@@ -1,3 +1,19 @@
+'use client'
+import { Button } from './button'
+import { useState } from 'react'
+
 export default function Home() {
-  return <div className="text-blue-500">Hello world!</div>
+  const [count, setCount] = useState(0)
+
+  function handleClick() {
+    setCount(count + 1)
+  }
+
+  return (
+    <div className="text-blue-500">
+      Hello world!
+      <Button count={count} onClick={handleClick} />
+      {count}
+    </div>
+  )
 }
