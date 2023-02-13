@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen-types": "supabase gen types typescript --project-id fkousziwzbnkdkldjper --schema public > utils/database.types.ts"
   },
   "dependencies": {
     "@next/font": "13.1.6",
