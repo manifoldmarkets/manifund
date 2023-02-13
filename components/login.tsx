@@ -4,7 +4,7 @@ import { useSupabase } from './supabase-provider'
 
 // Supabase auth needs to be triggered client-side
 export function Login() {
-  const { supabase, session } = useSupabase()
+  const { supabase } = useSupabase()
 
   const handleEmailLogin = async () => {
     await supabase.auth.signInWithPassword({
