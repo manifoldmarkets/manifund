@@ -1,19 +1,13 @@
-// import { Login } from '@/components/login'
+import { Button } from './button'
 import ServerComponent from './test-server-component'
 
 export default function Home() {
-  // const [count, setCount] = useState(0)
-
-  // function handleClick() {
-  //   setCount(count + 1)
-  // }
-
   return (
     <div className="text-blue-500">
       Hello world!
-      {/* <Button count={count} onClick={handleClick} /> */}
-      {/* {count} */}
-      {/* <Login /> */}
+      <Button />
+      {/* Async components cause a Typescript error, see https://github.com/vercel/next.js/issues/42292 */}
+      {/* @ts-expect-error Server Component */}
       <ServerComponent />
     </div>
   )
