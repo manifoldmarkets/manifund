@@ -10,6 +10,7 @@ type Profile = Database['public']['Tables']['profiles']['Row']
 export default function EditProfile() {
   const user = useUser()
   const id = user?.id ?? ''
+
   const [profile, setProfile] = useState<Profile>({ id, username: null })
   const { supabase } = useSupabase()
 
@@ -29,7 +30,7 @@ export default function EditProfile() {
     <div>
       this will be the edit profile page
       {JSON.stringify(user, null, 2)}
-      <EditProfileForm id={id} profile={profile} />
+      <EditProfileForm id={id} profile={profile} supabase={supabase} />
     </div>
   )
 }
@@ -48,23 +49,26 @@ async function getProfile(
   return data[0] ? data[0] : { id, username: null }
 }
 
-async function saveProfile(new_profile: Profile) {
-  const { supabase } = useSupabase()
+async function saveProfile(new_profile: Profile, supabase: SupabaseClient) {
   const { error } = await supabase
     .from('profiles')
-    .update(new_profile)
+    .update({ username: new_profile.username })
     .eq('id', new_profile.id)
   if (error) {
     throw error
   }
 }
 
-function EditProfileForm(props: { id: string; profile: Profile }) {
-  const { id, profile } = props
+function EditProfileForm(props: {
+  id: string
+  profile: Profile
+  supabase: SupabaseClient
+}) {
+  const { id, profile, supabase } = props
   const [username, setUsername] = useState<string | null>(profile.username)
 
   return (
-    <form onSubmit={() => saveProfile({ id, username })}>
+    <form onSubmit={() => saveProfile({ id, username }, supabase)}>
       <label htmlFor="username">Name</label>
       <input
         type="text"
