@@ -20,6 +20,16 @@ export default function ClientAuth() {
           <h1 className="text-2xl font-bold">
             Signed in as {session.user.email}
           </h1>
+          <button
+            className="bg-rose-400 text-white rounded p-2"
+            onClick={async () => {
+              await supabase.auth.signOut()
+              setSession(null)
+            }}
+          >
+            Sign out
+          </button>
+
           {/* <pre>{JSON.stringify(session?.user, null, 2)}</pre> */}
         </div>
       ) : (
