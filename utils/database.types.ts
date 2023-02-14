@@ -29,6 +29,20 @@ export interface Database {
           title?: string | null
         }
       }
+      profiles: {
+        Row: {
+          id: string
+          username: string | null
+        }
+        Insert: {
+          id: string
+          username?: string | null
+        }
+        Update: {
+          id?: string
+          username?: string | null
+        }
+      }
     }
     Views: {
       [_ in never]: never
