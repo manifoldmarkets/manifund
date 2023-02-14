@@ -15,11 +15,16 @@ export default function ClientAuth() {
 
   return (
     <div className="max-w-md bg-dark-200">
-      <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
-
-      <div className="p-4">
-        <pre>{JSON.stringify(session?.user, null, 2)}</pre>
-      </div>
+      {session?.user ? (
+        <div className="p-4">
+          <h1 className="text-2xl font-bold">
+            Signed in as {session.user.email}
+          </h1>
+          {/* <pre>{JSON.stringify(session?.user, null, 2)}</pre> */}
+        </div>
+      ) : (
+        <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
+      )}
     </div>
   )
 }
