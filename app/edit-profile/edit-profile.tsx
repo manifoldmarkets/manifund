@@ -10,7 +10,6 @@ export type Profile = Database['public']['Tables']['profiles']['Row']
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
   const { supabase } = useSupabase()
-  console.log('supabase', supabase)
   const [username, setUsername] = useState<string | null>(profile.username)
 
   return (
