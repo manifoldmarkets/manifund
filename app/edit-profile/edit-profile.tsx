@@ -10,14 +10,10 @@ export type Profile = Database['public']['Tables']['profiles']['Row']
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
   const { supabase } = useSupabase()
-  console.log('supabase', supabase)
   const [username, setUsername] = useState<string | null>(profile.username)
 
   return (
     <div className="text-red-500">
-      {/* <form
-        onSubmit={() => saveProfile({ id: profile.id, username }, supabase)}
-      > */}
       <label htmlFor="username">Name</label>
       <input
         type="text"
@@ -33,7 +29,6 @@ export function EditProfileForm(props: { profile: Profile }) {
       >
         Save
       </button>
-      {/* </form> */}
     </div>
   )
 }
