@@ -1,19 +1,9 @@
-'use client'
+import { createClient, getUser } from '@/utils/supabase-server'
 import React from 'react'
-import Router, { useRouter } from 'next/navigation'
-import { useUser } from '@/utils/hooks/use-user'
 
-export default function Sidebar() {
-  // props: {
-  //   className?: string
-  //   logoSubheading?: string
-  //   isMobile?: boolean
-  // }
-  //   const { className, logoSubheading, isMobile } = props
-  //   const router = useRouter()
-  //   const currentPage = router.pathname
-
-  const user = useUser()
+export default async function Sidebar() {
+  const supabase = createClient()
+  const user = await getUser(supabase)
 
   const navOptions = [{ name: 'Home', href: '/' }]
 
