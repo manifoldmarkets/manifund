@@ -34,7 +34,7 @@ export default function Sidebar() {
             <a href={item.href}>{item.name}</a>
           ))}
 
-          <p>Create Impact Certificate</p>
+          <a href="/create">Create Impact Certificate</a>
         </div>
       </nav>
     </div>
