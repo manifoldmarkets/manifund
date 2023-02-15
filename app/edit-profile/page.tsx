@@ -1,19 +1,28 @@
 import { Database } from '@/utils/database.types'
+import { createClient, getUser } from '@/utils/supabase-server'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { GetProfile } from './get-profile'
+import { EditProfileForm } from './edit-profile'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
-export default function Page() {
-  {
-    return (
-      <div>
-        <div className="text-blue-400">This is a server component</div>
-        {/* @ts-expect-error Server Component */}
-        <GetProfile />
-      </div>
-    )
+export default async function Page() {
+  const supabase = createClient()
+  const user = await getUser(supabase)
+  if (!user) {
+    return <div>you are not logged in</div>
   }
+  const profile = await getProfile(supabase, user?.id)
+
+  return (
+    <div>
+      <div className="text-blue-400">This is a server component</div>
+
+      <div className="text-blue-400">
+        {JSON.stringify(profile, null, 2)}
+        <EditProfileForm profile={profile} />
+      </div>
+    </div>
+  )
 }
 
 export async function getProfile(
