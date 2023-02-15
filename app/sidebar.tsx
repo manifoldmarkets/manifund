@@ -31,7 +31,9 @@ export default function Sidebar() {
 
         <div className="flex flex-col gap-1">
           {navOptions.map((item) => (
-            <a href={item.href}>{item.name}</a>
+            <a href={item.href} key={item.href}>
+              {item.name}
+            </a>
           ))}
 
           <a href="/create">Create Impact Certificate</a>
