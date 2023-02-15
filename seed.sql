@@ -38,3 +38,15 @@ $$;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- add RLS policies to projects
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."projects"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+
+WITH CHECK (true)
+
+CREATE POLICY "Enable read access for all users" ON "public"."projects"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
