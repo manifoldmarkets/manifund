@@ -5,6 +5,9 @@ import SupabaseProvider from '../components/supabase-provider'
 import './globals.css'
 import { createClient } from '../utils/supabase-server'
 import Sidebar from './sidebar'
+import { Readex_Pro } from '@next/font/google'
+
+const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 
 // do not cache this layout
 export const revalidate = 0
@@ -27,8 +30,11 @@ export default async function RootLayout({
       head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
     */}
       <head />
-      <body className="font-readex-pro mx-auto min-h-screen w-full lg:grid lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8">
+      <body
+        className={`${readex.variable} font-sans mx-auto min-h-screen w-full lg:grid lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
+      >
         <SupabaseProvider>
+          {/* @ts-expect-error Server Component */}
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
           {children}
