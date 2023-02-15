@@ -2,6 +2,7 @@
 import React from 'react'
 import Router, { useRouter } from 'next/navigation'
 import { useUser } from '@/utils/hooks/use-user'
+import { Button } from '@/components/button'
 
 export default function Sidebar() {
   // props: {
@@ -34,7 +35,9 @@ export default function Sidebar() {
             <a href={item.href}>{item.name}</a>
           ))}
 
-          <a href="/create">Create Impact Certificate</a>
+          <Button>
+            <a href="/create">Create Impact Certificate</a>
+          </Button>
         </div>
       </nav>
     </div>
