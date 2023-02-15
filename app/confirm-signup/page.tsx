@@ -2,9 +2,10 @@
 import { useSearchParams } from 'next/navigation'
 
 export default function ConfirmSignup() {
-  const confirmation_url = useSearchParams().get('confirmation_url')
+  const params = useSearchParams()
+  const confirmation_url = params.get('confirmation_url')
   if (!confirmation_url) return <div>no confirmation url</div>
-  const href = `${confirmation_url}&type=signup&redirect_to=${useSearchParams().get(
+  const href = `${confirmation_url}&type=signup&redirect_to=${params.get(
     'redirect_to'
   )}`
   return (
