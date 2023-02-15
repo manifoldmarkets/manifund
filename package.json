@@ -10,6 +10,7 @@
     "gen-types": "npx supabase gen types typescript --project-id fkousziwzbnkdkldjper --schema public > utils/database.types.ts"
   },
   "dependencies": {
+    "@heroicons/react": "^2.0.15",
     "@next/font": "13.1.6",
     "@supabase/auth-helpers-nextjs": "^0.5.4",
     "@supabase/auth-ui-react": "^0.2.7",
