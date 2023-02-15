@@ -1,6 +1,6 @@
 import { createClient, getUser } from '@/utils/supabase-server'
 import React from 'react'
-import { Button } from '@/components/button'
+import { CreateProjectButton } from './create-project-button'
 
 export default async function Sidebar() {
   const supabase = createClient()
@@ -27,9 +27,7 @@ export default async function Sidebar() {
             </a>
           ))}
 
-          <Button>
-            <a href="/create">Create Impact Certificate</a>
-          </Button>
+          <CreateProjectButton />
         </div>
       </nav>
     </div>
