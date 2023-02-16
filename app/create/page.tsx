@@ -4,6 +4,7 @@ import { useSupabase } from '@/components/supabase-provider'
 import { Database } from '@/utils/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { useState } from 'react'
+import { TextInput } from '@/components/text-input'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -16,9 +17,9 @@ export default function CreateCertForm() {
     return <div>log in to create a cert.</div>
   }
   return (
-    <div className="text-red-500">
+    <div className="">
       <label htmlFor="title">Title</label>
-      <input
+      <TextInput
         type="text"
         id="title"
         autoComplete="off"

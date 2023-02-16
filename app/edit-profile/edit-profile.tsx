@@ -5,6 +5,7 @@ import { Database } from '@/utils/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { useState } from 'react'
 import { Avatar } from '@/components/avatar'
+import { TextInput } from '@/components/text-input'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -15,10 +16,9 @@ export function EditProfileForm(props: { profile: Profile }) {
   const [avatar, setAvatar] = useState<File | null>(null)
 
   return (
-    <div className="text-red-500">
+    <div>
       <label htmlFor="username">Name</label>
-      <input
-        type="text"
+      <TextInput
         id="username"
         autoComplete="off"
         required
