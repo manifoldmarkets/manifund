@@ -50,3 +50,7 @@ CREATE POLICY "Enable read access for all users" ON "public"."projects"
 AS PERMISSIVE FOR SELECT
 TO public
 USING (true)
+
+-- add RLS policies to avatar bucket
+CREATE POLICY "Give users access to own folder 1oj01fe_0" ON storage.objects FOR SELECT TO public USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);CREATE POLICY "Allow users to add/change their avatar 1oj01fe_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+CREATE POLICY "Give users access to own folder 1oj01fe_1" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
