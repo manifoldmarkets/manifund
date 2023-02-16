@@ -6,7 +6,10 @@ export default async function Sidebar() {
   const supabase = createClient()
   const user = await getUser(supabase)
 
-  const navOptions = [{ name: 'Home', href: '/' }]
+  const navOptions = [
+    { name: 'Home', href: '/' },
+    { name: 'Projects', href: '/projects' },
+  ]
 
   return (
     <div className="sticky top-0 hidden divide-gray-300 self-start pl-2 lg:col-span-2 lg:flex">
