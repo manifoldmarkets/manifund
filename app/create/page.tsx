@@ -6,11 +6,13 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { useState } from 'react'
 import { TextInput } from '@/components/text-input'
 import { Button } from '@/components/button'
+import { useRouter } from 'next/navigation'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
 export default function CreateCertForm() {
   const { supabase, session } = useSupabase()
+  const router = useRouter()
   const [title, setTitle] = useState<string>('')
   const user = session?.user
 
@@ -28,22 +30,27 @@ export default function CreateCertForm() {
         value={title ? title : ''}
         onChange={(event) => setTitle(event.target.value)}
       />
-      <Button type="submit" onClick={() => saveCert(title, user.id, supabase)}>
+      <Button
+        type="submit"
+        onClick={async () => {
+          const slug = await saveCert(title)
+          router.push(`/projects/${slug}`)
+        }}
+      >
         Save
       </Button>
     </div>
   )
 }
 
-async function saveCert(
-  title: string,
-  creator: string,
-  supabase: SupabaseClient
-) {
-  const { error } = await supabase
-    .from('projects')
-    .insert({ title: title, creator: creator })
-  if (error) {
-    throw error
-  }
+async function saveCert(title: string) {
+  const response = await fetch('/api/create-project', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ title, blurb: 'blurby' }),
+  })
+  const newProject = await response.json()
+  return newProject.slug
 }
