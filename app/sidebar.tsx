@@ -1,13 +1,15 @@
-import { createClient, getUser } from '@/utils/supabase-server'
+import { createClient, getUser } from '@/db/supabase-server'
 import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
+import getProfileById from '@/db/profile'
 
 import { CreateProjectButton } from './create-project-button'
 
 export default async function Sidebar() {
   const supabase = createClient()
   const user = await getUser(supabase)
+  const profile = await getProfileById(supabase, user?.id)
 
   const navOptions = [{ name: 'Projects', href: '/projects' }]
 
@@ -31,7 +33,7 @@ export default async function Sidebar() {
         {user === null && <Link href="/login">Login</Link>}
 
         {/* {user && <div>Profile Summary</div>} */}
-        {user && <Link href="/edit-profile">Profile</Link>}
+        {user && <Link href={`/${profile.username}`}>Profile</Link>}
 
         <div className="flex flex-col gap-1">
           {navOptions.map((item) => (
