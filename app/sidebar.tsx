@@ -1,4 +1,5 @@
 import { createClient, getUser } from '@/utils/supabase-server'
+import Link from 'next/link'
 import React from 'react'
 import { CreateProjectButton } from './create-project-button'
 
@@ -18,16 +19,16 @@ export default async function Sidebar() {
         <div className="height-6" />
 
         {user === undefined && <div className="h-[56px]" />}
-        {user === null && <a href="/login">Login</a>}
+        {user === null && <Link href="/login">Login</Link>}
 
         {user && <div>Profile Summary</div>}
-        {user && <a href="/edit-profile">Edit Profile</a>}
+        {user && <Link href="/edit-profile">Edit Profile</Link>}
 
         <div className="flex flex-col gap-1">
           {navOptions.map((item) => (
-            <a href={item.href} key={item.href}>
+            <Link href={item.href} key={item.href}>
               {item.name}
-            </a>
+            </Link>
           ))}
 
           <CreateProjectButton />
