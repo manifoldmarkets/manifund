@@ -25,7 +25,7 @@ export default async function Page() {
   )
 }
 
-export async function getProfile(
+async function getProfile(
   supabase: SupabaseClient,
   id: string
 ): Promise<{ id: string; username: string | null }> {
