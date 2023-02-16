@@ -66,7 +66,11 @@ async function saveProfile(
   saveAvatar(avatar, new_profile.id, supabase)
   const { error } = await supabase
     .from('profiles')
-    .update({ username: new_profile.username })
+    .update({
+      username: new_profile.username
+        ?.replace(/ /g, '-')
+        .replace(/[^\w-]+/g, ''),
+    })
     .eq('id', new_profile.id)
   if (error) {
     throw error
