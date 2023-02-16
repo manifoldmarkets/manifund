@@ -31,8 +31,17 @@ export default async function handler(req: NextRequest) {
   const user = resp.data.user
   if (!user) return NextResponse.error()
 
-  // TODO: Ensure slug is valid, and append a random string if not
-  const slug = title.toLowerCase().replace(/ /g, '-')
+  let slug = title
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '')
+  const { data, error } = await supabase
+    .from('projects')
+    .select('slug')
+    .eq('slug', slug)
+  if (data && data.length > 0) {
+    slug = slug + '-' + Math.random().toString(36).substring(2, 15)
+  }
 
   const project = {
     title,
