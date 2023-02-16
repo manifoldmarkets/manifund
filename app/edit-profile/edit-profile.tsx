@@ -31,7 +31,7 @@ export function EditProfileForm(props: { profile: Profile }) {
         <div className="w-24 h-24">
           <Avatar
             username={username ? username : undefined}
-            avatarUrl={`https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${profile.id}/avatar`}
+            id={profile.id}
             noLink
             size={24}
           />

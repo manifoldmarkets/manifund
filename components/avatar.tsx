@@ -6,14 +6,22 @@ import { UserCircleIcon, UserIcon, UsersIcon } from '@heroicons/react/20/solid'
 
 export function Avatar(props: {
   username?: string
-  avatarUrl?: string
+  id?: string
   noLink?: boolean
   size?: number | 'xxs' | 'xs' | 'sm'
   className?: string
 }) {
   const { username, noLink, size, className } = props
-  const [avatarUrl, setAvatarUrl] = useState(props.avatarUrl)
-  useEffect(() => setAvatarUrl(props.avatarUrl), [props.avatarUrl])
+  const [avatarUrl, setAvatarUrl] = useState(
+    `https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${props.id}/avatar`
+  )
+  useEffect(
+    () =>
+      setAvatarUrl(
+        `https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${props.id}/avatar`
+      ),
+    [props.id]
+  )
   const s =
     size == 'xxs' ? 4 : size == 'xs' ? 6 : size === 'sm' ? 8 : size || 10
   const sizeInPx = s * 4
