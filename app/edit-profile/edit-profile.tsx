@@ -6,6 +6,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { useState } from 'react'
 import { Avatar } from '@/components/avatar'
 import { TextInput } from '@/components/text-input'
+import { Button } from '@/components/button'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -45,14 +46,14 @@ export function EditProfileForm(props: { profile: Profile }) {
           setAvatar(event.target.files ? event.target.files[0] : null)
         }}
       ></input>
-      <button
+      <Button
         type="submit"
         onClick={() =>
           saveProfile({ id: profile.id, username }, avatar, supabase)
         }
       >
         Save
-      </button>
+      </Button>
     </div>
   )
 }

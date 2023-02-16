@@ -5,6 +5,7 @@ import { Database } from '@/utils/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { useState } from 'react'
 import { TextInput } from '@/components/text-input'
+import { Button } from '@/components/button'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -27,9 +28,9 @@ export default function CreateCertForm() {
         value={title ? title : ''}
         onChange={(event) => setTitle(event.target.value)}
       />
-      <button type="submit" onClick={() => saveCert(title, user.id, supabase)}>
+      <Button type="submit" onClick={() => saveCert(title, user.id, supabase)}>
         Save
-      </button>
+      </Button>
     </div>
   )
 }
