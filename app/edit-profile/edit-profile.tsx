@@ -5,8 +5,6 @@ import { Database } from '@/utils/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { useState } from 'react'
 import { Avatar } from '@/components/avatar'
-import Image from 'next/image'
-import uuid from 'react-uuid'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -15,9 +13,6 @@ export function EditProfileForm(props: { profile: Profile }) {
   const { supabase } = useSupabase()
   const [username, setUsername] = useState<string | null>(profile.username)
   const [avatar, setAvatar] = useState<File | null>(null)
-  console.log(
-    `https://fkousziwzbnkdkldjper/storage/v1/object/public/avatars/${profile.id}/avatar`
-  )
 
   return (
     <div className="text-red-500">
@@ -33,14 +28,6 @@ export function EditProfileForm(props: { profile: Profile }) {
       <label htmlFor="avatar">Choose a profile picture:</label>
       <div className="flex space-x-2">
         <div className="w-24 h-24">
-          {/* <Image
-            src={`https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${profile.id}/avatar`}
-            width={100}
-            height={100}
-            priority
-            alt="your avatar"
-            className="rounded-full max-w-full h-auto"
-          /> */}
           <Avatar
             username={username ? username : undefined}
             avatarUrl={`https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${profile.id}/avatar`}
@@ -97,5 +84,4 @@ async function saveAvatar(
   if (error) {
     throw error
   }
-  console.log(data)
 }
