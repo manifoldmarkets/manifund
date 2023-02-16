@@ -38,9 +38,7 @@ export default async function RootLayout({
           {/* @ts-expect-error Server Component */}
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
-          <div className="flex flex-col flex-1 lg:col-span-8 xl:contents">
-            {children}
-          </div>
+          <div className="flex flex-col flex-1 lg:col-span-8">{children}</div>
         </SupabaseProvider>
       </body>
     </html>
