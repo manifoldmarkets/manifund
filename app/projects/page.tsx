@@ -1,6 +1,7 @@
 import { Database } from '@/utils/database.types'
 import { createClient } from '@/utils/supabase-server'
 import { Profile } from '../edit-profile/edit-profile'
+import Link from 'next/link'
 
 type Project = Database['public']['Tables']['projects']['Row']
 
@@ -26,10 +27,13 @@ async function ProjectCard(props: { project: Project }) {
   const { project } = props
   const creator = await getProfile(project.creator)
   return (
-    <div className="p-4 bg-gray-50 rounded-md hover:bg-orange-200 hover:cursor-pointer">
+    <Link
+      className="p-4 bg-gray-50 rounded-md hover:bg-orange-200 hover:cursor-pointer"
+      href="projects/any"
+    >
       <h1 className="text-2xl font-bold">{project.title}</h1>
       <p>Created by {creator.username}</p>
-    </div>
+    </Link>
   )
 }
 
