@@ -29,7 +29,7 @@ async function ProjectCard(props: { project: Project }) {
   return (
     <Link
       className="p-4 bg-gray-50 rounded-md hover:bg-orange-200 hover:cursor-pointer"
-      href="projects/any"
+      href={`projects/${project.slug}`}
     >
       <h1 className="text-2xl font-bold">{project.title}</h1>
       <p>Created by {creator.username}</p>

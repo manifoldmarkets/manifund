@@ -48,7 +48,8 @@ export interface Database {
           blurb: string | null
           created_at: string | null
           creator: string
-          id: number
+          id: string
+          slug: string
           tags: string | null
           title: string | null
         }
@@ -56,7 +57,8 @@ export interface Database {
           blurb?: string | null
           created_at?: string | null
           creator: string
-          id?: number
+          id?: string
+          slug?: string
           tags?: string | null
           title?: string | null
         }
@@ -64,9 +66,36 @@ export interface Database {
           blurb?: string | null
           created_at?: string | null
           creator?: string
-          id?: number
+          id?: string
+          slug?: string
           tags?: string | null
           title?: string | null
+        }
+      }
+      txns: {
+        Row: {
+          amount: number
+          created_at: string
+          from_id: string
+          id: string
+          to_id: string
+          token: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          from_id: string
+          id?: string
+          to_id: string
+          token: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          from_id?: string
+          id?: string
+          to_id?: string
+          token?: string
         }
       }
     }
