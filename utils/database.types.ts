@@ -48,7 +48,9 @@ export interface Database {
           blurb: string | null
           created_at: string | null
           creator: string
+          founder_portion: number
           id: string
+          min_funding: number
           slug: string
           tags: string | null
           title: string | null
@@ -57,7 +59,9 @@ export interface Database {
           blurb?: string | null
           created_at?: string | null
           creator: string
+          founder_portion?: number
           id?: string
+          min_funding?: number
           slug?: string
           tags?: string | null
           title?: string | null
@@ -66,7 +70,9 @@ export interface Database {
           blurb?: string | null
           created_at?: string | null
           creator?: string
+          founder_portion?: number
           id?: string
+          min_funding?: number
           slug?: string
           tags?: string | null
           title?: string | null
