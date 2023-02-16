@@ -15,7 +15,7 @@ export default async function Sidebar() {
         <div className="height-6" />
 
         {user === undefined && <div className="h-[56px]" />}
-        {user === null && <a href="/test">Login</a>}
+        {user === null && <a href="/login">Login</a>}
 
         {user && <div>Profile Summary</div>}
         {user && <a href="/edit-profile">Edit Profile</a>}

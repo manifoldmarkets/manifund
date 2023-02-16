@@ -6,6 +6,7 @@ import './globals.css'
 import { createClient } from '../utils/supabase-server'
 import Sidebar from './sidebar'
 import { Readex_Pro } from '@next/font/google'
+import clsx from 'clsx'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 
@@ -33,11 +34,11 @@ export default async function RootLayout({
       <body
         className={`${readex.variable} font-sans mx-auto min-h-screen w-full lg:grid lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
       >
-        <SupabaseProvider>
+        <SupabaseProvider session={session}>
           {/* @ts-expect-error Server Component */}
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
-          {children}
+          <div className="flex flex-col flex-1 lg:col-span-8">{children}</div>
         </SupabaseProvider>
       </body>
     </html>
