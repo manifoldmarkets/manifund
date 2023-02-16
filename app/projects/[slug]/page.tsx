@@ -1,6 +1,5 @@
 import { Database } from '@/utils/database.types'
-import { createClient, getUser } from '@/utils/supabase-server'
-import { SupabaseClient } from '@supabase/supabase-js'
+import { createClient } from '@/utils/supabase-server'
 import { getProfile } from '../page'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
