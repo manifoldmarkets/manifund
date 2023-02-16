@@ -1,13 +1,15 @@
 import { Database } from '@/utils/database.types'
 import { createClient, getUser } from '@/utils/supabase-server'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { getProfile } from '../page'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
   const project = await getProject(slug)
+  const creator = await getProfile(project.creator)
   return (
     <div>
-      {project.title} was made by {project.creator}
+      {project.title} was made by {creator.username}
     </div>
   )
 }
