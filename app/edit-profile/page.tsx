@@ -15,10 +15,7 @@ export default async function Page() {
 
   return (
     <div>
-      <div className="text-blue-400">This is a server component</div>
-
       <div className="text-blue-400">
-        {JSON.stringify(profile, null, 2)}
         <EditProfileForm profile={profile} />
       </div>
     </div>
