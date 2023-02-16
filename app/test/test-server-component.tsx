@@ -1,7 +1,7 @@
 import 'server-only'
 
-import { createClient } from '@/utils/supabase-server'
-import { Database } from '@/utils/database.types'
+import { createClient } from '@/db/supabase-server'
+import { Database } from '@/db/database.types'
 
 // do not cache this page
 export const revalidate = 0

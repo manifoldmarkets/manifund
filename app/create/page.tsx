@@ -1,7 +1,7 @@
 'use client'
 
 import { useSupabase } from '@/components/supabase-provider'
-import { Database } from '@/utils/database.types'
+import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { useState } from 'react'
 import { TextInput } from '@/components/text-input'

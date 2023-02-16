@@ -1,9 +1,6 @@
-import { Database } from '@/utils/database.types'
-import { createClient, getUser } from '@/utils/supabase-server'
-import { SupabaseClient } from '@supabase/supabase-js'
+import { createClient, getUser } from '@/db/supabase-server'
 import { EditProfileForm } from './edit-profile'
-
-export type Profile = Database['public']['Tables']['profiles']['Row']
+import getProfileById from '@/db/profile'
 
 export default async function Page() {
   const supabase = createClient()
@@ -11,7 +8,7 @@ export default async function Page() {
   if (!user) {
     return <div>you are not logged in</div>
   }
-  const profile = await getProfile(supabase, user?.id)
+  const profile = await getProfileById(supabase, user?.id)
 
   return (
     <div>
@@ -20,18 +17,4 @@ export default async function Page() {
       </div>
     </div>
   )
-}
-
-async function getProfile(
-  supabase: SupabaseClient,
-  id: string
-): Promise<{ id: string; username: string | null }> {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', id)
-  if (error) {
-    throw error
-  }
-  return data[0] ? data[0] : { id, username: null }
 }

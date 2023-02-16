@@ -1,5 +1,5 @@
-import { Database } from '@/utils/database.types'
-import { createClient } from '@/utils/supabase-server'
+import { Database } from '@/db/database.types'
+import { createClient } from '@/db/supabase-server'
 import { Profile } from '../edit-profile/edit-profile'
 import Link from 'next/link'
 

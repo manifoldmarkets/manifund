@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { createClient } from '../../utils/supabase-server'
+import { createClient } from '../../db/supabase-server'
 import Posts from './posts'
 
 // do not cache this page
