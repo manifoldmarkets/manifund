@@ -1,5 +1,6 @@
 import { getProfileByUsername } from '@/db/profile'
 import { createClient, getUser } from '@/db/supabase-server'
+import { ProfileHeader } from './profile-header'
 
 export default async function UserProfilePage(props: {
   params: { usernameSlug: string }
@@ -13,6 +14,7 @@ export default async function UserProfilePage(props: {
     <div>
       {profile?.username} profile page
       {isOwnProfile && <div>edit profile</div>}
+      <ProfileHeader profile={profile} />
     </div>
   )
 }
