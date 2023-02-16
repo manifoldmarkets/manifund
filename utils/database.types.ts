@@ -43,6 +43,32 @@ export interface Database {
           username?: string | null
         }
       }
+      projects: {
+        Row: {
+          blurb: string | null
+          created_at: string | null
+          creator: string
+          id: number
+          tags: string | null
+          title: string | null
+        }
+        Insert: {
+          blurb?: string | null
+          created_at?: string | null
+          creator: string
+          id?: number
+          tags?: string | null
+          title?: string | null
+        }
+        Update: {
+          blurb?: string | null
+          created_at?: string | null
+          creator?: string
+          id?: number
+          tags?: string | null
+          title?: string | null
+        }
+      }
     }
     Views: {
       [_ in never]: never
