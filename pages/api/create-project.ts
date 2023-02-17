@@ -12,10 +12,13 @@ type Project = Database['public']['Tables']['projects']['Row']
 type ProjectProps = {
   title: string
   blurb: string
+  min_funding: number
+  founder_portion: number
 }
 
 export default async function handler(req: NextRequest) {
-  const { title, blurb } = (await req.json()) as ProjectProps
+  const { title, blurb, min_funding, founder_portion } =
+    (await req.json()) as ProjectProps
   const res = NextResponse.next()
   const supabase = createMiddlewareSupabaseClient<Database>(
     {
@@ -35,7 +38,7 @@ export default async function handler(req: NextRequest) {
     .toLowerCase()
     .replace(/ /g, '-')
     .replace(/[^\w-]+/g, '')
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('projects')
     .select('slug')
     .eq('slug', slug)
@@ -46,10 +49,15 @@ export default async function handler(req: NextRequest) {
   const project = {
     title,
     blurb,
+    min_funding,
+    founder_portion,
     creator: user?.id,
     slug,
   }
 
-  await supabase.from('projects').insert([project])
+  const { error } = await supabase.from('projects').insert([project])
+  if (error) {
+    console.error(error)
+  }
   return NextResponse.json(project)
 }

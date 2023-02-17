@@ -6,7 +6,9 @@ import { SupabaseClient } from '@supabase/supabase-js'
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
   const supabase = createClient()
+  console.log('slug', slug)
   const project = await getProject(supabase, slug)
+  console.log('project as seen by project page after already made', project)
   const creator = await getProfileById(supabase, project.creator)
   return (
     <div>
