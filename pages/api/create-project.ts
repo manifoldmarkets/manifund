@@ -30,6 +30,8 @@ export default async function handler(req: NextRequest) {
     }
   )
 
+  console.log('founder_portion', founder_portion)
+
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
