@@ -4,7 +4,7 @@ import { useSupabase } from '@/components/supabase-provider'
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { useState } from 'react'
-import { TextInput } from '@/components/text-input'
+import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 
@@ -23,7 +23,8 @@ export default function CreateCertForm() {
   return (
     <div className="">
       <label htmlFor="title">Title</label>
-      <TextInput
+      <Input
+        type="text"
         id="title"
         autoComplete="off"
         required
@@ -31,7 +32,8 @@ export default function CreateCertForm() {
         onChange={(event) => setTitle(event.target.value)}
       />
       <label htmlFor="blurb">Blurb</label>
-      <TextInput
+      <Input
+        type="text"
         id="blurb"
         autoComplete="off"
         required

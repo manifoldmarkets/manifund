@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { forwardRef, Ref } from 'react'
 
 /** Text input. Wraps html `<input>` */
-export const TextInput = forwardRef(
+export const Input = forwardRef(
   (
     props: { error?: boolean } & JSX.IntrinsicElements['input'],
     ref: Ref<HTMLInputElement>
