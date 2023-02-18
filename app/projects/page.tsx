@@ -37,7 +37,7 @@ async function ProjectCard(props: { project: Project }) {
   )
 }
 
-export async function getProfile(userId: string) {
+async function getProfile(userId: string) {
   const supabase = createClient()
   const { data, error } = await supabase
     .from('profiles')
