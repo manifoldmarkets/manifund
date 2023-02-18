@@ -1,18 +1,23 @@
 import { Database } from '@/db/database.types'
-import { createClient } from '@/db/supabase-server'
-import getProfileById from '@/db/profile'
+import { createClient, getUser } from '@/db/supabase-server'
+import getProfileById, { getProfileByUsername } from '@/db/profile'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { PlaceBid } from './place-bid'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
+
   const supabase = createClient()
-  console.log('slug', slug)
   const project = await getProject(supabase, slug)
-  console.log('project as seen by project page after already made', project)
   const creator = await getProfileById(supabase, project.creator)
+  const user = await getUser(supabase)
+
+  const isOwnProject = user?.id === creator?.id
+
   return (
     <div>
       {project.title} was made by {creator.username}
+      {user && <PlaceBid project_id={project.id} user={user?.id} />}
     </div>
   )
 }

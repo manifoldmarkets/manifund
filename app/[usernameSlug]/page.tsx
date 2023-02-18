@@ -3,7 +3,6 @@ import { createClient, getUser } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import Link from 'next/link'
 import { PencilIcon } from '@heroicons/react/20/solid'
-import clsx from 'clsx'
 
 export default async function UserProfilePage(props: {
   params: { usernameSlug: string }
