@@ -6,9 +6,7 @@ import { useState } from 'react'
 import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
-import Slider from 'rc-slider'
-import 'rc-slider/assets/index.css'
-import clsx from 'clsx'
+import MySlider from '@/components/slider'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -65,29 +63,11 @@ export default function CreateCertForm() {
 
       <label htmlFor="founder_portion">Founder Portion</label>
       <div className="flex justify-center">
-        <Slider
-          min={0}
-          max={100}
+        <MySlider
           marks={marks}
           value={founder_portion ?? 0}
           onChange={(value) => setFounderPortion(value as number)}
-          className={clsx(
-            ' mt-3 mb-10 mx-2 !h-1 [&>.rc-slider-rail]:bg-gray-200 w-11/12',
-            '[&>.rc-slider-track]:bg-indigo-700 [&>.rc-slider-handle]:bg-indigo-500'
-          )}
-          railStyle={{ height: 4, top: 4, left: 0 }}
-          trackStyle={{ height: 4, top: 4 }}
-          handleStyle={{
-            height: 24,
-            width: 24,
-            opacity: 1,
-            border: 'none',
-            boxShadow: 'none',
-            top: -0.5,
-          }}
           step={5}
-          draggableTrack
-          pushable
         />
       </div>
       <Button
