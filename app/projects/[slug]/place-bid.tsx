@@ -4,6 +4,10 @@ import { Input } from 'components/input'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
 import { useState, useEffect } from 'react'
+import { Button } from 'components/button'
+import { useSupabase } from '@/components/supabase-provider'
+import { SupabaseClient } from '@supabase/supabase-js'
+
 import clsx from 'clsx'
 
 export function PlaceBid(props: {
@@ -13,12 +17,13 @@ export function PlaceBid(props: {
   user: string
 }) {
   const { project_id, min_funding, founder_portion, user } = props
+  const { supabase } = useSupabase()
 
   const sellable_portion = 1 - founder_portion / 10000000
   const min_valuation = sellable_portion * min_funding
 
   const [valuation, setValuation] = useState<number>(min_valuation)
-  const [bid, setBid] = useState<number>(0)
+  const [bid_portion, setBidPortion] = useState<number>(0)
   const [marks, setMarks] = useState<{ [key: number]: string }>({})
   useEffect(() => {
     setMarks({
@@ -28,7 +33,6 @@ export function PlaceBid(props: {
       75: `$${(((valuation * sellable_portion) / 4) * 3).toString()}`,
       100: `$${(valuation * sellable_portion).toString()}`,
     })
-    console.log('using effect')
   }, [valuation, sellable_portion])
   return (
     <div className="flex flex-col gap-2 p-4">
@@ -46,9 +50,9 @@ export function PlaceBid(props: {
       <Slider
         min={0}
         max={100}
-        value={bid ?? 0}
+        value={bid_portion ?? 0}
         marks={marks}
-        onChange={(value) => setBid(value as number)}
+        onChange={(value) => setBidPortion(value as number)}
         className={clsx(
           ' mt-3 mb-10 mx-2 !h-1 [&>.rc-slider-rail]:bg-gray-200 w-11/12',
           '[&>.rc-slider-track]:bg-indigo-700 [&>.rc-slider-handle]:bg-indigo-500'
@@ -67,19 +71,35 @@ export function PlaceBid(props: {
         draggableTrack
         pushable
       />
+      <Button
+        type="submit"
+        onClick={() =>
+          placeBid(
+            supabase,
+            project_id,
+            user,
+            valuation,
+            (bid_portion * (valuation * sellable_portion)) / 100
+          )
+        }
+      >
+        Place Bid
+      </Button>
     </div>
   )
 }
 
-// function determineMarks(valuation: number) {
-//    const quarter_num = valuation / 4;
-//     const half_num = valuation / 2;
-//     const three_quarter_num = valuation / 4 * 3;
-//   return {
-//     0: '$0',
-//     25: `$${quarter_num.toString()}`,
-//     50: `$${(valuation / 2).toString}`,
-//     75: `$${(valuation / 4).toString}`,
-//     100: `$${valuation.toString}`,
-//   }
-// }
+async function placeBid(
+  supabase: SupabaseClient,
+  project: string,
+  bidder: string,
+  valuation: number,
+  amount: number
+) {
+  const { error } = await supabase
+    .from('bids')
+    .insert([{ project, bidder, valuation, amount }])
+  if (error) {
+    throw error
+  }
+}
