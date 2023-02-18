@@ -7,6 +7,9 @@ export default async function getProfileById(
   supabase: SupabaseClient,
   id: string = ''
 ): Promise<{ id: string; username: string | null }> {
+  if (!id) {
+    return { id, username: null }
+  }
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -21,6 +24,9 @@ export async function getProfileByUsername(
   supabase: SupabaseClient,
   username: string = ''
 ) {
+  if (!username) {
+    return { id: null, username }
+  }
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
