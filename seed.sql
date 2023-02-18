@@ -70,3 +70,16 @@ alter table public.txns enable row level security;
 -- Allow anyone to read txns
 drop policy if exists "Allow anyone to read txns" on public.txns;
 create policy "Allow anyone to read txns" on public.txns for select using (true);
+
+
+--- Bids ----
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."bids"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+
+WITH CHECK (true)
+
+CREATE POLICY "Enable delete for users based on user_id" ON "public"."bids"
+AS PERMISSIVE FOR DELETE
+TO public
+USING (auth.uid() = bidder)
