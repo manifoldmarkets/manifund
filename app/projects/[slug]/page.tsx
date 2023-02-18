@@ -17,7 +17,14 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   return (
     <div>
       {project.title} was made by {creator.username}
-      {user && <PlaceBid project_id={project.id} user={user?.id} />}
+      {user && (
+        <PlaceBid
+          project_id={project.id}
+          min_funding={project.min_funding}
+          founder_portion={project.founder_portion}
+          user={user?.id}
+        />
+      )}
     </div>
   )
 }

@@ -6,21 +6,30 @@ import 'rc-slider/assets/index.css'
 import { useState, useEffect } from 'react'
 import clsx from 'clsx'
 
-export function PlaceBid(props: { project_id: string; user: string }) {
-  const { project_id, user } = props
-  const [valuation, setValuation] = useState<number>(0)
+export function PlaceBid(props: {
+  project_id: string
+  min_funding: number
+  founder_portion: number
+  user: string
+}) {
+  const { project_id, min_funding, founder_portion, user } = props
+
+  const sellable_portion = 1 - founder_portion / 10000000
+  const min_valuation = sellable_portion * min_funding
+
+  const [valuation, setValuation] = useState<number>(min_valuation)
   const [bid, setBid] = useState<number>(0)
   const [marks, setMarks] = useState<{ [key: number]: string }>({})
   useEffect(() => {
     setMarks({
       0: '$0',
-      25: `$${(valuation / 4).toString()}`,
-      50: `$${(valuation / 2).toString()}`,
-      75: `$${((valuation / 4) * 3).toString()}`,
-      100: `$${valuation.toString()}`,
+      25: `$${((valuation * sellable_portion) / 4).toString()}`,
+      50: `$${((valuation * sellable_portion) / 2).toString()}`,
+      75: `$${(((valuation * sellable_portion) / 4) * 3).toString()}`,
+      100: `$${(valuation * sellable_portion).toString()}`,
     })
     console.log('using effect')
-  }, [valuation])
+  }, [valuation, sellable_portion])
   return (
     <div className="flex flex-col gap-2 p-4">
       Place a bid!
@@ -28,6 +37,7 @@ export function PlaceBid(props: { project_id: string; user: string }) {
       <Input
         id="valuation"
         type="number"
+        min={min_valuation}
         required
         value={valuation ?? ''}
         onChange={(event) => setValuation(Number(event.target.value))}
