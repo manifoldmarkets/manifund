@@ -87,7 +87,7 @@ export interface Database {
           creator: string
           founder_portion: number
           id?: string
-          min_funding?: number
+          min_funding: number
           slug?: string
           tags?: string | null
           title?: string | null
