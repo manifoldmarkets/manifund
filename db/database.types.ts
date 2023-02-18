@@ -9,6 +9,32 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      bids: {
+        Row: {
+          amount: number | null
+          bidder: string
+          created_at: string | null
+          id: string
+          project: string
+          valuation: number | null
+        }
+        Insert: {
+          amount?: number | null
+          bidder: string
+          created_at?: string | null
+          id?: string
+          project: string
+          valuation?: number | null
+        }
+        Update: {
+          amount?: number | null
+          bidder?: string
+          created_at?: string | null
+          id?: string
+          project?: string
+          valuation?: number | null
+        }
+      }
       posts: {
         Row: {
           content: string | null
@@ -59,7 +85,7 @@ export interface Database {
           blurb?: string | null
           created_at?: string | null
           creator: string
-          founder_portion?: number
+          founder_portion: number
           id?: string
           min_funding?: number
           slug?: string
