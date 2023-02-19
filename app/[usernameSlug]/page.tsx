@@ -16,7 +16,7 @@ export default async function UserProfilePage(props: {
     <div>
       {profile?.username} profile page
       {isOwnProfile && (
-        <div className="bg-orange-400 rounded-full h-12 w-12 hover:bg-orange-500">
+        <div className="h-12 w-12 rounded-full bg-orange-400 hover:bg-orange-500">
           <Link href="/edit-profile">
             <PencilIcon className="h-12 w-12 p-2" aria-hidden />
           </Link>

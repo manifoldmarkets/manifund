@@ -8,10 +8,10 @@ export default async function Projects() {
   const projects = await listProjects()
 
   return (
-    <div className="max-w-4xl bg-dark-200">
+    <div className="bg-dark-200 max-w-4xl">
       <div className="p-4">
         <h1 className="text-2xl font-bold">Projects</h1>
-        <div className="grid grid-cols-2 gap-4 mt-2">
+        <div className="mt-2 grid grid-cols-2 gap-4">
           {projects.map((project) => (
             // @ts-expect-error Server Component
             <ProjectCard key={project.id} project={project} />
@@ -27,12 +27,12 @@ async function ProjectCard(props: { project: Project }) {
   const creator = await getProfile(project.creator)
   return (
     <Link
-      className="p-4 bg-white border border-orange-200 shadow rounded-md hover:bg-orange-200 hover:cursor-pointer"
+      className="rounded-md border border-orange-200 bg-white p-4 shadow hover:cursor-pointer hover:bg-orange-200"
       href={`projects/${project.slug}`}
     >
       <h1 className="text-2xl font-bold">{project.title}</h1>
       <p>By {creator.username}</p>
-      <p className="text-gray-500 font-light mb-2">{project.blurb}</p>
+      <p className="mb-2 font-light text-gray-500">{project.blurb}</p>
       <p>
         Raising ${formatLargeNumber(project.min_funding)} @ $
         {getValuation(project)}

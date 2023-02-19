@@ -9,8 +9,8 @@ export default function ConfirmSignup() {
     'redirect_to'
   )}`
   return (
-    <div className="max-w-md bg-dark-200">
-      <a className="p-5 bg-rose-200" href={href}>
+    <div className="bg-dark-200 max-w-md">
+      <a className="bg-rose-200 p-5" href={href}>
         confirmation link
       </a>
     </div>
