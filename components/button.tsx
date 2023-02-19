@@ -37,7 +37,7 @@ export function buttonClass(size: SizeType, color: ColorType | 'override') {
     color === 'blue' &&
       'disabled:bg-gray-200 bg-blue-400 text-white hover:bg-blue-500',
     color === 'orange' &&
-      'disabled:bg-gray-200 bg-orange-500 text-white hover:bg-indigo-600',
+      'disabled:bg-gray-200 bg-orange-500 text-white hover:bg-orange-600',
     color === 'gray' &&
       'bg-gray-50 text-gray-600 hover:bg-gray-200 disabled:opacity-50',
     color === 'gray-outline' &&
@@ -45,7 +45,7 @@ export function buttonClass(size: SizeType, color: ColorType | 'override') {
     color === 'gradient' &&
       'disabled:bg-gray-200 enabled:bg-gradient-to-r from-orange-500 to-rose-500 text-white hover:from-orange-700 hover:to-rose-700',
     color === 'gradient-pink' &&
-      'disabled:bg-gray-200 enabled:bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white',
+      'disabled:bg-gray-200 enabled:bg-gradient-to-r from-orange-500 to-fuchsia-500 text-white',
     color === 'gray-white' &&
       'text-gray-600 hover:bg-gray-200 shadow-none disabled:opacity-50'
   )
