@@ -15,9 +15,9 @@ const poiret = Poiret_One({
 })
 const josefin = Josefin_Slab({
   subsets: ['latin'],
-  weight: '400',
   variable: '--font-josefin-slab',
 })
+const fontVars = [readex.variable, poiret.variable, josefin.variable].join(' ')
 
 // do not cache this layout
 export const revalidate = 0
@@ -41,13 +41,13 @@ export default async function RootLayout({
     */}
       <head />
       <body
-        className={`${readex.variable} ${poiret.variable} ${josefin.variable} font-sans mx-auto min-h-screen w-full lg:grid lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8 bg-gray-50`}
+        className={`${fontVars} mx-auto min-h-screen w-full bg-gray-50 font-sans lg:grid lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
       >
         <SupabaseProvider session={session}>
           {/* @ts-expect-error Server Component */}
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
-          <div className="flex flex-col flex-1 lg:col-span-8">{children}</div>
+          <div className="flex flex-1 flex-col lg:col-span-8">{children}</div>
         </SupabaseProvider>
       </body>
     </html>

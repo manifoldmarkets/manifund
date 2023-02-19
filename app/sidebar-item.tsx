@@ -8,7 +8,8 @@ import {
   UserCircleIcon,
   WrenchIcon,
   InformationCircleIcon,
-} from '@heroicons/react/20/solid'
+  HomeIcon,
+} from '@heroicons/react/24/solid'
 
 export type Item = {
   name: string
@@ -48,6 +49,8 @@ function findIcon(name: string, isCurrentPage: boolean) {
     '-ml-1 mr-3 h-6 w-6 flex-shrink-0' + 'h-6 w-6'
   )
   switch (name) {
+    case 'Home':
+      return <HomeIcon className={styling} />
     case 'Profile':
       return <UserCircleIcon className={styling} />
     case 'Projects':

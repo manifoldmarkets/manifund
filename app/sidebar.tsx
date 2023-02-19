@@ -13,22 +13,26 @@ export default async function Sidebar() {
   const profile = await getProfileById(supabase, user?.id)
 
   return (
-    <div className="sticky top-0 mt-10 hidden self-start pl-2 lg:col-span-3 lg:flex gap-1 h-full">
+    <div className="sticky top-0 mt-10 hidden h-full gap-1 self-start pl-2 lg:col-span-3 lg:flex">
       <nav aria-label="Sidebar" className="flex h-screen flex-col">
         <Link href="/">
-          <div className="flex flex-row text-4xl font-bold text-orange-500 items-center gap-2 font-josefin">
+          <div className="group flex flex-row items-center gap-1">
             <Image
               src="/Manifox.png"
               alt="Manifold Markets"
+              className="-translate-y-2 transition-all group-hover:-translate-y-3"
               width={60}
               height={60}
             />
-            Manifund
+            <span className="bg-gradient-to-r from-orange-500  to-rose-400 bg-clip-text font-josefin text-4xl font-[650] text-transparent">
+              Manifund
+            </span>
           </div>
         </Link>
         <div className="h-6" />
 
         {user === undefined && <div className="h-[56px]" />}
+        <SidebarItem item={{ name: 'Home', href: '/' }} />
         {user === null && (
           <SidebarItem
             item={{
@@ -46,7 +50,6 @@ export default async function Sidebar() {
             }}
           />
         )}
-        <SidebarItem item={{ name: 'Projects', href: '/projects' }} />
         <SidebarItem item={{ name: 'About', href: '/about' }} />
         <CreateProjectButton />
       </nav>
