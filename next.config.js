@@ -14,6 +14,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'manifold.markets',
       },
+      {
+        protocol: 'https',
+        hostname: 'imgur.com',
+        pathname: '/a/h06lDL9',
+      },
     ],
   },
 }
