@@ -14,6 +14,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['var(--font-readex-pro)', ...defaultTheme.fontFamily.sans],
+        poiret: ['var(--font-poiret-one)', ...defaultTheme.fontFamily.sans],
       },
     },
   },

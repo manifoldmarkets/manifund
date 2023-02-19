@@ -5,10 +5,15 @@ import SupabaseProvider from '../components/supabase-provider'
 import './globals.css'
 import { createClient } from '../db/supabase-server'
 import Sidebar from './sidebar'
-import { Readex_Pro } from '@next/font/google'
+import { Poiret_One, Readex_Pro } from '@next/font/google'
 import clsx from 'clsx'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
+const poiret = Poiret_One({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-poiret-one',
+})
 
 // do not cache this layout
 export const revalidate = 0
@@ -32,7 +37,7 @@ export default async function RootLayout({
     */}
       <head />
       <body
-        className={`${readex.variable} font-sans mx-auto min-h-screen w-full lg:grid lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8 bg-gray-50`}
+        className={`${readex.variable} ${poiret.variable} font-sans mx-auto min-h-screen w-full lg:grid lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8 bg-gray-50`}
       >
         <SupabaseProvider session={session}>
           {/* @ts-expect-error Server Component */}
