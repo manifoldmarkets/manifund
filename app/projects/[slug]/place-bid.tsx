@@ -7,8 +7,6 @@ import { Button } from 'components/button'
 import { useSupabase } from '@/components/supabase-provider'
 import { SupabaseClient } from '@supabase/supabase-js'
 
-import clsx from 'clsx'
-
 export function PlaceBid(props: {
   project_id: string
   min_funding: number
