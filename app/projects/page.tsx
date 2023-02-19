@@ -2,8 +2,7 @@ import { Database } from '@/db/database.types'
 import { createClient } from '@/db/supabase-server'
 import { Profile } from '../edit-profile/edit-profile'
 import Link from 'next/link'
-
-type Project = Database['public']['Tables']['projects']['Row']
+import { formatLargeNumber, getValuation, Project } from '@/db/project'
 
 export default async function Projects() {
   const projects = await listProjects()
@@ -32,7 +31,12 @@ async function ProjectCard(props: { project: Project }) {
       href={`projects/${project.slug}`}
     >
       <h1 className="text-2xl font-bold">{project.title}</h1>
-      <p>Created by {creator.username}</p>
+      <p>By {creator.username}</p>
+      <p className="text-gray-500 font-light mb-2">{project.blurb}</p>
+      <p>
+        Raising ${formatLargeNumber(project.min_funding)} @ $
+        {getValuation(project)}
+      </p>
     </Link>
   )
 }
