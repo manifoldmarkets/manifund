@@ -27,7 +27,7 @@ async function ProjectCard(props: { project: Project }) {
   const creator = await getProfile(project.creator)
   return (
     <Link
-      className="p-4 bg-gray-50 rounded-md hover:bg-orange-200 hover:cursor-pointer"
+      className="p-4 bg-white border border-orange-200 shadow rounded-md hover:bg-orange-200 hover:cursor-pointer"
       href={`projects/${project.slug}`}
     >
       <h1 className="text-2xl font-bold">{project.title}</h1>

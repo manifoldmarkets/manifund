@@ -32,7 +32,7 @@ export default async function RootLayout({
     */}
       <head />
       <body
-        className={`${readex.variable} font-sans mx-auto min-h-screen w-full lg:grid lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
+        className={`${readex.variable} font-sans mx-auto min-h-screen w-full lg:grid lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8 bg-gray-50`}
       >
         <SupabaseProvider session={session}>
           {/* @ts-expect-error Server Component */}

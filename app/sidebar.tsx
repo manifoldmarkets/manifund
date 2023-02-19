@@ -16,9 +16,9 @@ export default async function Sidebar() {
     <div className="sticky top-0 hidden self-start pl-2 lg:col-span-3 lg:flex gap-1 h-full">
       <nav aria-label="Sidebar" className="flex h-screen flex-col">
         <Link href="/">
-          <div className="flex flex-row text-xl text-orange-600 items-center gap-4">
+          <div className="flex flex-row text-xl font-bold text-orange-500 items-center gap-4">
             <Image
-              src="https://manifold.markets/logo.png"
+              src="/Manifox.png"
               alt="Manifold Markets"
               width={60}
               height={60}
