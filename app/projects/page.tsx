@@ -8,10 +8,10 @@ export default async function Projects() {
   const projects = await listProjects()
 
   return (
-    <div className="max-w-md bg-dark-200">
+    <div className="max-w-4xl bg-dark-200">
       <div className="p-4">
         <h1 className="text-2xl font-bold">Projects</h1>
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-2 gap-4 mt-2">
           {projects.map((project) => (
             // @ts-expect-error Server Component
             <ProjectCard key={project.id} project={project} />
