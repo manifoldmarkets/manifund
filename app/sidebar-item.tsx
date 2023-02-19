@@ -4,7 +4,7 @@ import React from 'react'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { UserCircleIcon } from '@heroicons/react/20/solid'
+import { UserCircleIcon, WrenchIcon } from '@heroicons/react/20/solid'
 
 export type Item = {
   name: string
@@ -14,6 +14,7 @@ export type Item = {
 export function SidebarItem(props: { item: Item }) {
   const { item } = props
   const isCurrentPage = item.href === usePathname() && item.href != null
+  const icon = findIcon(item.name, isCurrentPage)
 
   const sidebarItem = (
     <div
@@ -25,15 +26,7 @@ export function SidebarItem(props: { item: Item }) {
       )}
       aria-current={item.href == usePathname() ? 'page' : undefined}
     >
-      <UserCircleIcon
-        className={clsx(
-          isCurrentPage
-            ? 'text-gray-500'
-            : 'text-gray-400 group-hover:text-gray-500',
-          '-ml-1 mr-3 h-6 w-6 flex-shrink-0'
-        )}
-        aria-hidden="true"
-      />
+      {icon}
       <span className="truncate">{item.name}</span>
     </div>
   )
@@ -43,4 +36,42 @@ export function SidebarItem(props: { item: Item }) {
       {sidebarItem}
     </Link>
   )
+}
+
+function findIcon(name: string, isCurrentPage: boolean) {
+  switch (name) {
+    case 'Profile':
+      return (
+        <UserCircleIcon
+          className={clsx(
+            isCurrentPage
+              ? 'text-gray-500'
+              : 'text-gray-400 group-hover:text-gray-500',
+            '-ml-1 mr-3 h-6 w-6 flex-shrink-0' + 'h-6 w-6'
+          )}
+        />
+      )
+    case 'Projects':
+      return (
+        <WrenchIcon
+          className={clsx(
+            isCurrentPage
+              ? 'text-gray-500'
+              : 'text-gray-400 group-hover:text-gray-500',
+            '-ml-1 mr-3 h-6 w-6 flex-shrink-0' + 'h-6 w-6'
+          )}
+        />
+      )
+    default:
+      return (
+        <UserCircleIcon
+          className={clsx(
+            isCurrentPage
+              ? 'text-gray-500'
+              : 'text-gray-400 group-hover:text-gray-500',
+            '-ml-1 mr-3 h-6 w-6 flex-shrink-0' + 'h-6 w-6'
+          )}
+        />
+      )
+  }
 }
