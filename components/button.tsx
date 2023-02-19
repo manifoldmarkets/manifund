@@ -6,7 +6,7 @@ export type ColorType =
   | 'green'
   | 'red'
   | 'blue'
-  | 'indigo'
+  | 'orange'
   | 'yellow'
   | 'gray'
   | 'gray-outline'
@@ -36,8 +36,8 @@ export function buttonClass(size: SizeType, color: ColorType | 'override') {
       'disabled:bg-gray-200 bg-yellow-400 text-white hover:bg-yellow-500',
     color === 'blue' &&
       'disabled:bg-gray-200 bg-blue-400 text-white hover:bg-blue-500',
-    color === 'indigo' &&
-      'disabled:bg-gray-200 bg-indigo-500 text-white hover:bg-indigo-600',
+    color === 'orange' &&
+      'disabled:bg-gray-200 bg-orange-500 text-white hover:bg-indigo-600',
     color === 'gray' &&
       'bg-gray-50 text-gray-600 hover:bg-gray-200 disabled:opacity-50',
     color === 'gray-outline' &&
@@ -66,7 +66,7 @@ export function Button(props: {
     className,
     onClick,
     size = 'md',
-    color = 'indigo',
+    color = 'orange',
     type = 'button',
     disabled = false,
     loading,
