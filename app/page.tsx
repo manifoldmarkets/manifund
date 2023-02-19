@@ -1,8 +1,9 @@
 import Image from 'next/image'
-import { Inter } from '@next/font/google'
+import { Inter, Readex_Pro } from '@next/font/google'
 import styles from './page.module.css'
 
 const inter = Inter({ subsets: ['latin'] })
+const readex = Readex_Pro({ subsets: ['latin'] })
 
 export default function Home() {
   return (
