@@ -1,4 +1,4 @@
-import Auth from '@/app/auth-ui'
+import Auth from '@/components/auth-ui'
 
 export default function Login() {
   return <Auth />

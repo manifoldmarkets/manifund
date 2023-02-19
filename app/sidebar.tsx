@@ -47,6 +47,7 @@ export default async function Sidebar() {
           />
         )}
         <SidebarItem item={{ name: 'Projects', href: '/projects' }} />
+        <SidebarItem item={{ name: 'About', href: '/about' }} />
         <CreateProjectButton />
       </nav>
     </div>

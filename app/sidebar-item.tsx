@@ -4,7 +4,11 @@ import React from 'react'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { UserCircleIcon, WrenchIcon } from '@heroicons/react/20/solid'
+import {
+  UserCircleIcon,
+  WrenchIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/20/solid'
 
 export type Item = {
   name: string
@@ -39,39 +43,18 @@ export function SidebarItem(props: { item: Item }) {
 }
 
 function findIcon(name: string, isCurrentPage: boolean) {
+  const styling = clsx(
+    isCurrentPage ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500',
+    '-ml-1 mr-3 h-6 w-6 flex-shrink-0' + 'h-6 w-6'
+  )
   switch (name) {
     case 'Profile':
-      return (
-        <UserCircleIcon
-          className={clsx(
-            isCurrentPage
-              ? 'text-gray-500'
-              : 'text-gray-400 group-hover:text-gray-500',
-            '-ml-1 mr-3 h-6 w-6 flex-shrink-0' + 'h-6 w-6'
-          )}
-        />
-      )
+      return <UserCircleIcon className={styling} />
     case 'Projects':
-      return (
-        <WrenchIcon
-          className={clsx(
-            isCurrentPage
-              ? 'text-gray-500'
-              : 'text-gray-400 group-hover:text-gray-500',
-            '-ml-1 mr-3 h-6 w-6 flex-shrink-0' + 'h-6 w-6'
-          )}
-        />
-      )
+      return <WrenchIcon className={styling} />
+    case 'About':
+      return <InformationCircleIcon className={styling} />
     default:
-      return (
-        <UserCircleIcon
-          className={clsx(
-            isCurrentPage
-              ? 'text-gray-500'
-              : 'text-gray-400 group-hover:text-gray-500',
-            '-ml-1 mr-3 h-6 w-6 flex-shrink-0' + 'h-6 w-6'
-          )}
-        />
-      )
+      return <UserCircleIcon className={styling} />
   }
 }
