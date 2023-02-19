@@ -1,8 +1,8 @@
-import Slider from 'rc-slider'
+import Slider, { SliderProps } from 'rc-slider'
 import 'rc-slider/assets/index.css'
 import clsx from 'clsx'
 
-export default function MySlider(props: { marks: { [key: number]: string } }) {
+export default function MySlider(props: SliderProps<number | number[]>) {
   const { marks, ...rest } = props
   return (
     <Slider
