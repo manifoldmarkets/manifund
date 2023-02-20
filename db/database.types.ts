@@ -35,26 +35,6 @@ export interface Database {
           valuation?: number | null
         }
       }
-      posts: {
-        Row: {
-          content: string | null
-          created_at: string
-          id: string
-          title: string | null
-        }
-        Insert: {
-          content?: string | null
-          created_at?: string
-          id?: string
-          title?: string | null
-        }
-        Update: {
-          content?: string | null
-          created_at?: string
-          id?: string
-          title?: string | null
-        }
-      }
       profiles: {
         Row: {
           id: string
@@ -74,33 +54,33 @@ export interface Database {
           blurb: string | null
           created_at: string | null
           creator: string
+          description: Json | null
           founder_portion: number
           id: string
           min_funding: number
           slug: string
-          tags: string | null
           title: string | null
         }
         Insert: {
           blurb?: string | null
           created_at?: string | null
           creator: string
+          description?: Json | null
           founder_portion: number
           id?: string
           min_funding: number
           slug?: string
-          tags?: string | null
           title?: string | null
         }
         Update: {
           blurb?: string | null
           created_at?: string | null
           creator?: string
+          description?: Json | null
           founder_portion?: number
           id?: string
           min_funding?: number
           slug?: string
-          tags?: string | null
           title?: string | null
         }
       }
