@@ -1,6 +1,6 @@
 import { Database } from '@/db/database.types'
 import { createClient, getUser } from '@/db/supabase-server'
-import getProfileById, { getProfileByUsername } from '@/db/profile'
+import getProfileById, { getProfileByUsername, isAdmin } from '@/db/profile'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
@@ -33,7 +33,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           user={user?.id}
         />
       )}
-      <CloseBidding project={project} />
+      {isAdmin(user) && <CloseBidding project={project} />}
     </div>
   )
 }
