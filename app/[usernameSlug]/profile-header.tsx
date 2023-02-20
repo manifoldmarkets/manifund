@@ -5,18 +5,21 @@ import Link from 'next/link'
 
 export function ProfileHeader(props: {
   profile: { username: string; id: string }
+  isOwnProfile: boolean
 }) {
-  const { profile } = props
+  const { profile, isOwnProfile } = props
   return (
-    <div className="flex items-center">
+    <div className="flex">
       <Avatar username={profile.username} id={profile.id} noLink size={24} />
-      <div className="relative top-6 right-6 h-10 w-10 rounded-full bg-orange-400 hover:bg-orange-500">
-        <Link href="/edit-profile">
-          <PencilIcon className="h-10 w-10 p-2" aria-hidden />
-        </Link>
-      </div>
+      {isOwnProfile && (
+        <div className="relative top-14 right-6 h-10 w-10 rounded-full bg-orange-400 hover:bg-orange-500">
+          <Link href="/edit-profile">
+            <PencilIcon className="h-10 w-10 p-2" aria-hidden />
+          </Link>
+        </div>
+      )}
 
-      <div className="ml-2">{profile.username}</div>
+      <div className="ml-1 mt-2 text-4xl font-bold">{profile.username}</div>
     </div>
   )
 }
