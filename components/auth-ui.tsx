@@ -2,6 +2,7 @@
 
 import { useSupabase } from '@/components/supabase-provider'
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
+import { Theme } from '@supabase/auth-ui-react/dist/esm/src/types'
 
 export default function ClientAuth() {
   const { supabase, session } = useSupabase()
@@ -22,8 +23,20 @@ export default function ClientAuth() {
           </button>
         </div>
       ) : (
-        <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
+        <Auth supabaseClient={supabase} appearance={{ theme: manifundTheme }} />
       )}
     </div>
   )
+}
+
+const manifundTheme: Theme = {
+  default: {
+    ...ThemeSupa.default,
+    colors: {
+      ...ThemeSupa.default.colors,
+      brand: '#f97316', // orange-500
+      brandAccent: '#ea580c', // orange-600
+    },
+    fonts: {},
+  },
 }
