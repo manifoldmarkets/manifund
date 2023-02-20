@@ -3,7 +3,8 @@ import { createClient, getUser } from '@/db/supabase-server'
 import getProfileById, { getProfileByUsername } from '@/db/profile'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { PlaceBid } from './place-bid'
-import {CloseBidding} from './close-bidding'
+import { RichContent } from '@/components/tiptap'
+import { CloseBidding } from './close-bidding'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -18,6 +19,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   return (
     <div>
       {project.title} was made by {creator.username}
+      {project.description && <RichContent content={project.description} />}
       {user && (
         <PlaceBid
           project_id={project.id}
@@ -26,7 +28,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           user={user?.id}
         />
       )}
-      <CloseBidding/>
+      <CloseBidding />
     </div>
   )
 }
