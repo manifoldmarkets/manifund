@@ -46,9 +46,14 @@ export function EditDescription(props: { project: Project }) {
             Edit project description
           </h3>
           <TextEditor editor={editor} />
-          <Button onClick={saveText} disabled={saving} loading={saving}>
-            Save
-          </Button>
+          <div className="flex flex-row gap-2">
+            <Button onClick={saveText} disabled={saving} loading={saving}>
+              Save
+            </Button>
+            <Button color="gray" onClick={() => setShowEditor(false)}>
+              Cancel
+            </Button>
+          </div>
         </div>
       ) : (
         <Button onClick={() => setShowEditor(true)}>

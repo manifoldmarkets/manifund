@@ -10,7 +10,7 @@ export function useTextEditor(content?: any) {
       attributes: {
         class: clsx(
           proseClass('md'),
-          'outline-none py-[.5em] px-4 h-full bg-white'
+          'focus:border-orange-500 focus:ring-orange-500 py-[.5em] px-4 h-full bg-white border border-gray-300 rounded-md min-h-[10em]'
         ),
       },
     },
