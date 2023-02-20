@@ -22,7 +22,7 @@ export default async function UserProfilePage(props: {
         </>
       )}
       {/* @ts-expect-error Server Component */}
-      <UserBids user={profile?.id} />
+      {isOwnProfile && <UserBids user={profile?.id} />}
     </div>
   )
 }
