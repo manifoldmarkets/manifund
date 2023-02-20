@@ -26,7 +26,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           user={user?.id}
         />
       )}
-      <CloseBidding/>
+      <CloseBidding project={project}/>
     </div>
   )
 }
@@ -40,4 +40,4 @@ async function getProject(supabase: SupabaseClient, slug: string) {
     throw error
   }
   return data[0] as Database['public']['Tables']['projects']['Row']
-}
+}``
