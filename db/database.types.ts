@@ -11,48 +11,28 @@ export interface Database {
     Tables: {
       bids: {
         Row: {
-          amount: number | null
+          amount: number
           bidder: string
           created_at: string | null
           id: string
           project: string
-          valuation: number | null
+          valuation: number
         }
         Insert: {
-          amount?: number | null
+          amount: number
           bidder: string
           created_at?: string | null
           id?: string
           project: string
-          valuation?: number | null
+          valuation: number
         }
         Update: {
-          amount?: number | null
+          amount?: number
           bidder?: string
           created_at?: string | null
           id?: string
           project?: string
-          valuation?: number | null
-        }
-      }
-      posts: {
-        Row: {
-          content: string | null
-          created_at: string
-          id: string
-          title: string | null
-        }
-        Insert: {
-          content?: string | null
-          created_at?: string
-          id?: string
-          title?: string | null
-        }
-        Update: {
-          content?: string | null
-          created_at?: string
-          id?: string
-          title?: string | null
+          valuation?: number
         }
       }
       profiles: {
@@ -74,33 +54,33 @@ export interface Database {
           blurb: string | null
           created_at: string | null
           creator: string
+          description: Json | null
           founder_portion: number
           id: string
           min_funding: number
           slug: string
-          tags: string | null
           title: string | null
         }
         Insert: {
           blurb?: string | null
           created_at?: string | null
           creator: string
+          description?: Json | null
           founder_portion: number
           id?: string
           min_funding: number
           slug?: string
-          tags?: string | null
           title?: string | null
         }
         Update: {
           blurb?: string | null
           created_at?: string | null
           creator?: string
+          description?: Json | null
           founder_portion?: number
           id?: string
           min_funding?: number
           slug?: string
-          tags?: string | null
           title?: string | null
         }
       }
@@ -108,7 +88,7 @@ export interface Database {
         Row: {
           amount: number
           created_at: string
-          from_id: string
+          from_id: string | null
           id: string
           to_id: string
           token: string
@@ -116,7 +96,7 @@ export interface Database {
         Insert: {
           amount: number
           created_at?: string
-          from_id: string
+          from_id?: string | null
           id?: string
           to_id: string
           token: string
@@ -124,7 +104,7 @@ export interface Database {
         Update: {
           amount?: number
           created_at?: string
-          from_id?: string
+          from_id?: string | null
           id?: string
           to_id?: string
           token?: string

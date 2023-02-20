@@ -71,6 +71,12 @@ alter table public.txns enable row level security;
 drop policy if exists "Allow anyone to read txns" on public.txns;
 create policy "Allow anyone to read txns" on public.txns for select using (true);
 
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."txns"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+
+WITH CHECK (true)
+
 
 --- Bids ----
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."bids"
@@ -88,4 +94,5 @@ CREATE POLICY "Enable read access for all users" ON "public"."bids"
 AS PERMISSIVE FOR SELECT
 TO public
 USING (true)
+
 

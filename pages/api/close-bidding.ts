@@ -41,34 +41,31 @@ export default async function handler(req: NextRequest) {
       supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     }
   )
-    console.log('project id as seen by server', id);
-    const { data, error } = await supabase
-    .from('bids')
-    .select()
-    .eq('project', id)
-    .order('amount', { ascending: false })
-if (error) {
-    console.error(error)
+    const bids = await getBids(supabase, id);
+
+    if (!bids) return NextResponse.error();
+let i = 0;
+let total_funding = 0;
+let investor_shares = 10000000 - founder_portion;
+let project_funded = false;
+while (i < bids.length && !project_funded) {
+    let valuation = bids[i].valuation;
+    total_funding += bids[i].amount;
+    let unbought_shares = investor_shares - total_funding * 10000000/valuation;
+    if (unbought_shares <= 0) {
+        createTxns(supabase, id, bids, i, bids[i].amount * 10000000/valuation - unbought_shares);
+        project_funded = true;
+    } else if (i == bids.length - 1 && total_funding > min_funding) {
+        createTxns(supabase, id, bids, i, bids[i].amount);
+        project_funded = true;
+    }
+    i++;
 }
-console.log('og bids', data)
 
-const bids = data;
-  console.log('bids', bids)
-
-//   const project = {
-//     title,
-//     blurb,
-//     min_funding,
-//     founder_portion,
-//     creator: user?.id,
-//     slug,
-//   }
-
-//   const { error } = await supabase.from('projects').insert([project])
-//   if (error) {
-//     console.error(error)
-//   }
-  return NextResponse.json('ok')
+if (!project_funded){
+    return NextResponse.json('project not funded')
+}
+  return NextResponse.json('project funded!')
 }
 
 
@@ -78,10 +75,31 @@ async function getBids(supabase: SupabaseClient, project_id: string) {
         .from('bids')
         .select()
         .eq('project', project_id)
-        .order('amount', { ascending: false })
+        .order('valuation', { ascending: false })
     if (error) {
         console.error(error)
     }
-    console.log('og bids', data)
     return data;
+}
+
+async function createTxns(supabase: SupabaseClient, project_id: string, bids: Bid[], last_bid_idx: number, last_bid_amount: number) {
+    //create txn for each bid that goes through
+    let valuation = bids[last_bid_idx].valuation;
+    for (let i = 0; i < last_bid_idx + 1; i++) {
+            let amount = i == last_bid_idx ? Math.round(last_bid_amount) : Math.round(bids[i].amount * 10000000/valuation);
+            createTxn(supabase, bids[i].bidder, amount, project_id)
+        }
+    }
+
+async function createTxn(supabase: SupabaseClient, to_id: string, amount: number, token: string) {
+    let txn = {
+        from_id: null,
+        to_id: to_id,
+        amount: amount,
+        token: token
+    }
+    const { error } = await supabase.from('txns').insert([txn])
+    if (error) {
+        console.error(error)
+    }
 }

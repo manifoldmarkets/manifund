@@ -6,7 +6,6 @@ import { Database } from '@/db/database.types'
 type Project = Database['public']['Tables']['projects']['Row']
 export function CloseBidding(props: {project: Project}){
     const { project } = props
-    console.log('project', project)
     return <Button onClick={() => closeBidding(project)}>Close Bidding</Button>
 }
 
