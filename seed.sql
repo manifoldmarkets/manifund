@@ -83,3 +83,9 @@ CREATE POLICY "Enable delete for users based on user_id" ON "public"."bids"
 AS PERMISSIVE FOR DELETE
 TO public
 USING (auth.uid() = bidder)
+
+CREATE POLICY "Enable read access for all users" ON "public"."bids"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
+
