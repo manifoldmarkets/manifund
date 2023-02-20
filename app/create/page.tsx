@@ -21,6 +21,7 @@ export default function CreateCertForm() {
   const [minFunding, setMinFunding] = useState<string>('0')
   const [founderPortion, setFounderPortion] = useState<number>(0)
   const [advancedSettings, setAdvancedSettings] = useState<boolean>(false)
+  const [round, setRound] = useState<string>('ACX Mini-Grants')
   const editor = useTextEditor()
 
   const user = session?.user
@@ -107,6 +108,39 @@ export default function CreateCertForm() {
               step={5}
             />
           </div>
+          <div className="relative flex items-start">
+            <div className="flex h-5 items-center">
+              <input
+                id="round"
+                aria-describedby="comments-description"
+                name="comments"
+                type="checkbox"
+                className="h-4 w-4 rounded border-gray-300 text-orange-600 hover:cursor-pointer focus:ring-orange-500"
+                onChange={() => {
+                  if (round === 'ACX Mini-Grants') {
+                    {
+                      setRound('Independent')
+                    }
+                  } else {
+                    setRound('ACX Mini-Grants')
+                  }
+                }}
+              />
+            </div>
+            <div className="ml-3 text-sm">
+              <label htmlFor="round" className="font-medium text-gray-700">
+                This project is NOT a part of the ACX Mini-Grants round.
+              </label>
+              <p id="round-description" className="text-gray-500">
+                I understand that only projects that are a part of the ACX
+                Mini-Grants round will be considered for oracular funding by
+                Scott Alexander, and that projects that are not part of the ACX
+                Mini-Grants round do not have a committed oracular funder. I
+                understand that by checking this box, my project is less likely
+                to recieve investments and oracular funding.
+              </p>
+            </div>
+          </div>
         </>
       )}
       <Button
@@ -125,6 +159,7 @@ export default function CreateCertForm() {
               description,
               min_funding: minFunding,
               founder_portion: founderShares.toString(),
+              round,
             }),
           })
           const newProject = await response.json()

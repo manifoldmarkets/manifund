@@ -15,10 +15,11 @@ type ProjectProps = {
   description: any
   min_funding: number
   founder_portion: number
+  round: string
 }
 
 export default async function handler(req: NextRequest) {
-  const { title, blurb, description, min_funding, founder_portion } =
+  const { title, blurb, description, min_funding, founder_portion, round } =
     (await req.json()) as ProjectProps
   const res = NextResponse.next()
   const supabase = createMiddlewareSupabaseClient<Database>(
@@ -57,7 +58,7 @@ export default async function handler(req: NextRequest) {
     founder_portion,
     creator: user?.id,
     slug,
-    round: 'ACX Mini-Grants',
+    round,
     auction_close: '03/08/2023',
   }
 
