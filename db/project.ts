@@ -1,4 +1,5 @@
 import { Database } from './database.types'
+import { SupabaseClient, User } from '@supabase/supabase-js'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 
@@ -53,4 +54,26 @@ export function formatLargeNumber(num: number, sigfigs = 2): string {
 
   const numStr = showPrecision(num / Math.pow(10, 3 * i), sigfigs)
   return `${numStr}${suffix[i] ?? ''}`
+}
+
+export async function getProjectBySlug(supabase: SupabaseClient, slug: string) {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('slug', slug)
+  if (error) {
+    throw error
+  }
+  return data[0] as Project
+}
+
+export async function getProjectById(supabase: SupabaseClient, id: string) {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('id', id)
+  if (error) {
+    throw error
+  }
+  return data[0] as Project
 }

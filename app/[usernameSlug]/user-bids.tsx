@@ -1,10 +1,9 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/db/supabase-server'
-import {
-  EllipsisHorizontalIcon,
-  CalendarIcon,
-} from '@heroicons/react/24/outline'
+import { CalendarIcon } from '@heroicons/react/24/outline'
+import { getProjectById } from '@/db/project'
+import Link from 'next/link'
 
 type Bid = Database['public']['Tables']['bids']['Row']
 
@@ -15,8 +14,10 @@ export async function UserBids(props: { user: string }) {
   console.log(bids)
   const bidsDisplay = bids.map((item) => (
     <li key={item.id}>
+      {/* @ts-expect-error Server Component */}
       <BidDisplay
-        project={item.project}
+        supabase={supabase}
+        project_id={item.project}
         amount={item.amount}
         valuation={item.valuation}
       />
@@ -24,7 +25,7 @@ export async function UserBids(props: { user: string }) {
   ))
   return (
     <div>
-      <h1>UserBids</h1>
+      <h1 className="text-2xl">Bids</h1>
       <div className="overflow-hidden bg-white shadow sm:rounded-md">
         <ul role="list" className="divide-y divide-gray-200">
           {bidsDisplay}
@@ -45,19 +46,20 @@ async function getBidsByUser(supabase: SupabaseClient, user: string) {
   return data as Bid[]
 }
 
-function BidDisplay(props: {
-  project: string
+async function BidDisplay(props: {
+  supabase: SupabaseClient
+  project_id: string
   amount: number
   valuation: number
 }) {
-  const { project, amount, valuation } = props
-  console.log('project', project)
+  const { supabase, project_id, amount, valuation } = props
+  const project = await getProjectById(supabase, project_id)
   return (
-    <a href="#" className="block hover:bg-gray-50">
+    <Link href={`/projects/${project.slug}`} className="block hover:bg-gray-50">
       <div className="px-4 py-4 sm:px-6">
         <div className="flex items-center justify-between">
-          <p className="truncate text-sm font-medium text-orange-600">
-            {project}
+          <p className="text-md text-md truncate text-orange-600">
+            {project.title}
           </p>
           <div className="ml-2 flex flex-shrink-0">
             <p className="inline-flex rounded-full bg-amber-100 px-2 text-xs font-semibold leading-5 text-amber-800">
@@ -79,6 +81,6 @@ function BidDisplay(props: {
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   )
 }

@@ -7,12 +7,13 @@ import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
 import { BidsTable } from '../bids-table'
+import { getProjectBySlug } from '@/db/project'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
 
   const supabase = createClient()
-  const project = await getProject(supabase, slug)
+  const project = await getProjectBySlug(supabase, slug)
   const creator = await getProfileById(supabase, project.creator)
   const user = await getUser(supabase)
 
@@ -40,15 +41,3 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     </div>
   )
 }
-
-async function getProject(supabase: SupabaseClient, slug: string) {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('slug', slug)
-  if (error) {
-    throw error
-  }
-  return data[0] as Database['public']['Tables']['projects']['Row']
-}
-;``
