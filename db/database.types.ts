@@ -61,7 +61,9 @@ export interface Database {
           founder_portion: number
           id: string
           min_funding: number
+          round: string
           slug: string
+          stage: string
           title: string | null
         }
         Insert: {
@@ -72,7 +74,9 @@ export interface Database {
           founder_portion: number
           id?: string
           min_funding: number
+          round?: string
           slug?: string
+          stage?: string
           title?: string | null
         }
         Update: {
@@ -83,7 +87,9 @@ export interface Database {
           founder_portion?: number
           id?: string
           min_funding?: number
+          round?: string
           slug?: string
+          stage?: string
           title?: string | null
         }
       }

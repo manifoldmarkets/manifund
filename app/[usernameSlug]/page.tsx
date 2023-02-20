@@ -2,7 +2,7 @@ import { getProfileByUsername } from '@/db/profile'
 import { createClient, getUser } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
-import { UserBids } from './user-bids'
+import { ProposalBids } from './user-proposal-bids'
 
 export default async function UserProfilePage(props: {
   params: { usernameSlug: string }
@@ -22,7 +22,7 @@ export default async function UserProfilePage(props: {
         </>
       )}
       {/* @ts-expect-error Server Component */}
-      {isOwnProfile && <UserBids user={profile?.id} />}
+      {isOwnProfile && <ProposalBids user={profile?.id} />}
     </div>
   )
 }
