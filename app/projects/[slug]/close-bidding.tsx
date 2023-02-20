@@ -1,6 +1,31 @@
 //this component is temporary for testing purposes
+"use client"
 import { Button } from '@/components/button'
+import { Database } from '@/db/database.types'
 
-export function CloseBidding(){
-    return <Button>Close Bidding</Button>
+type Project = Database['public']['Tables']['projects']['Row']
+export function CloseBidding(props: {project: Project}){
+    const { project } = props
+    console.log('project', project)
+    return <Button onClick={() => closeBidding(project)}>Close Bidding</Button>
+}
+
+async function closeBidding(
+    project: Project
+) {
+    const response = await fetch('/api/close-bidding', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: project.id,
+        title: project.title,
+        blurb: project.blurb,
+        min_funding: project.min_funding,
+        founder_portion: project.founder_portion,
+      }),
+    })
+    const res = await response.json()
+    return res
 }
