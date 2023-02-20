@@ -7,11 +7,10 @@ import Link from 'next/link'
 
 type Bid = Database['public']['Tables']['bids']['Row']
 
-export async function UserBids(props: { user: string }) {
+export async function ProposalBids(props: { user: string }) {
   const { user } = props
   const supabase = createClient()
   const bids: Bid[] = await getBidsByUser(supabase, user)
-  console.log(bids)
   const bidsDisplay = bids.map((item) => (
     <li key={item.id}>
       {/* @ts-expect-error Server Component */}
@@ -25,7 +24,7 @@ export async function UserBids(props: { user: string }) {
   ))
   return (
     <div>
-      <h1 className="text-2xl">Bids</h1>
+      <h1 className="text-2xl">Proposal Bids</h1>
       <div className="overflow-hidden bg-white shadow sm:rounded-md">
         <ul role="list" className="divide-y divide-gray-200">
           {bidsDisplay}
@@ -62,9 +61,7 @@ async function BidDisplay(props: {
             {project.title}
           </p>
           <div className="ml-2 flex flex-shrink-0">
-            <p className="inline-flex rounded-full bg-amber-100 px-2 text-xs font-semibold leading-5 text-amber-800">
-              Seed
-            </p>
+            <RoundTag round={project.round} />
           </div>
         </div>
         <div className="mt-2 sm:flex sm:justify-between">
@@ -83,4 +80,22 @@ async function BidDisplay(props: {
       </div>
     </Link>
   )
+}
+
+const RoundTag = (props: { round: string }) => {
+  const { round } = props
+  switch (round) {
+    case 'ACX Mini-Grants':
+      return (
+        <p className="inline-flex rounded-full bg-indigo-100 px-2 text-xs font-semibold leading-5 text-indigo-800">
+          ACX Mini-Grants
+        </p>
+      )
+    default:
+      return (
+        <p className="inline-flex rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800">
+          Independent
+        </p>
+      )
+  }
 }
