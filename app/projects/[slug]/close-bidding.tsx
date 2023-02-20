@@ -4,9 +4,9 @@ import { Button } from '@/components/button'
 import { Database } from '@/db/database.types'
 
 type Project = Database['public']['Tables']['projects']['Row']
-export function CloseBidding(props: {project: Project}){
-    const { project } = props
-    return <Button onClick={() => closeBidding(project)}>Close Bidding</Button>
+export function CloseBidding(props: { project: Project }) {
+  const { project } = props
+  return <Button onClick={() => closeBidding(project)}>Close Bidding</Button>
 }
 
 async function closeBidding(project: Project) {
@@ -17,10 +17,9 @@ async function closeBidding(project: Project) {
     },
     body: JSON.stringify({
       id: project.id,
-      title: project.title,
-      blurb: project.blurb,
       min_funding: project.min_funding,
       founder_portion: project.founder_portion,
+      founder: project.creator,
     }),
   })
   const res = await response.json()
