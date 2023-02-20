@@ -1,9 +1,9 @@
 import 'server-only'
 
-import SupabaseListener from '../components/supabase-listener'
-import SupabaseProvider from '../components/supabase-provider'
+import SupabaseListener from '@/db/supabase-listener'
+import SupabaseProvider from '@/db/supabase-provider'
+import { createClient } from '@/db/supabase-server'
 import './globals.css'
-import { createClient } from '../db/supabase-server'
 import Sidebar from './sidebar'
 import { Poiret_One, Readex_Pro, Josefin_Slab } from '@next/font/google'
 
