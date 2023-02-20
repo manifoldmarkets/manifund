@@ -106,6 +106,8 @@ WITH CHECK (true)
 
 
 ---- Bids ----
+-- Create an enum type for 'buy' vs 'sell' vs 'auction'
+create type bid_type as enum ('buy', 'sell', 'ipo');
 create table if not exists public.bids (
   id uuid not null default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -113,6 +115,7 @@ create table if not exists public.bids (
   bidder uuid not null references auth.users(id) on delete cascade,
   amount numeric not null,
   valuation numeric not null,
+  type bid_type not null,
   primary key (id)
 );
 

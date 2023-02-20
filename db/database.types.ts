@@ -16,6 +16,7 @@ export interface Database {
           created_at: string | null
           id: string
           project: string
+          type: Database["public"]["Enums"]["bid_type"]
           valuation: number
         }
         Insert: {
@@ -24,6 +25,7 @@ export interface Database {
           created_at?: string | null
           id?: string
           project: string
+          type?: Database["public"]["Enums"]["bid_type"]
           valuation: number
         }
         Update: {
@@ -32,6 +34,7 @@ export interface Database {
           created_at?: string | null
           id?: string
           project?: string
+          type?: Database["public"]["Enums"]["bid_type"]
           valuation?: number
         }
       }
@@ -118,7 +121,7 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      bid_type: "buy" | "sell" | "ipo"
     }
     CompositeTypes: {
       [_ in never]: never

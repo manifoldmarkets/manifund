@@ -6,6 +6,7 @@ import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
+import { BidsTable } from '../bids-table'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -27,13 +28,15 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       {isOwnProject && <EditDescription project={project} />}
       {user && (
         <PlaceBid
-          project_id={project.id}
-          min_funding={project.min_funding}
-          founder_portion={project.founder_portion}
-          user={user?.id}
+          projectId={project.id}
+          minFunding={project.min_funding}
+          founderPortion={project.founder_portion}
+          userId={user?.id}
         />
       )}
       {isAdmin(user) && <CloseBidding project={project} />}
+      {/* @ts-expect-error Server Component */}
+      <BidsTable projectId={project.id} />
     </div>
   )
 }
