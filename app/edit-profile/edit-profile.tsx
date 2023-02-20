@@ -7,17 +7,19 @@ import { useState } from 'react'
 import { Avatar } from '@/components/avatar'
 import { Input } from '@/components/input'
 import { Button } from '@/components/button'
+import { useRouter } from 'next/navigation'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
   const { supabase } = useSupabase()
-  const [username, setUsername] = useState<string | null>(profile.username)
+  const [username, setUsername] = useState<string>(profile.username)
   const [avatar, setAvatar] = useState<File | null>(null)
+  const router = useRouter()
 
   return (
-    <div>
+    <div className="flex flex-col gap-4 p-4">
       <label htmlFor="username">Name</label>
       <Input
         type="text"
@@ -49,9 +51,11 @@ export function EditProfileForm(props: { profile: Profile }) {
       ></input>
       <Button
         type="submit"
-        onClick={() =>
-          saveProfile({ id: profile.id, username }, avatar, supabase)
-        }
+        className="max-w-xs"
+        onClick={async () => {
+          await saveProfile({ id: profile.id, username }, avatar, supabase)
+          router.push(`/${username}`)
+        }}
       >
         Save
       </Button>
