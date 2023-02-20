@@ -8,7 +8,7 @@ import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import MySlider from '@/components/slider'
 import { TOTAL_SHARES } from '@/db/project'
-import { TextEditor, useTextEditor } from '@/components/tiptap'
+import { TextEditor, useTextEditor } from '@/components/editor'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 

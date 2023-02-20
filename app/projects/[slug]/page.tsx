@@ -3,7 +3,7 @@ import { createClient, getUser } from '@/db/supabase-server'
 import getProfileById, { getProfileByUsername } from '@/db/profile'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { PlaceBid } from './place-bid'
-import { RichContent } from '@/components/tiptap'
+import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
 

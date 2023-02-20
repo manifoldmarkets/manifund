@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/components/button'
 import { useSupabase } from '@/components/supabase-provider'
-import { useTextEditor, TextEditor } from '@/components/tiptap'
+import { useTextEditor, TextEditor } from '@/components/editor'
 
 export default function AboutPage() {
   return (
