@@ -2,6 +2,7 @@ import { getProfileByUsername } from '@/db/profile'
 import { createClient, getUser } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
+import { UserBids } from './user-bids'
 
 export default async function UserProfilePage(props: {
   params: { usernameSlug: string }
@@ -20,6 +21,8 @@ export default async function UserProfilePage(props: {
           <SignOutButton />
         </>
       )}
+      {/* @ts-expect-error Server Component */}
+      <UserBids user={profile?.id} />
     </div>
   )
 }
