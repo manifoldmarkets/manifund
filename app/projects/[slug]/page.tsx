@@ -5,6 +5,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/tiptap'
 import { CloseBidding } from './close-bidding'
+import { EditDescription } from './edit-description'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -17,9 +18,13 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const isOwnProject = user?.id === creator?.id
 
   return (
-    <div>
-      {project.title} was made by {creator.username}
+    <div className="flex flex-col gap-4">
+      <div>
+        <h2 className="text-2xl font-bold">{project.title}</h2>
+        <p>by {creator.username}</p>
+      </div>
       {project.description && <RichContent content={project.description} />}
+      {isOwnProject && <EditDescription project={project} />}
       {user && (
         <PlaceBid
           project_id={project.id}

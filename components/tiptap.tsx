@@ -4,7 +4,7 @@ import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
 import { generateReact } from './tiptap-utils'
 
-export function useTextEditor() {
+export function useTextEditor(content?: any) {
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -15,7 +15,7 @@ export function useTextEditor() {
       },
     },
     extensions: [StarterKit],
-    content: '<p>Hello World!</p>',
+    content: content ?? '<p>Edit here...</p>',
   })
   return editor
 }
