@@ -13,7 +13,7 @@ export default async function Sidebar() {
   const profile = await getProfileById(supabase, user?.id)
 
   return (
-    <div className="sticky top-0 mt-10 hidden h-full gap-1 self-start pl-2 lg:col-span-3 lg:flex">
+    <div className="sticky top-0 mt-10 hidden h-full gap-1 self-start pl-2 md:col-span-3 md:flex">
       <nav aria-label="Sidebar" className="flex h-screen flex-col">
         <Link href="/">
           <div className="group flex flex-row items-center gap-1">

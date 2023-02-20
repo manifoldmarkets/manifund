@@ -1,6 +1,6 @@
 import { Database } from '@/db/database.types'
 import { createClient, getUser } from '@/db/supabase-server'
-import getProfileById, { getProfileByUsername, isAdmin } from '@/db/profile'
+import getProfileById, { isAdmin } from '@/db/profile'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
@@ -21,7 +21,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     <div className="flex flex-col gap-4">
       <div>
         <h2 className="text-2xl font-bold">{project.title}</h2>
-        <p>by {creator.username}</p>
+        <p className="text-gray-500">by {creator.username}</p>
       </div>
       {project.description && <RichContent content={project.description} />}
       {isOwnProject && <EditDescription project={project} />}
