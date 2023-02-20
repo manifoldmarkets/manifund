@@ -57,6 +57,8 @@ export default async function handler(req: NextRequest) {
     founder_portion,
     creator: user?.id,
     slug,
+    round: 'ACX Mini-Grants',
+    auction_close: '03/08/2023',
   }
 
   const { error } = await supabase.from('projects').insert([project])
