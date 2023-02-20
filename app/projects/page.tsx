@@ -1,4 +1,3 @@
-import { Database } from '@/db/database.types'
 import { createClient } from '@/db/supabase-server'
 import { Profile } from '../edit-profile/edit-profile'
 import Link from 'next/link'
