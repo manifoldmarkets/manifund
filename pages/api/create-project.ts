@@ -12,12 +12,13 @@ type Project = Database['public']['Tables']['projects']['Row']
 type ProjectProps = {
   title: string
   blurb: string
+  description: any
   min_funding: number
   founder_portion: number
 }
 
 export default async function handler(req: NextRequest) {
-  const { title, blurb, min_funding, founder_portion } =
+  const { title, blurb, description, min_funding, founder_portion } =
     (await req.json()) as ProjectProps
   const res = NextResponse.next()
   const supabase = createMiddlewareSupabaseClient<Database>(
@@ -51,6 +52,7 @@ export default async function handler(req: NextRequest) {
   const project = {
     title,
     blurb,
+    description,
     min_funding,
     founder_portion,
     creator: user?.id,

@@ -35,6 +35,26 @@ export interface Database {
           valuation?: number
         }
       }
+      posts: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          title: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          title?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          title?: string | null
+        }
+      }
       profiles: {
         Row: {
           id: string
