@@ -6,7 +6,17 @@ import { Database } from '@/db/database.types'
 type Project = Database['public']['Tables']['projects']['Row']
 export function CloseBidding(props: { project: Project }) {
   const { project } = props
-  return <Button onClick={() => closeBidding(project)}>Close Bidding</Button>
+  return (
+    <Button
+      className="max-w-xs"
+      color="gray"
+      onClick={() => {
+        closeBidding(project)
+      }}
+    >
+      Close Bidding
+    </Button>
+  )
 }
 
 async function closeBidding(project: Project) {
