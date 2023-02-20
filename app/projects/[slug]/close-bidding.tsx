@@ -1,5 +1,5 @@
 //this component is temporary for testing purposes
-"use client"
+'use client'
 import { Button } from '@/components/button'
 import { Database } from '@/db/database.types'
 
@@ -9,22 +9,20 @@ export function CloseBidding(props: {project: Project}){
     return <Button onClick={() => closeBidding(project)}>Close Bidding</Button>
 }
 
-async function closeBidding(
-    project: Project
-) {
-    const response = await fetch('/api/close-bidding', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: project.id,
-        title: project.title,
-        blurb: project.blurb,
-        min_funding: project.min_funding,
-        founder_portion: project.founder_portion,
-      }),
-    })
-    const res = await response.json()
-    return res
+async function closeBidding(project: Project) {
+  const response = await fetch('/api/close-bidding', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: project.id,
+      title: project.title,
+      blurb: project.blurb,
+      min_funding: project.min_funding,
+      founder_portion: project.founder_portion,
+    }),
+  })
+  const res = await response.json()
+  return res
 }

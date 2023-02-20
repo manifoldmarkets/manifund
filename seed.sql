@@ -1,3 +1,4 @@
+---- Profiles ----
 -- add public profiles table
 create table public.profiles (
   id uuid not null references auth.users on delete cascade,
@@ -39,12 +40,32 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
+
+
+
+---- Projects ----
+create table if not exists public.projects (
+  id uuid not null default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  slug text not null,
+  title text not null,
+  blurb text,
+  creator uuid not null references auth.users(id) on delete cascade,
+  min_funding numeric not null,
+  founder_portion int8 not null,
+  description jsonb,
+  primary key (id)
+);
+
 -- add RLS policies to projects
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."projects"
 AS PERMISSIVE FOR INSERT
 TO authenticated
-
 WITH CHECK (true)
+
+CREATE POLICY "Enable update for users based on creator" ON "public"."projects"
+FOR UPDATE USING (auth.uid() = creator)
+
 
 CREATE POLICY "Enable read access for all users" ON "public"."projects"
 AS PERMISSIVE FOR SELECT
@@ -54,6 +75,8 @@ USING (true)
 -- add RLS policies to avatar bucket
 CREATE POLICY "Give users access to own folder 1oj01fe_0" ON storage.objects FOR SELECT TO public USING (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);CREATE POLICY "Allow users to add/change their avatar 1oj01fe_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
 CREATE POLICY "Give users access to own folder 1oj01fe_1" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'avatars' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+
 
 
 ---- Txns ----
@@ -78,7 +101,9 @@ TO authenticated
 WITH CHECK (true)
 
 
---- Bids ----
+
+
+---- Bids ----
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."bids"
 AS PERMISSIVE FOR INSERT
 TO authenticated

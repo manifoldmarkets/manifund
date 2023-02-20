@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react'
 import { Button } from 'components/button'
 import { useSupabase } from '@/components/supabase-provider'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { Subtitle } from '@/components/subtitle'
+import { formatLargeNumber, formatMoney } from '@/db/project'
 
 export function PlaceBid(props: {
   project_id: string
@@ -21,19 +23,20 @@ export function PlaceBid(props: {
 
   const [valuation, setValuation] = useState<number>(min_valuation)
   const [bid_portion, setBidPortion] = useState<number>(0)
+  const amount = (bid_portion * (valuation * sellable_portion)) / 100
   const [marks, setMarks] = useState<{ [key: number]: string }>({})
   useEffect(() => {
     setMarks({
       0: '$0',
-      25: `$${((valuation * sellable_portion) / 4).toString()}`,
-      50: `$${((valuation * sellable_portion) / 2).toString()}`,
-      75: `$${(((valuation * sellable_portion) / 4) * 3).toString()}`,
-      100: `$${(valuation * sellable_portion).toString()}`,
+      25: formatMoney((valuation * sellable_portion) / 4),
+      50: formatMoney((valuation * sellable_portion) / 2),
+      75: formatMoney(((valuation * sellable_portion) / 4) * 3),
+      100: formatMoney(valuation * sellable_portion),
     })
   }, [valuation, sellable_portion])
   return (
-    <div className="flex flex-col gap-2 p-4">
-      Place a bid!
+    <div className="flex max-w-md flex-col gap-2 rounded-md border p-4">
+      <Subtitle>Fund Project</Subtitle>
       <label htmlFor="valuation">Valuation (USD)</label>
       <Input
         id="valuation"
@@ -53,17 +56,9 @@ export function PlaceBid(props: {
       />
       <Button
         type="submit"
-        onClick={() =>
-          placeBid(
-            supabase,
-            project_id,
-            user,
-            valuation,
-            (bid_portion * (valuation * sellable_portion)) / 100
-          )
-        }
+        onClick={() => placeBid(supabase, project_id, user, valuation, amount)}
       >
-        Place Bid
+        Bid {formatMoney(amount)} @ {formatMoney(valuation)}
       </Button>
     </div>
   )

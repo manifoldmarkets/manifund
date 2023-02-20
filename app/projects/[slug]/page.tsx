@@ -1,9 +1,11 @@
 import { Database } from '@/db/database.types'
 import { createClient, getUser } from '@/db/supabase-server'
-import getProfileById, { getProfileByUsername } from '@/db/profile'
+import getProfileById, { isAdmin } from '@/db/profile'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { PlaceBid } from './place-bid'
-import {CloseBidding} from './close-bidding'
+import { RichContent } from '@/components/editor'
+import { CloseBidding } from './close-bidding'
+import { EditDescription } from './edit-description'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -16,8 +18,13 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const isOwnProject = user?.id === creator?.id
 
   return (
-    <div>
-      {project.title} was made by {creator.username}
+    <div className="flex flex-col gap-4">
+      <div>
+        <h2 className="text-2xl font-bold">{project.title}</h2>
+        <p className="text-gray-500">by {creator.username}</p>
+      </div>
+      {project.description && <RichContent content={project.description} />}
+      {isOwnProject && <EditDescription project={project} />}
       {user && (
         <PlaceBid
           project_id={project.id}
@@ -26,7 +33,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           user={user?.id}
         />
       )}
-      <CloseBidding project={project}/>
+      {isAdmin(user) && <CloseBidding project={project} />}
     </div>
   )
 }
@@ -40,4 +47,5 @@ async function getProject(supabase: SupabaseClient, slug: string) {
     throw error
   }
   return data[0] as Database['public']['Tables']['projects']['Row']
-}``
+}
+;``

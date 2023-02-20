@@ -23,6 +23,10 @@ export function formatMoneyUSD(amount: number) {
   return formatter.format(newAmount)
 }
 
+export function formatMoney(amount: number) {
+  return `$${formatLargeNumber(amount)}`
+}
+
 export function getMoneyNumber(amount: number) {
   // Handle 499.9999999999999 case
   const plusEpsilon = (amount > 0 ? Math.floor : Math.ceil)(
