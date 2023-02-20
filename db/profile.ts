@@ -9,11 +9,11 @@ export function isAdmin(user: User | null) {
 }
 
 export default async function getProfileById(
-  supabase: SupabaseClient,
+  supabase: SupabaseClient<Database>,
   id: string = ''
-): Promise<{ id: string; username: string | null }> {
+) {
   if (!id) {
-    return { id, username: null }
+    return { id, username: id }
   }
   const { data, error } = await supabase
     .from('profiles')
@@ -22,7 +22,7 @@ export default async function getProfileById(
   if (error) {
     throw error
   }
-  return data[0] ? data[0] : { id, username: null }
+  return data[0] ? data[0] : { id, username: id }
 }
 
 export async function getProfileByUsername(
