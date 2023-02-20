@@ -15,15 +15,10 @@ export default async function UserProfilePage(props: {
   const profile = await getProfileByUsername(supabase, usernameSlug)
   const isOwnProfile = user?.id === profile?.id
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 p-5">
       {profile?.username} profile page
       {isOwnProfile && (
         <>
-          <div className="h-12 w-12 rounded-full bg-orange-400 hover:bg-orange-500">
-            <Link href="/edit-profile">
-              <PencilIcon className="h-12 w-12 p-2" aria-hidden />
-            </Link>
-          </div>
           <SignOutButton />
         </>
       )}
