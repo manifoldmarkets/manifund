@@ -10,11 +10,5 @@ export default async function Page() {
   }
   const profile = await getProfileById(supabase, user?.id)
 
-  return (
-    <div>
-      <div className="text-blue-400">
-        <EditProfileForm profile={profile} />
-      </div>
-    </div>
-  )
+  return <EditProfileForm profile={profile} />
 }
