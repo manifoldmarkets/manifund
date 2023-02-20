@@ -106,6 +106,16 @@ WITH CHECK (true)
 
 
 ---- Bids ----
+create table if not exists public.bids (
+  id uuid not null default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  project uuid not null references public.projects(id) on delete cascade,
+  bidder uuid not null references auth.users(id) on delete cascade,
+  amount numeric not null,
+  valuation numeric not null,
+  primary key (id)
+);
+
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."bids"
 AS PERMISSIVE FOR INSERT
 TO authenticated
