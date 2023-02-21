@@ -6,8 +6,9 @@ import Link from 'next/link'
 export function ProfileHeader(props: {
   profile: { username: string; id: string }
   isOwnProfile: boolean
+  balance: number
 }) {
-  const { profile, isOwnProfile } = props
+  const { profile, isOwnProfile, balance } = props
   return (
     <div className="flex">
       <Avatar username={profile.username} id={profile.id} noLink size={24} />
@@ -18,8 +19,10 @@ export function ProfileHeader(props: {
           </Link>
         </div>
       )}
-
-      <div className="ml-1 mt-2 text-4xl font-bold">{profile.username}</div>
+      <div className="flex flex-col">
+        <div className="ml-1 mt-2 text-4xl font-bold">{profile.username}</div>
+        <div className="ml-1 mt-2">Balance = ${balance}</div>
+      </div>
     </div>
   )
 }

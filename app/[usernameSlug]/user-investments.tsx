@@ -11,39 +11,20 @@ import {
 import { getProjectById } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
 import Link from 'next/link'
+import type { investment } from './page'
 
-type Txn = Database['public']['Tables']['txns']['Row']
-type investment = {
-  project_id: string
-  num_shares: number
-  price_usd: number
-}
-
-export async function Investments(props: { user: string }) {
-  const { user } = props
-  const supabase = createServerClient()
-  const incomingShares: Txn[] = await getIncomingSharesByUser(supabase, user)
-  const outgoingShares: Txn[] = await getOutgoingSharesByUser(supabase, user)
-  const incomingPayments: Txn[] = await getIncomingPaymentsByUser(
-    supabase,
-    user
-  )
-  const outgoingPayments: Txn[] = await getOutgoingPaymentsByUser(
-    supabase,
-    user
-  )
-  const investments = compileInvestments(
-    incomingShares,
-    outgoingShares,
-    incomingPayments,
-    outgoingPayments
-  )
+export async function Investments(props: {
+  supabase: SupabaseClient
+  investments: investment[]
+  profile: string
+}) {
+  const { supabase, investments, profile } = props
   const investmentsDisplay = investments.map((item) => (
     <li key={item.project_id}>
       {/* @ts-expect-error Server Component */}
       <InvestmentsDisplay
         supabase={supabase}
-        user={user}
+        profile={profile}
         project_id={item.project_id}
         amount={item.price_usd}
         num_shares={item.num_shares}
@@ -64,17 +45,17 @@ export async function Investments(props: { user: string }) {
 
 async function InvestmentsDisplay(props: {
   supabase: SupabaseClient
-  user: string
+  profile: string
   project_id: string
   amount: number
   num_shares: number
 }) {
-  const { supabase, user, project_id, amount, num_shares } = props
+  const { supabase, profile, project_id, amount, num_shares } = props
   if (num_shares == 0) {
     return <div className="hidden"></div>
   }
   const project = await getProjectById(supabase, project_id)
-  if (project.creator == user) {
+  if (project.creator == profile) {
     return <div className="hidden"></div>
   }
   return (
@@ -91,10 +72,10 @@ async function InvestmentsDisplay(props: {
         <div className="mt-2 sm:flex sm:justify-between">
           <div className="sm:flex">
             <p className="flex items-center text-sm text-gray-500">
-              bought&nbsp;<span className="text-black">${amount}</span>
+              bought&nbsp;<span className="text-black">${-amount}</span>
               &nbsp;@&nbsp;
               <span className="text-black">
-                ${(amount * 10000000) / num_shares}
+                ${(-amount * 10000000) / num_shares}
               </span>
               &nbsp;valuation
             </p>
@@ -103,74 +84,4 @@ async function InvestmentsDisplay(props: {
       </div>
     </Link>
   )
-}
-
-function compileInvestments(
-  incomingShares: Txn[],
-  outgoingShares: Txn[],
-  incomingPayments: Txn[],
-  outgoingPayments: Txn[]
-) {
-  let investments: investment[] = []
-  incomingShares.forEach((item) => {
-    let aggInvestment = investments.find(
-      (investment) => investment.project_id === item.token
-    )
-    if (aggInvestment) {
-      aggInvestment.num_shares += item.amount
-    } else {
-      investments.push({
-        project_id: item.token,
-        num_shares: item.amount,
-        price_usd: 0,
-      })
-    }
-  })
-  outgoingShares.forEach((item) => {
-    let aggInvestment = investments.find(
-      (investment) => investment.project_id === item.token
-    )
-    if (aggInvestment) {
-      aggInvestment.num_shares -= item.amount
-    } else {
-      investments.push({
-        project_id: item.token,
-        num_shares: -item.amount,
-        price_usd: 0,
-      })
-    }
-  })
-  incomingPayments.forEach((item) => {
-    if (item.from_id) {
-      let aggInvestment = investments.find(
-        (investment) => investment.project_id === item.payment_for
-      )
-      if (aggInvestment) {
-        aggInvestment.price_usd -= item.amount
-      } else {
-        investments.push({
-          project_id: item.from_id,
-          num_shares: 0,
-          price_usd: -item.amount,
-        })
-      }
-    }
-  })
-  outgoingPayments.forEach((item) => {
-    if (item.to_id) {
-      let aggInvestment = investments.find(
-        (investment) => investment.project_id === item.payment_for
-      )
-      if (aggInvestment) {
-        aggInvestment.price_usd += item.amount
-      } else {
-        investments.push({
-          project_id: item.to_id,
-          num_shares: 0,
-          price_usd: item.amount,
-        })
-      }
-    }
-  })
-  return investments as investment[]
 }
