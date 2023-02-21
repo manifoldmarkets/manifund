@@ -3,6 +3,7 @@ import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
 import { ProposalBids } from './user-proposal-bids'
+import { Investments } from './user-investments'
 
 export default async function UserProfilePage(props: {
   params: { usernameSlug: string }
@@ -23,6 +24,8 @@ export default async function UserProfilePage(props: {
       )}
       {/* @ts-expect-error Server Component */}
       {isOwnProfile && <ProposalBids user={profile?.id} />}
+      {/* @ts-expect-error Server Component */}
+      <Investments user={profile?.id} />
     </div>
   )
 }
