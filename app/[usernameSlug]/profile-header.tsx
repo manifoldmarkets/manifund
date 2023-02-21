@@ -2,9 +2,12 @@
 import { Avatar } from '@/components/avatar'
 import { PencilIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import { Database } from '@/db/database.types'
+
+type Profile = Database['public']['Tables']['profiles']['Row']
 
 export function ProfileHeader(props: {
-  profile: { username: string; id: string }
+  profile: Profile
   isOwnProfile: boolean
   balance: number
 }) {
@@ -22,6 +25,8 @@ export function ProfileHeader(props: {
       <div className="flex flex-col">
         <div className="ml-1 mt-2 text-4xl font-bold">{profile.username}</div>
         <div className="ml-1 mt-2">Balance = ${balance}</div>
+        <p>{profile.bio}</p>
+        {profile.website && <a href={profile.website}>{profile.website}</a>}
       </div>
     </div>
   )
