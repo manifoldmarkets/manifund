@@ -6,6 +6,7 @@ import { Database } from '@/db/database.types'
 type Project = Database['public']['Tables']['projects']['Row']
 export function CloseBidding(props: { project: Project }) {
   const { project } = props
+  console.log('creator is', project.creator)
   return (
     <Button
       className="max-w-xs"
@@ -29,7 +30,7 @@ async function closeBidding(project: Project) {
       id: project.id,
       min_funding: project.min_funding,
       founder_portion: project.founder_portion,
-      founder: project.creator,
+      creator: project.creator,
     }),
   })
   const res = await response.json()
