@@ -65,7 +65,7 @@ export interface Database {
           round: string
           slug: string
           stage: string
-          title: string | null
+          title: string
         }
         Insert: {
           auction_close?: string
@@ -79,7 +79,7 @@ export interface Database {
           round?: string
           slug?: string
           stage?: string
-          title?: string | null
+          title?: string
         }
         Update: {
           auction_close?: string
@@ -93,7 +93,7 @@ export interface Database {
           round?: string
           slug?: string
           stage?: string
-          title?: string | null
+          title?: string
         }
       }
       txns: {
