@@ -1,6 +1,6 @@
 'use client'
 
-import { useSupabase } from '@/components/supabase-provider'
+import { useSupabase } from '@/db/supabase-provider'
 import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
 import { Theme } from '@supabase/auth-ui-react/dist/esm/src/types'
 import { Button } from '@/components/button'

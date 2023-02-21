@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/button'
-import { useSupabase } from '@/components/supabase-provider'
+import { useSupabase } from '@/db/supabase-provider'
 import { useTextEditor, TextEditor } from '@/components/editor'
 import { Project } from '@/db/project'
 import { useState } from 'react'

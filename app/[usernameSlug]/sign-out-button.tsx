@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/button'
-import { useSupabase } from '@/components/supabase-provider'
+import { useSupabase } from '@/db/supabase-provider'
 
 export function SignOutButton() {
   const { supabase } = useSupabase()
