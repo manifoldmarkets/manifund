@@ -8,7 +8,7 @@ export function isAdmin(user: User | null) {
   return ADMINS.includes(user?.email ?? '')
 }
 
-export async function getIncomingTxnsByUser(
+export async function getIncomingSharesByUser(
   supabase: SupabaseClient,
   user: string
 ) {
@@ -18,6 +18,51 @@ export async function getIncomingTxnsByUser(
     .select()
     .eq('to_id', user)
     .neq('token', 'USD')
+  if (error) {
+    throw error
+  }
+  return data
+}
+
+export async function getOutgoingSharesByUser(
+  supabase: SupabaseClient,
+  user: string
+) {
+  const { data, error } = await supabase
+    .from('txns')
+    .select()
+    .eq('from_id', user)
+    .neq('token', 'USD')
+  if (error) {
+    throw error
+  }
+  return data
+}
+
+export async function getIncomingPaymentsByUser(
+  supabase: SupabaseClient,
+  user: string
+) {
+  const { data, error } = await supabase
+    .from('txns')
+    .select()
+    .eq('to_id', user)
+    .eq('token', 'USD')
+  if (error) {
+    throw error
+  }
+  return data
+}
+
+export async function getOutgoingPaymentsByUser(
+  supabase: SupabaseClient,
+  user: string
+) {
+  const { data, error } = await supabase
+    .from('txns')
+    .select()
+    .eq('from_id', user)
+    .eq('token', 'USD')
   if (error) {
     throw error
   }
