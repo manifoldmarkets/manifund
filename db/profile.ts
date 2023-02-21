@@ -8,7 +8,7 @@ export function isAdmin(user: User | null) {
   return ADMINS.includes(user?.email ?? '')
 }
 
-export default async function getProfileById(
+export async function getProfileById(
   supabase: SupabaseClient<Database>,
   id: string = ''
 ) {
@@ -40,4 +40,9 @@ export async function getProfileByUsername(
     throw error
   }
   return data[0] ? data[0] : { id: null, username }
+}
+
+export async function getUser(supabase: SupabaseClient<Database>) {
+  const resp = await supabase.auth.getUser()
+  return resp.data.user
 }

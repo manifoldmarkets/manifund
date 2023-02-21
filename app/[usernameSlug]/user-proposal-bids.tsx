@@ -1,6 +1,6 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { createClient } from '@/db/supabase-server'
+import { createServerClient } from '@/db/supabase-server'
 import { CalendarIcon } from '@heroicons/react/24/outline'
 import { getProjectById } from '@/db/project'
 import Link from 'next/link'
@@ -9,7 +9,7 @@ type Bid = Database['public']['Tables']['bids']['Row']
 
 export async function ProposalBids(props: { user: string }) {
   const { user } = props
-  const supabase = createClient()
+  const supabase = createServerClient()
   const bids: Bid[] = await getBidsByUser(supabase, user)
   const bidsDisplay = bids.map((item) => (
     <li key={item.id}>
