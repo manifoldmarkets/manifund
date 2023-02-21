@@ -1,6 +1,11 @@
 import { Database } from '@/db/database.types'
-import { createMiddlewareSupabaseClient } from '@supabase/auth-helpers-nextjs'
+import {
+  createMiddlewareSupabaseClient,
+  SupabaseClient,
+} from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
+import React from 'react'
+import uuid from 'react-uuid'
 
 export const config = {
   runtime: 'edge',
@@ -54,8 +59,9 @@ export default async function handler(req: NextRequest) {
   if (data && data.length > 0) {
     slug = slug + '-' + Math.random().toString(36).substring(2, 15)
   }
-
+  const id = uuid()
   const project = {
+    id,
     title,
     blurb,
     description,
@@ -66,10 +72,23 @@ export default async function handler(req: NextRequest) {
     round,
     auction_close,
   }
-
+  addTxn(supabase, id, user.id)
   const { error } = await supabase.from('projects').insert([project])
   if (error) {
     console.error('create-project', error)
   }
   return NextResponse.json(project)
+}
+
+async function addTxn(supabase: SupabaseClient, id: string, creator: string) {
+  const txn = {
+    from_id: null,
+    to_id: creator,
+    amount: 10000000,
+    token: id,
+  }
+  const { error } = await supabase.from('txns').insert([txn])
+  if (error) {
+    console.error('create-project', error)
+  }
 }
