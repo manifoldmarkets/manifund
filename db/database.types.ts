@@ -40,16 +40,22 @@ export interface Database {
       }
       profiles: {
         Row: {
+          bio: string
           id: string
           username: string
+          website: string | null
         }
         Insert: {
+          bio?: string
           id: string
           username: string
+          website?: string | null
         }
         Update: {
+          bio?: string
           id?: string
           username?: string
+          website?: string | null
         }
       }
       projects: {

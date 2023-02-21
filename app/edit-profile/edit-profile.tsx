@@ -16,12 +16,14 @@ export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
   const { supabase } = useSupabase()
   const [username, setUsername] = useState<string>(profile.username)
+  const [bio, setBio] = useState<string>(profile.bio)
+  const [website, setWebsite] = useState<string | null>(profile.website)
   const [avatar, setAvatar] = useState<File | null>(null)
   const router = useRouter()
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <label htmlFor="username">Name</label>
+      <label htmlFor="username">Username</label>
       <Input
         type="text"
         id="username"
@@ -29,6 +31,26 @@ export function EditProfileForm(props: { profile: Profile }) {
         required
         value={username ? username : ''}
         onChange={(event) => setUsername(event.target.value)}
+      />
+      <label htmlFor="bio">Bio</label>
+      <Input
+        type="text"
+        id="bio"
+        autoComplete="off"
+        required
+        value={bio ? bio : ''}
+        onChange={(event) => setBio(event.target.value)}
+      />
+      <label htmlFor="website">
+        Website (e.g. LinkedIn, Twitter, personal website)
+      </label>
+      <Input
+        type="text"
+        id="website"
+        autoComplete="off"
+        required
+        value={website ? website : ''}
+        onChange={(event) => setWebsite(event.target.value)}
       />
       <label htmlFor="avatar">Choose a profile picture:</label>
       <div className="flex space-x-2">
@@ -57,7 +79,11 @@ export function EditProfileForm(props: { profile: Profile }) {
         type="submit"
         className="max-w-xs"
         onClick={async () => {
-          await saveProfile({ id: profile.id, username }, avatar, supabase)
+          await saveProfile(
+            { id: profile.id, username, bio, website },
+            avatar,
+            supabase
+          )
           router.push(`/${username}`)
         }}
       >
@@ -108,6 +134,8 @@ async function saveProfile(
       username: new_profile.username
         ?.replace(/ /g, '-')
         .replace(/[^\w-]+/g, ''),
+      bio: new_profile.bio,
+      website: new_profile.website,
     })
     .eq('id', new_profile.id)
   if (error) {
