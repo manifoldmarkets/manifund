@@ -77,3 +77,17 @@ export async function getProjectById(supabase: SupabaseClient, id: string) {
   }
   return data[0] as Project
 }
+
+export async function getProjectsByUser(
+  supabase: SupabaseClient,
+  user: string
+) {
+  const { data, error } = await supabase
+    .from('projects')
+    .select()
+    .eq('creator', user)
+  if (error) {
+    throw error
+  }
+  return data as Project[]
+}
