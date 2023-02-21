@@ -74,7 +74,7 @@ async function BidDisplay(props: {
           </div>
           <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
             <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" />
-            <p>Closing on March 8, 2022</p>
+            <p>Closing on {formatDate(project.auction_close)}</p>
           </div>
         </div>
       </div>
@@ -98,4 +98,48 @@ const RoundTag = (props: { round: string }) => {
         </p>
       )
   }
+}
+
+function formatDate(date: string) {
+  const sections = date.split('-')
+  let month = ''
+  switch (sections[1]) {
+    case '01':
+      month = 'January'
+      break
+    case '02':
+      month = 'February'
+      break
+    case '03':
+      month = 'March'
+      break
+    case '04':
+      month = 'April'
+      break
+    case '05':
+      month = 'May'
+      break
+    case '06':
+      month = 'June'
+      break
+    case '07':
+      month = 'July'
+      break
+    case '08':
+      month = 'August'
+      break
+    case '09':
+      month = 'September'
+      break
+    case '10':
+      month = 'October'
+      break
+    case '11':
+      month = 'November'
+      break
+    case '12':
+      month = 'December'
+      break
+  }
+  return `${month} ${sections[2]}, ${sections[0]}`
 }
