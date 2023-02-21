@@ -41,19 +41,25 @@ export interface Database {
       profiles: {
         Row: {
           bio: string
+          first_name: string
           id: string
+          last_name: string
           username: string
           website: string | null
         }
         Insert: {
           bio?: string
+          first_name?: string
           id: string
+          last_name?: string
           username: string
           website?: string | null
         }
         Update: {
           bio?: string
+          first_name?: string
           id?: string
+          last_name?: string
           username?: string
           website?: string | null
         }

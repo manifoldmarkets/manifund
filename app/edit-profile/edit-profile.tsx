@@ -9,6 +9,7 @@ import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { InformationCircleIcon } from '@heroicons/react/20/solid'
+import { StringDecoder } from 'string_decoder'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -18,6 +19,8 @@ export function EditProfileForm(props: { profile: Profile }) {
   const [username, setUsername] = useState<string>(profile.username)
   const [bio, setBio] = useState<string>(profile.bio)
   const [website, setWebsite] = useState<string | null>(profile.website)
+  const [first_name, setFirstName] = useState<string>(profile.first_name)
+  const [last_name, setLastName] = useState<string>(profile.last_name)
   const [avatar, setAvatar] = useState<File | null>(null)
   const router = useRouter()
 
@@ -31,6 +34,24 @@ export function EditProfileForm(props: { profile: Profile }) {
         required
         value={username ? username : ''}
         onChange={(event) => setUsername(event.target.value)}
+      />
+      <label htmlFor="first_name">First name</label>
+      <Input
+        type="text"
+        id="first_name"
+        autoComplete="off"
+        required
+        value={first_name ? first_name : ''}
+        onChange={(event) => setFirstName(event.target.value)}
+      />
+      <label htmlFor="last_name">Last name</label>
+      <Input
+        type="text"
+        id="last_name"
+        autoComplete="off"
+        required
+        value={last_name ? last_name : ''}
+        onChange={(event) => setLastName(event.target.value)}
       />
       <label htmlFor="bio">Bio</label>
       <Input
@@ -80,7 +101,7 @@ export function EditProfileForm(props: { profile: Profile }) {
         className="max-w-xs"
         onClick={async () => {
           await saveProfile(
-            { id: profile.id, username, bio, website },
+            { id: profile.id, username, bio, website, first_name, last_name },
             avatar,
             supabase
           )
