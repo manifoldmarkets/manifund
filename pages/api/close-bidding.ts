@@ -107,7 +107,7 @@ async function addTxns(
         : Math.round((bids[i].amount * 10000000) / valuation)
     let dollar_amount = Math.round((shares_amount * valuation) / 10000000)
     addTxn(supabase, creator, bids[i].bidder, shares_amount, project_id)
-    addTxn(supabase, bids[i].bidder, creator, dollar_amount, 'USD')
+    addTxn(supabase, bids[i].bidder, creator, dollar_amount, 'USD', project_id)
   }
 }
 
@@ -116,13 +116,15 @@ async function addTxn(
   from_id: string,
   to_id: string,
   amount: number,
-  token: string
+  token: string,
+  payment_for?: string
 ) {
   let txn = {
     from_id,
     to_id,
     amount,
     token,
+    payment_for: payment_for ? payment_for : null,
   }
   const { error } = await supabase.from('txns').insert([txn])
   if (error) {

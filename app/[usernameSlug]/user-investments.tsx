@@ -2,25 +2,51 @@ import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createServerClient } from '@/db/supabase-server'
 import { CalendarIcon } from '@heroicons/react/24/outline'
-import { getIncomingTxnsByUser } from '@/db/txn'
+import {
+  getIncomingSharesByUser,
+  getOutgoingSharesByUser,
+  getIncomingPaymentsByUser,
+  getOutgoingPaymentsByUser,
+} from '@/db/txn'
 import { getProjectById } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
 import Link from 'next/link'
 
 type Txn = Database['public']['Tables']['txns']['Row']
+type investment = {
+  project_id: string
+  num_shares: number
+  price_usd: number
+}
 
 export async function Investments(props: { user: string }) {
   const { user } = props
   const supabase = createServerClient()
-  const investments: Txn[] = await getIncomingTxnsByUser(supabase, user)
+  const incomingShares: Txn[] = await getIncomingSharesByUser(supabase, user)
+  const outgoingShares: Txn[] = await getOutgoingSharesByUser(supabase, user)
+  const incomingPayments: Txn[] = await getIncomingPaymentsByUser(
+    supabase,
+    user
+  )
+  const outgoingPayments: Txn[] = await getOutgoingPaymentsByUser(
+    supabase,
+    user
+  )
+  const investments = compileInvestments(
+    incomingShares,
+    outgoingShares,
+    incomingPayments,
+    outgoingPayments
+  )
   console.log('investments', investments)
   const bidsDisplay = investments.map((item) => (
-    <li key={item.id}>
+    <li key={item.project_id}>
       {/* @ts-expect-error Server Component */}
       <InvestmentsDisplay
         supabase={supabase}
-        project_id={item.token}
-        amount={item.amount}
+        project_id={item.project_id}
+        amount={item.price_usd}
+        num_shares={item.num_shares}
       />
     </li>
   ))
@@ -40,8 +66,9 @@ async function InvestmentsDisplay(props: {
   supabase: SupabaseClient
   project_id: string
   amount: number
+  num_shares: number
 }) {
-  const { supabase, project_id, amount } = props
+  const { supabase, project_id, amount, num_shares } = props
   const project = await getProjectById(supabase, project_id)
   return (
     <Link href={`/projects/${project.slug}`} className="block hover:bg-gray-50">
@@ -59,15 +86,84 @@ async function InvestmentsDisplay(props: {
             <p className="flex items-center text-sm text-gray-500">
               bought&nbsp;<span className="text-black">${amount}</span>
               &nbsp;@&nbsp;
-              <span className="text-black">to be gotten</span>&nbsp;valuation
+              <span className="text-black">
+                ${(amount * 10000000) / num_shares}
+              </span>
+              &nbsp;valuation
             </p>
-          </div>
-          <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-            <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" />
-            <p>Closing on</p>
           </div>
         </div>
       </div>
     </Link>
   )
+}
+
+function compileInvestments(
+  incomingShares: Txn[],
+  outgoingShares: Txn[],
+  incomingPayments: Txn[],
+  outgoingPayments: Txn[]
+) {
+  let investments: investment[] = []
+  incomingShares.forEach((item) => {
+    let aggInvestment = investments.find(
+      (investment) => investment.project_id === item.token
+    )
+    if (aggInvestment) {
+      aggInvestment.num_shares += item.amount
+    } else {
+      investments.push({
+        project_id: item.token,
+        num_shares: item.amount,
+        price_usd: 0,
+      })
+    }
+  })
+  outgoingShares.forEach((item) => {
+    let aggInvestment = investments.find(
+      (investment) => investment.project_id === item.token
+    )
+    if (aggInvestment) {
+      aggInvestment.num_shares -= item.amount
+    } else {
+      investments.push({
+        project_id: item.token,
+        num_shares: -item.amount,
+        price_usd: 0,
+      })
+    }
+  })
+  incomingPayments.forEach((item) => {
+    if (item.from_id) {
+      let aggInvestment = investments.find(
+        (investment) => investment.project_id === item.payment_for
+      )
+      if (aggInvestment) {
+        aggInvestment.price_usd -= item.amount
+      } else {
+        investments.push({
+          project_id: item.from_id,
+          num_shares: 0,
+          price_usd: -item.amount,
+        })
+      }
+    }
+  })
+  outgoingPayments.forEach((item) => {
+    if (item.to_id) {
+      let aggInvestment = investments.find(
+        (investment) => investment.project_id === item.payment_for
+      )
+      if (aggInvestment) {
+        aggInvestment.price_usd += item.amount
+      } else {
+        investments.push({
+          project_id: item.to_id,
+          num_shares: 0,
+          price_usd: item.amount,
+        })
+      }
+    }
+  })
+  return investments as investment[]
 }

@@ -102,6 +102,7 @@ export interface Database {
           created_at: string
           from_id: string | null
           id: string
+          payment_for: string | null
           to_id: string
           token: string
         }
@@ -110,6 +111,7 @@ export interface Database {
           created_at?: string
           from_id?: string | null
           id?: string
+          payment_for?: string | null
           to_id: string
           token: string
         }
@@ -118,6 +120,7 @@ export interface Database {
           created_at?: string
           from_id?: string | null
           id?: string
+          payment_for?: string | null
           to_id?: string
           token?: string
         }
