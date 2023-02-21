@@ -42,6 +42,10 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
+-- Expose user emails to admins
+create view public.users as select id, email from auth.users;
+revoke all on public.users from anon, authenticated;
+
 
 
 
