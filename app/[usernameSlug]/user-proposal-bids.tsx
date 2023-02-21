@@ -53,6 +53,9 @@ async function BidDisplay(props: {
 }) {
   const { supabase, project_id, amount, valuation } = props
   const project = await getProjectById(supabase, project_id)
+  if (project.stage != 'proposal') {
+    return null
+  }
   return (
     <Link href={`/projects/${project.slug}`} className="block hover:bg-gray-50">
       <div className="px-4 py-4 sm:px-6">
