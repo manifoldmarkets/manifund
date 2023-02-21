@@ -27,6 +27,7 @@ type ProjectProps = {
 }
 
 export default async function handler(req: NextRequest) {
+  console.log('closing bidding!')
   const { id, min_funding, founder_portion, founder } =
     (await req.json()) as ProjectProps
   const res = NextResponse.next()
@@ -82,8 +83,10 @@ export default async function handler(req: NextRequest) {
   }
 
   if (!project_funded) {
+    updateProjectStage(supabase, id, 'not funded')
     return NextResponse.json('project not funded')
   }
+  updateProjectStage(supabase, id, 'active')
   return NextResponse.json('project funded!')
 }
 
@@ -132,5 +135,20 @@ async function createBidderTxn(
   const { error } = await supabase.from('txns').insert([txn])
   if (error) {
     console.error('createBidderTxn', error)
+  }
+}
+
+async function updateProjectStage(
+  supabase: SupabaseClient,
+  id: string,
+  stage: string
+) {
+  console.log('updating project stage', id, stage)
+  const { error } = await supabase
+    .from('projects')
+    .update({ stage: stage })
+    .eq('id', id)
+  if (error) {
+    console.error('updateProjectStage', error)
   }
 }
