@@ -108,6 +108,11 @@ create table if not exists public.txns (
   primary key (id)
 );
 alter table public.txns enable row level security;
+
+CREATE POLICY "Enable read access for all users" ON "public"."txns"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
 -- Allow anyone to read txns
 drop policy if exists "Allow anyone to read txns" on public.txns;
 create policy "Allow anyone to read txns" on public.txns for select using (true);
