@@ -124,7 +124,20 @@ export interface Database {
       }
     }
     Views: {
-      [_ in never]: never
+      users: {
+        Row: {
+          email: string | null
+          id: string | null
+        }
+        Insert: {
+          email?: string | null
+          id?: string | null
+        }
+        Update: {
+          email?: string | null
+          id?: string | null
+        }
+      }
     }
     Functions: {
       [_ in never]: never

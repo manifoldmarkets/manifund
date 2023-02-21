@@ -23,12 +23,12 @@ type ProjectProps = {
   id: string
   min_funding: number
   founder_portion: number
-  founder: string
+  creator: string
 }
 
 export default async function handler(req: NextRequest) {
   console.log('closing bidding!')
-  const { id, min_funding, founder_portion, founder } =
+  const { id, min_funding, founder_portion, creator } =
     (await req.json()) as ProjectProps
   const res = NextResponse.next()
   const supabase = createMiddlewareSupabaseClient<Database>(
@@ -41,6 +41,7 @@ export default async function handler(req: NextRequest) {
     }
   )
   const bids = await getBids(supabase, id)
+  console.log('creator id', creator)
 
   if (!bids) return NextResponse.error()
   let i = 0
@@ -53,33 +54,20 @@ export default async function handler(req: NextRequest) {
     let unbought_shares =
       investor_shares - (total_funding * 10000000) / valuation
     if (unbought_shares <= 0) {
-      createTxns(
+      addTxns(
         supabase,
         id,
         bids,
         i,
-        (bids[i].amount * 10000000) / valuation - unbought_shares
+        (bids[i].amount * 10000000) / valuation - unbought_shares,
+        creator
       )
       project_funded = true
     } else if (i == bids.length - 1 && total_funding > min_funding) {
-      createTxns(supabase, id, bids, i, bids[i].amount)
+      addTxns(supabase, id, bids, i, bids[i].amount, creator)
       project_funded = true
     }
     i++
-  }
-
-  //create founder txn
-  if (project_funded && founder_portion > 0) {
-    let txn = {
-      from_id: null,
-      to_id: founder,
-      amount: founder_portion,
-      token: id,
-    }
-    const { error } = await supabase.from('txns').insert([txn])
-    if (error) {
-      console.error('close-bidding', error)
-    }
   }
 
   if (!project_funded) {
@@ -102,39 +90,43 @@ async function getBids(supabase: SupabaseClient, project_id: string) {
   return data
 }
 
-async function createTxns(
+async function addTxns(
   supabase: SupabaseClient,
   project_id: string,
   bids: Bid[],
   last_bid_idx: number,
-  last_bid_amount: number
+  last_bid_amount: number,
+  creator: string
 ) {
   //create txn for each bid that goes through
   let valuation = bids[last_bid_idx].valuation
   for (let i = 0; i < last_bid_idx + 1; i++) {
-    let amount =
+    let shares_amount =
       i == last_bid_idx
         ? Math.round(last_bid_amount)
         : Math.round((bids[i].amount * 10000000) / valuation)
-    createBidderTxn(supabase, bids[i].bidder, amount, project_id)
+    let dollar_amount = Math.round((shares_amount * valuation) / 10000000)
+    addTxn(supabase, creator, bids[i].bidder, shares_amount, project_id)
+    addTxn(supabase, bids[i].bidder, creator, dollar_amount, 'USD')
   }
 }
 
-async function createBidderTxn(
+async function addTxn(
   supabase: SupabaseClient,
+  from_id: string,
   to_id: string,
   amount: number,
   token: string
 ) {
   let txn = {
-    from_id: null,
-    to_id: to_id,
-    amount: amount,
-    token: token,
+    from_id,
+    to_id,
+    amount,
+    token,
   }
   const { error } = await supabase.from('txns').insert([txn])
   if (error) {
-    console.error('createBidderTxn', error)
+    console.error('createTxn', error)
   }
 }
 
