@@ -1,14 +1,14 @@
-import { createClient, getUser } from '@/db/supabase-server'
+import { createServerClient } from '@/db/supabase-server'
 import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
-import getProfileById from '@/db/profile'
+import { getUser, getProfileById } from '@/db/profile'
 import { SidebarItem } from './sidebar-item'
 
 import { CreateProjectButton } from './create-project-button'
 
 export default async function Sidebar() {
-  const supabase = createClient()
+  const supabase = createServerClient()
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
 
