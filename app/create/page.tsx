@@ -117,11 +117,9 @@ export default function CreateCertForm() {
                 name="comments"
                 type="checkbox"
                 className="h-4 w-4 rounded border-gray-300 text-orange-600 hover:cursor-pointer focus:ring-orange-500"
-                onChange={() => {
-                  if (round === 'ACX Mini-Grants') {
-                    {
-                      setRound('Independent')
-                    }
+                onChange={(event) => {
+                  if (event.target.checked) {
+                    setRound('Independent')
                   } else {
                     setRound('ACX Mini-Grants')
                   }
@@ -169,9 +167,9 @@ export default function CreateCertForm() {
               blurb,
               description,
               min_funding: minFunding,
-              founder_portion: founderShares.toString(),
-              round,
-              auction_close: auctionClose,
+              founder_portion: advancedSettings ? founderShares.toString() : 0,
+              round: advancedSettings ? round : 'ACX Mini-Grants',
+              auction_close: advancedSettings ? auctionClose : '03/08/2023',
             }),
           })
           const newProject = await response.json()
