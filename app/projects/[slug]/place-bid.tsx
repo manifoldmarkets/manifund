@@ -4,7 +4,7 @@ import { Input } from 'components/input'
 import MySlider from '@/components/slider'
 import { useState, useEffect } from 'react'
 import { Button } from 'components/button'
-import { useSupabase } from '@/components/supabase-provider'
+import { useSupabase } from '@/db/supabase-provider'
 import { Subtitle } from '@/components/subtitle'
 import { formatMoney } from '@/db/project'
 import { Database } from '@/db/database.types'
@@ -22,7 +22,7 @@ export function PlaceBid(props: {
   const { supabase } = useSupabase()
 
   const sellable_portion = 1 - founderPortion / 10000000
-  const min_valuation = minFunding / sellable_portion
+  const min_valuation = Math.round(minFunding / sellable_portion)
 
   const [valuation, setValuation] = useState<number>(min_valuation)
   const [bid_portion, setBidPortion] = useState<number>(0)
@@ -42,9 +42,27 @@ export function PlaceBid(props: {
   const [submitting, setSubmitting] = useState(false)
 
   return (
-    <div className="flex max-w-md flex-col gap-2 rounded-md border p-4">
-      <Subtitle>Fund Project</Subtitle>
-      <label htmlFor="valuation">Valuation (USD)</label>
+    <div className="flex max-w-md flex-col gap-4 rounded-md border p-4">
+      <div className="mb-4 flex flex-row items-end gap-2">
+        <Subtitle>Offer to</Subtitle>
+        <Select
+          id="bid-type"
+          value={bidType}
+          onChange={(event) => setBidType(event.target.value as BidType)}
+        >
+          <option value="buy">buy shares</option>
+          <option value="sell">sell shares</option>
+        </Select>
+      </div>
+      <label htmlFor="bid">Amount (USD)</label>
+      <div className="flex w-full flex-row">
+        <MySlider
+          value={bid_portion ?? 0}
+          marks={marks}
+          onChange={(value) => setBidPortion(value as number)}
+        />
+      </div>
+      <label htmlFor="valuation">Project valuation (USD)</label>
       <Input
         id="valuation"
         type="number"
@@ -53,24 +71,6 @@ export function PlaceBid(props: {
         value={valuation ?? ''}
         onChange={(event) => setValuation(Number(event.target.value))}
       />
-      <label htmlFor="bid">Bid (USD)</label>
-      <MySlider
-        value={bid_portion ?? 0}
-        marks={marks}
-        onChange={(value) => setBidPortion(value as number)}
-        railStyle={{ height: 4, top: 4, left: 0 }}
-        trackStyle={{ height: 4, top: 4 }}
-      />
-      <label htmlFor="bid-type">Bid Type</label>
-      <Select
-        id="bid-type"
-        value={bidType}
-        onChange={(event) => setBidType(event.target.value as BidType)}
-      >
-        <option value="ipo">IPO</option>
-        <option value="buy">Buy shares</option>
-        <option value="sell">Sell shares</option>
-      </Select>
       <Button
         type="submit"
         disabled={submitting}
@@ -92,7 +92,7 @@ export function PlaceBid(props: {
           setSubmitting(false)
         }}
       >
-        Bid {formatMoney(amount)} @ {formatMoney(valuation)}
+        Offer {formatMoney(amount)} @ {formatMoney(valuation)}
       </Button>
     </div>
   )
