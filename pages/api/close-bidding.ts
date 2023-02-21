@@ -77,7 +77,7 @@ export default async function handler(req: NextRequest) {
     }
     const { error } = await supabase.from('txns').insert([txn])
     if (error) {
-      console.error(error)
+      console.error('close-bidding', error)
     }
   }
 
@@ -94,7 +94,7 @@ async function getBids(supabase: SupabaseClient, project_id: string) {
     .eq('project', project_id)
     .order('valuation', { ascending: false })
   if (error) {
-    console.error(error)
+    console.error('getBids', error)
   }
   return data
 }
@@ -131,6 +131,6 @@ async function createBidderTxn(
   }
   const { error } = await supabase.from('txns').insert([txn])
   if (error) {
-    console.error(error)
+    console.error('createBidderTxn', error)
   }
 }

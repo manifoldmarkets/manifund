@@ -29,9 +29,7 @@ export function EditDescription(props: { project: Project }) {
       })
       .eq('id', project.id)
     if (error) {
-      console.error(error)
-    } else {
-      console.log('done', data)
+      console.error('saveText', error)
     }
     setShowEditor(false)
     setSaving(false)
@@ -56,7 +54,7 @@ export function EditDescription(props: { project: Project }) {
           </div>
         </div>
       ) : (
-        <Button onClick={() => setShowEditor(true)}>
+        <Button size="sm" color="gray" onClick={() => setShowEditor(true)}>
           Edit project description
         </Button>
       )}

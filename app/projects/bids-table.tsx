@@ -16,6 +16,9 @@ export async function BidsTable(props: { projectId: string }) {
     .from('bids')
     .select('*, profiles(*)')
     .eq('project', projectId)
+  if (error) {
+    console.error('BidsTable', error)
+  }
   const bids = data as BidAndProfile[]
 
   const buyBids = bids.filter((bid) => bid.type === 'buy')

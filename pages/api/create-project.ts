@@ -69,7 +69,7 @@ export default async function handler(req: NextRequest) {
 
   const { error } = await supabase.from('projects').insert([project])
   if (error) {
-    console.error(error)
+    console.error('create-project', error)
   }
   return NextResponse.json(project)
 }
