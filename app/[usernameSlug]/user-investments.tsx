@@ -38,12 +38,12 @@ export async function Investments(props: { user: string }) {
     incomingPayments,
     outgoingPayments
   )
-  console.log('investments', investments)
-  const bidsDisplay = investments.map((item) => (
+  const investmentsDisplay = investments.map((item) => (
     <li key={item.project_id}>
       {/* @ts-expect-error Server Component */}
       <InvestmentsDisplay
         supabase={supabase}
+        user={user}
         project_id={item.project_id}
         amount={item.price_usd}
         num_shares={item.num_shares}
@@ -55,7 +55,7 @@ export async function Investments(props: { user: string }) {
       <h1 className="text-2xl">Investments</h1>
       <div className="overflow-hidden bg-white shadow sm:rounded-md">
         <ul role="list" className="divide-y divide-gray-200">
-          {bidsDisplay}
+          {investmentsDisplay}
         </ul>
       </div>
     </div>
@@ -64,12 +64,19 @@ export async function Investments(props: { user: string }) {
 
 async function InvestmentsDisplay(props: {
   supabase: SupabaseClient
+  user: string
   project_id: string
   amount: number
   num_shares: number
 }) {
-  const { supabase, project_id, amount, num_shares } = props
+  const { supabase, user, project_id, amount, num_shares } = props
+  if (num_shares == 0) {
+    return <div className="hidden"></div>
+  }
   const project = await getProjectById(supabase, project_id)
+  if (project.creator == user) {
+    return <div className="hidden"></div>
+  }
   return (
     <Link href={`/projects/${project.slug}`} className="block hover:bg-gray-50">
       <div className="px-4 py-4 sm:px-6">
