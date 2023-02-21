@@ -8,6 +8,7 @@ import { Avatar } from '@/components/avatar'
 import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
+import { InformationCircleIcon } from '@heroicons/react/20/solid'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -49,6 +50,9 @@ export function EditProfileForm(props: { profile: Profile }) {
           setAvatar(event.target.files ? event.target.files[0] : null)
         }}
       ></input>
+
+      <AccreditationInfoBox />
+
       <Button
         type="submit"
         className="max-w-xs"
@@ -59,6 +63,35 @@ export function EditProfileForm(props: { profile: Profile }) {
       >
         Save
       </Button>
+    </div>
+  )
+}
+
+function AccreditationInfoBox() {
+  return (
+    <div className="rounded-md bg-blue-50 p-4">
+      <div className="flex">
+        <div className="flex-shrink-0">
+          <InformationCircleIcon
+            className="h-5 w-5 text-blue-400"
+            aria-hidden="true"
+          />
+        </div>
+        <p className="ml-3 text-sm font-light text-blue-600">
+          Anyone may create projects, but only accredited investors may invest
+          in projects.
+          <br />
+          Fill out this form to get verified as an accredited investor:{' '}
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://airtable.com/shrZVLeo6f34NBfR0"
+            className="font-bold hover:underline"
+          >
+            verification form
+          </a>
+        </p>
+      </div>
     </div>
   )
 }
