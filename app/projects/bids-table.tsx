@@ -23,20 +23,15 @@ export async function BidsTable(props: { projectId: string }) {
 
   const buyBids = bids.filter((bid) => bid.type === 'buy')
   const sellBids = bids.filter((bid) => bid.type === 'sell')
-  const ipoBids = bids.filter((bid) => bid.type === 'ipo')
 
   return (
     <div className="flex flex-row gap-4">
       <div>
-        <Subtitle>IPO orders</Subtitle>
-        <BidsSubtable bids={ipoBids} />
-      </div>
-      <div>
-        <Subtitle>Buy orders</Subtitle>
+        <Subtitle>Buy offers</Subtitle>
         <BidsSubtable bids={buyBids} />
       </div>
       <div>
-        <Subtitle>Sell orders</Subtitle>
+        <Subtitle>Sell offers</Subtitle>
         <BidsSubtable bids={sellBids} />
       </div>
     </div>

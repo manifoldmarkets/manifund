@@ -1,6 +1,6 @@
 'use client'
 
-import { useSupabase } from '@/components/supabase-provider'
+import { useSupabase } from '@/db/supabase-provider'
 import { Database } from '@/db/database.types'
 import { useState } from 'react'
 import { Input } from '@/components/input'
