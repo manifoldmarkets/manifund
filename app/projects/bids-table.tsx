@@ -1,4 +1,4 @@
-import { createClient } from '@/db/supabase-server'
+import { createServerClient } from '@/db/supabase-server'
 import { Database } from '@/db/database.types'
 import { formatMoney } from '@/db/project'
 import { Subtitle } from '@/components/subtitle'
@@ -10,7 +10,7 @@ type BidAndProfile = Bid & { profiles: Profile }
 
 export async function BidsTable(props: { projectId: string }) {
   const { projectId } = props
-  const supabase = createClient()
+  const supabase = createServerClient()
 
   const { data, error } = await supabase
     .from('bids')

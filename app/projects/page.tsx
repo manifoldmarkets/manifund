@@ -1,4 +1,4 @@
-import { createClient } from '@/db/supabase-server'
+import { createServerClient } from '@/db/supabase-server'
 import { Profile } from '../edit-profile/edit-profile'
 import Link from 'next/link'
 import { formatLargeNumber, getValuation, Project } from '@/db/project'
@@ -41,7 +41,7 @@ async function ProjectCard(props: { project: Project }) {
 }
 
 async function getProfile(userId: string) {
-  const supabase = createClient()
+  const supabase = createServerClient()
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -53,7 +53,7 @@ async function getProfile(userId: string) {
 }
 
 async function listProjects() {
-  const supabase = createClient()
+  const supabase = createServerClient()
   const { data, error } = await supabase.from('projects').select('*')
   if (error) {
     throw error
