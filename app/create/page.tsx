@@ -22,6 +22,7 @@ export default function CreateCertForm() {
   const [founderPortion, setFounderPortion] = useState<number>(0)
   const [advancedSettings, setAdvancedSettings] = useState<boolean>(false)
   const [round, setRound] = useState<string>('ACX Mini-Grants')
+  const [auctionClose, setAuctionClose] = useState<string>('03/08/2023')
   const editor = useTextEditor()
 
   const user = session?.user
@@ -141,6 +142,16 @@ export default function CreateCertForm() {
               </p>
             </div>
           </div>
+          {round === 'Independent' && (
+            <>
+              <label htmlFor="auction-close">IPO Auction Close Date</label>
+              <Input
+                type="date"
+                value={auctionClose}
+                onChange={(event) => setAuctionClose(event.target.value)}
+              />
+            </>
+          )}
         </>
       )}
       <Button
@@ -160,13 +171,14 @@ export default function CreateCertForm() {
               min_funding: minFunding,
               founder_portion: founderShares.toString(),
               round,
+              auction_close: auctionClose,
             }),
           })
           const newProject = await response.json()
           router.push(`/projects/${newProject.slug}`)
         }}
       >
-        Save
+        Publish Project Proposal
       </Button>
     </div>
   )

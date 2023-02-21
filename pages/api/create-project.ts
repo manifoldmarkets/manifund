@@ -16,11 +16,19 @@ type ProjectProps = {
   min_funding: number
   founder_portion: number
   round: string
+  auction_close: string
 }
 
 export default async function handler(req: NextRequest) {
-  const { title, blurb, description, min_funding, founder_portion, round } =
-    (await req.json()) as ProjectProps
+  const {
+    title,
+    blurb,
+    description,
+    min_funding,
+    founder_portion,
+    round,
+    auction_close,
+  } = (await req.json()) as ProjectProps
   const res = NextResponse.next()
   const supabase = createMiddlewareSupabaseClient<Database>(
     {
@@ -31,9 +39,6 @@ export default async function handler(req: NextRequest) {
       supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     }
   )
-
-  console.log('founder_portion', founder_portion)
-
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
@@ -59,7 +64,7 @@ export default async function handler(req: NextRequest) {
     creator: user?.id,
     slug,
     round,
-    auction_close: '03/08/2023',
+    auction_close,
   }
 
   const { error } = await supabase.from('projects').insert([project])
