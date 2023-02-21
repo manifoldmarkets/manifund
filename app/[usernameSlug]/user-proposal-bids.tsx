@@ -2,7 +2,7 @@ import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createServerClient } from '@/db/supabase-server'
 import { CalendarIcon } from '@heroicons/react/24/outline'
-import { getProjectById } from '@/db/project'
+import { formatMoney, getProjectById } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
 import Link from 'next/link'
 
@@ -71,9 +71,10 @@ async function BidDisplay(props: {
         <div className="mt-2 sm:flex sm:justify-between">
           <div className="sm:flex">
             <p className="flex items-center text-sm text-gray-500">
-              bid&nbsp;<span className="text-black">${amount}</span>
+              bid&nbsp;<span className="text-black">{formatMoney(amount)}</span>
               &nbsp;@&nbsp;
-              <span className="text-black">${valuation}</span>&nbsp;valuation
+              <span className="text-black">{formatMoney(valuation)}</span>
+              &nbsp;valuation
             </p>
           </div>
           <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
