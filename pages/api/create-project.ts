@@ -4,7 +4,6 @@ import {
   SupabaseClient,
 } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
-import React from 'react'
 import uuid from 'react-uuid'
 
 export const config = {
