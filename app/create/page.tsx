@@ -13,6 +13,15 @@ import clsx from 'clsx'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
+const DEFAULT_DESCRIPTION = `
+<h3>Longer description of your proposed project (max 1500 words)</h3>
+<p>I want to...</p>
+<h3>Why are you qualified to work on this?</h3>
+<p>Our team is...</p>
+<h3>How much money do you need?</h3>
+<p>We need...</p>
+`
+
 export default function CreateCertForm() {
   const { session } = useSupabase()
   const router = useRouter()
@@ -23,7 +32,7 @@ export default function CreateCertForm() {
   const [advancedSettings, setAdvancedSettings] = useState<boolean>(false)
   const [round, setRound] = useState<string>('ACX Mini-Grants')
   const [auctionClose, setAuctionClose] = useState<string>('03/08/2023')
-  const editor = useTextEditor()
+  const editor = useTextEditor(DEFAULT_DESCRIPTION)
 
   const user = session?.user
 
@@ -88,7 +97,7 @@ export default function CreateCertForm() {
       />
       <label htmlFor="description">Description</label>
       <TextEditor editor={editor} />
-      <label htmlFor="minFunding">Minimum Funding</label>
+      <label htmlFor="minFunding">Minimum funding</label>
       <Input
         type="number"
         id="minFunding"
