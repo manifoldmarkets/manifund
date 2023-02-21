@@ -9,6 +9,7 @@ import { Subtitle } from '@/components/subtitle'
 import { formatMoney } from '@/db/project'
 import { Database } from '@/db/database.types'
 import { Select } from '@/components/select'
+import { useRouter } from 'next/navigation'
 
 type BidType = Database['public']['Enums']['bid_type']
 
@@ -20,6 +21,7 @@ export function PlaceBid(props: {
 }) {
   const { projectId, minFunding, founderPortion, userId } = props
   const { supabase } = useSupabase()
+  const router = useRouter()
 
   const sellable_portion = 1 - founderPortion / 10000000
   const min_valuation = Math.round(minFunding / sellable_portion)
@@ -38,7 +40,7 @@ export function PlaceBid(props: {
     })
   }, [valuation, sellable_portion])
 
-  const [bidType, setBidType] = useState<BidType>('ipo')
+  const [bidType, setBidType] = useState<BidType>('buy')
   const [submitting, setSubmitting] = useState(false)
 
   return (
@@ -90,6 +92,7 @@ export function PlaceBid(props: {
             throw error
           }
           setSubmitting(false)
+          router.refresh()
         }}
       >
         Offer {formatMoney(amount)} @ {formatMoney(valuation)}
