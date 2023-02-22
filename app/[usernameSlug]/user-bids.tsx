@@ -4,6 +4,7 @@ import { CalendarIcon } from '@heroicons/react/24/outline'
 import { formatMoney, getProjectById } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
 import { Bid } from '@/db/bid'
+import { formatDate } from '@/db/project'
 import Link from 'next/link'
 
 export async function Bids(props: { supabase: SupabaseClient; bids: Bid[] }) {
@@ -70,48 +71,4 @@ async function BidDisplay(props: {
       </div>
     </Link>
   )
-}
-
-function formatDate(date: string) {
-  const sections = date.split('-')
-  let month = ''
-  switch (sections[1]) {
-    case '01':
-      month = 'January'
-      break
-    case '02':
-      month = 'February'
-      break
-    case '03':
-      month = 'March'
-      break
-    case '04':
-      month = 'April'
-      break
-    case '05':
-      month = 'May'
-      break
-    case '06':
-      month = 'June'
-      break
-    case '07':
-      month = 'July'
-      break
-    case '08':
-      month = 'August'
-      break
-    case '09':
-      month = 'September'
-      break
-    case '10':
-      month = 'October'
-      break
-    case '11':
-      month = 'November'
-      break
-    case '12':
-      month = 'December'
-      break
-  }
-  return `${month} ${sections[2]}, ${sections[0]}`
 }

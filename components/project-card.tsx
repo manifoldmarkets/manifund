@@ -1,10 +1,19 @@
 'use client'
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
-import { formatLargeNumber, getValuation, Project } from '@/db/project'
+import {
+  formatDate,
+  formatLargeNumber,
+  getValuation,
+  Project,
+} from '@/db/project'
 import Link from 'next/link'
 import { Avatar } from './avatar'
 import { RoundTag } from './round-tag'
+import {
+  EllipsisHorizontalCircleIcon,
+  CalendarIcon,
+} from '@heroicons/react/24/outline'
 
 export function ProjectCard(props: {
   project: Project
@@ -45,10 +54,21 @@ function ProjectCardFooter(props: { project: Project; bids: Bid[] }) {
     case 'proposal':
       return (
         <div>
-          <p>
-            Raising ${formatLargeNumber(project.min_funding)} @ $
-            {getValuation(project)}
-          </p>
+          <span className="mb-1 flex gap-1 text-gray-600">
+            <CalendarIcon className="h-6 w-6 text-orange-500" />
+            Auction closes
+            <span className="text-black">
+              {formatDate(project.auction_close)}
+            </span>
+          </span>
+          <span className="mb-1 flex gap-1 text-gray-600">
+            <EllipsisHorizontalCircleIcon className="h-6 w-6 text-orange-500" />
+            Raising{' '}
+            <span className="text-black">
+              ${formatLargeNumber(project.min_funding)}
+            </span>{' '}
+            @ <span className="text-black">${getValuation(project)}</span>
+          </span>
           <FundingProgressBar min_funding={project.min_funding} bids={bids} />
         </div>
       )
