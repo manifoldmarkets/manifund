@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "gen-types": "npx supabase gen types typescript --project-id fkousziwzbnkdkldjper --schema public > db/database.types.ts",
-    "format": "npx prettier --write ."
+    "format": "npx prettier --write .",
+    "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.15",

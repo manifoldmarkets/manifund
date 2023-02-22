@@ -13,7 +13,7 @@ export async function getProfileById(
   id: string = ''
 ) {
   if (!id) {
-    return { id, username: id }
+    return null
   }
   const { data, error } = await supabase
     .from('profiles')
@@ -22,7 +22,7 @@ export async function getProfileById(
   if (error) {
     throw error
   }
-  return data[0] ? data[0] : { id, username: id }
+  return data[0] ? data[0] : null
 }
 
 export async function getProfileByUsername(

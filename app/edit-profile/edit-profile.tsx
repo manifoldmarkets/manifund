@@ -9,7 +9,6 @@ import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { InformationCircleIcon } from '@heroicons/react/20/solid'
-import { StringDecoder } from 'string_decoder'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 

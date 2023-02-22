@@ -21,7 +21,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     <div className="flex flex-col gap-4">
       <div>
         <h2 className="text-2xl font-bold">{project.title}</h2>
-        <p className="text-gray-500">by {creator.username}</p>
+        <p className="text-gray-500">by {creator?.username}</p>
       </div>
       {project.description && <RichContent content={project.description} />}
       {isOwnProject && <EditDescription project={project} />}
