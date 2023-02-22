@@ -34,10 +34,43 @@ export function ProjectCard(props: {
       </div>
       <h1 className="mt-2 text-xl font-bold">{project.title}</h1>
       <p className="mb-2 font-light text-gray-500">{project.blurb}</p>
-      <p>
-        Raising ${formatLargeNumber(project.min_funding)} @ $
-        {getValuation(project)}
-      </p>
+      <ProjectCardFooter project={project} bids={bids} />
     </Link>
+  )
+}
+
+function ProjectCardFooter(props: { project: Project; bids: Bid[] }) {
+  const { project, bids } = props
+  switch (project.stage) {
+    case 'proposal':
+      return (
+        <div>
+          <p>
+            Raising ${formatLargeNumber(project.min_funding)} @ $
+            {getValuation(project)}
+          </p>
+          <FundingProgressBar min_funding={project.min_funding} bids={bids} />
+        </div>
+      )
+    default:
+      return <div></div>
+  }
+}
+
+function FundingProgressBar(props: { min_funding: number; bids: Bid[] }) {
+  const { min_funding, bids } = props
+  const total = bids.reduce((acc, bid) => acc + bid.amount, 0)
+  const percent = total / min_funding
+  return (
+    <div className="h-2 w-full rounded-full bg-gray-200">
+      <div
+        style={{
+          background: '#f97316',
+          width: `${percent * 100}%`,
+          height: '0.5rem',
+          borderRadius: '0.5rem',
+        }}
+      ></div>
+    </div>
   )
 }
