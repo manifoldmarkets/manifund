@@ -6,7 +6,6 @@ import { Database } from '@/db/database.types'
 type Project = Database['public']['Tables']['projects']['Row']
 export function CloseBidding(props: { project: Project }) {
   const { project } = props
-  console.log('creator is', project.creator)
   return (
     <Button
       className="max-w-xs"
