@@ -43,7 +43,7 @@ export function ProfileHeader(props: {
             className="flex gap-1 text-gray-500 hover:cursor-pointer hover:underline"
             href={profile.website}
           >
-            <LinkIcon className="relative top-1 h-4 w-4" stroke-width={2.5} />
+            <LinkIcon className="relative top-1 h-4 w-4" strokeWidth={2.5} />
             {profile.website}
           </a>
         )}
