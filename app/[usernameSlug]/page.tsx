@@ -5,12 +5,7 @@ import { SignOutButton } from './sign-out-button'
 import { Bids } from './user-bids'
 import { Investments } from './user-investments'
 import { Projects } from './user-projects'
-import {
-  getIncomingSharesByUser,
-  getOutgoingSharesByUser,
-  getIncomingPaymentsByUser,
-  getOutgoingPaymentsByUser,
-} from '@/db/txn'
+import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
@@ -48,7 +43,7 @@ export default async function UserProfilePage(props: {
         // @ts-expect-error Server Component
         <Bids bids={bids} supabase={supabase} />
       )}
-      {isOwnProfile && investments.length > 0 && (
+      {investments.length > 0 && (
         // @ts-expect-error Server Component
         <Investments
           supabase={supabase}
@@ -71,79 +66,57 @@ async function compileInvestments(
   supabase: SupabaseClient,
   profile_id: string
 ) {
-  const incomingShares: Txn[] = await getIncomingSharesByUser(
-    supabase,
-    profile_id
-  )
-  const outgoingShares: Txn[] = await getOutgoingSharesByUser(
-    supabase,
-    profile_id
-  )
-  const incomingPayments: Txn[] = await getIncomingPaymentsByUser(
-    supabase,
-    profile_id
-  )
-  const outgoingPayments: Txn[] = await getOutgoingPaymentsByUser(
-    supabase,
-    profile_id
-  )
+  const incomingTxns: Txn[] = await getIncomingTxnsByUser(supabase, profile_id)
+  const outgoingTxns: Txn[] = await getOutgoingTxnsByUser(supabase, profile_id)
   let investments: investment[] = []
-  incomingShares.forEach((item) => {
+  incomingTxns.forEach((item) => {
     let aggInvestment = investments.find(
-      (investment) => investment.project_id === item.token
+      (investment) => investment.project_id === item.project
     )
-    if (aggInvestment) {
-      aggInvestment.num_shares += item.amount
-    } else {
-      investments.push({
-        project_id: item.token,
-        num_shares: item.amount,
-        price_usd: 0,
-      })
-    }
-  })
-  outgoingShares.forEach((item) => {
-    let aggInvestment = investments.find(
-      (investment) => investment.project_id === item.token
-    )
-    if (aggInvestment) {
-      aggInvestment.num_shares -= item.amount
-    } else {
-      investments.push({
-        project_id: item.token,
-        num_shares: -item.amount,
-        price_usd: 0,
-      })
-    }
-  })
-  incomingPayments.forEach((item) => {
-    if (item.from_id) {
-      let aggInvestment = investments.find(
-        (investment) => investment.project_id === item.project
-      )
+    if (item.token === 'USD') {
       if (aggInvestment) {
         aggInvestment.price_usd += item.amount
       } else {
         investments.push({
-          project_id: item.from_id,
+          project_id: item.token,
           num_shares: 0,
           price_usd: item.amount,
         })
       }
+    } else {
+      if (aggInvestment) {
+        aggInvestment.num_shares += item.amount
+      } else {
+        investments.push({
+          project_id: item.token,
+          num_shares: item.amount,
+          price_usd: 0,
+        })
+      }
     }
   })
-  outgoingPayments.forEach((item) => {
-    if (item.to_id) {
-      let aggInvestment = investments.find(
-        (investment) => investment.project_id === item.project
-      )
+  outgoingTxns.forEach((item) => {
+    let aggInvestment = investments.find(
+      (investment) => investment.project_id === item.project
+    )
+    if (item.token === 'USD') {
       if (aggInvestment) {
         aggInvestment.price_usd -= item.amount
       } else {
         investments.push({
-          project_id: item.to_id,
+          project_id: item.token,
           num_shares: 0,
           price_usd: -item.amount,
+        })
+      }
+    } else {
+      if (aggInvestment) {
+        aggInvestment.num_shares -= item.amount
+      } else {
+        investments.push({
+          project_id: item.token,
+          num_shares: -item.amount,
+          price_usd: 0,
         })
       }
     }
