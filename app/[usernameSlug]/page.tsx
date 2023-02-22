@@ -11,8 +11,10 @@ import {
   getIncomingPaymentsByUser,
   getOutgoingPaymentsByUser,
 } from '@/db/txn'
+import { getBidsByUser } from '@/db/bid'
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { getProjectsByUser } from '@/db/project'
 
 type Txn = Database['public']['Tables']['txns']['Row']
 export type investment = {
@@ -28,6 +30,8 @@ export default async function UserProfilePage(props: {
   const supabase = createServerClient()
   const user = await getUser(supabase)
   const profile = await getProfileByUsername(supabase, usernameSlug)
+  const projects = await getProjectsByUser(supabase, profile.id)
+  const bids = await getBidsByUser(supabase, profile.id)
   const isOwnProfile = user?.id === profile?.id
   const investments = await compileInvestments(supabase, profile.id)
   const balance = calculateBalance(investments)
@@ -40,7 +44,7 @@ export default async function UserProfilePage(props: {
       />
 
       {/* @ts-expect-error Server Component */}
-      {isOwnProfile && <ProposalBids user={profile?.id} />}
+      {isOwnProfile && <ProposalBids bids={bids} supabase={supabase} />}
       {/* @ts-expect-error Server Component */}
       <Investments
         supabase={supabase}
@@ -48,7 +52,7 @@ export default async function UserProfilePage(props: {
         profile={profile.id}
       />
       {/* @ts-expect-error Server Component */}
-      <Projects user={profile?.id} />
+      <Projects projects={projects} />
       {isOwnProfile && (
         <div className="mt-5 flex justify-center">
           <SignOutButton />

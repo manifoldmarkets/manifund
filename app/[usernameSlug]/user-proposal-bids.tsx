@@ -1,17 +1,16 @@
-import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createServerClient } from '@/db/supabase-server'
 import { CalendarIcon } from '@heroicons/react/24/outline'
 import { formatMoney, getProjectById } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
+import { Bid } from '@/db/bid'
 import Link from 'next/link'
 
-type Bid = Database['public']['Tables']['bids']['Row']
-
-export async function ProposalBids(props: { user: string }) {
-  const { user } = props
-  const supabase = createServerClient()
-  const bids: Bid[] = await getBidsByUser(supabase, user)
+export async function ProposalBids(props: {
+  supabase: SupabaseClient
+  bids: Bid[]
+}) {
+  const { supabase, bids } = props
   const bidsDisplay = bids.map((item) => (
     <li key={item.id}>
       {/* @ts-expect-error Server Component */}
@@ -33,17 +32,6 @@ export async function ProposalBids(props: { user: string }) {
       </div>
     </div>
   )
-}
-
-async function getBidsByUser(supabase: SupabaseClient, user: string) {
-  const { data, error } = await supabase
-    .from('bids')
-    .select('*')
-    .eq('bidder', user)
-  if (error) {
-    throw error
-  }
-  return data as Bid[]
 }
 
 async function BidDisplay(props: {
