@@ -15,7 +15,6 @@ export async function getIncomingTxnsByUser(
   supabase: SupabaseClient,
   user: string
 ) {
-  console.log('user', user)
   const { data, error } = await supabase
     .from('txns')
     .select('*, projects(*)')
