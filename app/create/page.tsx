@@ -10,6 +10,7 @@ import MySlider from '@/components/slider'
 import { TOTAL_SHARES } from '@/db/project'
 import { TextEditor, useTextEditor } from '@/components/editor'
 import clsx from 'clsx'
+import { InfoTooltip } from '@/components/info-tooltip'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -97,7 +98,10 @@ export default function CreateCertForm() {
       />
       <label htmlFor="description">Description</label>
       <TextEditor editor={editor} />
-      <label htmlFor="minFunding">Minimum funding</label>
+      <label htmlFor="minFunding">
+        Funding goal (USD){' '}
+        <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
+      </label>
       <Input
         type="number"
         id="minFunding"
@@ -109,7 +113,10 @@ export default function CreateCertForm() {
 
       {advancedSettings && (
         <>
-          <label htmlFor="founderPortion">Founder Portion</label>
+          <label htmlFor="founderPortion">
+            Founder portion{' '}
+            <InfoTooltip text="What percent of the project's impact cert will be kept by the founding team?" />
+          </label>
           <div className="flex justify-center">
             <MySlider
               marks={marks}
