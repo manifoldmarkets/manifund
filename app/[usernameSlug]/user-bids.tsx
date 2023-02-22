@@ -6,10 +6,7 @@ import { RoundTag } from '@/components/round-tag'
 import { Bid } from '@/db/bid'
 import Link from 'next/link'
 
-export async function ProposalBids(props: {
-  supabase: SupabaseClient
-  bids: Bid[]
-}) {
+export async function Bids(props: { supabase: SupabaseClient; bids: Bid[] }) {
   const { supabase, bids } = props
   const bidsDisplay = bids.map((item) => (
     <li key={item.id}>

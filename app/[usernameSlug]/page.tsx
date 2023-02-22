@@ -2,7 +2,7 @@ import { getProfileByUsername, getUser } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
-import { ProposalBids } from './user-proposal-bids'
+import { Bids } from './user-bids'
 import { Investments } from './user-investments'
 import { Projects } from './user-projects'
 import {
@@ -11,10 +11,10 @@ import {
   getIncomingPaymentsByUser,
   getOutgoingPaymentsByUser,
 } from '@/db/txn'
-import { getBidsByUser } from '@/db/bid'
+import { Bid, getBidsByUser } from '@/db/bid'
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { getProjectsByUser } from '@/db/project'
+import { getProjectById, getProjectsByUser } from '@/db/project'
 
 type Txn = Database['public']['Tables']['txns']['Row']
 export type investment = {
@@ -32,6 +32,7 @@ export default async function UserProfilePage(props: {
   const profile = await getProfileByUsername(supabase, usernameSlug)
   const projects = await getProjectsByUser(supabase, profile.id)
   const bids = await getBidsByUser(supabase, profile.id)
+  const proposalBids = bids.filter((bid) => bid.projects.stage == 'proposal')
   const isOwnProfile = user?.id === profile?.id
   const investments = await compileInvestments(supabase, profile.id)
   const balance = calculateBalance(investments)
@@ -44,13 +45,17 @@ export default async function UserProfilePage(props: {
       />
 
       {/* @ts-expect-error Server Component */}
-      {isOwnProfile && <ProposalBids bids={bids} supabase={supabase} />}
+      {isOwnProfile && proposalBids.length > 0 && (
+        <Bids bids={bids} supabase={supabase} />
+      )}
       {/* @ts-expect-error Server Component */}
-      <Investments
-        supabase={supabase}
-        investments={investments}
-        profile={profile.id}
-      />
+      {isOwnProfile && investments.length > 0 && (
+        <Investments
+          supabase={supabase}
+          investments={investments}
+          profile={profile.id}
+        />
+      )}
       {/* @ts-expect-error Server Component */}
       <Projects projects={projects} />
       {isOwnProfile && (
