@@ -51,6 +51,9 @@ export default async function Sidebar() {
           />
         )}
         <SidebarItem item={{ name: 'About', href: '/about' }} />
+        <SidebarItem
+          item={{ name: 'Discord', href: 'https://discord.gg/zPnPtx6jBS' }}
+        />
         <CreateProjectButton />
       </nav>
     </div>

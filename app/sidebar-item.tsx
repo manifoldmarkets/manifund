@@ -9,7 +9,8 @@ import {
   WrenchIcon,
   InformationCircleIcon,
   HomeIcon,
-} from '@heroicons/react/24/solid'
+  ChatBubbleOvalLeftEllipsisIcon,
+} from '@heroicons/react/24/outline'
 
 export type Item = {
   name: string
@@ -57,6 +58,8 @@ function findIcon(name: string, isCurrentPage: boolean) {
       return <WrenchIcon className={styling} />
     case 'About':
       return <InformationCircleIcon className={styling} />
+    case 'Discord':
+      return <ChatBubbleOvalLeftEllipsisIcon className={styling} />
     default:
       return <UserCircleIcon className={styling} />
   }
