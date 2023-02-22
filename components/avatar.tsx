@@ -1,6 +1,6 @@
 import Router from 'next/router'
 import clsx from 'clsx'
-import { memo, MouseEvent, useEffect, useState } from 'react'
+import { MouseEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { UserCircleIcon, UserIcon, UsersIcon } from '@heroicons/react/20/solid'
 
@@ -11,16 +11,16 @@ export function Avatar(props: {
   size?: number | 'xxs' | 'xs' | 'sm'
   className?: string
 }) {
-  const { username, noLink, size, className } = props
+  const { username, id, noLink, size, className } = props
   const [avatarUrl, setAvatarUrl] = useState(
-    `https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${props.id}/avatar`
+    `https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${id}/avatar`
   )
   useEffect(
     () =>
       setAvatarUrl(
-        `https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${props.id}/avatar`
+        `https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${id}/avatar`
       ),
-    [props.id]
+    [id]
   )
   const s =
     size == 'xxs' ? 4 : size == 'xs' ? 6 : size === 'sm' ? 8 : size || 10
