@@ -7,13 +7,11 @@ import { Investments } from './user-investments'
 import { Projects } from './user-projects'
 import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
-import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { getProjectsByUser } from '@/db/project'
+import { getProjectsByUser, Project } from '@/db/project'
 
-type Txn = Database['public']['Tables']['txns']['Row']
 export type investment = {
-  project_id: string
+  project: Project
   num_shares: number
   price_usd: number
 }
@@ -66,58 +64,62 @@ async function compileInvestments(
   supabase: SupabaseClient,
   profile_id: string
 ) {
-  const incomingTxns: Txn[] = await getIncomingTxnsByUser(supabase, profile_id)
-  const outgoingTxns: Txn[] = await getOutgoingTxnsByUser(supabase, profile_id)
+  const incomingTxns = await getIncomingTxnsByUser(supabase, profile_id)
+  const outgoingTxns = await getOutgoingTxnsByUser(supabase, profile_id)
   let investments: investment[] = []
   incomingTxns.forEach((item) => {
-    let aggInvestment = investments.find(
-      (investment) => investment.project_id === item.project
-    )
-    if (item.token === 'USD') {
-      if (aggInvestment) {
-        aggInvestment.price_usd += item.amount
+    if (item.projects.creator != profile_id) {
+      let aggInvestment = investments.find(
+        (investment) => investment.project.id === item.project
+      )
+      if (item.token === 'USD') {
+        if (aggInvestment) {
+          aggInvestment.price_usd += item.amount
+        } else {
+          investments.push({
+            project: item.projects,
+            num_shares: 0,
+            price_usd: item.amount,
+          })
+        }
       } else {
-        investments.push({
-          project_id: item.token,
-          num_shares: 0,
-          price_usd: item.amount,
-        })
-      }
-    } else {
-      if (aggInvestment) {
-        aggInvestment.num_shares += item.amount
-      } else {
-        investments.push({
-          project_id: item.token,
-          num_shares: item.amount,
-          price_usd: 0,
-        })
+        if (aggInvestment) {
+          aggInvestment.num_shares += item.amount
+        } else {
+          investments.push({
+            project: item.projects,
+            num_shares: item.amount,
+            price_usd: 0,
+          })
+        }
       }
     }
   })
   outgoingTxns.forEach((item) => {
-    let aggInvestment = investments.find(
-      (investment) => investment.project_id === item.project
-    )
-    if (item.token === 'USD') {
-      if (aggInvestment) {
-        aggInvestment.price_usd -= item.amount
+    if (item.projects.creator != profile_id) {
+      let aggInvestment = investments.find(
+        (investment) => investment.project.id === item.project
+      )
+      if (item.token === 'USD') {
+        if (aggInvestment) {
+          aggInvestment.price_usd -= item.amount
+        } else {
+          investments.push({
+            project: item.projects,
+            num_shares: 0,
+            price_usd: -item.amount,
+          })
+        }
       } else {
-        investments.push({
-          project_id: item.token,
-          num_shares: 0,
-          price_usd: -item.amount,
-        })
-      }
-    } else {
-      if (aggInvestment) {
-        aggInvestment.num_shares -= item.amount
-      } else {
-        investments.push({
-          project_id: item.token,
-          num_shares: -item.amount,
-          price_usd: 0,
-        })
+        if (aggInvestment) {
+          aggInvestment.num_shares -= item.amount
+        } else {
+          investments.push({
+            project: item.projects,
+            num_shares: -item.amount,
+            price_usd: 0,
+          })
+        }
       }
     }
   })

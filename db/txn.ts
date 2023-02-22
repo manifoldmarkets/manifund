@@ -23,7 +23,7 @@ export async function getIncomingTxnsByUser(
   if (error) {
     throw error
   }
-  return data
+  return data as TxnAndProject[]
 }
 
 export async function getOutgoingTxnsByUser(
@@ -37,5 +37,5 @@ export async function getOutgoingTxnsByUser(
   if (error) {
     throw error
   }
-  return data
+  return data as TxnAndProject[]
 }

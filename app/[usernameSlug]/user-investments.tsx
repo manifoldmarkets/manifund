@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js'
-import { getProjectById } from '@/db/project'
+import { getProjectById, Project } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
 import Link from 'next/link'
 import type { investment } from './page'
@@ -11,12 +11,11 @@ export async function Investments(props: {
 }) {
   const { supabase, investments, profile } = props
   const investmentsDisplay = investments.map((item) => (
-    <li key={item.project_id}>
+    <li key={item.project.id}>
       {/* @ts-expect-error Server Component */}
       <InvestmentsDisplay
-        supabase={supabase}
         profile={profile}
-        project_id={item.project_id}
+        project={item.project}
         amount={item.price_usd}
         num_shares={item.num_shares}
       />
@@ -35,18 +34,13 @@ export async function Investments(props: {
 }
 
 async function InvestmentsDisplay(props: {
-  supabase: SupabaseClient
   profile: string
-  project_id: string
+  project: Project
   amount: number
   num_shares: number
 }) {
-  const { supabase, profile, project_id, amount, num_shares } = props
+  const { profile, project, amount, num_shares } = props
   if (num_shares == 0) {
-    return <div className="hidden"></div>
-  }
-  const project = await getProjectById(supabase, project_id)
-  if (project.creator == profile) {
     return <div className="hidden"></div>
   }
   return (
