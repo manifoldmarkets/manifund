@@ -157,6 +157,8 @@ async function saveProfile(
         .replace(/[^\w-]+/g, ''),
       bio: new_profile.bio,
       website: new_profile.website,
+      first_name: new_profile.first_name,
+      last_name: new_profile.last_name,
     })
     .eq('id', new_profile.id)
   if (error) {
