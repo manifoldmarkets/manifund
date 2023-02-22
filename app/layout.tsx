@@ -6,6 +6,7 @@ import { createServerClient } from '@/db/supabase-server'
 import './globals.css'
 import Sidebar from './sidebar'
 import { Poiret_One, Readex_Pro, Josefin_Slab } from '@next/font/google'
+import BetaBanner from './beta-banner'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 const poiret = Poiret_One({
@@ -41,13 +42,16 @@ export default async function RootLayout({
     */}
       <head />
       <body
-        className={`${fontVars} mx-auto mt-4 min-h-screen w-full bg-gray-50 font-sans lg:grid lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
+        className={`${fontVars} mx-auto mt-4 min-h-screen w-full bg-gray-50 font-sans md:grid md:max-w-7xl md:grid-cols-12`}
       >
         <SupabaseProvider session={session}>
           {/* @ts-expect-error Server Component */}
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
-          <div className="flex flex-1 flex-col lg:col-span-8">{children}</div>
+          <div className="flex flex-1 flex-col md:col-span-8">
+            <BetaBanner />
+            {children}
+          </div>
         </SupabaseProvider>
       </body>
     </html>
