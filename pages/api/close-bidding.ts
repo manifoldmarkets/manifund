@@ -27,7 +27,6 @@ type ProjectProps = {
 }
 
 export default async function handler(req: NextRequest) {
-  console.log('closing bidding!')
   const { id, min_funding, founder_portion, creator } =
     (await req.json()) as ProjectProps
   const res = NextResponse.next()
@@ -41,8 +40,6 @@ export default async function handler(req: NextRequest) {
     }
   )
   const bids = await getBids(supabase, id)
-  console.log('creator id', creator)
-
   if (!bids) return NextResponse.error()
   let i = 0
   let total_funding = 0
@@ -59,7 +56,7 @@ export default async function handler(req: NextRequest) {
         id,
         bids,
         i,
-        (bids[i].amount * 10000000) / valuation - unbought_shares,
+        (bids[i].amount * 10000000) / valuation + unbought_shares,
         creator
       )
       project_funded = true
@@ -144,7 +141,6 @@ async function updateProjectStage(
   id: string,
   stage: string
 ) {
-  console.log('updating project stage', id, stage)
   const { error } = await supabase
     .from('projects')
     .update({ stage: stage })
