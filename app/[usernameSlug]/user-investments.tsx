@@ -1,13 +1,4 @@
-import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { createServerClient } from '@/db/supabase-server'
-import { CalendarIcon } from '@heroicons/react/24/outline'
-import {
-  getIncomingSharesByUser,
-  getOutgoingSharesByUser,
-  getIncomingPaymentsByUser,
-  getOutgoingPaymentsByUser,
-} from '@/db/txn'
 import { getProjectById } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
 import Link from 'next/link'

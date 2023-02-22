@@ -1,12 +1,9 @@
-import { createServerClient } from '@/db/supabase-server'
-import { getProjectsByUser } from '@/db/project'
+import { Project } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
 import Link from 'next/link'
 
-export async function Projects(props: { user: string }) {
-  const { user } = props
-  const supabase = createServerClient()
-  const projects = await getProjectsByUser(supabase, user)
+export async function Projects(props: { projects: Project[] }) {
+  const { projects } = props
   const projectsDisplay = projects.map((item) => (
     <li key={item.id}>
       {/* @ts-expect-error Server Component */}
