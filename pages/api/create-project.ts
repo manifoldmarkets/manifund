@@ -71,11 +71,12 @@ export default async function handler(req: NextRequest) {
     round,
     auction_close,
   }
-  addTxn(supabase, id, user.id)
+
   const { error } = await supabase.from('projects').insert([project])
   if (error) {
     console.error('create-project', error)
   }
+  addTxn(supabase, id, user.id)
   return NextResponse.json(project)
 }
 
@@ -85,6 +86,7 @@ async function addTxn(supabase: SupabaseClient, id: string, creator: string) {
     to_id: creator,
     amount: 10000000,
     token: id,
+    project: id,
   }
   const { error } = await supabase.from('txns').insert([txn])
   if (error) {
