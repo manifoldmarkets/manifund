@@ -17,12 +17,23 @@ export async function Projects(props: { projects: Project[] }) {
   ))
   return (
     <div>
-      <h1 className="text-2xl">Projects</h1>
+      <h1 className="mb-2 text-2xl">Projects</h1>
       <div className="overflow-hidden bg-white shadow sm:rounded-md">
         <ul role="list" className="divide-y divide-gray-200">
-          {projectsDisplay}
+          {projects.length == 0 ? <NoProjects /> : projectsDisplay}
         </ul>
       </div>
+    </div>
+  )
+}
+
+function NoProjects() {
+  return (
+    <div className="p-4">
+      No projects found. Would you like to{' '}
+      <Link className="text-orange-600 hover:text-orange-500" href="/create">
+        propose one?
+      </Link>
     </div>
   )
 }
