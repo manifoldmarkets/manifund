@@ -21,8 +21,8 @@ export default function BetaBanner() {
             y2="96.115"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stopColor="#9089FC" />
-            <stop offset={1} stopColor="#FF80B5" />
+            <stop stopColor="#f97316" />
+            <stop offset={1} stopColor="#f43f5e" />
           </linearGradient>
         </defs>
       </svg>
