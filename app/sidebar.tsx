@@ -46,7 +46,7 @@ export default async function Sidebar() {
           <SidebarItem
             item={{
               name: 'Profile',
-              href: `/${profile.username}`,
+              href: `/${profile?.username}`,
             }}
           />
         )}

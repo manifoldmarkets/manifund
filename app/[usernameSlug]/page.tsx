@@ -11,10 +11,10 @@ import {
   getIncomingPaymentsByUser,
   getOutgoingPaymentsByUser,
 } from '@/db/txn'
-import { Bid, getBidsByUser } from '@/db/bid'
+import { getBidsByUser } from '@/db/bid'
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { getProjectById, getProjectsByUser } from '@/db/project'
+import { getProjectsByUser } from '@/db/project'
 
 type Txn = Database['public']['Tables']['txns']['Row']
 export type investment = {
@@ -44,12 +44,12 @@ export default async function UserProfilePage(props: {
         balance={balance}
       />
 
-      {/* @ts-expect-error Server Component */}
       {isOwnProfile && proposalBids.length > 0 && (
+        // @ts-expect-error Server Component
         <Bids bids={bids} supabase={supabase} />
       )}
-      {/* @ts-expect-error Server Component */}
       {isOwnProfile && investments.length > 0 && (
+        // @ts-expect-error Server Component
         <Investments
           supabase={supabase}
           investments={investments}
@@ -119,7 +119,7 @@ async function compileInvestments(
   incomingPayments.forEach((item) => {
     if (item.from_id) {
       let aggInvestment = investments.find(
-        (investment) => investment.project_id === item.payment_for
+        (investment) => investment.project_id === item.project
       )
       if (aggInvestment) {
         aggInvestment.price_usd += item.amount
@@ -135,7 +135,7 @@ async function compileInvestments(
   outgoingPayments.forEach((item) => {
     if (item.to_id) {
       let aggInvestment = investments.find(
-        (investment) => investment.project_id === item.payment_for
+        (investment) => investment.project_id === item.project
       )
       if (aggInvestment) {
         aggInvestment.price_usd -= item.amount
