@@ -1,13 +1,17 @@
 'use client'
+import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { formatLargeNumber, getValuation, Project } from '@/db/project'
 import Link from 'next/link'
 import { Avatar } from './avatar'
 import { RoundTag } from './round-tag'
 
-export function ProjectCard(props: { project: Project; creator: Profile }) {
-  const { creator, project } = props
-  console.log('creator', creator)
+export function ProjectCard(props: {
+  project: Project
+  creator: Profile
+  bids: Bid[]
+}) {
+  const { creator, project, bids } = props
   return (
     <Link
       className="rounded-md border border-orange-200 bg-white px-4 pb-1 shadow hover:cursor-pointer hover:bg-orange-200"

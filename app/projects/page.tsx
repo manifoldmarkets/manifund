@@ -1,11 +1,12 @@
 import { createServerClient } from '@/db/supabase-server'
-import Link from 'next/link'
-import { formatLargeNumber, getValuation, Project } from '@/db/project'
-import { getProfileById, Profile } from '@/db/profile'
-import { Avatar } from '@/components/avatar'
+import { Project } from '@/db/project'
+import { Profile } from '@/db/profile'
 import { ProjectCard } from '@/components/project-card'
+import { Bid } from '@/db/bid'
 
-type ProjectAndCreator = Project & { profiles: Profile }
+type ProjectAndCreatorAndBids = Project & { profiles: Profile } & {
+  bids: Bid[]
+}
 
 export default async function Projects() {
   const projects = await listProjects()
@@ -20,6 +21,7 @@ export default async function Projects() {
               key={project.id}
               project={project}
               creator={project.profiles}
+              bids={project.bids}
             />
           ))}
         </div>
@@ -32,9 +34,9 @@ async function listProjects() {
   const supabase = createServerClient()
   const { data, error } = await supabase
     .from('projects')
-    .select('*, profiles(*)')
+    .select('*, profiles(*), bids(*)')
   if (error) {
     throw error
   }
-  return data as ProjectAndCreator[]
+  return data as ProjectAndCreatorAndBids[]
 }
