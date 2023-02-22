@@ -28,6 +28,9 @@ export default async function UserProfilePage(props: {
   const proposalBids = bids.filter((bid) => bid.projects.stage == 'proposal')
   const isOwnProfile = user?.id === profile?.id
   const investments = await compileInvestments(supabase, profile.id)
+  const notOwnProjectInvestments = investments.filter(
+    (investment) => investment.project.creator != profile.id
+  )
   const balance = calculateBalance(investments)
   return (
     <div className="flex flex-col gap-10 p-5">
@@ -45,7 +48,7 @@ export default async function UserProfilePage(props: {
         // @ts-expect-error Server Component
         <Investments
           supabase={supabase}
-          investments={investments}
+          investments={notOwnProjectInvestments}
           profile={profile.id}
         />
       )}
@@ -68,58 +71,54 @@ async function compileInvestments(
   const outgoingTxns = await getOutgoingTxnsByUser(supabase, profile_id)
   let investments: investment[] = []
   incomingTxns.forEach((item) => {
-    if (item.projects.creator != profile_id) {
-      let aggInvestment = investments.find(
-        (investment) => investment.project.id === item.project
-      )
-      if (item.token === 'USD') {
-        if (aggInvestment) {
-          aggInvestment.price_usd += item.amount
-        } else {
-          investments.push({
-            project: item.projects,
-            num_shares: 0,
-            price_usd: item.amount,
-          })
-        }
+    let aggInvestment = investments.find(
+      (investment) => investment.project.id === item.project
+    )
+    if (item.token === 'USD') {
+      if (aggInvestment) {
+        aggInvestment.price_usd += item.amount
       } else {
-        if (aggInvestment) {
-          aggInvestment.num_shares += item.amount
-        } else {
-          investments.push({
-            project: item.projects,
-            num_shares: item.amount,
-            price_usd: 0,
-          })
-        }
+        investments.push({
+          project: item.projects,
+          num_shares: 0,
+          price_usd: item.amount,
+        })
+      }
+    } else {
+      if (aggInvestment) {
+        aggInvestment.num_shares += item.amount
+      } else {
+        investments.push({
+          project: item.projects,
+          num_shares: item.amount,
+          price_usd: 0,
+        })
       }
     }
   })
   outgoingTxns.forEach((item) => {
-    if (item.projects.creator != profile_id) {
-      let aggInvestment = investments.find(
-        (investment) => investment.project.id === item.project
-      )
-      if (item.token === 'USD') {
-        if (aggInvestment) {
-          aggInvestment.price_usd -= item.amount
-        } else {
-          investments.push({
-            project: item.projects,
-            num_shares: 0,
-            price_usd: -item.amount,
-          })
-        }
+    let aggInvestment = investments.find(
+      (investment) => investment.project.id === item.project
+    )
+    if (item.token === 'USD') {
+      if (aggInvestment) {
+        aggInvestment.price_usd -= item.amount
       } else {
-        if (aggInvestment) {
-          aggInvestment.num_shares -= item.amount
-        } else {
-          investments.push({
-            project: item.projects,
-            num_shares: -item.amount,
-            price_usd: 0,
-          })
-        }
+        investments.push({
+          project: item.projects,
+          num_shares: 0,
+          price_usd: -item.amount,
+        })
+      }
+    } else {
+      if (aggInvestment) {
+        aggInvestment.num_shares -= item.amount
+      } else {
+        investments.push({
+          project: item.projects,
+          num_shares: -item.amount,
+          price_usd: 0,
+        })
       }
     }
   })
