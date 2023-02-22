@@ -19,12 +19,12 @@ export default async function Sidebar() {
           <div className="group flex flex-row items-center gap-1">
             <Image
               src="/Manifox.png"
-              alt="Manifold Markets"
+              alt="Manifund fox"
               className="-translate-y-2 transition-all group-hover:-translate-y-3"
               width={60}
               height={60}
             />
-            <span className="bg-gradient-to-r from-orange-500  to-rose-400 bg-clip-text font-josefin text-4xl font-[650] text-transparent">
+            <span className="bg-gradient-to-r from-orange-500  to-rose-400 bg-clip-text font-josefin text-2xl font-[650] text-transparent lg:text-4xl">
               Manifund
             </span>
           </div>
