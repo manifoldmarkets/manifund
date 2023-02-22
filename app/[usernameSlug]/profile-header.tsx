@@ -1,8 +1,9 @@
 'use client'
 import { Avatar } from '@/components/avatar'
-import { PencilIcon } from '@heroicons/react/24/outline'
+import { PencilIcon, LinkIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { Database } from '@/db/database.types'
+import { BalanceBox } from './balance-box'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -13,20 +14,39 @@ export function ProfileHeader(props: {
 }) {
   const { profile, isOwnProfile, balance } = props
   return (
-    <div className="flex">
-      <Avatar username={profile.username} id={profile.id} noLink size={24} />
-      {isOwnProfile && (
-        <div className="relative top-14 right-6 h-10 w-10 rounded-full bg-orange-400 hover:bg-orange-500">
-          <Link href="/edit-profile">
-            <PencilIcon className="h-10 w-10 p-2" aria-hidden />
-          </Link>
+    <div className="flex flex-col gap-3">
+      <div className="flex">
+        <Avatar username={profile.username} id={profile.id} noLink size={24} />
+        {isOwnProfile && (
+          <div className="relative top-14 right-6 h-10 w-10 rounded-full bg-orange-400 hover:bg-orange-500">
+            <Link href="/edit-profile">
+              <PencilIcon className="h-10 w-10 p-2" aria-hidden />
+            </Link>
+          </div>
+        )}
+        <div className="ml-4 flex w-full flex-col">
+          <div className="flex justify-between">
+            <div className="flex flex-col">
+              <div className="text-4xl font-bold">{profile.username}</div>
+              <p className="text-gray-500">
+                {profile.first_name}&nbsp;{profile.last_name}
+              </p>
+            </div>
+            <BalanceBox balance={balance} />
+          </div>
         </div>
-      )}
-      <div className="flex flex-col">
-        <div className="ml-1 mt-2 text-4xl font-bold">{profile.username}</div>
-        <div className="ml-1 mt-2">Balance = ${balance}</div>
+      </div>
+      <div>
         <p>{profile.bio}</p>
-        {profile.website && <a href={profile.website}>{profile.website}</a>}
+        {profile.website && (
+          <a
+            className="flex gap-1 text-gray-500 hover:cursor-pointer hover:underline"
+            href={profile.website}
+          >
+            <LinkIcon className="relative top-1 h-4 w-4" stroke-width={2.5} />
+            {profile.website}
+          </a>
+        )}
       </div>
     </div>
   )
