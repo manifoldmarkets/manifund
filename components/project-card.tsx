@@ -11,6 +11,7 @@ import {
 } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
 import { ProjectHeader } from './project-header'
+import { ProgressBar } from './progress-bar'
 
 export function ProjectCard(props: {
   project: Project
@@ -64,26 +65,10 @@ function ProjectCardFooter(props: { project: Project; bids: Bid[] }) {
               <span className="text-black">{percentRaised * 100}%</span>raised
             </span>
           </div>
-          <FundingProgressBar percent={percentRaised} />
+          <ProgressBar percent={percentRaised} />
         </div>
       )
     default:
       return <div></div>
   }
-}
-
-function FundingProgressBar(props: { percent: number }) {
-  const { percent } = props
-  return (
-    <div className="h-2 w-full rounded-full bg-gray-200">
-      <div
-        style={{
-          background: '#f97316',
-          width: `${percent * 100}%`,
-          height: '0.5rem',
-          borderRadius: '0.5rem',
-        }}
-      ></div>
-    </div>
-  )
 }
