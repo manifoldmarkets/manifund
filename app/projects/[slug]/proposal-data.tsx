@@ -1,0 +1,41 @@
+import { Bid } from '@/db/bid'
+import { Project } from '@/db/project'
+import { formatDate, showPrecision } from '@/utils/formatting'
+import { getProposalValuation } from '@/utils/math'
+
+export function ProposalData(props: { project: Project; bids: Bid[] }) {
+  const { project, bids } = props
+  const raised = bids.reduce((acc, bid) => acc + bid.amount, 0)
+  const percentRaised = raised / project.min_funding
+  const closeDate = new Date(formatDate(project.auction_close) + ' 23:59:59')
+  const now = new Date()
+  console.log(now, closeDate)
+  console.log(now.getTime, closeDate.getTime)
+  const daysLeft = datediff(now.getTime(), closeDate.getTime())
+  return (
+    <div className="flex justify-between">
+      <div className="flex flex-col">
+        <span className="text-xl font-bold text-orange-500">${raised}</span>
+        <span className="text-sm text-gray-500">
+          raised of ${project.min_funding} goal
+        </span>
+      </div>
+      <div className="flex flex-col">
+        <span className="text-xl font-bold text-orange-500">
+          {showPrecision(daysLeft, 3)}
+        </span>
+        <span className="text-sm text-gray-500">days left to bid</span>
+      </div>
+      <div className="flex flex-col">
+        <span className="text-xl font-bold text-orange-500">
+          ${getProposalValuation(project)}
+        </span>
+        <span className="text-sm text-gray-500">minimum valuation</span>
+      </div>
+    </div>
+  )
+}
+
+function datediff(first: number, second: number) {
+  return Math.round(second - first) / (1000 * 60 * 60 * 24)
+}

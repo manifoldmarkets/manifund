@@ -23,7 +23,7 @@ export function getMoneyNumber(amount: number) {
   return Math.round(plusEpsilon) === 0 ? 0 : plusEpsilon
 }
 
-const showPrecision = (x: number, sigfigs: number) =>
+export const showPrecision = (x: number, sigfigs: number) =>
   // convert back to number for weird formatting reason
   `${Number(x.toPrecision(sigfigs))}`
 
