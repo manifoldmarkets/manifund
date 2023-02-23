@@ -9,6 +9,7 @@ import { formatLargeNumber } from '@/utils/formatting'
 import { ProjectHeader } from '@/components/project-header'
 import { getFullProjectBySlug } from '@/db/project'
 import { getProposalValuation, getActiveValuation } from '@/utils/math'
+import { ProposalData } from './proposal-data'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -28,18 +29,21 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         )
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 px-4">
       <ProjectHeader
         round={project.round}
         creator={project.profiles}
         valuation={valuation}
       />
       <div>
-        <h2 className="text-2xl font-bold">{project.title}</h2>
-        <p className="text-gray-500">by {project.profiles.username}</p>
+        <h2 className="text-3xl font-bold">{project.title}</h2>
       </div>
       {project.description && <RichContent content={project.description} />}
       {isOwnProject && <EditDescription project={project} />}
+      <hr className="h-0.5 rounded-sm bg-gray-500" />
+      {project.stage == 'proposal' && (
+        <ProposalData project={project} bids={project.bids} />
+      )}
       {user && profile?.accreditation_status && (
         <PlaceBid
           projectId={project.id}
@@ -49,6 +53,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           userId={user?.id}
         />
       )}
+
       {isAdmin(user) && <CloseBidding project={project} />}
       {/* @ts-expect-error Server Component */}
       {project.stage == 'active' && <BidsTable projectId={project.id} />}
