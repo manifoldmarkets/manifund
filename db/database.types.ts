@@ -42,27 +42,24 @@ export interface Database {
         Row: {
           accreditation_status: boolean
           bio: string
-          first_name: string
+          full_name: string
           id: string
-          last_name: string
           username: string
           website: string | null
         }
         Insert: {
           accreditation_status?: boolean
           bio?: string
-          first_name?: string
+          full_name?: string
           id: string
-          last_name?: string
           username: string
           website?: string | null
         }
         Update: {
           accreditation_status?: boolean
           bio?: string
-          first_name?: string
+          full_name?: string
           id?: string
-          last_name?: string
           username?: string
           website?: string | null
         }
