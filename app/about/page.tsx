@@ -2,7 +2,7 @@
 
 export default function AboutPage() {
   return (
-    <div className="prose font-light">
+    <div className="prose mx-auto font-light">
       <p>
         Manifund is a platform for creating and investing in{' '}
         <a href="https://astralcodexten.substack.com/p/impact-markets-the-annoying-details">
@@ -54,8 +54,8 @@ export default function AboutPage() {
         </li>
         <li>
           Ivan’s certs have tripled in value from $3,000 to $9,000; he sells
-          half to The Good Foundation for $4,500, and keeps the other half for
-          bragging rights.
+          half to The Good Foundation for $4,500, and burns the other half to
+          claim charitable impact.
         </li>
       </ol>
       <h2 id="-why-are-impact-certs-better-than-regular-grants-">
