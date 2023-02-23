@@ -29,7 +29,7 @@ export function ProjectCard(props: {
       : formatLargeNumber(calculateValuation(txns, project.founder_portion))
   return (
     <Link
-      className="flex flex-col justify-between rounded-md border border-orange-200 bg-white px-4 pb-1 shadow hover:cursor-pointer hover:bg-orange-200"
+      className="flex flex-col justify-between rounded-md border border-gray-200 bg-white px-4 pb-1 shadow hover:cursor-pointer hover:bg-gray-100"
       href={`projects/${project.slug}`}
     >
       <div>
@@ -48,7 +48,7 @@ export function ProjectCard(props: {
             </div>
           </div>
           <div className="relative top-1">
-            <ValuationBox valuation={valuation} color="emerald" />
+            <ValuationBox valuation={valuation} />
           </div>
         </div>
         <h1 className="mt-2 text-xl font-bold">{project.title}</h1>
@@ -61,26 +61,27 @@ export function ProjectCard(props: {
 
 function ProjectCardFooter(props: { project: Project; bids: Bid[] }) {
   const { project, bids } = props
+  const raised = bids.reduce((acc, bid) => acc + bid.amount, 0)
+  const percentRaised =
+    raised / project.min_funding > 1 ? 1 : raised / project.min_funding
   switch (project.stage) {
     case 'proposal':
       return (
         <div className="bottom">
-          <span className="mb-1 flex gap-1 text-gray-600">
-            <CalendarIcon className="h-6 w-6 text-orange-500" />
-            Auction closes
-            <span className="text-black">
-              {formatDate(project.auction_close)}
+          <div className="flex justify-between">
+            <span className="mb-1 flex gap-1 text-gray-600">
+              <EllipsisHorizontalCircleIcon className="h-6 w-6 text-orange-500" />
+              <span className="text-black">{percentRaised * 100}%</span>raised
             </span>
-          </span>
-          <span className="mb-1 flex gap-1 text-gray-600">
-            <EllipsisHorizontalCircleIcon className="h-6 w-6 text-orange-500" />
-            Raising{' '}
-            <span className="text-black">
-              ${formatLargeNumber(project.min_funding)}
-            </span>{' '}
-            @ <span className="text-black">${getValuation(project)}</span>
-          </span>
-          <FundingProgressBar min_funding={project.min_funding} bids={bids} />
+            <span className="mb-1 flex gap-1 text-gray-600">
+              <CalendarIcon className="h-6 w-6 text-orange-500" />
+              Auction closes
+              <span className="text-black">
+                {formatDate(project.auction_close)}
+              </span>
+            </span>
+          </div>
+          <FundingProgressBar percent={percentRaised} />
         </div>
       )
     default:
@@ -88,10 +89,8 @@ function ProjectCardFooter(props: { project: Project; bids: Bid[] }) {
   }
 }
 
-function FundingProgressBar(props: { min_funding: number; bids: Bid[] }) {
-  const { min_funding, bids } = props
-  const total = bids.reduce((acc, bid) => acc + bid.amount, 0)
-  const percent = total / min_funding > 1 ? 1 : total / min_funding
+function FundingProgressBar(props: { percent: number }) {
+  const { percent } = props
   return (
     <div className="h-2 w-full rounded-full bg-gray-200">
       <div
@@ -142,15 +141,15 @@ function calculateValuation(txns: Txn[], founder_portion: number) {
   return -1
 }
 
-function ValuationBox(props: { valuation: string; color: string }) {
-  const { valuation, color } = props
+function ValuationBox(props: { valuation: string }) {
+  const { valuation } = props
   return (
     <div
-      className={`flex flex-col rounded px-1 pt-1 pb-0 text-center bg-${color}-100`}
+      className={`flex flex-col rounded bg-gray-100 px-1 pt-1 pb-0 text-center`}
     >
-      <div className={`text-md text-${color}-500`}>Valuation</div>
+      <div className={`text-sm text-gray-500`}>Valuation</div>
       <div
-        className={`text-lg font-bold text-${color}-500 relative bottom-1 m-auto`}
+        className={`text-md relative bottom-1 m-auto font-bold text-gray-500`}
       >
         ${valuation}
       </div>
