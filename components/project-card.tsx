@@ -15,6 +15,8 @@ import {
   CalendarIcon,
 } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
+import { ValuationBox } from './valuation-box'
+import { ProjectHeader } from './project-header'
 
 export function ProjectCard(props: {
   project: Project
@@ -33,24 +35,11 @@ export function ProjectCard(props: {
       href={`projects/${project.slug}`}
     >
       <div>
-        <div className="flex justify-between">
-          <div className="mt-1">
-            <RoundTag round={project.round} />
-            <div className="mt-1 flex items-center">
-              <Avatar
-                className="mr-2"
-                username={creator?.username}
-                id={creator?.id}
-                noLink
-                size={'xs'}
-              />
-              <p>{creator?.username}</p>
-            </div>
-          </div>
-          <div className="relative top-1">
-            <ValuationBox valuation={valuation} />
-          </div>
-        </div>
+        <ProjectHeader
+          round={project.round}
+          creator={creator}
+          valuation={valuation}
+        />
         <h1 className="mt-2 text-xl font-bold">{project.title}</h1>
         <p className="mb-2 font-light text-gray-500">{project.blurb}</p>
       </div>
@@ -139,20 +128,4 @@ function calculateValuation(txns: Txn[], founder_portion: number) {
     i--
   }
   return -1
-}
-
-function ValuationBox(props: { valuation: string }) {
-  const { valuation } = props
-  return (
-    <div
-      className={`flex flex-col rounded bg-gray-100 px-1 pt-1 pb-0 text-center`}
-    >
-      <div className={`text-sm text-gray-500`}>Valuation</div>
-      <div
-        className={`text-md relative bottom-1 m-auto font-bold text-gray-500`}
-      >
-        ${valuation}
-      </div>
-    </div>
-  )
 }
