@@ -7,6 +7,7 @@ import './globals.css'
 import Sidebar from './sidebar'
 import { Poiret_One, Readex_Pro, Josefin_Slab } from '@next/font/google'
 import BetaBanner from './beta-banner'
+import { BottomNavBar } from './bottom-nav-bar'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 const poiret = Poiret_One({
@@ -52,6 +53,7 @@ export default async function RootLayout({
             <BetaBanner />
             {children}
           </div>
+          <BottomNavBar />
         </SupabaseProvider>
       </body>
     </html>
