@@ -36,8 +36,9 @@ export function ProjectCard(props: {
     >
       <div>
         <div className="flex justify-between">
-          <div>
-            <div className="mt-2 flex items-center">
+          <div className="mt-1">
+            <RoundTag round={project.round} />
+            <div className="mt-1 flex items-center">
               <Avatar
                 className="mr-2"
                 username={creator?.username}
@@ -47,7 +48,6 @@ export function ProjectCard(props: {
               />
               <p>{creator?.username}</p>
             </div>
-            <RoundTag round={project.round} />
           </div>
           <div className="relative top-1">
             <ValuationBox valuation={valuation} color="emerald" />
