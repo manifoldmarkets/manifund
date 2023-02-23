@@ -9,15 +9,6 @@ export const config = {
 }
 
 type Bid = Database['public']['Tables']['bids']['Row']
-type Txn = Database['public']['Tables']['txns']['Row']
-
-type BidProps = {
-  created_at: Date
-  project: string
-  bidder: string
-  amount: number
-  valuation: number
-}
 
 type ProjectProps = {
   id: string
