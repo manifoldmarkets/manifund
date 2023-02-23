@@ -6,10 +6,10 @@ import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
 import { BidsTable } from '../bids-table'
 import { formatLargeNumber } from '@/utils/formatting'
-import { ProjectHeader } from '@/components/project-header'
 import { getFullProjectBySlug } from '@/db/project'
 import { getProposalValuation, getActiveValuation } from '@/utils/math'
 import { ProposalData } from './proposal-data'
+import { ProjectPageHeader } from './project-page-header'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -30,7 +30,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
 
   return (
     <div className="flex flex-col gap-4 px-4">
-      <ProjectHeader
+      <ProjectPageHeader
         round={project.round}
         creator={project.profiles}
         valuation={valuation}
@@ -40,7 +40,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       </div>
       {project.description && <RichContent content={project.description} />}
       {isOwnProject && <EditDescription project={project} />}
-      <hr className="h-0.5 rounded-sm bg-gray-500" />
+      <hr className="mb-3 mt-5 h-0.5 rounded-sm bg-gray-500" />
       {project.stage == 'proposal' && (
         <ProposalData project={project} bids={project.bids} />
       )}
