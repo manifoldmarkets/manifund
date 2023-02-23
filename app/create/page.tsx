@@ -11,6 +11,7 @@ import { TOTAL_SHARES } from '@/db/project'
 import { TextEditor, useTextEditor } from '@/components/editor'
 import clsx from 'clsx'
 import { InfoTooltip } from '@/components/info-tooltip'
+import Link from 'next/link'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -46,7 +47,14 @@ export default function CreateCertForm() {
   }
 
   if (!user) {
-    return <div>log in to create a cert.</div>
+    return (
+      <div>
+        <Link href="/login" className="text-orange-500 hover:text-orange-600">
+          Log in
+        </Link>{' '}
+        to create a project!
+      </div>
+    )
   }
   return (
     <div className="flex flex-col gap-3 p-5">
