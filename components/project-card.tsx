@@ -1,7 +1,7 @@
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { formatDate, formatLargeNumber } from '@/utils/formatting'
-import { getSimpleValuation, calculateValuation } from '@/utils/math'
+import { getProposalValuation, getActiveValuation } from '@/utils/math'
 
 import { Project } from '@/db/project'
 import Link from 'next/link'
@@ -21,8 +21,8 @@ export function ProjectCard(props: {
   const { creator, project, bids, txns } = props
   const valuation =
     project.stage == 'proposal'
-      ? getSimpleValuation(project)
-      : formatLargeNumber(calculateValuation(txns, project.founder_portion))
+      ? getProposalValuation(project)
+      : formatLargeNumber(getActiveValuation(txns, project.founder_portion))
   return (
     <Link
       className="flex flex-col justify-between rounded-md border border-gray-200 bg-white px-4 pb-1 shadow hover:cursor-pointer hover:bg-gray-100"
