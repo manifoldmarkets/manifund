@@ -1,11 +1,9 @@
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
-import {
-  formatDate,
-  formatLargeNumber,
-  getValuation,
-  Project,
-} from '@/db/project'
+import { formatDate, formatLargeNumber } from '@/utils/formatting'
+import { getSimpleValuation, calculateValuation } from '@/utils/math'
+
+import { Project } from '@/db/project'
 import Link from 'next/link'
 import {
   EllipsisHorizontalCircleIcon,
@@ -13,7 +11,6 @@ import {
 } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
 import { ProjectHeader } from './project-header'
-import { calculateValuation } from '@/utils/math'
 
 export function ProjectCard(props: {
   project: Project
@@ -24,7 +21,7 @@ export function ProjectCard(props: {
   const { creator, project, bids, txns } = props
   const valuation =
     project.stage == 'proposal'
-      ? getValuation(project)
+      ? getSimpleValuation(project)
       : formatLargeNumber(calculateValuation(txns, project.founder_portion))
   return (
     <Link

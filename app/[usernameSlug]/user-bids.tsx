@@ -1,10 +1,9 @@
 import { SupabaseClient } from '@supabase/supabase-js'
-import { createServerClient } from '@/db/supabase-server'
 import { CalendarIcon } from '@heroicons/react/24/outline'
-import { formatMoney, getProjectById } from '@/db/project'
+import { getProjectById } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
 import { Bid } from '@/db/bid'
-import { formatDate } from '@/db/project'
+import { formatMoney, formatDate } from '@/utils/formatting'
 import Link from 'next/link'
 
 export async function Bids(props: { supabase: SupabaseClient; bids: Bid[] }) {

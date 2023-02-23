@@ -5,10 +5,10 @@ import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
 import { BidsTable } from '../bids-table'
-import { formatLargeNumber, getValuation } from '@/db/project'
+import { formatLargeNumber } from '@/utils/formatting'
 import { ProjectHeader } from '@/components/project-header'
 import { getFullProjectBySlug } from '@/db/project'
-import { calculateValuation } from '@/utils/math'
+import { calculateValuation, getSimpleValuation } from '@/utils/math'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -22,7 +22,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
 
   const valuation =
     project.stage == 'proposal'
-      ? getValuation(project)
+      ? getSimpleValuation(project)
       : formatLargeNumber(
           calculateValuation(project.txns, project.founder_portion)
         )
