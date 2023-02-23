@@ -33,33 +33,34 @@ export default async function UserProfilePage(props: {
   )
   const balance = calculateBalance(investments)
   return (
-    <div className="flex flex-col gap-10 p-5">
+    <div className="flex flex-col p-5">
       <ProfileHeader
         profile={profile}
         isOwnProfile={isOwnProfile}
         balance={balance}
       />
+      <div className="flex flex-col gap-10">
+        {isOwnProfile && proposalBids.length > 0 && <Bids bids={bids} />}
+        {notOwnProjectInvestments.length > 0 && (
+          // @ts-expect-error Server Component
+          <Investments
+            supabase={supabase}
+            investments={notOwnProjectInvestments}
+            profile={profile.id}
+          />
+        )}
+        {(isOwnProfile || projects.length > 0) && (
+          // @ts-expect-error Server Component
 
-      {isOwnProfile && proposalBids.length > 0 && <Bids bids={bids} />}
-      {notOwnProjectInvestments.length > 0 && (
-        // @ts-expect-error Server Component
-        <Investments
-          supabase={supabase}
-          investments={notOwnProjectInvestments}
-          profile={profile.id}
-        />
-      )}
-      {(isOwnProfile || projects.length > 0) && (
-        // @ts-expect-error Server Component
+          <Projects projects={projects} />
+        )}
 
-        <Projects projects={projects} />
-      )}
-
-      {isOwnProfile && (
-        <div className="mt-5 flex justify-center">
-          <SignOutButton />
-        </div>
-      )}
+        {isOwnProfile && (
+          <div className="mt-5 flex justify-center">
+            <SignOutButton />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
