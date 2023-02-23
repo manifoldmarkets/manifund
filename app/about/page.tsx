@@ -85,13 +85,13 @@ export default function AboutPage() {
         <strong>For founders:</strong> Manifund is like a Common App for
         charitable funding: instead of applying one-by-one to a bunch of
         different grantmakers, you only need to create a single project
-        proposal. Interested investors will then offer to fund your project
-        through our site.
+        proposal. This makes it easy to apply, even for very small amounts of
+        funding (as low $250). Interested investors can then offer to fund your
+        project through our site.
       </p>
       <p>
-        Also, like startup equity, you can keep a portion of your impact cert
-        shares, to sell later or distribute to other people who help your
-        project.
+        Like startup equity, you can keep a portion of your impact cert shares,
+        to sell later or distribute to other people who help your project.
       </p>
       <h2 id="about-us">About us</h2>
       <p>
