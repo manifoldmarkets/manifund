@@ -10,6 +10,7 @@ import { formatMoney } from '@/utils/formatting'
 import { Database } from '@/db/database.types'
 import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
+import { FounderPortionBox } from './founder-portion-box'
 
 type BidType = Database['public']['Enums']['bid_type']
 
@@ -44,26 +45,36 @@ export function PlaceBid(props: {
   const [bidType, setBidType] = useState<BidType>('buy')
   const [submitting, setSubmitting] = useState(false)
 
+  let errorMessage: string | null = null
+  if (valuation < min_valuation) {
+    errorMessage = `Valuation must be at least $${min_valuation} for this project to have enough funding to proceed.`
+  }
+
   return (
-    <div className="flex max-w-md flex-col gap-4 rounded-md border p-4">
-      {projectStage == 'active' && (
-        <div className="mb-4 flex flex-row items-end gap-2">
-          <Subtitle>Offer to</Subtitle>
-          <Select
-            id="bid-type"
-            value={bidType}
-            onChange={(event) => setBidType(event.target.value as BidType)}
-          >
-            <option value="buy">buy shares</option>
-            <option value="sell">sell shares</option>
-          </Select>
-        </div>
-      )}
-      {projectStage == 'proposal' && (
-        <div className="mb-1 flex flex-row items-end gap-2">
-          <Subtitle>Place a bid</Subtitle>
-        </div>
-      )}
+    <div className="flex w-full flex-col justify-between gap-4 rounded-md border border-gray-200 bg-white p-4 shadow-md">
+      <div className="flex justify-between">
+        {projectStage == 'active' && (
+          <div className="mb-4 flex flex-row items-end gap-2">
+            <Subtitle>Offer to</Subtitle>
+            <Select
+              id="bid-type"
+              value={bidType}
+              onChange={(event) => setBidType(event.target.value as BidType)}
+            >
+              <option value="buy">buy shares</option>
+              <option value="sell">sell shares</option>
+            </Select>
+          </div>
+        )}
+        {projectStage == 'proposal' && (
+          <div className="mb-1 flex flex-row gap-1">
+            <Subtitle>Place a bid</Subtitle>
+          </div>
+        )}
+        {founderPortion > 0 && (
+          <FounderPortionBox founderPortion={founderPortion / 100000} />
+        )}
+      </div>
 
       <label htmlFor="bid">Amount (USD)</label>
       <div className="flex w-full flex-row">
@@ -77,11 +88,12 @@ export function PlaceBid(props: {
       <Input
         id="valuation"
         type="number"
-        min={min_valuation}
         required
         value={valuation ?? ''}
         onChange={(event) => setValuation(Number(event.target.value))}
       />
+      <div className="text-red-500">{errorMessage}</div>
+
       <Button
         type="submit"
         disabled={submitting}
@@ -104,7 +116,7 @@ export function PlaceBid(props: {
           router.refresh()
         }}
       >
-        Offer {formatMoney(amount)} @ {formatMoney(valuation)}
+        Offer {formatMoney(amount)} @ {formatMoney(valuation)} Project Valuation
       </Button>
     </div>
   )
