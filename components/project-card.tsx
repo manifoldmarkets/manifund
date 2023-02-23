@@ -25,8 +25,8 @@ export function ProjectCard(props: {
   const { creator, project, bids, txns } = props
   const valuation =
     project.stage == 'proposal'
-      ? project.min_funding
-      : calculateValuation(txns, project.founder_portion)
+      ? getValuation(project)
+      : formatLargeNumber(calculateValuation(txns, project.founder_portion))
   return (
     <Link
       className="flex flex-col justify-between rounded-md border border-orange-200 bg-white px-4 pb-1 shadow hover:cursor-pointer hover:bg-orange-200"
@@ -142,7 +142,7 @@ function calculateValuation(txns: Txn[], founder_portion: number) {
   return -1
 }
 
-function ValuationBox(props: { valuation: number; color: string }) {
+function ValuationBox(props: { valuation: string; color: string }) {
   const { valuation, color } = props
   return (
     <div
@@ -152,7 +152,7 @@ function ValuationBox(props: { valuation: number; color: string }) {
       <div
         className={`text-lg font-bold text-${color}-500 relative bottom-1 m-auto`}
       >
-        ${formatLargeNumber(valuation)}
+        ${valuation}
       </div>
     </div>
   )
