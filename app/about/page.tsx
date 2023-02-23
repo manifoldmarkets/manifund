@@ -17,17 +17,22 @@ export default function AboutPage() {
           funding goal.
         </li>
         <li>
-          Accredited investors offer to fund the project, based on how valuable
-          they think the projects will turn out. They receive shares of the
-          impact certificate in exchange for their money.
+          Accredited investors initially offer to fund the proposed project
+          through an auction. At a predetermined date, the auction will resolve:
+          if the total amount bid meets the minimum funding goal, the project
+          will be funded and top bidders by valuation will recieve shares in the
+          project in exchange for money. Otherwise, the project will not be
+          funded.
         </li>
         <li>
-          Investors then trade these shares on the Manifund marketplace, buying
-          and selling based on how the projects are performing.
+          If the project is funded, accredited investors may continue to trade
+          shares in the active project, buying and selling based on how the
+          projects are performing.
         </li>
         <li>
-          Altruistic individuals or orgs can offer to buy up these shares in
-          recognition of successful impact by the project.
+          After the project is complete, altruistic individuals or organizations
+          can offer to buy up these shares in recognition of successful impact
+          by the project.
         </li>
       </ul>
       <h2 id="an-example-of-manifund-in-action">
