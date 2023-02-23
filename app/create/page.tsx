@@ -29,12 +29,19 @@ export default function CreateCertForm() {
   const router = useRouter()
   const [title, setTitle] = useState<string>('')
   const [blurb, setBlurb] = useState<string>('')
-  const [minFunding, setMinFunding] = useState<string>('0')
+  const [minFunding, setMinFunding] = useState<number>(250)
   const [founderPortion, setFounderPortion] = useState<number>(0)
   const [advancedSettings, setAdvancedSettings] = useState<boolean>(false)
   const [round, setRound] = useState<string>('ACX Mini-Grants')
   const [auctionClose, setAuctionClose] = useState<string>('03/08/2023')
   const editor = useTextEditor(DEFAULT_DESCRIPTION)
+  let errorMessage: string | null = null
+
+  if (title === '') {
+    errorMessage = 'Your project needs a title!'
+  } else if (minFunding < 250) {
+    errorMessage = 'Funding goals must be at least $250'
+  }
 
   const user = session?.user
 
@@ -59,10 +66,10 @@ export default function CreateCertForm() {
   return (
     <div className="flex flex-col gap-3 p-5">
       <div className="flex flex-col md:flex-row md:justify-between">
-        <h1 className="text-3xl font-bold">Create a Project Proposal</h1>
+        <h1 className="text-3xl font-bold">Create a project proposal</h1>
         <div className="mt-2 flex flex-row gap-2">
           <label htmlFor="advanced-settings" className="text-gray-600">
-            Advanced Settings
+            Advanced settings
           </label>
           <button
             type="button"
@@ -116,7 +123,7 @@ export default function CreateCertForm() {
         autoComplete="off"
         required
         value={minFunding ?? ''}
-        onChange={(event) => setMinFunding(event.target.value)}
+        onChange={(event) => setMinFunding(Number(event.target.value))}
       />
 
       {advancedSettings && (
@@ -176,9 +183,11 @@ export default function CreateCertForm() {
           )}
         </>
       )}
+      <div className="text-red-500">{errorMessage}</div>
       <Button
         className="mt-6"
         type="submit"
+        disabled={!!errorMessage}
         onClick={async () => {
           const founderShares = (founderPortion / 100) * TOTAL_SHARES
           const description = editor?.getJSON() ?? '<p>No description</p>'
@@ -191,7 +200,7 @@ export default function CreateCertForm() {
               title,
               blurb,
               description,
-              min_funding: minFunding,
+              min_funding: minFunding.toString(),
               founder_portion: advancedSettings ? founderShares.toString() : 0,
               round: advancedSettings ? round : 'ACX Mini-Grants',
               auction_close: advancedSettings ? auctionClose : '03/08/2023',
@@ -201,7 +210,7 @@ export default function CreateCertForm() {
           router.push(`/projects/${newProject.slug}`)
         }}
       >
-        Publish Project Proposal
+        Publish project proposal
       </Button>
     </div>
   )
