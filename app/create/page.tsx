@@ -16,11 +16,11 @@ import Link from 'next/link'
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
 const DEFAULT_DESCRIPTION = `
-<h3>Longer description of your proposed project (max 1500 words)</h3>
+<h3>Project description</h3>
 <p>I want to...</p>
-<h3>Why are you qualified to work on this?</h3>
+<h3>What is your track record on similar projects?</h3>
 <p>Our team is...</p>
-<h3>How much money do you need?</h3>
+<h3>How will you spend your funding?</h3>
 <p>We need...</p>
 `
 
@@ -177,6 +177,7 @@ export default function CreateCertForm() {
         </>
       )}
       <Button
+        className="mt-6"
         type="submit"
         onClick={async () => {
           const founderShares = (founderPortion / 100) * TOTAL_SHARES
