@@ -46,8 +46,8 @@ function BidsSubtable(props: { bids: BidAndProfile[] }) {
       <thead>
         <tr>
           <th>User</th>
+          <th>Offer</th>
           <th>Valuation</th>
-          <th>Amount</th>
         </tr>
       </thead>
       <tbody>
@@ -65,8 +65,8 @@ function BidRow(props: { bid: BidAndProfile }) {
   return (
     <tr>
       <td>{bid.profiles.username}</td>
-      <td>{formatMoney(bid.valuation)}</td>
       <td>{formatMoney(bid.amount)}</td>
+      <td>{formatMoney(bid.valuation)}</td>
     </tr>
   )
 }
