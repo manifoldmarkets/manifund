@@ -26,7 +26,7 @@ export function ProjectCard(props: {
       : formatLargeNumber(getActiveValuation(txns, project.founder_portion))
   return (
     <Link
-      className="flex flex-col justify-between rounded-md border border-gray-200 bg-white px-4 pb-1 shadow hover:cursor-pointer hover:bg-gray-100"
+      className="flex flex-col justify-between rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow hover:cursor-pointer hover:bg-gray-100"
       href={`projects/${project.slug}`}
     >
       <div>
