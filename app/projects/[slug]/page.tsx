@@ -14,6 +14,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const project = await getProjectBySlug(supabase, slug)
   const creator = await getProfileById(supabase, project.creator)
   const user = await getUser(supabase)
+  const profile = await getProfileById(supabase, user?.id)
 
   const isOwnProject = user?.id === creator?.id
 
@@ -25,7 +26,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       </div>
       {project.description && <RichContent content={project.description} />}
       {isOwnProject && <EditDescription project={project} />}
-      {user && (
+      {user && profile?.accreditation_status && (
         <PlaceBid
           projectId={project.id}
           minFunding={project.min_funding}
