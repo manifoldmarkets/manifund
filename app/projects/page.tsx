@@ -3,10 +3,11 @@ import { Project } from '@/db/project'
 import { Profile } from '@/db/profile'
 import { ProjectCard } from '@/components/project-card'
 import { Bid } from '@/db/bid'
+import { Txn } from '@/db/txn'
 
-type ProjectAndCreatorAndBids = Project & { profiles: Profile } & {
+type ProjectAndCreatorBidsTxns = Project & { profiles: Profile } & {
   bids: Bid[]
-}
+} & { txns: Txn[] }
 
 export default async function Projects() {
   const projects = await listProjects()
@@ -22,6 +23,7 @@ export default async function Projects() {
               project={project}
               creator={project.profiles}
               bids={project.bids}
+              txns={project.txns}
             />
           ))}
         </div>
@@ -34,9 +36,10 @@ async function listProjects() {
   const supabase = createServerClient()
   const { data, error } = await supabase
     .from('projects')
-    .select('*, profiles(*), bids(*)')
+    .select('*, profiles(*), bids(*), txns(*)')
+    .order('created_at', { ascending: false })
   if (error) {
     throw error
   }
-  return data as ProjectAndCreatorAndBids[]
+  return data as ProjectAndCreatorBidsTxns[]
 }
