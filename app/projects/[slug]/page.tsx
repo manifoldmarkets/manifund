@@ -10,6 +10,8 @@ import { getFullProjectBySlug } from '@/db/project'
 import { getProposalValuation, getActiveValuation } from '@/utils/math'
 import { ProposalData } from './proposal-data'
 import { ProjectPageHeader } from './project-page-header'
+import Link from 'next/link'
+import { SiteLink } from '@/components/site-link'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -53,10 +55,27 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           userId={user?.id}
         />
       )}
+      {user && !profile?.accreditation_status && <NotAccredited />}
 
       {isAdmin(user) && <CloseBidding project={project} />}
       {/* @ts-expect-error Server Component */}
       {project.stage == 'active' && <BidsTable projectId={project.id} />}
+    </div>
+  )
+}
+
+function NotAccredited() {
+  return (
+    <div className="rounded-md border border-gray-200 bg-white p-4 shadow-md">
+      You&apos;ll need to{' '}
+      <SiteLink
+        followsLinkClass={true}
+        className="text-orange-500"
+        href="https://airtable.com/shrZVLeo6f34NBfR0"
+      >
+        demonstrate that you&apos;re an accredited investor
+      </SiteLink>{' '}
+      before you can bid on or invest in projects.
     </div>
   )
 }
