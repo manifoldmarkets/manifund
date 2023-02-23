@@ -8,7 +8,7 @@ import { BidsTable } from '../bids-table'
 import { formatLargeNumber } from '@/utils/formatting'
 import { ProjectHeader } from '@/components/project-header'
 import { getFullProjectBySlug } from '@/db/project'
-import { calculateValuation, getSimpleValuation } from '@/utils/math'
+import { getProposalValuation, getActiveValuation } from '@/utils/math'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -22,9 +22,9 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
 
   const valuation =
     project.stage == 'proposal'
-      ? getSimpleValuation(project)
+      ? getProposalValuation(project)
       : formatLargeNumber(
-          calculateValuation(project.txns, project.founder_portion)
+          getActiveValuation(project.txns, project.founder_portion)
         )
 
   return (
@@ -43,6 +43,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       {user && profile?.accreditation_status && (
         <PlaceBid
           projectId={project.id}
+          projectStage={project.stage}
           minFunding={project.min_funding}
           founderPortion={project.founder_portion}
           userId={user?.id}
@@ -50,7 +51,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       )}
       {isAdmin(user) && <CloseBidding project={project} />}
       {/* @ts-expect-error Server Component */}
-      <BidsTable projectId={project.id} />
+      {project.stage == 'active' && <BidsTable projectId={project.id} />}
     </div>
   )
 }

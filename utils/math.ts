@@ -3,14 +3,14 @@ import { TOTAL_SHARES } from '@/db/project'
 import { Txn } from '@/db/txn'
 import { formatLargeNumber } from './formatting'
 
-export function getSimpleValuation(project: Project) {
+export function getProposalValuation(project: Project) {
   const investorPercent =
     (TOTAL_SHARES - project.founder_portion) / TOTAL_SHARES
   return formatLargeNumber(project.min_funding / investorPercent)
 }
 
 //bad because depends on USD and shares txns being right next to each other?
-export function calculateValuation(txns: Txn[], founder_portion: number) {
+export function getActiveValuation(txns: Txn[], founder_portion: number) {
   let i = txns.length - 1
   let price_usd = 0
   let num_shares = 0

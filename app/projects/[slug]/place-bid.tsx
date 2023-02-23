@@ -15,11 +15,12 @@ type BidType = Database['public']['Enums']['bid_type']
 
 export function PlaceBid(props: {
   projectId: string
+  projectStage: string
   minFunding: number
   founderPortion: number
   userId: string
 }) {
-  const { projectId, minFunding, founderPortion, userId } = props
+  const { projectId, projectStage, minFunding, founderPortion, userId } = props
   const { supabase } = useSupabase()
   const router = useRouter()
 
@@ -45,17 +46,25 @@ export function PlaceBid(props: {
 
   return (
     <div className="flex max-w-md flex-col gap-4 rounded-md border p-4">
-      <div className="mb-4 flex flex-row items-end gap-2">
-        <Subtitle>Offer to</Subtitle>
-        <Select
-          id="bid-type"
-          value={bidType}
-          onChange={(event) => setBidType(event.target.value as BidType)}
-        >
-          <option value="buy">buy shares</option>
-          <option value="sell">sell shares</option>
-        </Select>
-      </div>
+      {projectStage == 'active' && (
+        <div className="mb-4 flex flex-row items-end gap-2">
+          <Subtitle>Offer to</Subtitle>
+          <Select
+            id="bid-type"
+            value={bidType}
+            onChange={(event) => setBidType(event.target.value as BidType)}
+          >
+            <option value="buy">buy shares</option>
+            <option value="sell">sell shares</option>
+          </Select>
+        </div>
+      )}
+      {projectStage == 'proposal' && (
+        <div className="mb-1 flex flex-row items-end gap-2">
+          <Subtitle>Place a bid</Subtitle>
+        </div>
+      )}
+
       <label htmlFor="bid">Amount (USD)</label>
       <div className="flex w-full flex-row">
         <MySlider
