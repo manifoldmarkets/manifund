@@ -46,16 +46,6 @@ function BidDisplay(props: {
   }
   return (
     <div className="group flex justify-between px-4 py-4 hover:bg-gray-50 sm:px-6">
-      <Tooltip
-        text={'Delete Bid'}
-        className="relative right-3 my-auto mx-1 hidden rounded-full p-2 hover:cursor-pointer hover:bg-rose-100 group-hover:inline"
-      >
-        <TrashIcon
-          className="h-6 w-6 text-rose-600"
-          onClick={() => deleteBid(supabase, bid_id)}
-        />
-      </Tooltip>
-
       <Link href={`/projects/${project.slug}`} className="w-full">
         <div className="flex items-center justify-between">
           <p className="text-md text-md truncate text-orange-600">
@@ -81,6 +71,15 @@ function BidDisplay(props: {
           </div>
         </div>
       </Link>
+      <Tooltip
+        text={'Delete Bid'}
+        className="relative left-3 my-auto mx-1 hidden rounded-full p-2 hover:cursor-pointer hover:bg-rose-100 group-hover:inline"
+      >
+        <TrashIcon
+          className="h-6 w-6 text-rose-600"
+          onClick={() => deleteBid(supabase, bid_id)}
+        />
+      </Tooltip>
     </div>
   )
 }
