@@ -13,8 +13,6 @@ import { RoundTag } from './round-tag'
 import {
   EllipsisHorizontalCircleIcon,
   CalendarIcon,
-  SunIcon,
-  CurrencyDollarIcon,
 } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
 
@@ -116,13 +114,6 @@ function calculateValuation(txns: Txn[], founder_portion: number) {
   while (i > 0) {
     if (txns[i].project) {
       if (txns[i].token == 'USD') {
-        console.log('Txn #', i, " is in USD, so it's the price.")
-
-        console.log(txns[i - 1].project == txns[i].project)
-        console.log(txns[i - 1].token == 'USD')
-        console.log(txns[i - 1].from_id == txns[i].to_id)
-        console.log(txns[i - 1].to_id == txns[i].from_id)
-
         price_usd = txns[i].amount
         if (
           txns[i - 1].project == txns[i].project &&
@@ -130,18 +121,10 @@ function calculateValuation(txns: Txn[], founder_portion: number) {
           txns[i - 1].from_id == txns[i].to_id &&
           txns[i - 1].to_id == txns[i].from_id
         ) {
-          console.log(i, txns[i], txns[i - 1], num_shares, txns[i - 1].amount)
           num_shares = txns[i - 1].amount
           return (price_usd / num_shares) * (10000000 - founder_portion)
         }
       } else {
-        console.log('Txn #', i, " is not in USD, so it's the shares.")
-
-        console.log(txns[i - 1].project == txns[i].project)
-        console.log(txns[i - 1].token == 'USD')
-        console.log(txns[i - 1].from_id == txns[i].to_id)
-        console.log(txns[i - 1].to_id == txns[i].from_id)
-
         num_shares = txns[i].amount
         if (
           txns[i - 1].project == txns[i].project &&
@@ -149,7 +132,6 @@ function calculateValuation(txns: Txn[], founder_portion: number) {
           txns[i - 1].from_id == txns[i].to_id &&
           txns[i - 1].to_id == txns[i].from_id
         ) {
-          console.log(i, txns[i], txns[i - 1], num_shares, txns[i - 1].amount)
           price_usd = txns[i - 1].amount
           return (price_usd / num_shares) * (10000000 - founder_portion)
         }
