@@ -45,6 +45,7 @@ export function ProfileHeader(props: {
             {profile.website}
           </a>
         )}
+        <hr className="my-5 h-0.5 rounded-sm bg-gray-500" />
       </div>
     </div>
   )
