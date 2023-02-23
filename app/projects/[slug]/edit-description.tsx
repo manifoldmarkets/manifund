@@ -44,7 +44,7 @@ export function EditDescription(props: { project: Project }) {
             Edit project description
           </h3>
           <TextEditor editor={editor} />
-          <div className="flex flex-row gap-2">
+          <div className="mt-3 flex flex-row gap-2">
             <Button onClick={saveText} disabled={saving} loading={saving}>
               Save
             </Button>
