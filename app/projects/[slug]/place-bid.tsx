@@ -47,7 +47,7 @@ export function PlaceBid(props: {
 
   let errorMessage: string | null = null
   if (valuation < min_valuation) {
-    errorMessage = `Valuation must be at least $${min_valuation} for this project to have enough funding to proceed`
+    errorMessage = `Valuation must be at least $${min_valuation} for this project to have enough funding to proceed.`
   }
 
   return (
@@ -67,7 +67,7 @@ export function PlaceBid(props: {
           </div>
         )}
         {projectStage == 'proposal' && (
-          <div className="mb-1 flex flex-row items-end gap-2">
+          <div className="mb-1 flex flex-row gap-1">
             <Subtitle>Place a bid</Subtitle>
           </div>
         )}
