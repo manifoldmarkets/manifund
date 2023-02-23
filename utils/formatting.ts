@@ -1,19 +1,3 @@
-import { Database } from './database.types'
-import { SupabaseClient, User } from '@supabase/supabase-js'
-import { Bid } from './bid'
-import { Txn } from './txn'
-import { Profile } from './profile'
-
-export type Project = Database['public']['Tables']['projects']['Row']
-
-export const TOTAL_SHARES = 10_000_000
-
-export function getSimpleValuation(project: Project) {
-  const investorPercent =
-    (TOTAL_SHARES - project.founder_portion) / TOTAL_SHARES
-  return formatLargeNumber(project.min_funding / investorPercent)
-}
-
 // Formatting functions
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -101,69 +85,4 @@ export function formatDate(date: string) {
       break
   }
   return `${month} ${sections[2]}, ${sections[0]}`
-}
-
-export async function getProjectBySlug(supabase: SupabaseClient, slug: string) {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('slug', slug)
-  if (error) {
-    throw error
-  }
-  return data[0] as Project
-}
-
-export async function getProjectById(supabase: SupabaseClient, id: string) {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('id', id)
-  if (error) {
-    throw error
-  }
-  return data[0] as Project
-}
-
-export async function getProjectsByUser(
-  supabase: SupabaseClient,
-  user: string
-) {
-  const { data, error } = await supabase
-    .from('projects')
-    .select()
-    .eq('creator', user)
-  if (error) {
-    throw error
-  }
-  return data as Project[]
-}
-
-type ProjectAndCreatorBidsTxns = Project & { profiles: Profile } & {
-  bids: Bid[]
-} & { txns: Txn[] }
-
-export async function listProjects(supabase: SupabaseClient) {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*, profiles(*), bids(*), txns(*)')
-    .order('created_at', { ascending: false })
-  if (error) {
-    throw error
-  }
-  return data as ProjectAndCreatorBidsTxns[]
-}
-
-export async function getFullProjectBySlug(
-  supabase: SupabaseClient,
-  slug: string
-) {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*, profiles(*), bids(*), txns(*)')
-    .eq('slug', slug)
-  if (error) {
-    throw error
-  }
-  return data[0] as ProjectAndCreatorBidsTxns
 }

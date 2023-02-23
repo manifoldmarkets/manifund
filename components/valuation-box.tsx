@@ -1,4 +1,4 @@
-import { formatLargeNumber } from '@/db/project'
+import { formatLargeNumber } from '@/utils/formatting'
 
 export function ValuationBox(props: { valuation: string | number }) {
   const { valuation } = props
