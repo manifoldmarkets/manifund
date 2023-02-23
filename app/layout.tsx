@@ -53,6 +53,7 @@ export default async function RootLayout({
             <BetaBanner />
             {children}
           </div>
+          {/* @ts-expect-error Server Component */}
           <BottomNavBar />
         </SupabaseProvider>
       </body>
