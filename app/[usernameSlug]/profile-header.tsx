@@ -30,7 +30,7 @@ export function ProfileHeader(props: {
               <div className="text-4xl font-bold">{profile.username}</div>
               <p className="text-gray-500">{profile.full_name}</p>
             </div>
-            <BalanceBox balance={balance} />
+            {isOwnProfile && <BalanceBox balance={balance} />}
           </div>
         </div>
       </div>

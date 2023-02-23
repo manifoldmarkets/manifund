@@ -49,12 +49,11 @@ export default async function UserProfilePage(props: {
           profile={profile.id}
         />
       )}
-      {isOwnProfile ||
-        (projects.length > 0 && (
-          // @ts-expect-error Server Component
+      {(isOwnProfile || projects.length > 0) && (
+        // @ts-expect-error Server Component
 
-          <Projects projects={projects} />
-        ))}
+        <Projects projects={projects} />
+      )}
 
       {isOwnProfile && (
         <div className="mt-5 flex justify-center">
