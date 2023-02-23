@@ -68,7 +68,7 @@ function ProjectCardFooter(props: { project: Project; bids: Bid[] }) {
     case 'proposal':
       return (
         <div className="bottom">
-          <div className="flex justify-between">
+          <div className="flex justify-between lg:flex-col">
             <span className="mb-1 flex gap-1 text-gray-600">
               <EllipsisHorizontalCircleIcon className="h-6 w-6 text-orange-500" />
               <span className="text-black">{percentRaised * 100}%</span>raised
