@@ -14,7 +14,7 @@ export type Profile = Database['public']['Tables']['profiles']['Row']
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
-  const { supabase } = useSupabase()
+  const { supabase, session } = useSupabase()
   const [username, setUsername] = useState<string>(profile.username)
   const [bio, setBio] = useState<string>(profile.bio)
   const [website, setWebsite] = useState<string | null>(profile.website)
@@ -22,6 +22,25 @@ export function EditProfileForm(props: { profile: Profile }) {
   const [last_name, setLastName] = useState<string>(profile.last_name)
   const [avatar, setAvatar] = useState<File | null>(null)
   const router = useRouter()
+
+  const user = session?.user
+  const isNewUser = username === user?.id
+  // Grab fullname from Google signups
+  if (isNewUser && user?.user_metadata.full_name) {
+    const fullname = user.user_metadata.full_name
+    // Remove nonword characters from name
+    setUsername(fullname.replace(/\W/g, ''))
+    const [first, last] = fullname.split(' ')
+    setFirstName(first)
+    setLastName(last)
+    // TODO: Upload their avatar from user.user_metadata.avatar_url
+  }
+  // Otherwise, if they signed in with email, use that for their name
+  else if (isNewUser && user?.email) {
+    const email = user.email
+    setUsername(email.replace(/\W/g, ''))
+    setFirstName(email.split('@')[0])
+  }
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -127,14 +146,14 @@ function AccreditationInfoBox() {
           Anyone may create projects, but only accredited investors may invest
           in projects.
           <br />
-          Fill out this form to get verified as an accredited investor:{' '}
+          To get verified as an accredited investor, fill out{' '}
           <a
             target="_blank"
             rel="noopener noreferrer"
             href="https://airtable.com/shrZVLeo6f34NBfR0"
             className="font-bold hover:underline"
           >
-            verification form
+            this form
           </a>
         </p>
       </div>
