@@ -1,6 +1,6 @@
 'use client'
 import { Transition, Dialog } from '@headlessui/react'
-import { XMarkIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -25,6 +25,7 @@ function findIcon(name: string) {
       About: InformationCircleIcon,
       Profile: UserCircleIcon,
       Discord: ChatBubbleOvalLeftEllipsisIcon,
+      Create: PlusIcon,
     }[name] ?? UserCircleIcon
   )
 }

@@ -22,6 +22,10 @@ export async function BottomNavBar() {
       name: 'Discord',
       href: 'https://discord.gg/zPnPtx6jBS',
     },
+    {
+      name: 'Create',
+      href: '/create',
+    },
   ]
 
   return (
