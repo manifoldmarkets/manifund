@@ -5,7 +5,7 @@ import { RoundTag } from './round-tag'
 import { UserAvatarAndBadge } from './user-link'
 import { ValuationBox } from './valuation-box'
 
-export function ProjectHeader(props: {
+export function ProjectCardHeader(props: {
   round: string
   creator: Profile
   valuation: string

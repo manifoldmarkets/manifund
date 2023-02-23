@@ -10,7 +10,7 @@ import {
   CalendarIcon,
 } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
-import { ProjectHeader } from './project-header'
+import { ProjectCardHeader } from './project-card-header'
 import { ProgressBar } from './progress-bar'
 
 export function ProjectCard(props: {
@@ -30,7 +30,7 @@ export function ProjectCard(props: {
       href={`projects/${project.slug}`}
     >
       <div>
-        <ProjectHeader
+        <ProjectCardHeader
           round={project.round}
           creator={creator}
           valuation={valuation}
