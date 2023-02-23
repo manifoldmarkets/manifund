@@ -9,8 +9,7 @@ import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { InformationCircleIcon } from '@heroicons/react/20/solid'
-
-export type Profile = Database['public']['Tables']['profiles']['Row']
+import { Profile } from '@/db/profile'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
@@ -119,7 +118,15 @@ export function EditProfileForm(props: { profile: Profile }) {
         className="max-w-xs"
         onClick={async () => {
           await saveProfile(
-            { id: profile.id, username, bio, website, first_name, last_name },
+            {
+              id: profile.id,
+              username,
+              bio,
+              website,
+              first_name,
+              last_name,
+              accreditation_status: profile.accreditation_status,
+            },
             avatar,
             supabase
           )

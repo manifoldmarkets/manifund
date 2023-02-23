@@ -40,6 +40,7 @@ export interface Database {
       }
       profiles: {
         Row: {
+          accreditation_status: boolean
           bio: string
           first_name: string
           id: string
@@ -48,6 +49,7 @@ export interface Database {
           website: string | null
         }
         Insert: {
+          accreditation_status?: boolean
           bio?: string
           first_name?: string
           id: string
@@ -56,6 +58,7 @@ export interface Database {
           website?: string | null
         }
         Update: {
+          accreditation_status?: boolean
           bio?: string
           first_name?: string
           id?: string
