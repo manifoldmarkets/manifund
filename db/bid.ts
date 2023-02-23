@@ -3,7 +3,7 @@ import { SupabaseClient, User } from '@supabase/supabase-js'
 
 export type Bid = Database['public']['Tables']['bids']['Row']
 export type Project = Database['public']['Tables']['projects']['Row']
-type BidAndProject = Bid & { projects: Project }
+export type BidAndProject = Bid & { projects: Project }
 
 export async function getBidsByUser(supabase: SupabaseClient, user: string) {
   const { data, error } = await supabase

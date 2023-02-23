@@ -6,9 +6,12 @@ import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
 import { BidsTable } from '../bids-table'
 import { formatLargeNumber } from '@/utils/formatting'
-import { ProjectHeader } from '@/components/project-header'
 import { getFullProjectBySlug } from '@/db/project'
 import { getProposalValuation, getActiveValuation } from '@/utils/math'
+import { ProposalData } from './proposal-data'
+import { ProjectPageHeader } from './project-page-header'
+import Link from 'next/link'
+import { SiteLink } from '@/components/site-link'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -28,18 +31,21 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         )
 
   return (
-    <div className="flex flex-col gap-4">
-      <ProjectHeader
+    <div className="flex flex-col gap-4 px-4">
+      <ProjectPageHeader
         round={project.round}
         creator={project.profiles}
         valuation={valuation}
       />
       <div>
-        <h2 className="text-2xl font-bold">{project.title}</h2>
-        <p className="text-gray-500">by {project.profiles.username}</p>
+        <h2 className="text-3xl font-bold">{project.title}</h2>
       </div>
       {project.description && <RichContent content={project.description} />}
       {isOwnProject && <EditDescription project={project} />}
+      <hr className="mb-3 mt-5 h-0.5 rounded-sm bg-gray-500" />
+      {project.stage == 'proposal' && (
+        <ProposalData project={project} bids={project.bids} />
+      )}
       {user && profile?.accreditation_status && (
         <PlaceBid
           projectId={project.id}
@@ -49,9 +55,27 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           userId={user?.id}
         />
       )}
+      {user && !profile?.accreditation_status && <NotAccredited />}
+
       {isAdmin(user) && <CloseBidding project={project} />}
       {/* @ts-expect-error Server Component */}
       {project.stage == 'active' && <BidsTable projectId={project.id} />}
+    </div>
+  )
+}
+
+function NotAccredited() {
+  return (
+    <div className="rounded-md border border-gray-200 bg-white p-4 shadow-md">
+      You&apos;ll need to{' '}
+      <SiteLink
+        followsLinkClass={true}
+        className="text-orange-500"
+        href="https://airtable.com/shrZVLeo6f34NBfR0"
+      >
+        demonstrate that you&apos;re an accredited investor
+      </SiteLink>{' '}
+      before you can bid on or invest in projects.
     </div>
   )
 }

@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import Link from 'next/link'
 
 export const linkClass =
-  'break-anywhere hover:underline hover:decoration-orange-400 hover:decoration-2'
+  'break-anywhere hover:underline hover:decoration-orange-500 hover:decoration-2'
 
 export const SiteLink = (props: {
   href: string | undefined
