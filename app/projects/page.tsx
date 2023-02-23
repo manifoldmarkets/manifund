@@ -1,16 +1,10 @@
 import { createServerClient } from '@/db/supabase-server'
-import { Project } from '@/db/project'
-import { Profile } from '@/db/profile'
 import { ProjectCard } from '@/components/project-card'
-import { Bid } from '@/db/bid'
-import { Txn } from '@/db/txn'
-
-type ProjectAndCreatorBidsTxns = Project & { profiles: Profile } & {
-  bids: Bid[]
-} & { txns: Txn[] }
+import { listProjects } from '@/db/project'
 
 export default async function Projects() {
-  const projects = await listProjects()
+  const supabase = createServerClient()
+  const projects = await listProjects(supabase)
   const proposalProjects = projects.filter(
     (project) => project.stage == 'proposal'
   )
@@ -53,16 +47,4 @@ export default async function Projects() {
       </div>
     </div>
   )
-}
-
-async function listProjects() {
-  const supabase = createServerClient()
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*, profiles(*), bids(*), txns(*)')
-    .order('created_at', { ascending: false })
-  if (error) {
-    throw error
-  }
-  return data as ProjectAndCreatorBidsTxns[]
 }

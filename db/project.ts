@@ -1,5 +1,8 @@
 import { Database } from './database.types'
 import { SupabaseClient, User } from '@supabase/supabase-js'
+import { Bid } from './bid'
+import { Txn } from './txn'
+import { Profile } from './profile'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 
@@ -134,4 +137,33 @@ export async function getProjectsByUser(
     throw error
   }
   return data as Project[]
+}
+
+type ProjectAndCreatorBidsTxns = Project & { profiles: Profile } & {
+  bids: Bid[]
+} & { txns: Txn[] }
+
+export async function listProjects(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*, profiles(*), bids(*), txns(*)')
+    .order('created_at', { ascending: false })
+  if (error) {
+    throw error
+  }
+  return data as ProjectAndCreatorBidsTxns[]
+}
+
+export async function getFullProjectBySlug(
+  supabase: SupabaseClient,
+  slug: string
+) {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*, profiles(*), bids(*), txns(*)')
+    .eq('slug', slug)
+  if (error) {
+    throw error
+  }
+  return data[0] as ProjectAndCreatorBidsTxns
 }

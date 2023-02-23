@@ -1,3 +1,4 @@
+'use client'
 import { Profile } from '@/db/profile'
 import { Avatar } from './avatar'
 import { RoundTag } from './round-tag'
