@@ -2,7 +2,8 @@ import { SiteLink } from './site-link'
 import clsx from 'clsx'
 import { Tooltip } from './tooltip'
 import { Avatar } from './avatar'
-import { CheckBadgeIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
+import { CheckBadgeIcon } from '@heroicons/react/24/outline'
+import { ShieldCheckIcon } from '@heroicons/react/20/solid'
 
 export function shortenName(name: string) {
   const firstName = name.split(' ')[0]
@@ -65,7 +66,7 @@ export function UserLink(props: {
 export function UserBadge(props: { username: string }) {
   const { username } = props
 
-  if (['Austin'].includes(username)) {
+  if (['Austin', 'Rachel'].includes(username)) {
     return <CoreBadge />
   }
   if (['GavrielK'].includes(username)) {
@@ -77,8 +78,8 @@ export function UserBadge(props: { username: string }) {
 // Show a special checkmark next to Core team members
 function CoreBadge() {
   return (
-    <Tooltip text="I work on Manifold!" placement="right">
-      <ShieldCheckIcon className="h-4 w-4 text-indigo-700" aria-hidden="true" />
+    <Tooltip text="I work on Manifund!" placement="right">
+      <ShieldCheckIcon className="h-4 w-4 text-orange-600" aria-hidden="true" />
     </Tooltip>
   )
 }
@@ -86,8 +87,8 @@ function CoreBadge() {
 // Show a normal checkmark next to our trustworthy users
 function CheckBadge() {
   return (
-    <Tooltip text="Trustworthy. ish." placement="right">
-      <CheckBadgeIcon className="h-4 w-4 text-indigo-700" aria-hidden="true" />
+    <Tooltip text="Accredited investor" placement="right">
+      <CheckBadgeIcon className="h-4 w-4 text-orange-600" aria-hidden="true" />
     </Tooltip>
   )
 }
