@@ -17,28 +17,26 @@ export function EditProfileForm(props: { profile: Profile }) {
   const [username, setUsername] = useState<string>(profile.username)
   const [bio, setBio] = useState<string>(profile.bio)
   const [website, setWebsite] = useState<string | null>(profile.website)
-  const [first_name, setFirstName] = useState<string>(profile.first_name)
-  const [last_name, setLastName] = useState<string>(profile.last_name)
+  const [fullName, setFullName] = useState<string>(profile.full_name)
   const [avatar, setAvatar] = useState<File | null>(null)
+  const [submitting, setSubmitting] = useState<boolean>(false)
   const router = useRouter()
 
   const user = session?.user
   const isNewUser = username === user?.id
   // Grab fullname from Google signups
   if (isNewUser && user?.user_metadata.full_name) {
-    const fullname = user.user_metadata.full_name
+    const googleFullname = user.user_metadata.full_name
     // Remove nonword characters from name
-    setUsername(fullname.replace(/\W/g, ''))
-    const [first, last] = fullname.split(' ')
-    setFirstName(first)
-    setLastName(last)
+    setUsername(googleFullname.replace(/\W/g, ''))
+    setFullName(googleFullname)
     // TODO: Upload their avatar from user.user_metadata.avatar_url
   }
   // Otherwise, if they signed in with email, use that for their name
   else if (isNewUser && user?.email) {
     const email = user.email
     setUsername(email.replace(/\W/g, ''))
-    setFirstName(email.split('@')[0])
+    setFullName(email.split('@')[0])
   }
 
   return (
@@ -52,23 +50,14 @@ export function EditProfileForm(props: { profile: Profile }) {
         value={username ? username : ''}
         onChange={(event) => setUsername(event.target.value)}
       />
-      <label htmlFor="first_name">First name</label>
+      <label htmlFor="full_name">Full name</label>
       <Input
         type="text"
-        id="first_name"
+        id="full_name"
         autoComplete="off"
         required
-        value={first_name ? first_name : ''}
-        onChange={(event) => setFirstName(event.target.value)}
-      />
-      <label htmlFor="last_name">Last name</label>
-      <Input
-        type="text"
-        id="last_name"
-        autoComplete="off"
-        required
-        value={last_name ? last_name : ''}
-        onChange={(event) => setLastName(event.target.value)}
+        value={fullName ? fullName : ''}
+        onChange={(event) => setFullName(event.target.value)}
       />
       <label htmlFor="bio">Bio</label>
       <Input
@@ -115,21 +104,24 @@ export function EditProfileForm(props: { profile: Profile }) {
 
       <Button
         type="submit"
+        disabled={submitting}
+        loading={submitting}
         className="max-w-xs"
         onClick={async () => {
+          setSubmitting(true)
           await saveProfile(
             {
               id: profile.id,
               username,
               bio,
               website,
-              first_name,
-              last_name,
+              full_name: fullName,
               accreditation_status: profile.accreditation_status,
             },
             avatar,
             supabase
           )
+          setSubmitting(false)
           router.push(`/${username}`)
         }}
       >
@@ -182,8 +174,7 @@ async function saveProfile(
         .replace(/[^\w-]+/g, ''),
       bio: new_profile.bio,
       website: new_profile.website,
-      first_name: new_profile.first_name,
-      last_name: new_profile.last_name,
+      full_name: new_profile.full_name,
     })
     .eq('id', new_profile.id)
   if (error) {
