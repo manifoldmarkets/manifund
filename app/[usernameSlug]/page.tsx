@@ -40,10 +40,7 @@ export default async function UserProfilePage(props: {
         balance={balance}
       />
 
-      {isOwnProfile && proposalBids.length > 0 && (
-        // @ts-expect-error Server Component
-        <Bids bids={bids} supabase={supabase} />
-      )}
+      {isOwnProfile && proposalBids.length > 0 && <Bids bids={bids} />}
       {notOwnProjectInvestments.length > 0 && (
         // @ts-expect-error Server Component
         <Investments
