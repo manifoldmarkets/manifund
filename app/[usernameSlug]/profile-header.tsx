@@ -24,7 +24,7 @@ export function ProfileHeader(props: {
             </Link>
           </div>
         )}
-        <div className="ml-4 flex w-full flex-col">
+        <div className="flex w-full flex-col">
           <div className="flex justify-between">
             <div className="flex flex-col">
               <div className="text-4xl font-bold">{profile.username}</div>
