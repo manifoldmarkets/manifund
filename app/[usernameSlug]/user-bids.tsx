@@ -1,19 +1,21 @@
+'use client'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { CalendarIcon } from '@heroicons/react/24/outline'
-import { getProjectById } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
-import { Bid } from '@/db/bid'
+import { BidAndProject, Project } from '@/db/bid'
 import { formatMoney, formatDate } from '@/utils/formatting'
+import { TrashIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import { useSupabase } from '@/db/supabase-provider'
+import { Tooltip } from '@/components/tooltip'
 
-export async function Bids(props: { supabase: SupabaseClient; bids: Bid[] }) {
-  const { supabase, bids } = props
+export function Bids(props: { bids: BidAndProject[] }) {
+  const { bids } = props
   const bidsDisplay = bids.map((item) => (
     <li key={item.id}>
-      {/* @ts-expect-error Server Component */}
       <BidDisplay
-        supabase={supabase}
-        project_id={item.project}
+        bid_id={item.id}
+        project={item.projects}
         amount={item.amount}
         valuation={item.valuation}
       />
@@ -31,20 +33,30 @@ export async function Bids(props: { supabase: SupabaseClient; bids: Bid[] }) {
   )
 }
 
-async function BidDisplay(props: {
-  supabase: SupabaseClient
-  project_id: string
+function BidDisplay(props: {
+  bid_id: string
+  project: Project
   amount: number
   valuation: number
 }) {
-  const { supabase, project_id, amount, valuation } = props
-  const project = await getProjectById(supabase, project_id)
+  const { bid_id, project, amount, valuation } = props
+  const { supabase, session } = useSupabase()
   if (project.stage != 'proposal') {
     return <div className="hidden"></div>
   }
   return (
-    <Link href={`/projects/${project.slug}`} className="block hover:bg-gray-50">
-      <div className="px-4 py-4 sm:px-6">
+    <div className="group flex justify-between px-4 py-4 hover:bg-gray-50 sm:px-6">
+      <Tooltip
+        text={'Delete Bid'}
+        className="relative right-3 my-auto mx-1 hidden rounded-full p-2 hover:cursor-pointer hover:bg-rose-100 group-hover:inline"
+      >
+        <TrashIcon
+          className="h-6 w-6 text-rose-600"
+          onClick={() => deleteBid(supabase, bid_id)}
+        />
+      </Tooltip>
+
+      <Link href={`/projects/${project.slug}`} className="w-full">
         <div className="flex items-center justify-between">
           <p className="text-md text-md truncate text-orange-600">
             {project.title}
@@ -56,7 +68,8 @@ async function BidDisplay(props: {
         <div className="mt-2 sm:flex sm:justify-between">
           <div className="sm:flex">
             <p className="flex items-center text-sm text-gray-500">
-              bid&nbsp;<span className="text-black">{formatMoney(amount)}</span>
+              Bid&nbsp;
+              <span className="text-black">{formatMoney(amount)}</span>
               &nbsp;@&nbsp;
               <span className="text-black">{formatMoney(valuation)}</span>
               &nbsp;valuation
@@ -67,7 +80,15 @@ async function BidDisplay(props: {
             <p>Closing on {formatDate(project.auction_close)}</p>
           </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </div>
   )
+}
+
+async function deleteBid(supabase: SupabaseClient, bid_id: string) {
+  const { error } = await supabase.from('bids').delete().eq('id', bid_id)
+  if (error) {
+    console.log(error)
+  }
+  window.location.reload()
 }
