@@ -25,21 +25,23 @@ export function ProjectCard(props: {
       ? getProposalValuation(project)
       : formatLargeNumber(getActiveValuation(txns, project.founder_portion))
   return (
-    <Link
-      className="flex flex-col justify-between rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow hover:cursor-pointer hover:bg-gray-100"
-      href={`projects/${project.slug}`}
-    >
-      <div>
-        <ProjectCardHeader
-          round={project.round}
-          creator={creator}
-          valuation={valuation}
-        />
-        <h1 className="mt-2 text-xl font-bold">{project.title}</h1>
+    <div className="flex flex-col justify-between rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow hover:bg-gray-100">
+      <ProjectCardHeader
+        round={project.round}
+        creator={creator}
+        valuation={valuation}
+      />
+      <Link
+        href={`projects/${project.slug}`}
+        className="group hover:cursor-pointer"
+      >
+        <h1 className="mt-2 text-xl font-bold group-hover:underline">
+          {project.title}
+        </h1>
         <p className="mb-2 font-light text-gray-500">{project.blurb}</p>
-      </div>
-      <ProjectCardFooter project={project} bids={bids} />
-    </Link>
+        <ProjectCardFooter project={project} bids={bids} />
+      </Link>
+    </div>
   )
 }
 
