@@ -43,7 +43,7 @@ export default function BetaBanner() {
         >
           <circle cx={1} cy={1} r={1} />
         </svg>
-        ACX Forecasting Mini-Grants Proposal Phase
+        $20k ACX Forecasting Mini-Grants: Proposal Phase
         {/* <span aria-hidden="true">&rarr;</span> */}
         {/* </a> */}
       </p>
