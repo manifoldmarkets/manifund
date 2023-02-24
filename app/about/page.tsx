@@ -134,10 +134,10 @@ export default function AboutPage() {
       <h2>Appendix: technical details</h2>
       <h3 id="the-auction-mechanism">The Auction Mechanism</h3>
       <p>
-        On Manifund, project proposals start with a fundraising **auction**,
+        On Manifund, project proposals start with a fundraising <b>auction</b>,
         where investors can offer to fund the project at a different
-        **valuations.** At a predetermined auction close date, typically a week
-        or two after the proposal is posted, the auction will resolve as
+        <b> valuations</b>. At a predetermined auction close date, typically a
+        week or two after the proposal is posted, the auction will resolve as
         follows:
       </p>
       <p>
