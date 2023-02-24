@@ -1,7 +1,6 @@
 'use client'
 
 import { useSupabase } from '@/db/supabase-provider'
-import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { useState } from 'react'
 import { Avatar } from '@/components/avatar'

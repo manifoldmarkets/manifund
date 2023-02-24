@@ -11,6 +11,7 @@ import { Database } from '@/db/database.types'
 import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
 import { FounderPortionBox } from './founder-portion-box'
+import { Tooltip } from '@/components/tooltip'
 
 type BidType = Database['public']['Enums']['bid_type']
 
@@ -46,7 +47,7 @@ export function PlaceBid(props: {
   const [submitting, setSubmitting] = useState(false)
 
   let errorMessage: string | null = null
-  if (valuation < min_valuation) {
+  if (valuation < min_valuation && projectStage == 'proposal') {
     errorMessage = `Valuation must be at least $${min_valuation} for this project to have enough funding to proceed.`
   }
 
@@ -72,7 +73,13 @@ export function PlaceBid(props: {
           </div>
         )}
         {founderPortion > 0 && (
-          <FounderPortionBox founderPortion={founderPortion / 100000} />
+          <Tooltip
+            text={
+              'The founder chose to keep some of the equity in this project. You can only buy up to the percent of the project that they chose to sell.'
+            }
+          >
+            <FounderPortionBox founderPortion={founderPortion / 100000} />
+          </Tooltip>
         )}
       </div>
 
@@ -84,7 +91,14 @@ export function PlaceBid(props: {
           onChange={(value) => setBidPortion(value as number)}
         />
       </div>
-      <label htmlFor="valuation">Project valuation (USD)</label>
+      <Tooltip
+        className="w-48"
+        text={
+          'Based on the amount you expect a final funder will value the impact of this project after completion.'
+        }
+      >
+        <label htmlFor="valuation">Project valuation (USD)</label>
+      </Tooltip>
       <Input
         id="valuation"
         type="number"
