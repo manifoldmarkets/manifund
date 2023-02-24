@@ -9,6 +9,7 @@ import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { InformationCircleIcon } from '@heroicons/react/20/solid'
 import { Profile } from '@/db/profile'
+import { Select } from '@/components/select'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
@@ -78,6 +79,14 @@ export function EditProfileForm(props: { profile: Profile }) {
         value={website ? website : ''}
         onChange={(event) => setWebsite(event.target.value)}
       />
+      <label>Investor status</label>
+      <Select disabled value={profile.accreditation_status ? 'y' : 'n'}>
+        <option value="y">Accredited</option>
+        <option value="n">Not accredited</option>
+      </Select>
+
+      <AccreditationInfoBox />
+
       <label htmlFor="avatar">Choose a profile picture:</label>
       <div className="flex space-x-2">
         <div className="h-24 w-24">
@@ -98,8 +107,6 @@ export function EditProfileForm(props: { profile: Profile }) {
           setAvatar(event.target.files ? event.target.files[0] : null)
         }}
       ></input>
-
-      <AccreditationInfoBox />
 
       <Button
         type="submit"
