@@ -12,6 +12,7 @@ import { TextEditor, useTextEditor } from '@/components/editor'
 import clsx from 'clsx'
 import { InfoTooltip } from '@/components/info-tooltip'
 import Link from 'next/link'
+import { SiteLink } from '@/components/site-link'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -95,6 +96,7 @@ export default function CreateCertForm() {
       </div>
       <label htmlFor="title">Title</label>
       <Input
+        className="text-2xl font-bold"
         type="text"
         id="title"
         autoComplete="off"
@@ -102,7 +104,7 @@ export default function CreateCertForm() {
         value={title ?? ''}
         onChange={(event) => setTitle(event.target.value)}
       />
-      <label htmlFor="blurb">Blurb</label>
+      <label htmlFor="blurb">Subtitle</label>
       <Input
         type="text"
         id="blurb"
@@ -159,7 +161,15 @@ export default function CreateCertForm() {
             </div>
             <div className="ml-3 text-sm">
               <label htmlFor="round" className="font-medium text-gray-700">
-                This project is NOT a part of the ACX Mini-Grants round.
+                This project is NOT a part of the{' '}
+                <SiteLink
+                  href="https://astralcodexten.substack.com/p/announcing-forecasting-impact-mini"
+                  className="text-orange-500 hover:text-orange-600"
+                  followsLinkClass
+                >
+                  ACX Mini-Grants round
+                </SiteLink>
+                .
               </label>
               <p id="round-description" className="text-gray-500">
                 I understand that only projects that are a part of the ACX
