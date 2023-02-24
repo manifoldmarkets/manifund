@@ -10,8 +10,10 @@ import { getFullProjectBySlug } from '@/db/project'
 import { getProposalValuation, getActiveValuation } from '@/utils/math'
 import { ProposalData } from './proposal-data'
 import { ProjectPageHeader } from './project-page-header'
-import Link from 'next/link'
 import { SiteLink } from '@/components/site-link'
+import { SignInButton } from '@/components/sign-in-button'
+import clsx from 'clsx'
+import { buttonClass } from '@/components/button'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -56,6 +58,8 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         />
       )}
       {user && !profile?.accreditation_status && <NotAccredited />}
+      {!user && <SignInButton />}
+      <div className="h-6" />
 
       {isAdmin(user) && <CloseBidding project={project} />}
       {/* @ts-expect-error Server Component */}
@@ -67,15 +71,17 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
 function NotAccredited() {
   return (
     <div className="rounded-md border border-gray-200 bg-white p-4 shadow-md">
-      You&apos;ll need to{' '}
+      You&apos;ll need to demonstrate that you&apos;re an accredited investor
+      before you can invest in projects.
       <SiteLink
-        followsLinkClass={true}
-        className="text-orange-500"
         href="https://airtable.com/shrZVLeo6f34NBfR0"
+        className={clsx(
+          buttonClass('xl', 'gradient'),
+          'mx-auto mt-4 max-w-md bg-gradient-to-r'
+        )}
       >
-        demonstrate that you&apos;re an accredited investor
-      </SiteLink>{' '}
-      before you can bid on or invest in projects.
+        Verify status
+      </SiteLink>
     </div>
   )
 }
