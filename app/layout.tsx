@@ -8,6 +8,7 @@ import Sidebar from './sidebar'
 import { Poiret_One, Readex_Pro, Josefin_Slab } from '@next/font/google'
 import BetaBanner from './beta-banner'
 import { BottomNavBar } from './bottom-nav-bar'
+import Script from 'next/script'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 const poiret = Poiret_One({
@@ -56,6 +57,10 @@ export default async function RootLayout({
           {/* @ts-expect-error Server Component */}
           <BottomNavBar />
         </SupabaseProvider>
+        <Script
+          src="https://analytics.umami.is/script.js"
+          data-website-id="5bd676d9-a4fd-4b50-bed5-b15a561c7374"
+        />
       </body>
     </html>
   )
