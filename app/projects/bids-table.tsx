@@ -25,7 +25,7 @@ export async function BidsTable(props: { projectId: string }) {
   const sellBids = bids.filter((bid) => bid.type === 'sell')
 
   return (
-    <div className="flex flex-row gap-4">
+    <div className="grid grid-cols-2">
       <div>
         <Subtitle>Buy offers</Subtitle>
         <BidsSubtable bids={buyBids} />
@@ -40,6 +40,10 @@ export async function BidsTable(props: { projectId: string }) {
 
 function BidsSubtable(props: { bids: BidAndProfile[] }) {
   const { bids } = props
+
+  if (bids.length === 0) {
+    return <div className="text-gray-400">No offers yet</div>
+  }
 
   return (
     <Table className="table-auto">
