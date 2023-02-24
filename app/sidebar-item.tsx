@@ -11,6 +11,7 @@ import {
   HomeIcon,
   ChatBubbleOvalLeftEllipsisIcon,
 } from '@heroicons/react/24/outline'
+import { SiteLink } from '@/components/site-link'
 
 export type Item = {
   name: string
@@ -38,9 +39,9 @@ export function SidebarItem(props: { item: Item }) {
   )
 
   return (
-    <Link href={item.href} key={item.name}>
+    <SiteLink href={item.href} key={item.name}>
       {sidebarItem}
-    </Link>
+    </SiteLink>
   )
 }
 
