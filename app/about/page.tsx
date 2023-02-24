@@ -1,4 +1,5 @@
 'use client'
+import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
 
 export default function AboutPage() {
   return (
@@ -130,6 +131,78 @@ export default function AboutPage() {
           by Paul Christiano and Katja Grace
         </li>
       </ul>
+      <h2>Appendix: technical details</h2>
+      <h3 id="the-auction-mechanism">The Auction Mechanism</h3>
+      <p>
+        On Manifund, project proposals start with a fundraising **auction**,
+        where investors can offer to fund the project at a different
+        **valuations.** At a predetermined auction close date, typically a week
+        or two after the proposal is posted, the auction will resolve as
+        follows:
+      </p>
+      <p>
+        Bids will be read in order from highest valuation to lowest valuation.
+        Bids will be paid out until all shares are bought at the price set by
+        the lowest successful bid. If the total amount bid exceeds the minimum
+        funding but not all shares are sold, then all bids will go through, the
+        project will be funded, and remaining shares will go up for sale at that
+        valuation on the market (this only happens if all bids were above the
+        minimum valuation for the project). Otherwise, the minimum funding bar
+        was not met by all bids combined and the project will not proceed.
+      </p>
+      <p>
+        For example, let’s go back to that research team with a forecasting
+        project to prevent pandemics with a minimum funding bar of $5,000. Here
+        are a few ways the auction could go:
+      </p>
+      <div className="grid grid-cols-5">
+        <ul className="col-span-2 flex flex-col justify-center">
+          <li>$1,000 at 10k valuation</li>
+          <li>$3,000 at 8k valuation</li>
+          <li>$2,000 at 6k valuation</li>
+          <li>$3,000 at 5k valuation</li>
+        </ul>
+        <div className="flex h-full flex-col justify-center">
+          <ArrowLongRightIcon className="h-10" />
+        </div>
+        <div className="col-span-2 flex h-full flex-col justify-center">
+          <p>First three bids go through at a valuation of $6k</p>
+        </div>
+      </div>
+      <hr className="mb-3 mt-5 h-0.5 rounded-sm bg-gray-500" />
+
+      <div className="grid grid-cols-5">
+        <ul className="col-span-2 flex flex-col justify-center">
+          <li>$2,000 at 10k valuation</li>
+          <li>$3,000 at 10k valuation</li>
+        </ul>
+        <div className="flex h-full flex-col justify-center">
+          <ArrowLongRightIcon className="h-10" />
+        </div>
+        <div className="col-span-2 flex h-full flex-col justify-center">
+          <p>
+            Both bids go through at a valuation of $10k, leaving 50% of the
+            equity to be sold on the market at that same valuation
+          </p>
+        </div>
+      </div>
+      <hr className="mb-3 mt-5 h-0.5 rounded-sm bg-gray-500" />
+
+      <div className="grid grid-cols-5">
+        <ul className="col-span-2 flex flex-col justify-center">
+          <li>$2,000 at 5k valuation</li>
+          <li>$2,000 at 5k valuation</li>
+        </ul>
+        <div className="flex h-full flex-col justify-center">
+          <ArrowLongRightIcon className="h-10" />
+        </div>
+        <div className="col-span-2 flex h-full flex-col justify-center">
+          <p>
+            The bids did not meet the minimum funding bar so no bids go through
+            and the project is not funded.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
