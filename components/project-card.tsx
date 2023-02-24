@@ -12,6 +12,7 @@ import {
 import { Txn } from '@/db/txn'
 import { ProjectCardHeader } from './project-card-header'
 import { ProgressBar } from './progress-bar'
+import { Col } from './layout/col'
 
 export function ProjectCard(props: {
   project: Project
@@ -25,7 +26,7 @@ export function ProjectCard(props: {
       ? getProposalValuation(project)
       : formatLargeNumber(getActiveValuation(txns, project.founder_portion))
   return (
-    <div className="flex flex-col justify-between rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow hover:bg-gray-100">
+    <Col className="rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow hover:bg-gray-100">
       <ProjectCardHeader
         round={project.round}
         creator={creator}
@@ -33,15 +34,17 @@ export function ProjectCard(props: {
       />
       <Link
         href={`projects/${project.slug}`}
-        className="group hover:cursor-pointer"
+        className="group flex flex-1 flex-col justify-between hover:cursor-pointer"
       >
-        <h1 className="mt-2 text-xl font-bold group-hover:underline">
-          {project.title}
-        </h1>
-        <p className="mb-2 font-light text-gray-500">{project.blurb}</p>
+        <div className="my-3">
+          <h1 className="text-xl font-bold group-hover:underline">
+            {project.title}
+          </h1>
+          <p className="font-light text-gray-500">{project.blurb}</p>
+        </div>
         <ProjectCardFooter project={project} bids={bids} />
       </Link>
-    </div>
+    </Col>
   )
 }
 
@@ -53,7 +56,7 @@ function ProjectCardFooter(props: { project: Project; bids: Bid[] }) {
   switch (project.stage) {
     case 'proposal':
       return (
-        <div className="bottom">
+        <div>
           <div className="flex flex-col justify-between md:flex-row lg:flex-col">
             <span className="mb-1 flex gap-1 text-gray-600">
               <CalendarIcon className="h-6 w-6 text-orange-500" />
