@@ -43,7 +43,7 @@ export default async function RootLayout({
     */}
       <head />
       <body
-        className={`${fontVars} mx-auto mt-4 min-h-screen w-full bg-gray-50 font-sans md:grid md:max-w-7xl md:grid-cols-12`}
+        className={`${fontVars} mx-auto mt-4 mb-20 min-h-screen w-full bg-gray-50 font-sans md:grid md:max-w-7xl md:grid-cols-12`}
       >
         <SupabaseProvider session={session}>
           {/* @ts-expect-error Server Component */}
