@@ -169,9 +169,7 @@ create table if not exists public.bids (
   created_at timestamptz not null default now(),
   project uuid not null references public.projects(id) on delete cascade,
   bidder uuid not null references auth.users(id) on delete cascade,
-  amount numeric not null,
-  valuation numeric not null,
-  btype bid_type not null,
+  content jsonb,
   primary key (id)
 );
 
@@ -187,6 +185,17 @@ SELECT
 
 
   -- Comments
+create table if not exists public.comments (
+  id int8 not null default (),
+  created_at timestamptz not null default now(),
+  project uuid not null references public.projects(id) on delete cascade,
+  commenter uuid not null references profiles.users(id) on delete cascade,
+  amount numeric not null,
+  valuation numeric not null,
+  btype bid_type not null,
+  primary key (id)
+);
+
   CREATE POLICY "Enable read access for all users" ON "public"."comments"
 AS PERMISSIVE FOR SELECT
 TO public
