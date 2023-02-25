@@ -33,6 +33,8 @@ export function AuctionPlayground() {
   let errorMessage: string | null = null
   if (playBids.find((playBid) => playBid.valuation < minValuation)) {
     errorMessage = `All bids on this project must have a valuation of at least $${minValuation}.`
+  } else if (!minFunding) {
+    errorMessage = 'Please enter a minimum funding amount.'
   }
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export function AuctionPlayground() {
             <Input
               id="amount"
               className="relative bottom-2 w-24"
-              value={playBid.amount}
+              value={playBid.amount || ''}
               onChange={(e: { target: { value: any } }) => {
                 setPlayBids(
                   playBids.map((playBid, i) => {
@@ -68,7 +70,7 @@ export function AuctionPlayground() {
             <Input
               id="valuation"
               className="relative bottom-2 w-24"
-              value={playBid.valuation}
+              value={playBid.valuation || ''}
               onChange={(e: { target: { value: any } }) => {
                 setPlayBids(
                   playBids.map((playBid, i) => {
@@ -109,7 +111,7 @@ export function AuctionPlayground() {
         <label htmlFor="min_funding">Project Minimum Funding: $</label>
         <Input
           id="min_funding"
-          value={minFunding}
+          value={minFunding || ''}
           type="number"
           className="relative bottom-2 w-24"
           onChange={(e: { target: { value: any } }) => {
@@ -124,7 +126,7 @@ export function AuctionPlayground() {
           id="founder_portion"
           type="number"
           className=" relative bottom-2 w-24"
-          value={founderPortion}
+          value={founderPortion || ''}
           onChange={(e: { target: { value: any } }) => {
             setFounderPortion(Number(e.target.value))
             setSeeResults(false)
@@ -195,6 +197,11 @@ function resolveBids(
   let i = 0
   let total_funding = 0
   playBids.sort((a, b) => a.valuation - b.valuation)
+  playBids.forEach((playBid) => {
+    if (!playBid.amount) {
+      playBid.amount = 0
+    }
+  })
   while (i < playBids.length) {
     let valuation = playBids[i].valuation
     total_funding += playBids[i].amount
