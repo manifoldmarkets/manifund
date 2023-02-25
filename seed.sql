@@ -184,3 +184,21 @@ CREATE POLICY "Enable delete for users based on user_id" ON "public"."bids" AS P
 CREATE POLICY "Enable read access for all users" ON "public"."bids" AS PERMISSIVE FOR
 SELECT
   TO public USING (true);
+
+
+  -- Comments
+  CREATE POLICY "Enable read access for all users" ON "public"."comments"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
+
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."comments"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+
+WITH CHECK (true)
+
+CREATE POLICY "Enable delete for users based on user_id" ON "public"."comments"
+AS PERMISSIVE FOR DELETE
+TO public
+USING (auth.uid() = commenter)
