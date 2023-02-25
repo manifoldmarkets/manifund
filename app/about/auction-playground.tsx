@@ -7,7 +7,6 @@ import {
   ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
-import clsx from 'clsx'
 
 type playBid = {
   index: number
@@ -19,12 +18,22 @@ type playBid = {
 export function AuctionPlayground() {
   const [minFunding, setMinFunding] = useState<number>(1000)
   const [founderPortion, setFounderPortion] = useState<number>(0)
-  const [playBids, setPlayBids] = useState<playBid[]>([
-    { index: 0, amount: 0, valuation: minFunding, resolution: -1 },
-  ])
+  const [playBids, setPlayBids] = useState<playBid[]>([])
   const [playBidsDisplay, setPlayBidsDisplay] = useState<JSX.Element[]>([])
   const [seeResults, setSeeResults] = useState<boolean>(false)
   const [resultsText, setResultsText] = useState<JSX.Element>(<></>)
+  const [minValuation, setMinValuation] = useState<number>(minFunding)
+
+  useEffect(() => {
+    setMinValuation(
+      Math.round((minFunding / (1 - founderPortion / 100)) * 100) / 100
+    )
+  }, [minFunding, founderPortion])
+
+  let errorMessage: string | null = null
+  if (playBids.find((playBid) => playBid.valuation < minValuation)) {
+    errorMessage = `All bids on this project must have a valuation of at least $${minValuation}.`
+  }
 
   useEffect(() => {
     setPlayBidsDisplay(
@@ -85,9 +94,7 @@ export function AuctionPlayground() {
       <ArrowPathIcon
         className="absolute top-4 right-5 h-6 w-6 text-gray-500 hover:cursor-pointer"
         onClick={() => {
-          setPlayBids([
-            { index: 0, amount: 0, valuation: minFunding, resolution: -1 },
-          ])
+          setPlayBids([])
           setFounderPortion(0)
           setMinFunding(1000)
           setSeeResults(false)
@@ -135,7 +142,7 @@ export function AuctionPlayground() {
               {
                 index: playBids.length,
                 amount: 0,
-                valuation: minFunding,
+                valuation: minValuation,
                 resolution: -1,
               },
             ])
@@ -149,6 +156,9 @@ export function AuctionPlayground() {
           Add Bid
         </Button>
       </div>
+      {errorMessage && (
+        <p className="text-center text-rose-500">{errorMessage}</p>
+      )}
       {!seeResults && (
         <div className="flex justify-center">
           <Button
