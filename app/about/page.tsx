@@ -1,5 +1,6 @@
 'use client'
 import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
+import { AuctionPlayground } from './auction-playground'
 
 export default function AboutPage() {
   return (
@@ -150,6 +151,7 @@ export default function AboutPage() {
         minimum valuation for the project). Otherwise, the minimum funding bar
         was not met by all bids combined and the project will not proceed.
       </p>
+      <AuctionPlayground />
       <p>
         For example, let’s go back to that research team with a forecasting
         project to prevent pandemics with a minimum funding bar of $5,000. Here

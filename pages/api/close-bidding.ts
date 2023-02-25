@@ -51,7 +51,7 @@ export default async function handler(req: NextRequest) {
         creator
       )
       project_funded = true
-    } else if (i == bids.length - 1 && total_funding > min_funding) {
+    } else if (i == bids.length - 1 && total_funding >= min_funding) {
       addTxns(supabase, id, bids, i, bids[i].amount, creator)
       project_funded = true
     }
