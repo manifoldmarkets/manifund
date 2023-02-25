@@ -271,7 +271,7 @@ function ResultsText(props: {
   if (funded && total_funding == valuation * (1 - founder_portion)) {
     return (
       <div className="rounded-md  bg-emerald-100 p-3 text-center font-bold text-emerald-500 shadow-sm">
-        Funding successful! All shares were sold. Valuation: $${valuation} Total
+        Funding successful! All shares were sold. Valuation: ${valuation} Total
         Funding: ${total_funding}
       </div>
     )
