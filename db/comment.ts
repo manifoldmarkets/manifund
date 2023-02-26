@@ -1,8 +1,10 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { JSONContent } from '@tiptap/react'
+import { Profile } from './profile'
 
 export type Comment = Database['public']['Tables']['comments']['Row']
+export type CommentAndProfile = Comment & { profiles: Profile }
 
 export async function getCommentsByProject(
   supabase: SupabaseClient,
@@ -10,12 +12,12 @@ export async function getCommentsByProject(
 ) {
   const { data, error } = await supabase
     .from('comments')
-    .select('*')
+    .select('*, profiles(*)')
     .eq('project', project)
   if (error) {
     throw error
   }
-  return data as Comment[]
+  return data as CommentAndProfile[]
 }
 
 export async function sendComment(

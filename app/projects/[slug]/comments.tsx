@@ -1,15 +1,15 @@
 'use client'
-import { Comment } from '@/db/comment'
+import { CommentAndProfile } from '@/db/comment'
 import { TextEditor, useTextEditor, RichContent } from '@/components/editor'
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
 import { sendComment } from '@/db/comment'
 import { useSupabase } from '@/db/supabase-provider'
 import { Profile } from '@/db/profile'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { UserLink } from '@/components/user-link'
+import { UserAvatarAndBadge } from '@/components/user-link'
 
 export function Comments(props: {
-  comments: Comment[]
+  comments: CommentAndProfile[]
   project: string
   profile: Profile | null
 }) {
@@ -19,9 +19,13 @@ export function Comments(props: {
   const commentsDisplay = comments.map((comment) => (
     <div key={comment.id}>
       <div className="flex flex-row gap-2">
-        <div className="h-10 w-10 rounded-full bg-gray-300"></div>
         <div>
           <div className="flex flex-row gap-2">
+            <UserAvatarAndBadge
+              name={comment.profiles.full_name}
+              username={comment.profiles.username}
+              id={comment.profiles.id}
+            />
             <div className="text-gray-500">{comment.created_at}</div>
           </div>
           <div>
@@ -57,12 +61,8 @@ function WriteComment(props: {
         className="h-6 w-6 text-orange-500 hover:cursor-pointer"
         onClick={() => {
           if (!editor?.getJSON() || !editor?.getJSON().content) {
-            console.log('no comment to send')
-            console.log(editor?.getJSON())
-            console.log(editor?.getJSON().content)
             return
           }
-          console.log('about to send comment')
           sendComment(supabase, editor?.getJSON(), project, profile.id)
         }}
       />
