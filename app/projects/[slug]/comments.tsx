@@ -7,6 +7,7 @@ import { useSupabase } from '@/db/supabase-provider'
 import { Profile } from '@/db/profile'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { UserAvatarAndBadge } from '@/components/user-link'
+import { format, formatDistance, formatRelative, subDays } from 'date-fns'
 
 export function Comments(props: {
   comments: CommentAndProfile[]
@@ -26,9 +27,15 @@ export function Comments(props: {
               username={comment.profiles.username}
               id={comment.profiles.id}
             />
-            <div className="text-gray-500">{comment.created_at}</div>
+            <div className="text-gray-500">
+              {formatDistance(
+                new Date(comment.created_at ? comment.created_at : 0),
+                new Date(),
+                { addSuffix: true }
+              )}
+            </div>
           </div>
-          <div>
+          <div className="relative left-8">
             <RichContent content={comment.content} />
           </div>
         </div>
