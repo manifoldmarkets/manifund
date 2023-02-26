@@ -56,7 +56,13 @@ function WriteComment(props: {
       <PaperAirplaneIcon
         className="h-6 w-6 text-orange-500 hover:cursor-pointer"
         onClick={() => {
-          if (!editor?.getJSON() || !editor?.getJSON().stringify) return
+          if (!editor?.getJSON() || !editor?.getJSON().content) {
+            console.log('no comment to send')
+            console.log(editor?.getJSON())
+            console.log(editor?.getJSON().content)
+            return
+          }
+          console.log('about to send comment')
           sendComment(supabase, editor?.getJSON(), project, profile.id)
         }}
       />
