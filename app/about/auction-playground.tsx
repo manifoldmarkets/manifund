@@ -196,7 +196,8 @@ function resolveBids(
 ) {
   let i = 0
   let total_funding = 0
-  playBids.sort((a, b) => a.valuation - b.valuation)
+  playBids = playBids.sort((a, b) => a.valuation - b.valuation)
+  console.log(playBids)
   playBids.forEach((playBid) => {
     if (!playBid.amount) {
       playBid.amount = 0

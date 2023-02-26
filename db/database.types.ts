@@ -38,6 +38,29 @@ export interface Database {
           valuation?: number
         }
       }
+      comments: {
+        Row: {
+          commenter: string
+          content: Json | null
+          created_at: string | null
+          id: string
+          project: string
+        }
+        Insert: {
+          commenter: string
+          content?: Json | null
+          created_at?: string | null
+          id?: string
+          project: string
+        }
+        Update: {
+          commenter?: string
+          content?: Json | null
+          created_at?: string | null
+          id?: string
+          project?: string
+        }
+      }
       profiles: {
         Row: {
           accreditation_status: boolean
