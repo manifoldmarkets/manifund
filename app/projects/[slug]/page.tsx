@@ -14,6 +14,7 @@ import { SiteLink } from '@/components/site-link'
 import { SignInButton } from '@/components/sign-in-button'
 import clsx from 'clsx'
 import { buttonClass } from '@/components/button'
+import { Comments } from './comments'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -61,9 +62,11 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       {!user && <SignInButton />}
       <div className="h-6" />
 
-      {isAdmin(user) && <CloseBidding project={project} />}
       {/* @ts-expect-error Server Component */}
       {project.stage == 'active' && <BidsTable projectId={project.id} />}
+      {/* @ts-expect-error Server Component */}
+      <Comments project={project.id} profile={profile} />
+      {isAdmin(user) && <CloseBidding project={project} />}
     </div>
   )
 }
