@@ -1,7 +1,14 @@
 'use client'
-import { useEditor, EditorContent, Editor } from '@tiptap/react'
+import Link from '@tiptap/extension-link'
+import {
+  useEditor,
+  EditorContent,
+  Editor,
+  mergeAttributes,
+} from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
+import { linkClass } from './site-link'
 import { generateReact } from './tiptap-utils'
 
 export function useTextEditor(content?: any) {
@@ -14,7 +21,7 @@ export function useTextEditor(content?: any) {
         ),
       },
     },
-    extensions: [StarterKit],
+    extensions: [StarterKit, DisplayLink],
     content: content ?? '<p>Edit here...</p>',
   })
   return editor
@@ -29,7 +36,7 @@ export function TextEditor(props: { editor: Editor | null }) {
 const proseClass = (size: 'sm' | 'md' | 'lg') =>
   clsx(
     'prose max-w-none leading-relaxed',
-    'prose-a:text-indigo-700 prose-a:no-underline',
+    'prose-a:text-orange-700 prose-a:no-underline',
     size === 'sm' ? 'prose-sm' : 'text-md',
     size !== 'lg' && 'prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0',
     '[&>p]:prose-li:my-0',
@@ -38,6 +45,7 @@ const proseClass = (size: 'sm' | 'md' | 'lg') =>
     'break-anywhere'
   )
 
+// TODO: Extract to server component
 export function RichContent(props: {
   content: any // JSONContent | null
   className?: string
@@ -46,7 +54,7 @@ export function RichContent(props: {
   const { className, content, size = 'md' } = props
   if (!content) return null
 
-  const jsxContent = generateReact(content, [StarterKit])
+  const jsxContent = generateReact(content, [StarterKit, DisplayLink])
   return (
     <div
       className={clsx(
@@ -60,3 +68,10 @@ export function RichContent(props: {
     </div>
   )
 }
+
+const DisplayLink = Link.extend({
+  renderHTML({ HTMLAttributes }) {
+    delete HTMLAttributes.class // only use our classes (don't duplicate on paste)
+    return ['a', mergeAttributes(HTMLAttributes, { class: linkClass }), 0]
+  },
+})
