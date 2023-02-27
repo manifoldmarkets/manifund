@@ -45,19 +45,19 @@ export async function getProjectsByUser(
   return data as Project[]
 }
 
-type ProjectAndCreatorBidsTxnsComments = Project & { profiles: Profile } & {
+type FullProject = Project & { profiles: Profile } & {
   bids: Bid[]
-} & { txns: Txn[] } & { comments: Comment[] }
+} & { txns: Txn[] }
 
 export async function listProjects(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('projects')
-    .select('*, profiles(*), bids(*), txns(*), comments(*)')
+    .select('*, profiles(*), bids(*), txns(*)')
     .order('created_at', { ascending: false })
   if (error) {
     throw error
   }
-  return data as ProjectAndCreatorBidsTxnsComments[]
+  return data as FullProject[]
 }
 
 export async function getFullProjectBySlug(
@@ -66,10 +66,10 @@ export async function getFullProjectBySlug(
 ) {
   const { data, error } = await supabase
     .from('projects')
-    .select('*, profiles(*), bids(*), txns(*), comments(*)')
+    .select('*, profiles(*), bids(*), txns(*)')
     .eq('slug', slug)
   if (error) {
     throw error
   }
-  return data[0] as ProjectAndCreatorBidsTxnsComments
+  return data[0] as FullProject
 }

@@ -15,7 +15,6 @@ import { SignInButton } from '@/components/sign-in-button'
 import clsx from 'clsx'
 import { buttonClass } from '@/components/button'
 import { Comments } from './comments'
-import { getCommentsByProject } from '@/db/comment'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -24,7 +23,6 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const project = await getFullProjectBySlug(supabase, slug)
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
-  const comments = await getCommentsByProject(supabase, project.id)
 
   const isOwnProject = user?.id === project.profiles.id
 
