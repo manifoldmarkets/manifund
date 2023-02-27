@@ -190,9 +190,7 @@ create table if not exists public.comments (
   created_at timestamptz not null default now(),
   project uuid not null references public.projects(id) on delete cascade,
   commenter uuid not null references profiles.users(id) on delete cascade,
-  amount numeric not null,
-  valuation numeric not null,
-  btype bid_type not null,
+  content jsonb,
   primary key (id)
 );
 

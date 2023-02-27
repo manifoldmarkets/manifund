@@ -42,21 +42,21 @@ export interface Database {
         Row: {
           commenter: string
           content: Json | null
-          created_at: string | null
+          created_at: string
           id: string
           project: string
         }
         Insert: {
           commenter: string
           content?: Json | null
-          created_at?: string | null
+          created_at?: string
           id?: string
           project: string
         }
         Update: {
           commenter?: string
           content?: Json | null
-          created_at?: string | null
+          created_at?: string
           id?: string
           project?: string
         }
