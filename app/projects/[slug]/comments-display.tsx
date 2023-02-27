@@ -61,10 +61,6 @@ function WriteComment(props: {
   const { supabase, project, profile } = props
   const editor = useTextEditor('')
 
-  function setState(arg0: { comment: string }) {
-    throw new Error('Function not implemented.')
-  }
-
   return (
     <div>
       <TextEditor editor={editor}></TextEditor>
@@ -75,7 +71,6 @@ function WriteComment(props: {
             return
           }
           sendComment(supabase, editor?.getJSON(), project, profile.id)
-          setState({ comment: '' })
         }}
       />
     </div>
