@@ -10,6 +10,7 @@ import { UserAvatarAndBadge } from '@/components/user-link'
 import { formatDistance } from 'date-fns'
 import { Divider } from '@/components/divider'
 import { useRouter } from 'next/navigation'
+import { Avatar } from '@/components/avatar'
 
 export function CommentsDisplay(props: {
   comments: CommentAndProfile[]
@@ -17,7 +18,7 @@ export function CommentsDisplay(props: {
   profile: Profile | null
 }) {
   const { comments, project, profile } = props
-  const { supabase, session } = useSupabase()
+  const { supabase } = useSupabase()
 
   const commentsDisplay = comments.map((comment) => (
     <div key={comment.id}>
@@ -46,8 +47,21 @@ export function CommentsDisplay(props: {
   ))
   return (
     <div>
+      {(comments.length > 0 || profile) && (
+        <h1 className="mb-5 text-3xl font-bold">Comments</h1>
+      )}
       {profile && (
-        <WriteComment supabase={supabase} project={project} profile={profile} />
+        <div>
+          <div className="flex gap-3">
+            <Avatar id={profile.id} />
+            <WriteComment
+              supabase={supabase}
+              project={project}
+              profile={profile}
+            />
+          </div>
+          <Divider />
+        </div>
       )}
       {commentsDisplay}
     </div>
@@ -64,7 +78,7 @@ function WriteComment(props: {
   const router = useRouter()
 
   return (
-    <div>
+    <div className="w-full">
       <TextEditor editor={editor}></TextEditor>
       <div className="flex justify-end">
         <PaperAirplaneIcon
@@ -78,7 +92,6 @@ function WriteComment(props: {
           }}
         />
       </div>
-      <Divider />
     </div>
   )
 }
