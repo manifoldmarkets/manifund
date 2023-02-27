@@ -438,6 +438,13 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-italic/-/extension-italic-2.0.0-beta.218.tgz#9dac0e94b481df04eca409dbe6cf7e7165ab9b7e"
   integrity sha512-+/NRGoLQXi+CCziVT7MixB10jC72c5BCG6w15H4hfHkD+eJc/DfzLCuIaePzYCZC/xqjNI/EBNh6BP3HTMHCpQ==
 
+"@tiptap/extension-link@^2.0.0-beta.218":
+  version "2.0.0-beta.218"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-link/-/extension-link-2.0.0-beta.218.tgz#40d99cebfe9cbdb9c39b8cdb61dc8ce663b2bada"
+  integrity sha512-Vi+qZOzqS+tTpK2q23q5wLEDxIZMiRNHduzJtZh2wKryLPjbs7jEnxSVQybvQqRHAhUC6uGsh+9nhN0+fq6oAw==
+  dependencies:
+    linkifyjs "^3.0.5"
+
 "@tiptap/extension-list-item@^2.0.0-beta.218":
   version "2.0.0-beta.218"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-list-item/-/extension-list-item-2.0.0-beta.218.tgz#21ae2c21da9488b05be4e03dc14e3ec9c7fdbf90"
@@ -2041,6 +2048,11 @@ linkify-it@^4.0.1:
   integrity sha512-C7bfi1UZmoj8+PQx22XyeXCuBlokoyWQL5pWSP+EI6nzRylyThouddufc2c1NDIcP9k5agmN9fLpA7VNJfIiqw==
   dependencies:
     uc.micro "^1.0.1"
+
+linkifyjs@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-3.0.5.tgz#99e51a3a0c0e232fcb63ebb89eea3ff923378f34"
+  integrity sha512-1Y9XQH65eQKA9p2xtk+zxvnTeQBG7rdAXSkUG97DmuI/Xhji9uaUzaWxRj6rf9YC0v8KKHkxav7tnLX82Sz5Fg==
 
 locate-path@^6.0.0:
   version "6.0.0"
