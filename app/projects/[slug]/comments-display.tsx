@@ -88,6 +88,7 @@ function WriteComment(props: {
               return
             }
             await sendComment(supabase, editor?.getJSON(), project, profile.id)
+            editor.commands.clearContent()
             router.refresh()
           }}
         />
