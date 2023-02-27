@@ -169,9 +169,7 @@ create table if not exists public.bids (
   created_at timestamptz not null default now(),
   project uuid not null references public.projects(id) on delete cascade,
   bidder uuid not null references auth.users(id) on delete cascade,
-  amount numeric not null,
-  valuation numeric not null,
-  btype bid_type not null,
+  content jsonb,
   primary key (id)
 );
 
@@ -184,3 +182,30 @@ CREATE POLICY "Enable delete for users based on user_id" ON "public"."bids" AS P
 CREATE POLICY "Enable read access for all users" ON "public"."bids" AS PERMISSIVE FOR
 SELECT
   TO public USING (true);
+
+
+  -- Comments
+create table if not exists public.comments (
+  id int8 not null default (),
+  created_at timestamptz not null default now(),
+  project uuid not null references public.projects(id) on delete cascade,
+  commenter uuid not null references profiles.users(id) on delete cascade,
+  content jsonb,
+  primary key (id)
+);
+
+  CREATE POLICY "Enable read access for all users" ON "public"."comments"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
+
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."comments"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+
+WITH CHECK (true)
+
+CREATE POLICY "Enable delete for users based on user_id" ON "public"."comments"
+AS PERMISSIVE FOR DELETE
+TO public
+USING (auth.uid() = commenter)

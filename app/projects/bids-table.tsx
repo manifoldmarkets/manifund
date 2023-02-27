@@ -1,6 +1,6 @@
 import { createServerClient } from '@/db/supabase-server'
 import { Database } from '@/db/database.types'
-import { formatMoney } from '@/db/project'
+import { formatMoney } from '@/utils/formatting'
 import { Subtitle } from '@/components/subtitle'
 import { Table } from '@/components/table'
 

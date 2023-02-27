@@ -1,5 +1,6 @@
 import { Database } from '@/db/database.types'
-import { SupabaseClient, User } from '@supabase/supabase-js'
+import { SupabaseClient } from '@supabase/supabase-js'
+import { JSONContent } from '@tiptap/react'
 import { Profile } from './profile'
 
 export type Comment = Database['public']['Tables']['comments']['Row']
@@ -17,4 +18,22 @@ export async function getCommentsByProject(
     throw error
   }
   return data as CommentAndProfile[]
+}
+
+export async function sendComment(
+  supabase: SupabaseClient,
+  content: JSONContent,
+  project: string,
+  commenter: string
+) {
+  const { error } = await supabase.from('comments').insert([
+    {
+      content,
+      project,
+      commenter,
+    },
+  ])
+  if (error) {
+    throw error
+  }
 }

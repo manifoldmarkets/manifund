@@ -1,3 +1,5 @@
+'use client'
+
 import Router from 'next/router'
 import clsx from 'clsx'
 import { MouseEvent, useEffect, useState } from 'react'
