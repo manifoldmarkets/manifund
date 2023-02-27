@@ -196,7 +196,8 @@ function resolveBids(
 ) {
   let i = 0
   let total_funding = 0
-  playBids.sort((a, b) => a.valuation - b.valuation)
+  playBids = playBids.sort((a, b) => a.valuation - b.valuation)
+  console.log(playBids)
   playBids.forEach((playBid) => {
     if (!playBid.amount) {
       playBid.amount = 0
@@ -250,13 +251,13 @@ function BidResult(props: { portionPaid: number }) {
   let color =
     portionPaid == 0
       ? 'text-rose-500'
-      : portionPaid == 1
+      : portionPaid == 100
       ? 'text-emerald-500'
       : 'text-amber-500'
   return (
     <div className={`flex font-bold ${color}`}>
       <ArrowRightIcon className="relative top-1 mx-3 h-5 w-5" />
-      {portionPaid * 100}% paid
+      {portionPaid}% paid
     </div>
   )
 }

@@ -151,7 +151,7 @@ export default function AboutPage() {
         minimum valuation for the project). Otherwise, the minimum funding bar
         was not met by all bids combined and the project will not proceed.
       </p>
-      <AuctionPlayground />
+      {/* <AuctionPlayground /> */}
       <p>
         For example, let’s go back to that research team with a forecasting
         project to prevent pandemics with a minimum funding bar of $5,000. Here
