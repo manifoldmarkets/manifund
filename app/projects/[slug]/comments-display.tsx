@@ -8,6 +8,8 @@ import { Profile } from '@/db/profile'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { formatDistance } from 'date-fns'
+import { Divider } from '@/components/divider'
+import { useRouter } from 'next/navigation'
 
 export function CommentsDisplay(props: {
   comments: CommentAndProfile[]
@@ -44,7 +46,6 @@ export function CommentsDisplay(props: {
   ))
   return (
     <div>
-      Comment Section
       {profile && (
         <WriteComment supabase={supabase} project={project} profile={profile} />
       )}
@@ -60,19 +61,24 @@ function WriteComment(props: {
 }) {
   const { supabase, project, profile } = props
   const editor = useTextEditor('')
+  const router = useRouter()
 
   return (
     <div>
       <TextEditor editor={editor}></TextEditor>
-      <PaperAirplaneIcon
-        className="h-6 w-6 text-orange-500 hover:cursor-pointer"
-        onClick={() => {
-          if (!editor?.getJSON() || !editor?.getJSON().content) {
-            return
-          }
-          sendComment(supabase, editor?.getJSON(), project, profile.id)
-        }}
-      />
+      <div className="flex justify-end">
+        <PaperAirplaneIcon
+          className="m-2 h-8 w-8 text-orange-500 hover:cursor-pointer"
+          onClick={async () => {
+            if (!editor?.getJSON() || !editor?.getJSON().content) {
+              return
+            }
+            await sendComment(supabase, editor?.getJSON(), project, profile.id)
+            router.refresh()
+          }}
+        />
+      </div>
+      <Divider />
     </div>
   )
 }
