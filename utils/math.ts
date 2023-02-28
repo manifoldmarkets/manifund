@@ -48,7 +48,6 @@ export function getActiveValuation(txns: Txn[], founder_portion: number) {
 export function calculateUserBalance(incomingTxns: Txn[], outgoingTxns: Txn[]) {
   let incoming = 0
   let outgoing = 0
-  console.log(incomingTxns)
   if (incomingTxns) {
     incomingTxns.forEach((txn) => {
       if (txn.token == 'USD') {
