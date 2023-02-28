@@ -7,7 +7,11 @@ import { EditDescription } from './edit-description'
 import { BidsTable } from '../bids-table'
 import { formatLargeNumber } from '@/utils/formatting'
 import { getFullProjectBySlug } from '@/db/project'
-import { getProposalValuation, getActiveValuation } from '@/utils/math'
+import {
+  getProposalValuation,
+  getActiveValuation,
+  calculateUserBalance,
+} from '@/utils/math'
 import { ProposalData } from './proposal-data'
 import { ProjectPageHeader } from './project-page-header'
 import { SiteLink } from '@/components/site-link'
@@ -15,6 +19,8 @@ import { SignInButton } from '@/components/sign-in-button'
 import clsx from 'clsx'
 import { buttonClass } from '@/components/button'
 import { Comments } from './comments'
+import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
+import { SupabaseClient } from '@supabase/supabase-js'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -23,6 +29,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const project = await getFullProjectBySlug(supabase, slug)
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
+  const userBalance = user ? await getUserBalance(supabase, user.id) : 0
 
   const isOwnProject = user?.id === project.profiles.id
 
@@ -56,6 +63,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           minFunding={project.min_funding}
           founderPortion={project.founder_portion}
           userId={user?.id}
+          userBalance={userBalance}
         />
       )}
       {user && !profile?.accreditation_status && <NotAccredited />}
@@ -87,4 +95,10 @@ function NotAccredited() {
       </SiteLink>
     </div>
   )
+}
+
+async function getUserBalance(supabase: SupabaseClient, userId: string) {
+  const incomingTxns = await getIncomingTxnsByUser(supabase, userId)
+  const outgoingTxns = await getOutgoingTxnsByUser(supabase, userId)
+  return calculateUserBalance(incomingTxns, outgoingTxns)
 }
