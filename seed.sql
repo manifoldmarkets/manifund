@@ -3,6 +3,11 @@
 create table public.profiles (
   id uuid not null references auth.users on delete cascade,
   username text not null unique,
+  bio text not null,
+  website text,
+  accreditation_status boolean not null,
+  full_name text not null,
+  avatar_url text,
   primary key (id)
 );
 

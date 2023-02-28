@@ -64,6 +64,7 @@ export interface Database {
       profiles: {
         Row: {
           accreditation_status: boolean
+          avatar_url: string | null
           bio: string
           full_name: string
           id: string
@@ -72,6 +73,7 @@ export interface Database {
         }
         Insert: {
           accreditation_status?: boolean
+          avatar_url?: string | null
           bio?: string
           full_name?: string
           id: string
@@ -80,6 +82,7 @@ export interface Database {
         }
         Update: {
           accreditation_status?: boolean
+          avatar_url?: string | null
           bio?: string
           full_name?: string
           id?: string
