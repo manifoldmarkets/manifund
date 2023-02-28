@@ -1,6 +1,6 @@
 'use client'
 
-import Router from 'next/router'
+import router, { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { MouseEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
@@ -24,6 +24,7 @@ export function Avatar(props: {
       ),
     [id]
   )
+  const router = useRouter()
   const s =
     size == 'xxs' ? 4 : size == 'xs' ? 6 : size === 'sm' ? 8 : size || 10
   const sizeInPx = s * 4
@@ -31,7 +32,7 @@ export function Avatar(props: {
   const onClick = (e: MouseEvent) => {
     if (!noLink && username) {
       e.stopPropagation()
-      Router.push(`/${username}`)
+      router.push(`/${username}`)
     }
   }
 
