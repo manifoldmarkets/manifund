@@ -26,7 +26,7 @@ export function ProfileHeader(props: {
         )}
         <div className="flex w-full flex-col">
           <div className="flex justify-between">
-            <div className="flex flex-col">
+            <div className="ml-3 flex flex-col">
               <div className="text-4xl font-bold">{profile.username}</div>
               <p className="text-gray-500">{profile.full_name}</p>
             </div>
