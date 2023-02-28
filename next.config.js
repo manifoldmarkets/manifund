@@ -4,11 +4,16 @@ const nextConfig = {
     appDir: true,
   },
   images: {
+    domains: [
+      'fkousziwzbnkdkldjper.supabase.co',
+      'manifold.markets',
+      'imgur.com',
+    ],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'fkousziwzbnkdkldjper.supabase.co',
-        pathname: '/storage/v1/object/public/avatars/**/avatar',
+        pathname: '/storage/v1/object/public/avatars/*/*',
       },
       {
         protocol: 'https',

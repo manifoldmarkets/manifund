@@ -10,6 +10,9 @@ import { useRouter } from 'next/navigation'
 import { InformationCircleIcon } from '@heroicons/react/20/solid'
 import { Profile } from '@/db/profile'
 import { Select } from '@/components/select'
+import uuid from 'react-uuid'
+import Image from 'next/image'
+import { isNullishCoalesce } from 'typescript'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
@@ -90,7 +93,17 @@ export function EditProfileForm(props: { profile: Profile }) {
       <label htmlFor="avatar">Choose a profile picture:</label>
       <div className="flex space-x-2">
         <div className="h-24 w-24">
-          <Avatar profile={profile} noLink size={24} />
+          {!avatar && <Avatar profile={profile} noLink size={24} />}
+          {avatar && (
+            <Image
+              width={24}
+              height={24}
+              className="my-0 h-24 w-24 flex-shrink-0 rounded-full bg-white object-cover"
+              style={{ maxWidth: `6rem` }}
+              src={URL.createObjectURL(avatar)}
+              alt="Your new avatar"
+            />
+          )}
         </div>
       </div>
       <input
@@ -118,7 +131,7 @@ export function EditProfileForm(props: { profile: Profile }) {
               website,
               full_name: fullName,
               accreditation_status: profile.accreditation_status,
-              avatar_url: profile.avatar_url,
+              avatar_url: null,
             },
             avatar,
             supabase
@@ -167,7 +180,13 @@ async function saveProfile(
   avatar: File | null,
   supabase: SupabaseClient
 ) {
-  saveAvatar(avatar, new_profile.id, supabase)
+  const avatarSlug = uuid()
+  const avatarUrl = avatar
+    ? `https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${new_profile.id}/${avatarSlug}`
+    : null
+  if (avatar) {
+    await saveAvatar(supabase, new_profile.id, avatarSlug, avatar)
+  }
   const { error } = await supabase
     .from('profiles')
     .update({
@@ -177,6 +196,7 @@ async function saveProfile(
       bio: new_profile.bio,
       website: new_profile.website,
       full_name: new_profile.full_name,
+      avatar_url: avatarUrl,
     })
     .eq('id', new_profile.id)
   if (error) {
@@ -185,14 +205,17 @@ async function saveProfile(
 }
 
 async function saveAvatar(
-  avatar: File | null,
-  id: string,
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
+  userId: string,
+  avatarSlug: string,
+  avatar: File
 ) {
-  if (!avatar) return
-  const { data, error } = await supabase.storage
+  if (!avatar) {
+    return
+  }
+  const { error } = await supabase.storage
     .from('avatars')
-    .upload(`${id}/avatar`, avatar)
+    .upload(`${userId}/${avatarSlug}`, avatar)
   if (error) {
     throw error
   }
