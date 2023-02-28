@@ -12,6 +12,9 @@ import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
 import { FounderPortionBox } from './founder-portion-box'
 import { Tooltip } from '@/components/tooltip'
+import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
+import { SupabaseClient } from '@supabase/supabase-js'
+import { calculateUserBalance } from '@/utils/math'
 
 type BidType = Database['public']['Enums']['bid_type']
 
@@ -21,34 +24,44 @@ export function PlaceBid(props: {
   minFunding: number
   founderPortion: number
   userId: string
+  userBalance: number
 }) {
-  const { projectId, projectStage, minFunding, founderPortion, userId } = props
+  const {
+    projectId,
+    projectStage,
+    minFunding,
+    founderPortion,
+    userId,
+    userBalance,
+  } = props
   const { supabase } = useSupabase()
   const router = useRouter()
 
-  const sellable_portion = 1 - founderPortion / 10000000
-  const min_valuation = Math.round(minFunding / sellable_portion)
+  const sellablePortion = 1 - founderPortion / 10000000
+  const minValuation = Math.round(minFunding / sellablePortion)
 
-  const [valuation, setValuation] = useState<number>(min_valuation)
+  const [valuation, setValuation] = useState<number>(minValuation)
   const [bid_portion, setBidPortion] = useState<number>(0)
-  const amount = (bid_portion * (valuation * sellable_portion)) / 100
+  const amount = (bid_portion * (valuation * sellablePortion)) / 100
   const [marks, setMarks] = useState<{ [key: number]: string }>({})
   useEffect(() => {
     setMarks({
       0: '$0',
-      25: formatMoney((valuation * sellable_portion) / 4),
-      50: formatMoney((valuation * sellable_portion) / 2),
-      75: formatMoney(((valuation * sellable_portion) / 4) * 3),
-      100: formatMoney(valuation * sellable_portion),
+      25: formatMoney((valuation * sellablePortion) / 4),
+      50: formatMoney((valuation * sellablePortion) / 2),
+      75: formatMoney(((valuation * sellablePortion) / 4) * 3),
+      100: formatMoney(valuation * sellablePortion),
     })
-  }, [valuation, sellable_portion])
+  }, [valuation, sellablePortion])
 
   const [bidType, setBidType] = useState<BidType>('buy')
   const [submitting, setSubmitting] = useState(false)
 
   let errorMessage: string | null = null
-  if (valuation < min_valuation && projectStage == 'proposal') {
-    errorMessage = `Valuation must be at least $${min_valuation} for this project to have enough funding to proceed.`
+  if (amount > userBalance && bidType == 'buy') {
+    errorMessage = `You don't have enough funds to place this bid.`
+  } else if (valuation < minValuation && projectStage == 'proposal') {
+    errorMessage = `Valuation must be at least $${minValuation} for this project to have enough funding to proceed.`
   }
 
   return (
@@ -106,11 +119,11 @@ export function PlaceBid(props: {
         value={valuation ?? ''}
         onChange={(event) => setValuation(Number(event.target.value))}
       />
-      <div className="text-red-500">{errorMessage}</div>
+      <div className="text-center text-red-500">{errorMessage}</div>
 
       <Button
         type="submit"
-        disabled={submitting}
+        disabled={submitting || !!errorMessage}
         loading={submitting}
         onClick={async () => {
           setSubmitting(true)

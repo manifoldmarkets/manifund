@@ -44,3 +44,24 @@ export function getActiveValuation(txns: Txn[], founder_portion: number) {
   }
   return -1
 }
+
+export function calculateUserBalance(incomingTxns: Txn[], outgoingTxns: Txn[]) {
+  let incoming = 0
+  let outgoing = 0
+  console.log(incomingTxns)
+  if (incomingTxns) {
+    incomingTxns.forEach((txn) => {
+      if (txn.token == 'USD') {
+        incoming += txn.amount
+      }
+    })
+  }
+  if (outgoingTxns) {
+    outgoingTxns.forEach((txn) => {
+      if (txn.token == 'USD') {
+        outgoing += txn.amount
+      }
+    })
+  }
+  return incoming - outgoing
+}
