@@ -5,40 +5,30 @@ import clsx from 'clsx'
 import { MouseEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { UserCircleIcon, UserIcon, UsersIcon } from '@heroicons/react/20/solid'
+import { Profile } from '@/db/profile'
 
 export function Avatar(props: {
-  username?: string
-  id?: string
+  profile: Profile
   noLink?: boolean
   size?: number | 'xxs' | 'xs' | 'sm'
   className?: string
 }) {
-  const { username, id, noLink, size, className } = props
-  const [avatarUrl, setAvatarUrl] = useState(
-    `https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${id}/avatar`
-  )
-  useEffect(
-    () =>
-      setAvatarUrl(
-        `https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${id}/avatar`
-      ),
-    [id]
-  )
+  const { profile, noLink, size, className } = props
   const router = useRouter()
   const s =
     size == 'xxs' ? 4 : size == 'xs' ? 6 : size === 'sm' ? 8 : size || 10
   const sizeInPx = s * 4
 
   const onClick = (e: MouseEvent) => {
-    if (!noLink && username) {
+    if (!noLink && profile) {
       e.stopPropagation()
-      router.push(`/${username}`)
+      router.push(`/${profile.username}`)
     }
   }
 
   // there can be no avatar URL or username in the feed, we show a "submit comment"
   // item with a fake grey user circle guy even if you aren't signed in
-  return avatarUrl ? (
+  return profile.avatar_url ? (
     <Image
       width={sizeInPx}
       height={sizeInPx}
@@ -49,14 +39,9 @@ export function Avatar(props: {
         className
       )}
       style={{ maxWidth: `${s * 0.25}rem` }}
-      src={avatarUrl}
+      src={profile.avatar_url}
       onClick={onClick}
-      alt={`${username ?? 'Unknown user'} avatar`}
-      onError={() => {
-        // If the image doesn't load, clear the avatarUrl to show the default
-        // Mostly for localhost, when getting a 403 from googleusercontent
-        setAvatarUrl('')
-      }}
+      alt={`${profile.username ?? 'Unknown user'} avatar`}
     />
   ) : (
     <UserCircleIcon
@@ -65,6 +50,7 @@ export function Avatar(props: {
         className
       )}
       aria-hidden="true"
+      onClick={onClick}
     />
   )
 }

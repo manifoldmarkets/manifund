@@ -90,12 +90,7 @@ export function EditProfileForm(props: { profile: Profile }) {
       <label htmlFor="avatar">Choose a profile picture:</label>
       <div className="flex space-x-2">
         <div className="h-24 w-24">
-          <Avatar
-            username={username ? username : undefined}
-            id={profile.id}
-            noLink
-            size={24}
-          />
+          <Avatar profile={profile} noLink size={24} />
         </div>
       </div>
       <input
