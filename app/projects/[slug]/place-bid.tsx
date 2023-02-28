@@ -12,9 +12,6 @@ import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
 import { FounderPortionBox } from './founder-portion-box'
 import { Tooltip } from '@/components/tooltip'
-import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
-import { SupabaseClient } from '@supabase/supabase-js'
-import { calculateUserBalance } from '@/utils/math'
 
 type BidType = Database['public']['Enums']['bid_type']
 
@@ -24,7 +21,7 @@ export function PlaceBid(props: {
   minFunding: number
   founderPortion: number
   userId: string
-  userBalance: number
+  userSpendableFunds: number
 }) {
   const {
     projectId,
@@ -32,7 +29,7 @@ export function PlaceBid(props: {
     minFunding,
     founderPortion,
     userId,
-    userBalance,
+    userSpendableFunds,
   } = props
   const { supabase } = useSupabase()
   const router = useRouter()
@@ -58,8 +55,10 @@ export function PlaceBid(props: {
   const [submitting, setSubmitting] = useState(false)
 
   let errorMessage: string | null = null
-  if (amount > userBalance && bidType == 'buy') {
-    errorMessage = `You don't have enough funds to place this bid.`
+  if (amount > userSpendableFunds && bidType == 'buy') {
+    errorMessage = `You don't have enough funds to place this bid. If all of the buy bids you have already placed are accepted, you will only have ${formatMoney(
+      userSpendableFunds
+    )} left.`
   } else if (valuation < minValuation && projectStage == 'proposal') {
     errorMessage = `Valuation must be at least $${minValuation} for this project to have enough funding to proceed.`
   }
