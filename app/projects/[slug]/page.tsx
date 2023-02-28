@@ -20,6 +20,7 @@ import clsx from 'clsx'
 import { buttonClass } from '@/components/button'
 import { Comments } from './comments'
 import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
+import { getBidsByUser } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
@@ -29,7 +30,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const project = await getFullProjectBySlug(supabase, slug)
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
-  const userBalance = user ? await getUserBalance(supabase, user.id) : 0
+  const spendableFunds = user ? await getSpendableFunds(supabase, user.id) : 0
 
   const isOwnProject = user?.id === project.profiles.id
 
@@ -63,7 +64,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           minFunding={project.min_funding}
           founderPortion={project.founder_portion}
           userId={user?.id}
-          userBalance={userBalance}
+          userSpendableFunds={spendableFunds}
         />
       )}
       {user && !profile?.accreditation_status && <NotAccredited />}
@@ -97,8 +98,16 @@ function NotAccredited() {
   )
 }
 
-async function getUserBalance(supabase: SupabaseClient, userId: string) {
+async function getSpendableFunds(supabase: SupabaseClient, userId: string) {
   const incomingTxns = await getIncomingTxnsByUser(supabase, userId)
   const outgoingTxns = await getOutgoingTxnsByUser(supabase, userId)
-  return calculateUserBalance(incomingTxns, outgoingTxns)
+  const userBids = await getBidsByUser(supabase, userId)
+  const currentBalance = calculateUserBalance(incomingTxns, outgoingTxns)
+  let balanceMinusBids = currentBalance
+  userBids.forEach((bid) => {
+    if (bid.type == 'buy') {
+      balanceMinusBids -= bid.amount
+    }
+  })
+  return balanceMinusBids
 }
