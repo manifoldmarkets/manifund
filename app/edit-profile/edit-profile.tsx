@@ -123,6 +123,7 @@ export function EditProfileForm(props: { profile: Profile }) {
               website,
               full_name: fullName,
               accreditation_status: profile.accreditation_status,
+              avatar_url: profile.avatar_url,
             },
             avatar,
             supabase
