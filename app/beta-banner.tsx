@@ -1,3 +1,5 @@
+import { SiteLink } from '@/components/site-link'
+
 export default function BetaBanner() {
   return (
     <div className="relative isolate -mx-2 -mt-4 mb-6 flex items-center gap-x-6 overflow-hidden bg-gray-50 py-2.5 px-6 sm:px-3.5 sm:before:flex-1">
@@ -34,18 +36,18 @@ export default function BetaBanner() {
         <use href="#a906133b-f855-4023-a54c-38d70c72fe9c" />
       </svg>
       <p className="text-sm leading-6 text-gray-900">
-        {/* <a href="#"> */}
-        <strong className="font-semibold">BETA</strong>
-        <svg
-          viewBox="0 0 2 2"
-          className="mx-2 inline h-0.5 w-0.5 fill-current"
-          aria-hidden="true"
-        >
-          <circle cx={1} cy={1} r={1} />
-        </svg>
-        $20k ACX Forecasting Mini-Grants: Proposal Phase
-        {/* <span aria-hidden="true">&rarr;</span> */}
-        {/* </a> */}
+        <SiteLink href="https://astralcodexten.substack.com/p/announcing-forecasting-impact-mini">
+          <strong className="font-semibold">BETA</strong>
+          <svg
+            viewBox="0 0 2 2"
+            className="mx-2 inline h-0.5 w-0.5 fill-current"
+            aria-hidden="true"
+          >
+            <circle cx={1} cy={1} r={1} />
+          </svg>
+          $20k ACX Forecasting Mini-Grants: Proposal Phase &nbsp;
+          <span aria-hidden="true">&rarr;</span>
+        </SiteLink>
       </p>
       <div className="flex flex-1 justify-end">
         {/* <button
