@@ -12,11 +12,7 @@ export function ProjectPageHeader(props: {
   const { round, creator, valuation } = props
   return (
     <div className="flex justify-between">
-      <UserAvatarAndBadge
-        id={creator.id}
-        name={creator.full_name}
-        username={creator.username}
-      />
+      <UserAvatarAndBadge profile={creator} />
       <RoundTag round={round} />
     </div>
   )

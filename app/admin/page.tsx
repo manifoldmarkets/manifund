@@ -3,6 +3,7 @@ import { getUser, isAdmin } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { createAdminClient } from '@/pages/api/_db'
 import { PayUser } from './pay-user'
+import { FixAvatars } from './fix-avatars'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -81,6 +82,8 @@ export default async function Admin() {
           ))}
         </tbody>
       </Table>
+      <h2>Fix Avatars</h2>
+      {/* <FixAvatars /> */}
     </div>
   )
 }

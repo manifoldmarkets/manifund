@@ -16,11 +16,7 @@ export function ProjectCardHeader(props: {
       <div className="mt-1">
         <RoundTag round={round} />
         <div className="h-1" />
-        <UserAvatarAndBadge
-          id={creator.id}
-          name={creator.full_name}
-          username={creator.username}
-        />
+        <UserAvatarAndBadge profile={creator} />
       </div>
       <div className="relative top-1">
         <ValuationBox valuation={valuation} />

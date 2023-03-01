@@ -4,6 +4,7 @@ import { Tooltip } from './tooltip'
 import { Avatar } from './avatar'
 import { CheckBadgeIcon } from '@heroicons/react/24/outline'
 import { ShieldCheckIcon } from '@heroicons/react/20/solid'
+import { Profile } from '@/db/profile'
 
 export function shortenName(name: string) {
   const firstName = name.split(' ')[0]
@@ -20,17 +21,14 @@ export function shortenName(name: string) {
 }
 
 export function UserAvatarAndBadge(props: {
-  name: string
-  username: string
-  id: string
-  avatarUrl?: string
+  profile: Profile
   className?: string
 }) {
-  const { name, username, id, avatarUrl, className } = props
+  const { profile, className } = props
   return (
     <div className={clsx('flex flex-row items-center gap-2', className)}>
-      <Avatar username={username} size={6} id={id} />
-      <UserLink name={name} username={username} />
+      <Avatar profile={profile} size={6} />
+      <UserLink name={profile.full_name} username={profile.username} />
     </div>
   )
 }

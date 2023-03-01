@@ -20,11 +20,7 @@ export async function Comments(props: {
       <div className="my-6 flex flex-row gap-2">
         <div>
           <div className="flex flex-row gap-2">
-            <UserAvatarAndBadge
-              name={comment.profiles.full_name}
-              username={comment.profiles.username}
-              id={comment.profiles.id}
-            />
+            <UserAvatarAndBadge profile={comment.profiles} />
             <div className="text-gray-500">
               {formatDistanceToNow(new Date(comment.created_at), {
                 addSuffix: true,
@@ -46,7 +42,7 @@ export async function Comments(props: {
       {profile && (
         <div>
           <div className="flex gap-3">
-            <Avatar id={profile.id} />
+            <Avatar profile={profile} />
             <WriteComment project={project} profile={profile} />
           </div>
           <Divider />
