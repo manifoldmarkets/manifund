@@ -4,11 +4,6 @@ const nextConfig = {
     appDir: true,
   },
   images: {
-    domains: [
-      'fkousziwzbnkdkldjper.supabase.co',
-      'manifold.markets',
-      'imgur.com',
-    ],
     remotePatterns: [
       {
         protocol: 'https',
