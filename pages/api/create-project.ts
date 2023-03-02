@@ -1,17 +1,13 @@
 import { Database } from '@/db/database.types'
-import {
-  createMiddlewareSupabaseClient,
-  SupabaseClient,
-} from '@supabase/auth-helpers-nextjs'
+import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
+import { createEdgeClient } from './_db'
 
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
 }
-
-type Project = Database['public']['Tables']['projects']['Row']
 
 type ProjectProps = {
   title: string
@@ -33,16 +29,7 @@ export default async function handler(req: NextRequest) {
     round,
     auction_close,
   } = (await req.json()) as ProjectProps
-  const res = NextResponse.next()
-  const supabase = createMiddlewareSupabaseClient<Database>(
-    {
-      req,
-      res,
-    },
-    {
-      supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-    }
-  )
+  const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
