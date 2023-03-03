@@ -22,10 +22,11 @@ export function WriteComment(props: { project: Project; profile: Profile }) {
           className="m-2 h-8 w-8 text-orange-500 hover:cursor-pointer"
           onClick={async () => {
             const content = editor?.getJSON()
-            if (!content || content.length === 0 || !editor) {
+            const htmlContent = editor?.getHTML()
+            if (!content || content.length === 0 || !editor || !htmlContent) {
               return
             }
-            await sendComment(supabase, content, project, profile)
+            await sendComment(supabase, content, htmlContent, project, profile)
             console.log('content as seen by write-comment', content)
             editor.commands.clearContent()
             router.refresh()

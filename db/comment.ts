@@ -1,6 +1,6 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { JSONContent } from '@tiptap/react'
+import { HTMLContent, JSONContent } from '@tiptap/react'
 import { Project } from './project'
 import { Profile } from './profile'
 import { createAdminClient } from '@/pages/api/_db'
@@ -25,6 +25,7 @@ export async function getCommentsByProject(
 export async function sendComment(
   supabase: SupabaseClient,
   content: JSONContent,
+  htmlContent: HTMLContent,
   project: Project,
   commenter: Profile
 ) {
@@ -49,7 +50,7 @@ export async function sendComment(
         projectTitle: project.title,
         commenterUsername: commenter.username,
         projectCreatorId: project.creator,
-        content,
+        htmlContent,
       }),
     })
     const newProject = await response.json()
