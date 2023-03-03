@@ -1,4 +1,3 @@
-//this component is temporary for testing purposes
 'use client'
 import { Button } from '@/components/button'
 import { Database } from '@/db/database.types'
