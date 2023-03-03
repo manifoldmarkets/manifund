@@ -21,12 +21,12 @@ export function WriteComment(props: { project: Project; profile: Profile }) {
         <PaperAirplaneIcon
           className="m-2 h-8 w-8 text-orange-500 hover:cursor-pointer"
           onClick={async () => {
-            const content = editor?.getJSON().content
+            const content = editor?.getJSON()
             if (!content || content.length === 0 || !editor) {
               return
             }
             await sendComment(supabase, content, project, profile)
-            console.log('content as seen by write-comment', content[0].text)
+            console.log('content as seen by write-comment', content)
             editor.commands.clearContent()
             router.refresh()
           }}
