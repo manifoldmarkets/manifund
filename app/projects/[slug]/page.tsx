@@ -25,7 +25,6 @@ import { SupabaseClient } from '@supabase/supabase-js'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
-
   const supabase = createServerClient()
   const project = await getFullProjectBySlug(supabase, slug)
   const user = await getUser(supabase)

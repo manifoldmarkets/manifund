@@ -12,7 +12,6 @@ export function createEdgeClient(req: NextRequest) {
 }
 
 export function createAdminClient() {
-  console.log(process.env.SUPABASE_SERVICE_ROLE_KEY)
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
     process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''

@@ -10,6 +10,7 @@ export function TestEmail() {
           headers: {
             'Content-Type': 'test/json',
           },
+          body: JSON.stringify({}),
         })
         console.log(response)
       }}
