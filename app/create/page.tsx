@@ -213,7 +213,7 @@ export default function CreateCertForm() {
               min_funding: minFunding.toString(),
               founder_portion: advancedSettings ? founderShares.toString() : 0,
               round: advancedSettings ? round : 'ACX Mini-Grants',
-              auction_close: advancedSettings ? auctionClose : '03/08/2023',
+              auction_close: advancedSettings ? auctionClose : '03/12/2023',
             }),
           })
           const newProject = await response.json()
