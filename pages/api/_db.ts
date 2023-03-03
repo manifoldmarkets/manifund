@@ -1,4 +1,3 @@
-import 'server-only'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createMiddlewareSupabaseClient } from '@supabase/auth-helpers-nextjs'
