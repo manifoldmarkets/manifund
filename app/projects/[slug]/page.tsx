@@ -74,7 +74,11 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       {/* @ts-expect-error Server Component */}
       {project.stage == 'active' && <BidsTable projectId={project.id} />}
       {/* @ts-expect-error Server Component */}
-      <Comments project={project.id} profile={profile} />
+      <Comments
+        project={project}
+        profile={profile}
+        projectCreator={project.profiles}
+      />
       {isAdmin(user) && <CloseBidding project={project} />}
     </div>
   )

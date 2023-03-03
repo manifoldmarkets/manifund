@@ -1,7 +1,9 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { JSONContent } from '@tiptap/react'
+import { Project } from './project'
 import { Profile } from './profile'
+import { createAdminClient } from '@/pages/api/_db'
 
 export type Comment = Database['public']['Tables']['comments']['Row']
 export type CommentAndProfile = Comment & { profiles: Profile }
@@ -23,17 +25,31 @@ export async function getCommentsByProject(
 export async function sendComment(
   supabase: SupabaseClient,
   content: JSONContent,
-  project: string,
-  commenter: string
+  project: Project,
+  commenter: Profile,
+  projectCreatorId: string
 ) {
   const { error } = await supabase.from('comments').insert([
     {
       content,
-      project,
-      commenter,
+      project: project.id,
+      commenter: commenter.id,
     },
   ])
   if (error) {
     throw error
+  } else {
+    const response = await fetch('/api/comment-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        projectTitle: project.title,
+        commenterUsername: commenter.username,
+        projectCreatorId,
+      }),
+    })
+    const newProject = await response.json()
   }
 }

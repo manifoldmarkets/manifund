@@ -7,14 +7,16 @@ import { formatDistanceToNow } from 'date-fns'
 import { RichContent } from '@/components/editor'
 import { Avatar } from '@/components/avatar'
 import { Divider } from '@/components/divider'
+import { Project } from '@/db/bid'
 
 export async function Comments(props: {
-  project: string
+  project: Project
   profile: Profile | null
+  projectCreator: Profile
 }) {
-  const { project, profile } = props
+  const { project, profile, projectCreator } = props
   const supabase = createServerClient()
-  const comments = await getCommentsByProject(supabase, project)
+  const comments = await getCommentsByProject(supabase, project.id)
   const commentsDisplay = comments.map((comment) => (
     <div key={comment.id}>
       <div className="my-6 flex flex-row gap-2">
@@ -43,7 +45,11 @@ export async function Comments(props: {
         <div>
           <div className="flex gap-3">
             <Avatar profile={profile} />
-            <WriteComment project={project} profile={profile} />
+            <WriteComment
+              project={project}
+              profile={profile}
+              projectCreator={projectCreator}
+            />
           </div>
           <Divider />
         </div>

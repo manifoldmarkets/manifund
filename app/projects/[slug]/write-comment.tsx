@@ -3,12 +3,17 @@ import { TextEditor, useTextEditor } from '@/components/editor'
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
 import { sendComment } from '@/db/comment'
 import { Profile } from '@/db/profile'
-import { SupabaseClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { useSupabase } from '@/db/supabase-provider'
+import { Project } from '@/db/project'
+import { createAdminClient } from '@/pages/api/_db'
 
-export function WriteComment(props: { project: string; profile: Profile }) {
-  const { project, profile } = props
+export function WriteComment(props: {
+  project: Project
+  profile: Profile
+  projectCreator: Profile
+}) {
+  const { project, profile, projectCreator } = props
   const { supabase } = useSupabase()
   const editor = useTextEditor('')
   const router = useRouter()
@@ -23,7 +28,13 @@ export function WriteComment(props: { project: string; profile: Profile }) {
             if (!editor?.getJSON() || !editor?.getJSON().content) {
               return
             }
-            await sendComment(supabase, editor?.getJSON(), project, profile.id)
+            await sendComment(
+              supabase,
+              editor?.getJSON(),
+              project,
+              profile,
+              projectCreator.id
+            )
             editor.commands.clearContent()
             router.refresh()
           }}
