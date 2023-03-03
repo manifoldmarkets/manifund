@@ -12,9 +12,8 @@ import { Project } from '@/db/bid'
 export async function Comments(props: {
   project: Project
   profile: Profile | null
-  projectCreator: Profile
 }) {
-  const { project, profile, projectCreator } = props
+  const { project, profile } = props
   const supabase = createServerClient()
   const comments = await getCommentsByProject(supabase, project.id)
   const commentsDisplay = comments.map((comment) => (
@@ -45,11 +44,7 @@ export async function Comments(props: {
         <div>
           <div className="flex gap-3">
             <Avatar profile={profile} />
-            <WriteComment
-              project={project}
-              profile={profile}
-              projectCreator={projectCreator}
-            />
+            <WriteComment project={project} profile={profile} />
           </div>
           <Divider />
         </div>

@@ -2,18 +2,22 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from './_db'
 import mailgun from 'mailgun-js'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { JSONContent } from '@tiptap/react'
 
 type CommentProps = {
   projectTitle: string
   commenterUsername: string
   projectCreatorId: string
+  content: JSONContent
 }
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<CommentProps>
 ) {
-  const { projectTitle, commenterUsername, projectCreatorId } = req.body
+  const { projectTitle, commenterUsername, projectCreatorId, content } =
+    req.body
+  console.log('Content as seen by handler', content)
   const projectCreatorEmail = await getUserEmail(projectCreatorId)
   const DOMAIN = 'sandboxeb69e3d5dd454159a4cc98cef7d1edfb.mailgun.org'
   const mg = mailgun({
@@ -24,12 +28,14 @@ export default async function handler(
     from: 'Mailgun Sandbox <me@sandboxeb69e3d5dd454159a4cc98cef7d1edfb.mailgun.org>',
     to: projectCreatorEmail ?? '',
     subject: 'New comment on your project!',
-    text: `You have a new comment on your project: ${projectTitle} from ${commenterUsername}.`,
+    text: `You have a new comment on your project: ${projectTitle}!\n\n${commenterUsername} said: ${content[0].text}.`,
   }
   mg.messages().send(data, function (body: any) {
     console.log(body)
   })
-  res.status(200).json({ projectTitle, commenterUsername, projectCreatorId })
+  res
+    .status(200)
+    .json({ projectTitle, commenterUsername, projectCreatorId, content })
 }
 
 async function getUserEmail(userId: string) {

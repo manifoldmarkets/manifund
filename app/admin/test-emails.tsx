@@ -8,7 +8,7 @@ export function TestEmail() {
         const response = await fetch('/api/comment-notification', {
           method: 'POST',
           headers: {
-            'Content-Type': 'test/json',
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({}),
         })

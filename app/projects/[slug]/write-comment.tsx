@@ -8,12 +8,8 @@ import { useSupabase } from '@/db/supabase-provider'
 import { Project } from '@/db/project'
 import { createAdminClient } from '@/pages/api/_db'
 
-export function WriteComment(props: {
-  project: Project
-  profile: Profile
-  projectCreator: Profile
-}) {
-  const { project, profile, projectCreator } = props
+export function WriteComment(props: { project: Project; profile: Profile }) {
+  const { project, profile } = props
   const { supabase } = useSupabase()
   const editor = useTextEditor('')
   const router = useRouter()
@@ -25,16 +21,12 @@ export function WriteComment(props: {
         <PaperAirplaneIcon
           className="m-2 h-8 w-8 text-orange-500 hover:cursor-pointer"
           onClick={async () => {
-            if (!editor?.getJSON() || !editor?.getJSON().content) {
+            const content = editor?.getJSON().content
+            if (!content || content.length === 0 || !editor) {
               return
             }
-            await sendComment(
-              supabase,
-              editor?.getJSON(),
-              project,
-              profile,
-              projectCreator.id
-            )
+            await sendComment(supabase, content, project, profile)
+            console.log('content as seen by write-comment', content[0].text)
             editor.commands.clearContent()
             router.refresh()
           }}
