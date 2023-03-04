@@ -33,8 +33,8 @@ export default function CreateCertForm() {
   const [minFunding, setMinFunding] = useState<number>(250)
   const [founderPortion, setFounderPortion] = useState<number>(0)
   const [advancedSettings, setAdvancedSettings] = useState<boolean>(false)
-  const [round, setRound] = useState<string>('ACX Mini-Grants')
-  const [auctionClose, setAuctionClose] = useState<string>('03/08/2023')
+  const [round, setRound] = useState<string>('Independent')
+  const [auctionClose, setAuctionClose] = useState<string>('03/12/2023')
   const editor = useTextEditor(DEFAULT_DESCRIPTION)
   let errorMessage: string | null = null
 
@@ -42,6 +42,8 @@ export default function CreateCertForm() {
     errorMessage = 'Your project needs a title!'
   } else if (minFunding < 250) {
     errorMessage = 'Funding goals must be at least $250'
+  } else if (round !== 'Independent') {
+    errorMessage = 'Submissions to ACX Mini-Grants have closed.'
   }
 
   const user = session?.user
@@ -127,6 +129,56 @@ export default function CreateCertForm() {
         value={minFunding ?? ''}
         onChange={(event) => setMinFunding(Number(event.target.value))}
       />
+      <div className="relative flex items-start">
+        <div className="flex h-5 items-center">
+          <input
+            id="round"
+            aria-describedby="comments-description"
+            name="comments"
+            type="checkbox"
+            className="h-4 w-4 rounded border-gray-300 text-orange-600 hover:cursor-pointer focus:ring-orange-500"
+            checked={round === 'Independent'}
+            onChange={(event) => {
+              if (event.target.checked) {
+                setRound('Independent')
+              } else {
+                setRound('ACX Mini-Grants')
+              }
+            }}
+          />
+        </div>
+        <div className="ml-3 text-sm">
+          <label htmlFor="round" className="font-medium text-gray-700">
+            This project is NOT a part of the{' '}
+            <SiteLink
+              href="https://astralcodexten.substack.com/p/announcing-forecasting-impact-mini"
+              className="text-orange-500 hover:text-orange-600"
+              followsLinkClass
+            >
+              ACX Mini-Grants round
+            </SiteLink>
+            .
+          </label>
+          <p id="round-description" className="text-gray-500">
+            I understand that only projects that are a part of the ACX
+            Mini-Grants round will be considered for oracular funding by Scott
+            Alexander, and that projects that are not part of the ACX
+            Mini-Grants round do not have a committed oracular funder. I
+            understand that by checking this box, my project is less likely to
+            recieve investments and oracular funding.
+          </p>
+        </div>
+      </div>
+      {round === 'Independent' && (
+        <div>
+          <label htmlFor="auction-close">IPO Auction Close Date </label>
+          <Input
+            type="date"
+            value={auctionClose}
+            onChange={(event) => setAuctionClose(event.target.value)}
+          />
+        </div>
+      )}
 
       {advancedSettings && (
         <>
@@ -142,55 +194,6 @@ export default function CreateCertForm() {
               step={5}
             />
           </div>
-          <div className="relative flex items-start">
-            <div className="flex h-5 items-center">
-              <input
-                id="round"
-                aria-describedby="comments-description"
-                name="comments"
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-orange-600 hover:cursor-pointer focus:ring-orange-500"
-                onChange={(event) => {
-                  if (event.target.checked) {
-                    setRound('Independent')
-                  } else {
-                    setRound('ACX Mini-Grants')
-                  }
-                }}
-              />
-            </div>
-            <div className="ml-3 text-sm">
-              <label htmlFor="round" className="font-medium text-gray-700">
-                This project is NOT a part of the{' '}
-                <SiteLink
-                  href="https://astralcodexten.substack.com/p/announcing-forecasting-impact-mini"
-                  className="text-orange-500 hover:text-orange-600"
-                  followsLinkClass
-                >
-                  ACX Mini-Grants round
-                </SiteLink>
-                .
-              </label>
-              <p id="round-description" className="text-gray-500">
-                I understand that only projects that are a part of the ACX
-                Mini-Grants round will be considered for oracular funding by
-                Scott Alexander, and that projects that are not part of the ACX
-                Mini-Grants round do not have a committed oracular funder. I
-                understand that by checking this box, my project is less likely
-                to recieve investments and oracular funding.
-              </p>
-            </div>
-          </div>
-          {round === 'Independent' && (
-            <>
-              <label htmlFor="auction-close">IPO Auction Close Date</label>
-              <Input
-                type="date"
-                value={auctionClose}
-                onChange={(event) => setAuctionClose(event.target.value)}
-              />
-            </>
-          )}
         </>
       )}
       <div className="text-red-500">{errorMessage}</div>
