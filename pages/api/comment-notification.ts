@@ -34,7 +34,7 @@ export default async function handler(
   } = req.body
   const projectCreatorEmail = await getUserEmail(projectCreatorId)
   const data: mailgun.messages.SendTemplateData = {
-    from: 'Manifund <info@manifund.org>',
+    from: 'Manifund <no-reply@manifund.org>',
     to: projectCreatorEmail ?? '',
     subject: `New comment on ${projectTitle}!`,
     template: 'comment_on_project',

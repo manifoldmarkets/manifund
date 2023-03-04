@@ -6,7 +6,6 @@ import { Profile } from '@/db/profile'
 import { useRouter } from 'next/navigation'
 import { useSupabase } from '@/db/supabase-provider'
 import { Project } from '@/db/project'
-import { createAdminClient } from '@/pages/api/_db'
 
 export function WriteComment(props: { project: Project; profile: Profile }) {
   const { project, profile } = props
@@ -27,7 +26,6 @@ export function WriteComment(props: { project: Project; profile: Profile }) {
               return
             }
             await sendComment(supabase, content, htmlContent, project, profile)
-            console.log('content as seen by write-comment', content)
             editor.commands.clearContent()
             router.refresh()
           }}
