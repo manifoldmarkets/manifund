@@ -24,6 +24,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<CommentProps>
 ) {
+  console.log('just got into the handler')
   const {
     projectTitle,
     projectUrl,
@@ -32,7 +33,9 @@ export default async function handler(
     projectCreatorId,
     htmlContent,
   } = req.body
+  console.log('set variables in the handler')
   const projectCreatorEmail = await getUserEmail(projectCreatorId)
+  console.log('got the project creator email')
   const data: mailgun.messages.SendTemplateData = {
     from: 'Manifund <no-reply@manifund.org>',
     to: projectCreatorEmail ?? '',
@@ -48,10 +51,13 @@ export default async function handler(
     'o:tag': 'comment_on_project',
     'o:tracking': true,
   }
+  console.log('set the data variable to: ', data)
   const mg = initMailgun().messages()
+  console.log('initialized mailgun', mg)
   mg.send(data, function (error, body) {
     console.log(body)
   })
+  console.log('sent the email (should be a console log above this one)')
   res.status(200).json({
     projectTitle,
     projectUrl,
@@ -60,6 +66,7 @@ export default async function handler(
     projectCreatorId,
     htmlContent,
   })
+  console.log('set res to: ', res)
   return res
 }
 
