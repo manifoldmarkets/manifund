@@ -29,6 +29,7 @@ export async function sendComment(
   project: Project,
   commenter: Profile
 ) {
+  console.log('about to send comment')
   const { error } = await supabase.from('comments').insert([
     {
       content,
@@ -39,6 +40,9 @@ export async function sendComment(
   if (error) {
     throw error
   } else {
+    console.log(
+      'Just sent comment notif successfully. About to call API fxn...'
+    )
     const response = await fetch('/api/comment-notification', {
       method: 'POST',
       headers: {
