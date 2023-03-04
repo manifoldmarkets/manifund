@@ -7,13 +7,15 @@ const initMailgun = () => {
   const apiKey = process.env.MAILGUN_KEY as string
   return mailgun({
     apiKey,
-    domain: 'sandboxeb69e3d5dd454159a4cc98cef7d1edfb.mailgun.org',
+    domain: 'manifund.org',
   })
 }
 
 type CommentProps = {
   projectTitle: string
+  projectUrl: string
   commenterUsername: string
+  commenterAvatarUrl: string
   projectCreatorId: string
   htmlContent: HTMLContent
 }
@@ -22,27 +24,42 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<CommentProps>
 ) {
-  const { projectTitle, commenterUsername, projectCreatorId, htmlContent } =
-    req.body
+  const {
+    projectTitle,
+    projectUrl,
+    commenterUsername,
+    commenterAvatarUrl,
+    projectCreatorId,
+    htmlContent,
+  } = req.body
   const projectCreatorEmail = await getUserEmail(projectCreatorId)
   const data: mailgun.messages.SendTemplateData = {
-    from: 'Mailgun Sandbox <me@sandboxeb69e3d5dd454159a4cc98cef7d1edfb.mailgun.org>',
+    from: 'Manifund <info@manifund.org>',
     to: projectCreatorEmail ?? '',
     subject: `New comment on ${projectTitle}!`,
     template: 'comment_on_project',
     'h:X-Mailgun-Variables': JSON.stringify({
       projectTitle,
-      commenter: commenterUsername,
+      projectUrl,
+      commenterUsername: commenterUsername,
+      commenterAvatarUrl: commenterAvatarUrl,
       htmlContent,
     }),
+    'o:tag': 'comment_on_project',
+    'o:tracking': true,
   }
   const mg = initMailgun().messages()
   mg.send(data, function (error, body) {
     console.log(body)
   })
-  res
-    .status(200)
-    .json({ projectTitle, commenterUsername, projectCreatorId, htmlContent })
+  res.status(200).json({
+    projectTitle,
+    projectUrl,
+    commenterUsername,
+    commenterAvatarUrl,
+    projectCreatorId,
+    htmlContent,
+  })
   return res
 }
 

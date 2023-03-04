@@ -29,8 +29,6 @@ export async function sendComment(
   project: Project,
   commenter: Profile
 ) {
-  console.log('Content as seen by comment.ts', content)
-
   const { error } = await supabase.from('comments').insert([
     {
       content,
@@ -48,7 +46,9 @@ export async function sendComment(
       },
       body: JSON.stringify({
         projectTitle: project.title,
+        projectUrl: `https://manifund.org/projects/${project.slug}`,
         commenterUsername: commenter.username,
+        commenterAvatarUrl: commenter.avatar_url,
         projectCreatorId: project.creator,
         htmlContent,
       }),
