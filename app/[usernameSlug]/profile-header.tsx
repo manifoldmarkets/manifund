@@ -13,6 +13,10 @@ export function ProfileHeader(props: {
   balance: number
 }) {
   const { profile, isOwnProfile, balance } = props
+  // Add https:// to website if it doesn't have it
+  const website = profile.website?.startsWith('http')
+    ? profile.website
+    : `https://${profile.website}`
   return (
     <div className="flex flex-col gap-3">
       <div className="flex">
@@ -39,7 +43,7 @@ export function ProfileHeader(props: {
         {profile.website && (
           <a
             className="flex gap-1 text-gray-500 hover:cursor-pointer hover:underline"
-            href={profile.website}
+            href={website}
           >
             <LinkIcon className="relative top-1 h-4 w-4" strokeWidth={2.5} />
             {profile.website}
