@@ -18,7 +18,7 @@ export default async function Projects() {
         {proposalProjects.length > 0 && (
           <div>
             <h1 className="text-2xl font-bold">
-              ACX Forecasting Mini-grants Round
+              ACX Forecasting Mini-Grants Round
             </h1>
             <div className="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
               {proposalProjects.map((project) => (
