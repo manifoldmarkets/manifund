@@ -1,15 +1,6 @@
 import { createAdminClient } from './_db'
-import mailgun from 'mailgun-js'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { HTMLContent } from '@tiptap/react'
-
-const initMailgun = () => {
-  const apiKey = process.env.MAILGUN_KEY as string
-  return mailgun({
-    apiKey,
-    domain: 'manifund.org',
-  })
-}
 
 type CommentProps = {
   projectTitle: string
@@ -35,28 +26,35 @@ export default async function handler(
   } = req.body
   console.log('set variables in the handler')
   const projectCreatorEmail = await getUserEmail(projectCreatorId)
-  console.log('got the project creator email')
-  const data: mailgun.messages.SendTemplateData = {
-    from: 'Manifund <no-reply@manifund.org>',
-    to: projectCreatorEmail ?? '',
-    subject: `New comment on ${projectTitle}!`,
-    template: 'comment_on_project',
-    'h:X-Mailgun-Variables': JSON.stringify({
-      projectTitle,
-      projectUrl,
-      commenterUsername: commenterUsername,
-      commenterAvatarUrl: commenterAvatarUrl,
-      htmlContent,
-    }),
-    'o:tag': 'comment_on_project',
-    'o:tracking': true,
-  }
-  console.log('set the data variable to: ', data)
-  const mg = initMailgun().messages()
-  console.log('initialized mailgun', mg)
-  mg.send(data, function (error, body) {
-    console.log(body)
+  console.log('got the project creator email', projectCreatorEmail)
+
+  const mailgunVars = JSON.stringify({
+    projectTitle,
+    projectUrl,
+    commenterUsername: commenterUsername,
+    commenterAvatarUrl: commenterAvatarUrl,
+    htmlContent,
   })
+  const body = new FormData()
+  body.append('from', 'Manifund <no-reply@manifund.org>')
+  body.append('to', projectCreatorEmail ?? '')
+  body.append('subject', `New comment on ${projectTitle}`)
+  body.append('template', 'comment_on_project')
+  body.append('h:X-Mailgun-Variables', mailgunVars)
+
+  const resp = await fetch('https://api.mailgun.net/v3/manifund.org/messages', {
+    method: 'POST',
+    body,
+    headers: {
+      Authorization:
+        'Basic ' +
+        Buffer.from('api:' + process.env.MAILGUN_KEY).toString('base64'),
+    },
+  })
+
+  const respJson = await resp.json()
+  console.log('response', respJson)
+
   console.log('sent the email (should be a console log above this one)')
   res.status(200).json({
     projectTitle,
@@ -66,7 +64,7 @@ export default async function handler(
     projectCreatorId,
     htmlContent,
   })
-  console.log('set res to: ', res)
+  // console.log('set res to: ', res)
   return res
 }
 
