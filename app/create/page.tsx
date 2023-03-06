@@ -2,7 +2,7 @@
 
 import { useSupabase } from '@/db/supabase-provider'
 import { Database } from '@/db/database.types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
@@ -34,17 +34,21 @@ export default function CreateCertForm() {
   const [founderPortion, setFounderPortion] = useState<number>(0)
   const [advancedSettings, setAdvancedSettings] = useState<boolean>(false)
   const [round, setRound] = useState<string>('Independent')
-  const [auctionClose, setAuctionClose] = useState<string>('03/12/2023')
+  const [auctionClose, setAuctionClose] = useState<string>('2023-03-12')
   const editor = useTextEditor(DEFAULT_DESCRIPTION)
-  let errorMessage: string | null = null
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  if (title === '') {
-    errorMessage = 'Your project needs a title!'
-  } else if (minFunding < 250) {
-    errorMessage = 'Funding goals must be at least $250'
-  } else if (round !== 'Independent') {
-    errorMessage = 'Submissions to ACX Mini-Grants have closed.'
-  }
+  useEffect(() => {
+    if (title === '') {
+      setErrorMessage('Your project needs a title!')
+    } else if (minFunding < 250) {
+      setErrorMessage('Funding goals must be at least $250')
+    } else if (round === 'ACX Mini-Grants') {
+      setErrorMessage('Submissions to ACX Mini-Grants have closed.')
+    } else {
+      setErrorMessage(null)
+    }
+  }, [title, minFunding, round])
 
   const user = session?.user
 
@@ -138,8 +142,8 @@ export default function CreateCertForm() {
             type="checkbox"
             className="h-4 w-4 rounded border-gray-300 text-orange-600 hover:cursor-pointer focus:ring-orange-500"
             checked={round === 'Independent'}
-            onChange={(event) => {
-              if (event.target.checked) {
+            onChange={async (event) => {
+              if (round === 'ACX Mini-Grants') {
                 setRound('Independent')
               } else {
                 setRound('ACX Mini-Grants')
@@ -215,7 +219,7 @@ export default function CreateCertForm() {
               description,
               min_funding: minFunding.toString(),
               founder_portion: advancedSettings ? founderShares.toString() : 0,
-              round: advancedSettings ? round : 'ACX Mini-Grants',
+              round,
               auction_close: advancedSettings ? auctionClose : '03/12/2023',
             }),
           })
