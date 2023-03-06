@@ -1,7 +1,7 @@
 import { Database } from '@/db/database.types'
 import { NextRequest, NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { createEdgeClient } from './_db'
+import { createAdminClient } from './_db'
 
 export const config = {
   runtime: 'edge',
@@ -20,7 +20,7 @@ type ProjectProps = {
 export default async function handler(req: NextRequest) {
   const { id, min_funding, founder_portion, creator } =
     (await req.json()) as ProjectProps
-  const supabase = createEdgeClient(req)
+  const supabase = createAdminClient()
   const bids = await getBids(supabase, id)
   if (!bids) return NextResponse.error()
   let i = 0
