@@ -3,6 +3,7 @@ import { getUser, isAdmin } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { createAdminClient } from '@/pages/api/_db'
 import { PayUser } from './pay-user'
+import { VerifyInvestor } from './verify-investor'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -14,11 +15,11 @@ export default async function Admin() {
   const supabaseAdmin = createAdminClient()
   const { data, error } = await supabaseAdmin
     .from('users')
-    .select('*, profiles(username)')
+    .select('*, profiles(username, accreditation_status)')
   const users = data as {
     id: string
     email: string
-    profiles: { username: string }
+    profiles: { username: string; accreditation_status: boolean }
   }[]
 
   const usersById = new Map(users.map((user) => [user.id, user]))
@@ -41,6 +42,7 @@ export default async function Admin() {
             <th>Email</th>
             <th>Username</th>
             <th>Id</th>
+            <th>Accredited</th>
             <th>Pay user</th>
           </tr>
         </thead>
@@ -50,6 +52,12 @@ export default async function Admin() {
               <td>{user.email}</td>
               <td>{user.profiles.username}</td>
               <td>{user.id}</td>
+              <td>
+                <VerifyInvestor
+                  userId={user.id}
+                  accredited={user.profiles.accreditation_status}
+                />
+              </td>
               <td>
                 <PayUser userId={user.id} />
               </td>
