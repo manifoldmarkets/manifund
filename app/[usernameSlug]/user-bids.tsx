@@ -8,6 +8,7 @@ import { TrashIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { useSupabase } from '@/db/supabase-provider'
 import { Tooltip } from '@/components/tooltip'
+import { useRouter } from 'next/navigation'
 
 export function Bids(props: { bids: BidAndProject[] }) {
   const { bids } = props
@@ -41,6 +42,7 @@ function BidDisplay(props: {
 }) {
   const { bid_id, project, amount, valuation } = props
   const { supabase, session } = useSupabase()
+  const router = useRouter()
   if (project.stage != 'proposal') {
     return <div className="hidden"></div>
   }
@@ -77,7 +79,10 @@ function BidDisplay(props: {
       >
         <TrashIcon
           className="h-6 w-6 text-rose-600"
-          onClick={() => deleteBid(supabase, bid_id)}
+          onClick={() => {
+            deleteBid(supabase, bid_id)
+            router.refresh()
+          }}
         />
       </Tooltip>
     </div>
@@ -85,9 +90,11 @@ function BidDisplay(props: {
 }
 
 async function deleteBid(supabase: SupabaseClient, bid_id: string) {
-  const { error } = await supabase.from('bids').delete().eq('id', bid_id)
+  const { error } = await supabase
+    .from('bids')
+    .update({ status: 'deleted' })
+    .eq('id', bid_id)
   if (error) {
     console.log(error)
   }
-  window.location.reload()
 }

@@ -16,6 +16,7 @@ export interface Database {
           created_at: string | null
           id: string
           project: string
+          status: Database["public"]["Enums"]["bid_status"]
           type: Database["public"]["Enums"]["bid_type"]
           valuation: number
         }
@@ -25,6 +26,7 @@ export interface Database {
           created_at?: string | null
           id?: string
           project: string
+          status?: Database["public"]["Enums"]["bid_status"]
           type?: Database["public"]["Enums"]["bid_type"]
           valuation: number
         }
@@ -34,6 +36,7 @@ export interface Database {
           created_at?: string | null
           id?: string
           project?: string
+          status?: Database["public"]["Enums"]["bid_status"]
           type?: Database["public"]["Enums"]["bid_type"]
           valuation?: number
         }
@@ -184,6 +187,7 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
+      bid_status: "deleted" | "pending" | "accepted" | "declined"
       bid_type: "buy" | "sell" | "ipo"
     }
     CompositeTypes: {
