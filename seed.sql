@@ -168,12 +168,14 @@ INSERT
 ---- Bids ----
 -- Create an enum type for 'buy' vs 'sell' vs 'auction'
 create type bid_type as enum ('buy', 'sell', 'ipo');
+create type bid_status as enum ('deleted', 'pending', 'accepted', 'declined');
 
 create table if not exists public.bids (
   id uuid not null default gen_random_uuid(),
   created_at timestamptz not null default now(),
   project uuid not null references public.projects(id) on delete cascade,
   bidder uuid not null references auth.users(id) on delete cascade,
+  status bid_status not null default 'pending',
   content jsonb,
   primary key (id)
 );
@@ -182,7 +184,7 @@ CREATE POLICY "Enable insert for authenticated users only" ON "public"."bids" AS
 INSERT
   TO authenticated WITH CHECK (true);
 
-CREATE POLICY "Enable delete for users based on user_id" ON "public"."bids" AS PERMISSIVE FOR DELETE TO public USING (auth.uid() = bidder);
+CREATE POLICY "Enable update for users based on user_id" ON "public"."bids" AS PERMISSIVE FOR UPDATE TO public USING (auth.uid() = bidder);
 
 CREATE POLICY "Enable read access for all users" ON "public"."bids" AS PERMISSIVE FOR
 SELECT
@@ -209,8 +211,3 @@ AS PERMISSIVE FOR INSERT
 TO authenticated
 
 WITH CHECK (true)
-
-CREATE POLICY "Enable delete for users based on user_id" ON "public"."comments"
-AS PERMISSIVE FOR DELETE
-TO public
-USING (auth.uid() = commenter)

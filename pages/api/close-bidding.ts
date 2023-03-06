@@ -41,9 +41,11 @@ export default async function handler(req: NextRequest) {
         (bids[i].amount * 10000000) / valuation + unbought_shares,
         creator
       )
+      updateBidsStatus(supabase, bids, i, id)
       project_funded = true
     } else if (i == bids.length - 1 && total_funding >= min_funding) {
       addTxns(supabase, id, bids, i, bids[i].amount, creator)
+      updateBidsStatus(supabase, bids, i, id)
       project_funded = true
     }
     i++
@@ -51,6 +53,7 @@ export default async function handler(req: NextRequest) {
 
   if (!project_funded) {
     updateProjectStage(supabase, id, 'not funded')
+    updateBidsStatus(supabase, bids, bids.length, id)
     return NextResponse.json('project not funded')
   }
   updateProjectStage(supabase, id, 'active')
@@ -62,6 +65,7 @@ async function getBids(supabase: SupabaseClient, project_id: string) {
     .from('bids')
     .select()
     .eq('project', project_id)
+    .eq('status', 'pending')
     .order('valuation', { ascending: false })
   if (error) {
     console.error('getBids', error)
@@ -129,5 +133,30 @@ async function updateProjectStage(
     .eq('id', id)
   if (error) {
     console.error('updateProjectStage', error)
+  }
+}
+
+async function updateBidsStatus(
+  supabase: SupabaseClient,
+  bids: Bid[],
+  lastBidIdx: number,
+  project_id: string
+) {
+  const { error } = await supabase
+    .from('bids')
+    .update({ status: 'declined' })
+    .eq('project', project_id)
+    .eq('status', 'pending')
+  if (error) {
+    console.error('updateBidStatus', error)
+  }
+  for (let i = 0; i < lastBidIdx + 1; i++) {
+    const { error } = await supabase
+      .from('bids')
+      .update({ status: 'accepted' })
+      .eq('id', bids[i].id)
+    if (error) {
+      console.error('updateBidStatus', error)
+    }
   }
 }

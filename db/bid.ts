@@ -10,6 +10,7 @@ export async function getBidsByUser(supabase: SupabaseClient, user: string) {
     .from('bids')
     .select('*, projects(*)')
     .eq('bidder', user)
+    .eq('status', 'pending')
   if (error) {
     throw error
   }
