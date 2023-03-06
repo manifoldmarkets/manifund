@@ -35,7 +35,7 @@ export default function BetaBanner() {
       >
         <use href="#a906133b-f855-4023-a54c-38d70c72fe9c" />
       </svg>
-      <p className="text-sm leading-6 text-gray-900">
+      <p className="text-center text-sm leading-6 text-gray-900">
         <SiteLink href="https://astralcodexten.substack.com/p/announcing-forecasting-impact-mini">
           <strong className="font-semibold">BETA</strong>
           <svg
@@ -45,7 +45,7 @@ export default function BetaBanner() {
           >
             <circle cx={1} cy={1} r={1} />
           </svg>
-          $20k ACX Forecasting Mini-Grants: Proposals due Mar 3 &nbsp;
+          $20k ACX Forecasting Mini-Grants: Auction Phase Ends March 12 &nbsp;
           <span aria-hidden="true">&rarr;</span>
         </SiteLink>
       </p>
