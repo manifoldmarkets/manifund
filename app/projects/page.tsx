@@ -27,7 +27,7 @@ export default async function Projects() {
                   project={project}
                   creator={project.profiles}
                   numComments={project.comments.length}
-                  bids={project.bids}
+                  bids={project.bids.filter((bid) => bid.status == 'pending')}
                   txns={project.txns}
                 />
               ))}
@@ -44,7 +44,7 @@ export default async function Projects() {
                   project={project}
                   creator={project.profiles}
                   numComments={project.comments.length}
-                  bids={project.bids}
+                  bids={project.bids.filter((bid) => bid.status == 'pending')}
                   txns={project.txns}
                 />
               ))}
@@ -61,7 +61,7 @@ export default async function Projects() {
                   project={project}
                   creator={project.profiles}
                   numComments={project.comments.length}
-                  bids={project.bids}
+                  bids={project.bids.filter((bid) => bid.status == 'pending')}
                   txns={project.txns}
                 />
               ))}

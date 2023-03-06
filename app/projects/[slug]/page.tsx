@@ -54,7 +54,10 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       {isOwnProject && <EditDescription project={project} />}
       <hr className="mb-3 mt-5 h-0.5 rounded-sm bg-gray-500" />
       {project.stage == 'proposal' && (
-        <ProposalData project={project} bids={project.bids} />
+        <ProposalData
+          project={project}
+          bids={project.bids.filter((bid) => bid.status === 'pending')}
+        />
       )}
       {user && profile?.accreditation_status && (
         <PlaceBid
