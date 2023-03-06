@@ -1,13 +1,11 @@
 import { createAdminClient } from './_db'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { HTMLContent } from '@tiptap/react'
+import { getFullCommentById } from '@/db/comment'
+import { SupabaseClient } from '@supabase/supabase-js'
 
 type CommentProps = {
-  projectTitle: string
-  projectUrl: string
-  commenterUsername: string
-  commenterAvatarUrl: string
-  projectCreatorId: string
+  commentId: string
   htmlContent: HTMLContent
 }
 
@@ -15,30 +13,24 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<CommentProps>
 ) {
-  console.log('just got into the handler')
-  const {
-    projectTitle,
-    projectUrl,
-    commenterUsername,
-    commenterAvatarUrl,
-    projectCreatorId,
-    htmlContent,
-  } = req.body
-  console.log('set variables in the handler')
-  const projectCreatorEmail = await getUserEmail(projectCreatorId)
-  console.log('got the project creator email', projectCreatorEmail)
-
+  const { commentId, htmlContent } = req.body
+  const supabaseAdmin = createAdminClient()
+  const comment = await getFullCommentById(supabaseAdmin, commentId)
+  const projectCreatorEmail = await getUserEmail(
+    supabaseAdmin,
+    comment.projects.creator
+  )
   const mailgunVars = JSON.stringify({
-    projectTitle,
-    projectUrl,
-    commenterUsername: commenterUsername,
-    commenterAvatarUrl: commenterAvatarUrl,
+    projectTitle: comment.projects.title,
+    projectUrl: `https://manifund.org/projects/${comment.projects.slug}`,
+    commenterUsername: comment.profiles.username,
+    commenterAvatarUrl: comment.profiles.avatar_url,
     htmlContent,
   })
-  const body = new FormData()
+  const body = new URLSearchParams()
   body.append('from', 'Manifund <no-reply@manifund.org>')
   body.append('to', projectCreatorEmail ?? '')
-  body.append('subject', `New comment on ${projectTitle}`)
+  body.append('subject', `New comment on ${comment.projects.title}`)
   body.append('template', 'comment_on_project')
   body.append('h:X-Mailgun-Variables', mailgunVars)
 
@@ -53,23 +45,14 @@ export default async function handler(
   })
 
   const respJson = await resp.json()
-  console.log('response', respJson)
-
-  console.log('sent the email (should be a console log above this one)')
   res.status(200).json({
-    projectTitle,
-    projectUrl,
-    commenterUsername,
-    commenterAvatarUrl,
-    projectCreatorId,
+    commentId,
     htmlContent,
   })
-  // console.log('set res to: ', res)
   return res
 }
 
-async function getUserEmail(userId: string) {
-  const supabaseAdmin = createAdminClient()
+async function getUserEmail(supabaseAdmin: SupabaseClient, userId: string) {
   const { data, error } = await supabaseAdmin
     .from('users')
     .select('email')
