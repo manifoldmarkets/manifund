@@ -4,11 +4,13 @@ import { CalendarIcon } from '@heroicons/react/24/outline'
 import { RoundTag } from '@/components/round-tag'
 import { BidAndProject, Project } from '@/db/bid'
 import { formatMoney, formatDate } from '@/utils/formatting'
-import { TrashIcon } from '@heroicons/react/24/outline'
+import { TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline'
+import { Menu } from '@headlessui/react'
 import Link from 'next/link'
 import { useSupabase } from '@/db/supabase-provider'
 import { Tooltip } from '@/components/tooltip'
 import { useRouter } from 'next/navigation'
+import { Row } from '@/components/layout/row'
 
 export function Bids(props: { bids: BidAndProject[] }) {
   const { bids } = props
@@ -47,7 +49,7 @@ function BidDisplay(props: {
     return <div className="hidden"></div>
   }
   return (
-    <div className="group flex justify-between px-4 py-4 hover:bg-gray-50 sm:px-6">
+    <div className="group flex justify-between px-5 py-4 hover:bg-gray-50 sm:px-6">
       <Link href={`/projects/${project.slug}`} className="w-full">
         <div className="flex items-center justify-between">
           <p className="text-md text-md truncate text-orange-600">
@@ -73,7 +75,30 @@ function BidDisplay(props: {
           </div>
         </div>
       </Link>
-      <Tooltip
+      <Menu as="div" className="relative z-10 inline-block">
+        <Menu.Button>
+          <EllipsisVerticalIcon className="relative left-2 h-6 w-6 text-gray-400 hover:cursor-pointer" />
+        </Menu.Button>
+        <Menu.Items className="absolute right-0 top-4 z-10 mt-2 w-24 origin-top-right rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <Menu.Item>
+            {({ active }) => (
+              <button
+                className={`${
+                  active && 'bg-rose-100'
+                } flex h-full w-full justify-between  p-2 text-rose-600`}
+                onClick={() => {
+                  deleteBid(supabase, bid_id)
+                  router.refresh()
+                }}
+              >
+                <TrashIcon className="h-6 w-6" />
+                Delete
+              </button>
+            )}
+          </Menu.Item>
+        </Menu.Items>
+      </Menu>
+      {/* <Tooltip
         text={'Delete Bid'}
         className="relative left-3 my-auto mx-1 hidden rounded-full p-2 hover:cursor-pointer hover:bg-rose-100 group-hover:inline"
       >
@@ -84,7 +109,7 @@ function BidDisplay(props: {
             router.refresh()
           }}
         />
-      </Tooltip>
+      </Tooltip> */}
     </div>
   )
 }
