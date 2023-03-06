@@ -47,12 +47,12 @@ export async function getProjectsByUser(
 
 type FullProject = Project & { profiles: Profile } & {
   bids: Bid[]
-} & { txns: Txn[] }
+} & { txns: Txn[] } & { comments: Comment[] }
 
 export async function listProjects(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('projects')
-    .select('*, profiles(*), bids(*), txns(*)')
+    .select('*, profiles(*), bids(*), txns(*), comments(*)')
     .order('created_at', { ascending: false })
   if (error) {
     throw error

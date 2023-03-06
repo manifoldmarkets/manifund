@@ -8,6 +8,7 @@ import Link from 'next/link'
 import {
   EllipsisHorizontalCircleIcon,
   CalendarIcon,
+  ChatBubbleLeftEllipsisIcon,
 } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
 import { ProjectCardHeader } from './project-card-header'
@@ -17,10 +18,11 @@ import { Col } from './layout/col'
 export function ProjectCard(props: {
   project: Project
   creator: Profile
+  numComments: number
   bids: Bid[]
   txns: Txn[]
 }) {
-  const { creator, project, bids, txns } = props
+  const { creator, project, numComments, bids, txns } = props
   const valuation =
     project.stage == 'proposal'
       ? getProposalValuation(project)
@@ -42,14 +44,22 @@ export function ProjectCard(props: {
           </h1>
           <p className="font-light text-gray-500">{project.blurb}</p>
         </div>
-        <ProjectCardFooter project={project} bids={bids} />
+        <ProjectCardFooter
+          project={project}
+          numComments={numComments}
+          bids={bids}
+        />
       </Link>
     </Col>
   )
 }
 
-function ProjectCardFooter(props: { project: Project; bids: Bid[] }) {
-  const { project, bids } = props
+function ProjectCardFooter(props: {
+  project: Project
+  numComments: number
+  bids: Bid[]
+}) {
+  const { project, numComments, bids } = props
   const raised = bids.reduce((acc, bid) => acc + bid.amount, 0)
   const percentRaised =
     raised / project.min_funding > 1 ? 1 : raised / project.min_funding
@@ -57,18 +67,24 @@ function ProjectCardFooter(props: { project: Project; bids: Bid[] }) {
     case 'proposal':
       return (
         <div>
-          <div className="flex flex-col justify-between md:flex-row lg:flex-col">
-            <span className="mb-1 flex gap-1 text-gray-600">
-              <CalendarIcon className="h-6 w-6 text-orange-500" />
-              Auction closes
-              <span className="text-black">
-                {formatDate(project.auction_close)}
+          <div className="flex justify-between">
+            <div className="flex flex-col">
+              <span className="mb-1 text-gray-600">
+                <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
+                Auction closes{' '}
+                <span className="text-black">
+                  {formatDate(project.auction_close)}
+                </span>
               </span>
-            </span>
-            <span className="mb-1 flex gap-1 text-gray-600">
-              <EllipsisHorizontalCircleIcon className="h-6 w-6 text-orange-500" />
-              <span className="text-black">{percentRaised * 100}%</span>raised
-            </span>
+              <span className="mb-1 flex gap-1 text-gray-600">
+                <EllipsisHorizontalCircleIcon className="h-6 w-6 text-orange-500" />
+                <span className="text-black">{percentRaised * 100}%</span>raised
+              </span>
+            </div>
+            <div className="flex flex-row items-center gap-2">
+              <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-gray-400" />
+              <span className="text-gray-500">{numComments}</span>
+            </div>
           </div>
           <ProgressBar percent={percentRaised} />
         </div>
