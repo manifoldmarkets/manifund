@@ -3,7 +3,6 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { HTMLContent, JSONContent } from '@tiptap/react'
 import { Project } from './project'
 import { Profile } from './profile'
-import { createAdminClient } from '@/pages/api/_db'
 
 export type Comment = Database['public']['Tables']['comments']['Row']
 export type CommentAndProfile = Comment & { profiles: Profile }

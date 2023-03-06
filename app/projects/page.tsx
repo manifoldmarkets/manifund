@@ -26,6 +26,7 @@ export default async function Projects() {
                   key={project.id}
                   project={project}
                   creator={project.profiles}
+                  numComments={project.comments.length}
                   bids={project.bids}
                   txns={project.txns}
                 />
@@ -42,6 +43,7 @@ export default async function Projects() {
                   key={project.id}
                   project={project}
                   creator={project.profiles}
+                  numComments={project.comments.length}
                   bids={project.bids}
                   txns={project.txns}
                 />
@@ -58,6 +60,7 @@ export default async function Projects() {
                   key={project.id}
                   project={project}
                   creator={project.profiles}
+                  numComments={project.comments.length}
                   bids={project.bids}
                   txns={project.txns}
                 />
