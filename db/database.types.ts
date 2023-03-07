@@ -97,7 +97,7 @@ export interface Database {
         Row: {
           auction_close: string
           blurb: string | null
-          created_at: string | null
+          created_at: string
           creator: string
           description: Json | null
           founder_portion: number
@@ -111,7 +111,7 @@ export interface Database {
         Insert: {
           auction_close?: string
           blurb?: string | null
-          created_at?: string | null
+          created_at?: string
           creator: string
           description?: Json | null
           founder_portion: number
@@ -125,7 +125,7 @@ export interface Database {
         Update: {
           auction_close?: string
           blurb?: string | null
-          created_at?: string | null
+          created_at?: string
           creator?: string
           description?: Json | null
           founder_portion?: number
