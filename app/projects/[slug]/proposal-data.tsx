@@ -1,14 +1,20 @@
 import { ProgressBar } from '@/components/progress-bar'
 import { Bid } from '@/db/bid'
 import { Project } from '@/db/project'
-import { formatDate, showPrecision } from '@/utils/formatting'
+import {
+  formatDate,
+  formatMoneyPrecise,
+  showPrecision,
+} from '@/utils/formatting'
 import { getProposalValuation } from '@/utils/math'
 
 export function ProposalData(props: { project: Project; bids: Bid[] }) {
   const { project, bids } = props
   const raised = bids.reduce((acc, bid) => acc + bid.amount, 0)
   const raisedString =
-    raised > project.min_funding ? `>$${project.min_funding}` : `$${raised}`
+    raised > project.min_funding
+      ? `>` + formatMoneyPrecise(project.min_funding)
+      : formatMoneyPrecise(raised)
   const percentRaised = raised / project.min_funding
   const closeDate = new Date(formatDate(project.auction_close) + ' 23:59:59')
   const now = new Date()
