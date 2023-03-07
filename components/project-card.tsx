@@ -8,12 +8,12 @@ import Link from 'next/link'
 import {
   EllipsisHorizontalCircleIcon,
   CalendarIcon,
-  ChatBubbleLeftEllipsisIcon,
 } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
 import { ProjectCardHeader } from './project-card-header'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
+import { ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline'
 
 export function ProjectCard(props: {
   project: Project
@@ -69,24 +69,33 @@ function ProjectCardFooter(props: {
         <div>
           <div className="flex justify-between">
             <div className="flex flex-col">
-              <span className="mb-1 text-gray-600">
-                <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
-                Auction closes{' '}
-                <span className="text-black">
-                  {formatDate(project.auction_close)}
+              {project.round !== 'ACX Mini-Grants' && (
+                <span className="mb-1 text-gray-600">
+                  <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
+                  Auction closes{' '}
+                  <span className="text-black">
+                    {formatDate(project.auction_close)}
+                  </span>
                 </span>
-              </span>
-              <span className="mb-1 flex gap-1 text-gray-600">
-                <EllipsisHorizontalCircleIcon className="h-6 w-6 text-orange-500" />
-                <span className="text-black">{percentRaised * 100}%</span>raised
-              </span>
+              )}
+              {percentRaised > 0.005 && (
+                <span className="mb-1 flex gap-1 text-gray-600">
+                  <EllipsisHorizontalCircleIcon className="h-6 w-6 text-orange-500" />
+                  <span className="text-black">
+                    {formatLargeNumber(percentRaised * 100)}%
+                  </span>
+                  raised
+                </span>
+              )}
             </div>
-            <div className="flex flex-row items-center gap-2">
-              <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-gray-400" />
-              <span className="text-gray-500">{numComments}</span>
-            </div>
+            {numComments > 0 && (
+              <div className="flex flex-row items-center gap-2">
+                <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-gray-400" />
+                <span className="text-gray-500">{numComments}</span>
+              </div>
+            )}
           </div>
-          <ProgressBar percent={percentRaised} />
+          {percentRaised > 0.005 && <ProgressBar percent={percentRaised} />}
         </div>
       )
     default:
