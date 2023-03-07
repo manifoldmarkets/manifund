@@ -4,7 +4,7 @@ import { Project } from './project'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 export type Txn = Database['public']['Tables']['txns']['Row']
-export type TxnAndProject = Txn & { projects: Project }
+export type TxnAndProject = Txn & { projects?: Project }
 
 export function isAdmin(user: User | null) {
   const ADMINS = ['rachel.weinberg12@gmail.com', 'akrolsmir@gmail.com']

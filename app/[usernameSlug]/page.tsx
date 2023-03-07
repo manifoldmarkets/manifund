@@ -73,6 +73,7 @@ async function compileInvestments(
   const outgoingTxns = await getOutgoingTxnsByUser(supabase, profile_id)
   let investments: investment[] = []
   incomingTxns.forEach((item) => {
+    if (!item.projects) return
     let aggInvestment = investments.find(
       (investment) => investment.project.id === item.project
     )
@@ -99,6 +100,7 @@ async function compileInvestments(
     }
   })
   outgoingTxns.forEach((item) => {
+    if (!item.projects) return
     let aggInvestment = investments.find(
       (investment) => investment.project.id === item.project
     )
