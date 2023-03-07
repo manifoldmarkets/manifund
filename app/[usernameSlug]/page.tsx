@@ -11,7 +11,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { getProjectsByUser, Project } from '@/db/project'
 
 export type investment = {
-  project: Project
+  project?: Project
   num_shares: number
   price_usd: number
 }
@@ -73,9 +73,8 @@ async function compileInvestments(
   const outgoingTxns = await getOutgoingTxnsByUser(supabase, profile_id)
   let investments: investment[] = []
   incomingTxns.forEach((item) => {
-    if (!item.projects) return
     let aggInvestment = investments.find(
-      (investment) => investment.project.id === item.project
+      (investment) => investment.project?.id === item.project
     )
     if (item.token === 'USD') {
       if (aggInvestment) {
@@ -100,9 +99,8 @@ async function compileInvestments(
     }
   })
   outgoingTxns.forEach((item) => {
-    if (!item.projects) return
     let aggInvestment = investments.find(
-      (investment) => investment.project.id === item.project
+      (investment) => investment.project?.id === item.project
     )
     if (item.token === 'USD') {
       if (aggInvestment) {
