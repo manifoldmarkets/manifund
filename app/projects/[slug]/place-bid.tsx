@@ -140,6 +140,7 @@ export function PlaceBid(props: {
           }
           setSubmitting(false)
           router.refresh()
+          setBidPortion(0)
         }}
       >
         Offer {formatMoney(amount)} @ {formatMoney(valuation)} Project Valuation
