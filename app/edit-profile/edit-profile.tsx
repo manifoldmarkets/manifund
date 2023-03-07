@@ -30,8 +30,19 @@ export function EditProfileForm(props: { profile: Profile }) {
   if (isNewUser && user?.user_metadata.full_name) {
     const googleFullname = user.user_metadata.full_name
     // Remove nonword characters from name
-    setUsername(googleFullname.replace(/\W/g, ''))
+    const newUsername = googleFullname.replace(/\W/g, '')
+    setUsername(newUsername)
     setFullName(googleFullname)
+    // Just save their profile now, in the background.
+    /* no await */ saveProfile(
+      {
+        ...profile,
+        username: newUsername,
+        full_name: googleFullname,
+      },
+      avatar,
+      supabase
+    )
     // TODO: Upload their avatar from user.user_metadata.avatar_url
   }
   // Otherwise, if they signed in with email, use that for their name
@@ -124,13 +135,11 @@ export function EditProfileForm(props: { profile: Profile }) {
           setSubmitting(true)
           await saveProfile(
             {
-              id: profile.id,
+              ...profile,
               username,
               bio,
               website,
               full_name: fullName,
-              accreditation_status: profile.accreditation_status,
-              avatar_url: profile.avatar_url,
             },
             avatar,
             supabase
