@@ -8,12 +8,14 @@ import Link from 'next/link'
 import {
   EllipsisHorizontalCircleIcon,
   CalendarIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
 import { ProjectCardHeader } from './project-card-header'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
 import { ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline'
+import clsx from 'clsx'
 
 export function ProjectCard(props: {
   project: Project
@@ -38,8 +40,8 @@ export function ProjectCard(props: {
         href={`projects/${project.slug}`}
         className="group flex flex-1 flex-col justify-between hover:cursor-pointer"
       >
-        <div className="my-3">
-          <h1 className="text-xl font-bold group-hover:underline">
+        <div className="mt-2 mb-4">
+          <h1 className="text-xl font-semibold group-hover:underline">
             {project.title}
           </h1>
           <p className="font-light text-gray-500">{project.blurb}</p>
@@ -78,15 +80,19 @@ function ProjectCardFooter(props: {
                   </span>
                 </span>
               )}
-              {percentRaised > 0.005 && (
-                <span className="mb-1 flex gap-1 text-gray-600">
-                  <EllipsisHorizontalCircleIcon className="h-6 w-6 text-orange-500" />
-                  <span className="text-black">
-                    {formatLargeNumber(percentRaised * 100)}%
-                  </span>
-                  raised
+
+              <span className="mb-1 flex gap-1 text-gray-600">
+                <SparklesIcon
+                  className={clsx(
+                    'h-6 w-6 ',
+                    percentRaised >= 0.005 ? 'text-orange-500' : 'text-gray-400'
+                  )}
+                />
+                <span className="text-black">
+                  {formatLargeNumber(percentRaised * 100)}%
                 </span>
-              )}
+                raised
+              </span>
             </div>
             {numComments > 0 && (
               <div className="flex flex-row items-center gap-2">
@@ -95,7 +101,7 @@ function ProjectCardFooter(props: {
               </div>
             )}
           </div>
-          {percentRaised > 0.005 && <ProgressBar percent={percentRaised} />}
+          <ProgressBar percent={percentRaised} />
         </div>
       )
     default:
