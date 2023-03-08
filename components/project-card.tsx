@@ -25,7 +25,7 @@ export function ProjectCard(props: {
   const { creator, project, numComments, bids, txns } = props
   const valuation =
     project.stage == 'proposal'
-      ? getProposalValuation(project)
+      ? formatLargeNumber(getProposalValuation(project))
       : formatLargeNumber(getActiveValuation(txns, project.founder_portion))
   return (
     <Col className="rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow hover:bg-gray-100">

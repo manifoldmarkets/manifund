@@ -17,7 +17,8 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
   const sortOptions = [
     { id: 1, name: 'percent funded' },
     { id: 2, name: 'number of comments' },
-    { id: 3, name: 'time created' },
+    { id: 3, name: 'newest first' },
+    { id: 4, name: 'oldest first' },
   ]
   const [sortBy, setSortBy] = useState(sortOptions[0])
 
@@ -25,31 +26,20 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
   const searchParams = useSearchParams()
   const [search, setSearch] = useState<string>(searchParams.get('q') || '')
 
-  const ACXProposals = projects
+  const selectedProjects = searchProjects(
+    sortProjects(projects, sortBy.name),
+    search
+  )
+
+  const acxProposals = selectedProjects
     .filter((project) => project.stage == 'proposal')
     .filter((project) => project.round == 'ACX Mini-Grants')
-  const indieProposals = projects
+  const indieProposals = selectedProjects
     .filter((project) => project.stage == 'proposal')
     .filter((project) => project.round == 'Independent')
-  const activeProjects = projects.filter((project) => project.stage == 'active')
-
-  const [selectedACXProposals, setSelectedACXProposals] = useState(ACXProposals)
-  const [selectedIndieProposals, setSelectedIndieProposals] =
-    useState(indieProposals)
-  const [selectedActiveProjects, setSelectedActiveProjects] =
-    useState(activeProjects)
-
-  useEffect(() => {
-    setSelectedACXProposals(
-      searchProjects(sortProjects(ACXProposals, sortBy.name, false), search)
-    )
-    setSelectedIndieProposals(
-      searchProjects(sortProjects(indieProposals, sortBy.name, false), search)
-    )
-    setSelectedActiveProjects(
-      searchProjects(sortProjects(activeProjects, sortBy.name, false), search)
-    )
-  }, [sortBy, search])
+  const activeProjects = selectedProjects.filter(
+    (project) => project.stage == 'active'
+  )
 
   return (
     <div>
@@ -152,70 +142,46 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
         )}
       </Listbox>
       <div className="flex flex-col gap-10 p-4">
-        {ACXProposals.length > 0 && (
+        {acxProposals.length > 0 && (
           <ProjectGroup
-            projects={selectedACXProposals}
+            projects={acxProposals}
             category="ACX Mini-Grants Proposals"
           />
         )}
         {indieProposals.length > 0 && (
           <ProjectGroup
-            projects={selectedIndieProposals}
+            projects={indieProposals}
             category="Independent Proposals"
           />
         )}
         {activeProjects.length > 0 && (
-          <ProjectGroup
-            projects={selectedActiveProjects}
-            category="Active Projects"
-          />
+          <ProjectGroup projects={activeProjects} category="Active Projects" />
         )}
       </div>
     </div>
   )
 }
 
-function sortProjects(
-  projects: FullProject[],
-  sortBy: string,
-  ascending: boolean
-) {
+function sortProjects(projects: FullProject[], sortBy: string) {
   projects.forEach((project) => {
     project.bids = project.bids.filter((bid) => bid.status == 'pending')
   })
   switch (sortBy) {
-    case 'time created':
-      if (ascending) {
-        return projects.sort((a, b) => (a.created_at > b.created_at ? 1 : -1))
-      } else {
-        return projects.sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
-      }
+    case 'oldest first':
+      return projects.sort((a, b) => (a.created_at > b.created_at ? 1 : -1))
+    case 'newest first':
+      return projects.sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
     case 'percent funded':
-      if (ascending) {
-        return projects.sort((a, b) =>
-          a.bids.reduce((acc, bid) => acc + bid.amount, 0) / a.min_funding >
-          b.bids.reduce((acc, bid) => acc + bid.amount, 0) / b.min_funding
-            ? 1
-            : -1
-        )
-      } else {
-        return projects.sort((a, b) =>
-          a.bids.reduce((acc, bid) => acc + bid.amount, 0) / a.min_funding <
-          b.bids.reduce((acc, bid) => acc + bid.amount, 0) / b.min_funding
-            ? 1
-            : -1
-        )
-      }
+      return projects.sort((a, b) =>
+        a.bids.reduce((acc, bid) => acc + bid.amount, 0) / a.min_funding <
+        b.bids.reduce((acc, bid) => acc + bid.amount, 0) / b.min_funding
+          ? 1
+          : -1
+      )
     case 'number of comments':
-      if (ascending) {
-        return projects.sort((a, b) =>
-          a.comments.length > b.comments.length ? 1 : -1
-        )
-      } else {
-        return projects.sort((a, b) =>
-          a.comments.length < b.comments.length ? 1 : -1
-        )
-      }
+      return projects.sort((a, b) =>
+        a.comments.length < b.comments.length ? 1 : -1
+      )
     default:
       return projects
   }
