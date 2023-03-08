@@ -11,7 +11,7 @@ import { BidAndProfile } from '@/db/bid'
 export function Tabs(props: {
   project: FullProject
   comments: CommentAndProfile[]
-  user: Profile
+  user: Profile | null
   bids: BidAndProfile[]
 }) {
   const { project, comments, user, bids } = props

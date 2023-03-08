@@ -21,8 +21,10 @@ export function Comments(props: {
         No comments yet. Sign in to create one!
       </p>
     )
-
-  const commentsDisplay = comments.map((comment) => (
+  const sortedComments = comments.sort((a, b) =>
+    a.created_at < b.created_at ? 1 : -1
+  )
+  const commentsDisplay = sortedComments.map((comment) => (
     <div key={comment.id}>
       <div className="my-6 flex flex-row gap-2">
         <div>
