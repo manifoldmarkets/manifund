@@ -2,15 +2,14 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import { CalendarIcon } from '@heroicons/react/24/outline'
 import { RoundTag } from '@/components/round-tag'
-import { BidAndProject, Project } from '@/db/bid'
+import { BidAndProject } from '@/db/bid'
+import { Project } from '@/db/project'
 import { formatMoney, formatDate } from '@/utils/formatting'
 import { TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline'
 import { Menu } from '@headlessui/react'
 import Link from 'next/link'
 import { useSupabase } from '@/db/supabase-provider'
-import { Tooltip } from '@/components/tooltip'
 import { useRouter } from 'next/navigation'
-import { Row } from '@/components/layout/row'
 
 export function Bids(props: { bids: BidAndProject[] }) {
   const { bids } = props
@@ -98,18 +97,6 @@ function BidDisplay(props: {
           </Menu.Item>
         </Menu.Items>
       </Menu>
-      {/* <Tooltip
-        text={'Delete Bid'}
-        className="relative left-3 my-auto mx-1 hidden rounded-full p-2 hover:cursor-pointer hover:bg-rose-100 group-hover:inline"
-      >
-        <TrashIcon
-          className="h-6 w-6 text-rose-600"
-          onClick={() => {
-            deleteBid(supabase, bid_id)
-            router.refresh()
-          }}
-        />
-      </Tooltip> */}
     </div>
   )
 }

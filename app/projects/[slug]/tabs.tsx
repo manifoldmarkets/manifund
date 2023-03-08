@@ -73,7 +73,7 @@ export function Tabs(props: {
       </div>
       <div className="py-6">
         {currentTab === 'bids' ? (
-          <Bids bids={bids} />
+          <Bids bids={bids} stage={project.stage} />
         ) : (
           <Comments project={project} comments={comments} user={user} />
         )}

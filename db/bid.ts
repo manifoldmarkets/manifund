@@ -31,5 +31,5 @@ export async function getBidsByProject(
   if (error) {
     throw error
   }
-  return data as Bid[]
+  return data.filter((bid) => bid.status !== 'rejected') as Bid[]
 }
