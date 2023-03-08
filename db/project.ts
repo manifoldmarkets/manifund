@@ -45,7 +45,7 @@ export async function getProjectsByUser(
   return data as Project[]
 }
 
-type FullProject = Project & { profiles: Profile } & {
+export type FullProject = Project & { profiles: Profile } & {
   bids: Bid[]
 } & { txns: Txn[] } & { comments: Comment[] }
 
