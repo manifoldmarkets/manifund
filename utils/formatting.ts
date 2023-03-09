@@ -6,7 +6,7 @@ const formatter = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 0,
 })
 
-export function formatMoneyUSD(amount: number) {
+export function formatMoneyPrecise(amount: number) {
   const newAmount = getMoneyNumber(amount)
   return formatter.format(newAmount)
 }

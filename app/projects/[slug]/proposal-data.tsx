@@ -1,7 +1,11 @@
 import { ProgressBar } from '@/components/progress-bar'
 import { Bid } from '@/db/bid'
 import { Project } from '@/db/project'
-import { formatDate, showPrecision } from '@/utils/formatting'
+import {
+  formatDate,
+  formatMoneyPrecise,
+  showPrecision,
+} from '@/utils/formatting'
 import { getProposalValuation } from '@/utils/math'
 
 export function ProposalData(props: { project: Project; bids: Bid[] }) {

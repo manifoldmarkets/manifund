@@ -1,26 +1,26 @@
-import { SupabaseClient } from '@supabase/supabase-js'
-import { getProjectById, Project } from '@/db/project'
+import { Project } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
 import Link from 'next/link'
 import type { investment } from './page'
 
 export async function Investments(props: {
-  supabase: SupabaseClient
   investments: investment[]
   profile: string
 }) {
-  const { supabase, investments, profile } = props
-  const investmentsDisplay = investments.map((item) => (
-    <li key={item.project.id}>
-      {/* @ts-expect-error Server Component */}
-      <InvestmentsDisplay
-        profile={profile}
-        project={item.project}
-        amount={item.price_usd}
-        num_shares={item.num_shares}
-      />
-    </li>
-  ))
+  const { investments, profile } = props
+  const investmentsDisplay = investments.map((item) =>
+    item.project ? (
+      <li key={item.project.id}>
+        {/* @ts-expect-error Server Component */}
+        <InvestmentsDisplay
+          profile={profile}
+          project={item.project}
+          amount={item.price_usd}
+          num_shares={item.num_shares}
+        />
+      </li>
+    ) : null
+  )
   return (
     <div>
       <h1 className="text-2xl">Investments</h1>

@@ -31,8 +31,8 @@ export function ProfileHeader(props: {
         <div className="flex w-full flex-col">
           <div className="flex justify-between">
             <div className="ml-3 flex flex-col">
-              <div className="text-4xl font-bold">{profile.username}</div>
-              <p className="text-gray-500">{profile.full_name}</p>
+              <div className="text-4xl font-bold">{profile.full_name}</div>
+              <p className="text-gray-500">@{profile.username}</p>
             </div>
             {isOwnProfile && <BalanceBox balance={balance} />}
           </div>

@@ -8,6 +8,9 @@ export const config = {
   regions: ['sfo1'],
 }
 
+// ID for austin@manifold.markets, the official bank account
+const BANK_ID = '758e68da-c37c-4a9d-a82b-f4aaedde31b9'
+
 export default async function handler(req: NextRequest) {
   const supabaseEdge = createEdgeClient(req)
   const user = await getUser(supabaseEdge)
@@ -19,7 +22,7 @@ export default async function handler(req: NextRequest) {
   // Create a new txn paying this user
   const { data: txn, error } = await supabaseAdmin
     .from('txns')
-    .insert({ amount, from_id: user.id, to_id: userId, token: 'USD' })
+    .insert({ amount, from_id: BANK_ID, to_id: userId, token: 'USD' })
 
   return NextResponse.json(txn)
 }

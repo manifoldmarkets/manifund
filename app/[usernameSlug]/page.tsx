@@ -11,7 +11,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { getProjectsByUser, Project } from '@/db/project'
 
 export type investment = {
-  project: Project
+  project?: Project // Undefined eg for txns that are just transfers of money
   num_shares: number
   price_usd: number
 }
@@ -44,7 +44,6 @@ export default async function UserProfilePage(props: {
         {notOwnProjectInvestments.length > 0 && (
           // @ts-expect-error Server Component
           <Investments
-            supabase={supabase}
             investments={notOwnProjectInvestments}
             profile={profile.id}
           />
@@ -74,7 +73,7 @@ async function compileInvestments(
   let investments: investment[] = []
   incomingTxns.forEach((item) => {
     let aggInvestment = investments.find(
-      (investment) => investment.project.id === item.project
+      (investment) => investment.project?.id === item.project
     )
     if (item.token === 'USD') {
       if (aggInvestment) {
@@ -100,7 +99,7 @@ async function compileInvestments(
   })
   outgoingTxns.forEach((item) => {
     let aggInvestment = investments.find(
-      (investment) => investment.project.id === item.project
+      (investment) => investment.project?.id === item.project
     )
     if (item.token === 'USD') {
       if (aggInvestment) {

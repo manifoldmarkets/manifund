@@ -1,5 +1,6 @@
 import { createServerClient } from '@/db/supabase-server'
 import { listProjects } from '@/db/project'
+import { CalendarIcon } from '@heroicons/react/24/solid'
 import { AllProjectsDisplay } from './all-projects-display'
 
 export default async function Projects() {
