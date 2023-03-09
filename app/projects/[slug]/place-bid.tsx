@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import { Button } from 'components/button'
 import { useSupabase } from '@/db/supabase-provider'
 import { Subtitle } from '@/components/subtitle'
-import { formatMoney } from '@/utils/formatting'
+import { formatMoney, roundLargeNumber } from '@/utils/formatting'
 import { Database } from '@/db/database.types'
 import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
@@ -130,8 +130,8 @@ export function PlaceBid(props: {
             {
               project: projectId,
               bidder: userId,
-              valuation,
-              amount,
+              valuation: roundLargeNumber(valuation),
+              amount: roundLargeNumber(amount),
               type: bidType,
             },
           ])
