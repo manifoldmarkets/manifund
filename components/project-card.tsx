@@ -90,7 +90,7 @@ function ProjectCardFooter(props: {
                   )}
                 />
                 <span className="text-black">
-                  {formatLargeNumber(percentRaised * 100)}%
+                  {formatLargeNumber(percentRaised)}%
                 </span>
                 raised
               </span>

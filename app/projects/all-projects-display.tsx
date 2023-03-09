@@ -1,11 +1,12 @@
 'use client'
 import { FullProject } from '@/db/project'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import {
   CheckIcon,
   ChevronUpDownIcon,
   MagnifyingGlassIcon,
+  CalendarIcon,
 } from '@heroicons/react/20/solid'
 import { ProjectGroup } from './project-group'
 import { useRouter, useSearchParams } from 'next/navigation'
