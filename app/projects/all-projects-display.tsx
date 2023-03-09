@@ -61,6 +61,7 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
             type="text"
             name="search"
             id="search"
+            autoComplete="off"
             className="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:leading-6"
             placeholder="Search..."
             value={search}
@@ -71,7 +72,7 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
             }}
           />
         </div>
-        <div className="relative">
+        <div className="relative lg:w-4/12">
           <Listbox
             value={sortBy}
             onChange={(event) => {
