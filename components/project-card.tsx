@@ -1,8 +1,11 @@
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { formatDate, formatLargeNumber } from '@/utils/formatting'
-import { getProposalValuation, getActiveValuation } from '@/utils/math'
-
+import {
+  getProposalValuation,
+  getActiveValuation,
+  getPercentFunded,
+} from '@/utils/math'
 import { Project } from '@/db/project'
 import Link from 'next/link'
 import {
@@ -60,9 +63,7 @@ function ProjectCardFooter(props: {
   bids: Bid[]
 }) {
   const { project, numComments, bids } = props
-  const raised = bids.reduce((acc, bid) => acc + bid.amount, 0)
-  const percentRaised =
-    raised / project.min_funding > 1 ? 1 : raised / project.min_funding
+  let percentRaised = Math.min(getPercentFunded(bids, project.min_funding), 100)
   switch (project.stage) {
     case 'proposal':
       return (
@@ -78,7 +79,7 @@ function ProjectCardFooter(props: {
               </span>
               <span className="mb-1 flex gap-1 text-gray-600">
                 <EllipsisHorizontalCircleIcon className="h-6 w-6 text-orange-500" />
-                <span className="text-black">{percentRaised * 100}%</span>raised
+                <span className="text-black">{percentRaised}%</span>raised
               </span>
             </div>
             <div className="flex flex-row items-center gap-2">
