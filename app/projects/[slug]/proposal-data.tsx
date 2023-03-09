@@ -3,6 +3,7 @@ import { Bid } from '@/db/bid'
 import { Project } from '@/db/project'
 import {
   formatDate,
+  formatMoney,
   formatMoneyPrecise,
   showPrecision,
 } from '@/utils/formatting'
@@ -12,7 +13,9 @@ export function ProposalData(props: { project: Project; bids: Bid[] }) {
   const { project, bids } = props
   const raised = bids.reduce((acc, bid) => acc + bid.amount, 0)
   const raisedString =
-    raised > project.min_funding ? `>$${project.min_funding}` : `$${raised}`
+    raised > project.min_funding
+      ? `>${formatMoney(project.min_funding)}`
+      : `${formatMoney(raised)}`
   const percentRaised = (raised / project.min_funding) * 100
   const closeDate = new Date(formatDate(project.auction_close) + ' 23:59:59')
   const now = new Date()
@@ -36,7 +39,7 @@ export function ProposalData(props: { project: Project; bids: Bid[] }) {
         </div>
         <div className="flex flex-col">
           <span className="text-xl font-bold text-orange-500">
-            ${getProposalValuation(project)}
+            {formatMoney(getProposalValuation(project))}
           </span>
           <span className="text-sm text-gray-500">minimum valuation</span>
         </div>
