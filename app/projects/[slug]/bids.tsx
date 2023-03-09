@@ -3,6 +3,7 @@ import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { BidAndProfile } from '@/db/bid'
+import { formatMoney } from '@/utils/formatting'
 
 export function Bids(props: { bids: BidAndProfile[]; stage: string }) {
   const { bids, stage } = props
@@ -52,12 +53,12 @@ function Bid(props: { bid: BidAndProfile; showValuation: boolean }) {
       <UserAvatarAndBadge profile={bid.profiles} />
       {showValuation ? (
         <div>
-          ${bid.amount} <span className="text-gray-500"> @ </span>$
+          {formatMoney(bid.amount)} <span className="text-gray-500"> @ </span>$
           {bid.valuation}
           <span className="text-gray-500"> valuation</span>
         </div>
       ) : (
-        <div>${bid.amount}</div>
+        <div>{formatMoney(bid.amount)}</div>
       )}
     </Row>
   )
