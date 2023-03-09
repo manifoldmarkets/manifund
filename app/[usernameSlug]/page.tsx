@@ -40,7 +40,9 @@ export default async function UserProfilePage(props: {
         balance={balance}
       />
       <div className="flex flex-col gap-10">
-        {isOwnProfile && proposalBids.length > 0 && <Bids bids={bids} />}
+        {proposalBids.length > 0 && (
+          <Bids bids={bids} isOwnProfile={isOwnProfile} />
+        )}
         {notOwnProjectInvestments.length > 0 && (
           // @ts-expect-error Server Component
           <Investments
