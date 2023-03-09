@@ -35,7 +35,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
 
   const valuation =
     project.stage == 'proposal'
-      ? getProposalValuation(project)
+      ? formatLargeNumber(getProposalValuation(project))
       : formatLargeNumber(
           getActiveValuation(project.txns, project.founder_portion)
         )
