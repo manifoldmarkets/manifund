@@ -1,5 +1,6 @@
-import { Bid, Project } from '@/db/bid'
-import { FullProject, TOTAL_SHARES } from '@/db/project'
+import { Bid } from '@/db/bid'
+import { Project } from '@/db/project'
+import { TOTAL_SHARES } from '@/db/project'
 import { Txn } from '@/db/txn'
 import { formatLargeNumber } from './formatting'
 

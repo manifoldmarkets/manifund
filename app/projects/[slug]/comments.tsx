@@ -1,22 +1,34 @@
+'use client'
 import { Profile } from '@/db/profile'
 import { WriteComment } from './write-comment'
-import { getCommentsByProject } from '@/db/comment'
-import { createServerClient } from '@/db/supabase-server'
+import { CommentAndProfile, getCommentsByProject } from '@/db/comment'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { formatDistanceToNow } from 'date-fns'
 import { RichContent } from '@/components/editor'
 import { Avatar } from '@/components/avatar'
 import { Divider } from '@/components/divider'
-import { Project } from '@/db/bid'
+import { Project } from '@/db/project'
 
-export async function Comments(props: {
+export function Comments(props: {
   project: Project
-  profile: Profile | null
+  comments: CommentAndProfile[]
+  user: Profile | null
 }) {
-  const { project, profile } = props
-  const supabase = createServerClient()
-  const comments = await getCommentsByProject(supabase, project.id)
-  const commentsDisplay = comments.map((comment) => (
+  const { project, comments, user } = props
+  if (comments.length === 0 && !user)
+    return (
+      <p className="text-center italic text-gray-500">
+        No comments yet.{' '}
+        <a href="/login" className="hover:underline">
+          Sign in
+        </a>{' '}
+        to create one!
+      </p>
+    )
+  const sortedComments = comments.sort((a, b) =>
+    a.created_at < b.created_at ? 1 : -1
+  )
+  const commentsDisplay = sortedComments.map((comment) => (
     <div key={comment.id}>
       <div className="my-6 flex flex-row gap-2">
         <div>
@@ -37,14 +49,11 @@ export async function Comments(props: {
   ))
   return (
     <div>
-      {(comments.length > 0 || profile) && (
-        <h1 className="mb-5 text-3xl font-bold">Comments</h1>
-      )}
-      {profile && (
+      {user && (
         <div>
           <div className="flex gap-3">
-            <Avatar profile={profile} />
-            <WriteComment project={project} profile={profile} />
+            <Avatar profile={user} />
+            <WriteComment project={project} profile={user} />
           </div>
           <Divider />
         </div>

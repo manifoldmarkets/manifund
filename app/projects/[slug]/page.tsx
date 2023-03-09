@@ -7,6 +7,8 @@ import { EditDescription } from './edit-description'
 import { BidsTable } from '../bids-table'
 import { formatLargeNumber } from '@/utils/formatting'
 import { getFullProjectBySlug } from '@/db/project'
+import { getCommentsByProject } from '@/db/comment'
+import { getBidsByProject } from '@/db/bid'
 import {
   getProposalValuation,
   getActiveValuation,
@@ -18,7 +20,7 @@ import { SiteLink } from '@/components/site-link'
 import { SignInButton } from '@/components/sign-in-button'
 import clsx from 'clsx'
 import { buttonClass } from '@/components/button'
-import { Comments } from './comments'
+import { Tabs } from './tabs'
 import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
@@ -30,6 +32,8 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
   const spendableFunds = user ? await getSpendableFunds(supabase, user.id) : 0
+  const comments = await getCommentsByProject(supabase, project.id)
+  const bids = await getBidsByProject(supabase, project.id)
 
   const isOwnProject = user?.id === project.profiles.id
 
@@ -72,11 +76,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       {user && !profile?.accreditation_status && <NotAccredited />}
       {!user && <SignInButton />}
       <div className="h-6" />
-
-      {/* @ts-expect-error Server Component */}
-      {project.stage == 'active' && <BidsTable projectId={project.id} />}
-      {/* @ts-expect-error Server Component */}
-      <Comments project={project} profile={profile} />
+      <Tabs project={project} user={profile} comments={comments} bids={bids} />
       {isAdmin(user) && <CloseBidding project={project} />}
     </div>
   )
