@@ -17,7 +17,8 @@ export function ProposalData(props: { project: Project; bids: Bid[] }) {
       ? `>${formatMoney(project.min_funding)}`
       : `${formatMoney(raised)}`
   const percentRaised = (raised / project.min_funding) * 100
-  const closeDate = new Date(formatDate(project.auction_close) + ' 23:59:59')
+  // Close it on 23:59:59 in UTC -12 aka "Anywhere on Earth" time
+  const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
   const now = new Date()
   const daysLeft = datediff(now.getTime(), closeDate.getTime())
   return (
