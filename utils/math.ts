@@ -1,3 +1,4 @@
+import { Bid } from '@/db/bid'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn } from '@/db/txn'
