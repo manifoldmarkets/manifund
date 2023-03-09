@@ -12,10 +12,8 @@ export function ProposalData(props: { project: Project; bids: Bid[] }) {
   const { project, bids } = props
   const raised = bids.reduce((acc, bid) => acc + bid.amount, 0)
   const raisedString =
-    raised > project.min_funding
-      ? `>` + formatMoneyPrecise(project.min_funding)
-      : formatMoneyPrecise(raised)
-  const percentRaised = raised / project.min_funding
+    raised > project.min_funding ? `>$${project.min_funding}` : `$${raised}`
+  const percentRaised = (raised / project.min_funding) * 100
   const closeDate = new Date(formatDate(project.auction_close) + ' 23:59:59')
   const now = new Date()
   const daysLeft = datediff(now.getTime(), closeDate.getTime())

@@ -6,7 +6,7 @@ import { formatLargeNumber } from './formatting'
 export function getProposalValuation(project: Project) {
   const investorPercent =
     (TOTAL_SHARES - project.founder_portion) / TOTAL_SHARES
-  return formatLargeNumber(project.min_funding / investorPercent)
+  return project.min_funding / investorPercent
 }
 
 //bad because depends on USD and shares txns being right next to each other?
@@ -63,4 +63,9 @@ export function calculateUserBalance(incomingTxns: Txn[], outgoingTxns: Txn[]) {
     })
   }
   return incoming - outgoing
+}
+
+export function getPercentFunded(bids: Bid[], minFunding: number) {
+  const total = bids.reduce((acc, bid) => acc + bid.amount, 0)
+  return (total / minFunding) * 100
 }
