@@ -1,8 +1,11 @@
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { formatDate, formatLargeNumber } from '@/utils/formatting'
-import { getProposalValuation, getActiveValuation } from '@/utils/math'
-
+import {
+  getProposalValuation,
+  getActiveValuation,
+  getPercentFunded,
+} from '@/utils/math'
 import { Project } from '@/db/project'
 import Link from 'next/link'
 import {
@@ -27,7 +30,7 @@ export function ProjectCard(props: {
   const { creator, project, numComments, bids, txns } = props
   const valuation =
     project.stage == 'proposal'
-      ? getProposalValuation(project)
+      ? formatLargeNumber(getProposalValuation(project))
       : formatLargeNumber(getActiveValuation(txns, project.founder_portion))
   return (
     <Col className="rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow hover:bg-gray-100">
@@ -62,9 +65,7 @@ function ProjectCardFooter(props: {
   bids: Bid[]
 }) {
   const { project, numComments, bids } = props
-  const raised = bids.reduce((acc, bid) => acc + bid.amount, 0)
-  const percentRaised =
-    raised / project.min_funding > 1 ? 1 : raised / project.min_funding
+  let percentRaised = Math.min(getPercentFunded(bids, project.min_funding), 100)
   switch (project.stage) {
     case 'proposal':
       return (
@@ -89,7 +90,7 @@ function ProjectCardFooter(props: {
                   )}
                 />
                 <span className="text-black">
-                  {formatLargeNumber(percentRaised * 100)}%
+                  {formatLargeNumber(percentRaised)}%
                 </span>
                 raised
               </span>

@@ -5,7 +5,7 @@ export function ProgressBar(props: { percent: number }) {
       <div
         style={{
           background: '#f97316',
-          width: `${percent * 100}%`,
+          width: `${percent}%`,
           height: '0.5rem',
           borderRadius: '0.5rem',
         }}
