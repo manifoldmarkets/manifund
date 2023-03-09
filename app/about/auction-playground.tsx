@@ -11,34 +11,34 @@ import { sortBy, orderBy } from 'lodash'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 
 type playBid = {
-  timeStamp: number
+  createdAt: number
   amount: number
   valuation: number
   amountPaid: number
 }
 
 export function AuctionPlayground() {
-  const initialBids = [
+  const INITIAL_BIDS = [
     {
-      timeStamp: 0,
+      createdAt: 0,
       amount: 100,
       valuation: 1000,
       amountPaid: -1,
     },
     {
-      timeStamp: 1,
+      createdAt: 1,
       amount: 500,
       valuation: 1200,
       amountPaid: -1,
     },
     {
-      timeStamp: 2,
+      createdAt: 2,
       amount: 600,
       valuation: 1000,
       amountPaid: -1,
     },
     {
-      timeStamp: 3,
+      createdAt: 3,
       amount: 100,
       valuation: 1500,
       amountPaid: -1,
@@ -47,7 +47,7 @@ export function AuctionPlayground() {
 
   const [minFunding, setMinFunding] = useState<number>(900)
   const [founderPortion, setFounderPortion] = useState<number | null>(0.1)
-  const [playBids, setPlayBids] = useState<playBid[]>(initialBids)
+  const [playBids, setPlayBids] = useState<playBid[]>(INITIAL_BIDS)
   const [playBidsDisplay, setPlayBidsDisplay] = useState<JSX.Element[]>([])
   const [seeResults, setSeeResults] = useState<boolean>(false)
   const [resultsText, setResultsText] = useState<JSX.Element>(<></>)
@@ -76,7 +76,7 @@ export function AuctionPlayground() {
               onClick={() => {
                 setPlayBids(
                   playBids.filter(
-                    (bid) => bid.timeStamp !== playBids[index].timeStamp
+                    (bid) => bid.createdAt !== playBids[index].createdAt
                   )
                 )
                 setSeeResults(false)
@@ -90,7 +90,7 @@ export function AuctionPlayground() {
               onChange={(e: { target: { value: any } }) => {
                 setPlayBids(
                   playBids.map((playBid, i) => {
-                    if (playBids[i].timeStamp === playBid.timeStamp) {
+                    if (playBids[i].createdAt === playBid.createdAt) {
                       return { ...playBid, amount: Number(e.target.value) }
                     }
                     return playBid
@@ -107,7 +107,7 @@ export function AuctionPlayground() {
               onChange={(e: { target: { value: any } }) => {
                 setPlayBids(
                   playBids.map((playBid, i) => {
-                    if (playBids[i].timeStamp === playBid.timeStamp) {
+                    if (playBids[i].createdAt === playBid.createdAt) {
                       return {
                         ...playBid,
                         valuation: Number(e.target.value),
@@ -137,7 +137,7 @@ export function AuctionPlayground() {
       <ArrowPathIcon
         className="absolute top-4 right-5 h-6 w-6 text-gray-500 hover:cursor-pointer"
         onClick={() => {
-          setPlayBids(initialBids)
+          setPlayBids(INITIAL_BIDS)
           setFounderPortion(0.1)
           setMinFunding(900)
           setSeeResults(false)
@@ -188,7 +188,7 @@ export function AuctionPlayground() {
             setPlayBids([
               ...playBids,
               {
-                timeStamp: playBids[playBids.length - 1].timeStamp + 1,
+                createdAt: playBids[playBids.length - 1].createdAt + 1,
                 amount: 0,
                 valuation: minValuation,
                 amountPaid: -1,
@@ -245,7 +245,7 @@ function resolveBids(
   minFunding: number,
   founderPortion: number
 ) {
-  // sort bids by valuation
+  // Sort bids by valuation (keep $0 bids so they don't disappear from UI)
   const sortedBids = orderBy(playBids, 'valuation', 'desc')
   sortedBids.forEach((bid) => {
     if (!bid.amount) {
@@ -255,37 +255,37 @@ function resolveBids(
 
   let i = 0
   let totalFunding = 0
-  //starting at the bid w/ highest valuation, for each bid...
+  // Starting at the bid w/ highest valuation, for each bid...
   while (i < sortedBids.length) {
-    //determine, at valuation of current bid, how much of the project is still unsold
+    // Determine, at valuation of current bid, how much of the project is still unsold
     const valuation = sortedBids[i].valuation
     totalFunding += sortedBids[i].amount
     const unsoldPortion = 1 - founderPortion - totalFunding / valuation
-    //if all shares are sold, bids go through
+    // If all shares are sold, bids go through
     if (unsoldPortion <= 0) {
-      //current bid gets partially paid out
+      // Current bid gets partially paid out
       sortedBids[i].amountPaid =
         sortedBids[i].amount + unsoldPortion * valuation
-      //early return resolution data
+      // Early return resolution data
       return {
-        bids: sortBy(sortedBids, 'timeStamp'),
+        bids: sortBy(sortedBids, 'createdAt'),
         resolvedValuation: valuation,
       }
-      //if all bids are exhausted but the project has enough funding, bids go through
+      // If all bids are exhausted but the project has enough funding, bids go through
     } else if (totalFunding >= minFunding && i + 1 == sortedBids.length) {
-      //current bid gets fully paid out
+      // Current bid gets fully paid out
       sortedBids[i].amountPaid = sortedBids[i].amount
-      //early return resolution data
+      // Early return resolution data
       return {
-        bids: sortBy(sortedBids, 'timeStamp'),
+        bids: sortBy(sortedBids, 'createdAt'),
         resolvedValuation: valuation,
       }
     }
-    //Haven't resolved yet; if project gets funded based on later bids, current bid will fully pay out
+    // Haven't resolved yet; if project gets funded based on later bids, current bid will fully pay out
     sortedBids[i].amountPaid = sortedBids[i].amount
     i++
   }
-  //bids are exhausted and minimum funding was not reached: reject all bids & return resolution data
+  // Bids are exhausted and minimum funding was not reached: reject all bids & return resolution data
   playBids.forEach((bid) => {
     bid.amountPaid = -1
   })
