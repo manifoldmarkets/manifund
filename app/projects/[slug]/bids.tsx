@@ -17,7 +17,7 @@ export function Bids(props: { bids: BidAndProfile[]; stage: string }) {
       <Row className="justify-center">
         <Col className="w-full max-w-xl">
           {bids.map((bid) => (
-            <Bid key={bid.id} bid={bid} showValuation={true} />
+            <Bid key={bid.id} bid={bid} showValuation={false} />
           ))}
         </Col>
       </Row>
