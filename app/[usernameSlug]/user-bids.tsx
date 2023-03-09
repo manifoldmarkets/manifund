@@ -11,15 +11,16 @@ import Link from 'next/link'
 import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 
-export function Bids(props: { bids: BidAndProject[] }) {
-  const { bids } = props
+export function Bids(props: { bids: BidAndProject[]; isOwnProfile: boolean }) {
+  const { bids, isOwnProfile } = props
   const bidsDisplay = bids.map((item) => (
     <li key={item.id}>
       <BidDisplay
-        bid_id={item.id}
+        bidId={item.id}
         project={item.projects}
         amount={item.amount}
         valuation={item.valuation}
+        isOwnProfile={isOwnProfile}
       />
     </li>
   ))
@@ -36,12 +37,13 @@ export function Bids(props: { bids: BidAndProject[] }) {
 }
 
 function BidDisplay(props: {
-  bid_id: string
+  bidId: string
   project: Project
   amount: number
   valuation: number
+  isOwnProfile: boolean
 }) {
-  const { bid_id, project, amount, valuation } = props
+  const { bidId, project, amount, valuation, isOwnProfile } = props
   const { supabase, session } = useSupabase()
   const router = useRouter()
   if (project.stage != 'proposal') {
@@ -63,9 +65,13 @@ function BidDisplay(props: {
             <p className="flex items-center text-sm text-gray-500">
               Bid&nbsp;
               <span className="text-black">{formatMoney(amount)}</span>
-              &nbsp;@&nbsp;
-              <span className="text-black">{formatMoney(valuation)}</span>
-              &nbsp;valuation
+              {isOwnProfile && (
+                <span>
+                  &nbsp;@&nbsp;
+                  <span className="text-black">{formatMoney(valuation)}</span>
+                  &nbsp;valuation
+                </span>
+              )}
             </p>
           </div>
           <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
@@ -74,29 +80,31 @@ function BidDisplay(props: {
           </div>
         </div>
       </Link>
-      <Menu as="div" className="relative z-10 inline-block">
-        <Menu.Button>
-          <EllipsisVerticalIcon className="relative left-2 h-6 w-6 text-gray-400 hover:cursor-pointer" />
-        </Menu.Button>
-        <Menu.Items className="absolute right-0 top-4 z-10 mt-2 w-24 origin-top-right rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          <Menu.Item>
-            {({ active }) => (
-              <button
-                className={`${
-                  active && 'bg-rose-100'
-                } flex h-full w-full justify-between  p-2 text-rose-600`}
-                onClick={() => {
-                  deleteBid(supabase, bid_id)
-                  router.refresh()
-                }}
-              >
-                <TrashIcon className="h-6 w-6" />
-                Delete
-              </button>
-            )}
-          </Menu.Item>
-        </Menu.Items>
-      </Menu>
+      {isOwnProfile && (
+        <Menu as="div" className="relative z-10 inline-block">
+          <Menu.Button>
+            <EllipsisVerticalIcon className="relative left-2 h-6 w-6 text-gray-400 hover:cursor-pointer" />
+          </Menu.Button>
+          <Menu.Items className="absolute right-0 top-4 z-10 mt-2 w-24 origin-top-right rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  className={`${
+                    active && 'bg-rose-100'
+                  } flex h-full w-full justify-between  p-2 text-rose-600`}
+                  onClick={() => {
+                    deleteBid(supabase, bidId)
+                    router.refresh()
+                  }}
+                >
+                  <TrashIcon className="h-6 w-6" />
+                  Delete
+                </button>
+              )}
+            </Menu.Item>
+          </Menu.Items>
+        </Menu>
+      )}
     </div>
   )
 }
