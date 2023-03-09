@@ -51,7 +51,6 @@ export function Tabs(props: {
                   'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium'
                 )}
                 aria-current={tab.current ? 'page' : undefined}
-                disabled={tab.name === 'Bids' && bids.length === 0}
               >
                 {tab.name}
                 {tab.count > 0 ? (

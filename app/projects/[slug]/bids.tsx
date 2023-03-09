@@ -6,12 +6,18 @@ import { BidAndProfile } from '@/db/bid'
 
 export function Bids(props: { bids: BidAndProfile[]; stage: string }) {
   const { bids, stage } = props
+  if (bids.length === 0)
+    return (
+      <p className="text-center italic text-gray-500">
+        There are no bids on this project yet.
+      </p>
+    )
   if (stage === 'proposal') {
     return (
       <Row className="justify-center">
         <Col className="w-full max-w-xl">
           {bids.map((bid) => (
-            <BidHideValuation key={bid.id} bid={bid} />
+            <Bid key={bid.id} bid={bid} showValuation={true} />
           ))}
         </Col>
       </Row>
@@ -24,12 +30,12 @@ export function Bids(props: { bids: BidAndProfile[]; stage: string }) {
         <Col className="w-full max-w-xl">
           {buyBids.length !== 0 && <h1 className="text-xl">Buy Offers</h1>}
           {buyBids.map((bid) => (
-            <BidShowValuation key={bid.id} bid={bid} />
+            <Bid key={bid.id} bid={bid} showValuation={true} />
           ))}
           <div className="h-4" />
           {sellBids.length !== 0 && <h1 className="text-xl">Sell Offers</h1>}
           {sellBids.map((bid) => (
-            <BidShowValuation key={bid.id} bid={bid} />
+            <Bid key={bid.id} bid={bid} showValuation={true} />
           ))}
         </Col>
       </Row>
@@ -39,25 +45,20 @@ export function Bids(props: { bids: BidAndProfile[]; stage: string }) {
   }
 }
 
-function BidHideValuation(props: { bid: BidAndProfile }) {
-  const { bid } = props
+function Bid(props: { bid: BidAndProfile; showValuation: boolean }) {
+  const { bid, showValuation } = props
   return (
     <Row className="justify-between rounded p-3 hover:bg-gray-200">
       <UserAvatarAndBadge profile={bid.profiles} />
-      <div>${bid.amount}</div>
-    </Row>
-  )
-}
-
-function BidShowValuation(props: { bid: BidAndProfile }) {
-  const { bid } = props
-  return (
-    <Row className="justify-between rounded p-3 hover:bg-gray-200">
-      <UserAvatarAndBadge profile={bid.profiles} />
-      <div>
-        ${bid.amount} <span className="text-gray-500"> @ </span>${bid.valuation}
-        <span className="text-gray-500"> valuation</span>
-      </div>
+      {showValuation ? (
+        <div>
+          ${bid.amount} <span className="text-gray-500"> @ </span>$
+          {bid.valuation}
+          <span className="text-gray-500"> valuation</span>
+        </div>
+      ) : (
+        <div>${bid.amount}</div>
+      )}
     </Row>
   )
 }

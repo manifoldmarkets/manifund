@@ -18,7 +18,11 @@ export function Comments(props: {
   if (comments.length === 0 && !user)
     return (
       <p className="text-center italic text-gray-500">
-        No comments yet. Sign in to create one!
+        No comments yet.{' '}
+        <a href="/login" className="hover:underline">
+          Sign in
+        </a>{' '}
+        to create one!
       </p>
     )
   const sortedComments = comments.sort((a, b) =>
