@@ -31,16 +31,22 @@ export const showPrecision = (x: number, sigfigs: number) =>
 export function formatLargeNumber(num: number, sigfigs = 2): string {
   const absNum = Math.abs(num)
   if (absNum < 1) return showPrecision(num, sigfigs)
-
   if (absNum < 100) return showPrecision(num, 2)
-  if (absNum < 1000) return showPrecision(num, 3)
-  if (absNum < 10000) return showPrecision(num, 4)
 
   const suffix = ['', 'K', 'M', 'B', 'T', 'Q']
   const i = Math.floor(Math.log10(absNum) / 3)
 
-  const numStr = showPrecision(num / Math.pow(10, 3 * i), sigfigs)
+  const numStr = showPrecision(num / Math.pow(10, 3 * i), 3)
   return `${numStr}${suffix[i] ?? ''}`
+}
+
+// like formatLargeNumber but returns number instead of string
+export function roundLargeNumber(num: number, sigfigs = 2): number {
+  const absNum = Math.abs(num)
+  if (absNum < 1) return Number(showPrecision(num, sigfigs))
+  if (absNum < 100) return Number(showPrecision(num, 2))
+
+  return Number(showPrecision(num, 3))
 }
 
 export function formatDate(date: string) {
