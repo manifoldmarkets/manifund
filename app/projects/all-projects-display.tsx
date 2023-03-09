@@ -156,7 +156,7 @@ function SortSelect(props: {
   const { sortBy, open, options } = props
   return (
     <div>
-      <Listbox.Button className=" relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
+      <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
         <div className="truncate">
           <span className="text-gray-500">Sort by </span>
           {sortBy}
@@ -176,14 +176,14 @@ function SortSelect(props: {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <Listbox.Options className=" absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           {options.map((option) => (
             <Listbox.Option
               key={option}
               className={({ active }) =>
                 clsx(
                   active ? 'bg-orange-500 text-white' : 'text-gray-900',
-                  'relative cursor-default select-none py-2 pl-3 pr-9'
+                  'relative cursor-pointer select-none py-2 pl-3 pr-9'
                 )
               }
               value={option}
