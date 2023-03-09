@@ -8,23 +8,48 @@ import {
 } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
 import { sortBy, orderBy } from 'lodash'
-import { formatLargeNumber } from '@/utils/formatting'
+import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 
 type playBid = {
   index: number
   amount: number
   valuation: number
-  resolvedValuation: number
   amountPaid: number
 }
 
 export function AuctionPlayground() {
-  const [minFunding, setMinFunding] = useState<number>(1000)
-  const [founderPortion, setFounderPortion] = useState<number>(0)
-  const [playBids, setPlayBids] = useState<playBid[]>([])
+  const [minFunding, setMinFunding] = useState<number>(900)
+  const [founderPortion, setFounderPortion] = useState<number>(0.1)
+  const [playBids, setPlayBids] = useState<playBid[]>([
+    {
+      index: 0,
+      amount: 100,
+      valuation: 1000,
+      amountPaid: -1,
+    },
+    {
+      index: 1,
+      amount: 500,
+      valuation: 1200,
+      amountPaid: -1,
+    },
+    {
+      index: 2,
+      amount: 600,
+      valuation: 1000,
+      amountPaid: -1,
+    },
+    {
+      index: 3,
+      amount: 100,
+      valuation: 1500,
+      amountPaid: -1,
+    },
+  ])
   const [playBidsDisplay, setPlayBidsDisplay] = useState<JSX.Element[]>([])
   const [seeResults, setSeeResults] = useState<boolean>(false)
   const [resultsText, setResultsText] = useState<JSX.Element>(<></>)
+  const [resolvedValuation, setResolvedValuation] = useState<number>(0)
 
   let minValuation = Math.round(minFunding / (1 - founderPortion))
 
@@ -33,6 +58,8 @@ export function AuctionPlayground() {
     errorMessage = `All bids on this project must have a valuation of at least $${minValuation}.`
   } else if (!minFunding) {
     errorMessage = 'Please enter a minimum funding amount.'
+  } else if (founderPortion < 0 || founderPortion > 1) {
+    errorMessage = 'Founder portion must be between 0% and 100%.'
   }
 
   useEffect(() => {
@@ -47,7 +74,7 @@ export function AuctionPlayground() {
                 setSeeResults(false)
               }}
             />
-            <label htmlFor="amount">Bid $</label>
+            <label htmlFor="amount">Bid</label>
             <Input
               id="amount"
               className="relative bottom-2 w-24"
@@ -73,7 +100,10 @@ export function AuctionPlayground() {
                 setPlayBids(
                   playBids.map((playBid, i) => {
                     if (i === index) {
-                      return { ...playBid, valuation: Number(e.target.value) }
+                      return {
+                        ...playBid,
+                        valuation: Number(e.target.value),
+                      }
                     }
                     return playBid
                   })
@@ -85,7 +115,7 @@ export function AuctionPlayground() {
             {seeResults && (
               <BidResult
                 amountPaid={playBid.amountPaid}
-                resolvedValuation={playBid.resolvedValuation}
+                resolvedValuation={resolvedValuation}
               />
             )}
           </div>
@@ -148,7 +178,6 @@ export function AuctionPlayground() {
                 index: playBids.length,
                 amount: 0,
                 valuation: minValuation,
-                resolvedValuation: -1,
                 amountPaid: -1,
               },
             ])
@@ -170,15 +199,16 @@ export function AuctionPlayground() {
           <Button
             size={'lg'}
             className="mt-3 w-48"
+            disabled={errorMessage ? true : false}
             onClick={() => {
-              setPlayBids(
-                resolveBids(playBids, minFunding, minValuation, founderPortion)
-              )
-              console.log('just resolved', playBids)
+              let results = resolveBids(playBids, minFunding, founderPortion)
+              setPlayBids(results.bids)
+              setResolvedValuation(results.resolvedValuation)
               setResultsText(
                 <ResultsText
-                  playBids={playBids}
+                  playBids={results.bids}
                   founderPortion={founderPortion}
+                  resolvedValuation={results.resolvedValuation}
                 />
               )
               setSeeResults(true)
@@ -196,12 +226,10 @@ export function AuctionPlayground() {
 function resolveBids(
   playBids: playBid[],
   minFunding: number,
-  minValuation: number,
   founderPortion: number
 ) {
   let i = 0
   let totalFunding = 0
-  let unsoldPortion = 1 - founderPortion
   const sortedBids = orderBy(playBids, 'valuation', 'desc')
   sortedBids.forEach((bid) => {
     if (!bid.amount) {
@@ -209,21 +237,16 @@ function resolveBids(
     }
   })
   while (i < sortedBids.length) {
-    sortedBids[i].resolvedValuation = minValuation
-    if (i + 1 < sortedBids.length) {
-      sortedBids[i].resolvedValuation = sortedBids[i + 1].valuation
-    }
+    let valuation = sortedBids[i].valuation
     totalFunding += sortedBids[i].amount
-    unsoldPortion -= sortedBids[i].amount / sortedBids[i].resolvedValuation
+    let unsoldPortion = 1 - founderPortion - totalFunding / valuation
     if (unsoldPortion <= 0) {
       sortedBids[i].amountPaid =
-        sortedBids[i].amount + unsoldPortion * sortedBids[i].resolvedValuation
-      console.log('re-unsorted bids', sortBy(sortedBids, 'index'))
-      return sortBy(sortedBids, 'index')
+        sortedBids[i].amount + unsoldPortion * valuation
+      return { bids: sortBy(sortedBids, 'index'), resolvedValuation: valuation }
     } else if (totalFunding >= minFunding && i + 1 == sortedBids.length) {
-      console.log('accidentally hit success condiiton')
       sortedBids[i].amountPaid = sortedBids[i].amount
-      return sortBy(sortedBids, 'index')
+      return { bids: sortBy(sortedBids, 'index'), resolvedValuation: valuation }
     } else {
       sortedBids[i].amountPaid = sortedBids[i].amount
     }
@@ -231,14 +254,13 @@ function resolveBids(
   }
   playBids.forEach((bid) => {
     bid.amountPaid = -1
-    bid.resolvedValuation = -1
   })
-  return playBids
+  return { bids: playBids, resolvedValuation: -1 }
 }
 
 function BidResult(props: { amountPaid: number; resolvedValuation: number }) {
   const { amountPaid, resolvedValuation } = props
-  if (amountPaid === -1 || resolvedValuation === -1) {
+  if (amountPaid <= 0) {
     return (
       <div className="flex text-rose-500">
         <ArrowRightIcon className="relative top-1 mx-3 h-5 w-5" />
@@ -248,45 +270,42 @@ function BidResult(props: { amountPaid: number; resolvedValuation: number }) {
   }
   return (
     <div className="flex text-emerald-500">
-      <ArrowRightIcon className="relative top-1 mx-3 h-5 w-5" />
-      paid ${formatLargeNumber(amountPaid)} @ $
-      {formatLargeNumber(resolvedValuation)} for{' '}
-      {formatLargeNumber((amountPaid / resolvedValuation) * 100, 3)}% ownership
+      <ArrowRightIcon className="relative top-1 mx-3 h-5 w-5" />$
+      {formatLargeNumber(amountPaid)} for{' '}
+      {formatLargeNumber((amountPaid / resolvedValuation) * 100)}% ownership
     </div>
   )
 }
 
-function ResultsText(props: { playBids: playBid[]; founderPortion: number }) {
-  const { playBids, founderPortion } = props
+function ResultsText(props: {
+  playBids: playBid[]
+  founderPortion: number
+  resolvedValuation: number
+}) {
+  const { playBids, founderPortion, resolvedValuation } = props
   let totalFunding = playBids.reduce(
     (total, current) =>
       current.amountPaid > 0 ? total + current.amountPaid : total,
     0
   )
-  let portionSold = playBids.reduce(
-    (total, current) =>
-      current.amountPaid > 0
-        ? total + current.amountPaid / current.resolvedValuation
-        : total,
-    0
-  )
-  console.log(founderPortion + portionSold)
-  // accounting for floating point arithmetic imprecision
+  let portionSold = totalFunding / resolvedValuation
+  // accounting for floating point arithmetic errors
   if (portionSold + founderPortion >= 0.999999999999) {
     return (
       <div className="rounded-md  bg-emerald-100 p-3 text-center font-bold text-emerald-500 shadow-sm">
-        Funding successful! All shares were sold, and the project recieved $
+        Funding successful! All shares were sold at a valuation of{' '}
+        {formatMoney(resolvedValuation)} and the project recieved $
         {formatLargeNumber(totalFunding)} in funding.
       </div>
     )
   } else if (totalFunding > 0) {
     return (
       <div className=" rounded-md  bg-emerald-100 p-3 text-center font-bold text-emerald-500 shadow-sm">
-        Funding successful! {formatLargeNumber(portionSold * 100)}% of shares
-        were sold, the founder holds another{' '}
-        {formatLargeNumber(founderPortion * 100)}%, and the project recieved $
-        {formatLargeNumber(totalFunding)} in funding. The remaining shares will
-        be sold on the market.
+        Funding successful! The project recieved {formatMoney(totalFunding)} in
+        funding. {formatLargeNumber(portionSold * 100)}% of shares were sold at
+        a valuation of {formatMoney(resolvedValuation)}, the founder holds
+        another {formatLargeNumber(founderPortion * 100)}%, and the remaining
+        shares will be sold on the market.
       </div>
     )
   } else {
