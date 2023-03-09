@@ -11,55 +11,59 @@ import { sortBy, orderBy } from 'lodash'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 
 type playBid = {
-  index: number
+  timeStamp: number
   amount: number
   valuation: number
   amountPaid: number
 }
 
 export function AuctionPlayground() {
-  const [minFunding, setMinFunding] = useState<number>(900)
-  const [founderPortion, setFounderPortion] = useState<number>(0.1)
-  const [playBids, setPlayBids] = useState<playBid[]>([
+  const initialBids = [
     {
-      index: 0,
+      timeStamp: 0,
       amount: 100,
       valuation: 1000,
       amountPaid: -1,
     },
     {
-      index: 1,
+      timeStamp: 1,
       amount: 500,
       valuation: 1200,
       amountPaid: -1,
     },
     {
-      index: 2,
+      timeStamp: 2,
       amount: 600,
       valuation: 1000,
       amountPaid: -1,
     },
     {
-      index: 3,
+      timeStamp: 3,
       amount: 100,
       valuation: 1500,
       amountPaid: -1,
     },
-  ])
+  ]
+
+  const [minFunding, setMinFunding] = useState<number>(900)
+  const [founderPortion, setFounderPortion] = useState<number | null>(0.1)
+  const [playBids, setPlayBids] = useState<playBid[]>(initialBids)
   const [playBidsDisplay, setPlayBidsDisplay] = useState<JSX.Element[]>([])
   const [seeResults, setSeeResults] = useState<boolean>(false)
   const [resultsText, setResultsText] = useState<JSX.Element>(<></>)
   const [resolvedValuation, setResolvedValuation] = useState<number>(0)
 
-  let minValuation = Math.round(minFunding / (1 - founderPortion))
+  let minValuation = founderPortion
+    ? Math.round(minFunding / (1 - founderPortion))
+    : 0
 
   let errorMessage: string | null = null
-  if (playBids.find((playBid) => playBid.valuation < minValuation)) {
+  if (founderPortion === null || founderPortion < 0 || founderPortion >= 1) {
+    errorMessage = 'Founder portion must be at least 0% and below 100%.'
+  } else if (playBids.find((playBid) => playBid.valuation < minValuation)) {
     errorMessage = `All bids on this project must have a valuation of at least $${minValuation}.`
   } else if (!minFunding) {
     errorMessage = 'Please enter a minimum funding amount.'
-  } else if (founderPortion < 0 || founderPortion > 1) {
-    errorMessage = 'Founder portion must be between 0% and 100%.'
   }
 
   useEffect(() => {
@@ -70,7 +74,11 @@ export function AuctionPlayground() {
             <XCircleIcon
               className="relative top-1 h-6 w-6 cursor-pointer text-rose-500"
               onClick={() => {
-                setPlayBids(playBids.filter((bid) => bid.index != index))
+                setPlayBids(
+                  playBids.filter(
+                    (bid) => bid.timeStamp !== playBids[index].timeStamp
+                  )
+                )
                 setSeeResults(false)
               }}
             />
@@ -82,7 +90,7 @@ export function AuctionPlayground() {
               onChange={(e: { target: { value: any } }) => {
                 setPlayBids(
                   playBids.map((playBid, i) => {
-                    if (i === index) {
+                    if (playBids[i].timeStamp === playBid.timeStamp) {
                       return { ...playBid, amount: Number(e.target.value) }
                     }
                     return playBid
@@ -99,7 +107,7 @@ export function AuctionPlayground() {
               onChange={(e: { target: { value: any } }) => {
                 setPlayBids(
                   playBids.map((playBid, i) => {
-                    if (i === index) {
+                    if (playBids[i].timeStamp === playBid.timeStamp) {
                       return {
                         ...playBid,
                         valuation: Number(e.target.value),
@@ -129,9 +137,9 @@ export function AuctionPlayground() {
       <ArrowPathIcon
         className="absolute top-4 right-5 h-6 w-6 text-gray-500 hover:cursor-pointer"
         onClick={() => {
-          setPlayBids([])
-          setFounderPortion(0)
-          setMinFunding(1000)
+          setPlayBids(initialBids)
+          setFounderPortion(0.1)
+          setMinFunding(900)
           setSeeResults(false)
         }}
       />
@@ -159,14 +167,19 @@ export function AuctionPlayground() {
           id="founder_portion"
           type="number"
           className=" relative bottom-2 w-24"
-          value={founderPortion * 100 || ''}
+          value={founderPortion === null ? '' : founderPortion * 100}
           onChange={(e: { target: { value: any } }) => {
-            setFounderPortion(Number(e.target.value) / 100)
+            setFounderPortion(
+              e.target.value === '' ? null : Number(e.target.value) / 100
+            )
             setSeeResults(false)
           }}
         />
         %
       </div>
+      <p className="text-center">
+        {formatMoney(minValuation)} minimum valuation
+      </p>
       <hr className="mt-2 mb-5 h-0.5 rounded-sm bg-gray-500" />
       {playBidsDisplay}
       <div className="flex justify-center gap-1">
@@ -175,7 +188,7 @@ export function AuctionPlayground() {
             setPlayBids([
               ...playBids,
               {
-                index: playBids.length,
+                timeStamp: playBids[playBids.length - 1].timeStamp + 1,
                 amount: 0,
                 valuation: minValuation,
                 amountPaid: -1,
@@ -201,13 +214,17 @@ export function AuctionPlayground() {
             className="mt-3 w-48"
             disabled={errorMessage ? true : false}
             onClick={() => {
-              let results = resolveBids(playBids, minFunding, founderPortion)
+              let results = resolveBids(
+                playBids,
+                minFunding,
+                founderPortion ?? 0
+              )
               setPlayBids(results.bids)
               setResolvedValuation(results.resolvedValuation)
               setResultsText(
                 <ResultsText
                   playBids={results.bids}
-                  founderPortion={founderPortion}
+                  founderPortion={founderPortion ?? 0}
                   resolvedValuation={results.resolvedValuation}
                 />
               )
@@ -228,30 +245,47 @@ function resolveBids(
   minFunding: number,
   founderPortion: number
 ) {
-  let i = 0
-  let totalFunding = 0
+  // sort bids by valuation
   const sortedBids = orderBy(playBids, 'valuation', 'desc')
   sortedBids.forEach((bid) => {
     if (!bid.amount) {
       bid.amount = 0
     }
   })
+
+  let i = 0
+  let totalFunding = 0
+  //starting at the bid w/ highest valuation, for each bid...
   while (i < sortedBids.length) {
-    let valuation = sortedBids[i].valuation
+    //determine, at valuation of current bid, how much of the project is still unsold
+    const valuation = sortedBids[i].valuation
     totalFunding += sortedBids[i].amount
-    let unsoldPortion = 1 - founderPortion - totalFunding / valuation
+    const unsoldPortion = 1 - founderPortion - totalFunding / valuation
+    //if all shares are sold, bids go through
     if (unsoldPortion <= 0) {
+      //current bid gets partially paid out
       sortedBids[i].amountPaid =
         sortedBids[i].amount + unsoldPortion * valuation
-      return { bids: sortBy(sortedBids, 'index'), resolvedValuation: valuation }
+      //early return resolution data
+      return {
+        bids: sortBy(sortedBids, 'timeStamp'),
+        resolvedValuation: valuation,
+      }
+      //if all bids are exhausted but the project has enough funding, bids go through
     } else if (totalFunding >= minFunding && i + 1 == sortedBids.length) {
+      //current bid gets fully paid out
       sortedBids[i].amountPaid = sortedBids[i].amount
-      return { bids: sortBy(sortedBids, 'index'), resolvedValuation: valuation }
-    } else {
-      sortedBids[i].amountPaid = sortedBids[i].amount
+      //early return resolution data
+      return {
+        bids: sortBy(sortedBids, 'timeStamp'),
+        resolvedValuation: valuation,
+      }
     }
+    //Haven't resolved yet; if project gets funded based on later bids, current bid will fully pay out
+    sortedBids[i].amountPaid = sortedBids[i].amount
     i++
   }
+  //bids are exhausted and minimum funding was not reached: reject all bids & return resolution data
   playBids.forEach((bid) => {
     bid.amountPaid = -1
   })
@@ -311,7 +345,8 @@ function ResultsText(props: {
   } else {
     return (
       <div className="rounded-md  bg-rose-100 p-3 text-center font-bold text-rose-500 shadow-sm">
-        Funding unsuccessful. The project will not proceed :{'('}
+        Funding unsuccessful: only {formatMoney(totalFunding)} worth of bids
+        were made. The project will not proceed :{'('}
       </div>
     )
   }
