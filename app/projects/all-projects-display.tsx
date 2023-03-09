@@ -71,7 +71,7 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
             }}
           />
         </div>
-        <div>
+        <div className="relative">
           <Listbox
             value={sortBy}
             onChange={(event) => {
