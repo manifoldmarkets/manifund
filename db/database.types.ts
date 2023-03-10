@@ -13,7 +13,7 @@ export interface Database {
         Row: {
           amount: number
           bidder: string
-          created_at: string | null
+          created_at: string
           id: string
           project: string
           status: Database["public"]["Enums"]["bid_status"]
@@ -23,7 +23,7 @@ export interface Database {
         Insert: {
           amount: number
           bidder: string
-          created_at?: string | null
+          created_at?: string
           id?: string
           project: string
           status?: Database["public"]["Enums"]["bid_status"]
@@ -33,7 +33,7 @@ export interface Database {
         Update: {
           amount?: number
           bidder?: string
-          created_at?: string | null
+          created_at?: string
           id?: string
           project?: string
           status?: Database["public"]["Enums"]["bid_status"]
