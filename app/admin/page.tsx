@@ -4,6 +4,9 @@ import { createServerClient } from '@/db/supabase-server'
 import { createAdminClient } from '@/pages/api/_db'
 import { PayUser } from './pay-user'
 import { VerifyInvestor } from './verify-investor'
+import { RoundBidAmounts } from './round-bid-amounts'
+import { SupabaseClient } from '@supabase/supabase-js'
+import { roundLargeNumber } from '@/utils/formatting'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -89,8 +92,32 @@ export default async function Admin() {
           ))}
         </tbody>
       </Table>
-      <h2>Fix Avatars</h2>
-      {/* <FixAvatars /> */}
+      <h2>Round Bid Amounts</h2>
+      <RoundBidAmounts />
     </div>
   )
+}
+
+async function roundDbBidAmounts(supabase: SupabaseClient) {
+  const { data, error } = await supabase.from('bids').select('*')
+  if (error) {
+    console.error('Getting bids', error)
+  } else {
+    data.forEach(async (bid) => {
+      console.log(
+        'Updating bid',
+        bid.id,
+        bid.amount,
+        '->',
+        roundLargeNumber(bid.amount)
+      )
+      const { error } = await supabase
+        .from('bids')
+        .update({ amount: roundLargeNumber(bid.amount) })
+        .eq('id', bid.id)
+      if (error) {
+        console.error('Updating bid', error)
+      }
+    })
+  }
 }
