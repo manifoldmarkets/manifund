@@ -2,6 +2,7 @@ import { Database } from '@/db/database.types'
 import { NextRequest, NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from './_db'
+import { sortBy } from 'lodash'
 
 export const config = {
   runtime: 'edge',
@@ -15,6 +16,13 @@ type ProjectProps = {
   min_funding: number
   founder_portion: number
   creator: string
+}
+
+export type MutableBid = {
+  createdAt: number
+  amount: number
+  valuation: number
+  amountPaid: number
 }
 
 export default async function handler(req: NextRequest) {
@@ -159,4 +167,47 @@ async function updateBidsStatus(
       console.error('updateBidStatus', error)
     }
   }
+}
+
+export function resolveBids(
+  sortedBids: MutableBid[],
+  minFunding: number,
+  founderPortion: number
+) {
+  console.log('sorted bids', sortedBids)
+  let i = 0
+  let totalFunding = 0
+  // Starting at the bid w/ highest valuation, for each bid...
+  while (i < sortedBids.length) {
+    // Determine, at valuation of current bid, how much of the project is still unsold
+    const valuation = sortedBids[i].valuation
+    totalFunding += sortedBids[i].amount
+    const unsoldPortion = 1 - founderPortion - totalFunding / valuation
+    console.log('unsold portion', unsoldPortion, valuation, i)
+    // If all shares are sold, bids go through
+    if (unsoldPortion <= 0) {
+      // Current bid gets partially paid out
+      sortedBids[i].amountPaid =
+        sortedBids[i].amount + unsoldPortion * valuation
+      // Early return resolution data
+      return {
+        bids: sortBy(sortedBids, 'createdAt'),
+        resolvedValuation: valuation,
+      }
+      // If all bids are exhausted but the project has enough funding, bids go through
+    } else if (totalFunding >= minFunding && i + 1 == sortedBids.length) {
+      // Current bid gets fully paid out
+      sortedBids[i].amountPaid = sortedBids[i].amount
+      // Early return resolution data
+      return {
+        bids: sortBy(sortedBids, 'createdAt'),
+        resolvedValuation: valuation,
+      }
+    }
+    // Haven't resolved yet; if project gets funded based on later bids, current bid will fully pay out
+    sortedBids[i].amountPaid = sortedBids[i].amount
+    i++
+  }
+  // Bids are exhausted and minimum funding was not reached: reject all bids & return resolution data
+  return { bids: sortedBids, resolvedValuation: -1 }
 }
