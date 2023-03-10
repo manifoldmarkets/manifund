@@ -37,34 +37,17 @@ export default async function handler(req: NextRequest) {
   const supabase = createAdminClient()
   const bids = await getBids(supabase, id)
   if (!bids) return NextResponse.json('project not funded')
-
-  const mutableBids = bids.map((bid) => {
-    return {
-      createdAt: bid.created_at.getTime(),
-      amount: bid.amount,
-      valuation: bid.valuation,
-      amountPaid: -1,
-      id: bid.id,
-    } as MutableBid
-  })
   let founderPortion = founderShares / TOTAL_SHARES
-  const resolution = resolveBids(mutableBids, minFunding, founderPortion)
+  const resolution = resolveBids(bids, minFunding, founderPortion)
 
-  if (resolution.resolvedValuation === -1) {
+  if (resolution.valuation === -1) {
     updateProjectStage(supabase, id, 'not funded')
-    updateBidsStatus(supabase, mutableBids, bids)
+    updateBidsStatus(supabase, bids, resolution)
     return NextResponse.json('project not funded')
   } else {
     updateProjectStage(supabase, id, 'active')
-    addTxns(
-      supabase,
-      id,
-      mutableBids,
-      bids,
-      resolution.resolvedValuation,
-      creator
-    )
-    updateBidsStatus(supabase, mutableBids, bids)
+    addTxns(supabase, id, bids, resolution, creator)
+    updateBidsStatus(supabase, bids, resolution)
     return NextResponse.json('project funded!')
   }
 }
@@ -85,21 +68,22 @@ async function getBids(supabase: SupabaseClient, projectId: string) {
 async function addTxns(
   supabase: SupabaseClient,
   projectId: string,
-  mutableBids: MutableBid[],
   bids: Bid[],
-  valuation: number,
+  resolution: Resolution,
   creator: string
 ) {
   //create txn for each bid that goes through
   for (let i = 0; i < bids.length + 1; i++) {
-    if (mutableBids[i].amountPaid > 0) {
-      let numShares = (mutableBids[i].amountPaid / valuation) * TOTAL_SHARES
+    if (resolution.amountsPaid[bids[i].id] > 0) {
+      let numShares =
+        (resolution.amountsPaid[bids[i].id] / resolution.valuation) *
+        TOTAL_SHARES
       addTxn(supabase, creator, bids[i].bidder, numShares, projectId, projectId)
       addTxn(
         supabase,
         bids[i].bidder,
         creator,
-        mutableBids[i].amountPaid,
+        resolution.amountsPaid[bids[i].id],
         'USD',
         projectId
       )
@@ -144,14 +128,15 @@ async function updateProjectStage(
 
 async function updateBidsStatus(
   supabase: SupabaseClient,
-  mutableBids: MutableBid[],
-  bids: Bid[]
+  bids: Bid[],
+  resolution: Resolution
 ) {
   for (let i = 0; i < bids.length + 1; i++) {
     const { error } = await supabase
       .from('bids')
       .update({
-        status: mutableBids[i].amountPaid > 0 ? 'accepted' : 'declined',
+        status:
+          resolution.amountsPaid[bids[i].id] > 0 ? 'accepted' : 'declined',
       })
       .eq('id', bids[i].id)
     if (error) {
@@ -160,12 +145,21 @@ async function updateBidsStatus(
   }
 }
 
+export type Resolution = {
+  amountsPaid: { [key: string]: number }
+  valuation: number
+}
 export function resolveBids(
-  sortedBids: MutableBid[],
+  sortedBids: Bid[],
   minFunding: number,
   founderPortion: number
 ) {
   console.log('sorted bids', sortedBids)
+  const amountsPaid = Object.fromEntries(sortedBids.map((bid) => [bid.id, 0]))
+  const resolution = {
+    amountsPaid,
+    valuation: -1,
+  } as Resolution
   let i = 0
   let totalFunding = 0
   // Starting at the bid w/ highest valuation, for each bid...
@@ -178,27 +172,31 @@ export function resolveBids(
     // If all shares are sold, bids go through
     if (unsoldPortion <= 0) {
       // Current bid gets partially paid out
-      sortedBids[i].amountPaid =
+      resolution.amountsPaid[sortedBids[i].id] =
         sortedBids[i].amount + unsoldPortion * valuation
+      resolution.valuation = valuation
+      console.log('valuation in rESoLVEbIDs', resolution.valuation, valuation)
       // Early return resolution data
-      return {
-        bids: sortBy(sortedBids, 'createdAt'),
-        resolvedValuation: valuation,
-      }
+      return resolution
       // If all bids are exhausted but the project has enough funding, bids go through
-    } else if (totalFunding >= minFunding && i + 1 == sortedBids.length) {
+    } else if (
+      (totalFunding >= minFunding && i + 1 == sortedBids.length) ||
+      (i + 1 < sortedBids.length &&
+        totalFunding / sortedBids[i + 1].valuation >= 1 - founderPortion)
+    ) {
       // Current bid gets fully paid out
-      sortedBids[i].amountPaid = sortedBids[i].amount
+      resolution.amountsPaid[sortedBids[i].id] = sortedBids[i].amount
+      resolution.valuation = valuation
       // Early return resolution data
-      return {
-        bids: sortBy(sortedBids, 'createdAt'),
-        resolvedValuation: valuation,
-      }
+      return resolution
     }
     // Haven't resolved yet; if project gets funded based on later bids, current bid will fully pay out
-    sortedBids[i].amountPaid = sortedBids[i].amount
+    resolution.amountsPaid[sortedBids[i].id] = sortedBids[i].amount
     i++
   }
   // Bids are exhausted and minimum funding was not reached: reject all bids & return resolution data
-  return { bids: sortedBids, resolvedValuation: -1 }
+  resolution.amountsPaid = Object.fromEntries(
+    sortedBids.map((bid) => [bid.id, 0])
+  )
+  return resolution
 }
