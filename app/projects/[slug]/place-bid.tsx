@@ -122,7 +122,7 @@ export function PlaceBid(props: {
 
       <Button
         type="submit"
-        disabled={submitting || !!errorMessage}
+        disabled={submitting || !!errorMessage || amount === 0}
         loading={submitting}
         onClick={async () => {
           setSubmitting(true)
