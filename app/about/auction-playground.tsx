@@ -9,13 +9,8 @@ import {
 import { useEffect, useState } from 'react'
 import { sortBy, orderBy } from 'lodash'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
-
-type playBid = {
-  createdAt: number
-  amount: number
-  valuation: number
-  amountPaid: number
-}
+import { MutableBid, resolveBids } from '@/pages/api/close-bidding'
+import { Bids } from '../[usernameSlug]/user-bids'
 
 export function AuctionPlayground() {
   const INITIAL_BIDS = [
@@ -47,7 +42,7 @@ export function AuctionPlayground() {
 
   const [minFunding, setMinFunding] = useState<number>(900)
   const [founderPortion, setFounderPortion] = useState<number | null>(0.1)
-  const [playBids, setPlayBids] = useState<playBid[]>(INITIAL_BIDS)
+  const [playBids, setPlayBids] = useState<MutableBid[]>(INITIAL_BIDS)
   const [playBidsDisplay, setPlayBidsDisplay] = useState<JSX.Element[]>([])
   const [seeResults, setSeeResults] = useState<boolean>(false)
   const [resultsText, setResultsText] = useState<JSX.Element>(<></>)
@@ -89,11 +84,11 @@ export function AuctionPlayground() {
               value={playBid.amount || ''}
               onChange={(e: { target: { value: any } }) => {
                 setPlayBids(
-                  playBids.map((playBid, i) => {
-                    if (playBids[i].createdAt === playBid.createdAt) {
+                  playBids.map((bid) => {
+                    if (bid.createdAt === playBid.createdAt) {
                       return { ...playBid, amount: Number(e.target.value) }
                     }
-                    return playBid
+                    return bid
                   })
                 )
                 setSeeResults(false)
@@ -106,14 +101,14 @@ export function AuctionPlayground() {
               value={playBid.valuation || ''}
               onChange={(e: { target: { value: any } }) => {
                 setPlayBids(
-                  playBids.map((playBid, i) => {
-                    if (playBids[i].createdAt === playBid.createdAt) {
+                  playBids.map((bid) => {
+                    if (bid.createdAt === playBid.createdAt) {
                       return {
                         ...playBid,
                         valuation: Number(e.target.value),
                       }
                     }
-                    return playBid
+                    return bid
                   })
                 )
                 setSeeResults(false)
@@ -188,12 +183,15 @@ export function AuctionPlayground() {
             setPlayBids([
               ...playBids,
               {
-                createdAt: playBids[playBids.length - 1].createdAt + 1,
+                createdAt: playBids[playBids.length - 1]
+                  ? playBids[playBids.length - 1].createdAt + 2
+                  : 0,
                 amount: 0,
                 valuation: minValuation,
                 amountPaid: -1,
               },
             ])
+            console.log(playBids)
             setSeeResults(false)
           }}
           size={'xs'}
@@ -214,7 +212,7 @@ export function AuctionPlayground() {
             className="mt-3 w-48"
             disabled={errorMessage ? true : false}
             onClick={() => {
-              let results = resolveBids(
+              let results = resolvePlayBids(
                 playBids,
                 minFunding,
                 founderPortion ?? 0
@@ -240,8 +238,8 @@ export function AuctionPlayground() {
   )
 }
 
-function resolveBids(
-  playBids: playBid[],
+function resolvePlayBids(
+  playBids: MutableBid[],
   minFunding: number,
   founderPortion: number
 ) {
@@ -251,45 +249,18 @@ function resolveBids(
     if (!bid.amount) {
       bid.amount = 0
     }
-  })
-
-  let i = 0
-  let totalFunding = 0
-  // Starting at the bid w/ highest valuation, for each bid...
-  while (i < sortedBids.length) {
-    // Determine, at valuation of current bid, how much of the project is still unsold
-    const valuation = sortedBids[i].valuation
-    totalFunding += sortedBids[i].amount
-    const unsoldPortion = 1 - founderPortion - totalFunding / valuation
-    // If all shares are sold, bids go through
-    if (unsoldPortion <= 0) {
-      // Current bid gets partially paid out
-      sortedBids[i].amountPaid =
-        sortedBids[i].amount + unsoldPortion * valuation
-      // Early return resolution data
-      return {
-        bids: sortBy(sortedBids, 'createdAt'),
-        resolvedValuation: valuation,
-      }
-      // If all bids are exhausted but the project has enough funding, bids go through
-    } else if (totalFunding >= minFunding && i + 1 == sortedBids.length) {
-      // Current bid gets fully paid out
-      sortedBids[i].amountPaid = sortedBids[i].amount
-      // Early return resolution data
-      return {
-        bids: sortBy(sortedBids, 'createdAt'),
-        resolvedValuation: valuation,
-      }
-    }
-    // Haven't resolved yet; if project gets funded based on later bids, current bid will fully pay out
-    sortedBids[i].amountPaid = sortedBids[i].amount
-    i++
-  }
-  // Bids are exhausted and minimum funding was not reached: reject all bids & return resolution data
-  playBids.forEach((bid) => {
     bid.amountPaid = -1
   })
-  return { bids: playBids, resolvedValuation: -1 }
+  const resolution = resolveBids(sortedBids, minFunding, founderPortion)
+  console.log('resolution', resolution)
+  if (resolution.resolvedValuation === -1) {
+    playBids.forEach((bid) => (bid.amountPaid = -1))
+    return {
+      bids: playBids,
+      resolvedValuation: -1,
+    }
+  }
+  return resolution
 }
 
 function BidResult(props: { amountPaid: number; resolvedValuation: number }) {
@@ -312,7 +283,7 @@ function BidResult(props: { amountPaid: number; resolvedValuation: number }) {
 }
 
 function ResultsText(props: {
-  playBids: playBid[]
+  playBids: MutableBid[]
   founderPortion: number
   resolvedValuation: number
 }) {
@@ -345,8 +316,7 @@ function ResultsText(props: {
   } else {
     return (
       <div className="rounded-md  bg-rose-100 p-3 text-center font-bold text-rose-500 shadow-sm">
-        Funding unsuccessful: only {formatMoney(totalFunding)} worth of bids
-        were made. The project will not proceed :{'('}
+        Funding unsuccessful. The project will not proceed :{'('}
       </div>
     )
   }
