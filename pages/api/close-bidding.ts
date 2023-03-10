@@ -2,11 +2,15 @@ import { Database } from '@/db/database.types'
 import { NextRequest, NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from './_db'
-import { sortBy } from 'lodash'
+import sortBy from 'lodash/sortBy'
 
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
+  // From https://github.com/lodash/lodash/issues/5525
+  unstable_allowDynamic: [
+    '**/node_modules/lodash/_root.js', // use a glob to allow anything in the function-bind 3rd party module
+  ],
 }
 
 type Bid = Database['public']['Tables']['bids']['Row']
