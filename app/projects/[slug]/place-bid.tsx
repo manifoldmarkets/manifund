@@ -12,6 +12,10 @@ import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
 import { FounderPortionBox } from './founder-portion-box'
 import { Tooltip } from '@/components/tooltip'
+import { Bid } from '@/db/bid'
+import { SupabaseClient } from '@supabase/supabase-js'
+import { TOTAL_SHARES } from '@/db/project'
+import uuid from 'react-uuid'
 
 type BidType = Database['public']['Enums']['bid_type']
 
@@ -126,17 +130,21 @@ export function PlaceBid(props: {
         loading={submitting}
         onClick={async () => {
           setSubmitting(true)
-          const { error } = await supabase.from('bids').insert([
-            {
-              project: projectId,
-              bidder: userId,
-              valuation: roundLargeNumber(valuation),
-              amount: roundLargeNumber(amount),
-              type: bidType,
-            },
-          ])
+          const newBid = {
+            id: uuid(),
+            project: projectId,
+            bidder: userId,
+            valuation: roundLargeNumber(valuation),
+            amount: roundLargeNumber(amount),
+            status: 'pending',
+            type: bidType,
+          } as Bid
+          const { error } = await supabase.from('bids').insert([newBid])
           if (error) {
             throw error
+          }
+          if (projectStage === 'active') {
+            await findAndMakeTrades(newBid, supabase)
           }
           setSubmitting(false)
           router.refresh()
@@ -147,4 +155,101 @@ export function PlaceBid(props: {
       </Button>
     </div>
   )
+}
+
+async function findAndMakeTrades(bid: Bid, supabase: SupabaseClient) {
+  const newOfferType = bid.type
+  const { data, error } = await supabase
+    .from('bids')
+    .select()
+    .eq('project', bid.project)
+    .eq('type', newOfferType == 'buy' ? 'sell' : 'buy')
+    .eq('status', 'pending')
+    .order('valuation', { ascending: newOfferType == 'buy' })
+  if (error) {
+    throw error
+  }
+  let i = 0
+  let budget = bid.amount
+  while (budget > 0 && i < data.length) {
+    if (
+      newOfferType === 'buy'
+        ? data[i].valuation > bid.valuation
+        : data[i].valuation < bid.valuation
+    ) {
+      return
+    }
+    const tradeAmount = Math.min(budget, data[i].amount)
+    budget -= tradeAmount
+    await makeTrade(
+      newOfferType === 'buy' ? bid : data[i],
+      newOfferType === 'buy' ? data[i] : bid,
+      tradeAmount,
+      data[i].valuation,
+      supabase
+    )
+    i++
+  }
+}
+
+async function makeTrade(
+  buyBid: Bid,
+  sellBid: Bid,
+  amount: number,
+  valuation: number,
+  supabase: SupabaseClient
+) {
+  const updateBuyBid = async () => {
+    const { error } = await supabase
+      .from('bids')
+      .update({
+        amount: buyBid.amount - amount,
+        // May have issues with floating point arithmetic errors
+        status: buyBid.amount === amount ?? 'resolved',
+      })
+      .eq('id', buyBid.id)
+    if (error) {
+      throw error
+    }
+  }
+  updateBuyBid()
+  const updateSellBid = async () => {
+    const { error } = await supabase
+      .from('bids')
+      .update({
+        amount: sellBid.amount - amount,
+        status: sellBid.amount === amount ?? 'resolved',
+      })
+      .eq('id', sellBid.id)
+    if (error) {
+      throw error
+    }
+  }
+  updateSellBid()
+  const addSharesTxn = async () => {
+    const { error } = await supabase.from('txns').insert({
+      amount: (amount / valuation) * TOTAL_SHARES,
+      from_id: sellBid.bidder,
+      to_id: buyBid.bidder,
+      project: buyBid.project,
+      token: buyBid.project,
+    })
+    if (error) {
+      throw error
+    }
+  }
+  addSharesTxn()
+  const addUSDTxn = async () => {
+    const { error } = await supabase.from('txns').insert({
+      amount,
+      from_id: buyBid.bidder,
+      to_id: sellBid.bidder,
+      project: buyBid.project,
+      token: 'USD',
+    })
+    if (error) {
+      throw error
+    }
+  }
+  addUSDTxn()
 }
