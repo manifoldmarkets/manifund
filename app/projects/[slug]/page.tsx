@@ -79,7 +79,14 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       {user && !profile?.accreditation_status && <NotAccredited />}
       {!user && <SignInButton />}
       <div className="h-6" />
-      <Tabs project={project} user={profile} comments={comments} bids={bids} />
+      <Tabs
+        project={project}
+        user={profile}
+        comments={comments}
+        bids={bids}
+        userSpendableFunds={userSpendableFunds}
+        userSellableShares={userSellableShares}
+      />
       {isAdmin(user) && <CloseBidding project={project} />}
     </div>
   )

@@ -13,8 +13,17 @@ export function Tabs(props: {
   comments: CommentAndProfile[]
   user: Profile | null
   bids: BidAndProfile[]
+  userSpendableFunds: number
+  userSellableShares: number
 }) {
-  const { project, comments, user, bids } = props
+  const {
+    project,
+    comments,
+    user,
+    bids,
+    userSpendableFunds,
+    userSellableShares,
+  } = props
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentTab = searchParams.get('tab')
@@ -72,7 +81,13 @@ export function Tabs(props: {
       </div>
       <div className="py-6">
         {currentTab === 'bids' ? (
-          <Bids bids={bids} stage={project.stage} />
+          <Bids
+            bids={bids}
+            stage={project.stage}
+            userId={user?.id}
+            userSpendableFunds={userSpendableFunds}
+            userSellableShares={userSellableShares}
+          />
         ) : (
           <Comments project={project} comments={comments} user={user} />
         )}
