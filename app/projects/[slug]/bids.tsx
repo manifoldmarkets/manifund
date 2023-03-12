@@ -38,7 +38,7 @@ export function Bids(props: {
     const sellBids = bids.filter((bid) => bid.type === 'sell')
     return (
       <Row className="w-full justify-center">
-        <div className="flex w-full flex-col xl:flex-row">
+        <div className="flex w-full flex-col">
           <Col>
             {buyBids.length !== 0 && <h1 className="text-xl">Buy Offers</h1>}
             {buyBids.map((bid) => (
