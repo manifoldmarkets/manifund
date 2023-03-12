@@ -30,7 +30,7 @@ export function PlaceBid(props: {
   founderPortion: number
   userId: string
   userSpendableFunds: number
-  userShares: number
+  userSellableShares: number
 }) {
   const {
     projectId,
@@ -39,7 +39,7 @@ export function PlaceBid(props: {
     founderPortion,
     userId,
     userSpendableFunds,
-    userShares,
+    userSellableShares,
   } = props
   const { supabase } = useSupabase()
   const router = useRouter()
@@ -64,15 +64,16 @@ export function PlaceBid(props: {
   }, [valuation, sellablePortion])
 
   let errorMessage: string | null = null
-  // First condition doesn't yet account for other sell shares already made on this project
   if (
     projectStage == 'active' &&
-    userShares < (amount / valuation) * TOTAL_SHARES &&
+    userSellableShares < (amount / valuation) * TOTAL_SHARES &&
     bidType == 'sell'
   ) {
     errorMessage = `You don't hold enough equity to make this offer. You currently hold ${formatLargeNumber(
-      (userShares / TOTAL_SHARES) * 100
-    )}% of the equity in this project.`
+      (userSellableShares / TOTAL_SHARES) * 100
+    )}% of the equity in this project and have already offered to sell ${formatLargeNumber(
+      (userSellableShares / TOTAL_SHARES) * 100
+    )}% of it.`
   } else if (amount > userSpendableFunds && bidType == 'buy') {
     errorMessage = `You don't have enough funds to place this bid. If all of the buy bids you have already placed are accepted, you will only have ${formatMoney(
       userSpendableFunds

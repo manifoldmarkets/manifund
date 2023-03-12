@@ -31,7 +31,9 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const project = await getFullProjectBySlug(supabase, slug)
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
-  const spendableFunds = user ? await getSpendableFunds(supabase, user.id) : 0
+  const { userSpendableFunds, userSellableShares } = user
+    ? await getUserFundsAndShares(supabase, user.id, project.id)
+    : { userSpendableFunds: 0, userSellableShares: 0 }
   const comments = await getCommentsByProject(supabase, project.id)
   const bids = await getBidsByProject(supabase, project.id)
 
@@ -70,7 +72,8 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           minFunding={project.min_funding}
           founderPortion={project.founder_portion}
           userId={user?.id}
-          userSpendableFunds={spendableFunds}
+          userSpendableFunds={userSpendableFunds}
+          userSellableShares={userSellableShares}
         />
       )}
       {user && !profile?.accreditation_status && <NotAccredited />}
@@ -100,16 +103,45 @@ function NotAccredited() {
   )
 }
 
-async function getSpendableFunds(supabase: SupabaseClient, userId: string) {
+async function getUserFundsAndShares(
+  supabase: SupabaseClient,
+  userId: string,
+  projectId: string
+) {
   const incomingTxns = await getIncomingTxnsByUser(supabase, userId)
   const outgoingTxns = await getOutgoingTxnsByUser(supabase, userId)
   const userBids = await getBidsByUser(supabase, userId)
-  const currentBalance = calculateUserBalance(incomingTxns, outgoingTxns)
-  let balanceMinusBids = currentBalance
-  userBids.forEach((bid) => {
-    if (bid.type == 'buy') {
-      balanceMinusBids -= bid.amount
-    }
-  })
-  return balanceMinusBids
+
+  const getUserSellableShares = () => {
+    const incomingShares = incomingTxns
+      .filter((txn) => txn.token === projectId)
+      .reduce((acc, txn) => acc + txn.amount, 0)
+    const outgoingShares = incomingTxns
+      .filter((txn) => txn.token === projectId)
+      .reduce((acc, txn) => acc + txn.amount, 0)
+    const totalSharesOffered = userBids
+      .filter(
+        (bid) =>
+          bid.type === 'sell' &&
+          bid.status === 'pending' &&
+          bid.project === projectId
+      )
+      .reduce((acc, bid) => acc + bid.amount, 0)
+    return incomingShares - outgoingShares - totalSharesOffered
+  }
+  const userSellableShares = getUserSellableShares()
+
+  const getUserSpendableFunds = async () => {
+    const currentBalance = calculateUserBalance(incomingTxns, outgoingTxns)
+    let balanceMinusBids = currentBalance
+    userBids.forEach((bid) => {
+      if (bid.type == 'buy') {
+        balanceMinusBids -= bid.amount
+      }
+    })
+    return balanceMinusBids
+  }
+  const userSpendableFunds = await getUserSpendableFunds()
+
+  return { userSpendableFunds, userSellableShares }
 }
