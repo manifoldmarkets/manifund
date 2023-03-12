@@ -6,7 +6,11 @@ import { useState, useEffect } from 'react'
 import { Button } from 'components/button'
 import { useSupabase } from '@/db/supabase-provider'
 import { Subtitle } from '@/components/subtitle'
-import { formatMoney, roundLargeNumber } from '@/utils/formatting'
+import {
+  formatLargeNumber,
+  formatMoney,
+  roundLargeNumber,
+} from '@/utils/formatting'
 import { Database } from '@/db/database.types'
 import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
@@ -26,6 +30,7 @@ export function PlaceBid(props: {
   founderPortion: number
   userId: string
   userSpendableFunds: number
+  userShares: number
 }) {
   const {
     projectId,
@@ -34,6 +39,7 @@ export function PlaceBid(props: {
     founderPortion,
     userId,
     userSpendableFunds,
+    userShares,
   } = props
   const { supabase } = useSupabase()
   const router = useRouter()
@@ -42,8 +48,10 @@ export function PlaceBid(props: {
   const minValuation = Math.round(minFunding / sellablePortion)
 
   const [valuation, setValuation] = useState<number>(minValuation)
-  const [bid_portion, setBidPortion] = useState<number>(0)
-  const amount = (bid_portion * (valuation * sellablePortion)) / 100
+  const [bidPortion, setBidPortion] = useState<number>(0)
+  const [bidType, setBidType] = useState<BidType>('buy')
+  const [submitting, setSubmitting] = useState(false)
+  const amount = (bidPortion * (valuation * sellablePortion)) / 100
   const [marks, setMarks] = useState<{ [key: number]: string }>({})
   useEffect(() => {
     setMarks({
@@ -55,11 +63,17 @@ export function PlaceBid(props: {
     })
   }, [valuation, sellablePortion])
 
-  const [bidType, setBidType] = useState<BidType>('buy')
-  const [submitting, setSubmitting] = useState(false)
-
   let errorMessage: string | null = null
-  if (amount > userSpendableFunds && bidType == 'buy') {
+  // First condition doesn't yet account for other sell shares already made on this project
+  if (
+    projectStage == 'active' &&
+    userShares < (amount / valuation) * TOTAL_SHARES &&
+    bidType == 'sell'
+  ) {
+    errorMessage = `You don't hold enough equity to make this offer. You currently hold ${formatLargeNumber(
+      (userShares / TOTAL_SHARES) * 100
+    )}% of the equity in this project.`
+  } else if (amount > userSpendableFunds && bidType == 'buy') {
     errorMessage = `You don't have enough funds to place this bid. If all of the buy bids you have already placed are accepted, you will only have ${formatMoney(
       userSpendableFunds
     )} left.`
@@ -102,7 +116,7 @@ export function PlaceBid(props: {
       <label htmlFor="bid">Amount (USD)</label>
       <div className="flex w-full flex-row">
         <MySlider
-          value={bid_portion ?? 0}
+          value={bidPortion ?? 0}
           marks={marks}
           onChange={(value) => setBidPortion(value as number)}
         />
