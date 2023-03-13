@@ -34,13 +34,9 @@ export default async function handler(req: NextRequest) {
   const bids = (await getBidsForResolution(supabase, id)).filter(
     (bid) => bid.status === 'pending'
   )
-  console.log(bids)
-  console.log('founder shares: ', founderShares)
   let founderPortion = founderShares / TOTAL_SHARES
-  console.log(founderPortion)
   const project = await getProjectById(supabase, id)
   const resolution = resolveBids(bids, minFunding, founderPortion)
-  console.log(resolution)
   sendAuctionCloseEmails(
     bids,
     project,
@@ -160,14 +156,12 @@ export function resolveBids(
     const valuation = sortedBids[i].valuation
     totalFunding += sortedBids[i].amount
     const unsoldPortion = 1 - founderPortion - totalFunding / valuation
-    console.log('unsold portion', unsoldPortion, valuation, i)
     // If all shares are sold, bids go through
     if (unsoldPortion <= 0) {
       // Current bid gets partially paid out
       resolution.amountsPaid[sortedBids[i].id] =
         sortedBids[i].amount + unsoldPortion * valuation
       resolution.valuation = valuation
-      console.log('valuation in rESoLVEbIDs', resolution.valuation, valuation)
       // Early return resolution data
       return resolution
       // If all bids are exhausted but the project has enough funding, bids go through
