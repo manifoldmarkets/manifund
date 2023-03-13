@@ -10,7 +10,6 @@ import { Avatar } from '@/components/avatar'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import { formatDistanceToNow } from 'date-fns'
 import { Trade } from './tabs'
-import { Divider } from '@/components/divider'
 
 export function Shareholders(props: { trades: Trade[]; creator: Profile }) {
   const { trades, creator } = props
