@@ -9,6 +9,7 @@ import { Bids } from './bids'
 import { BidAndProfile } from '@/db/bid'
 import { TxnAndProfiles } from '@/db/txn'
 import { History } from './history'
+import { Shareholders } from './shareholders'
 
 export function Tabs(props: {
   project: FullProject
@@ -21,7 +22,8 @@ export function Tabs(props: {
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentTab = searchParams.get('tab')
-  console.log(currentTab)
+  const trades = calculateTrades(txns)
+  const creator = project.profiles
 
   const tabs = [
     {
@@ -50,8 +52,7 @@ export function Tabs(props: {
       href: '?tab=shareholders',
       count: 0,
       current: currentTab === 'shareholders',
-      //leaving stages blank because tab is empty
-      stages: [],
+      stages: ['active', 'completed'],
     },
   ]
   return (
@@ -97,9 +98,39 @@ export function Tabs(props: {
         {currentTab === 'comments' && (
           <Comments project={project} comments={comments} user={user} />
         )}
-        {currentTab === 'history' && <History txns={txns} />}
-        {currentTab === 'shareholders' && <div>Shareholders</div>}
+        {currentTab === 'history' && <History trades={trades} />}
+        {currentTab === 'shareholders' && (
+          <Shareholders trades={trades} creator={creator} />
+        )}
       </div>
     </div>
   )
+}
+
+export type Trade = {
+  bundle: string
+  toProfile: Profile
+  fromProfile: Profile
+  amountUSD: number
+  numShares: number
+  date: Date
+}
+
+function calculateTrades(txns: TxnAndProfiles[]) {
+  const tradeTxns = txns.filter((txn) => txn.bundle !== null)
+  const trades = Object.fromEntries(
+    tradeTxns.map((txn) => [txn.bundle, {} as Trade])
+  )
+  for (const txn of tradeTxns) {
+    if (txn.token === 'USD') {
+      trades[txn?.bundle ?? 0].amountUSD = txn.amount
+      trades[txn?.bundle ?? 0].date = new Date(txn.created_at)
+      trades[txn?.bundle ?? 0].fromProfile = txn.profiles
+      trades[txn?.bundle ?? 0].bundle = txn.bundle
+    } else {
+      trades[txn?.bundle ?? 0].numShares = txn.amount
+      trades[txn?.bundle ?? 0].toProfile = txn.profiles
+    }
+  }
+  return Object.values(trades) as Trade[]
 }

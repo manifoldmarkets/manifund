@@ -7,18 +7,10 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import { formatDistanceToNow } from 'date-fns'
+import { Trade } from './tabs'
 
-type Trade = {
-  bundle: string
-  toProfile: Profile
-  fromProfile: Profile
-  amountUSD: number
-  numShares: number
-  date: Date
-}
-export function History(props: { txns: TxnAndProfiles[] }) {
-  const { txns } = props
-  const trades: Trade[] = genTrades(txns)
+export function History(props: { trades: Trade[] }) {
+  const { trades } = props
   const tradeDisplay = trades.map((trade) => {
     return (
       <Row key={trade.bundle} className="justify-center">
@@ -45,27 +37,4 @@ export function History(props: { txns: TxnAndProfiles[] }) {
     )
   })
   return <div>{tradeDisplay}</div>
-}
-
-function genTrades(txns: TxnAndProfiles[]) {
-  const tradeTxns = txns.filter((txn) => txn.bundle !== null)
-  console.log('tradeTxns', tradeTxns)
-  const trades = Object.fromEntries(
-    tradeTxns.map((txn) => [txn.bundle, {} as Trade])
-  )
-  console.log('trades', trades)
-  for (const txn of tradeTxns) {
-    if (txn.token === 'USD') {
-      trades[txn?.bundle ?? 0].amountUSD = txn.amount
-      trades[txn?.bundle ?? 0].date = new Date(txn.created_at)
-      trades[txn?.bundle ?? 0].fromProfile = txn.profiles
-      trades[txn?.bundle ?? 0].bundle = txn.bundle
-    } else {
-      trades[txn?.bundle ?? 0].numShares = txn.amount
-      trades[txn?.bundle ?? 0].toProfile = txn.profiles
-    }
-  }
-  console.log('trades 2', trades)
-  console.log('trades values', Object.values(trades))
-  return Object.values(trades) as Trade[]
 }
