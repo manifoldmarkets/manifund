@@ -67,6 +67,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       )}
       {user &&
         profile?.accreditation_status &&
+        project.stage !== 'not funded' &&
         (isClosed ? (
           <div className="rounded-md border border-gray-200 bg-white p-4 shadow-md">
             Bidding is closed.
