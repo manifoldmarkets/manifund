@@ -8,7 +8,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Bids } from './bids'
 import { BidAndProfile } from '@/db/bid'
 import { TxnAndProfiles } from '@/db/txn'
-import { History } from './history'
 import { Shareholders } from './shareholders'
 
 export function Tabs(props: {
@@ -39,13 +38,6 @@ export function Tabs(props: {
       count: bids.length,
       current: currentTab === 'bids',
       stages: ['proposal', 'active', 'completed'],
-    },
-    {
-      name: 'History',
-      href: '?tab=history',
-      count: 0,
-      current: currentTab === 'history',
-      stages: ['active', 'completed'],
     },
     {
       name: 'Shareholders',
@@ -98,7 +90,6 @@ export function Tabs(props: {
         {currentTab === 'comments' && (
           <Comments project={project} comments={comments} user={user} />
         )}
-        {currentTab === 'history' && <History trades={trades} />}
         {currentTab === 'shareholders' && (
           <Shareholders trades={trades} creator={creator} />
         )}
