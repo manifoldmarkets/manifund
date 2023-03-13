@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { HTMLContent } from '@tiptap/react'
 import { getFullCommentById } from '@/db/comment'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { getUserEmail } from '@/db/profile'
 
 type CommentProps = {
   commentId: string
@@ -33,6 +34,7 @@ export default async function handler(
   body.append('subject', `New comment on ${comment.projects.title}`)
   body.append('template', 'comment_on_project')
   body.append('h:X-Mailgun-Variables', mailgunVars)
+  body.append('o:tag', 'comment_on_project')
 
   const resp = await fetch('https://api.mailgun.net/v3/manifund.org/messages', {
     method: 'POST',
@@ -50,15 +52,4 @@ export default async function handler(
     htmlContent,
   })
   return res
-}
-
-async function getUserEmail(supabaseAdmin: SupabaseClient, userId: string) {
-  const { data, error } = await supabaseAdmin
-    .from('users')
-    .select('email')
-    .eq('id', userId)
-  if (error) {
-    console.log(error)
-  }
-  return data ? data[0].email : null
 }

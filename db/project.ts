@@ -1,5 +1,5 @@
 import { Database } from './database.types'
-import { SupabaseClient, User } from '@supabase/supabase-js'
+import { SupabaseClient } from '@supabase/supabase-js'
 import { Bid } from './bid'
 import { Txn } from './txn'
 import { Profile } from './profile'

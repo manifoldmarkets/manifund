@@ -313,7 +313,6 @@ function ResultsText(props: {
     0
   )
   let portionSold = totalFunding / resolution.valuation
-  console.log('valuation in results text', resolution.valuation)
   // accounting for floating point arithmetic errors
   if (portionSold + founderPortion >= 0.999999999999) {
     return (
