@@ -5,6 +5,7 @@ import { createAdminClient } from './_db'
 import { TOTAL_SHARES } from '@/db/project'
 
 import sortBy from 'lodash/sortBy'
+import uuid from 'react-uuid'
 
 export const config = {
   runtime: 'edge',
@@ -75,17 +76,27 @@ async function addTxns(
   //create txn for each bid that goes through
   for (let i = 0; i < bids.length + 1; i++) {
     if (resolution.amountsPaid[bids[i].id] > 0) {
-      let numShares =
+      const numShares =
         (resolution.amountsPaid[bids[i].id] / resolution.valuation) *
         TOTAL_SHARES
-      addTxn(supabase, creator, bids[i].bidder, numShares, projectId, projectId)
+      const txnBundle = uuid()
+      addTxn(
+        supabase,
+        creator,
+        bids[i].bidder,
+        numShares,
+        projectId,
+        projectId,
+        txnBundle
+      )
       addTxn(
         supabase,
         bids[i].bidder,
         creator,
         resolution.amountsPaid[bids[i].id],
         'USD',
-        projectId
+        projectId,
+        txnBundle
       )
     }
   }
@@ -97,14 +108,16 @@ async function addTxn(
   to_id: string,
   amount: number,
   token: string,
-  project: string
+  project: string,
+  bundle: string
 ) {
-  let txn = {
+  const txn = {
     from_id,
     to_id,
     amount,
     token,
     project,
+    bundle,
   }
   const { error } = await supabase.from('txns').insert([txn])
   if (error) {

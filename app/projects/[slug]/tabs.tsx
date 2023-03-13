@@ -7,12 +7,14 @@ import { CommentAndProfile } from '@/db/comment'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Bids } from './bids'
 import { BidAndProfile } from '@/db/bid'
+import { TxnAndProfiles } from '@/db/txn'
 
 export function Tabs(props: {
   project: FullProject
   comments: CommentAndProfile[]
   user: Profile | null
   bids: BidAndProfile[]
+  txns: TxnAndProfiles[]
 }) {
   const { project, comments, user, bids } = props
   const router = useRouter()
@@ -25,12 +27,29 @@ export function Tabs(props: {
       href: '?tab=comments',
       count: comments.length,
       current: currentTab !== 'bids',
+      stages: ['proposal', 'active', 'completed', 'not funded'],
     },
     {
       name: 'Bids',
       href: '?tab=bids',
       count: bids.length,
       current: currentTab === 'bids',
+      stages: ['proposal', 'active', 'completed'],
+    },
+    {
+      name: 'History',
+      href: '?tab=history',
+      count: 0,
+      current: currentTab === 'history',
+      stages: ['active', 'completed'],
+    },
+    {
+      name: 'Shareholders',
+      href: '?tab=shareholders',
+      count: 0,
+      current: currentTab === 'shareholders',
+      //leaving stages blank because tab is empty
+      stages: [],
     },
   ]
   return (
@@ -48,7 +67,8 @@ export function Tabs(props: {
                   tab.current
                     ? 'border-orange-500 text-orange-600'
                     : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700',
-                  'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium'
+                  'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium',
+                  tab.stages.includes(project.stage) ? 'inline-block' : 'hidden'
                 )}
                 aria-current={tab.current ? 'page' : undefined}
               >
@@ -71,11 +91,12 @@ export function Tabs(props: {
         </div>
       </div>
       <div className="py-6">
-        {currentTab === 'bids' ? (
-          <Bids bids={bids} stage={project.stage} />
-        ) : (
+        {currentTab === 'bids' && <Bids bids={bids} stage={project.stage} />}
+        {currentTab === 'comments' && (
           <Comments project={project} comments={comments} user={user} />
         )}
+        {currentTab === 'history' && <div>History</div>}
+        {currentTab === 'shareholders' && <div>Shareholders</div>}
       </div>
     </div>
   )
