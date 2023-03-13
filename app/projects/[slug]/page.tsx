@@ -107,7 +107,7 @@ async function getSpendableFunds(supabase: SupabaseClient, userId: string) {
   const currentBalance = calculateUserBalance(incomingTxns, outgoingTxns)
   let balanceMinusBids = currentBalance
   userBids.forEach((bid) => {
-    if (bid.type == 'buy') {
+    if (bid.type == 'buy' && bid.status == 'pending') {
       balanceMinusBids -= bid.amount
     }
   })
