@@ -44,5 +44,5 @@ export async function getBidsForResolution(
   if (error) {
     throw error
   }
-  return data.filter((bid) => bid.status !== 'pending') as BidAndProfile[]
+  return data.filter((bid) => bid.status === 'pending') as BidAndProfile[]
 }
