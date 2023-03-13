@@ -26,8 +26,8 @@ async function closeBidding(project: Project) {
     },
     body: JSON.stringify({
       id: project.id,
-      min_funding: project.min_funding,
-      founder_portion: project.founder_portion,
+      minFunding: project.min_funding,
+      founderShares: project.founder_portion,
       creator: project.creator,
     }),
   })
