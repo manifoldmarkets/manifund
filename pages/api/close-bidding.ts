@@ -63,19 +63,12 @@ async function addTxns(
   resolution: Resolution,
   creator: string
 ) {
-  for (let i = 0; i < bids.length; i++) {
-    if (resolution.amountsPaid[bids[i].id] > 0) {
-      const actualAmountPaid = Math.floor(resolution.amountsPaid[bids[i].id])
+  for (const bid of bids) {
+    if (resolution.amountsPaid[bid.id] > 0) {
+      const actualAmountPaid = Math.floor(resolution.amountsPaid[bid.id])
       const numShares = (actualAmountPaid / resolution.valuation) * TOTAL_SHARES
-      addTxn(supabase, creator, bids[i].bidder, numShares, projectId, projectId)
-      addTxn(
-        supabase,
-        bids[i].bidder,
-        creator,
-        actualAmountPaid,
-        'USD',
-        projectId
-      )
+      addTxn(supabase, creator, bid.bidder, numShares, projectId, projectId)
+      addTxn(supabase, bid.bidder, creator, actualAmountPaid, 'USD', projectId)
     }
   }
 }
@@ -120,14 +113,13 @@ async function updateBidsStatus(
   bids: Bid[],
   resolution: Resolution
 ) {
-  for (let i = 0; i < bids.length; i++) {
+  for (const bid of bids) {
     const { error } = await supabase
       .from('bids')
       .update({
-        status:
-          resolution.amountsPaid[bids[i].id] > 0 ? 'accepted' : 'declined',
+        status: resolution.amountsPaid[bid.id] > 0 ? 'accepted' : 'declined',
       })
-      .eq('id', bids[i].id)
+      .eq('id', bid.id)
     if (error) {
       console.error('updateBidStatus', error)
     }
@@ -200,15 +192,15 @@ async function sendAuctionCloseEmails(
     founderPortion
   )
   const claimFundsHTML = genClaimFundsHTML(resolution)
-  for (let i = 0; i < bids.length; i++) {
-    const bidResolutionText = genBidResolutionText(bids[i], resolution)
+  for (const bid of bids) {
+    const bidResolutionText = genBidResolutionText(bid, resolution)
     await sendBidderEmail(
-      resolution.amountsPaid[bids[i].id] > 0,
+      resolution.amountsPaid[bid.id] > 0,
       auctionResolutionText,
       bidResolutionText,
       project.title,
       projectUrl,
-      bids[i].bidder
+      bid.bidder
     )
   }
   await sendCreatorEmail(
