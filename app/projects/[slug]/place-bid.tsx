@@ -38,18 +38,18 @@ export function PlaceBid(props: {
   const minValuation = Math.round(minFunding / sellablePortion)
 
   const [valuation, setValuation] = useState<number>(minValuation)
-  const [bid_portion, setBidPortion] = useState<number>(0)
-  const amount = (bid_portion * (valuation * sellablePortion)) / 100
+  const fundable = valuation * sellablePortion
+  const [amount, setAmount] = useState<number>(0)
   const [marks, setMarks] = useState<{ [key: number]: string }>({})
   useEffect(() => {
     setMarks({
       0: '$0',
-      25: formatMoney((valuation * sellablePortion) / 4),
-      50: formatMoney((valuation * sellablePortion) / 2),
-      75: formatMoney(((valuation * sellablePortion) / 4) * 3),
-      100: formatMoney(valuation * sellablePortion),
+      25: formatMoney(fundable / 4),
+      50: formatMoney(fundable / 2),
+      75: formatMoney((fundable / 4) * 3),
+      100: formatMoney(fundable),
     })
-  }, [valuation, sellablePortion])
+  }, [fundable])
 
   const [bidType, setBidType] = useState<BidType>('buy')
   const [submitting, setSubmitting] = useState(false)
@@ -96,11 +96,19 @@ export function PlaceBid(props: {
       </div>
 
       <label htmlFor="bid">Amount (USD)</label>
-      <div className="flex w-full flex-row">
+      <div className="flex w-full flex-col gap-4 md:flex-row">
+        <Input
+          value={amount}
+          type="number"
+          onChange={(event) => setAmount(Number(event.target.value))}
+        />
         <MySlider
-          value={bid_portion ?? 0}
+          value={100 * (amount / fundable)}
           marks={marks}
-          onChange={(value) => setBidPortion(value as number)}
+          onChange={(value) => {
+            const amount = ((value as number) / 100) * fundable
+            setAmount(roundLargeNumber(amount))
+          }}
         />
       </div>
       <Tooltip
@@ -140,7 +148,7 @@ export function PlaceBid(props: {
           }
           setSubmitting(false)
           router.refresh()
-          setBidPortion(0)
+          setAmount(0)
         }}
       >
         Offer {formatMoney(amount)} @ {formatMoney(valuation)} Project Valuation
