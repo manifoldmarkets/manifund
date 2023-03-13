@@ -8,6 +8,7 @@ import { getProfileById } from '@/db/profile'
 import { getUserEmail } from '@/db/profile'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import { constants } from 'fs/promises'
 
 export const config = {
   runtime: 'edge',
@@ -65,7 +66,7 @@ async function addTxns(
   for (let i = 0; i < bids.length; i++) {
     if (resolution.amountsPaid[bids[i].id] > 0) {
       const actualAmountPaid = Math.floor(resolution.amountsPaid[bids[i].id])
-      let numShares = (actualAmountPaid / resolution.valuation) * TOTAL_SHARES
+      const numShares = (actualAmountPaid / resolution.valuation) * TOTAL_SHARES
       addTxn(supabase, creator, bids[i].bidder, numShares, projectId, projectId)
       addTxn(
         supabase,
@@ -87,7 +88,7 @@ async function addTxn(
   token: string,
   project: string
 ) {
-  let txn = {
+  const txn = {
     from_id: fromId,
     to_id: toId,
     amount,
@@ -224,14 +225,14 @@ function genAuctionResolutionText(
   resolution: Resolution,
   founderPortion: number
 ) {
-  let totalFunding = bids.reduce(
+  const totalFunding = bids.reduce(
     (total, current) =>
       resolution.amountsPaid[current.id] > 0
         ? total + resolution.amountsPaid[current.id]
         : total,
     0
   )
-  let portionSold = totalFunding / resolution.valuation
+  const portionSold = totalFunding / resolution.valuation
   if (portionSold + founderPortion >= 0.999999999999) {
     return `This project was successfully funded. All shares were sold at a valuation of 
         ${formatMoney(resolution.valuation)} and the project recieved
