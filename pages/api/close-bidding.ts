@@ -4,11 +4,9 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from './_db'
 import { Project, TOTAL_SHARES } from '@/db/project'
 import { getProjectById } from '@/db/project'
-import { getProfileById } from '@/db/profile'
 import { getUserEmail } from '@/db/profile'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
-import { constants } from 'fs/promises'
 import uuid from 'react-uuid'
 
 export const config = {
@@ -36,7 +34,6 @@ export default async function handler(req: NextRequest) {
   const bids = (await getBidsForResolution(supabase, id)).filter(
     (bid) => bid.status === 'pending'
   )
-  console.log(bids)
   let founderPortion = founderShares / TOTAL_SHARES
   const project = await getProjectById(supabase, id)
   const resolution = resolveBids(bids, minFunding, founderPortion)
@@ -70,48 +67,27 @@ async function addTxns(
       const actualAmountPaid = Math.floor(resolution.amountsPaid[bid.id])
       const numShares = (actualAmountPaid / resolution.valuation) * TOTAL_SHARES
       const txnBundle = uuid()
-      addTxn(
-        supabase,
-        creator,
-        bid.bidder,
-        numShares,
-        projectId,
-        projectId,
-        txnBundle
-      )
-      addTxn(
-        supabase,
-        bid.bidder,
-        creator,
-        actualAmountPaid,
-        'USD',
-        projectId,
-        txnBundle
-      )
+      const sharesTxn = {
+        from_id: creator,
+        to_id: bid.bidder,
+        amount: numShares,
+        token: projectId,
+        project: projectId,
+        bundle: txnBundle,
+      }
+      const usdTxn = {
+        from_id: bid.bidder,
+        to_id: creator,
+        amount: actualAmountPaid,
+        token: 'USD',
+        project: projectId,
+        bundle: txnBundle,
+      }
+      const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
+      if (error) {
+        console.error('createTxn', error)
+      }
     }
-  }
-}
-
-async function addTxn(
-  supabase: SupabaseClient,
-  fromId: string,
-  toId: string,
-  amount: number,
-  token: string,
-  project: string,
-  bundle: string
-) {
-  const txn = {
-    from_id: fromId,
-    to_id: toId,
-    amount,
-    token,
-    project,
-    bundle,
-  }
-  const { error } = await supabase.from('txns').insert([txn])
-  if (error) {
-    console.error('createTxn', error)
   }
 }
 

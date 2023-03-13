@@ -122,14 +122,15 @@ function calculateTrades(txns: TxnAndProfiles[]) {
     tradeTxns.map((txn) => [txn.bundle, {} as Trade])
   )
   for (const txn of tradeTxns) {
+    const trade = trades[txn?.bundle ?? 0]
     if (txn.token === 'USD') {
-      trades[txn?.bundle ?? 0].amountUSD = txn.amount
-      trades[txn?.bundle ?? 0].date = new Date(txn.created_at)
-      trades[txn?.bundle ?? 0].fromProfile = txn.profiles
-      trades[txn?.bundle ?? 0].bundle = txn.bundle
+      trade.amountUSD = txn.amount
+      trade.date = new Date(txn.created_at)
+      trade.fromProfile = txn.profiles
+      trade.bundle = txn.bundle
     } else {
-      trades[txn?.bundle ?? 0].numShares = txn.amount
-      trades[txn?.bundle ?? 0].toProfile = txn.profiles
+      trade.numShares = txn.amount
+      trade.toProfile = txn.profiles
     }
   }
   return Object.values(trades) as Trade[]
