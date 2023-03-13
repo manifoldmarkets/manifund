@@ -33,3 +33,19 @@ export async function getBidsByProject(
   }
   return data.filter((bid) => bid.status !== 'rejected') as BidAndProfile[]
 }
+
+export async function getBidsForResolution(
+  supabase: SupabaseClient,
+  project: string
+) {
+  const { data, error } = await supabase
+    .from('bids')
+    .select('*, profiles(*)')
+    .eq('project', project)
+    .neq('status', 'deleted')
+    .order('valuation', { ascending: false })
+  if (error) {
+    throw error
+  }
+  return data.filter((bid) => bid.status !== 'rejected') as BidAndProfile[]
+}
