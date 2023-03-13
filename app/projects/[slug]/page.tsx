@@ -35,6 +35,8 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const comments = await getCommentsByProject(supabase, project.id)
   const bids = await getBidsByProject(supabase, project.id)
 
+  const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
+  const isClosed = new Date() > closeDate
   const isOwnProject = user?.id === project.profiles.id
 
   const valuation =
@@ -63,16 +65,22 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           bids={project.bids.filter((bid) => bid.status === 'pending')}
         />
       )}
-      {user && profile?.accreditation_status && (
-        <PlaceBid
-          projectId={project.id}
-          projectStage={project.stage}
-          minFunding={project.min_funding}
-          founderPortion={project.founder_portion}
-          userId={user?.id}
-          userSpendableFunds={spendableFunds}
-        />
-      )}
+      {user &&
+        profile?.accreditation_status &&
+        (isClosed ? (
+          <div className="rounded-md border border-gray-200 bg-white p-4 shadow-md">
+            Bidding is closed.
+          </div>
+        ) : (
+          <PlaceBid
+            projectId={project.id}
+            projectStage={project.stage}
+            minFunding={project.min_funding}
+            founderPortion={project.founder_portion}
+            userId={user?.id}
+            userSpendableFunds={spendableFunds}
+          />
+        ))}
       {user && !profile?.accreditation_status && <NotAccredited />}
       {!user && <SignInButton />}
       <div className="h-6" />
