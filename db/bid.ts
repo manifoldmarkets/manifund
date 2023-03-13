@@ -12,7 +12,6 @@ export async function getBidsByUser(supabase: SupabaseClient, user: string) {
     .from('bids')
     .select('*, projects(*)')
     .eq('bidder', user)
-    .eq('status', 'pending')
   if (error) {
     throw error
   }
@@ -27,11 +26,10 @@ export async function getBidsByProject(
     .from('bids')
     .select('*, profiles(*)')
     .eq('project', project)
-    .neq('status', 'deleted')
   if (error) {
     throw error
   }
-  return data.filter((bid) => bid.status !== 'rejected') as BidAndProfile[]
+  return data.filter((bid) => bid.status === 'pending') as BidAndProfile[]
 }
 
 export async function getBidsForResolution(
@@ -42,10 +40,9 @@ export async function getBidsForResolution(
     .from('bids')
     .select('*, profiles(*)')
     .eq('project', project)
-    .neq('status', 'deleted')
     .order('valuation', { ascending: false })
   if (error) {
     throw error
   }
-  return data.filter((bid) => bid.status !== 'rejected') as BidAndProfile[]
+  return data.filter((bid) => bid.status !== 'pending') as BidAndProfile[]
 }

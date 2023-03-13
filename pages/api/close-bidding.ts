@@ -62,17 +62,16 @@ async function addTxns(
   resolution: Resolution,
   creator: string
 ) {
-  for (let i = 0; i < bids.length + 1; i++) {
+  for (let i = 0; i < bids.length; i++) {
     if (resolution.amountsPaid[bids[i].id] > 0) {
-      let numShares =
-        (resolution.amountsPaid[bids[i].id] / resolution.valuation) *
-        TOTAL_SHARES
+      const actualAmountPaid = Math.floor(resolution.amountsPaid[bids[i].id])
+      let numShares = (actualAmountPaid / resolution.valuation) * TOTAL_SHARES
       addTxn(supabase, creator, bids[i].bidder, numShares, projectId, projectId)
       addTxn(
         supabase,
         bids[i].bidder,
         creator,
-        resolution.amountsPaid[bids[i].id],
+        actualAmountPaid,
         'USD',
         projectId
       )
@@ -82,15 +81,15 @@ async function addTxns(
 
 async function addTxn(
   supabase: SupabaseClient,
-  from_id: string,
-  to_id: string,
+  fromId: string,
+  toId: string,
   amount: number,
   token: string,
   project: string
 ) {
   let txn = {
-    from_id,
-    to_id,
+    from_id: fromId,
+    to_id: toId,
     amount,
     token,
     project,
@@ -120,7 +119,7 @@ async function updateBidsStatus(
   bids: Bid[],
   resolution: Resolution
 ) {
-  for (let i = 0; i < bids.length + 1; i++) {
+  for (let i = 0; i < bids.length; i++) {
     const { error } = await supabase
       .from('bids')
       .update({
