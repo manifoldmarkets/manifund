@@ -361,11 +361,7 @@ async function sendBidderEmail(
     method: 'POST',
     body,
     headers: {
-      Authorization:
-        'Basic ' +
-        // Buffer.from('api:' + process.env.MAILGUN_KEY).toString('base64'),
-        // Instead of the above, use btoa
-        btoa('api:' + process.env.MAILGUN_KEY),
+      Authorization: 'Basic ' + btoa('api:' + process.env.MAILGUN_KEY),
     },
   })
 }

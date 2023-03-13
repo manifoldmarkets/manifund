@@ -19,7 +19,6 @@ export function Shareholders(props: { trades: Trade[]; creator: Profile }) {
   return (
     <Row className="w-full justify-center">
       <Col className="w-full max-w-lg">
-        {/* <h1 className="my-2 text-xl">Current Holders</h1> */}
         {sortedShareholders.map((shareholder) => (
           <Row
             key={shareholder.profile?.id}
