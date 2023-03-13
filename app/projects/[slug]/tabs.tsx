@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Bids } from './bids'
 import { BidAndProfile } from '@/db/bid'
 import { TxnAndProfiles } from '@/db/txn'
+import { History } from './history'
 
 export function Tabs(props: {
   project: FullProject
@@ -16,17 +17,18 @@ export function Tabs(props: {
   bids: BidAndProfile[]
   txns: TxnAndProfiles[]
 }) {
-  const { project, comments, user, bids } = props
+  const { project, comments, user, bids, txns } = props
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentTab = searchParams.get('tab')
+  console.log(currentTab)
 
   const tabs = [
     {
       name: 'Comments',
       href: '?tab=comments',
       count: comments.length,
-      current: currentTab !== 'bids',
+      current: currentTab === 'comments' || !currentTab,
       stages: ['proposal', 'active', 'completed', 'not funded'],
     },
     {
@@ -95,7 +97,7 @@ export function Tabs(props: {
         {currentTab === 'comments' && (
           <Comments project={project} comments={comments} user={user} />
         )}
-        {currentTab === 'history' && <div>History</div>}
+        {currentTab === 'history' && <History txns={txns} />}
         {currentTab === 'shareholders' && <div>Shareholders</div>}
       </div>
     </div>

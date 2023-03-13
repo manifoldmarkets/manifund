@@ -36,6 +36,7 @@ export default async function handler(req: NextRequest) {
   const bids = (await getBidsForResolution(supabase, id)).filter(
     (bid) => bid.status === 'pending'
   )
+  console.log(bids)
   let founderPortion = founderShares / TOTAL_SHARES
   const project = await getProjectById(supabase, id)
   const resolution = resolveBids(bids, minFunding, founderPortion)
