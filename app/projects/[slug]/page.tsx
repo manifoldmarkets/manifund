@@ -88,7 +88,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         ))}
       {user && !profile?.accreditation_status && <NotAccredited />}
       {!user && <SignInButton />}
-      <div className="h-6" />
+      <div className="h-6" id="tabs" />
       <Tabs
         project={project}
         user={profile}

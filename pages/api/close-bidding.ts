@@ -206,7 +206,7 @@ async function sendAuctionCloseEmails(
   resolution: Resolution,
   founderPortion: number
 ) {
-  const projectUrl = `https://manifund.org/projects/${project.slug}`
+  const projectUrl = `https://manifund.org/projects/${project.slug}?tab=history#tabs`
   const auctionResolutionText = genAuctionResolutionText(
     bids,
     resolution,
