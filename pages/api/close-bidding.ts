@@ -4,11 +4,10 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from './_db'
 import { Project, TOTAL_SHARES } from '@/db/project'
 import { getProjectById } from '@/db/project'
-import { getProfileById } from '@/db/profile'
 import { getUserEmail } from '@/db/profile'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
-import { constants } from 'fs/promises'
+import uuid from 'react-uuid'
 
 export const config = {
   runtime: 'edge',
@@ -67,30 +66,28 @@ async function addTxns(
     if (resolution.amountsPaid[bid.id] > 0) {
       const actualAmountPaid = Math.floor(resolution.amountsPaid[bid.id])
       const numShares = (actualAmountPaid / resolution.valuation) * TOTAL_SHARES
-      addTxn(supabase, creator, bid.bidder, numShares, projectId, projectId)
-      addTxn(supabase, bid.bidder, creator, actualAmountPaid, 'USD', projectId)
+      const txnBundle = uuid()
+      const sharesTxn = {
+        from_id: creator,
+        to_id: bid.bidder,
+        amount: numShares,
+        token: projectId,
+        project: projectId,
+        bundle: txnBundle,
+      }
+      const usdTxn = {
+        from_id: bid.bidder,
+        to_id: creator,
+        amount: actualAmountPaid,
+        token: 'USD',
+        project: projectId,
+        bundle: txnBundle,
+      }
+      const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
+      if (error) {
+        console.error('createTxn', error)
+      }
     }
-  }
-}
-
-async function addTxn(
-  supabase: SupabaseClient,
-  fromId: string,
-  toId: string,
-  amount: number,
-  token: string,
-  project: string
-) {
-  const txn = {
-    from_id: fromId,
-    to_id: toId,
-    amount,
-    token,
-    project,
-  }
-  const { error } = await supabase.from('txns').insert([txn])
-  if (error) {
-    console.error('createTxn', error)
   }
 }
 
@@ -185,7 +182,7 @@ async function sendAuctionCloseEmails(
   resolution: Resolution,
   founderPortion: number
 ) {
-  const projectUrl = `https://manifund.org/projects/${project.slug}`
+  const projectUrl = `https://manifund.org/projects/${project.slug}?tab=shareholders#tabs`
   const auctionResolutionText = genAuctionResolutionText(
     bids,
     resolution,
@@ -364,11 +361,7 @@ async function sendBidderEmail(
     method: 'POST',
     body,
     headers: {
-      Authorization:
-        'Basic ' +
-        // Buffer.from('api:' + process.env.MAILGUN_KEY).toString('base64'),
-        // Instead of the above, use btoa
-        btoa('api:' + process.env.MAILGUN_KEY),
+      Authorization: 'Basic ' + btoa('api:' + process.env.MAILGUN_KEY),
     },
   })
 }

@@ -7,30 +7,44 @@ import { CommentAndProfile } from '@/db/comment'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Bids } from './bids'
 import { BidAndProfile } from '@/db/bid'
+import { TxnAndProfiles } from '@/db/txn'
+import { Shareholders } from './shareholders'
 
 export function Tabs(props: {
   project: FullProject
   comments: CommentAndProfile[]
   user: Profile | null
   bids: BidAndProfile[]
+  txns: TxnAndProfiles[]
 }) {
-  const { project, comments, user, bids } = props
+  const { project, comments, user, bids, txns } = props
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentTab = searchParams.get('tab')
+  const trades = calculateTrades(txns)
+  const creator = project.profiles
 
   const tabs = [
     {
       name: 'Comments',
       href: '?tab=comments',
       count: comments.length,
-      current: currentTab !== 'bids',
+      current: currentTab === 'comments' || !currentTab,
+      stages: ['proposal', 'active', 'completed', 'not funded'],
     },
     {
       name: 'Bids',
       href: '?tab=bids',
       count: bids.length,
       current: currentTab === 'bids',
+      stages: ['proposal', 'active', 'completed'],
+    },
+    {
+      name: 'Shareholders',
+      href: '?tab=shareholders',
+      count: 0,
+      current: currentTab === 'shareholders',
+      stages: ['active', 'completed'],
     },
   ]
   return (
@@ -48,7 +62,8 @@ export function Tabs(props: {
                   tab.current
                     ? 'border-orange-500 text-orange-600'
                     : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700',
-                  'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium'
+                  'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium',
+                  tab.stages.includes(project.stage) ? 'inline-block' : 'hidden'
                 )}
                 aria-current={tab.current ? 'page' : undefined}
               >
@@ -71,12 +86,43 @@ export function Tabs(props: {
         </div>
       </div>
       <div className="py-6">
-        {currentTab === 'bids' ? (
-          <Bids bids={bids} stage={project.stage} />
-        ) : (
+        {currentTab === 'bids' && <Bids bids={bids} stage={project.stage} />}
+        {currentTab === 'comments' && (
           <Comments project={project} comments={comments} user={user} />
+        )}
+        {currentTab === 'shareholders' && (
+          <Shareholders trades={trades} creator={creator} />
         )}
       </div>
     </div>
   )
+}
+
+export type Trade = {
+  bundle: string
+  toProfile: Profile
+  fromProfile: Profile
+  amountUSD: number
+  numShares: number
+  date: Date
+}
+
+function calculateTrades(txns: TxnAndProfiles[]) {
+  const tradeTxns = txns.filter((txn) => txn.bundle !== null)
+  const trades = Object.fromEntries(
+    tradeTxns.map((txn) => [txn.bundle, {} as Trade])
+  )
+  for (const txn of tradeTxns) {
+    const trade = trades[txn?.bundle ?? 0]
+    if (txn.token === 'USD') {
+      trade.amountUSD = txn.amount
+      trade.date = new Date(txn.created_at)
+      trade.fromProfile = txn.profiles
+      trade.bundle = txn.bundle
+    } else {
+      trade.numShares = txn.amount
+      trade.toProfile = txn.profiles
+    }
+  }
+  return Object.values(trades) as Trade[]
 }
