@@ -48,11 +48,21 @@ function calculateShareholders(trades: Trade[], creator: Profile) {
   )
   shareholders[creator.id] = { profile: creator, numShares: 10000000 }
   for (const trade of trades) {
+    console.log('trade', trade)
     shareholders[trade.toProfile.id].profile = trade.toProfile
     shareholders[trade.toProfile.id].numShares += trade.numShares
     shareholders[trade.fromProfile.id].numShares -= trade.numShares
   }
-  return Object.values(shareholders) as Shareholder[]
+  const shareholdersArray = Object.values(shareholders) as Shareholder[]
+  //round to 2 decimal places for small arithmetic errors
+  shareholdersArray.forEach((shareholder) => {
+    shareholder.numShares = Math.round(shareholder.numShares * 100) / 100
+  })
+  shareholdersArray.filter(
+    (shareholder) =>
+      shareholder.numShares > 0 || shareholder.profile.id === creator.id
+  )
+  return shareholdersArray
 }
 
 function History(props: { trades: Trade[] }) {
