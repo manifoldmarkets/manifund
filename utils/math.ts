@@ -1,7 +1,9 @@
 import { Bid } from '@/db/bid'
+import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
-import { Txn } from '@/db/txn'
+import { Txn, TxnAndProfiles } from '@/db/txn'
+import { orderBy } from 'lodash'
 import { formatLargeNumber } from './formatting'
 
 export function getProposalValuation(project: Project) {
@@ -10,40 +12,36 @@ export function getProposalValuation(project: Project) {
   return project.min_funding / investorPercent
 }
 
-//bad because depends on USD and shares txns being right next to each other?
-export function getActiveValuation(txns: Txn[], founder_portion: number) {
-  let i = txns.length - 1
-  let price_usd = 0
-  let num_shares = 0
-  while (i > 0) {
-    if (txns[i].project) {
-      if (txns[i].token == 'USD') {
-        price_usd = txns[i].amount
-        if (
-          txns[i - 1].project == txns[i].project &&
-          txns[i - 1].token != 'USD' &&
-          txns[i - 1].from_id == txns[i].to_id &&
-          txns[i - 1].to_id == txns[i].from_id
-        ) {
-          num_shares = txns[i - 1].amount
-          return (price_usd / num_shares) * (10000000 - founder_portion)
-        }
-      } else {
-        num_shares = txns[i].amount
-        if (
-          txns[i - 1].project == txns[i].project &&
-          txns[i - 1].token == 'USD' &&
-          txns[i - 1].from_id == txns[i].to_id &&
-          txns[i - 1].to_id == txns[i].from_id
-        ) {
-          price_usd = txns[i - 1].amount
-          return (price_usd / num_shares) * (10000000 - founder_portion)
-        }
-      }
+type MathTrade = {
+  amountUSD: number
+  numShares: number
+  date: Date
+  bundle: string
+}
+export function getActiveValuation(txns: Txn[], minValuation: number) {
+  const tradeTxns = txns.filter((txn) => txn.bundle !== null)
+  const trades = Object.fromEntries(
+    tradeTxns.map((txn) => [txn.bundle, {} as MathTrade])
+  )
+  for (const txn of tradeTxns) {
+    const trade = trades[txn?.bundle ?? 0]
+    if (txn.token === 'USD') {
+      trade.amountUSD = txn.amount
+      trade.date = new Date(txn.created_at)
+      trade.bundle = txn.bundle
+    } else {
+      trade.numShares = txn.amount
     }
-    i--
   }
-  return -1
+  const sortedTrades = orderBy(
+    Object.values(trades),
+    'date',
+    'desc'
+  ) as MathTrade[]
+  if (sortedTrades.length === 0) {
+    return minValuation
+  }
+  return (sortedTrades[0].amountUSD / sortedTrades[0].numShares) * TOTAL_SHARES
 }
 
 export function calculateUserBalance(incomingTxns: Txn[], outgoingTxns: Txn[]) {
@@ -69,4 +67,32 @@ export function calculateUserBalance(incomingTxns: Txn[], outgoingTxns: Txn[]) {
 export function getPercentFunded(bids: Bid[], minFunding: number) {
   const total = bids.reduce((acc, bid) => acc + bid.amount, 0)
   return (total / minFunding) * 100
+}
+
+export type FullTrade = {
+  bundle: string
+  toProfile: Profile
+  fromProfile: Profile
+  amountUSD: number
+  numShares: number
+  date: Date
+}
+export function calculateFullTrades(txns: TxnAndProfiles[]) {
+  const tradeTxns = txns.filter((txn) => txn.bundle !== null)
+  const trades = Object.fromEntries(
+    tradeTxns.map((txn) => [txn.bundle, {} as FullTrade])
+  )
+  for (const txn of tradeTxns) {
+    const trade = trades[txn?.bundle ?? 0]
+    if (txn.token === 'USD') {
+      trade.amountUSD = txn.amount
+      trade.date = new Date(txn.created_at)
+      trade.fromProfile = txn.profiles
+      trade.bundle = txn.bundle
+    } else {
+      trade.numShares = txn.amount
+      trade.toProfile = txn.profiles
+    }
+  }
+  return orderBy(Object.values(trades), 'date', 'desc') as FullTrade[]
 }

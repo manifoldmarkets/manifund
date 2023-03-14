@@ -9,9 +9,9 @@ import { orderBy } from 'lodash'
 import { Avatar } from '@/components/avatar'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import { formatDistanceToNow } from 'date-fns'
-import { Trade } from './tabs'
+import { FullTrade } from '@/utils/math'
 
-export function Shareholders(props: { trades: Trade[]; creator: Profile }) {
+export function Shareholders(props: { trades: FullTrade[]; creator: Profile }) {
   const { trades, creator } = props
   const shareholders = calculateShareholders(trades, creator)
   const sortedShareholders = orderBy(shareholders, 'numShares', 'desc')
@@ -42,7 +42,7 @@ type Shareholder = {
   profile: Profile
   numShares: number
 }
-function calculateShareholders(trades: Trade[], creator: Profile) {
+function calculateShareholders(trades: FullTrade[], creator: Profile) {
   const shareholders = Object.fromEntries(
     trades.map((trade) => [trade.toProfile.id, { numShares: 0 } as Shareholder])
   )
@@ -64,7 +64,7 @@ function calculateShareholders(trades: Trade[], creator: Profile) {
   return shareholdersArray
 }
 
-function History(props: { trades: Trade[] }) {
+function History(props: { trades: FullTrade[] }) {
   const { trades } = props
   const tradeDisplay = trades.map((trade) => {
     return (
