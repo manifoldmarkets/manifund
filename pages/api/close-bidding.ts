@@ -317,7 +317,7 @@ async function sendCreatorEmail(
   const body = new URLSearchParams()
   body.append('from', 'Manifund <no-reply@manifund.org>')
   body.append('to', creatorEmail ?? '')
-  body.append('subject', `The auction for ${projectTitle} has resolved!`)
+  body.append('subject', `Manifund auction for "${projectTitle}" has resolved!`)
   body.append('template', 'auction_resolution')
   body.append('h:X-Mailgun-Variables', mailgunVars)
   body.append('o:tag', 'auction_resolution')
@@ -351,7 +351,7 @@ async function sendBidderEmail(
   body.append('to', bidderEmail ?? '')
   body.append(
     'subject',
-    `Bid on ${projectTitle} ${bidSuccessful ? 'accepted' : 'declined'}`
+    `Manifund bid ${bidSuccessful ? 'accepted' : 'declined'}: ${projectTitle}`
   )
   body.append('template', 'bid_resolution')
   body.append('h:X-Mailgun-Variables', mailgunVars)
