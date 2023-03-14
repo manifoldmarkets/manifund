@@ -1,4 +1,4 @@
-export const SUPABASE_ENV = process.env.NEXT_PUBLIC_SUPABASE_ENV ?? 'DEV'
+export const SUPABASE_ENV = process.env.NEXT_PUBLIC_SUPABASE_ENV ?? 'PROD'
 
 export const SUPABASE_URL =
   SUPABASE_ENV === 'PROD'

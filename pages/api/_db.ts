@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { createMiddlewareSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/db/database.types'
-import { SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL } from '@/db/keys'
+import { SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL } from '@/db/env'
 
 export function createEdgeClient(req: NextRequest) {
   const res = NextResponse.next()
