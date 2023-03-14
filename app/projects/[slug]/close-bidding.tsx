@@ -1,16 +1,21 @@
 'use client'
 import { Button } from '@/components/button'
 import { Database } from '@/db/database.types'
+import { useState } from 'react'
 
 type Project = Database['public']['Tables']['projects']['Row']
 export function CloseBidding(props: { project: Project }) {
   const { project } = props
+  const [isSubmitting, setIsSubmitting] = useState(false)
   return (
     <Button
       className="max-w-xs"
       color="gray"
-      onClick={() => {
-        closeBidding(project)
+      loading={isSubmitting}
+      onClick={async () => {
+        setIsSubmitting(true)
+        await closeBidding(project)
+        setIsSubmitting(false)
       }}
     >
       Close Bidding
