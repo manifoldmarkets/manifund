@@ -29,7 +29,7 @@ export default async function UserProfilePage(props: {
   const isOwnProfile = user?.id === profile?.id
   const investments = await compileInvestments(supabase, profile.id)
   const notOwnProjectInvestments = investments.filter((investment) => {
-    investment.project && investment.project.creator != profile.id
+    return investment.project && investment.project.creator !== profile.id
   })
   const balance = calculateBalance(investments)
   return (
