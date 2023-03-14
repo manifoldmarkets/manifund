@@ -17,7 +17,7 @@ export function Shareholders(props: { trades: Trade[]; creator: Profile }) {
   const sortedShareholders = orderBy(shareholders, 'numShares', 'desc')
   return (
     <Row className="w-full justify-center">
-      <Col className="w-full max-w-lg">
+      <Col className="w-full max-w-sm sm:max-w-xl">
         {sortedShareholders.map((shareholder) => (
           <Row
             key={shareholder.profile?.id}
