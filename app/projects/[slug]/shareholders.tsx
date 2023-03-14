@@ -48,7 +48,6 @@ function calculateShareholders(trades: Trade[], creator: Profile) {
   )
   shareholders[creator.id] = { profile: creator, numShares: 10000000 }
   for (const trade of trades) {
-    console.log('trade', trade)
     shareholders[trade.toProfile.id].profile = trade.toProfile
     shareholders[trade.toProfile.id].numShares += trade.numShares
     shareholders[trade.fromProfile.id].numShares -= trade.numShares
