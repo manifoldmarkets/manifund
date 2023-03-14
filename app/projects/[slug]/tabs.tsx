@@ -9,6 +9,7 @@ import { Bids } from './bids'
 import { BidAndProfile } from '@/db/bid'
 import { TxnAndProfiles } from '@/db/txn'
 import { Shareholders } from './shareholders'
+import { calculateFullTrades } from '@/utils/math'
 
 export function Tabs(props: {
   project: FullProject
@@ -21,7 +22,7 @@ export function Tabs(props: {
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentTab = searchParams.get('tab')
-  const trades = calculateTrades(txns)
+  const trades = calculateFullTrades(txns)
   const creator = project.profiles
 
   const tabs = [
@@ -96,33 +97,4 @@ export function Tabs(props: {
       </div>
     </div>
   )
-}
-
-export type Trade = {
-  bundle: string
-  toProfile: Profile
-  fromProfile: Profile
-  amountUSD: number
-  numShares: number
-  date: Date
-}
-
-function calculateTrades(txns: TxnAndProfiles[]) {
-  const tradeTxns = txns.filter((txn) => txn.bundle !== null)
-  const trades = Object.fromEntries(
-    tradeTxns.map((txn) => [txn.bundle, {} as Trade])
-  )
-  for (const txn of tradeTxns) {
-    const trade = trades[txn?.bundle ?? 0]
-    if (txn.token === 'USD') {
-      trade.amountUSD = txn.amount
-      trade.date = new Date(txn.created_at)
-      trade.fromProfile = txn.profiles
-      trade.bundle = txn.bundle
-    } else {
-      trade.numShares = txn.amount
-      trade.toProfile = txn.profiles
-    }
-  }
-  return Object.values(trades) as Trade[]
 }
