@@ -15,7 +15,6 @@ export function WriteComment(props: { project: Project; profile: Profile }) {
   const editor = useTextEditor('')
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  console.log('editor', editor?.getText())
 
   return (
     <div className="w-full">
