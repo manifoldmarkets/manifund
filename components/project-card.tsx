@@ -19,6 +19,8 @@ import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
 import { ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
+import { isNull, orderBy } from 'lodash'
+import { formatDistanceToNow } from 'date-fns'
 
 export function ProjectCard(props: {
   project: Project
@@ -39,7 +41,7 @@ export function ProjectCard(props: {
       <ProjectCardHeader
         round={project.round}
         creator={creator}
-        valuation={valuation}
+        valuation={project.stage !== 'not funded' ? valuation : undefined}
       />
       <Link
         href={`projects/${project.slug}`}
@@ -55,6 +57,7 @@ export function ProjectCard(props: {
           project={project}
           numComments={numComments}
           bids={bids}
+          txns={txns}
         />
       </Link>
     </Col>
@@ -65,8 +68,9 @@ function ProjectCardFooter(props: {
   project: Project
   numComments: number
   bids: Bid[]
+  txns: Txn[]
 }) {
-  const { project, numComments, bids } = props
+  const { project, numComments, bids, txns } = props
   let percentRaised = Math.min(getPercentFunded(bids, project.min_funding), 100)
   switch (project.stage) {
     case 'proposal':
@@ -107,7 +111,40 @@ function ProjectCardFooter(props: {
           <ProgressBar percent={percentRaised} />
         </div>
       )
+    case 'active':
+      const sortedTxns = orderBy(txns, 'created_at', 'desc')
+      const lastTraded = new Date(sortedTxns[0].created_at)
+      return (
+        <div className="flex justify-between">
+          {lastTraded && (
+            <span className="mb-1 text-gray-600">
+              <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
+              Last traded{' '}
+              <span className="text-black">
+                {formatDistanceToNow(lastTraded, {
+                  addSuffix: true,
+                })}
+              </span>
+            </span>
+          )}
+          {numComments > 0 && (
+            <div className="flex flex-row items-center gap-2">
+              <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-gray-400" />
+              <span className="text-gray-500">{numComments}</span>
+            </div>
+          )}
+        </div>
+      )
     default:
-      return <div></div>
+      return (
+        <div className="flex justify-end">
+          {numComments > 0 && (
+            <div className="flex flex-row items-center gap-2">
+              <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-gray-400" />
+              <span className="text-gray-500">{numComments}</span>
+            </div>
+          )}
+        </div>
+      )
   }
 }

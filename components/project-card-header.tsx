@@ -8,7 +8,7 @@ import { ValuationBox } from './valuation-box'
 export function ProjectCardHeader(props: {
   round: string
   creator: Profile
-  valuation: string
+  valuation?: string
 }) {
   const { round, creator, valuation } = props
   return (
@@ -18,9 +18,11 @@ export function ProjectCardHeader(props: {
         <div className="h-1" />
         <UserAvatarAndBadge profile={creator} />
       </div>
-      <div className="relative top-1">
-        <ValuationBox valuation={valuation} />
-      </div>
+      {valuation && (
+        <div className="relative top-1">
+          <ValuationBox valuation={valuation} />
+        </div>
+      )}
     </div>
   )
 }
