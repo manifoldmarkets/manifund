@@ -1,12 +1,14 @@
 ## Getting Started
 
-First, run the development server:
+To spin up a server against the prod database:
 
 ```bash
 yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+Or run `yarn dev:dev` to connect to the dev database.
 
 ## Getting .env variables
 

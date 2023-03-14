@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:dev": "cross-env NEXT_PUBLIC_SUPABASE_ENV=dev next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.9",
     "autoprefixer": "^10.4.13",
+    "cross-env": "^7.0.3",
     "encoding": "^0.1.13",
     "postcss": "^8.4.21",
     "prettier": "^2.8.4",
