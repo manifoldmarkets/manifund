@@ -32,7 +32,6 @@ export async function sendComment(
   project: Project,
   commenter: Profile
 ) {
-  console.log('about to send comment')
   const commentId = uuid()
   const { error } = await supabase.from('comments').insert([
     {
@@ -45,9 +44,6 @@ export async function sendComment(
   if (error) {
     throw error
   } else {
-    console.log(
-      'Just sent comment to db successfully. About to call API fxn...'
-    )
     const response = await fetch('/api/comment-notification', {
       method: 'POST',
       headers: {
@@ -56,12 +52,6 @@ export async function sendComment(
       body: JSON.stringify({
         commentId,
         htmlContent,
-        // projectTitle: project.title,
-        // projectUrl: `https://manifund.org/projects/${project.slug}`,
-        // commenterUsername: commenter.username,
-        // commenterAvatarUrl: commenter.avatar_url,
-        // projectCreatorId: project.creator,
-        // htmlContent,
       }),
     })
     const newProject = await response.json()

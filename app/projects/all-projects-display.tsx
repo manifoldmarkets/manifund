@@ -47,6 +47,9 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
   const activeProjects = selectedProjects.filter(
     (project) => project.stage == 'active'
   )
+  const notFundedProjects = selectedProjects.filter(
+    (project) => project.stage == 'not funded'
+  )
 
   return (
     <div>
@@ -102,6 +105,12 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
         )}
         {activeProjects.length > 0 && (
           <ProjectGroup projects={activeProjects} category="Active Projects" />
+        )}
+        {notFundedProjects.length > 0 && (
+          <ProjectGroup
+            projects={notFundedProjects}
+            category="Unfunded Projects"
+          />
         )}
       </div>
     </div>
