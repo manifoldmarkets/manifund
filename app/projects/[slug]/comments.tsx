@@ -11,8 +11,9 @@ import { Project } from '@/db/project'
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { IconButton } from '@/components/button'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
+import clsx from 'clsx'
 
 export function Comments(props: {
   project: Project
@@ -42,7 +43,7 @@ export function Comments(props: {
     <div key={thread.root.id}>
       <Row className="w-full">
         <div className="w-full">
-          <div className="my-2 w-full rounded-md border border-gray-300 bg-white p-3 hover:bg-gray-200">
+          <CommentWrapper>
             <Comment comment={thread.root} />
             {user && (
               <Row className="w-full justify-end">
@@ -51,14 +52,12 @@ export function Comments(props: {
                 </IconButton>
               </Row>
             )}
-          </div>
+          </CommentWrapper>
+
           {thread.replies.map((reply) => (
-            <div
-              key={reply.id}
-              className="my-2 ml-8 rounded-md border border-gray-300 bg-white p-3 hover:bg-gray-200"
-            >
+            <CommentWrapper key={reply.id} className="ml-8">
               <Comment comment={reply} />
-            </div>
+            </CommentWrapper>
           ))}
           {replyingTo?.id === thread.root.id && user && (
             <div className="mt-2 ml-8">
@@ -128,6 +127,20 @@ function Comment(props: { comment: CommentAndProfile }) {
       <div className="relative left-8">
         <RichContent content={comment.content} />
       </div>
+    </div>
+  )
+}
+
+function CommentWrapper(props: { className?: string; children?: ReactNode }) {
+  const { className, children } = props
+  return (
+    <div
+      className={clsx(
+        className,
+        'my-2 rounded-md border border-gray-300 bg-white p-3 hover:bg-gray-200'
+      )}
+    >
+      {children}
     </div>
   )
 }
