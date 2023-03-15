@@ -11,7 +11,7 @@ import { Project } from '@/db/project'
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { IconButton } from '@/components/button'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import clsx from 'clsx'
 
@@ -22,6 +22,12 @@ export function Comments(props: {
 }) {
   const { project, comments, user } = props
   const [replyingTo, setReplyingTo] = useState<CommentAndProfile | null>(null)
+  const rootComments = comments.filter(
+    (comment) => comment.replying_to === null
+  )
+  const replyComments = comments.filter(
+    (comment) => comment.replying_to !== null
+  )
   if (comments.length === 0 && !user)
     return (
       <p className="text-center italic text-gray-500">
@@ -32,12 +38,6 @@ export function Comments(props: {
         to create one!
       </p>
     )
-  const rootComments = comments.filter(
-    (comment) => comment.replying_to === null
-  )
-  const replyComments = comments.filter(
-    (comment) => comment.replying_to !== null
-  )
   const threads = genThreads(rootComments, replyComments)
   const commentsDisplay = threads.map((thread) => (
     <div key={thread.root.id}>
@@ -77,7 +77,6 @@ export function Comments(props: {
       {user && (
         <div>
           <div className="flex gap-3">
-            <Avatar profile={user} />
             <WriteComment project={project} commenter={user} />
           </div>
           <Divider />
