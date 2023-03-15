@@ -12,7 +12,7 @@ import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { IconButton } from '@/components/button'
 import { useState } from 'react'
-import { orderBy } from 'lodash'
+import { orderBy, sortBy } from 'lodash'
 
 export function Comments(props: {
   project: Project
@@ -31,35 +31,43 @@ export function Comments(props: {
         to create one!
       </p>
     )
-  const sortedComments = orderBy(comments, 'created_at', 'desc')
-  const commentsDisplay = sortedComments.map((comment) => (
-    <div key={comment.id}>
-      <Row className="my-3 w-full rounded p-2 hover:bg-gray-200">
+  const rootComments = comments.filter(
+    (comment) => comment.replying_to === null
+  )
+  const replyComments = comments.filter(
+    (comment) => comment.replying_to !== null
+  )
+  const threads = genThreads(rootComments, replyComments)
+  const commentsDisplay = threads.map((thread) => (
+    <div key={thread.root.id}>
+      <Row className="w-full">
         <div className="w-full">
-          <Row className="justify-between gap-2">
-            <UserAvatarAndBadge profile={comment.profiles} />
-            <div className="text-sm text-gray-500">
-              {formatDistanceToNow(new Date(comment.created_at), {
-                addSuffix: true,
-              })}
-            </div>
-          </Row>
-          <div className="relative left-8">
-            <RichContent content={comment.content} />
+          <div className="my-2 w-full rounded-md border border-gray-300 bg-white p-3 hover:bg-gray-200">
+            <Comment comment={thread.root} />
+            {user && (
+              <Row className="w-full justify-end">
+                <IconButton onClick={() => setReplyingTo(thread.root)}>
+                  <ArrowUturnRightIcon className="h-5 w-5 rotate-180 text-gray-500" />
+                </IconButton>
+              </Row>
+            )}
           </div>
-          {user && (
-            <Row className="w-full justify-end">
-              <IconButton onClick={() => setReplyingTo(comment)}>
-                <ArrowUturnRightIcon className="h-5 w-5 rotate-180 text-gray-500" />
-              </IconButton>
-            </Row>
-          )}
-          {replyingTo?.id === comment.id && user && (
-            <WriteComment
-              project={project}
-              commenter={user}
-              replyingToId={comment.id}
-            />
+          {thread.replies.map((reply) => (
+            <div
+              key={reply.id}
+              className="my-2 ml-8 rounded-md border border-gray-300 bg-white p-3 hover:bg-gray-200"
+            >
+              <Comment comment={reply} />
+            </div>
+          ))}
+          {replyingTo?.id === thread.root.id && user && (
+            <div className="mt-2 ml-8">
+              <WriteComment
+                project={project}
+                commenter={user}
+                replyingToId={thread.root.id}
+              />
+            </div>
           )}
         </div>
       </Row>
@@ -77,6 +85,49 @@ export function Comments(props: {
         </div>
       )}
       {commentsDisplay}
+    </div>
+  )
+}
+
+type Thread = {
+  root: CommentAndProfile
+  replies: CommentAndProfile[]
+}
+function genThreads(
+  rootComments: CommentAndProfile[],
+  replyComments: CommentAndProfile[]
+) {
+  const threads = Object.fromEntries(
+    rootComments.map((comment) => [
+      comment.id,
+      { root: comment, replies: [] } as Thread,
+    ])
+  )
+  replyComments.forEach((reply) => {
+    threads[reply.replying_to ?? 0].replies.push(reply)
+  })
+  const threadsArray = Object.values(threads)
+  threadsArray.forEach((thread) => {
+    thread.replies = sortBy(thread.replies, 'created_at')
+  })
+  return threadsArray
+}
+
+function Comment(props: { comment: CommentAndProfile }) {
+  const { comment } = props
+  return (
+    <div className="w-full">
+      <Row className="justify-between gap-2">
+        <UserAvatarAndBadge profile={comment.profiles} />
+        <div className="text-sm text-gray-500">
+          {formatDistanceToNow(new Date(comment.created_at), {
+            addSuffix: true,
+          })}
+        </div>
+      </Row>
+      <div className="relative left-8">
+        <RichContent content={comment.content} />
+      </div>
     </div>
   )
 }
