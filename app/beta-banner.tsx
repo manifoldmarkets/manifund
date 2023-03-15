@@ -45,7 +45,7 @@ export default function BetaBanner() {
           >
             <circle cx={1} cy={1} r={1} />
           </svg>
-          $20k ACX Forecasting Mini-Grants: Auction Phase Ends March 12 &nbsp;
+          $20k ACX Forecasting Mini-Grants: 17 Active Projects &nbsp;
           <span aria-hidden="true">&rarr;</span>
         </SiteLink>
       </p>
