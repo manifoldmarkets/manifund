@@ -8,6 +8,8 @@ import { RichContent } from '@/components/editor'
 import { Avatar } from '@/components/avatar'
 import { Divider } from '@/components/divider'
 import { Project } from '@/db/project'
+import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
+import { Row } from '@/components/layout/row'
 
 export function Comments(props: {
   project: Project
@@ -30,21 +32,24 @@ export function Comments(props: {
   )
   const commentsDisplay = sortedComments.map((comment) => (
     <div key={comment.id}>
-      <div className="my-6 flex flex-row gap-2">
-        <div>
-          <div className="flex flex-row gap-2">
+      <Row className="my-3 w-full rounded p-3 hover:bg-gray-200">
+        <div className="w-full">
+          <Row className="justify-between gap-2">
             <UserAvatarAndBadge profile={comment.profiles} />
-            <div className="text-gray-500">
+            <div className="text-sm text-gray-500">
               {formatDistanceToNow(new Date(comment.created_at), {
                 addSuffix: true,
               })}
             </div>
-          </div>
+          </Row>
           <div className="relative left-8">
             <RichContent content={comment.content} />
           </div>
+          <Row className="w-full justify-end">
+            <ArrowUturnRightIcon className=" w- h-5 rotate-180 text-gray-500" />
+          </Row>
         </div>
-      </div>
+      </Row>
     </div>
   ))
   return (
