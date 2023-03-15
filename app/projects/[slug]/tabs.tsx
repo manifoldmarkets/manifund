@@ -10,6 +10,7 @@ import { BidAndProfile } from '@/db/bid'
 import { TxnAndProfiles } from '@/db/txn'
 import { Shareholders } from './shareholders'
 import { calculateFullTrades } from '@/utils/math'
+import { isNull } from 'util'
 
 export function Tabs(props: {
   project: FullProject
@@ -22,6 +23,7 @@ export function Tabs(props: {
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentTab = searchParams.get('tab')
+  console.log('current tab: ', currentTab)
   const trades = calculateFullTrades(txns)
   const creator = project.profiles
 
@@ -30,7 +32,7 @@ export function Tabs(props: {
       name: 'Comments',
       href: '?tab=comments',
       count: comments.length,
-      current: currentTab === 'comments' || !currentTab,
+      current: currentTab === 'comments' || currentTab === null,
       stages: ['proposal', 'active', 'completed', 'not funded'],
     },
     {
@@ -88,9 +90,10 @@ export function Tabs(props: {
       </div>
       <div className="py-6">
         {currentTab === 'bids' && <Bids bids={bids} stage={project.stage} />}
-        {currentTab === 'comments' && (
-          <Comments project={project} comments={comments} user={user} />
-        )}
+        {currentTab === 'comments' ||
+          (currentTab === null && (
+            <Comments project={project} comments={comments} user={user} />
+          ))}
         {currentTab === 'shareholders' && (
           <Shareholders trades={trades} creator={creator} />
         )}
