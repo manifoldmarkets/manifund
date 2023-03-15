@@ -42,8 +42,8 @@ export function Comments(props: {
   const commentsDisplay = threads.map((thread) => (
     <div key={thread.root.id}>
       <Row className="w-full">
-        <div className="w-full">
-          <CommentWrapper>
+        <div className="MT w-full">
+          <CommentWrapper className="mt-2">
             <Comment comment={thread.root} />
             {user && (
               <Row className="w-full justify-end">
@@ -60,7 +60,7 @@ export function Comments(props: {
             </CommentWrapper>
           ))}
           {replyingTo?.id === thread.root.id && user && (
-            <div className="mt-2 ml-8">
+            <div className="mt-1 ml-8">
               <WriteComment
                 project={project}
                 commenter={user}
@@ -137,7 +137,7 @@ function CommentWrapper(props: { className?: string; children?: ReactNode }) {
     <div
       className={clsx(
         className,
-        'my-2 rounded-md border border-gray-300 bg-white p-3 hover:bg-gray-200'
+        'my-1 rounded-md border border-gray-300 bg-white p-3'
       )}
     >
       {children}
