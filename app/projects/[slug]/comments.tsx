@@ -10,6 +10,9 @@ import { Divider } from '@/components/divider'
 import { Project } from '@/db/project'
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
+import { IconButton } from '@/components/button'
+import { useState } from 'react'
+import { orderBy } from 'lodash'
 
 export function Comments(props: {
   project: Project
@@ -17,6 +20,7 @@ export function Comments(props: {
   user: Profile | null
 }) {
   const { project, comments, user } = props
+  const [replyingTo, setReplyingTo] = useState<CommentAndProfile | null>(null)
   if (comments.length === 0 && !user)
     return (
       <p className="text-center italic text-gray-500">
@@ -27,12 +31,10 @@ export function Comments(props: {
         to create one!
       </p>
     )
-  const sortedComments = comments.sort((a, b) =>
-    a.created_at < b.created_at ? 1 : -1
-  )
+  const sortedComments = orderBy(comments, 'created_at', 'desc')
   const commentsDisplay = sortedComments.map((comment) => (
     <div key={comment.id}>
-      <Row className="my-3 w-full rounded p-3 hover:bg-gray-200">
+      <Row className="my-3 w-full rounded p-2 hover:bg-gray-200">
         <div className="w-full">
           <Row className="justify-between gap-2">
             <UserAvatarAndBadge profile={comment.profiles} />
@@ -45,9 +47,20 @@ export function Comments(props: {
           <div className="relative left-8">
             <RichContent content={comment.content} />
           </div>
-          <Row className="w-full justify-end">
-            <ArrowUturnRightIcon className=" w- h-5 rotate-180 text-gray-500" />
-          </Row>
+          {user && (
+            <Row className="w-full justify-end">
+              <IconButton onClick={() => setReplyingTo(comment)}>
+                <ArrowUturnRightIcon className="h-5 w-5 rotate-180 text-gray-500" />
+              </IconButton>
+            </Row>
+          )}
+          {replyingTo?.id === comment.id && user && (
+            <WriteComment
+              project={project}
+              profile={user}
+              replyingTo={comment}
+            />
+          )}
         </div>
       </Row>
     </div>
