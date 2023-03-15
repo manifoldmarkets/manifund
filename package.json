@@ -10,6 +10,8 @@
     "lint": "next lint",
     "gen-types": "npx supabase gen types typescript --project-id fkousziwzbnkdkldjper --schema public > db/database.types.ts",
     "format": "npx prettier --write .",
+    "snap:restore": "snaplet snapshot restore",
+    "snap:restore-empty": "snaplet snapshot restore --no-data",
     "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty"
   },
   "dependencies": {
