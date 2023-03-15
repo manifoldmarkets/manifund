@@ -1,0 +1,13 @@
+{
+  "net": false,
+  "graphql": false,
+  "storage": false,
+  "pgsodium": false,
+  "realtime": false,
+  "pg_catalog": {
+    "extensions": {}
+  },
+  "graphql_public": false,
+  "pgsodium_masks": false,
+  "supabase_functions": false
+}

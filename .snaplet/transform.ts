@@ -59,23 +59,20 @@ export const config: Transform = () => ({
           limit: 255,
         }),
         phone: copycat.scramble(row.phone),
-        role: copycat.fullName(row.role, {
-          limit: 255,
-        }),
       };
     },
   },
   public: {
     bids({ row }) {
       return {
-        bidder: copycat.uuid(row.bidder),
-        project: copycat.uuid(row.project),
+        // bidder: copycat.uuid(row.bidder),
+        // project: copycat.uuid(row.project),
       };
     },
 
     comments({ row }) {
       return {
-        project: copycat.uuid(row.project),
+        // project: copycat.uuid(row.project),
       };
     },
 
@@ -88,17 +85,13 @@ export const config: Transform = () => ({
 
     projects({ row }) {
       return {
-        blurb: copycat.uuid(row.blurb),
-        slug: copycat.uuid(row.slug),
-        stage: copycat.oneOf(row.stage, faker.locales.en.address.state),
-        title: copycat.fullName(row.title),
       };
     },
 
     txns({ row }) {
       return {
-        project: copycat.uuid(row.project),
-        token: copycat.uuid(row.token),
+        // project: copycat.uuid(row.project),
+        // token: copycat.uuid(row.token),
       };
     },
   },
@@ -137,3 +130,15 @@ export const config: Transform = () => ({
     },
   },
 });
+
+export const subset = {
+  enabled: true,
+  version: "2", // the latest version
+  targets: [
+    {
+      table: "auth.audit_log_entries",
+      percent: 1
+    }
+  ],
+  keepDisconnectedTables: true
+}
