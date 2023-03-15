@@ -1,13 +1,13 @@
 'use client'
 import { TextEditor, useTextEditor } from '@/components/editor'
-import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
-import { CommentAndProfile, sendComment } from '@/db/comment'
+import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
+import { sendComment } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import { useRouter } from 'next/navigation'
 import { useSupabase } from '@/db/supabase-provider'
 import { Project } from '@/db/project'
 import { useState } from 'react'
-import { Button, IconButton } from '@/components/button'
+import { IconButton } from '@/components/button'
 
 export function WriteComment(props: {
   project: Project
@@ -48,7 +48,7 @@ export function WriteComment(props: {
             }
           }}
         >
-          <PaperAirplaneIcon className="h-6 w-6 text-orange-500 hover:cursor-pointer" />
+          <PaperAirplaneIcon className="h-6 w-6 text-orange-500 hover:cursor-pointer hover:text-orange-600" />
         </IconButton>
       </div>
     </div>

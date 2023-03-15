@@ -23,7 +23,6 @@ export function Tabs(props: {
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentTab = searchParams.get('tab')
-  console.log('current tab: ', currentTab)
   const trades = calculateFullTrades(txns)
   const creator = project.profiles
 

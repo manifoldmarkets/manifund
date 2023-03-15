@@ -43,12 +43,12 @@ export function Comments(props: {
     <div key={thread.root.id}>
       <Row className="w-full">
         <div className="MT w-full">
-          <CommentWrapper className="mt-2">
+          <CommentWrapper className="mt-2 pb-0">
             <Comment comment={thread.root} />
             {user && (
               <Row className="w-full justify-end">
                 <IconButton onClick={() => setReplyingTo(thread.root)}>
-                  <ArrowUturnRightIcon className="h-5 w-5 rotate-180 text-gray-500" />
+                  <ArrowUturnRightIcon className="h-5 w-5 rotate-180 text-gray-500 hover:text-gray-700" />
                 </IconButton>
               </Row>
             )}
