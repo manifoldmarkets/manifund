@@ -27,18 +27,20 @@ export async function getCommentsByProject(
 
 export async function sendComment(
   supabase: SupabaseClient,
-  content: JSONContent,
   htmlContent: HTMLContent,
-  project: Project,
-  commenter: Profile
+  content: JSONContent,
+  projectId: string,
+  commenterId: string,
+  replyingTo?: string
 ) {
   const commentId = uuid()
   const { error } = await supabase.from('comments').insert([
     {
       id: commentId,
       content,
-      project: project.id,
-      commenter: commenter.id,
+      project: projectId,
+      commenter: commenterId,
+      replying_to: replyingTo ?? null,
     },
   ])
   if (error) {

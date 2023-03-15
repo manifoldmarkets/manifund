@@ -57,8 +57,8 @@ export function Comments(props: {
           {replyingTo?.id === comment.id && user && (
             <WriteComment
               project={project}
-              profile={user}
-              replyingTo={comment}
+              commenter={user}
+              replyingToId={comment.id}
             />
           )}
         </div>
@@ -71,7 +71,7 @@ export function Comments(props: {
         <div>
           <div className="flex gap-3">
             <Avatar profile={user} />
-            <WriteComment project={project} profile={user} />
+            <WriteComment project={project} commenter={user} />
           </div>
           <Divider />
         </div>

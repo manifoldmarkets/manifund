@@ -11,10 +11,10 @@ import { Button, IconButton } from '@/components/button'
 
 export function WriteComment(props: {
   project: Project
-  profile: Profile
-  replyingTo?: CommentAndProfile
+  commenter: Profile
+  replyingToId?: string
 }) {
-  const { project, profile, replyingTo } = props
+  const { project, commenter, replyingToId } = props
   const { supabase } = useSupabase()
   const editor = useTextEditor('')
   const router = useRouter()
@@ -36,10 +36,11 @@ export function WriteComment(props: {
               }
               await sendComment(
                 supabase,
-                content,
                 htmlContent,
-                project,
-                profile
+                content,
+                project.id,
+                commenter.id,
+                replyingToId
               )
               editor.commands.clearContent()
               setIsSubmitting(false)
