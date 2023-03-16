@@ -150,8 +150,8 @@ function Trade(props: {
     errorMessage = `You can only trade up to the amount offered: ${formatLargeNumber(
       (tradeAmount / bid.valuation) * 100
     )}% for ${formatMoney(tradeAmount)}.`
-  } else if (tradeAmount === 0) {
-    errorMessage = `You cannot initiate a trade at $0.`
+  } else if (tradeAmount <= 0) {
+    errorMessage = `You must trade over $0.`
   }
   return (
     <div>
@@ -218,7 +218,8 @@ function Trade(props: {
                         </p>
                       </div>
                       <div className="mt-5 flex justify-center">
-                        <div className="flex w-11/12 justify-center gap-3">
+                        <div className="flex w-11/12 justify-center gap-2">
+                          <p className="relative top-3">$</p>
                           <Input
                             value={tradeAmount}
                             type="number"
