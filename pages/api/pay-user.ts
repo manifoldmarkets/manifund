@@ -17,12 +17,16 @@ export default async function handler(req: NextRequest) {
   if (!user || !isAdmin(user)) return Response.error()
 
   const { userId, amount } = (await req.json()) as PayUserProps
+  // Interpret negative amounts as payments to the bank
+  const positiveAmount = Math.abs(amount)
+  const from_id = amount > 0 ? BANK_ID : userId
+  const to_id = amount > 0 ? userId : BANK_ID
 
   const supabaseAdmin = createAdminClient()
   // Create a new txn paying this user
   const { data: txn, error } = await supabaseAdmin
     .from('txns')
-    .insert({ amount, from_id: BANK_ID, to_id: userId, token: 'USD' })
+    .insert({ amount: positiveAmount, from_id, to_id, token: 'USD' })
 
   return NextResponse.json(txn)
 }
