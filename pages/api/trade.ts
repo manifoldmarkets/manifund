@@ -1,5 +1,8 @@
+import { Bid, getBidById } from '@/db/bid'
 import { TOTAL_SHARES } from '@/db/project'
+import { SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
+import { devNull } from 'os'
 import { createAdminClient } from './_db'
 
 export const config = {
@@ -8,24 +11,25 @@ export const config = {
 }
 
 export type TradeProps = {
-  buyer: string
-  seller: string
-  amount: number
-  valuation: number
-  projectId: string
+  oldBidId: string
+  usdTraded: number
+  tradePartnerId: string
+  newBidId?: string
 }
 
 export default async function handler(req: NextRequest) {
-  const { buyer, seller, amount, valuation, projectId } =
+  const { oldBidId, usdTraded, newBidId, tradePartnerId } =
     (await req.json()) as TradeProps
   const supabase = createAdminClient()
+  const oldBid = await getBidById(oldBidId, supabase)
+  const newBid = newBidId ? await getBidById(newBidId, supabase) : null
   const addSharesTxn = async () => {
     const { error } = await supabase.from('txns').insert({
-      amount: (amount / valuation) * TOTAL_SHARES,
-      from_id: seller,
-      to_id: buyer,
-      project: projectId,
-      token: projectId,
+      amount: (usdTraded / oldBid.valuation) * TOTAL_SHARES,
+      from_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
+      to_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
+      project: oldBid.project,
+      token: oldBid.project,
     })
     if (error) {
       throw error
@@ -34,10 +38,10 @@ export default async function handler(req: NextRequest) {
   addSharesTxn()
   const addUSDTxn = async () => {
     const { error } = await supabase.from('txns').insert({
-      amount,
-      from_id: buyer,
-      to_id: seller,
-      project: projectId,
+      amount: usdTraded,
+      from_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
+      to_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
+      project: oldBid.project,
       token: 'USD',
     })
     if (error) {
@@ -45,5 +49,27 @@ export default async function handler(req: NextRequest) {
     }
   }
   addUSDTxn()
+  updateBidOnTrade(oldBid, usdTraded, supabase)
+  if (newBid) {
+    updateBidOnTrade(newBid, usdTraded, supabase)
+  }
   return NextResponse.json({ success: true })
+}
+
+export async function updateBidOnTrade(
+  bid: Bid,
+  amountTraded: number,
+  supabase: SupabaseClient
+) {
+  const { error } = await supabase
+    .from('bids')
+    .update({
+      amount: bid.amount - amountTraded,
+      // May have issues with floating point arithmetic errors
+      status: bid.amount === amountTraded ? 'accepted' : 'pending',
+    })
+    .eq('id', bid.id)
+  if (error) {
+    throw error
+  }
 }

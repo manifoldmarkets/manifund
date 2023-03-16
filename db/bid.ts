@@ -64,3 +64,14 @@ export async function updateBidOnTrade(
     throw error
   }
 }
+
+export async function getBidById(bidId: string, supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from('bids')
+    .select('*, profiles(*)')
+    .eq('id', bidId)
+  if (error) {
+    throw error
+  }
+  return data[0] as BidAndProfile
+}

@@ -16,7 +16,7 @@ import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
 import { FounderPortionBox } from './founder-portion-box'
 import { Tooltip } from '@/components/tooltip'
-import { Bid, updateBidOnTrade } from '@/db/bid'
+import { Bid } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { TOTAL_SHARES } from '@/db/project'
 import uuid from 'react-uuid'
@@ -184,37 +184,35 @@ async function findAndMakeTrades(bid: Bid, supabase: SupabaseClient) {
     .from('bids')
     .select()
     .eq('project', bid.project)
-    .eq('type', newOfferType == 'buy' ? 'sell' : 'buy')
-    .eq('status', 'pending')
-    .order('valuation', { ascending: newOfferType == 'buy' })
+    .order('valuation', { ascending: newOfferType === 'buy' })
   if (error) {
     throw error
   }
+  const oldBids = data
+    .filter((oldBid) => oldBid.bidder !== bid.bidder)
+    .filter((oldBid) => oldBid.type !== newOfferType)
+    .filter((oldBid) => oldBid.status === 'pending')
   let i = 0
   let budget = bid.amount
-  while (budget > 0 && i < data.length) {
+  while (budget > 0 && i < oldBids.length) {
     if (
       newOfferType === 'buy'
-        ? data[i].valuation > bid.valuation
-        : data[i].valuation < bid.valuation
+        ? oldBids[i].valuation > bid.valuation
+        : oldBids[i].valuation < bid.valuation
     ) {
       return
     }
-    const tradeAmount = Math.min(budget, data[i].amount)
+    const tradeAmount = Math.min(budget, oldBids[i].amount)
     budget -= tradeAmount
-    await updateBidOnTrade(data[i], tradeAmount, supabase)
-    await updateBidOnTrade(bid, tradeAmount, supabase)
     const response = await fetch('/api/trade', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        buyer: newOfferType === 'buy' ? bid.bidder : data[i].bidder,
-        seller: newOfferType === 'buy' ? data[i].bidder : bid.bidder,
-        amount: tradeAmount,
-        valuation: data[i].valuation,
-        projectId: bid.project,
+        oldBidId: oldBids[i].bidder,
+        usdTraded: tradeAmount,
+        tradePartnerId: bid.bidder,
       }),
     })
     i++

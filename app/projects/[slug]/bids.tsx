@@ -3,7 +3,7 @@ import { Button } from '@/components/button'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { UserAvatarAndBadge } from '@/components/user-link'
-import { BidAndProfile, updateBidOnTrade } from '@/db/bid'
+import { BidAndProfile } from '@/db/bid'
 import { TOTAL_SHARES } from '@/db/project'
 import { useSupabase } from '@/db/supabase-provider'
 import { formatMoney } from '@/utils/formatting'
@@ -103,18 +103,15 @@ function Bid(props: {
             bid.bidder === userId
           }
           onClick={async () => {
-            await updateBidOnTrade(bid, bid.amount, supabase)
             const response = await fetch('/api/trade', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                buyer: bid.type === 'buy' ? userId : bid.bidder,
-                seller: bid.type === 'buy' ? bid.bidder : userId,
-                amount: bid.amount,
-                valuation: bid.valuation,
-                projectId: bid.project,
+                oldBidId: bid.id,
+                usdTraded: bid.amount,
+                tradePartnerId: userId,
               }),
             })
           }}
