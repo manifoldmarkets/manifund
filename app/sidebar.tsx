@@ -6,6 +6,7 @@ import { getUser, getProfileById } from '@/db/profile'
 import { SidebarItem } from './sidebar-item'
 
 import { CreateProjectButton } from './create-project-button'
+import { SUPABASE_ENV } from '@/db/env'
 
 export default async function Sidebar() {
   const supabase = createServerClient()
@@ -25,7 +26,7 @@ export default async function Sidebar() {
               height={60}
             />
             <span className="bg-gradient-to-r from-orange-500  to-rose-400 bg-clip-text font-josefin text-2xl font-[650] text-transparent lg:text-4xl">
-              Manifund
+              {SUPABASE_ENV === 'PROD' ? 'Manifund' : 'Devifund'}
             </span>
           </div>
         </Link>

@@ -140,6 +140,7 @@ export interface Database {
       txns: {
         Row: {
           amount: number
+          bundle: string | null
           created_at: string
           from_id: string | null
           id: string
@@ -149,6 +150,7 @@ export interface Database {
         }
         Insert: {
           amount: number
+          bundle?: string | null
           created_at?: string
           from_id?: string | null
           id?: string
@@ -158,6 +160,7 @@ export interface Database {
         }
         Update: {
           amount?: number
+          bundle?: string | null
           created_at?: string
           from_id?: string | null
           id?: string

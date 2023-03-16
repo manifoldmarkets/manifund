@@ -1,11 +1,12 @@
 import { Database } from '@/db/database.types'
 import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient, User } from '@supabase/supabase-js'
+import { Profile } from './profile'
 import { Project, TOTAL_SHARES } from './project'
 
-export type Profile = Database['public']['Tables']['profiles']['Row']
 export type Txn = Database['public']['Tables']['txns']['Row']
 export type TxnAndProject = Txn & { projects?: Project }
+export type TxnAndProfiles = Txn & { profiles?: Profile }
 
 export function isAdmin(user: User | null) {
   const ADMINS = ['rachel.weinberg12@gmail.com', 'akrolsmir@gmail.com']
@@ -74,4 +75,18 @@ export async function makeTrade(
     }
   }
   addUSDTxn()
+}
+
+export async function getTxnsByProject(
+  supabase: SupabaseClient,
+  project: string
+) {
+  const { data, error } = await supabase
+    .from('txns')
+    .select('*, profiles!txns_to_id_fkey(*)')
+    .eq('project', project)
+  if (error) {
+    throw error
+  }
+  return data as TxnAndProfiles[]
 }

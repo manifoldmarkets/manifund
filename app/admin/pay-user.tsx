@@ -27,7 +27,7 @@ export function PayUser(props: { userId: string }) {
           router.refresh()
         }}
       >
-        Pay
+        Add
       </Button>
     </div>
   )

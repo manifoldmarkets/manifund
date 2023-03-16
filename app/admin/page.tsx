@@ -7,6 +7,7 @@ import { VerifyInvestor } from './verify-investor'
 import { RoundBidAmounts } from './round-bid-amounts'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { roundLargeNumber } from '@/utils/formatting'
+import { Txn } from '@/db/txn'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -35,6 +36,7 @@ export default async function Admin() {
     .select('*')
     .eq('token', 'USD')
     .order('created_at')
+  const balances = userBalances(txns ?? [])
 
   return (
     <div>
@@ -46,6 +48,7 @@ export default async function Admin() {
             <th>Username</th>
             <th>Id</th>
             <th>Accredited</th>
+            <th>Balance</th>
             <th>Pay user</th>
           </tr>
         </thead>
@@ -61,6 +64,7 @@ export default async function Admin() {
                   accredited={user.profiles.accreditation_status}
                 />
               </td>
+              <td>{balances.get(user.id) ?? 0}</td>
               <td>
                 <PayUser userId={user.id} />
               </td>
@@ -96,6 +100,19 @@ export default async function Admin() {
       <RoundBidAmounts />
     </div>
   )
+}
+
+function userBalances(txns: Txn[]) {
+  const balances = new Map<string, number>()
+  txns.forEach((txn) => {
+    if (txn.from_id) {
+      const from = balances.get(txn.from_id) ?? 0
+      balances.set(txn.from_id, from - txn.amount)
+    }
+    const to = balances.get(txn.to_id) ?? 0
+    balances.set(txn.to_id, to + txn.amount)
+  })
+  return balances
 }
 
 async function roundDbBidAmounts(supabase: SupabaseClient) {

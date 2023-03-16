@@ -21,7 +21,11 @@ import { SignInButton } from '@/components/sign-in-button'
 import clsx from 'clsx'
 import { buttonClass } from '@/components/button'
 import { Tabs } from './tabs'
-import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
+import {
+  getIncomingTxnsByUser,
+  getOutgoingTxnsByUser,
+  getTxnsByProject,
+} from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
 
@@ -36,7 +40,10 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     : { userSpendableFunds: 0, userSellableShares: 0 }
   const comments = await getCommentsByProject(supabase, project.id)
   const bids = await getBidsByProject(supabase, project.id)
+  const txns = await getTxnsByProject(supabase, project.id)
 
+  const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
+  const isClosed = new Date() > closeDate
   const isOwnProject = user?.id === project.profiles.id
 
   const valuation =

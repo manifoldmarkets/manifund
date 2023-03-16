@@ -2,9 +2,12 @@ import { Database } from '@/db/database.types'
 import { NextRequest, NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from './_db'
-import { TOTAL_SHARES } from '@/db/project'
-
-import sortBy from 'lodash/sortBy'
+import { Project, TOTAL_SHARES } from '@/db/project'
+import { getProjectById } from '@/db/project'
+import { getUserEmail } from '@/db/profile'
+import { getBidsForResolution, BidAndProfile } from '@/db/bid'
+import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import uuid from 'react-uuid'
 
 export const config = {
   runtime: 'edge',
@@ -24,22 +27,22 @@ type ProjectProps = {
   creator: string
 }
 
-export type MutableBid = {
-  createdAt: number
-  amount: number
-  valuation: number
-  amountPaid: number
-}
-
 export default async function handler(req: NextRequest) {
   const { id, minFunding, founderShares, creator } =
     (await req.json()) as ProjectProps
   const supabase = createAdminClient()
-  const bids = await getBids(supabase, id)
-  if (!bids) return NextResponse.json('project not funded')
+  const bids = (await getBidsForResolution(supabase, id)).filter(
+    (bid) => bid.status === 'pending'
+  )
   let founderPortion = founderShares / TOTAL_SHARES
+  const project = await getProjectById(supabase, id)
   const resolution = resolveBids(bids, minFunding, founderPortion)
-
+  sendAuctionCloseEmails(
+    bids,
+    project,
+    resolution,
+    founderShares / TOTAL_SHARES
+  )
   if (resolution.valuation === -1) {
     updateProjectStage(supabase, id, 'not funded')
     updateBidsStatus(supabase, bids, resolution)
@@ -52,19 +55,6 @@ export default async function handler(req: NextRequest) {
   }
 }
 
-async function getBids(supabase: SupabaseClient, projectId: string) {
-  const { data, error } = await supabase
-    .from('bids')
-    .select()
-    .eq('project', projectId)
-    .eq('status', 'pending')
-    .order('valuation', { ascending: false })
-  if (error) {
-    console.error('getBids', error)
-  }
-  return data
-}
-
 async function addTxns(
   supabase: SupabaseClient,
   projectId: string,
@@ -72,43 +62,32 @@ async function addTxns(
   resolution: Resolution,
   creator: string
 ) {
-  //create txn for each bid that goes through
-  for (let i = 0; i < bids.length + 1; i++) {
-    if (resolution.amountsPaid[bids[i].id] > 0) {
-      let numShares =
-        (resolution.amountsPaid[bids[i].id] / resolution.valuation) *
-        TOTAL_SHARES
-      addTxn(supabase, creator, bids[i].bidder, numShares, projectId, projectId)
-      addTxn(
-        supabase,
-        bids[i].bidder,
-        creator,
-        resolution.amountsPaid[bids[i].id],
-        'USD',
-        projectId
-      )
+  for (const bid of bids) {
+    if (resolution.amountsPaid[bid.id] > 0) {
+      const actualAmountPaid = Math.floor(resolution.amountsPaid[bid.id])
+      const numShares = (actualAmountPaid / resolution.valuation) * TOTAL_SHARES
+      const txnBundle = uuid()
+      const sharesTxn = {
+        from_id: creator,
+        to_id: bid.bidder,
+        amount: numShares,
+        token: projectId,
+        project: projectId,
+        bundle: txnBundle,
+      }
+      const usdTxn = {
+        from_id: bid.bidder,
+        to_id: creator,
+        amount: actualAmountPaid,
+        token: 'USD',
+        project: projectId,
+        bundle: txnBundle,
+      }
+      const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
+      if (error) {
+        console.error('createTxn', error)
+      }
     }
-  }
-}
-
-async function addTxn(
-  supabase: SupabaseClient,
-  from_id: string,
-  to_id: string,
-  amount: number,
-  token: string,
-  project: string
-) {
-  let txn = {
-    from_id,
-    to_id,
-    amount,
-    token,
-    project,
-  }
-  const { error } = await supabase.from('txns').insert([txn])
-  if (error) {
-    console.error('createTxn', error)
   }
 }
 
@@ -131,14 +110,13 @@ async function updateBidsStatus(
   bids: Bid[],
   resolution: Resolution
 ) {
-  for (let i = 0; i < bids.length + 1; i++) {
+  for (const bid of bids) {
     const { error } = await supabase
       .from('bids')
       .update({
-        status:
-          resolution.amountsPaid[bids[i].id] > 0 ? 'accepted' : 'declined',
+        status: resolution.amountsPaid[bid.id] > 0 ? 'accepted' : 'declined',
       })
-      .eq('id', bids[i].id)
+      .eq('id', bid.id)
     if (error) {
       console.error('updateBidStatus', error)
     }
@@ -154,7 +132,6 @@ export function resolveBids(
   minFunding: number,
   founderPortion: number
 ) {
-  console.log('sorted bids', sortedBids)
   const amountsPaid = Object.fromEntries(sortedBids.map((bid) => [bid.id, 0]))
   const resolution = {
     amountsPaid,
@@ -168,14 +145,12 @@ export function resolveBids(
     const valuation = sortedBids[i].valuation
     totalFunding += sortedBids[i].amount
     const unsoldPortion = 1 - founderPortion - totalFunding / valuation
-    console.log('unsold portion', unsoldPortion, valuation, i)
     // If all shares are sold, bids go through
     if (unsoldPortion <= 0) {
       // Current bid gets partially paid out
       resolution.amountsPaid[sortedBids[i].id] =
         sortedBids[i].amount + unsoldPortion * valuation
       resolution.valuation = valuation
-      console.log('valuation in rESoLVEbIDs', resolution.valuation, valuation)
       // Early return resolution data
       return resolution
       // If all bids are exhausted but the project has enough funding, bids go through
@@ -199,4 +174,194 @@ export function resolveBids(
     sortedBids.map((bid) => [bid.id, 0])
   )
   return resolution
+}
+
+async function sendAuctionCloseEmails(
+  bids: BidAndProfile[],
+  project: Project,
+  resolution: Resolution,
+  founderPortion: number
+) {
+  const projectUrl = `https://manifund.org/projects/${project.slug}?tab=shareholders#tabs`
+  const auctionResolutionText = genAuctionResolutionText(
+    bids,
+    resolution,
+    founderPortion
+  )
+  const claimFundsHTML = genClaimFundsHTML(resolution)
+  for (const bid of bids) {
+    const bidResolutionText = genBidResolutionText(bid, resolution)
+    await sendBidderEmail(
+      resolution.amountsPaid[bid.id] > 0,
+      auctionResolutionText,
+      bidResolutionText,
+      project.title,
+      projectUrl,
+      bid.bidder
+    )
+  }
+  await sendCreatorEmail(
+    auctionResolutionText,
+    claimFundsHTML,
+    project.title,
+    projectUrl,
+    project.creator
+  )
+}
+
+function genAuctionResolutionText(
+  bids: Bid[],
+  resolution: Resolution,
+  founderPortion: number
+) {
+  const totalFunding = bids.reduce(
+    (total, current) =>
+      resolution.amountsPaid[current.id] > 0
+        ? total + resolution.amountsPaid[current.id]
+        : total,
+    0
+  )
+  const portionSold = totalFunding / resolution.valuation
+  if (portionSold + founderPortion >= 0.999999999999) {
+    return `This project was successfully funded. All shares were sold at a valuation of 
+        ${formatMoney(resolution.valuation)} and the project recieved
+        ${formatMoney(totalFunding)} in funding.`
+  } else if (totalFunding > 0) {
+    return `This project was successfully funded. It recieved ${formatMoney(
+      totalFunding
+    )} in
+        funding. ${formatLargeNumber(portionSold * 100)}% of shares were sold at
+        a valuation of ${formatMoney(resolution.valuation)}, the founder holds
+        another ${formatLargeNumber(founderPortion * 100)}%, and the remaining
+        shares will be sold on the market.`
+  } else {
+    return `Funding unsuccessful. The project will not proceed.`
+  }
+}
+
+function genBidResolutionText(bid: Bid, resolution: Resolution) {
+  if (resolution.amountsPaid[bid.id] > 0) {
+    return `Your bid of ${formatMoney(bid.amount)} at ${formatMoney(
+      bid.valuation
+    )} was accepted! You paid
+        ${formatMoney(resolution.amountsPaid[bid.id])} for ${formatLargeNumber(
+      (resolution.amountsPaid[bid.id] / resolution.valuation) * 100
+    )}% ownership of the impact certificate.`
+  } else {
+    return `Your bid of ${formatMoney(bid.amount)} at ${formatMoney(
+      bid.valuation
+    )} was declined.`
+  }
+}
+
+function genClaimFundsHTML(resolution: Resolution) {
+  if (resolution.valuation > 0) {
+    return `<a
+    href="https://airtable.com/shrI3XFPivduhbnGa"
+    target="_blank"
+    style="
+      box-sizing: border-box;
+      display: inline-block;
+      font-family: arial, helvetica, sans-serif;
+      text-decoration: none;
+      -webkit-text-size-adjust: none;
+      text-align: center;
+      color: #ffffff;
+      background-color: #ea580c;
+      border-radius: 4px;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      width: auto;
+      max-width: 100%;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      word-wrap: break-word;
+      mso-border-alt: none;
+    "
+  >
+    <span
+      style="
+        display: block;
+        padding: 10px 20px;
+        line-height: 120%;
+      "
+      ><span
+        style="
+          font-size: 16px;
+          font-weight: bold;
+          line-height: 18.8px;
+        "
+        >Claim funds</span
+      ></span
+    >
+  </a>`
+  } else {
+    return ''
+  }
+}
+
+async function sendCreatorEmail(
+  auctionResolutionText: string,
+  claimFundsHTML: string,
+  projectTitle: string,
+  projectUrl: string,
+  creatorId: string
+) {
+  const supabaseAdmin = createAdminClient()
+  const creatorEmail = await getUserEmail(supabaseAdmin, creatorId)
+  const mailgunVars = JSON.stringify({
+    projectUrl,
+    claimFundsHTML,
+    auctionResolutionText,
+  })
+  const body = new URLSearchParams()
+  body.append('from', 'Manifund <no-reply@manifund.org>')
+  body.append('to', creatorEmail ?? '')
+  body.append('subject', `Manifund auction for "${projectTitle}" has resolved!`)
+  body.append('template', 'auction_resolution')
+  body.append('h:X-Mailgun-Variables', mailgunVars)
+  body.append('o:tag', 'auction_resolution')
+
+  const resp = await fetch('https://api.mailgun.net/v3/manifund.org/messages', {
+    method: 'POST',
+    body,
+    headers: {
+      Authorization: 'Basic ' + btoa('api:' + process.env.MAILGUN_KEY),
+    },
+  })
+}
+
+async function sendBidderEmail(
+  bidSuccessful: boolean,
+  auctionResolutionText: string,
+  bidResolutionText: string,
+  projectTitle: string,
+  projectUrl: string,
+  bidderId: string
+) {
+  const supabaseAdmin = createAdminClient()
+  const bidderEmail = await getUserEmail(supabaseAdmin, bidderId)
+  const mailgunVars = JSON.stringify({
+    projectUrl,
+    auctionResolutionText,
+    bidResolutionText,
+  })
+  const body = new URLSearchParams()
+  body.append('from', 'Manifund <no-reply@manifund.org>')
+  body.append('to', bidderEmail ?? '')
+  body.append(
+    'subject',
+    `Manifund bid ${bidSuccessful ? 'accepted' : 'declined'}: ${projectTitle}`
+  )
+  body.append('template', 'bid_resolution')
+  body.append('h:X-Mailgun-Variables', mailgunVars)
+  body.append('o:tag', 'bid_resolution')
+
+  const resp = await fetch('https://api.mailgun.net/v3/manifund.org/messages', {
+    method: 'POST',
+    body,
+    headers: {
+      Authorization: 'Basic ' + btoa('api:' + process.env.MAILGUN_KEY),
+    },
+  })
 }
