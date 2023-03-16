@@ -46,3 +46,21 @@ export async function getBidsForResolution(
   }
   return data.filter((bid) => bid.status === 'pending') as BidAndProfile[]
 }
+
+export async function updateBidOnTrade(
+  bid: Bid,
+  amountTraded: number,
+  supabase: SupabaseClient
+) {
+  const { error } = await supabase
+    .from('bids')
+    .update({
+      amount: bid.amount - amountTraded,
+      // May have issues with floating point arithmetic errors
+      status: bid.amount === amountTraded ?? 'resolved',
+    })
+    .eq('id', bid.id)
+  if (error) {
+    throw error
+  }
+}

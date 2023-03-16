@@ -28,6 +28,8 @@ import {
 } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { Row } from '@/components/layout/row'
+import { Col } from '@/components/layout/col'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -91,6 +93,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         user={profile}
         comments={comments}
         bids={bids}
+        txns={txns}
         userSpendableFunds={userSpendableFunds}
         userSellableShares={userSellableShares}
       />
@@ -101,18 +104,22 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
 
 function NotAccredited() {
   return (
-    <div className="rounded-md border border-gray-200 bg-white p-4 shadow-md">
-      You&apos;ll need to demonstrate that you&apos;re an accredited investor
-      before you can invest in projects.
-      <SiteLink
-        href="https://airtable.com/shrZVLeo6f34NBfR0"
-        className={clsx(
-          buttonClass('xl', 'gradient'),
-          'mx-auto mt-4 max-w-md bg-gradient-to-r'
-        )}
-      >
-        Verify status
-      </SiteLink>
+    <div className="rounded-md border border-gray-200 bg-white p-4 text-center shadow-md">
+      <Row className="w-full justify-center">
+        <Col className="w-full">
+          You&apos;ll need to demonstrate that you&apos;re an accredited
+          investor before you can invest in projects.
+          <SiteLink
+            href="https://airtable.com/shrZVLeo6f34NBfR0"
+            className={clsx(
+              buttonClass('xl', 'gradient'),
+              'mx-auto mt-4 max-w-md bg-gradient-to-r'
+            )}
+          >
+            Verify status
+          </SiteLink>
+        </Col>
+      </Row>
     </div>
   )
 }
@@ -130,9 +137,11 @@ async function getUserFundsAndShares(
     const incomingShares = incomingTxns
       .filter((txn) => txn.token === projectId)
       .reduce((acc, txn) => acc + txn.amount, 0)
-    const outgoingShares = incomingTxns
+    console.log('incomingShares', incomingShares)
+    const outgoingShares = outgoingTxns
       .filter((txn) => txn.token === projectId)
       .reduce((acc, txn) => acc + txn.amount, 0)
+    console.log('outgoingShares', outgoingShares)
     const totalSharesOffered = userBids
       .filter(
         (bid) =>
@@ -141,6 +150,7 @@ async function getUserFundsAndShares(
           bid.project === projectId
       )
       .reduce((acc, bid) => acc + bid.amount, 0)
+    console.log('totalSharesOffered', totalSharesOffered)
     return incomingShares - outgoingShares - totalSharesOffered
   }
   const userSellableShares = getUserSellableShares()

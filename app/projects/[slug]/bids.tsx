@@ -3,9 +3,9 @@ import { Button } from '@/components/button'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { UserAvatarAndBadge } from '@/components/user-link'
-import { BidAndProfile } from '@/db/bid'
+import { BidAndProfile, updateBidOnTrade } from '@/db/bid'
 import { TOTAL_SHARES } from '@/db/project'
-import { makeTrade } from '@/db/txn'
+import { useSupabase } from '@/db/supabase-provider'
 import { formatMoney } from '@/utils/formatting'
 
 export function Bids(props: {
@@ -83,7 +83,7 @@ function Bid(props: {
   const enoughMoney = bid.amount <= (userSpendableFunds ?? 0)
   const enoughShares =
     (bid.amount / bid.valuation) * TOTAL_SHARES <= (userSellableShares ?? 0)
-
+  const { supabase } = useSupabase()
   return (
     <Row className="w-full justify-between gap-3 rounded p-3 hover:bg-gray-200">
       <UserAvatarAndBadge profile={bid.profiles} />
@@ -98,16 +98,26 @@ function Bid(props: {
       )}
       {userId && (
         <Button
-          disabled={bid.type === 'buy' ? !enoughShares : !enoughMoney}
-          onClick={() =>
-            makeTrade(
-              bid.type === 'buy' ? bid.bidder : userId,
-              bid.type === 'buy' ? userId : bid.bidder,
-              bid.amount,
-              bid.valuation,
-              bid.project
-            )
+          disabled={
+            (bid.type === 'buy' ? !enoughShares : !enoughMoney) ||
+            bid.bidder === userId
           }
+          onClick={async () => {
+            await updateBidOnTrade(bid, bid.amount, supabase)
+            const response = await fetch('/api/trade', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                buyer: bid.type === 'buy' ? userId : bid.bidder,
+                seller: bid.type === 'buy' ? bid.bidder : userId,
+                amount: bid.amount,
+                valuation: bid.valuation,
+                projectId: bid.project,
+              }),
+            })
+          }}
         >
           trade
         </Button>

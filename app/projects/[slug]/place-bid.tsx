@@ -16,11 +16,10 @@ import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
 import { FounderPortionBox } from './founder-portion-box'
 import { Tooltip } from '@/components/tooltip'
-import { Bid } from '@/db/bid'
+import { Bid, updateBidOnTrade } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { TOTAL_SHARES } from '@/db/project'
 import uuid from 'react-uuid'
-import { makeTrade } from '@/db/txn'
 
 type BidType = Database['public']['Enums']['bid_type']
 
@@ -70,11 +69,9 @@ export function PlaceBid(props: {
     userSellableShares < (amount / valuation) * TOTAL_SHARES &&
     bidType == 'sell'
   ) {
-    errorMessage = `You don't hold enough equity to make this offer. You currently hold ${formatLargeNumber(
-      (userSellableShares / TOTAL_SHARES) * 100
-    )}% of the equity in this project and have already offered to sell ${formatLargeNumber(
-      (userSellableShares / TOTAL_SHARES) * 100
-    )}% of it.`
+    errorMessage = `You don't hold enough equity to make this offer. If all of the sell offers you have already placed are accepted, you will only have ${formatLargeNumber(
+      userSellableShares / TOTAL_SHARES
+    )}% left.`
   } else if (amount > userSpendableFunds && bidType == 'buy') {
     errorMessage = `You don't have enough funds to place this bid. If all of the buy bids you have already placed are accepted, you will only have ${formatMoney(
       userSpendableFunds
@@ -207,31 +204,19 @@ async function findAndMakeTrades(bid: Bid, supabase: SupabaseClient) {
     budget -= tradeAmount
     await updateBidOnTrade(data[i], tradeAmount, supabase)
     await updateBidOnTrade(bid, tradeAmount, supabase)
-    await makeTrade(
-      newOfferType === 'buy' ? bid.bidder : data[i].bidder,
-      newOfferType === 'buy' ? data[i].bidder : bid.bidder,
-      tradeAmount,
-      data[i].valuation,
-      bid.project
-    )
-    i++
-  }
-}
-
-async function updateBidOnTrade(
-  bid: Bid,
-  amount: number,
-  supabase: SupabaseClient
-) {
-  const { error } = await supabase
-    .from('bids')
-    .update({
-      amount: bid.amount - amount,
-      // May have issues with floating point arithmetic errors
-      status: bid.amount === amount ?? 'resolved',
+    const response = await fetch('/api/trade', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        buyer: newOfferType === 'buy' ? bid.bidder : data[i].bidder,
+        seller: newOfferType === 'buy' ? data[i].bidder : bid.bidder,
+        amount: tradeAmount,
+        valuation: data[i].valuation,
+        projectId: bid.project,
+      }),
     })
-    .eq('id', bid.id)
-  if (error) {
-    throw error
+    i++
   }
 }
