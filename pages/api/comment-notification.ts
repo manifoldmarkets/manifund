@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { HTMLContent } from '@tiptap/react'
 import { getFullCommentById } from '@/db/comment'
 import { sendTemplateEmail } from '@/utils/email'
+import { getReplies } from '@/db/comment'
 
 type CommentProps = {
   commentId: string
@@ -51,6 +52,28 @@ export default async function handler(
         parentCommenterMailgunVars
       )
     }
+    const threadComments = await getReplies(supabaseAdmin, comment.replying_to)
+    const threadCommenterIds = new Set(threadComments.map((reply) => reply.id))
+    threadCommenterIds.forEach((commenterId) => {
+      if (
+        commenterId !== comment.projects.creator &&
+        commenterId !== parentComment.commenter
+      ) {
+        const threadCommenterMailgunVars = JSON.stringify({
+          projectTitle: comment.projects.title,
+          projectUrl: `https://manifund.org/projects/${comment.projects.slug}`,
+          commenterUsername: comment.profiles.username,
+          commenterAvatarUrl: comment.profiles.avatar_url,
+          htmlContent,
+        })
+        sendTemplateEmail(
+          commenterId,
+          `New reply to a comment on ${comment.projects.title}`,
+          'comment_on_project',
+          threadCommenterMailgunVars
+        )
+      }
+    })
   }
   res.status(200).json({
     commentId,

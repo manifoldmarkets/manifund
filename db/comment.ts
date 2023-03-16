@@ -70,3 +70,14 @@ export async function getFullCommentById(supabase: SupabaseClient, id: string) {
   }
   return data[0] as FullComment
 }
+
+export async function getReplies(supabase: SupabaseClient, rootId: string) {
+  const { data, error } = await supabase
+    .from('comments')
+    .select('*')
+    .eq('replying_to', rootId)
+  if (error) {
+    throw error
+  }
+  return data as Comment[]
+}
