@@ -7,7 +7,7 @@ import { BidAndProfile } from '@/db/bid'
 import { TOTAL_SHARES } from '@/db/project'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { Dialog, Transition } from '@headlessui/react'
-import { CheckIcon } from '@heroicons/react/24/outline'
+import { CircleStackIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import { Fragment, useRef, useState } from 'react'
 import { MySlider } from '@/components/slider'
@@ -198,9 +198,9 @@ function Trade(props: {
               >
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                   <div>
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                      <CheckIcon
-                        className="h-6 w-6 text-green-600"
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+                      <CircleStackIcon
+                        className="h-6 w-6 text-orange-600"
                         aria-hidden="true"
                       />
                     </div>
@@ -213,19 +213,16 @@ function Trade(props: {
                       </Dialog.Title>
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">
-                          Lorem ipsum, dolor sit amet consectetur adipisicing
-                          elit. Eius aliquam laudantium explicabo pariatur iste
-                          dolorem animi vitae error totam. At sapiente aliquam
-                          accusamus facere veritatis.
+                          You can choose to trade up to the portion of equity
+                          offered and at the price offered.
                         </p>
                       </div>
-                      <div className="flex justify-center">
-                        <div className="flex w-11/12 flex-col justify-center gap-3 sm:flex-row">
-                          {' '}
+                      <div className="mt-5 flex justify-center">
+                        <div className="flex w-11/12 justify-center gap-3">
                           <Input
                             value={tradeAmount}
                             type="number"
-                            className="w-full sm:w-1/3"
+                            className="w-1/3"
                             onChange={(event) =>
                               setTradeAmount(Number(event.target.value))
                             }
