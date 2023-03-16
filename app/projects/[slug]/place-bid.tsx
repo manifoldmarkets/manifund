@@ -48,7 +48,8 @@ export function PlaceBid(props: {
   const minValuation = Math.round(minFunding / sellablePortion)
 
   const [valuation, setValuation] = useState<number>(minValuation)
-  const fundable = valuation * sellablePortion
+  const fundable =
+    projectStage === 'proposal' ? valuation * sellablePortion : valuation
   const [amount, setAmount] = useState<number>(0)
   const [bidType, setBidType] = useState<BidType>('buy')
   const [submitting, setSubmitting] = useState(false)
@@ -78,6 +79,10 @@ export function PlaceBid(props: {
     )} left.`
   } else if (valuation < minValuation && projectStage == 'proposal') {
     errorMessage = `Valuation must be at least $${minValuation} for this project to have enough funding to proceed.`
+  } else if (amount > fundable) {
+    errorMessage = `You can't bid more than ${formatMoney(
+      fundable
+    )} at the valuation you've set.`
   }
 
   return (
