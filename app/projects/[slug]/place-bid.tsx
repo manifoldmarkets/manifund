@@ -1,7 +1,7 @@
 'use client'
 
 import { Input } from 'components/input'
-import MySlider from '@/components/slider'
+import { MySlider } from '@/components/slider'
 import { useState, useEffect } from 'react'
 import { Button } from 'components/button'
 import { useSupabase } from '@/db/supabase-provider'
