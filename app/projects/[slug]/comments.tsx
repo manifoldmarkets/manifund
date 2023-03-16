@@ -108,7 +108,7 @@ function genThreads(
   threadsArray.forEach((thread) => {
     thread.replies = sortBy(thread.replies, 'created_at')
   })
-  return threadsArray
+  return orderBy(threadsArray, 'root.created_at', 'desc')
 }
 
 function Comment(props: { comment: CommentAndProfile }) {
