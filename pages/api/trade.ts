@@ -3,6 +3,7 @@ import { TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { devNull } from 'os'
+import uuid from 'react-uuid'
 import { createAdminClient } from './_db'
 
 export const config = {
@@ -23,6 +24,7 @@ export default async function handler(req: NextRequest) {
   const supabase = createAdminClient()
   const oldBid = await getBidById(oldBidId, supabase)
   const newBid = newBidId ? await getBidById(newBidId, supabase) : null
+  const bundle = uuid()
   const addSharesTxn = async () => {
     const { error } = await supabase.from('txns').insert({
       amount: (usdTraded / oldBid.valuation) * TOTAL_SHARES,
@@ -30,6 +32,7 @@ export default async function handler(req: NextRequest) {
       to_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
       project: oldBid.project,
       token: oldBid.project,
+      bundle,
     })
     if (error) {
       throw error
@@ -43,6 +46,7 @@ export default async function handler(req: NextRequest) {
       to_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
       project: oldBid.project,
       token: 'USD',
+      bundle,
     })
     if (error) {
       throw error

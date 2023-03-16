@@ -5,8 +5,9 @@ import { Row } from '@/components/layout/row'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { BidAndProfile } from '@/db/bid'
 import { TOTAL_SHARES } from '@/db/project'
-import { useSupabase } from '@/db/supabase-provider'
 import { formatMoney } from '@/utils/formatting'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export function Bids(props: {
   bids: BidAndProfile[]
@@ -20,7 +21,7 @@ export function Bids(props: {
   if (bids.length === 0)
     return (
       <p className="text-center italic text-gray-500">
-        There are no bids on this project yet.
+        There are no bids on this project.
       </p>
     )
   if (stage === 'proposal') {
@@ -83,7 +84,8 @@ function Bid(props: {
   const enoughMoney = bid.amount <= (userSpendableFunds ?? 0)
   const enoughShares =
     (bid.amount / bid.valuation) * TOTAL_SHARES <= (userSellableShares ?? 0)
-  const { supabase } = useSupabase()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter()
   return (
     <Row className="w-full justify-between gap-3 rounded p-3 hover:bg-gray-200">
       <UserAvatarAndBadge profile={bid.profiles} />
@@ -102,7 +104,9 @@ function Bid(props: {
             (bid.type === 'buy' ? !enoughShares : !enoughMoney) ||
             bid.bidder === userId
           }
+          loading={isSubmitting}
           onClick={async () => {
+            setIsSubmitting(true)
             const response = await fetch('/api/trade', {
               method: 'POST',
               headers: {
@@ -114,6 +118,9 @@ function Bid(props: {
                 tradePartnerId: userId,
               }),
             })
+            const res = await response.json()
+            setIsSubmitting(false)
+            router.refresh()
           }}
         >
           trade

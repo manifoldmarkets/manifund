@@ -137,11 +137,9 @@ async function getUserFundsAndShares(
     const incomingShares = incomingTxns
       .filter((txn) => txn.token === projectId)
       .reduce((acc, txn) => acc + txn.amount, 0)
-    console.log('incomingShares', incomingShares)
     const outgoingShares = outgoingTxns
       .filter((txn) => txn.token === projectId)
       .reduce((acc, txn) => acc + txn.amount, 0)
-    console.log('outgoingShares', outgoingShares)
     const totalSharesOffered = userBids
       .filter(
         (bid) =>
@@ -150,7 +148,6 @@ async function getUserFundsAndShares(
           bid.project === projectId
       )
       .reduce((acc, bid) => acc + bid.amount, 0)
-    console.log('totalSharesOffered', totalSharesOffered)
     return incomingShares - outgoingShares - totalSharesOffered
   }
   const userSellableShares = getUserSellableShares()
