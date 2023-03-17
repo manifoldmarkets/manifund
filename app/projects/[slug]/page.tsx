@@ -74,18 +74,16 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           bids={project.bids.filter((bid) => bid.status === 'pending')}
         />
       )}
-      {user && profile?.accreditation_status && (
-        <PlaceBid
-          projectId={project.id}
-          projectStage={project.stage}
-          minFunding={project.min_funding}
-          founderPortion={project.founder_portion}
-          userId={user?.id}
-          userSpendableFunds={userSpendableFunds}
-          userSellableShares={userSellableShares}
-          userShares={userShares}
-        />
-      )}
+      {profile?.accreditation_status ||
+        (profile?.id === project.creator && project.stage === 'active' && (
+          <PlaceBid
+            project={project}
+            user={profile}
+            userSpendableFunds={userSpendableFunds}
+            userSellableShares={userSellableShares}
+            userShares={userShares}
+          />
+        ))}
       {user && !profile?.accreditation_status && <NotAccredited />}
       {!user && <SignInButton />}
       <div className="h-6" />
