@@ -48,6 +48,7 @@ export interface Database {
           created_at: string
           id: string
           project: string
+          replying_to: string | null
         }
         Insert: {
           commenter: string
@@ -55,6 +56,7 @@ export interface Database {
           created_at?: string
           id?: string
           project: string
+          replying_to?: string | null
         }
         Update: {
           commenter?: string
@@ -62,6 +64,7 @@ export interface Database {
           created_at?: string
           id?: string
           project?: string
+          replying_to?: string | null
         }
       }
       profiles: {

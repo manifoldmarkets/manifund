@@ -46,17 +46,3 @@ export async function getUser(supabase: SupabaseClient<Database>) {
   const resp = await supabase.auth.getUser()
   return resp.data.user
 }
-
-export async function getUserEmail(
-  supabaseAdmin: SupabaseClient,
-  userId: string
-) {
-  const { data, error } = await supabaseAdmin
-    .from('users')
-    .select('email')
-    .eq('id', userId)
-  if (error) {
-    console.log(error)
-  }
-  return data ? data[0].email : null
-}

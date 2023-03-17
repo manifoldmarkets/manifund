@@ -4,9 +4,9 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from './_db'
 import { Project, TOTAL_SHARES } from '@/db/project'
 import { getProjectById } from '@/db/project'
-import { getUserEmail } from '@/db/profile'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import { sendTemplateEmail } from '@/utils/email'
 import uuid from 'react-uuid'
 
 export const config = {
@@ -188,24 +188,33 @@ async function sendAuctionCloseEmails(
     resolution,
     founderPortion
   )
-  const claimFundsHTML = genClaimFundsHTML(resolution)
   for (const bid of bids) {
     const bidResolutionText = genBidResolutionText(bid, resolution)
-    await sendBidderEmail(
-      resolution.amountsPaid[bid.id] > 0,
+    const bidderMailgunVars = JSON.stringify({
+      projectUrl,
       auctionResolutionText,
       bidResolutionText,
-      project.title,
-      projectUrl,
-      bid.bidder
+    })
+    await sendTemplateEmail(
+      bid.bidder,
+      `Manifund bid ${
+        resolution.amountsPaid[bid.id] > 0 ? 'accepted' : 'declined'
+      }: ${project.title}`,
+      'bid_resolution',
+      bidderMailgunVars
     )
   }
-  await sendCreatorEmail(
-    auctionResolutionText,
-    claimFundsHTML,
-    project.title,
+  const claimFundsHTML = genClaimFundsHTML(resolution)
+  const creatorMailgunVars = JSON.stringify({
     projectUrl,
-    project.creator
+    claimFundsHTML,
+    auctionResolutionText,
+  })
+  await sendTemplateEmail(
+    project.creator,
+    `Manifund auction for "${project.title}" has resolved!`,
+    'auction_resolution',
+    creatorMailgunVars
   )
 }
 
@@ -298,70 +307,4 @@ function genClaimFundsHTML(resolution: Resolution) {
   } else {
     return ''
   }
-}
-
-async function sendCreatorEmail(
-  auctionResolutionText: string,
-  claimFundsHTML: string,
-  projectTitle: string,
-  projectUrl: string,
-  creatorId: string
-) {
-  const supabaseAdmin = createAdminClient()
-  const creatorEmail = await getUserEmail(supabaseAdmin, creatorId)
-  const mailgunVars = JSON.stringify({
-    projectUrl,
-    claimFundsHTML,
-    auctionResolutionText,
-  })
-  const body = new URLSearchParams()
-  body.append('from', 'Manifund <no-reply@manifund.org>')
-  body.append('to', creatorEmail ?? '')
-  body.append('subject', `Manifund auction for "${projectTitle}" has resolved!`)
-  body.append('template', 'auction_resolution')
-  body.append('h:X-Mailgun-Variables', mailgunVars)
-  body.append('o:tag', 'auction_resolution')
-
-  const resp = await fetch('https://api.mailgun.net/v3/manifund.org/messages', {
-    method: 'POST',
-    body,
-    headers: {
-      Authorization: 'Basic ' + btoa('api:' + process.env.MAILGUN_KEY),
-    },
-  })
-}
-
-async function sendBidderEmail(
-  bidSuccessful: boolean,
-  auctionResolutionText: string,
-  bidResolutionText: string,
-  projectTitle: string,
-  projectUrl: string,
-  bidderId: string
-) {
-  const supabaseAdmin = createAdminClient()
-  const bidderEmail = await getUserEmail(supabaseAdmin, bidderId)
-  const mailgunVars = JSON.stringify({
-    projectUrl,
-    auctionResolutionText,
-    bidResolutionText,
-  })
-  const body = new URLSearchParams()
-  body.append('from', 'Manifund <no-reply@manifund.org>')
-  body.append('to', bidderEmail ?? '')
-  body.append(
-    'subject',
-    `Manifund bid ${bidSuccessful ? 'accepted' : 'declined'}: ${projectTitle}`
-  )
-  body.append('template', 'bid_resolution')
-  body.append('h:X-Mailgun-Variables', mailgunVars)
-  body.append('o:tag', 'bid_resolution')
-
-  const resp = await fetch('https://api.mailgun.net/v3/manifund.org/messages', {
-    method: 'POST',
-    body,
-    headers: {
-      Authorization: 'Basic ' + btoa('api:' + process.env.MAILGUN_KEY),
-    },
-  })
 }
