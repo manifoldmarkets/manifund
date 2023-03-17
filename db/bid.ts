@@ -6,6 +6,7 @@ import { Project } from './project'
 export type Bid = Database['public']['Tables']['bids']['Row']
 export type BidAndProject = Bid & { projects: Project }
 export type BidAndProfile = Bid & { profiles: Profile }
+export type FullBid = Bid & { profiles: Profile } & { projects: Project }
 
 export async function getBidsByUser(supabase: SupabaseClient, user: string) {
   const { data, error } = await supabase
@@ -50,19 +51,19 @@ export async function getBidsForResolution(
 export async function getBidById(bidId: string, supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('bids')
-    .select('*, profiles(*)')
+    .select('*, projects(*), profiles(*)')
     .eq('id', bidId)
   if (error) {
     throw error
   }
-  return data[0] as BidAndProfile
+  return data[0] as FullBid
 }
 
-export async function deleteBid(supabase: SupabaseClient, bid_id: string) {
+export async function deleteBid(supabase: SupabaseClient, bidId: string) {
   const { error } = await supabase
     .from('bids')
     .update({ status: 'deleted' })
-    .eq('id', bid_id)
+    .eq('id', bidId)
   if (error) {
     console.log(error)
   }
