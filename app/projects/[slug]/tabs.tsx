@@ -79,7 +79,9 @@ export function Tabs(props: {
                 )}
                 aria-current={tab.current ? 'page' : undefined}
               >
-                {tab.name}
+                {tab.name === 'Bids' && project.stage === 'active'
+                  ? 'Offers'
+                  : tab.name}
                 {tab.count > 0 ? (
                   <span
                     className={clsx(
