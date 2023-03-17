@@ -57,11 +57,10 @@ function calculateShareholders(trades: FullTrade[], creator: Profile) {
   shareholdersArray.forEach((shareholder) => {
     shareholder.numShares = Math.round(shareholder.numShares * 100) / 100
   })
-  shareholdersArray.filter(
+  return shareholdersArray.filter(
     (shareholder) =>
       shareholder.numShares > 0 || shareholder.profile.id === creator.id
   )
-  return shareholdersArray
 }
 
 function History(props: { trades: FullTrade[] }) {

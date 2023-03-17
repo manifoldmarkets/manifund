@@ -18,8 +18,18 @@ export function Tabs(props: {
   user: Profile | null
   bids: BidAndProfile[]
   txns: TxnAndProfiles[]
+  userSpendableFunds: number
+  userSellableShares: number
 }) {
-  const { project, comments, user, bids, txns } = props
+  const {
+    project,
+    comments,
+    user,
+    bids,
+    txns,
+    userSpendableFunds,
+    userSellableShares,
+  } = props
   const router = useRouter()
   const searchParams = useSearchParams()
   const currentTab = searchParams.get('tab')
@@ -69,7 +79,9 @@ export function Tabs(props: {
                 )}
                 aria-current={tab.current ? 'page' : undefined}
               >
-                {tab.name}
+                {tab.name === 'Bids' && project.stage === 'active'
+                  ? 'Offers'
+                  : tab.name}
                 {tab.count > 0 ? (
                   <span
                     className={clsx(
@@ -88,7 +100,15 @@ export function Tabs(props: {
         </div>
       </div>
       <div className="py-6">
-        {currentTab === 'bids' && <Bids bids={bids} stage={project.stage} />}
+        {currentTab === 'bids' && (
+          <Bids
+            bids={bids}
+            stage={project.stage}
+            userId={user?.id}
+            userSpendableFunds={userSpendableFunds}
+            userSellableShares={userSellableShares}
+          />
+        )}
         {currentTab === 'comments' ||
           (currentTab === null && (
             <Comments project={project} comments={comments} user={user} />
