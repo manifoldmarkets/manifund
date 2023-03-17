@@ -2,13 +2,13 @@ import { Bid } from '@/db/bid'
 import { Project } from '@/db/project'
 import { useSupabase } from '@/db/supabase-provider'
 import { formatDate, formatMoney } from '@/utils/formatting'
+import { deleteBid } from '@/db/bid'
 import { Menu } from '@headlessui/react'
 import {
   CalendarIcon,
   EllipsisVerticalIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline'
-import { SupabaseClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { RoundTag } from './round-tag'
@@ -111,16 +111,6 @@ function BidText(props: { bid: Bid; stage: string; showValuation: boolean }) {
       )
     default:
       return <></>
-  }
-}
-
-async function deleteBid(supabase: SupabaseClient, bid_id: string) {
-  const { error } = await supabase
-    .from('bids')
-    .update({ status: 'deleted' })
-    .eq('id', bid_id)
-  if (error) {
-    console.log(error)
   }
 }
 

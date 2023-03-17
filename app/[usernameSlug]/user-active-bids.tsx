@@ -1,15 +1,5 @@
 'use client'
-import { SupabaseClient } from '@supabase/supabase-js'
-import { CalendarIcon } from '@heroicons/react/24/outline'
-import { RoundTag } from '@/components/round-tag'
 import { BidAndProject } from '@/db/bid'
-import { Project } from '@/db/project'
-import { formatMoney, formatDate } from '@/utils/formatting'
-import { TrashIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline'
-import { Menu } from '@headlessui/react'
-import Link from 'next/link'
-import { useSupabase } from '@/db/supabase-provider'
-import { useRouter } from 'next/navigation'
 import { UserBidDisplay } from '@/components/user-bids'
 
 export function ActiveBids(props: {

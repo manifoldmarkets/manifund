@@ -1,17 +1,18 @@
 'use client'
-import { Button } from '@/components/button'
+import { Button, IconButton } from '@/components/button'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { UserAvatarAndBadge } from '@/components/user-link'
-import { BidAndProfile } from '@/db/bid'
+import { BidAndProfile, deleteBid } from '@/db/bid'
 import { TOTAL_SHARES } from '@/db/project'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { Dialog, Transition } from '@headlessui/react'
-import { CircleStackIcon } from '@heroicons/react/24/outline'
+import { CircleStackIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import { Fragment, useRef, useState } from 'react'
 import { MySlider } from '@/components/slider'
 import { Input } from '@/components/input'
+import { useSupabase } from '@/db/supabase-provider'
 
 export function Bids(props: {
   bids: BidAndProfile[]
@@ -121,6 +122,7 @@ function Trade(props: {
   userSellableShares: number
 }) {
   const { bid, userId, userSpendableFunds, userSellableShares } = props
+  const { supabase } = useSupabase()
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [tradeAmount, setTradeAmount] = useState(bid.amount)
@@ -142,7 +144,7 @@ function Trade(props: {
     errorMessage = `You don't hold enough equity to make this trade. If all of the sell offers you have already placed are accepted, you will only have ${formatLargeNumber(
       userSellableShares / TOTAL_SHARES
     )}% left.`
-  } else if (bid.type === 'sell' && tradeAmount > userSpendableFunds) {
+  } else if (bid.type === 'sell' && !enoughMoney) {
     errorMessage = `You don't have enough funds to make this trade. If all of the buy bids you have already placed are accepted, you will only have ${formatMoney(
       userSpendableFunds
     )} left.`
@@ -155,14 +157,24 @@ function Trade(props: {
   }
   return (
     <div>
-      <Button
-        disabled={bid.bidder === userId}
-        onClick={async () => {
-          setOpen(true)
-        }}
-      >
-        trade
-      </Button>
+      {bid.bidder !== userId ? (
+        <Button
+          onClick={async () => {
+            setOpen(true)
+          }}
+        >
+          {bid.type === 'buy' ? 'Sell' : 'Buy'}
+        </Button>
+      ) : (
+        <Button
+          className={'bg-rose-500 hover:bg-rose-600'}
+          onClick={async () => {
+            deleteBid(supabase, bid.id)
+          }}
+        >
+          <TrashIcon className="h-5 w-5 text-white" aria-hidden="true" />
+        </Button>
+      )}
       <Transition.Root show={open} as={Fragment}>
         <Dialog
           as="div"
