@@ -104,7 +104,7 @@ export function Tabs(props: {
           <Bids
             bids={bids}
             stage={project.stage}
-            userId={user?.id}
+            user={user}
             userSpendableFunds={userSpendableFunds}
             userSellableShares={userSellableShares}
           />
