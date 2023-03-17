@@ -6,10 +6,10 @@ import { UserAvatarAndBadge } from '@/components/user-link'
 import { BidAndProfile, deleteBid } from '@/db/bid'
 import { TOTAL_SHARES } from '@/db/project'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog } from '@headlessui/react'
 import { CircleStackIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
-import { Fragment, useRef, useState } from 'react'
+import { useState } from 'react'
 import { MySlider } from '@/components/slider'
 import { Input } from '@/components/input'
 import { useSupabase } from '@/db/supabase-provider'
@@ -139,7 +139,6 @@ function Trade(props: {
     75: `${formatMoney((bid.amount / 4) * 3)}`,
     100: `${formatMoney(bid.amount)}`,
   }
-  const cancelButtonRef = useRef(null)
   const router = useRouter()
 
   let errorMessage: string | null = null

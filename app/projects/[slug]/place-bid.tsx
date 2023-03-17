@@ -14,7 +14,7 @@ import {
 import { Database } from '@/db/database.types'
 import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
-import { FounderPortionBox } from './founder-portion-box'
+import { HoldingsBox } from './holdings-box'
 import { Tooltip } from '@/components/tooltip'
 import { Bid } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
@@ -31,6 +31,7 @@ export function PlaceBid(props: {
   userId: string
   userSpendableFunds: number
   userSellableShares: number
+  userShares: number
 }) {
   const {
     projectId,
@@ -40,6 +41,7 @@ export function PlaceBid(props: {
     userId,
     userSpendableFunds,
     userSellableShares,
+    userShares,
   } = props
   const { supabase } = useSupabase()
   const router = useRouter()
@@ -71,7 +73,7 @@ export function PlaceBid(props: {
     bidType == 'sell'
   ) {
     errorMessage = `You don't hold enough equity to make this offer. If all of the sell offers you have already placed are accepted, you will only have ${formatLargeNumber(
-      userSellableShares / TOTAL_SHARES
+      (userSellableShares / TOTAL_SHARES) * 100
     )}% left.`
   } else if (amount > userSpendableFunds && bidType == 'buy') {
     errorMessage = `You don't have enough funds to place this bid. If all of the buy bids you have already placed are accepted, you will only have ${formatMoney(
@@ -101,19 +103,28 @@ export function PlaceBid(props: {
             </Select>
           </div>
         )}
-        {projectStage == 'proposal' && (
+        {projectStage === 'proposal' && (
           <div className="mb-1 flex flex-row gap-1">
             <Subtitle>Place a bid</Subtitle>
           </div>
         )}
-        {founderPortion > 0 && (
+        {founderPortion > 0 && projectStage === 'proposal' && (
           <Tooltip
             text={
               'The founder chose to keep some of the equity in this project. You can only buy up to the percent of the project that they chose to sell.'
             }
           >
-            <FounderPortionBox founderPortion={founderPortion / 100000} />
+            <HoldingsBox
+              label="Founder holds"
+              holdings={(founderPortion / TOTAL_SHARES) * 100}
+            />
           </Tooltip>
+        )}
+        {projectStage === 'active' && (
+          <HoldingsBox
+            label="You hold"
+            holdings={(userShares / TOTAL_SHARES) * 100}
+          />
         )}
       </div>
 
