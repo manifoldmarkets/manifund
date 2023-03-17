@@ -2,7 +2,8 @@ import { getProfileByUsername, getUser } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
-import { Bids } from './user-bids'
+import { ProposalBids } from './user-proposal-bids'
+import { ActiveBids } from './user-active-bids'
 import { Investments } from './user-investments'
 import { Projects } from './user-projects'
 import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
@@ -25,7 +26,12 @@ export default async function UserProfilePage(props: {
   const profile = await getProfileByUsername(supabase, usernameSlug)
   const projects = await getProjectsByUser(supabase, profile.id)
   const bids = await getBidsByUser(supabase, profile.id)
-  const proposalBids = bids.filter((bid) => bid.projects.stage == 'proposal')
+  const proposalBids = bids.filter(
+    (bid) => bid.projects.stage === 'proposal' && bid.status === 'pending'
+  )
+  const activeBids = bids.filter(
+    (bid) => bid.projects.stage === 'active' && bid.status === 'pending'
+  )
   const isOwnProfile = user?.id === profile?.id
   const investments = await compileInvestments(supabase, profile.id)
   const notOwnProjectInvestments = investments.filter((investment) => {
@@ -41,7 +47,10 @@ export default async function UserProfilePage(props: {
       />
       <div className="flex flex-col gap-10">
         {proposalBids.length > 0 && (
-          <Bids bids={bids} isOwnProfile={isOwnProfile} />
+          <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
+        )}
+        {activeBids.length > 0 && (
+          <ActiveBids bids={activeBids} isOwnProfile={isOwnProfile} />
         )}
         {notOwnProjectInvestments.length > 0 && (
           // @ts-expect-error Server Component
@@ -52,7 +61,6 @@ export default async function UserProfilePage(props: {
         )}
         {(isOwnProfile || projects.length > 0) && (
           // @ts-expect-error Server Component
-
           <Projects projects={projects} />
         )}
 

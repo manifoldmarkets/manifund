@@ -156,10 +156,7 @@ function Trade(props: {
   return (
     <div>
       <Button
-        disabled={
-          (bid.type === 'buy' ? !enoughShares : !enoughMoney) ||
-          bid.bidder === userId
-        }
+        disabled={bid.bidder === userId}
         onClick={async () => {
           setOpen(true)
         }}
@@ -213,8 +210,7 @@ function Trade(props: {
                       </Dialog.Title>
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">
-                          You can choose to trade up to the portion of equity
-                          offered and at the price offered.
+                          Choose what portion of this offer to accept.
                         </p>
                       </div>
                       <div className="mt-5 flex justify-center">
@@ -272,6 +268,7 @@ function Trade(props: {
                         })
                         const res = await response.json()
                         setIsSubmitting(false)
+                        setOpen(false)
                         router.refresh()
                       }}
                     >

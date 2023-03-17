@@ -122,6 +122,7 @@ export function PlaceBid(props: {
         <Input
           value={amount}
           type="number"
+          className="w-1/3"
           onChange={(event) => setAmount(Number(event.target.value))}
         />
         <MySlider
