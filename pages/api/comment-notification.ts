@@ -25,7 +25,7 @@ export default async function handler(
       commenterAvatarUrl: comment.profiles.avatar_url,
       htmlContent,
     })
-    sendTemplateEmail(
+    await sendTemplateEmail(
       comment.projects.creator,
       `New comment on ${comment.projects.title}`,
       'comment_on_project',
@@ -45,7 +45,7 @@ export default async function handler(
         commenterAvatarUrl: comment.profiles.avatar_url,
         htmlContent,
       })
-      sendTemplateEmail(
+      await sendTemplateEmail(
         parentComment.commenter,
         `New reply to your comment on ${comment.projects.title}`,
         'comment_on_project',
@@ -54,7 +54,7 @@ export default async function handler(
     }
     const threadComments = await getReplies(supabaseAdmin, comment.replying_to)
     const threadCommenterIds = new Set(threadComments.map((reply) => reply.id))
-    threadCommenterIds.forEach((commenterId) => {
+    threadCommenterIds.forEach(async (commenterId) => {
       if (
         commenterId !== comment.projects.creator &&
         commenterId !== parentComment.commenter
@@ -66,7 +66,7 @@ export default async function handler(
           commenterAvatarUrl: comment.profiles.avatar_url,
           htmlContent,
         })
-        sendTemplateEmail(
+        await sendTemplateEmail(
           commenterId,
           `New reply to a comment on ${comment.projects.title}`,
           'comment_on_project',
