@@ -88,7 +88,7 @@ function Bid(props: {
 }) {
   const { bid, showValuation, userId, userSpendableFunds, userSellableShares } =
     props
-  console.log(userId, userSpendableFunds, userSellableShares)
+  const { supabase } = useSupabase()
   return (
     <Row className="w-full justify-between gap-3 rounded p-3 hover:bg-gray-200">
       <UserAvatarAndBadge profile={bid.profiles} />
@@ -101,16 +101,25 @@ function Bid(props: {
       ) : (
         <div className="relative top-1.5">{formatMoney(bid.amount)}</div>
       )}
-      {userId &&
-        userSpendableFunds !== undefined &&
-        userSellableShares !== undefined && (
-          <Trade
-            bid={bid}
-            userId={userId}
-            userSpendableFunds={userSpendableFunds}
-            userSellableShares={userSellableShares}
-          />
-        )}
+      {userId && (
+        <div>
+          {bid.bidder === userId ? (
+            <Button
+              className=" w-14 bg-rose-500 hover:bg-rose-600"
+              onClick={async () => await deleteBid(supabase, bid.id)}
+            >
+              <TrashIcon className="h-5 w-5" />
+            </Button>
+          ) : (
+            <Trade
+              bid={bid}
+              userId={userId}
+              userSpendableFunds={userSpendableFunds ?? 0}
+              userSellableShares={userSellableShares ?? 0}
+            />
+          )}
+        </div>
+      )}
     </Row>
   )
 }
@@ -122,7 +131,6 @@ function Trade(props: {
   userSellableShares: number
 }) {
   const { bid, userId, userSpendableFunds, userSellableShares } = props
-  const { supabase } = useSupabase()
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [tradeAmount, setTradeAmount] = useState(bid.amount)
@@ -157,24 +165,14 @@ function Trade(props: {
   }
   return (
     <div>
-      {bid.bidder !== userId ? (
-        <Button
-          onClick={async () => {
-            setOpen(true)
-          }}
-        >
-          {bid.type === 'buy' ? 'Sell' : 'Buy'}
-        </Button>
-      ) : (
-        <Button
-          className={'bg-rose-500 hover:bg-rose-600'}
-          onClick={async () => {
-            deleteBid(supabase, bid.id)
-          }}
-        >
-          <TrashIcon className="h-5 w-5 text-white" aria-hidden="true" />
-        </Button>
-      )}
+      <Button
+        className="w-14"
+        onClick={async () => {
+          setOpen(true)
+        }}
+      >
+        {bid.type === 'buy' ? 'Sell' : 'Buy'}
+      </Button>
       <Transition.Root show={open} as={Fragment}>
         <Dialog
           as="div"
@@ -251,7 +249,6 @@ function Trade(props: {
                     </div>
                   </div>
                   <div className="text-center text-red-500">{errorMessage}</div>
-
                   <div className="sm:flex-2 mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row">
                     <Button
                       type="button"
