@@ -89,7 +89,6 @@ function Bid(props: {
 }) {
   const { bid, showValuation, userId, userSpendableFunds, userSellableShares } =
     props
-  const { supabase } = useSupabase()
   return (
     <Row className="w-full justify-between gap-3 rounded p-3 hover:bg-gray-200">
       <UserAvatarAndBadge profile={bid.profiles} />
@@ -105,12 +104,7 @@ function Bid(props: {
       {userId && (
         <div>
           {bid.bidder === userId ? (
-            <Button
-              className=" w-14 bg-rose-500 hover:bg-rose-600"
-              onClick={async () => await deleteBid(supabase, bid.id)}
-            >
-              <TrashIcon className="h-5 w-5" />
-            </Button>
+            <DeleteBid bidId={bid.id} />
           ) : (
             <Trade
               bid={bid}
@@ -151,7 +145,7 @@ function Trade(props: {
   let errorMessage: string | null = null
   if (bid.type === 'buy' && !enoughShares) {
     errorMessage = `You don't hold enough equity to make this trade. If all of the sell offers you have already placed are accepted, you will only have ${formatLargeNumber(
-      userSellableShares / TOTAL_SHARES
+      (userSellableShares / TOTAL_SHARES) * 100
     )}% left.`
   } else if (bid.type === 'sell' && !enoughMoney) {
     errorMessage = `You don't have enough funds to make this trade. If all of the buy bids you have already placed are accepted, you will only have ${formatMoney(
@@ -253,6 +247,64 @@ function Trade(props: {
             {`${bid.type === 'buy' ? 'Sell' : 'Buy'} ${formatLargeNumber(
               (tradeAmount / bid.valuation) * 100
             )}% for ${formatMoney(tradeAmount)}`}
+          </Button>
+        </div>
+      </Modal>
+    </div>
+  )
+}
+
+function DeleteBid(props: { bidId: string }) {
+  const { bidId } = props
+  const [open, setOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { supabase } = useSupabase()
+  const router = useRouter()
+  return (
+    <div>
+      <Button
+        className="w-14 bg-rose-500 hover:bg-rose-600"
+        onClick={async () => {
+          setOpen(true)
+        }}
+      >
+        Delete
+      </Button>
+      <Modal open={open}>
+        <div>
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-100">
+            <TrashIcon className="h-6 w-6 text-rose-600" aria-hidden="true" />
+          </div>
+          <div className="mt-3 text-center sm:mt-5">
+            <Dialog.Title
+              as="h3"
+              className="text-base font-semibold leading-6 text-gray-900"
+            >
+              Are you sure you want to delete this offer?
+            </Dialog.Title>
+          </div>
+        </div>
+        <div className="sm:flex-2 mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row">
+          <Button
+            type="button"
+            color={'gray'}
+            className="inline-flex w-full justify-center sm:col-start-1"
+            onClick={() => setOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            className="sm:flex-2 inline-flex w-full justify-center bg-rose-500 hover:bg-rose-600"
+            loading={isSubmitting}
+            onClick={async () => {
+              await deleteBid(supabase, bidId)
+              setIsSubmitting(false)
+              setOpen(false)
+              router.refresh()
+            }}
+          >
+            Delete offer
           </Button>
         </div>
       </Modal>
