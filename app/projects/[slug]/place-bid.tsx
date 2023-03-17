@@ -1,17 +1,25 @@
 'use client'
 
 import { Input } from 'components/input'
-import MySlider from '@/components/slider'
+import { MySlider } from '@/components/slider'
 import { useState, useEffect } from 'react'
 import { Button } from 'components/button'
 import { useSupabase } from '@/db/supabase-provider'
 import { Subtitle } from '@/components/subtitle'
-import { formatMoney, roundLargeNumber } from '@/utils/formatting'
+import {
+  formatLargeNumber,
+  formatMoney,
+  roundLargeNumber,
+} from '@/utils/formatting'
 import { Database } from '@/db/database.types'
 import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
-import { FounderPortionBox } from './founder-portion-box'
+import { HoldingsBox } from './holdings-box'
 import { Tooltip } from '@/components/tooltip'
+import { Bid } from '@/db/bid'
+import { SupabaseClient } from '@supabase/supabase-js'
+import { TOTAL_SHARES } from '@/db/project'
+import uuid from 'react-uuid'
 
 type BidType = Database['public']['Enums']['bid_type']
 
@@ -22,6 +30,8 @@ export function PlaceBid(props: {
   founderPortion: number
   userId: string
   userSpendableFunds: number
+  userSellableShares: number
+  userShares: number
 }) {
   const {
     projectId,
@@ -30,6 +40,8 @@ export function PlaceBid(props: {
     founderPortion,
     userId,
     userSpendableFunds,
+    userSellableShares,
+    userShares,
   } = props
   const { supabase } = useSupabase()
   const router = useRouter()
@@ -38,8 +50,11 @@ export function PlaceBid(props: {
   const minValuation = Math.round(minFunding / sellablePortion)
 
   const [valuation, setValuation] = useState<number>(minValuation)
-  const fundable = valuation * sellablePortion
+  const fundable =
+    projectStage === 'proposal' ? valuation * sellablePortion : valuation
   const [amount, setAmount] = useState<number>(0)
+  const [bidType, setBidType] = useState<BidType>('buy')
+  const [submitting, setSubmitting] = useState(false)
   const [marks, setMarks] = useState<{ [key: number]: string }>({})
   useEffect(() => {
     setMarks({
@@ -49,18 +64,27 @@ export function PlaceBid(props: {
       75: formatMoney((fundable / 4) * 3),
       100: formatMoney(fundable),
     })
-  }, [fundable])
-
-  const [bidType, setBidType] = useState<BidType>('buy')
-  const [submitting, setSubmitting] = useState(false)
+  }, [valuation, sellablePortion])
 
   let errorMessage: string | null = null
-  if (amount > userSpendableFunds && bidType == 'buy') {
+  if (
+    projectStage == 'active' &&
+    userSellableShares < (amount / valuation) * TOTAL_SHARES &&
+    bidType == 'sell'
+  ) {
+    errorMessage = `You don't hold enough equity to make this offer. If all of the sell offers you have already placed are accepted, you will only have ${formatLargeNumber(
+      (userSellableShares / TOTAL_SHARES) * 100
+    )}% left.`
+  } else if (amount > userSpendableFunds && bidType == 'buy') {
     errorMessage = `You don't have enough funds to place this bid. If all of the buy bids you have already placed are accepted, you will only have ${formatMoney(
       userSpendableFunds
     )} left.`
   } else if (valuation < minValuation && projectStage == 'proposal') {
     errorMessage = `Valuation must be at least $${minValuation} for this project to have enough funding to proceed.`
+  } else if (amount > fundable) {
+    errorMessage = `You can't bid more than ${formatMoney(
+      fundable
+    )} at the valuation you've set.`
   }
 
   return (
@@ -79,19 +103,28 @@ export function PlaceBid(props: {
             </Select>
           </div>
         )}
-        {projectStage == 'proposal' && (
+        {projectStage === 'proposal' && (
           <div className="mb-1 flex flex-row gap-1">
             <Subtitle>Place a bid</Subtitle>
           </div>
         )}
-        {founderPortion > 0 && (
+        {founderPortion > 0 && projectStage === 'proposal' && (
           <Tooltip
             text={
               'The founder chose to keep some of the equity in this project. You can only buy up to the percent of the project that they chose to sell.'
             }
           >
-            <FounderPortionBox founderPortion={founderPortion / 100000} />
+            <HoldingsBox
+              label="Founder holds"
+              holdings={(founderPortion / TOTAL_SHARES) * 100}
+            />
           </Tooltip>
+        )}
+        {projectStage === 'active' && (
+          <HoldingsBox
+            label="You hold"
+            holdings={(userShares / TOTAL_SHARES) * 100}
+          />
         )}
       </div>
 
@@ -100,6 +133,7 @@ export function PlaceBid(props: {
         <Input
           value={amount}
           type="number"
+          className="w-1/3"
           onChange={(event) => setAmount(Number(event.target.value))}
         />
         <MySlider
@@ -134,17 +168,21 @@ export function PlaceBid(props: {
         loading={submitting}
         onClick={async () => {
           setSubmitting(true)
-          const { error } = await supabase.from('bids').insert([
-            {
-              project: projectId,
-              bidder: userId,
-              valuation: roundLargeNumber(valuation),
-              amount: roundLargeNumber(amount),
-              type: bidType,
-            },
-          ])
+          const newBid = {
+            id: uuid(),
+            project: projectId,
+            bidder: userId,
+            valuation: roundLargeNumber(valuation),
+            amount: roundLargeNumber(amount),
+            status: 'pending',
+            type: bidType,
+          } as Bid
+          const { error } = await supabase.from('bids').insert([newBid])
           if (error) {
             throw error
+          }
+          if (projectStage === 'active') {
+            await findAndMakeTrades(newBid, supabase)
           }
           setSubmitting(false)
           router.refresh()
@@ -155,4 +193,45 @@ export function PlaceBid(props: {
       </Button>
     </div>
   )
+}
+
+async function findAndMakeTrades(bid: Bid, supabase: SupabaseClient) {
+  const newOfferType = bid.type
+  const { data, error } = await supabase
+    .from('bids')
+    .select()
+    .eq('project', bid.project)
+    .order('valuation', { ascending: newOfferType === 'buy' })
+  if (error) {
+    throw error
+  }
+  const oldBids = data
+    .filter((oldBid) => oldBid.bidder !== bid.bidder)
+    .filter((oldBid) => oldBid.type !== newOfferType)
+    .filter((oldBid) => oldBid.status === 'pending')
+  let i = 0
+  let budget = bid.amount
+  while (budget > 0 && i < oldBids.length) {
+    if (
+      newOfferType === 'buy'
+        ? oldBids[i].valuation > bid.valuation
+        : oldBids[i].valuation < bid.valuation
+    ) {
+      return
+    }
+    const tradeAmount = Math.min(budget, oldBids[i].amount)
+    budget -= tradeAmount
+    const response = await fetch('/api/trade', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        oldBidId: oldBids[i].bidder,
+        usdTraded: tradeAmount,
+        tradePartnerId: bid.bidder,
+      }),
+    })
+    i++
+  }
 }

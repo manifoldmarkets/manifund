@@ -2,6 +2,7 @@ import { Project } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
 import Link from 'next/link'
 import type { investment } from './page'
+import { formatMoney } from '@/utils/formatting'
 
 export async function Investments(props: {
   investments: investment[]
@@ -57,10 +58,11 @@ async function InvestmentsDisplay(props: {
         <div className="mt-2 sm:flex sm:justify-between">
           <div className="sm:flex">
             <p className="flex items-center text-sm text-gray-500">
-              bought&nbsp;<span className="text-black">${-amount}</span>
+              Bought&nbsp;
+              <span className="text-black">{formatMoney(-amount)}</span>
               &nbsp;@&nbsp;
               <span className="text-black">
-                ${(-amount * 10000000) / num_shares}
+                {formatMoney((-amount * 10000000) / num_shares)}
               </span>
               &nbsp;valuation
             </p>

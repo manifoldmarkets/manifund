@@ -28,6 +28,8 @@ import {
 } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { Row } from '@/components/layout/row'
+import { Col } from '@/components/layout/col'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -35,7 +37,9 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const project = await getFullProjectBySlug(supabase, slug)
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
-  const spendableFunds = user ? await getSpendableFunds(supabase, user.id) : 0
+  const { userSpendableFunds, userSellableShares, userShares } = user
+    ? await getUserFundsAndShares(supabase, user.id, project.id)
+    : { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
   const comments = await getCommentsByProject(supabase, project.id)
   const bids = await getBidsByProject(supabase, project.id)
   const txns = await getTxnsByProject(supabase, project.id)
@@ -70,32 +74,29 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           bids={project.bids.filter((bid) => bid.status === 'pending')}
         />
       )}
-      {user &&
-        profile?.accreditation_status &&
-        project.stage !== 'not funded' &&
-        (isClosed ? (
-          <div className="rounded-md border border-gray-200 bg-white p-4 shadow-md">
-            Bidding is closed.
-          </div>
-        ) : (
-          <PlaceBid
-            projectId={project.id}
-            projectStage={project.stage}
-            minFunding={project.min_funding}
-            founderPortion={project.founder_portion}
-            userId={user?.id}
-            userSpendableFunds={spendableFunds}
-          />
-        ))}
+      {user && profile?.accreditation_status && (
+        <PlaceBid
+          projectId={project.id}
+          projectStage={project.stage}
+          minFunding={project.min_funding}
+          founderPortion={project.founder_portion}
+          userId={user?.id}
+          userSpendableFunds={userSpendableFunds}
+          userSellableShares={userSellableShares}
+          userShares={userShares}
+        />
+      )}
       {user && !profile?.accreditation_status && <NotAccredited />}
       {!user && <SignInButton />}
-      <div className="h-6" id="tabs" />
+      <div className="h-6" />
       <Tabs
         project={project}
         user={profile}
         comments={comments}
         bids={bids}
         txns={txns}
+        userSpendableFunds={userSpendableFunds}
+        userSellableShares={userSellableShares}
       />
       {isAdmin(user) && <CloseBidding project={project} />}
     </div>
@@ -104,32 +105,66 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
 
 function NotAccredited() {
   return (
-    <div className="rounded-md border border-gray-200 bg-white p-4 shadow-md">
-      You&apos;ll need to demonstrate that you&apos;re an accredited investor
-      before you can invest in projects.
-      <SiteLink
-        href="https://airtable.com/shrZVLeo6f34NBfR0"
-        className={clsx(
-          buttonClass('xl', 'gradient'),
-          'mx-auto mt-4 max-w-md bg-gradient-to-r'
-        )}
-      >
-        Verify status
-      </SiteLink>
+    <div className="rounded-md border border-gray-200 bg-white p-4 text-center shadow-md">
+      <Row className="w-full justify-center">
+        <Col className="w-full">
+          You&apos;ll need to demonstrate that you&apos;re an accredited
+          investor before you can invest in projects.
+          <SiteLink
+            href="https://airtable.com/shrZVLeo6f34NBfR0"
+            className={clsx(
+              buttonClass('xl', 'gradient'),
+              'mx-auto mt-4 max-w-md bg-gradient-to-r'
+            )}
+          >
+            Verify status
+          </SiteLink>
+        </Col>
+      </Row>
     </div>
   )
 }
 
-async function getSpendableFunds(supabase: SupabaseClient, userId: string) {
+async function getUserFundsAndShares(
+  supabase: SupabaseClient,
+  userId: string,
+  projectId: string
+) {
   const incomingTxns = await getIncomingTxnsByUser(supabase, userId)
   const outgoingTxns = await getOutgoingTxnsByUser(supabase, userId)
   const userBids = await getBidsByUser(supabase, userId)
-  const currentBalance = calculateUserBalance(incomingTxns, outgoingTxns)
-  let balanceMinusBids = currentBalance
-  userBids.forEach((bid) => {
-    if (bid.type == 'buy' && bid.status == 'pending') {
-      balanceMinusBids -= bid.amount
-    }
-  })
-  return balanceMinusBids
+
+  const getUserShares = () => {
+    const incomingShares = incomingTxns
+      .filter((txn) => txn.token === projectId)
+      .reduce((acc, txn) => acc + txn.amount, 0)
+    const outgoingShares = outgoingTxns
+      .filter((txn) => txn.token === projectId)
+      .reduce((acc, txn) => acc + txn.amount, 0)
+    return incomingShares - outgoingShares
+  }
+  const userShares = getUserShares()
+  const offeredShares = userBids
+    .filter(
+      (bid) =>
+        bid.type === 'sell' &&
+        bid.status === 'pending' &&
+        bid.project === projectId
+    )
+    .reduce((acc, bid) => acc + bid.amount, 0)
+  const userSellableShares = userShares - offeredShares
+
+  const getUserSpendableFunds = async () => {
+    const currentBalance = calculateUserBalance(incomingTxns, outgoingTxns)
+    let balanceMinusBids = currentBalance
+    userBids.forEach((bid) => {
+      if (bid.type == 'buy') {
+        balanceMinusBids -= bid.amount
+      }
+    })
+    return balanceMinusBids
+  }
+  const userSpendableFunds = await getUserSpendableFunds()
+
+  return { userSpendableFunds, userSellableShares, userShares }
 }
