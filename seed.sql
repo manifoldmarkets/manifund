@@ -211,3 +211,19 @@ AS PERMISSIVE FOR INSERT
 TO authenticated
 
 WITH CHECK (true)
+
+
+ -- Rounds
+create table if not exists public.rounds (
+  title text not null,
+  auction_close_date date,
+  proposal_due_date date,
+  retro_pool float8,
+  description jsonb,
+  primary key (title)
+);
+
+CREATE POLICY "Enable read access for all users" ON "public"."rounds"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
