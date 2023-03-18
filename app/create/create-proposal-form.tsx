@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { SiteLink } from '@/components/site-link'
 import { Round } from '@/db/round'
 import { sortBy } from 'lodash'
+import { add, format } from 'date-fns'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -45,8 +46,10 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
   const [minFunding, setMinFunding] = useState<number>(250)
   const [founderPortion, setFounderPortion] = useState<number>(0)
   const [advancedSettings, setAdvancedSettings] = useState<boolean>(false)
-  const [round, setRound] = useState<string>('Independent')
-  const [auctionClose, setAuctionClose] = useState<string>('2023-03-12')
+  const [round, setRound] = useState<Round>(availableRounds[0])
+  const auctionClose = round.auction_close_date
+    ? format(new Date(round.auction_close_date), 'yyyy-MM-dd')
+    : format(add(new Date(), { days: 7 }), 'yyyy-MM-dd')
   const editor = useTextEditor(DEFAULT_DESCRIPTION)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -55,8 +58,6 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
       setErrorMessage('Your project needs a title!')
     } else if (minFunding < 250) {
       setErrorMessage('Funding goals must be at least $250')
-    } else if (round === 'ACX Mini-Grants') {
-      setErrorMessage('Submissions to ACX Mini-Grants have closed.')
     } else {
       setErrorMessage(null)
     }
@@ -153,26 +154,29 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
           <fieldset className="mt-4">
             <legend className="sr-only">Notification method</legend>
             <div className="space-y-4">
-              {availableRounds.map((round) => (
-                <div key={round.title} className="relative flex items-start">
+              {availableRounds.map((availableRound) => (
+                <div
+                  key={availableRound.title}
+                  className="relative flex items-start"
+                >
                   <div className="flex h-6 items-center">
                     <input
-                      id={round.title}
+                      id={availableRound.title}
                       name="notification-method"
                       type="radio"
-                      defaultChecked={round.title === 'Independent'}
-                      onChange={() => setRound(round.title)}
+                      defaultChecked={availableRound.title === round.title}
+                      onChange={() => setRound(availableRound)}
                       className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
                     />
                   </div>
                   <div className="ml-3">
                     <label
-                      htmlFor={round.title}
+                      htmlFor={availableRound.title}
                       className="text-md block font-medium"
                     >
-                      {round.title}
+                      {availableRound.title}
                     </label>
-                    {round.title === 'Independent' && (
+                    {availableRound.title === 'Independent' && (
                       <p className="text-sm text-gray-500">
                         Independent projects do not have a committed oracular
                         funder. By entering as an Independent project, your
@@ -187,18 +191,15 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
           </fieldset>
         </div>
       </div>
-      {round === 'Independent' && (
-        <>
-          <div>
-            <label htmlFor="auction-close">Auction Close Date: </label>
-            <Input
-              type="date"
-              value={auctionClose}
-              onChange={(event) => setAuctionClose(event.target.value)}
-            />
-          </div>
-        </>
-      )}
+      <div>
+        <label htmlFor="auction-close">Auction Close Date: </label>
+        <Input
+          type="date"
+          value={auctionClose}
+          disabled={round.title !== 'Independent'}
+          onChange={(event) => setAuctionClose(event.target.value)}
+        />
+      </div>
 
       {advancedSettings && (
         <>
@@ -236,7 +237,10 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
               min_funding: minFunding.toString(),
               founder_portion: advancedSettings ? founderShares.toString() : 0,
               round,
-              auction_close: advancedSettings ? auctionClose : '03/12/2023',
+              auction_close:
+                round.title === 'Independent'
+                  ? auctionClose
+                  : round.auction_close_date,
             }),
           })
           const newProject = await response.json()
