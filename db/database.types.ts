@@ -120,7 +120,7 @@ export interface Database {
           founder_portion: number
           id?: string
           min_funding: number
-          round?: string
+          round: string
           slug?: string
           stage?: string
           title?: string
@@ -137,6 +137,29 @@ export interface Database {
           round?: string
           slug?: string
           stage?: string
+          title?: string
+        }
+      }
+      rounds: {
+        Row: {
+          auction_close_date: string | null
+          description: Json | null
+          proposal_due_date: string | null
+          retro_pool: number | null
+          title: string
+        }
+        Insert: {
+          auction_close_date?: string | null
+          description?: Json | null
+          proposal_due_date?: string | null
+          retro_pool?: number | null
+          title: string
+        }
+        Update: {
+          auction_close_date?: string | null
+          description?: Json | null
+          proposal_due_date?: string | null
+          retro_pool?: number | null
           title?: string
         }
       }
@@ -190,7 +213,14 @@ export interface Database {
       }
     }
     Functions: {
-      [_ in never]: never
+      get_user_balances: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: number
+          username: string
+          balance: number
+        }[]
+      }
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
