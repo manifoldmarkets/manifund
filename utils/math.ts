@@ -96,3 +96,7 @@ export function calculateFullTrades(txns: TxnAndProfiles[]) {
   }
   return orderBy(Object.values(trades), 'date', 'desc') as FullTrade[]
 }
+
+export function dateDiff(first: number, second: number) {
+  return Math.round(second - first) / (1000 * 60 * 60 * 24)
+}

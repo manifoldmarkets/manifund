@@ -2,7 +2,7 @@ import { ProgressBar } from '@/components/progress-bar'
 import { Bid } from '@/db/bid'
 import { Project } from '@/db/project'
 import { formatMoney, showPrecision } from '@/utils/formatting'
-import { getProposalValuation } from '@/utils/math'
+import { dateDiff, getProposalValuation } from '@/utils/math'
 
 export function ProposalData(props: { project: Project; bids: Bid[] }) {
   const { project, bids } = props
@@ -15,7 +15,7 @@ export function ProposalData(props: { project: Project; bids: Bid[] }) {
   // Close it on 23:59:59 in UTC -12 aka "Anywhere on Earth" time
   const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
   const now = new Date()
-  const daysLeft = datediff(now.getTime(), closeDate.getTime())
+  const daysLeft = dateDiff(now.getTime(), closeDate.getTime())
   return (
     <div>
       <div className="mb-4 flex justify-between">
@@ -43,8 +43,4 @@ export function ProposalData(props: { project: Project; bids: Bid[] }) {
       <ProgressBar percent={percentRaised} />
     </div>
   )
-}
-
-function datediff(first: number, second: number) {
-  return Math.round(second - first) / (1000 * 60 * 60 * 24)
 }

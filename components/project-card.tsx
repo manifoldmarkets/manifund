@@ -8,18 +8,14 @@ import {
 } from '@/utils/math'
 import { Project } from '@/db/project'
 import Link from 'next/link'
-import {
-  EllipsisHorizontalCircleIcon,
-  CalendarIcon,
-  SparklesIcon,
-} from '@heroicons/react/24/solid'
+import { CalendarIcon, SparklesIcon } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
 import { ProjectCardHeader } from './project-card-header'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
 import { ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
-import { isNull, orderBy } from 'lodash'
+import { orderBy } from 'lodash'
 import { formatDistanceToNow } from 'date-fns'
 
 export function ProjectCard(props: {
