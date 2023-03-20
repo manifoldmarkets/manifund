@@ -32,7 +32,7 @@ export function Tabs(props: {
   } = props
   const router = useRouter()
   const searchParams = useSearchParams()
-  const currentTab = searchParams.get('tab')
+  const currentTabName = searchParams.get('tab')
   const trades = calculateFullTrades(txns)
   const creator = project.profiles
 
@@ -41,22 +41,33 @@ export function Tabs(props: {
       name: 'Comments',
       href: '?tab=comments',
       count: comments.length,
-      current: currentTab === 'comments' || currentTab === null,
+      current: currentTabName === 'comments' || currentTabName === null,
       stages: ['proposal', 'active', 'completed', 'not funded'],
+      display: <Comments project={project} comments={comments} user={user} />,
     },
     {
-      name: 'Bids',
+      name: project.stage === 'active' ? 'Offers' : 'Bids',
       href: '?tab=bids',
       count: bids.length,
-      current: currentTab === 'bids',
+      current: currentTabName === 'bids',
       stages: ['proposal', 'active', 'completed'],
+      display: (
+        <Bids
+          bids={bids}
+          stage={project.stage}
+          userId={user?.id}
+          userSpendableFunds={userSpendableFunds}
+          userSellableShares={userSellableShares}
+        />
+      ),
     },
     {
       name: 'Shareholders',
       href: '?tab=shareholders',
       count: 0,
-      current: currentTab === 'shareholders',
+      current: currentTabName === 'shareholders',
       stages: ['active', 'completed'],
+      display: <Shareholders trades={trades} creator={creator} />,
     },
   ]
   return (
@@ -79,9 +90,7 @@ export function Tabs(props: {
                 )}
                 aria-current={tab.current ? 'page' : undefined}
               >
-                {tab.name === 'Bids' && project.stage === 'active'
-                  ? 'Offers'
-                  : tab.name}
+                {tab.name}
                 {tab.count > 0 ? (
                   <span
                     className={clsx(
@@ -99,24 +108,7 @@ export function Tabs(props: {
           </nav>
         </div>
       </div>
-      <div className="py-6">
-        {currentTab === 'bids' && (
-          <Bids
-            bids={bids}
-            stage={project.stage}
-            userId={user?.id}
-            userSpendableFunds={userSpendableFunds}
-            userSellableShares={userSellableShares}
-          />
-        )}
-        {currentTab === 'comments' ||
-          (currentTab === null && (
-            <Comments project={project} comments={comments} user={user} />
-          ))}
-        {currentTab === 'shareholders' && (
-          <Shareholders trades={trades} creator={creator} />
-        )}
-      </div>
+      <div className="py-6">{tabs.filter((tab) => tab.current)[0].display}</div>
     </div>
   )
 }
