@@ -13,3 +13,14 @@ export async function getRounds(supabase: SupabaseClient) {
   }
   return data as Round[]
 }
+
+export async function getRoundBySlug(supabase: SupabaseClient, slug: string) {
+  const { data, error } = await supabase
+    .from('rounds')
+    .select('*')
+    .eq('slug', slug)
+  if (error) {
+    throw error
+  }
+  return data[0] as Round
+}
