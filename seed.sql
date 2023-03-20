@@ -220,6 +220,7 @@ create table if not exists public.rounds (
   proposal_due_date date,
   retro_pool float8,
   description jsonb,
+  slug text not null,
   primary key (title)
 );
 
