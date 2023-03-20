@@ -248,7 +248,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
               description,
               min_funding: minFunding.toString(),
               founder_portion: advancedSettings ? founderShares.toString() : 0,
-              round,
+              round: round.title,
               auction_close:
                 round.title === 'Independent'
                   ? auctionClose
