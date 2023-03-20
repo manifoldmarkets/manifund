@@ -10,7 +10,6 @@ import { BidAndProfile } from '@/db/bid'
 import { TxnAndProfiles } from '@/db/txn'
 import { Shareholders } from './shareholders'
 import { calculateFullTrades } from '@/utils/math'
-import { isNull } from 'util'
 
 export function Tabs(props: {
   project: FullProject
@@ -109,10 +108,9 @@ export function Tabs(props: {
             userSellableShares={userSellableShares}
           />
         )}
-        {currentTab === 'comments' ||
-          (currentTab === null && (
-            <Comments project={project} comments={comments} user={user} />
-          ))}
+        {currentTab === 'comments' || currentTab === null ? (
+          <Comments project={project} comments={comments} user={user} />
+        ) : null}
         {currentTab === 'shareholders' && (
           <Shareholders trades={trades} creator={creator} />
         )}
