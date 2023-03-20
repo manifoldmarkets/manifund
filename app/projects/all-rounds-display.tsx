@@ -1,13 +1,14 @@
 import { Col } from '@/components/layout/col'
-import { Project } from '@/db/project'
+import { FullProject, Project } from '@/db/project'
 import { Round } from '@/db/round'
 import { formatMoney, showPrecision } from '@/utils/formatting'
 import { dateDiff } from '@/utils/math'
 import Link from 'next/link'
+import { RoundCarousel } from './round-carousel'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
-  projects: Project[]
+  projects: FullProject[]
 }) {
   const { rounds, projects } = props
   return (
@@ -23,11 +24,12 @@ export function AllRoundsDisplay(props: {
   )
 }
 
-function Round(props: { round: Round; projects: Project[] }) {
+function Round(props: { round: Round; projects: FullProject[] }) {
   const { round, projects } = props
   return (
     <Col className="rounded-md border border-gray-200 bg-white p-4 shadow hover:bg-gray-100">
-      <h1 className="text-2xl">{round.title}</h1>
+      <h1 className="text-2xl font-bold">{round.title}</h1>
+      <RoundCarousel projects={projects} />
       <RoundFooter round={round} projects={projects} />
     </Col>
   )
