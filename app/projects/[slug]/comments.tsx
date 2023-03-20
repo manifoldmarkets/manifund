@@ -43,7 +43,7 @@ export function Comments(props: {
     <div key={thread.root.id}>
       <Row className="w-full">
         <div className="MT w-full">
-          <CommentWrapper className="mt-2 pb-0">
+          <CommentWrapper className={clsx('mt-2', user ?? 'pb-0')}>
             <Comment comment={thread.root} />
             {user && (
               <Row className="w-full justify-end">
