@@ -1,3 +1,4 @@
+'use client'
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { formatDate, formatLargeNumber } from '@/utils/formatting'
@@ -10,13 +11,16 @@ import { Project } from '@/db/project'
 import Link from 'next/link'
 import { CalendarIcon, SparklesIcon } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
-import { ProjectCardHeader } from './project-card-header'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
 import { ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { orderBy } from 'lodash'
 import { formatDistanceToNow } from 'date-fns'
+import { Avatar } from './avatar'
+import { RoundTag } from './round-tag'
+import { UserAvatarAndBadge } from './user-link'
+import { ValuationBox } from './valuation-box'
 
 export function ProjectCard(props: {
   project: Project
@@ -143,4 +147,26 @@ function ProjectCardFooter(props: {
         </div>
       )
   }
+}
+
+export function ProjectCardHeader(props: {
+  round: string
+  creator: Profile
+  valuation?: string
+}) {
+  const { round, creator, valuation } = props
+  return (
+    <div className="flex justify-between">
+      <div className="mt-1">
+        <RoundTag round={round} />
+        <div className="h-1" />
+        <UserAvatarAndBadge profile={creator} />
+      </div>
+      {valuation && (
+        <div className="relative top-1">
+          <ValuationBox valuation={valuation} />
+        </div>
+      )}
+    </div>
+  )
 }

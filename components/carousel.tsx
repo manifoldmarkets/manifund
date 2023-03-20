@@ -36,7 +36,13 @@ export function Carousel(props: {
   useEffect(onScroll, [children])
 
   return (
-    <div className={clsx('relative', className)}>
+    <div className={clsx('flex', className)}>
+      <div
+        className="relative right-2 flex w-10 cursor-pointer items-center justify-center"
+        onMouseDown={scrollLeft}
+      >
+        <ChevronLeftIcon className="h-8 w-8 rounded-full bg-orange-100 p-1 text-orange-600" />
+      </div>
       <Row
         className="scrollbar-hide w-full snap-x gap-4 overflow-x-auto scroll-smooth"
         ref={ref}
@@ -51,22 +57,12 @@ export function Carousel(props: {
           />
         )}
       </Row>
-      {!atFront && (
-        <div
-          className="absolute left-0 top-0 bottom-0 z-10 flex w-10 cursor-pointer items-center justify-center hover:bg-indigo-100/30"
-          onMouseDown={scrollLeft}
-        >
-          <ChevronLeftIcon className="h-7 w-7 rounded-full bg-indigo-50 text-indigo-700" />
-        </div>
-      )}
-      {!atBack && (
-        <div
-          className="absolute right-0 top-0 bottom-0 z-10 flex w-10 cursor-pointer items-center justify-center hover:bg-indigo-100/30"
-          onMouseDown={scrollRight}
-        >
-          <ChevronRightIcon className="h-7 w-7 rounded-full bg-indigo-50 text-indigo-700" />
-        </div>
-      )}
+      <div
+        className="relative left-2 flex w-10 cursor-pointer items-center justify-center"
+        onMouseDown={scrollRight}
+      >
+        <ChevronRightIcon className="h-8 w-8 rounded-full bg-orange-100 p-1 text-orange-600" />
+      </div>
     </div>
   )
 }
