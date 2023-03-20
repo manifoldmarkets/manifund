@@ -114,7 +114,7 @@ function genThreads(
 function Comment(props: { comment: CommentAndProfile }) {
   const { comment } = props
   return (
-    <div className="w-full">
+    <div className="w-11/12">
       <Row className="justify-between gap-2">
         <UserAvatarAndBadge profile={comment.profiles} />
         <div className="text-sm text-gray-500">
@@ -136,7 +136,7 @@ function CommentWrapper(props: { className?: string; children?: ReactNode }) {
     <div
       className={clsx(
         className,
-        'my-1 rounded-md border border-gray-300 bg-white p-3'
+        'my-1 rounded-md border border-gray-300 bg-white p-5'
       )}
     >
       {children}
