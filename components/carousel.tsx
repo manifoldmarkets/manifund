@@ -44,7 +44,7 @@ export function Carousel(props: {
         <ChevronLeftIcon className="h-8 w-8 rounded-full bg-orange-100 p-1 text-orange-600" />
       </div>
       <Row
-        className="scrollbar-hide w-full snap-x gap-4 overflow-x-auto scroll-smooth"
+        className="scrollbar-hide w-full snap-x gap-4 overflow-x-auto scroll-smooth rounded-md bg-orange-100 py-3 px-3 shadow-inner"
         ref={ref}
         onScroll={onScroll}
       >

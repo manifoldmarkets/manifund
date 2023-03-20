@@ -13,13 +13,17 @@ export function AllRoundsDisplay(props: {
   const { rounds, projects } = props
   return (
     <Col className="mb-5 gap-3">
-      {rounds.map((round) => (
-        <Round
-          key={round.title}
-          round={round}
-          projects={projects.filter((project) => project.round === round.title)}
-        />
-      ))}
+      {rounds.map((round) => {
+        const roundProjects = projects.filter(
+          (project) => project.round === round.title
+        )
+        if (roundProjects.length > 0) {
+          return (
+            <Round key={round.title} round={round} projects={roundProjects} />
+          )
+        }
+        return null
+      })}
     </Col>
   )
 }
@@ -30,7 +34,9 @@ function Round(props: { round: Round; projects: FullProject[] }) {
     <Col className="rounded-md border border-gray-200 bg-white p-4 shadow">
       <h1 className="mb-2 text-2xl font-bold">{round.title}</h1>
       <RoundCarousel projects={projects} />
-      <RoundFooter round={round} projects={projects} />
+      <div className="flex justify-center">
+        <RoundFooter round={round} projects={projects} />
+      </div>
     </Col>
   )
 }
@@ -41,7 +47,7 @@ function RoundFooter(props: { round: Round; projects: Project[] }) {
   const now = new Date()
   const daysLeft = dateDiff(now.getTime(), closeDate.getTime())
   return (
-    <Col className="mt-4">
+    <Col className="mt-4 w-10/12">
       <div className="mb-4 flex justify-between">
         {round.title === 'Independent' || daysLeft > 0 ? (
           <DataPoint
