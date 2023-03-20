@@ -1,19 +1,16 @@
 import { formatLargeNumber } from '@/utils/formatting'
+import { Col } from './layout/col'
 
 export function ValuationBox(props: { valuation: string | number }) {
   const { valuation } = props
   const valuation_string =
     typeof valuation == 'string' ? valuation : formatLargeNumber(valuation)
   return (
-    <div
-      className={`flex flex-col rounded bg-gray-100 px-1 pt-1 pb-0 text-center`}
-    >
+    <Col className="mx-1 rounded bg-gray-100 p-1 text-center">
       <div className={`text-sm text-gray-500`}>Valuation</div>
-      <div
-        className={`text-md relative bottom-1 m-auto font-bold text-gray-500`}
-      >
+      <div className="text-md relative m-auto font-bold text-gray-500">
         ${valuation_string}
       </div>
-    </div>
+    </Col>
   )
 }

@@ -28,8 +28,9 @@ export function ProjectCard(props: {
   numComments: number
   bids: Bid[]
   txns: Txn[]
+  simple?: boolean
 }) {
-  const { creator, project, numComments, bids, txns } = props
+  const { creator, project, numComments, bids, txns, simple } = props
   const valuation =
     project.stage == 'proposal'
       ? formatLargeNumber(getProposalValuation(project))
@@ -42,6 +43,7 @@ export function ProjectCard(props: {
         round={project.round}
         creator={creator}
         valuation={project.stage !== 'not funded' ? valuation : undefined}
+        simple={simple}
       />
       <Link
         href={`projects/${project.slug}`}
@@ -58,6 +60,7 @@ export function ProjectCard(props: {
           numComments={numComments}
           bids={bids}
           txns={txns}
+          simple={simple}
         />
       </Link>
     </Col>
@@ -69,8 +72,9 @@ function ProjectCardFooter(props: {
   numComments: number
   bids: Bid[]
   txns: Txn[]
+  simple?: boolean
 }) {
-  const { project, numComments, bids, txns } = props
+  const { project, numComments, bids, txns, simple } = props
   let percentRaised = Math.min(getPercentFunded(bids, project.min_funding), 100)
   switch (project.stage) {
     case 'proposal':
@@ -78,7 +82,7 @@ function ProjectCardFooter(props: {
         <div>
           <div className="flex justify-between">
             <div className="flex flex-col">
-              {project.round !== 'ACX Mini-Grants' && (
+              {!simple && (
                 <span className="mb-1 text-gray-600">
                   <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
                   Auction closes{' '}
@@ -115,8 +119,10 @@ function ProjectCardFooter(props: {
       const sortedTxns = orderBy(txns, 'created_at', 'desc')
       const lastTraded = new Date(sortedTxns[0].created_at)
       return (
-        <div className="flex justify-between">
-          {lastTraded && (
+        <div
+          className={clsx('flex', simple ? 'justify-end' : 'justify-between')}
+        >
+          {lastTraded && !simple && (
             <span className="mb-1 text-gray-600">
               <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
               Last traded{' '}
@@ -153,16 +159,17 @@ export function ProjectCardHeader(props: {
   round: string
   creator: Profile
   valuation?: string
+  simple?: boolean
 }) {
-  const { round, creator, valuation } = props
+  const { round, creator, valuation, simple } = props
   return (
     <div className="flex justify-between">
       <div className="mt-1">
-        <RoundTag round={round} />
+        {!simple && <RoundTag round={round} />}
         <div className="h-1" />
         <UserAvatarAndBadge profile={creator} />
       </div>
-      {valuation && (
+      {valuation && !simple && (
         <div className="relative top-1">
           <ValuationBox valuation={valuation} />
         </div>

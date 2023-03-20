@@ -15,6 +15,7 @@ export function RoundCarousel(props: { projects: FullProject[] }) {
           numComments={project.comments.length}
           bids={project.bids}
           txns={project.txns}
+          simple={true}
         />
       ))}
     </Carousel>
