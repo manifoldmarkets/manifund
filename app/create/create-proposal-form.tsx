@@ -47,9 +47,11 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
   const [founderPortion, setFounderPortion] = useState<number>(0)
   const [advancedSettings, setAdvancedSettings] = useState<boolean>(false)
   const [round, setRound] = useState<Round>(availableRounds[0])
-  const auctionClose = round.auction_close_date
-    ? format(new Date(round.auction_close_date), 'yyyy-MM-dd')
-    : format(add(new Date(), { days: 7 }), 'yyyy-MM-dd')
+  const [auctionClose, setAuctionClose] = useState(
+    round.auction_close_date
+      ? format(new Date(round.auction_close_date), 'yyyy-MM-dd')
+      : format(add(new Date(), { days: 7 }), 'yyyy-MM-dd')
+  )
   const editor = useTextEditor(DEFAULT_DESCRIPTION)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -62,6 +64,16 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
       setErrorMessage(null)
     }
   }, [title, minFunding, round])
+
+  useEffect(
+    () =>
+      round.auction_close_date
+        ? setAuctionClose(
+            format(new Date(round.auction_close_date), 'yyyy-MM-dd')
+          )
+        : setAuctionClose(format(add(new Date(), { days: 7 }), 'yyyy-MM-dd')),
+    [round]
+  )
 
   const user = session?.user
 
