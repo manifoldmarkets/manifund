@@ -32,7 +32,7 @@ export function RoundData(props: { round: Round; projects: Project[] }) {
         {round.retro_pool && (
           <DataPoint
             value={formatMoney(round.retro_pool)}
-            label="pledged retro funding"
+            label="available retro funding"
           />
         )}
         {daysLeft > 0 && (

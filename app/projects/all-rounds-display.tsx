@@ -30,10 +30,10 @@ export function AllRoundsDisplay(props: {
 function Round(props: { round: Round; projects: FullProject[] }) {
   const { round, projects } = props
   return (
-    <Col className="rounded-md border border-gray-200 bg-white p-6 shadow">
+    <Col className=" p-3 ">
       <Link
         href={`/rounds/${round.slug}`}
-        className="mb-2 cursor-pointer text-2xl font-bold"
+        className="mb-3 cursor-pointer text-3xl font-bold"
       >
         {round.title}
       </Link>

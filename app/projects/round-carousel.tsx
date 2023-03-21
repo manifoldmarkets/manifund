@@ -1,6 +1,6 @@
 'use client'
 import { Carousel } from '@/components/carousel'
-import { ProjectCard } from '@/components/project-card'
+import { SimpleProjectCard } from '@/components/project-card'
 import { FullProject } from '@/db/project'
 
 export function RoundCarousel(props: { projects: FullProject[] }) {
@@ -8,14 +8,12 @@ export function RoundCarousel(props: { projects: FullProject[] }) {
   return (
     <Carousel>
       {projects.map((project) => (
-        <ProjectCard
+        <SimpleProjectCard
           key={project.id}
           project={project}
           creator={project.profiles}
           numComments={project.comments.length}
           bids={project.bids}
-          txns={project.txns}
-          simple={true}
         />
       ))}
     </Carousel>
