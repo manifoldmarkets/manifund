@@ -19,10 +19,11 @@ export default async function RoundPage(props: {
           src={round.header_image_url}
           width={1000}
           height={500}
+          className="aspect-[16/5] w-full flex-shrink-0 bg-white object-cover"
           alt="round header image"
         />
       )}
-      <h1 className="text-4xl font-bold">{round.title}</h1>
+      <h1 className="my-2 text-4xl font-bold">{round.title}</h1>
       <div className="my-5">
         <RoundData round={round} projects={projects} />
       </div>

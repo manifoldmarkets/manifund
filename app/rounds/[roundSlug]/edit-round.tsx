@@ -129,8 +129,3 @@ export function EditRound(props: { round: Round }) {
     </div>
   )
 }
-
-/*
-https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/round-header-images/acx-mini-grants/ffc76a9c-1e5d-4a30-15ca-8df8d68884c4.png
-https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/round-header-images/acx-mini-grants/20210615035946_IMG_1991_2.JPG
-*/
