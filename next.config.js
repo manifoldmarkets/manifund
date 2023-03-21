@@ -12,6 +12,16 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'fkousziwzbnkdkldjper.supabase.co',
+        pathname: '/storage/v1/object/public/round-header-images/*',
+      },
+      {
+        protocol: 'https',
+        hostname: 'fkousziwzbnkdkldjper.supabase.co',
+        pathname: '/storage/v1/object/public/round-header-images/*/*',
+      },
+      {
+        protocol: 'https',
         hostname: 'manifold.markets',
       },
       {

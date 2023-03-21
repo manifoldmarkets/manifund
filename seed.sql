@@ -240,3 +240,12 @@ AS PERMISSIVE FOR UPDATE
 TO public
 USING (auth.jwt() ->> 'email' = 'akrolsmir@gmail.com')
 WITH CHECK (auth.jwt() ->> 'email' = 'akrolsmir@gmail.com')
+
+-- Round header image RLS
+CREATE POLICY "Give edit access to rachel 1w84ji1_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'rachel.weinberg12@gmail.com');
+CREATE POLICY "Give edit access to rachel 1w84ji1_0" ON storage.objects FOR UPDATE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'rachel.weinberg12@gmail.com');
+CREATE POLICY "Give edit access to rachel 1w84ji1_0" ON storage.objects FOR DELETE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'rachel.weinberg12@gmail.com');
+
+CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
+CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR UPDATE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
+CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR DELETE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');

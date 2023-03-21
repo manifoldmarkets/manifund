@@ -5,7 +5,7 @@ import { Tabs } from '@/components/tabs'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
 import { useSearchParams } from 'next/navigation'
-import { EditDescription } from './edit-about'
+import { EditRound } from './edit-round'
 
 export function RoundTabs(props: { round: Round; projects: FullProject[] }) {
   const { round, projects } = props
@@ -27,7 +27,7 @@ export function RoundTabs(props: { round: Round; projects: FullProject[] }) {
       display: (
         <div>
           {round.description && <RichContent content={round.description} />}
-          <EditDescription round={round} />
+          <EditRound round={round} />
         </div>
       ),
     },

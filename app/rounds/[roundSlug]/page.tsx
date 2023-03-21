@@ -3,7 +3,7 @@ import { getRoundBySlug } from '@/db/round'
 import { getFullProjectsByRound } from '@/db/project'
 import { RoundTabs } from './round-tabs'
 import { RoundData } from '@/components/round-data'
-import { Row } from '@/components/layout/row'
+import Image from 'next/image'
 
 export default async function RoundPage(props: {
   params: { roundSlug: string }
@@ -14,6 +14,14 @@ export default async function RoundPage(props: {
   const projects = await getFullProjectsByRound(supabase, round.title)
   return (
     <div className="bg-dark-200 max-w-4xl">
+      {round.header_image_url && (
+        <Image
+          src={round.header_image_url}
+          width={1000}
+          height={500}
+          alt="round header image"
+        />
+      )}
       <h1 className="text-4xl font-bold">{round.title}</h1>
       <div className="my-5">
         <RoundData round={round} projects={projects} />
