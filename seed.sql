@@ -228,3 +228,15 @@ CREATE POLICY "Enable read access for all users" ON "public"."rounds"
 AS PERMISSIVE FOR SELECT
 TO public
 USING (true)
+
+CREATE POLICY "Enable update for rachel based on email" ON "public"."rounds"
+AS PERMISSIVE FOR UPDATE
+TO public
+USING (auth.jwt() ->> 'email' = 'rachel.weinberg12@gmail.com')
+WITH CHECK (auth.jwt() ->> 'email' = 'rachel.weinberg12@gmail.com')
+
+CREATE POLICY "Enable update for austin based on email" ON "public"."rounds"
+AS PERMISSIVE FOR UPDATE
+TO public
+USING (auth.jwt() ->> 'email' = 'akrolsmir@gmail.com')
+WITH CHECK (auth.jwt() ->> 'email' = 'akrolsmir@gmail.com')

@@ -1,9 +1,11 @@
 'use client'
+import { RichContent } from '@/components/editor'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { Tabs } from '@/components/tabs'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
 import { useSearchParams } from 'next/navigation'
+import { EditDescription } from './edit-about'
 
 export function RoundTabs(props: { round: Round; projects: FullProject[] }) {
   const { round, projects } = props
@@ -22,7 +24,12 @@ export function RoundTabs(props: { round: Round; projects: FullProject[] }) {
       href: `?tab=about`,
       count: 0,
       current: currentTabName === 'about',
-      display: <div>About</div>,
+      display: (
+        <div>
+          {round.description && <RichContent content={round.description} />}
+          <EditDescription round={round} />
+        </div>
+      ),
     },
   ]
   return <Tabs tabs={tabs} preTabSlug={`/rounds/${round.slug}`} />
