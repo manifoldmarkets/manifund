@@ -1,3 +1,4 @@
+import { DataPoint } from '@/components/data-point'
 import { ProgressBar } from '@/components/progress-bar'
 import { Bid } from '@/db/bid'
 import { Project } from '@/db/project'
@@ -19,26 +20,18 @@ export function ProposalData(props: { project: Project; bids: Bid[] }) {
   return (
     <div>
       <div className="mb-4 flex justify-between">
-        <div className="flex flex-col">
-          <span className="text-xl font-bold text-orange-500">
-            {raisedString}
-          </span>
-          <span className="text-sm text-gray-500">
-            raised of ${project.min_funding} goal
-          </span>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-xl font-bold text-orange-500">
-            {showPrecision(daysLeft, 3)}
-          </span>
-          <span className="text-sm text-gray-500">days left to bid</span>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-xl font-bold text-orange-500">
-            {formatMoney(getProposalValuation(project))}
-          </span>
-          <span className="text-sm text-gray-500">minimum valuation</span>
-        </div>
+        <DataPoint
+          value={raisedString}
+          label={`raised of ${project.min_funding} goal`}
+        />
+        <DataPoint
+          value={showPrecision(daysLeft, 3)}
+          label="days left to bid"
+        />
+        <DataPoint
+          value={formatMoney(getProposalValuation(project))}
+          label="minimum valuation"
+        />
       </div>
       <ProgressBar percent={percentRaised} />
     </div>
