@@ -146,6 +146,7 @@ export interface Database {
           description: Json | null
           proposal_due_date: string | null
           retro_pool: number | null
+          slug: string
           title: string
         }
         Insert: {
@@ -153,6 +154,7 @@ export interface Database {
           description?: Json | null
           proposal_due_date?: string | null
           retro_pool?: number | null
+          slug: string
           title: string
         }
         Update: {
@@ -160,6 +162,7 @@ export interface Database {
           description?: Json | null
           proposal_due_date?: string | null
           retro_pool?: number | null
+          slug?: string
           title?: string
         }
       }

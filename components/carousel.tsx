@@ -36,7 +36,7 @@ export function Carousel(props: {
   useEffect(onScroll, [children])
 
   return (
-    <div className={clsx('flex', className)}>
+    <div className={clsx('flex justify-between', className)}>
       <div
         className="relative right-2 flex w-10 cursor-pointer items-center justify-center"
         onMouseDown={scrollLeft}

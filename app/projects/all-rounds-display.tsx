@@ -31,8 +31,13 @@ export function AllRoundsDisplay(props: {
 function Round(props: { round: Round; projects: FullProject[] }) {
   const { round, projects } = props
   return (
-    <Col className="rounded-md border border-gray-200 bg-white p-4 shadow">
-      <h1 className="mb-2 text-2xl font-bold">{round.title}</h1>
+    <Col className="rounded-md border border-gray-200 bg-white p-6 shadow">
+      <Link
+        href={`/rounds/${round.slug}`}
+        className="mb-2 cursor-pointer text-2xl font-bold"
+      >
+        {round.title}
+      </Link>
       <RoundCarousel projects={projects} />
       <div className="flex justify-center">
         <RoundFooter round={round} projects={projects} />

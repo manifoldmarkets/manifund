@@ -20,7 +20,7 @@ import { SiteLink } from '@/components/site-link'
 import { SignInButton } from '@/components/sign-in-button'
 import clsx from 'clsx'
 import { buttonClass } from '@/components/button'
-import { ProjectTabs } from './projectTabs'
+import { ProjectTabs } from './project-tabs'
 import {
   getIncomingTxnsByUser,
   getOutgoingTxnsByUser,

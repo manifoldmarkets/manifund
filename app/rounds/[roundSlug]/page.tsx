@@ -1,6 +1,7 @@
 import { createServerClient } from '@/db/supabase-server'
 import { getRoundBySlug } from '@/db/round'
 import { getFullProjectsByRound } from '@/db/project'
+import { RoundTabs } from './round-tabs'
 
 export default async function RoundPage(props: {
   params: { roundSlug: string }
@@ -10,6 +11,9 @@ export default async function RoundPage(props: {
   const round = await getRoundBySlug(supabase, roundSlug)
   const projects = await getFullProjectsByRound(supabase, round.title)
   return (
-    <div className="bg-dark-200 max-w-4xl">Round Page for {round.title}</div>
+    <div className="bg-dark-200 max-w-4xl">
+      Round Page for {round.title}
+      <RoundTabs round={round} projects={projects} />
+    </div>
   )
 }
