@@ -1,4 +1,5 @@
 'use client'
+import { ProjectsDisplay } from '@/components/projects-display'
 import { Tabs } from '@/components/tabs'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
@@ -14,7 +15,7 @@ export function RoundTabs(props: { round: Round; projects: FullProject[] }) {
       href: `?tab=projects`,
       count: projects.length,
       current: currentTabName === 'projects' || currentTabName === null,
-      display: <div>Projects</div>,
+      display: <ProjectsDisplay projects={projects} />,
     },
     {
       name: 'About',

@@ -12,7 +12,7 @@ export default async function RoundPage(props: {
   const projects = await getFullProjectsByRound(supabase, round.title)
   return (
     <div className="bg-dark-200 max-w-4xl">
-      Round Page for {round.title}
+      <h1 className="text-2xl font-bold">{round.title}</h1>
       <RoundTabs round={round} projects={projects} />
     </div>
   )

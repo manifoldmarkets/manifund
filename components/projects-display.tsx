@@ -1,16 +1,15 @@
-'use client'
 import { FullProject } from '@/db/project'
-import { Fragment, useState } from 'react'
-import { Listbox, Transition } from '@headlessui/react'
 import {
   CheckIcon,
   ChevronUpDownIcon,
   MagnifyingGlassIcon,
-} from '@heroicons/react/20/solid'
-import { ProjectGroup } from '../../components/project-group'
-import { useRouter, useSearchParams } from 'next/navigation'
-import clsx from 'clsx'
+} from '@heroicons/react/24/outline'
+import { Listbox, Transition } from '@headlessui/react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { Fragment, useState } from 'react'
 import { getPercentFunded } from '@/utils/math'
+import clsx from 'clsx'
+import { ProjectGroup } from '@/components/project-group'
 
 type SortOption =
   | 'percent funded'
@@ -18,7 +17,7 @@ type SortOption =
   | 'newest first'
   | 'oldest first'
 
-export function AllProjectsDisplay(props: { projects: FullProject[] }) {
+export function ProjectsDisplay(props: { projects: FullProject[] }) {
   const { projects } = props
   const [sortBy, setSortBy] = useState<SortOption>('newest first')
   const options: SortOption[] = [
@@ -37,16 +36,16 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
     search
   )
 
-  const acxProposals = selectedProjects
-    .filter((project) => project.stage == 'proposal')
-    .filter((project) => project.round == 'ACX Mini-Grants')
-  const indieProposals = selectedProjects
-    .filter((project) => project.stage == 'proposal')
-    .filter((project) => project.round == 'Independent')
+  const proposals = selectedProjects.filter(
+    (project) => project.stage == 'proposal'
+  )
   const activeProjects = selectedProjects.filter(
     (project) => project.stage == 'active'
   )
-  const notFundedProjects = selectedProjects.filter(
+  const completeProjects = selectedProjects.filter(
+    (project) => project.stage == 'complete'
+  )
+  const unfundedProjects = selectedProjects.filter(
     (project) => project.stage == 'not funded'
   )
 
@@ -90,24 +89,21 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
         </div>
       </div>
       <div className="flex flex-col gap-10 p-4">
-        {acxProposals.length > 0 && (
-          <ProjectGroup
-            projects={acxProposals}
-            category="ACX Mini-Grants Proposals"
-          />
-        )}
-        {indieProposals.length > 0 && (
-          <ProjectGroup
-            projects={indieProposals}
-            category="Independent Proposals"
-          />
+        {proposals.length > 0 && (
+          <ProjectGroup projects={proposals} category="Proposals" />
         )}
         {activeProjects.length > 0 && (
           <ProjectGroup projects={activeProjects} category="Active Projects" />
         )}
-        {notFundedProjects.length > 0 && (
+        {completeProjects.length > 0 && (
           <ProjectGroup
-            projects={notFundedProjects}
+            projects={completeProjects}
+            category="Complete Projects"
+          />
+        )}
+        {unfundedProjects.length > 0 && (
+          <ProjectGroup
+            projects={unfundedProjects}
             category="Unfunded Projects"
           />
         )}
