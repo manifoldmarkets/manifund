@@ -20,7 +20,7 @@ import { SiteLink } from '@/components/site-link'
 import { SignInButton } from '@/components/sign-in-button'
 import clsx from 'clsx'
 import { buttonClass } from '@/components/button'
-import { Tabs } from './tabs'
+import { ProjectTabs } from './projectTabs'
 import {
   getIncomingTxnsByUser,
   getOutgoingTxnsByUser,
@@ -89,7 +89,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       {user && !profile?.accreditation_status && <NotAccredited />}
       {!user && <SignInButton />}
       <div className="h-6" />
-      <Tabs
+      <ProjectTabs
         project={project}
         user={profile}
         comments={comments}

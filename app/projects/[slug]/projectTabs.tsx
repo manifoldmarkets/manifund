@@ -10,9 +10,9 @@ import { BidAndProfile } from '@/db/bid'
 import { TxnAndProfiles } from '@/db/txn'
 import { Shareholders } from './shareholders'
 import { calculateFullTrades } from '@/utils/math'
-import { isNull } from 'util'
+import { Tabs } from '@/components/tabs'
 
-export function Tabs(props: {
+export function ProjectTabs(props: {
   project: FullProject
   comments: CommentAndProfile[]
   user: Profile | null
@@ -42,15 +42,20 @@ export function Tabs(props: {
       href: '?tab=comments',
       count: comments.length,
       current: currentTabName === 'comments' || currentTabName === null,
-      stages: ['proposal', 'active', 'completed', 'not funded'],
       display: <Comments project={project} comments={comments} user={user} />,
     },
-    {
+  ]
+
+  if (
+    project.stage === 'active' ||
+    project.stage === 'completed' ||
+    project.stage === 'proposal'
+  ) {
+    tabs.push({
       name: project.stage === 'active' ? 'Offers' : 'Bids',
       href: '?tab=bids',
       count: bids.length,
       current: currentTabName === 'bids',
-      stages: ['proposal', 'active', 'completed'],
       display: (
         <Bids
           bids={bids}
@@ -60,55 +65,17 @@ export function Tabs(props: {
           userSellableShares={userSellableShares}
         />
       ),
-    },
-    {
+    })
+  }
+  if (project.stage === 'active' || project.stage === 'completed') {
+    tabs.push({
       name: 'Shareholders',
       href: '?tab=shareholders',
       count: 0,
       current: currentTabName === 'shareholders',
-      stages: ['active', 'completed'],
       display: <Shareholders trades={trades} creator={creator} />,
-    },
-  ]
-  return (
-    <div>
-      <div className="block">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8" aria-label="Tabs">
-            {tabs.map((tab) => (
-              <button
-                key={tab.name}
-                onClick={() => {
-                  router.push(`/projects/${project.slug}${tab.href}`)
-                }}
-                className={clsx(
-                  tab.current
-                    ? 'border-orange-500 text-orange-600'
-                    : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700',
-                  'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium',
-                  tab.stages.includes(project.stage) ? 'inline-block' : 'hidden'
-                )}
-                aria-current={tab.current ? 'page' : undefined}
-              >
-                {tab.name}
-                {tab.count > 0 ? (
-                  <span
-                    className={clsx(
-                      tab.current
-                        ? 'bg-orange-100 text-orange-600'
-                        : 'bg-gray-100 text-gray-900',
-                      'ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block'
-                    )}
-                  >
-                    {tab.count}
-                  </span>
-                ) : null}
-              </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-      <div className="py-6">{tabs.filter((tab) => tab.current)[0].display}</div>
-    </div>
-  )
+    })
+  }
+
+  return <Tabs tabs={tabs} preTabSlug={`/projects/${project.slug}`} />
 }
