@@ -4,16 +4,10 @@ import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
-import { BidsTable } from '../bids-table'
-import { formatLargeNumber } from '@/utils/formatting'
 import { getFullProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
-import {
-  getProposalValuation,
-  getActiveValuation,
-  calculateUserBalance,
-} from '@/utils/math'
+import { calculateUserBalance } from '@/utils/math'
 import { ProposalData } from './proposal-data'
 import { ProjectPageHeader } from './project-page-header'
 import { SiteLink } from '@/components/site-link'
@@ -44,24 +38,11 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const bids = await getBidsByProject(supabase, project.id)
   const txns = await getTxnsByProject(supabase, project.id)
 
-  const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
-  const isClosed = new Date() > closeDate
   const isOwnProject = user?.id === project.profiles.id
-
-  const valuation =
-    project.stage == 'proposal'
-      ? formatLargeNumber(getProposalValuation(project))
-      : formatLargeNumber(
-          getActiveValuation(project.txns, project.founder_portion)
-        )
 
   return (
     <div className="flex flex-col gap-4 px-4">
-      <ProjectPageHeader
-        round={project.round}
-        creator={project.profiles}
-        valuation={valuation}
-      />
+      <ProjectPageHeader round={project.rounds} creator={project.profiles} />
       <div>
         <h2 className="text-3xl font-bold">{project.title}</h2>
       </div>
