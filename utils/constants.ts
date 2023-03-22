@@ -10,6 +10,18 @@ export function getURL() {
   return url
 }
 
+const COLORS = [
+  'bg-indigo-200',
+  'bg-gray-200',
+  'bg-blue-200',
+  'bg-indigo-400',
+  'bg-gray-400',
+  'bg-blue-400',
+  'text-indigo-700',
+  'text-gray-700',
+  'text-blue-700',
+]
+
 export function getRoundTheme(roundTitle: string) {
   switch (roundTitle) {
     case 'ACX Mini-Grants':
