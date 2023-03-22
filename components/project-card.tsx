@@ -190,7 +190,7 @@ export function SimpleProjectCard(props: {
   return (
     <Col
       className={clsx(
-        'rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow'
+        'w-60 max-w-min rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow'
       )}
     >
       <Link
@@ -198,17 +198,19 @@ export function SimpleProjectCard(props: {
         className=" group flex min-w-full flex-1 flex-col justify-between hover:cursor-pointer"
       >
         <div className="mt-2 mb-4">
-          <h1 className="text-xl font-semibold group-hover:underline">
+          <h1 className="text-lg font-semibold line-clamp-3 group-hover:underline">
             {project.title}
           </h1>
-          <p className="font-light text-gray-500">{project.blurb}</p>
+          <p className="font-light text-gray-500 line-clamp-3">
+            {project.blurb}
+          </p>
         </div>
       </Link>
       <Col>
-        <div className="flex justify-between gap-5">
+        <div className="flex justify-between gap-1">
           <UserAvatarAndBadge profile={creator} />
           {numComments > 0 ? (
-            <div className="flex flex-row items-center gap-2">
+            <div className="flex flex-row items-center gap-1">
               <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-gray-400" />
               <span className="text-gray-500">{numComments}</span>
             </div>

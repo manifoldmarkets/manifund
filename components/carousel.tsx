@@ -52,7 +52,7 @@ export function Carousel(props: {
         />
       </div>
       <Row
-        className="scrollbar-hide w-full snap-x gap-4 overflow-x-auto scroll-smooth rounded-md py-3 px-3"
+        className="w-full snap-x gap-3 overflow-x-auto scroll-smooth rounded-md py-3 scrollbar-hide"
         ref={ref}
         onScroll={onScroll}
       >

@@ -48,14 +48,14 @@ function Round(props: { round: Round; projects: FullProject[] }) {
             width={1000}
             height={500}
             alt="round header image"
-            className="absolute -top-10 left-1/2 -z-10 h-96 w-full -translate-x-1/2 object-cover"
+            className="absolute -top-10 left-1/2 -z-10 h-72 w-full -translate-x-1/2 object-cover"
           />
         )}
       </div>
       <Link href={`/rounds/${round.slug}`} className="relative px-6">
         <RoundTag roundTitle={round.title} size="xl" />
       </Link>
-      <div className="px-6">
+      <div className="px-3">
         <RoundCarousel projects={projects} theme={theme} />
       </div>
       <div className="my-5 flex justify-center px-6">
