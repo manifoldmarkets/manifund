@@ -23,12 +23,17 @@ export function shortenName(name: string) {
 export function UserAvatarAndBadge(props: {
   profile: Profile
   className?: string
+  short?: boolean
 }) {
-  const { profile, className } = props
+  const { profile, className, short } = props
   return (
     <div className={clsx('flex flex-row items-center gap-1', className)}>
       <Avatar profile={profile} size={6} />
-      <UserLink name={profile.full_name} username={profile.username} />
+      <UserLink
+        name={profile.full_name}
+        username={profile.username}
+        short={short}
+      />
     </div>
   )
 }

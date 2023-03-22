@@ -207,8 +207,8 @@ export function SimpleProjectCard(props: {
         </div>
       </Link>
       <Col>
-        <div className="flex justify-between gap-1">
-          <UserAvatarAndBadge profile={creator} />
+        <div className="flex justify-between gap-5">
+          <UserAvatarAndBadge profile={creator} short />
           {numComments > 0 ? (
             <div className="flex flex-row items-center gap-1">
               <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-gray-400" />
