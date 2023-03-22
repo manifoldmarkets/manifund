@@ -7,7 +7,7 @@ import {
   getActiveValuation,
   getPercentFunded,
 } from '@/utils/math'
-import { Project } from '@/db/project'
+import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
 import { CalendarIcon, SparklesIcon } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
@@ -20,9 +20,10 @@ import { formatDistanceToNow } from 'date-fns'
 import { RoundTag } from './round-tag'
 import { UserAvatarAndBadge } from './user-link'
 import { ValuationBox } from './valuation-box'
+import { Round } from '@/db/round'
 
 export function ProjectCard(props: {
-  project: Project
+  project: FullProject
   creator: Profile
   numComments: number
   bids: Bid[]
@@ -42,7 +43,7 @@ export function ProjectCard(props: {
       )}
     >
       <ProjectCardHeader
-        round={project.round}
+        round={project.rounds}
         creator={creator}
         valuation={project.stage !== 'not funded' ? valuation : undefined}
       />
@@ -154,7 +155,7 @@ function ProjectCardFooter(props: {
 }
 
 export function ProjectCardHeader(props: {
-  round: string
+  round: Round
   creator: Profile
   valuation?: string
 }) {
@@ -162,7 +163,7 @@ export function ProjectCardHeader(props: {
   return (
     <div className="flex justify-between">
       <div className="mt-1">
-        <RoundTag round={round} />
+        <RoundTag roundTitle={round.title} />
         <div className="h-1" />
         <UserAvatarAndBadge profile={creator} />
       </div>

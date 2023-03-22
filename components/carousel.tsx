@@ -7,10 +7,11 @@ import { VisibilityObserver } from './visibility-observer'
 
 export function Carousel(props: {
   children: ReactNode
+  theme?: string
   loadMore?: () => void
   className?: string
 }) {
-  const { children, loadMore, className } = props
+  const { children, theme, loadMore, className } = props
 
   const ref = useRef<HTMLDivElement>(null)
 
@@ -41,7 +42,14 @@ export function Carousel(props: {
         className="relative right-2 flex w-10 cursor-pointer items-center justify-center"
         onMouseDown={scrollLeft}
       >
-        <ChevronLeftIcon className="h-8 w-8 rounded-full bg-orange-100 p-1 text-orange-600" />
+        <ChevronLeftIcon
+          className={clsx(
+            'h-8 w-8 rounded-full p-1',
+            theme
+              ? `bg-${theme}-100 text-${theme}-600`
+              : 'bg-orange-100 text-orange-600'
+          )}
+        />
       </div>
       <Row
         className="scrollbar-hide w-full snap-x gap-4 overflow-x-auto scroll-smooth rounded-md py-3 px-3"
@@ -61,7 +69,14 @@ export function Carousel(props: {
         className="relative left-2 flex w-10 cursor-pointer items-center justify-center"
         onMouseDown={scrollRight}
       >
-        <ChevronRightIcon className="h-8 w-8 rounded-full bg-orange-100 p-1 text-orange-600" />
+        <ChevronRightIcon
+          className={clsx(
+            'h-8 w-8 rounded-full p-1',
+            theme
+              ? `bg-${theme}-100 text-${theme}-600`
+              : 'bg-orange-100 text-orange-600'
+          )}
+        />
       </div>
     </div>
   )
