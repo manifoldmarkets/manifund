@@ -144,6 +144,7 @@ export interface Database {
         Row: {
           auction_close_date: string | null
           description: Json | null
+          eval_date: string | null
           header_image_url: string | null
           proposal_due_date: string | null
           retro_pool: number | null
@@ -153,6 +154,7 @@ export interface Database {
         Insert: {
           auction_close_date?: string | null
           description?: Json | null
+          eval_date?: string | null
           header_image_url?: string | null
           proposal_due_date?: string | null
           retro_pool?: number | null
@@ -162,6 +164,7 @@ export interface Database {
         Update: {
           auction_close_date?: string | null
           description?: Json | null
+          eval_date?: string | null
           header_image_url?: string | null
           proposal_due_date?: string | null
           retro_pool?: number | null
