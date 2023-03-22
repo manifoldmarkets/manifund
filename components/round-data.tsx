@@ -1,5 +1,6 @@
 import { Project } from '@/db/project'
 import { Round } from '@/db/round'
+import { getRoundTheme } from '@/utils/constants'
 import { formatMoney, showPrecision } from '@/utils/formatting'
 import { dateDiff } from '@/utils/math'
 import { DataPoint } from './data-point'
@@ -19,6 +20,7 @@ export function RoundData(props: { round: Round; projects: Project[] }) {
               .filter((project) => project.stage === 'proposal')
               .length.toString()}
             label="proposals"
+            theme={getRoundTheme(round.title)}
           />
         ) : null}
         {round.title === 'Independent' || daysLeft < 0 ? (
@@ -27,18 +29,21 @@ export function RoundData(props: { round: Round; projects: Project[] }) {
               .filter((project) => project.stage === 'active')
               .length.toString()}
             label="active projects"
+            theme={getRoundTheme(round.title)}
           />
         ) : null}
         {round.retro_pool && (
           <DataPoint
             value={formatMoney(round.retro_pool)}
             label="available retro funding"
+            theme={getRoundTheme(round.title)}
           />
         )}
         {daysLeft > 0 && (
           <DataPoint
             value={showPrecision(daysLeft, 3)}
             label="days left to bid"
+            theme={getRoundTheme(round.title)}
           />
         )}
       </div>

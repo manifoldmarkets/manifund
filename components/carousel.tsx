@@ -46,8 +46,8 @@ export function Carousel(props: {
           className={clsx(
             'h-8 w-8 rounded-full p-1',
             theme
-              ? `bg-${theme}-100 text-${theme}-600`
-              : 'bg-orange-100 text-orange-600'
+              ? `bg-${theme}-200 text-${theme}-700`
+              : 'bg-orange-200 text-orange-700'
           )}
         />
       </div>
@@ -73,8 +73,8 @@ export function Carousel(props: {
           className={clsx(
             'h-8 w-8 rounded-full p-1',
             theme
-              ? `bg-${theme}-100 text-${theme}-600`
-              : 'bg-orange-100 text-orange-600'
+              ? `bg-${theme}-200 text-${theme}-700`
+              : 'bg-orange-200 text-orange-700'
           )}
         />
       </div>
