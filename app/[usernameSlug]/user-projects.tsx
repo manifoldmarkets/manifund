@@ -51,7 +51,7 @@ async function ProjectDisplay(props: {
         <div className="flex items-center justify-between">
           <p className="text-md text-md truncate text-orange-600">{title}</p>
           <div className="ml-2 flex flex-shrink-0">
-            <RoundTag round={round} />
+            <RoundTag roundTitle={round} />
           </div>
         </div>
         <div className="mt-2 sm:flex sm:justify-between">
