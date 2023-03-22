@@ -8,6 +8,7 @@ import Image from 'next/image'
 import clsx from 'clsx'
 import { getRoundTheme } from '@/utils/constants'
 import { RoundTag } from '@/components/round-tag'
+import { sortBy } from 'lodash'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
@@ -18,11 +19,16 @@ export function AllRoundsDisplay(props: {
     <Col className="mb-5 gap-3">
       {rounds.map((round) => {
         const roundProjects = projects.filter(
-          (project) => project.rounds.title === round.title
+          (project) =>
+            project.rounds.title === round.title && project.stage !== 'hidden'
         )
         if (roundProjects.length > 0) {
           return (
-            <Round key={round.title} round={round} projects={roundProjects} />
+            <Round
+              key={round.title}
+              round={round}
+              projects={sortForPreview(roundProjects)}
+            />
           )
         }
         return null
@@ -65,4 +71,38 @@ function Round(props: { round: Round; projects: FullProject[] }) {
       </div>
     </Col>
   )
+}
+
+function sortForPreview(projects: FullProject[]) {
+  const sortedByComments = projects.sort((a, b) =>
+    a.comments.length < b.comments.length ? 1 : -1
+  )
+  const sortedByStage = sortBy(sortedByComments, [
+    function (project: FullProject) {
+      switch (project.stage) {
+        case 'proposal':
+          return 0
+        case 'active':
+          return 1
+        case 'complete':
+          return 2
+        default:
+          return 3
+      }
+    },
+  ])
+  return sortedByStage
+}
+
+function stageRankForPreview(stage: string) {
+  switch (stage) {
+    case 'proposal':
+      return 0
+    case 'active':
+      return 1
+    case 'complete':
+      return 2
+    default:
+      return 3
+  }
 }

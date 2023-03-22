@@ -38,7 +38,7 @@ export async function getProjectsByUser(
 ) {
   const { data, error } = await supabase
     .from('projects')
-    .select('*, bids(*), txns(*), comments(*), round(*)')
+    .select('*, bids(*), txns(*), comments(*), rounds(*)')
     .eq('creator', user)
   if (error) {
     throw error

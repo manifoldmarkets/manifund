@@ -1,4 +1,3 @@
-import { Round } from '@/db/round'
 import { getRoundTheme } from '@/utils/constants'
 import clsx from 'clsx'
 import Link from 'next/link'
