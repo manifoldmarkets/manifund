@@ -163,7 +163,7 @@ export function ProjectCardHeader(props: {
   return (
     <div className="flex justify-between">
       <div className="mt-1">
-        <RoundTag roundTitle={round.title} />
+        <RoundTag roundTitle={round.title} roundSlug={round.slug} />
         <div className="h-1" />
         <UserAvatarAndBadge profile={creator} />
       </div>

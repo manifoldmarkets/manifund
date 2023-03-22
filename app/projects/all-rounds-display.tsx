@@ -37,7 +37,7 @@ function Round(props: { round: Round; projects: FullProject[] }) {
   return (
     <Col
       className={clsx(
-        'isolate overflow-hidden rounded-md py-6',
+        'isolate mx-4 overflow-hidden rounded-md py-6 md:mx-0',
         `bg-${theme}-200`
       )}
     >
@@ -52,9 +52,9 @@ function Round(props: { round: Round; projects: FullProject[] }) {
           />
         )}
       </div>
-      <Link href={`/rounds/${round.slug}`} className="relative px-6">
-        <RoundTag roundTitle={round.title} size="xl" />
-      </Link>
+      <div className="mx-6">
+        <RoundTag roundTitle={round.title} size="xl" roundSlug={round.slug} />
+      </div>
       <div className="px-3">
         <RoundCarousel projects={projects} theme={theme} />
       </div>

@@ -9,7 +9,7 @@ export function ProjectPageHeader(props: { round: Round; creator: Profile }) {
   return (
     <div className="flex justify-between">
       <UserAvatarAndBadge profile={creator} />
-      <RoundTag roundTitle={round.title} />
+      <RoundTag roundTitle={round.title} roundSlug={round.slug} />
     </div>
   )
 }
