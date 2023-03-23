@@ -1,3 +1,4 @@
+'use client'
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { formatDate, formatLargeNumber } from '@/utils/formatting'
@@ -6,24 +7,23 @@ import {
   getActiveValuation,
   getPercentFunded,
 } from '@/utils/math'
-import { Project } from '@/db/project'
+import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
-import {
-  EllipsisHorizontalCircleIcon,
-  CalendarIcon,
-  SparklesIcon,
-} from '@heroicons/react/24/solid'
+import { CalendarIcon, SparklesIcon } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
-import { ProjectCardHeader } from './project-card-header'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
 import { ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
-import { isNull, orderBy } from 'lodash'
+import { orderBy } from 'lodash'
 import { formatDistanceToNow } from 'date-fns'
+import { RoundTag } from './round-tag'
+import { UserAvatarAndBadge } from './user-link'
+import { ValuationBox } from './valuation-box'
+import { Round } from '@/db/round'
 
 export function ProjectCard(props: {
-  project: Project
+  project: FullProject
   creator: Profile
   numComments: number
   bids: Bid[]
@@ -37,9 +37,13 @@ export function ProjectCard(props: {
           getActiveValuation(txns, getProposalValuation(project))
         )
   return (
-    <Col className="rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow hover:bg-gray-100">
+    <Col
+      className={clsx(
+        'rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow'
+      )}
+    >
       <ProjectCardHeader
-        round={project.round}
+        round={project.rounds}
         creator={creator}
         valuation={project.stage !== 'not funded' ? valuation : undefined}
       />
@@ -71,22 +75,23 @@ function ProjectCardFooter(props: {
   txns: Txn[]
 }) {
   const { project, numComments, bids, txns } = props
-  let percentRaised = Math.min(getPercentFunded(bids, project.min_funding), 100)
+  const percentRaised = Math.min(
+    getPercentFunded(bids, project.min_funding),
+    100
+  )
   switch (project.stage) {
     case 'proposal':
       return (
         <div>
           <div className="flex justify-between">
             <div className="flex flex-col">
-              {project.round !== 'ACX Mini-Grants' && (
-                <span className="mb-1 text-gray-600">
-                  <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
-                  Auction closes{' '}
-                  <span className="text-black">
-                    {formatDate(project.auction_close)}
-                  </span>
+              <span className="mb-1 text-gray-600">
+                <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
+                Auction closes{' '}
+                <span className="text-black">
+                  {formatDate(project.auction_close)}
                 </span>
-              )}
+              </span>
 
               <span className="mb-1 flex gap-1 text-gray-600">
                 <SparklesIcon
@@ -147,4 +152,76 @@ function ProjectCardFooter(props: {
         </div>
       )
   }
+}
+
+export function ProjectCardHeader(props: {
+  round: Round
+  creator: Profile
+  valuation?: string
+}) {
+  const { round, creator, valuation } = props
+  return (
+    <div className="flex justify-between">
+      <div className="mt-1">
+        <RoundTag roundTitle={round.title} roundSlug={round.slug} />
+        <div className="h-1" />
+        <UserAvatarAndBadge profile={creator} />
+      </div>
+      {valuation && (
+        <div className="relative top-1">
+          <ValuationBox valuation={valuation} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function SimpleProjectCard(props: {
+  project: Project
+  creator: Profile
+  bids: Bid[]
+  numComments: number
+}) {
+  const { project, creator, bids, numComments } = props
+  const percentRaised = Math.min(
+    getPercentFunded(bids, project.min_funding),
+    100
+  )
+  return (
+    <Col
+      className={clsx(
+        'w-60 max-w-min rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow'
+      )}
+    >
+      <Link
+        href={`projects/${project.slug}`}
+        className=" group flex min-w-full flex-1 flex-col justify-between hover:cursor-pointer"
+      >
+        <div className="mt-2 mb-4">
+          <h1 className="text-lg font-semibold line-clamp-3 group-hover:underline">
+            {project.title}
+          </h1>
+          <p className="font-light text-gray-500 line-clamp-3">
+            {project.blurb}
+          </p>
+        </div>
+      </Link>
+      <Col>
+        <div className="flex justify-between gap-5">
+          <UserAvatarAndBadge profile={creator} short />
+          {numComments > 0 ? (
+            <div className="flex flex-row items-center gap-1">
+              <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-gray-400" />
+              <span className="text-gray-500">{numComments}</span>
+            </div>
+          ) : (
+            <div className="w-16" />
+          )}
+        </div>
+        {project.stage === 'proposal' && (
+          <ProgressBar percent={percentRaised} />
+        )}
+      </Col>
+    </Col>
+  )
 }

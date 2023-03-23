@@ -52,7 +52,7 @@ async function InvestmentsDisplay(props: {
             {project.title}
           </p>
           <div className="ml-2 flex flex-shrink-0">
-            <RoundTag round={project.round} />
+            <RoundTag roundTitle={project.round} />
           </div>
         </div>
         <div className="mt-2 sm:flex sm:justify-between">

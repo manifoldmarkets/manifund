@@ -23,12 +23,17 @@ export function shortenName(name: string) {
 export function UserAvatarAndBadge(props: {
   profile: Profile
   className?: string
+  short?: boolean
 }) {
-  const { profile, className } = props
+  const { profile, className, short } = props
   return (
-    <div className={clsx('flex flex-row items-center gap-2', className)}>
+    <div className={clsx('flex flex-row items-center gap-1', className)}>
       <Avatar profile={profile} size={6} />
-      <UserLink name={profile.full_name} username={profile.username} />
+      <UserLink
+        name={profile.full_name}
+        username={profile.username}
+        short={short}
+      />
     </div>
   )
 }
@@ -49,7 +54,7 @@ export function UserLink(props: {
     <SiteLink
       href={`/${username}`}
       className={clsx(
-        'inline-flex max-w-[120px] flex-row items-center gap-1 truncate min-[480px]:max-w-[200px]',
+        'inline-flex max-w-[120px] flex-row items-center gap-0.5 truncate min-[480px]:max-w-[200px]',
         className,
         noLink && 'pointer-events-none'
       )}

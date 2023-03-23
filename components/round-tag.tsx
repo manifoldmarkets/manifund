@@ -1,19 +1,52 @@
+import { getRoundTheme } from '@/utils/constants'
 import clsx from 'clsx'
+import Link from 'next/link'
 
-export function RoundTag(props: { round: string }) {
-  const { round } = props
-  switch (round) {
-    case 'ACX Mini-Grants':
-      return (
-        <p className="inline-flex max-h-6 rounded-full bg-indigo-100 px-2 text-xs font-semibold leading-5 text-indigo-800">
-          ACX Mini-Grants
+const COLORS = [
+  'bg-indigo-200',
+  'bg-gray-200',
+  'bg-cyan-200',
+  'bg-indigo-400',
+  'bg-gray-400',
+  'bg-cyan-400',
+  'text-indigo-700',
+  'text-gray-700',
+  'text-cyan-700',
+]
+
+export function RoundTag(props: {
+  roundTitle: string
+  size?: 'xl'
+  roundSlug?: string
+}) {
+  const { roundTitle, size, roundSlug } = props
+  const roundTheme = getRoundTheme(roundTitle)
+  if (roundSlug) {
+    return (
+      <Link href={`/rounds/${roundSlug}`}>
+        <p
+          className={clsx(
+            'inline-flex rounded-full font-semibold leading-5',
+            `text-${roundTheme}-700`,
+            `bg-${roundTheme}-200`,
+            size === 'xl' ? 'max-h-24 p-3 text-2xl' : 'max-h-6 px-2 text-xs'
+          )}
+        >
+          {roundTitle}
         </p>
-      )
-    default:
-      return (
-        <p className="inline-flex max-h-6 rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800">
-          Independent
-        </p>
-      )
+      </Link>
+    )
   }
+  return (
+    <p
+      className={clsx(
+        'inline-flex rounded-full font-semibold leading-5',
+        `text-${roundTheme}-700`,
+        `bg-${roundTheme}-200`,
+        size === 'xl' ? 'max-h-24 p-3 text-2xl' : 'max-h-6 px-2 text-xs'
+      )}
+    >
+      {roundTitle}
+    </p>
+  )
 }

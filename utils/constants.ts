@@ -9,3 +9,16 @@ export function getURL() {
   url = url.charAt(url.length - 1) === '/' ? url : `${url}/`
   return url
 }
+
+export function getRoundTheme(roundTitle: string) {
+  switch (roundTitle) {
+    case 'ACX Mini-Grants':
+      return 'indigo'
+    case 'OpenPhil AI Worldview Prizes':
+      return 'cyan'
+    case 'Independent':
+      return 'gray'
+    default:
+      return 'pink' //this should never happen
+  }
+}

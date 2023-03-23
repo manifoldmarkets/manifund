@@ -51,7 +51,6 @@ export default async function RootLayout({
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
           <div className="mx-2 flex flex-1 flex-col md:col-span-8">
-            <BetaBanner />
             {children}
           </div>
           {/* @ts-expect-error Server Component */}
