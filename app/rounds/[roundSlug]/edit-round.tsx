@@ -9,6 +9,7 @@ import { Round } from '@/db/round'
 import { isAdmin } from '@/db/profile'
 import Image from 'next/image'
 import uuid from 'react-uuid'
+import { SUPABASE_BUCKET_URL } from '@/db/env'
 
 export function EditRound(props: { round: Round }) {
   const { round } = props
@@ -55,7 +56,7 @@ export function EditRound(props: { round: Round }) {
     const { error } = await supabase
       .from('rounds')
       .update({
-        header_image_url: `https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/round-header-images/${round.slug}/${headerImageId}`,
+        header_image_url: `https://${SUPABASE_BUCKET_URL}.supabase.co/storage/v1/object/public/round-header-images/${round.slug}/${headerImageId}`,
       })
       .eq('title', round.title)
     if (error) {
@@ -81,7 +82,7 @@ export function EditRound(props: { round: Round }) {
               <Image
                 src={
                   round.header_image_url ??
-                  'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/round-header-images/default_header.png'
+                  `${SUPABASE_BUCKET_URL}/storage/v1/object/public/round-header-images/default_header.png`
                 }
                 width={500}
                 height={300}
