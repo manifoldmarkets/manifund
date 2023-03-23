@@ -3,15 +3,13 @@ import clsx from 'clsx'
 import { throttle } from 'lodash'
 import { ReactNode, useRef, useState, useEffect } from 'react'
 import { Row } from './layout/row'
-import { VisibilityObserver } from './visibility-observer'
 
 export function Carousel(props: {
   children: ReactNode
   theme?: string
-  loadMore?: () => void
   className?: string
 }) {
-  const { children, theme, loadMore, className } = props
+  const { children, theme, className } = props
 
   const ref = useRef<HTMLDivElement>(null)
 
@@ -57,13 +55,6 @@ export function Carousel(props: {
         onScroll={onScroll}
       >
         {children}
-
-        {loadMore && (
-          <VisibilityObserver
-            className="relative -left-96"
-            onVisibilityUpdated={(visible) => visible && loadMore()}
-          />
-        )}
       </Row>
       <div
         className="relative left-2 flex w-10 cursor-pointer items-center justify-center"
