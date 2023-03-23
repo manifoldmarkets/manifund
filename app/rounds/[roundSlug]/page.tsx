@@ -19,7 +19,7 @@ export default async function RoundPage(props: {
           src={round.header_image_url}
           width={1000}
           height={500}
-          className="relative aspect-[4/1] w-full flex-shrink-0 bg-white object-cover"
+          className="relative aspect-[4/1] w-full flex-shrink-0 rounded bg-white object-cover"
           alt="round header image"
         />
       )}
