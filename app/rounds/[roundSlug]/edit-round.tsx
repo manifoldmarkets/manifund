@@ -56,7 +56,7 @@ export function EditRound(props: { round: Round }) {
     const { error } = await supabase
       .from('rounds')
       .update({
-        header_image_url: `https://${SUPABASE_BUCKET_URL}.supabase.co/storage/v1/object/public/round-header-images/${round.slug}/${headerImageId}`,
+        header_image_url: `${SUPABASE_BUCKET_URL}/storage/v1/object/public/round-header-images/${round.slug}/${headerImageId}`,
       })
       .eq('title', round.title)
     if (error) {
@@ -80,10 +80,7 @@ export function EditRound(props: { round: Round }) {
               />
             ) : (
               <Image
-                src={
-                  round.header_image_url ??
-                  `${SUPABASE_BUCKET_URL}/storage/v1/object/public/round-header-images/default_header.png`
-                }
+                src={round.header_image_url ?? '/default-header.png'}
                 width={500}
                 height={300}
                 alt="round header image"
