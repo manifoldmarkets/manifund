@@ -14,15 +14,16 @@ import { MySlider } from '@/components/slider'
 import { Input } from '@/components/input'
 import { useSupabase } from '@/db/supabase-provider'
 import { Modal } from '@/components/modal'
+import { Profile } from '@/db/profile'
 
 export function Bids(props: {
   bids: BidAndProfile[]
   stage: string
-  userId?: string
+  user: Profile | null
   userSpendableFunds: number
   userSellableShares: number
 }) {
-  const { bids, stage, userId, userSpendableFunds, userSellableShares } = props
+  const { bids, stage, user, userSpendableFunds, userSellableShares } = props
 
   if (bids.length === 0)
     return (
@@ -52,7 +53,7 @@ export function Bids(props: {
               <Bid
                 key={bid.id}
                 bid={bid}
-                userId={userId}
+                user={user}
                 showValuation={true}
                 userSellableShares={userSellableShares}
                 userSpendableFunds={userSpendableFunds}
@@ -65,7 +66,7 @@ export function Bids(props: {
               <Bid
                 key={bid.id}
                 bid={bid}
-                userId={userId}
+                user={user}
                 showValuation={true}
                 userSellableShares={userSellableShares}
                 userSpendableFunds={userSpendableFunds}
@@ -83,11 +84,11 @@ export function Bids(props: {
 function Bid(props: {
   bid: BidAndProfile
   showValuation: boolean
-  userId?: string
+  user?: Profile | null
   userSpendableFunds?: number
   userSellableShares?: number
 }) {
-  const { bid, showValuation, userId, userSpendableFunds, userSellableShares } =
+  const { bid, showValuation, user, userSpendableFunds, userSellableShares } =
     props
   return (
     <Row className="w-full justify-between gap-3 rounded p-3 hover:bg-gray-200">
@@ -101,14 +102,14 @@ function Bid(props: {
       ) : (
         <div className="relative top-1.5">{formatMoney(bid.amount)}</div>
       )}
-      {userId && (
+      {user && user.accreditation_status && (
         <div>
-          {bid.bidder === userId ? (
+          {bid.bidder === user.id ? (
             <DeleteBid bidId={bid.id} />
           ) : (
             <Trade
               bid={bid}
-              userId={userId}
+              userId={user.id}
               userSpendableFunds={userSpendableFunds ?? 0}
               userSellableShares={userSellableShares ?? 0}
             />
