@@ -30,7 +30,6 @@ export function ProjectTabs(props: {
     userSpendableFunds,
     userSellableShares,
   } = props
-  const router = useRouter()
   const searchParams = useSearchParams()
   const currentTabName = searchParams.get('tab')
   const trades = calculateFullTrades(txns)
@@ -60,7 +59,7 @@ export function ProjectTabs(props: {
         <Bids
           bids={bids}
           stage={project.stage}
-          userId={user?.id}
+          user={user}
           userSpendableFunds={userSpendableFunds}
           userSellableShares={userSellableShares}
         />
