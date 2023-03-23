@@ -1,5 +1,5 @@
 import { Bid } from '@/db/bid'
-import { Project } from '@/db/project'
+import { FullProject, Project } from '@/db/project'
 import { useSupabase } from '@/db/supabase-provider'
 import { formatDate, formatMoney } from '@/utils/formatting'
 import { deleteBid } from '@/db/bid'
@@ -29,7 +29,7 @@ export function UserBidDisplay(props: {
             {project.title}
           </p>
           <div className="ml-2 flex flex-shrink-0">
-            <RoundTag round={project.round} />
+            <RoundTag roundTitle={project.round} />
           </div>
         </div>
         <div className="mt-2 sm:flex sm:justify-between">

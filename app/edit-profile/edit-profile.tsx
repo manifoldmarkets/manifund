@@ -12,6 +12,7 @@ import { Profile } from '@/db/profile'
 import { Select } from '@/components/select'
 import uuid from 'react-uuid'
 import Image from 'next/image'
+import { SUPABASE_BUCKET_URL } from '@/db/env'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
@@ -191,7 +192,7 @@ async function saveProfile(
   let avatarUrl = new_profile.avatar_url
   if (avatar) {
     const avatarSlug = uuid()
-    avatarUrl = `https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/${new_profile.id}/${avatarSlug}`
+    avatarUrl = `${SUPABASE_BUCKET_URL}/storage/v1/object/public/avatars/${new_profile.id}/${avatarSlug}`
     await saveAvatar(supabase, new_profile.id, avatarSlug, avatar)
   }
   const { error } = await supabase

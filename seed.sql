@@ -211,3 +211,41 @@ AS PERMISSIVE FOR INSERT
 TO authenticated
 
 WITH CHECK (true)
+
+
+ -- Rounds
+create table if not exists public.rounds (
+  title text not null,
+  auction_close_date date,
+  proposal_due_date date,
+  retro_pool float8,
+  description jsonb,
+  slug text not null,
+  primary key (title)
+);
+
+CREATE POLICY "Enable read access for all users" ON "public"."rounds"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
+
+CREATE POLICY "Enable update for rachel based on email" ON "public"."rounds"
+AS PERMISSIVE FOR UPDATE
+TO public
+USING (auth.jwt() ->> 'email' = 'rachel.weinberg12@gmail.com')
+WITH CHECK (auth.jwt() ->> 'email' = 'rachel.weinberg12@gmail.com')
+
+CREATE POLICY "Enable update for austin based on email" ON "public"."rounds"
+AS PERMISSIVE FOR UPDATE
+TO public
+USING (auth.jwt() ->> 'email' = 'akrolsmir@gmail.com')
+WITH CHECK (auth.jwt() ->> 'email' = 'akrolsmir@gmail.com')
+
+-- Round header image RLS
+CREATE POLICY "Give edit access to rachel 1w84ji1_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'rachel.weinberg12@gmail.com');
+CREATE POLICY "Give edit access to rachel 1w84ji1_0" ON storage.objects FOR UPDATE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'rachel.weinberg12@gmail.com');
+CREATE POLICY "Give edit access to rachel 1w84ji1_0" ON storage.objects FOR DELETE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'rachel.weinberg12@gmail.com');
+
+CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
+CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR UPDATE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
+CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR DELETE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
