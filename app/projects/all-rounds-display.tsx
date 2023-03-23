@@ -64,7 +64,7 @@ function Round(props: { round: Round; projects: FullProject[] }) {
       <div className="px-3">
         <RoundCarousel projects={projects} theme={theme} />
       </div>
-      <div className="my-5 flex justify-center px-6">
+      <div className="my-2 flex justify-center px-6">
         <div className="w-10/12">
           <RoundData round={round} projects={projects} />
         </div>
@@ -92,17 +92,4 @@ function sortForPreview(projects: FullProject[]) {
     },
   ])
   return sortedByStage
-}
-
-function stageRankForPreview(stage: string) {
-  switch (stage) {
-    case 'proposal':
-      return 0
-    case 'active':
-      return 1
-    case 'complete':
-      return 2
-    default:
-      return 3
-  }
 }
