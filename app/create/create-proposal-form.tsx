@@ -64,7 +64,8 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
         )
       : null
   )
-  console.log('auctionClose', auctionClose)
+  console.log('selling portion', sellingPortion)
+  console.log('founder shares', ((100 - sellingPortion) / 100) * TOTAL_SHARES)
   const editor = useTextEditor(DEFAULT_DESCRIPTION)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -315,7 +316,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
               min_funding: useAuction
                 ? minFunding.toString()
                 : (sellingPortion / 100) * initialValuation,
-              founder_portion: advancedSettings ? founderShares.toString() : 0,
+              founder_portion: founderShares.toString(),
               round: round.title,
               auction_close:
                 round.title === 'Independent'
