@@ -51,8 +51,8 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
   const [useAuction, setUseAuction] = useState<boolean>(
     round.auction_close_date ? true : false
   )
-  const [founderPortion, setFounderPortion] = useState<number>(
-    useAuction ? 0 : 100
+  const [sellingPortion, setSellingPortion] = useState<number>(
+    useAuction ? 100 : 0
   )
   const [auctionClose, setAuctionClose] = useState(
     useAuction
@@ -234,24 +234,24 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
           )}
         </div>
         <label htmlFor="founderPortion">
-          Founder portion{' '}
-          <InfoTooltip text="What percent of the project's impact cert will be kept by the founding team?" />
+          Portion of stake to be sold{' '}
+          <InfoTooltip text="What percent of the project's impact cert will be sold to investors? The rest will be kept by the founding team." />
         </label>
         <div className="flex justify-center gap-5">
           <div className="flex gap-1">
             <Input
-              value={founderPortion}
+              value={sellingPortion}
               type="number"
               onChange={(event) =>
-                setFounderPortion(Number(event.target.value))
+                setSellingPortion(Number(event.target.value))
               }
             ></Input>
             <p className="relative top-3">%</p>
           </div>
           <MySlider
             marks={marks}
-            value={founderPortion}
-            onChange={(value) => setFounderPortion(value as number)}
+            value={sellingPortion}
+            onChange={(value) => setSellingPortion(value as number)}
             step={5}
           />
         </div>
@@ -290,7 +290,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
         )}
         <div className="m-3 rounded-md bg-orange-100 p-2 text-center font-medium text-orange-500 shadow-sm">
           {genEquityPriceSummary(
-            founderPortion,
+            sellingPortion,
             useAuction ? minFunding : undefined,
             useAuction ? undefined : initialValuation
           )}
@@ -302,7 +302,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
         type="submit"
         disabled={!!errorMessage}
         onClick={async () => {
-          const founderShares = (founderPortion / 100) * TOTAL_SHARES
+          const founderShares = ((100 - sellingPortion) / 100) * TOTAL_SHARES
           const description = editor?.getJSON() ?? '<p>No description</p>'
           const response = await fetch('/api/create-project', {
             method: 'POST',
@@ -315,7 +315,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
               description,
               min_funding: useAuction
                 ? minFunding.toString()
-                : ((100 - founderPortion) / 100) * initialValuation,
+                : (sellingPortion / 100) * initialValuation,
               founder_portion: advancedSettings ? founderShares.toString() : 0,
               round: round.title,
               auction_close:
@@ -336,28 +336,20 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
 }
 
 function genEquityPriceSummary(
-  founderPortion: number,
+  sellingPortion: number,
   minFunding?: number,
   minValuation?: number
 ) {
-  const founderShares = (founderPortion / 100) * TOTAL_SHARES
-  const publicShares = TOTAL_SHARES - founderShares
   if (minFunding !== undefined) {
-    return `${
-      100 - founderPortion
-    }% of your project will be put up for auction at a minimum valuation of ${
-      (100 * minFunding) / (100 - founderPortion)
+    return `${sellingPortion}% of your project will be put up for auction at a minimum valuation of ${
+      (100 * minFunding) / sellingPortion
     }. If less than ${minFunding} worth of bids are placed before the auction close date, no funds will be sent and your project will not proceed.`
   } else if (minValuation !== undefined) {
-    return `${
-      100 - founderPortion
-    }% of your project immediately be put up for sale at a valuation of ${formatMoney(
+    return `${sellingPortion}% of your project immediately be put up for sale at a valuation of ${formatMoney(
       minValuation
     )}. If all of that equity is sold, you will recieve ${formatMoney(
-      ((100 - founderPortion) / 100) * minValuation
-    )} in upfront funding, and will pay back ${
-      100 - founderPortion
-    }% of any retroactive funding you later recieve for this project to your investors. You can sell more of your equity at any time.`
+      (sellingPortion / 100) * minValuation
+    )} in upfront funding, and will pay back ${sellingPortion}% of any retroactive funding you later recieve for this project to your investors. You can sell more of your equity at any time.`
   } else {
     return ''
   }
