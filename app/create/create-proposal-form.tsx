@@ -44,14 +44,25 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
   const [title, setTitle] = useState<string>('')
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number>(250)
-  const [founderPortion, setFounderPortion] = useState<number>(0)
   const [advancedSettings, setAdvancedSettings] = useState<boolean>(false)
   const [round, setRound] = useState<Round>(availableRounds[0])
-  const [auctionClose, setAuctionClose] = useState(
-    round.auction_close_date
-      ? format(new Date(round.auction_close_date), 'yyyy-MM-dd')
-      : format(add(new Date(), { days: 7 }), 'yyyy-MM-dd')
+  const [useAuction, setUseAuction] = useState<boolean>(
+    round.auction_close_date ? true : false
   )
+  const [founderPortion, setFounderPortion] = useState<number>(
+    useAuction ? 0 : 100
+  )
+  const [auctionClose, setAuctionClose] = useState(
+    useAuction
+      ? format(
+          round.auction_close_date
+            ? new Date(round.auction_close_date)
+            : add(new Date(), { days: 7 }),
+          'yyyy-MM-dd'
+        )
+      : null
+  )
+  console.log('auctionClose', auctionClose)
   const editor = useTextEditor(DEFAULT_DESCRIPTION)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -99,31 +110,6 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
     <div className="flex flex-col gap-3 p-5">
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Create a project proposal</h1>
-        <div className="mt-2 flex flex-row gap-2">
-          <label htmlFor="advanced-settings" className="text-gray-600">
-            Advanced settings
-          </label>
-          <button
-            type="button"
-            className={clsx(
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
-                (advancedSettings ? ' bg-orange-500' : ' bg-gray-200'),
-              'focus:ring-offset-gray-100'
-            )}
-            role="switch"
-            aria-checked="false"
-            onClick={() => setAdvancedSettings(!advancedSettings)}
-          >
-            <span className="sr-only">Use setting</span>
-            <span
-              aria-hidden="true"
-              className={clsx(
-                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                advancedSettings ? 'translate-x-5' : 'translate-x-0'
-              )}
-            ></span>
-          </button>
-        </div>
       </div>
       <label htmlFor="title">Title</label>
       <Input
@@ -146,90 +132,150 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
       />
       <label htmlFor="description">Description</label>
       <TextEditor editor={editor} />
-      <label htmlFor="minFunding">
-        Funding goal (USD){' '}
-        <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
-      </label>
-      <Input
-        type="number"
-        id="minFunding"
-        autoComplete="off"
-        required
-        value={minFunding ?? ''}
-        onChange={(event) => setMinFunding(Number(event.target.value))}
-      />
-      <div className="">
-        <div>
-          <label className="text-base font-semibold text-gray-900">
-            Rounds currently accepting submissions
-          </label>
-          <fieldset className="mt-4">
-            <legend className="sr-only">Notification method</legend>
-            <div className="space-y-4">
-              {availableRounds.map((availableRound) => (
-                <div
-                  key={availableRound.title}
-                  className="relative flex items-start"
-                >
-                  <div className="flex h-6 items-center">
-                    <input
-                      id={availableRound.title}
-                      name="notification-method"
-                      type="radio"
-                      defaultChecked={availableRound.title === round.title}
-                      onChange={() => setRound(availableRound)}
-                      className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
-                    />
-                  </div>
-                  <div className="ml-3">
-                    <label
-                      htmlFor={availableRound.title}
-                      className="text-md block font-medium"
-                    >
-                      {availableRound.title}
-                    </label>
-                    {availableRound.title === 'Independent' && (
-                      <p className="text-sm text-gray-500">
-                        Independent projects do not have a committed oracular
-                        funder. By entering as an Independent project, your
-                        project is less likely to recieve investments and
-                        oracular funding.
-                      </p>
-                    )}
-                  </div>
+      <div>
+        <label className="text-base font-semibold text-gray-900">
+          Rounds currently accepting submissions
+        </label>
+        <fieldset className="mt-4">
+          <legend className="sr-only">Notification method</legend>
+          <div className="space-y-4">
+            {availableRounds.map((availableRound) => (
+              <div
+                key={availableRound.title}
+                className="relative flex items-start"
+              >
+                <div className="flex h-6 items-center">
+                  <input
+                    id={availableRound.title}
+                    name="notification-method"
+                    type="radio"
+                    defaultChecked={availableRound.title === round.title}
+                    onChange={() => setRound(availableRound)}
+                    className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
+                  />
                 </div>
-              ))}
-            </div>
-          </fieldset>
-        </div>
+                <div className="ml-3">
+                  <label
+                    htmlFor={availableRound.title}
+                    className="text-md block font-medium"
+                  >
+                    {availableRound.title}
+                  </label>
+                  {availableRound.title === 'Independent' && (
+                    <p className="text-sm text-gray-500">
+                      Independent projects do not have a committed oracular
+                      funder. By entering as an Independent project, your
+                      project is less likely to recieve investments and oracular
+                      funding.
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </fieldset>
+      </div>
+      <div
+        className={clsx(
+          'mt-2 flex flex-row gap-2',
+          round.title !== 'Independent' ? 'hidden' : 'block'
+        )}
+      >
+        <label htmlFor="advanced-settings" className="text-gray-600">
+          Auction for initial valuation
+          <InfoTooltip text="If you use an auction, your project will start in the 'proposal' phase, and you will only recieve funding if there are enough bids to pass the minimum funding bar you set. Otherwise, your project will begin in the 'active' phase and you can sell shares at the valuation of your choice immediately." />
+        </label>
+        <button
+          type="button"
+          className={clsx(
+            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
+              (useAuction ? ' bg-orange-500' : ' bg-gray-200'),
+            'focus:ring-offset-gray-100'
+          )}
+          role="switch"
+          disabled={round.title !== 'Independent'}
+          aria-checked="false"
+          onClick={() => setUseAuction(!useAuction)}
+        >
+          <span className="sr-only">Use auction</span>
+          <span
+            aria-hidden="true"
+            className={clsx(
+              'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+              useAuction ? 'translate-x-5' : 'translate-x-0'
+            )}
+          ></span>
+        </button>
       </div>
       <div>
-        <label htmlFor="auction-close">Auction Close Date: </label>
-        <Input
-          type="date"
-          value={auctionClose}
-          disabled={round.title !== 'Independent'}
-          onChange={(event) => setAuctionClose(event.target.value)}
-        />
-      </div>
-
-      {advancedSettings && (
-        <>
-          <label htmlFor="founderPortion">
-            Founder portion{' '}
-            <InfoTooltip text="What percent of the project's impact cert will be kept by the founding team?" />
-          </label>
-          <div className="flex justify-center">
-            <MySlider
-              marks={marks}
-              value={founderPortion ?? 0}
-              onChange={(value) => setFounderPortion(value as number)}
-              step={5}
+        {useAuction && (
+          <div>
+            <label htmlFor="auction-close">Auction Close Date: </label>
+            <Input
+              type="date"
+              value={auctionClose ?? ''}
+              disabled={round.title !== 'Independent'}
+              onChange={(event) => setAuctionClose(event.target.value)}
             />
           </div>
-        </>
+        )}
+      </div>
+      <label htmlFor="founderPortion">
+        Founder portion{' '}
+        <InfoTooltip text="What percent of the project's impact cert will be kept by the founding team?" />
+      </label>
+      <div className="flex justify-center gap-5">
+        <div className="flex gap-1">
+          <Input
+            value={founderPortion}
+            type="number"
+            onChange={(event) => setFounderPortion(Number(event.target.value))}
+          ></Input>
+          <p className="relative top-3">%</p>
+        </div>
+        <MySlider
+          marks={marks}
+          value={founderPortion}
+          onChange={(value) => setFounderPortion(value as number)}
+          step={5}
+        />
+      </div>
+      {useAuction ? (
+        <div>
+          <label htmlFor="minFunding">
+            Minimum funding (USD){' '}
+            <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
+          </label>
+          <Input
+            type="number"
+            id="minFunding"
+            autoComplete="off"
+            required
+            value={minFunding ?? ''}
+            onChange={(event) => setMinFunding(Number(event.target.value))}
+          />
+        </div>
+      ) : (
+        <div>
+          <label htmlFor="valuation" className="mr-3">
+            Initial valuation (USD){' '}
+            <InfoTooltip text="Approximately our expected payout." />
+          </label>
+          <Input
+            type="number"
+            id="minFunding"
+            autoComplete="off"
+            required
+            value={(100 * minFunding) / (100 - founderPortion) ?? ''}
+            onChange={(event) =>
+              setMinFunding(
+                (100 - founderPortion) / (100 * Number(event.target.value))
+              )
+            }
+          />
+        </div>
       )}
-      <div className="text-red-500">{errorMessage}</div>
+      <div className="text-rose-500">{errorMessage}</div>
       <Button
         className="mt-6"
         type="submit"
@@ -259,7 +305,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
           router.push(`/projects/${newProject.slug}`)
         }}
       >
-        Publish project proposal
+        Publish project
       </Button>
     </div>
   )
