@@ -17,6 +17,7 @@ type ProjectProps = {
   founder_portion: number
   round: string
   auction_close: string
+  stage: string
 }
 
 export default async function handler(req: NextRequest) {
@@ -28,6 +29,7 @@ export default async function handler(req: NextRequest) {
     founder_portion,
     round,
     auction_close,
+    stage,
   } = (await req.json()) as ProjectProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
@@ -57,6 +59,7 @@ export default async function handler(req: NextRequest) {
     slug,
     round,
     auction_close,
+    stage,
   }
 
   const { error } = await supabase.from('projects').insert([project])

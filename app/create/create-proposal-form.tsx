@@ -16,6 +16,7 @@ import { SiteLink } from '@/components/site-link'
 import { Round } from '@/db/round'
 import { sortBy } from 'lodash'
 import { add, format } from 'date-fns'
+import { formatMoney } from '@/utils/formatting'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -44,6 +45,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
   const [title, setTitle] = useState<string>('')
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number>(250)
+  const [initialValuation, setInitialValuation] = useState<number>(250)
   const [advancedSettings, setAdvancedSettings] = useState<boolean>(false)
   const [round, setRound] = useState<Round>(availableRounds[0])
   const [useAuction, setUseAuction] = useState<boolean>(
@@ -175,109 +177,123 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
           </div>
         </fieldset>
       </div>
-      <div
-        className={clsx(
-          'mt-2 flex flex-row gap-2',
-          round.title !== 'Independent' ? 'hidden' : 'block'
-        )}
-      >
-        <label htmlFor="advanced-settings" className="text-gray-600">
-          Auction for initial valuation
-          <InfoTooltip text="If you use an auction, your project will start in the 'proposal' phase, and you will only recieve funding if there are enough bids to pass the minimum funding bar you set. Otherwise, your project will begin in the 'active' phase and you can sell shares at the valuation of your choice immediately." />
-        </label>
-        <button
-          type="button"
+      <div className="rounded-md border border-gray-300 bg-white p-5 shadow-md">
+        <h1 className="text-xl font-bold">Founder equity & initial pricing</h1>
+        <p className="mb-5 text-sm text-gray-500">
+          Check these numbers carefully. They cannot be changed after your
+          project is published.
+        </p>
+        <div
           className={clsx(
-            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
-              (useAuction ? ' bg-orange-500' : ' bg-gray-200'),
-            'focus:ring-offset-gray-100'
+            'mt-2 flex flex-row gap-2',
+            round.title !== 'Independent' ? 'hidden' : 'block'
           )}
-          role="switch"
-          disabled={round.title !== 'Independent'}
-          aria-checked="false"
-          onClick={() => setUseAuction(!useAuction)}
         >
-          <span className="sr-only">Use auction</span>
-          <span
-            aria-hidden="true"
+          <label htmlFor="advanced-settings" className="text-gray-600">
+            Auction for initial valuation
+            <InfoTooltip text="If you use an auction, your project will start in the 'proposal' phase, and you will only recieve funding if there are enough bids to pass the minimum funding bar you set. Otherwise, your project will begin in the 'active' phase and you can sell shares at the valuation of your choice immediately." />
+          </label>
+          <button
+            type="button"
             className={clsx(
-              'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-              useAuction ? 'translate-x-5' : 'translate-x-0'
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
+                (useAuction ? ' bg-orange-500' : ' bg-gray-200'),
+              'focus:ring-offset-gray-100'
             )}
-          ></span>
-        </button>
-      </div>
-      <div>
-        {useAuction && (
-          <div>
-            <label htmlFor="auction-close">Auction Close Date: </label>
+            role="switch"
+            disabled={round.title !== 'Independent'}
+            aria-checked="false"
+            onClick={() => setUseAuction(!useAuction)}
+          >
+            <span className="sr-only">Use auction</span>
+            <span
+              aria-hidden="true"
+              className={clsx(
+                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                useAuction ? 'translate-x-5' : 'translate-x-0'
+              )}
+            ></span>
+          </button>
+        </div>
+        <div>
+          {useAuction && (
+            <div>
+              <label htmlFor="auction-close">Auction Close Date: </label>
+              <Input
+                type="date"
+                value={auctionClose ?? ''}
+                disabled={round.title !== 'Independent'}
+                onChange={(event) => setAuctionClose(event.target.value)}
+              />
+            </div>
+          )}
+        </div>
+        <label htmlFor="founderPortion">
+          Founder portion{' '}
+          <InfoTooltip text="What percent of the project's impact cert will be kept by the founding team?" />
+        </label>
+        <div className="flex justify-center gap-5">
+          <div className="flex gap-1">
             <Input
-              type="date"
-              value={auctionClose ?? ''}
-              disabled={round.title !== 'Independent'}
-              onChange={(event) => setAuctionClose(event.target.value)}
+              value={founderPortion}
+              type="number"
+              onChange={(event) =>
+                setFounderPortion(Number(event.target.value))
+              }
+            ></Input>
+            <p className="relative top-3">%</p>
+          </div>
+          <MySlider
+            marks={marks}
+            value={founderPortion}
+            onChange={(value) => setFounderPortion(value as number)}
+            step={5}
+          />
+        </div>
+        {useAuction ? (
+          <div className="flex flex-col">
+            <label htmlFor="minFunding">
+              Minimum funding (USD){' '}
+              <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
+            </label>
+            <Input
+              type="number"
+              id="minFunding"
+              autoComplete="off"
+              required
+              value={minFunding ?? ''}
+              onChange={(event) => setMinFunding(Number(event.target.value))}
+            />
+          </div>
+        ) : (
+          <div className="flex flex-col">
+            <label htmlFor="valuation" className="mr-3">
+              Initial valuation (USD){' '}
+              <InfoTooltip text="Approximately our expected payout." />
+            </label>
+            <Input
+              type="number"
+              id="minFunding"
+              autoComplete="off"
+              required
+              value={initialValuation}
+              onChange={(event) =>
+                setInitialValuation(Number(event.target.value))
+              }
             />
           </div>
         )}
+        <div className="m-3 rounded-md bg-orange-100 p-2 text-center font-medium text-orange-500 shadow-sm">
+          {genEquityPriceSummary(
+            founderPortion,
+            useAuction ? minFunding : undefined,
+            useAuction ? undefined : initialValuation
+          )}
+        </div>
       </div>
-      <label htmlFor="founderPortion">
-        Founder portion{' '}
-        <InfoTooltip text="What percent of the project's impact cert will be kept by the founding team?" />
-      </label>
-      <div className="flex justify-center gap-5">
-        <div className="flex gap-1">
-          <Input
-            value={founderPortion}
-            type="number"
-            onChange={(event) => setFounderPortion(Number(event.target.value))}
-          ></Input>
-          <p className="relative top-3">%</p>
-        </div>
-        <MySlider
-          marks={marks}
-          value={founderPortion}
-          onChange={(value) => setFounderPortion(value as number)}
-          step={5}
-        />
-      </div>
-      {useAuction ? (
-        <div>
-          <label htmlFor="minFunding">
-            Minimum funding (USD){' '}
-            <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
-          </label>
-          <Input
-            type="number"
-            id="minFunding"
-            autoComplete="off"
-            required
-            value={minFunding ?? ''}
-            onChange={(event) => setMinFunding(Number(event.target.value))}
-          />
-        </div>
-      ) : (
-        <div>
-          <label htmlFor="valuation" className="mr-3">
-            Initial valuation (USD){' '}
-            <InfoTooltip text="Approximately our expected payout." />
-          </label>
-          <Input
-            type="number"
-            id="minFunding"
-            autoComplete="off"
-            required
-            value={(100 * minFunding) / (100 - founderPortion) ?? ''}
-            onChange={(event) =>
-              setMinFunding(
-                (100 - founderPortion) / (100 * Number(event.target.value))
-              )
-            }
-          />
-        </div>
-      )}
-      <div className="text-rose-500">{errorMessage}</div>
+      <div className="mt-4 text-center text-rose-500">{errorMessage}</div>
       <Button
-        className="mt-6"
+        className="mt-4"
         type="submit"
         disabled={!!errorMessage}
         onClick={async () => {
@@ -292,13 +308,16 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
               title,
               blurb,
               description,
-              min_funding: minFunding.toString(),
+              min_funding: useAuction
+                ? minFunding.toString()
+                : ((100 - founderPortion) / 100) * initialValuation,
               founder_portion: advancedSettings ? founderShares.toString() : 0,
               round: round.title,
               auction_close:
                 round.title === 'Independent'
                   ? auctionClose
                   : round.auction_close_date,
+              stage: useAuction ? 'proposal' : 'active',
             }),
           })
           const newProject = await response.json()
@@ -309,4 +328,32 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
       </Button>
     </div>
   )
+}
+
+function genEquityPriceSummary(
+  founderPortion: number,
+  minFunding?: number,
+  minValuation?: number
+) {
+  const founderShares = (founderPortion / 100) * TOTAL_SHARES
+  const publicShares = TOTAL_SHARES - founderShares
+  if (minFunding !== undefined) {
+    return `${
+      100 - founderPortion
+    }% of your project will be put up for auction at a minimum valuation of ${
+      (100 * minFunding) / (100 - founderPortion)
+    }. If less than ${minFunding} worth of bids are placed before the auction close date, no funds will be sent and your project will not proceed.`
+  } else if (minValuation !== undefined) {
+    return `${
+      100 - founderPortion
+    }% of your project immediately be put up for sale at a valuation of ${formatMoney(
+      minValuation
+    )}. If all of that equity is sold, you will recieve ${formatMoney(
+      ((100 - founderPortion) / 100) * minValuation
+    )} in upfront funding, and will pay back ${
+      100 - founderPortion
+    }% of any retroactive funding you later recieve for this project to your investors. You can sell more of your equity at any time.`
+  } else {
+    return ''
+  }
 }
