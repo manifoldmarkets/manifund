@@ -42,7 +42,7 @@ export function Carousel(props: {
       >
         <ChevronLeftIcon
           className={clsx(
-            'h-8 w-8 rounded-full p-1',
+            'h-8 w-8 rounded-full p-1 transition-transform duration-200 hover:-translate-x-1',
             theme
               ? `bg-${theme}-200 text-${theme}-700`
               : 'bg-orange-200 text-orange-700'
@@ -62,7 +62,7 @@ export function Carousel(props: {
       >
         <ChevronRightIcon
           className={clsx(
-            'h-8 w-8 rounded-full p-1',
+            'h-8 w-8 rounded-full p-1 transition-transform duration-200 hover:translate-x-1',
             theme
               ? `bg-${theme}-200 text-${theme}-700`
               : 'bg-orange-200 text-orange-700'

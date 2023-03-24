@@ -26,7 +26,7 @@ export function RoundTag(props: {
       <Link href={`/rounds/${roundSlug}`}>
         <p
           className={clsx(
-            'inline-flex rounded-full font-semibold leading-5',
+            'inline-flex rounded-full font-semibold leading-5 hover:underline hover:decoration-2',
             `text-${roundTheme}-700`,
             `bg-${roundTheme}-200`,
             size === 'xl' ? 'max-h-24 p-3 text-2xl' : 'max-h-6 px-2 text-xs'
@@ -40,7 +40,7 @@ export function RoundTag(props: {
   return (
     <p
       className={clsx(
-        'inline-flex rounded-full font-semibold leading-5',
+        'inline-flex rounded-full font-semibold leading-5 hover:underline hover:decoration-2',
         `text-${roundTheme}-700`,
         `bg-${roundTheme}-200`,
         size === 'xl' ? 'max-h-24 p-3 text-2xl' : 'max-h-6 px-2 text-xs'
