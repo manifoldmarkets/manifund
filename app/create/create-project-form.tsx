@@ -16,6 +16,9 @@ import { Round } from '@/db/round'
 import { sortBy } from 'lodash'
 import { add, format } from 'date-fns'
 import { formatMoney } from '@/utils/formatting'
+import { ArrowRightIcon } from '@heroicons/react/24/solid'
+import { Col } from '@/components/layout/col'
+import { Row } from '@/components/layout/row'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -105,7 +108,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
     )
   }
   return (
-    <div className="flex flex-col gap-3 p-5">
+    <Col className="gap-3 p-5">
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
@@ -138,11 +141,8 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           <legend className="sr-only">Round options</legend>
           <div className="space-y-4">
             {availableRounds.map((availableRound) => (
-              <div
-                key={availableRound.title}
-                className="relative flex items-start"
-              >
-                <div className="flex h-6 items-center">
+              <Row key={availableRound.title} className="relative items-start">
+                <Row className="h-6 items-center">
                   <input
                     id={availableRound.title}
                     name="notification-method"
@@ -156,14 +156,19 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                     }}
                     className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
                   />
-                </div>
+                </Row>
                 <div className="ml-3">
-                  <label
-                    htmlFor={availableRound.title}
-                    className="text-md block font-medium"
-                  >
-                    {availableRound.title}
-                  </label>
+                  <Row>
+                    <label
+                      htmlFor={availableRound.title}
+                      className="text-md block font-medium"
+                    >
+                      {availableRound.title}
+                    </label>
+                    <Link href={`/rounds/${availableRound.slug}`}>
+                      <ArrowRightIcon className="ml-2 h-5 w-5 text-gray-400" />
+                    </Link>
+                  </Row>
                   {availableRound.title === 'Independent' && (
                     <p className="text-sm text-gray-500">
                       Independent projects do not have a committed oracular
@@ -173,7 +178,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                     </p>
                   )}
                 </div>
-              </div>
+              </Row>
             ))}
           </div>
         </fieldset>
@@ -184,7 +189,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           You can choose to buy or sell more of your project at any time.
         </p>
         {round.title === 'Independent' && (
-          <div className="mt-2 flex flex-row gap-2">
+          <Row className="mt-2 gap-2">
             <label htmlFor="advanced-settings" className="text-gray-600">
               Auction for initial valuation
               <InfoTooltip text="If you use an auction, your project will start in the 'proposal' phase, and you will only recieve funding if there are enough bids to pass the minimum funding bar you set. Otherwise, your project will begin in the 'active' phase and you can sell shares at the valuation of your choice immediately." />
@@ -210,7 +215,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                 )}
               ></span>
             </button>
-          </div>
+          </Row>
         )}
         {useAuction && (
           <div className="mb-3">
@@ -227,8 +232,8 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           Portion of stake to be sold{' '}
           <InfoTooltip text="What percent of the project's impact cert will be sold to investors? The rest will be kept by the founding team." />
         </label>
-        <div className="flex justify-center gap-5">
-          <div className="flex gap-1">
+        <Row className="justify-center gap-5">
+          <Row className=" gap-1">
             <Input
               value={sellingPortion}
               type="number"
@@ -237,16 +242,16 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               }
             ></Input>
             <p className="relative top-3">%</p>
-          </div>
+          </Row>
           <MySlider
             marks={marks}
             value={sellingPortion}
             onChange={(value) => setSellingPortion(value as number)}
             step={5}
           />
-        </div>
+        </Row>
         {useAuction ? (
-          <div className="flex flex-col">
+          <Col>
             <label htmlFor="minFunding">
               Minimum funding (USD){' '}
               <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
@@ -259,9 +264,9 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               value={minFunding ?? ''}
               onChange={(event) => setMinFunding(Number(event.target.value))}
             />
-          </div>
+          </Col>
         ) : (
-          <div className="flex flex-col">
+          <Col>
             <label htmlFor="valuation" className="mr-3">
               Initial valuation (USD){' '}
               <InfoTooltip text="Approximately our expected payout." />
@@ -276,7 +281,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                 setInitialValuation(Number(event.target.value))
               }
             />
-          </div>
+          </Col>
         )}
         <div className="m-3 rounded-md bg-orange-100 p-2 text-center text-sm font-medium text-orange-500 shadow-sm">
           {genEquityPriceSummary(
@@ -321,7 +326,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       >
         Publish project
       </Button>
-    </div>
+    </Col>
   )
 }
 
