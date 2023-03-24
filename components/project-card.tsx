@@ -85,13 +85,15 @@ function ProjectCardFooter(props: {
         <div>
           <div className="flex justify-between">
             <div className="flex flex-col">
-              <span className="mb-1 text-gray-600">
-                <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
-                Auction closes{' '}
-                <span className="text-black">
-                  {formatDate(project.auction_close)}
+              {project.auction_close && (
+                <span className="mb-1 text-gray-600">
+                  <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
+                  Auction closes{' '}
+                  <span className="text-black">
+                    {formatDate(project.auction_close)}
+                  </span>
                 </span>
-              </span>
+              )}
 
               <span className="mb-1 flex gap-1 text-gray-600">
                 <SparklesIcon

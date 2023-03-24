@@ -98,7 +98,7 @@ export interface Database {
       }
       projects: {
         Row: {
-          auction_close: string
+          auction_close: string | null
           blurb: string | null
           created_at: string
           creator: string
@@ -112,7 +112,7 @@ export interface Database {
           title: string
         }
         Insert: {
-          auction_close?: string
+          auction_close?: string | null
           blurb?: string | null
           created_at?: string
           creator: string
@@ -126,7 +126,7 @@ export interface Database {
           title?: string
         }
         Update: {
-          auction_close?: string
+          auction_close?: string | null
           blurb?: string | null
           created_at?: string
           creator?: string

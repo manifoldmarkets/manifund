@@ -1,4 +1,5 @@
 import { Database } from '@/db/database.types'
+import { TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
@@ -17,6 +18,7 @@ type ProjectProps = {
   founder_portion: number
   round: string
   auction_close: string
+  stage: string
 }
 
 export default async function handler(req: NextRequest) {
@@ -28,6 +30,7 @@ export default async function handler(req: NextRequest) {
     founder_portion,
     round,
     auction_close,
+    stage,
   } = (await req.json()) as ProjectProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
@@ -53,17 +56,26 @@ export default async function handler(req: NextRequest) {
     description,
     min_funding,
     founder_portion,
-    creator: user?.id,
+    creator: user.id,
     slug,
     round,
     auction_close,
+    stage,
   }
-
   const { error } = await supabase.from('projects').insert([project])
   if (error) {
     console.error('create-project', error)
   }
   addTxn(supabase, id, user.id)
+  if (stage === 'active') {
+    addBid(
+      supabase,
+      id,
+      user.id,
+      min_funding,
+      (TOTAL_SHARES * min_funding) / (TOTAL_SHARES - founder_portion)
+    )
+  }
   return NextResponse.json(project)
 }
 
@@ -76,6 +88,26 @@ async function addTxn(supabase: SupabaseClient, id: string, creator: string) {
     project: id,
   }
   const { error } = await supabase.from('txns').insert([txn])
+  if (error) {
+    console.error('create-project', error)
+  }
+}
+
+async function addBid(
+  supabase: SupabaseClient,
+  projectId: string,
+  creatorId: string,
+  amount: number,
+  valuation: number
+) {
+  const bid = {
+    bidder: creatorId,
+    amount,
+    valuation,
+    project: projectId,
+    type: 'sell',
+  }
+  const { error } = await supabase.from('bids').insert([bid])
   if (error) {
     console.error('create-project', error)
   }

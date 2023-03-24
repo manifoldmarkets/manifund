@@ -5,13 +5,13 @@ import Link from 'next/link'
 const COLORS = [
   'bg-indigo-200',
   'bg-gray-200',
-  'bg-cyan-200',
+  'bg-sky-200',
   'bg-indigo-400',
   'bg-gray-400',
-  'bg-cyan-400',
+  'bg-sky-400',
   'text-indigo-700',
   'text-gray-700',
-  'text-cyan-700',
+  'text-sky-700',
 ]
 
 export function RoundTag(props: {
