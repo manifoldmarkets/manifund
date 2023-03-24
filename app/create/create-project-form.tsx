@@ -49,12 +49,9 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   const [minFunding, setMinFunding] = useState<number>(250)
   const [initialValuation, setInitialValuation] = useState<number>(250)
   const [round, setRound] = useState<Round>(availableRounds[0])
-  const [useAuction, setUseAuction] = useState<boolean>(
-    round.auction_close_date ? true : false
-  )
   const [sellingPortion, setSellingPortion] = useState<number>(0)
   const [auctionClose, setAuctionClose] = useState(
-    useAuction
+    round.auction_close_date !== null
       ? format(
           round.auction_close_date
             ? new Date(round.auction_close_date)
@@ -63,29 +60,30 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
         )
       : null
   )
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const editor = useTextEditor(DEFAULT_DESCRIPTION)
 
   let errorMessage = null
   if (title === '') {
     errorMessage = 'Your project needs a title!'
-  } else if (initialValuation <= 0 && !useAuction) {
+  } else if (initialValuation <= 0 && auctionClose === null) {
     errorMessage =
       'Your initial valuation must be greater than 0. Only post projects with positive expected value.'
-  } else if (minFunding <= 0 && useAuction) {
+  } else if (minFunding <= 0 && auctionClose !== null) {
     errorMessage = 'Your minimum funding must be greater than 0.'
   } else {
     errorMessage = null
   }
 
-  useEffect(
-    () =>
-      round.auction_close_date
-        ? setAuctionClose(
-            format(new Date(round.auction_close_date), 'yyyy-MM-dd')
-          )
-        : setAuctionClose(format(add(new Date(), { days: 7 }), 'yyyy-MM-dd')),
-    [round]
-  )
+  useEffect(() => {
+    if (round.title === 'Independent') {
+      setAuctionClose(format(add(new Date(), { days: 7 }), 'yyyy-MM-dd'))
+    } else if (round.auction_close_date) {
+      setAuctionClose(format(new Date(round.auction_close_date), 'yyyy-MM-dd'))
+    } else {
+      setAuctionClose(null)
+    }
+  }, [round])
 
   const user = session?.user
 
@@ -150,9 +148,6 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                     defaultChecked={availableRound.title === round.title}
                     onChange={() => {
                       setRound(availableRound)
-                      setUseAuction(
-                        availableRound.auction_close_date ? true : false
-                      )
                     }}
                     className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
                   />
@@ -199,25 +194,31 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               type="button"
               className={clsx(
                 'relative mb-3 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
-                  (useAuction ? ' bg-orange-500' : ' bg-gray-200'),
+                  (auctionClose === null ? ' bg-gray-200' : ' bg-orange-500'),
                 'focus:ring-offset-gray-100'
               )}
               role="switch"
               aria-checked="false"
-              onClick={() => setUseAuction(!useAuction)}
+              onClick={() =>
+                setAuctionClose(
+                  auctionClose === null
+                    ? format(add(new Date(), { days: 7 }), 'yyyy-MM-dd')
+                    : null
+                )
+              }
             >
               <span className="sr-only">Use auction</span>
               <span
                 aria-hidden="true"
                 className={clsx(
                   'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                  useAuction ? 'translate-x-5' : 'translate-x-0'
+                  auctionClose === null ? 'translate-x-0' : 'translate-x-5'
                 )}
               ></span>
             </button>
           </Row>
         )}
-        {useAuction && (
+        {auctionClose !== null && (
           <div className="mb-3">
             <label htmlFor="auction-close">Auction Close Date: </label>
             <Input
@@ -250,22 +251,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
             step={5}
           />
         </Row>
-        {useAuction ? (
-          <Col>
-            <label htmlFor="minFunding">
-              Minimum funding (USD){' '}
-              <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
-            </label>
-            <Input
-              type="number"
-              id="minFunding"
-              autoComplete="off"
-              required
-              value={minFunding ?? ''}
-              onChange={(event) => setMinFunding(Number(event.target.value))}
-            />
-          </Col>
-        ) : (
+        {auctionClose === null ? (
           <Col>
             <label htmlFor="valuation" className="mr-3">
               Initial valuation (USD){' '}
@@ -282,12 +268,27 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               }
             />
           </Col>
+        ) : (
+          <Col>
+            <label htmlFor="minFunding">
+              Minimum funding (USD){' '}
+              <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
+            </label>
+            <Input
+              type="number"
+              id="minFunding"
+              autoComplete="off"
+              required
+              value={minFunding ?? ''}
+              onChange={(event) => setMinFunding(Number(event.target.value))}
+            />
+          </Col>
         )}
         <div className="m-3 rounded-md bg-orange-100 p-2 text-center text-sm font-medium text-orange-500 shadow-sm">
           {genEquityPriceSummary(
             sellingPortion,
-            useAuction ? minFunding : undefined,
-            useAuction ? undefined : initialValuation
+            auctionClose === null ? undefined : minFunding,
+            auctionClose === null ? initialValuation : undefined
           )}
         </div>
       </div>
@@ -296,7 +297,9 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
         className="mt-4"
         type="submit"
         disabled={!!errorMessage}
+        loading={isSubmitting}
         onClick={async () => {
+          setIsSubmitting(true)
           const founderShares = ((100 - sellingPortion) / 100) * TOTAL_SHARES
           const description = editor?.getJSON() ?? '<p>No description</p>'
           const response = await fetch('/api/create-project', {
@@ -308,19 +311,21 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               title,
               blurb,
               description,
-              min_funding: useAuction
-                ? minFunding.toString()
-                : (sellingPortion / 100) * initialValuation,
+              min_funding:
+                auctionClose === null
+                  ? (sellingPortion / 100) * initialValuation
+                  : minFunding.toString(),
               founder_portion: founderShares.toString(),
               round: round.title,
               auction_close:
                 round.title === 'Independent'
                   ? auctionClose
                   : round.auction_close_date,
-              stage: useAuction ? 'proposal' : 'active',
+              stage: auctionClose === null ? 'active' : 'proposal',
             }),
           })
           const newProject = await response.json()
+          setIsSubmitting(false)
           router.push(`/projects/${newProject.slug}`)
         }}
       >
