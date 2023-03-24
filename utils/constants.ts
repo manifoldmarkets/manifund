@@ -14,7 +14,7 @@ export function getRoundTheme(roundTitle: string) {
   switch (roundTitle) {
     case 'ACX Mini-Grants':
       return 'indigo'
-    case 'OP AI Worldview Contest':
+    case 'OP AI Worldviews Contest':
       return 'sky'
     case 'Independent':
       return 'gray'
