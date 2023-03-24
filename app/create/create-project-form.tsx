@@ -12,7 +12,6 @@ import { TextEditor, useTextEditor } from '@/components/editor'
 import clsx from 'clsx'
 import { InfoTooltip } from '@/components/info-tooltip'
 import Link from 'next/link'
-import { SiteLink } from '@/components/site-link'
 import { Round } from '@/db/round'
 import { sortBy } from 'lodash'
 import { add, format } from 'date-fns'
@@ -29,7 +28,7 @@ const DEFAULT_DESCRIPTION = `
 <p>We need...</p>
 `
 
-export function CreateProposalForm(props: { rounds: Round[] }) {
+export function CreateProjectForm(props: { rounds: Round[] }) {
   const { rounds } = props
   const availableRounds = sortBy(
     rounds.filter((round) => {
@@ -46,14 +45,11 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number>(250)
   const [initialValuation, setInitialValuation] = useState<number>(250)
-  const [advancedSettings, setAdvancedSettings] = useState<boolean>(false)
   const [round, setRound] = useState<Round>(availableRounds[0])
   const [useAuction, setUseAuction] = useState<boolean>(
     round.auction_close_date ? true : false
   )
-  const [sellingPortion, setSellingPortion] = useState<number>(
-    useAuction ? 100 : 0
-  )
+  const [sellingPortion, setSellingPortion] = useState<number>(0)
   const [auctionClose, setAuctionClose] = useState(
     useAuction
       ? format(
@@ -64,20 +60,19 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
         )
       : null
   )
-  console.log('selling portion', sellingPortion)
-  console.log('founder shares', ((100 - sellingPortion) / 100) * TOTAL_SHARES)
   const editor = useTextEditor(DEFAULT_DESCRIPTION)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (title === '') {
-      setErrorMessage('Your project needs a title!')
-    } else if (minFunding < 250) {
-      setErrorMessage('Funding goals must be at least $250')
-    } else {
-      setErrorMessage(null)
-    }
-  }, [title, minFunding, round])
+  let errorMessage = null
+  if (title === '') {
+    errorMessage = 'Your project needs a title!'
+  } else if (initialValuation <= 0 && !useAuction) {
+    errorMessage =
+      'Your initial valuation must be greater than 0. Only post projects with positive expected value.'
+  } else if (minFunding <= 0 && useAuction) {
+    errorMessage = 'Your minimum funding must be greater than 0.'
+  } else {
+    errorMessage = null
+  }
 
   useEffect(
     () =>
@@ -112,7 +107,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
   return (
     <div className="flex flex-col gap-3 p-5">
       <div className="flex flex-col md:flex-row md:justify-between">
-        <h1 className="text-3xl font-bold">Create a project proposal</h1>
+        <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
       <label htmlFor="title">Title</label>
       <Input
@@ -188,51 +183,46 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
         <p className="mb-5 text-sm text-gray-500">
           You can choose to buy or sell more of your project at any time.
         </p>
-        <div
-          className={clsx(
-            'mt-2 flex flex-row gap-2',
-            round.title !== 'Independent' ? 'hidden' : 'block'
-          )}
-        >
-          <label htmlFor="advanced-settings" className="text-gray-600">
-            Auction for initial valuation
-            <InfoTooltip text="If you use an auction, your project will start in the 'proposal' phase, and you will only recieve funding if there are enough bids to pass the minimum funding bar you set. Otherwise, your project will begin in the 'active' phase and you can sell shares at the valuation of your choice immediately." />
-          </label>
-          <button
-            type="button"
-            className={clsx(
-              'relative mb-3 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
-                (useAuction ? ' bg-orange-500' : ' bg-gray-200'),
-              'focus:ring-offset-gray-100'
-            )}
-            role="switch"
-            disabled={round.title !== 'Independent'}
-            aria-checked="false"
-            onClick={() => setUseAuction(!useAuction)}
-          >
-            <span className="sr-only">Use auction</span>
-            <span
-              aria-hidden="true"
+        {round.title === 'Independent' && (
+          <div className="mt-2 flex flex-row gap-2">
+            <label htmlFor="advanced-settings" className="text-gray-600">
+              Auction for initial valuation
+              <InfoTooltip text="If you use an auction, your project will start in the 'proposal' phase, and you will only recieve funding if there are enough bids to pass the minimum funding bar you set. Otherwise, your project will begin in the 'active' phase and you can sell shares at the valuation of your choice immediately." />
+            </label>
+
+            <button
+              type="button"
               className={clsx(
-                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                useAuction ? 'translate-x-5' : 'translate-x-0'
+                'relative mb-3 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
+                  (useAuction ? ' bg-orange-500' : ' bg-gray-200'),
+                'focus:ring-offset-gray-100'
               )}
-            ></span>
-          </button>
-        </div>
-        <div>
-          {useAuction && (
-            <div className="mb-3">
-              <label htmlFor="auction-close">Auction Close Date: </label>
-              <Input
-                type="date"
-                value={auctionClose ?? ''}
-                disabled={round.title !== 'Independent'}
-                onChange={(event) => setAuctionClose(event.target.value)}
-              />
-            </div>
-          )}
-        </div>
+              role="switch"
+              aria-checked="false"
+              onClick={() => setUseAuction(!useAuction)}
+            >
+              <span className="sr-only">Use auction</span>
+              <span
+                aria-hidden="true"
+                className={clsx(
+                  'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                  useAuction ? 'translate-x-5' : 'translate-x-0'
+                )}
+              ></span>
+            </button>
+          </div>
+        )}
+        {useAuction && (
+          <div className="mb-3">
+            <label htmlFor="auction-close">Auction Close Date: </label>
+            <Input
+              type="date"
+              value={auctionClose ?? ''}
+              disabled={round.title !== 'Independent'}
+              onChange={(event) => setAuctionClose(event.target.value)}
+            />
+          </div>
+        )}
         <label htmlFor="founderPortion">
           Portion of stake to be sold{' '}
           <InfoTooltip text="What percent of the project's impact cert will be sold to investors? The rest will be kept by the founding team." />
