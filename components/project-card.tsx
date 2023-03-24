@@ -48,7 +48,7 @@ export function ProjectCard(props: {
         valuation={project.stage !== 'not funded' ? valuation : undefined}
       />
       <Link
-        href={`projects/${project.slug}`}
+        href={`/projects/${project.slug}`}
         className="group flex flex-1 flex-col justify-between hover:cursor-pointer"
       >
         <div className="mt-2 mb-4">
