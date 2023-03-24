@@ -185,8 +185,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
       <div className="rounded-md border border-gray-300 bg-white p-5 shadow-md">
         <h1 className="text-xl font-bold">Founder equity & initial pricing</h1>
         <p className="mb-5 text-sm text-gray-500">
-          Check these numbers carefully. They cannot be changed after your
-          project is published.
+          You can choose to buy or sell more of your project at any time.
         </p>
         <div
           className={clsx(
@@ -288,7 +287,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
             />
           </div>
         )}
-        <div className="m-3 rounded-md bg-orange-100 p-2 text-center font-medium text-orange-500 shadow-sm">
+        <div className="m-3 rounded-md bg-orange-100 p-2 text-center text-sm font-medium text-orange-500 shadow-sm">
           {genEquityPriceSummary(
             sellingPortion,
             useAuction ? minFunding : undefined,
@@ -345,11 +344,11 @@ function genEquityPriceSummary(
       (100 * minFunding) / sellingPortion
     }. If less than ${minFunding} worth of bids are placed before the auction close date, no funds will be sent and your project will not proceed.`
   } else if (minValuation !== undefined) {
-    return `${sellingPortion}% of your project immediately be put up for sale at a valuation of ${formatMoney(
+    return `${sellingPortion}% of your project will immediately be put up for sale at a valuation of ${formatMoney(
       minValuation
     )}. If all of that equity is sold, you will recieve ${formatMoney(
       (sellingPortion / 100) * minValuation
-    )} in upfront funding, and will pay back ${sellingPortion}% of any retroactive funding you later recieve for this project to your investors. You can sell more of your equity at any time.`
+    )} in upfront funding, and will pay back ${sellingPortion}% of any retroactive funding you later recieve for this project to your investors.`
   } else {
     return ''
   }
