@@ -139,7 +139,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
           Rounds currently accepting submissions
         </label>
         <fieldset className="mt-4">
-          <legend className="sr-only">Notification method</legend>
+          <legend className="sr-only">Round options</legend>
           <div className="space-y-4">
             {availableRounds.map((availableRound) => (
               <div
@@ -152,7 +152,12 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
                     name="notification-method"
                     type="radio"
                     defaultChecked={availableRound.title === round.title}
-                    onChange={() => setRound(availableRound)}
+                    onChange={() => {
+                      setRound(availableRound)
+                      setUseAuction(
+                        availableRound.auction_close_date ? true : false
+                      )
+                    }}
                     className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
                   />
                 </div>
@@ -196,7 +201,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
           <button
             type="button"
             className={clsx(
-              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
+              'relative mb-3 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
                 (useAuction ? ' bg-orange-500' : ' bg-gray-200'),
               'focus:ring-offset-gray-100'
             )}
@@ -217,7 +222,7 @@ export function CreateProposalForm(props: { rounds: Round[] }) {
         </div>
         <div>
           {useAuction && (
-            <div>
+            <div className="mb-3">
               <label htmlFor="auction-close">Auction Close Date: </label>
               <Input
                 type="date"
