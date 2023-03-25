@@ -9,7 +9,7 @@ export default async function Projects() {
   const projects = await listProjects(supabase)
   const rounds = await getRounds(supabase)
   return (
-    <div className="bg-dark-200 max-w-4xl">
+    <div className="bg-dark-200 max-w-4xl pt-5">
       <AllRoundsDisplay rounds={rounds} projects={projects} />
       <AllProjectsDisplay projects={projects} />
     </div>
