@@ -125,7 +125,7 @@ function ProjectCardFooter(props: {
       )
       return (
         <div className="flex justify-between">
-          {sortedTxns && (
+          {sortedTxns.length > 0 && (
             <span className="mb-1 text-gray-600">
               <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
               Last traded{' '}
@@ -171,11 +171,11 @@ export function ProjectCardHeader(props: {
         <div className="h-1" />
         <UserAvatarAndBadge profile={creator} />
       </div>
-      {valuation && (
+      {valuation !== 'NaN' && valuation ? (
         <div className="relative top-1">
           <ValuationBox valuation={valuation} />
         </div>
-      )}
+      ) : null}
     </div>
   )
 }
