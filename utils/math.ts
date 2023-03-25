@@ -20,6 +20,9 @@ type MathTrade = {
 }
 export function getActiveValuation(txns: Txn[], minValuation: number) {
   const tradeTxns = txns.filter((txn) => txn.bundle !== null)
+  if (tradeTxns.length === 0) {
+    return minValuation
+  }
   const trades = Object.fromEntries(
     tradeTxns.map((txn) => [txn.bundle, {} as MathTrade])
   )
@@ -38,9 +41,6 @@ export function getActiveValuation(txns: Txn[], minValuation: number) {
     'date',
     'desc'
   ) as MathTrade[]
-  if (sortedTrades.length === 0) {
-    return minValuation
-  }
   return (sortedTrades[0].amountUSD / sortedTrades[0].numShares) * TOTAL_SHARES
 }
 

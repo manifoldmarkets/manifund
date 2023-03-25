@@ -67,14 +67,15 @@ export function RoundData(props: { round: Round; projects: Project[] }) {
         {daysTilProposalsDue > 0 && round.proposal_due_date !== null ? (
           <DataPoint
             value={showPrecision(daysTilProposalsDue, 3)}
-            label="days left to submit proposals"
+            label="days left to submit projects"
             theme={getRoundTheme(round.title)}
           />
         ) : null}
-        {daysTilAuctionClose < 0 && daysTilEvals > 0 ? (
+        {(daysTilAuctionClose < 0 || round.auction_close_date === null) &&
+        daysTilEvals > 0 ? (
           <DataPoint
             value={showPrecision(daysTilEvals, 3)}
-            label="days until close"
+            label="days until project evals"
             theme={getRoundTheme(round.title)}
           />
         ) : null}
