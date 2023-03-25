@@ -9,7 +9,7 @@ import { EditRound } from './edit-round'
 
 export function RoundTabs(props: { round: Round; projects: FullProject[] }) {
   const { round, projects } = props
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
   const tabs = [
     {

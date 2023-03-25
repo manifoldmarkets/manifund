@@ -120,10 +120,12 @@ function ProjectCardFooter(props: {
       )
     case 'active':
       const sortedTxns = orderBy(txns, 'created_at', 'desc')
-      const lastTraded = new Date(sortedTxns[0].created_at)
+      const lastTraded = new Date(
+        sortedTxns.length > 0 ? sortedTxns[0].created_at : 0
+      )
       return (
         <div className="flex justify-between">
-          {lastTraded && (
+          {sortedTxns && (
             <span className="mb-1 text-gray-600">
               <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
               Last traded{' '}

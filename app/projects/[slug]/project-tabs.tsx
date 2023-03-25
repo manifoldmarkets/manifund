@@ -30,7 +30,7 @@ export function ProjectTabs(props: {
     userSpendableFunds,
     userSellableShares,
   } = props
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
   const trades = calculateFullTrades(txns)
   const creator = project.profiles
