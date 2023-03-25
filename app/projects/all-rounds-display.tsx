@@ -8,16 +8,17 @@ import Image from 'next/image'
 import clsx from 'clsx'
 import { getRoundTheme } from '@/utils/constants'
 import { RoundTag } from '@/components/round-tag'
-import { sortBy } from 'lodash'
+import { orderBy, sortBy } from 'lodash'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
   projects: FullProject[]
 }) {
   const { rounds, projects } = props
+  const sortedRounds = sortRoundsForPreview(rounds)
   return (
     <Col className="mb-5 gap-3">
-      {rounds.map((round) => {
+      {sortedRounds.map((round) => {
         const roundProjects = projects.filter(
           (project) =>
             project.rounds.title === round.title && project.stage !== 'hidden'
@@ -27,7 +28,7 @@ export function AllRoundsDisplay(props: {
             <Round
               key={round.title}
               round={round}
-              projects={sortForPreview(roundProjects)}
+              projects={sortProjectsForPreview(roundProjects)}
             />
           )
         }
@@ -73,7 +74,7 @@ function Round(props: { round: Round; projects: FullProject[] }) {
   )
 }
 
-function sortForPreview(projects: FullProject[]) {
+function sortProjectsForPreview(projects: FullProject[]) {
   const sortedByComments = projects.sort((a, b) =>
     a.comments.length < b.comments.length ? 1 : -1
   )
@@ -92,4 +93,18 @@ function sortForPreview(projects: FullProject[]) {
     },
   ])
   return sortedByStage
+}
+
+function sortRoundsForPreview(rounds: Round[]) {
+  const sortedByDueDate = orderBy(rounds, 'proposal_due_date', 'desc')
+  const independentLast = sortBy(sortedByDueDate, [
+    function (round: Round) {
+      if (round.title === 'Independent') {
+        return 1
+      } else {
+        return 0
+      }
+    },
+  ])
+  return independentLast
 }
