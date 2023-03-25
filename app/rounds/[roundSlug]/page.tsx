@@ -5,6 +5,17 @@ import { RoundTabs } from './round-tabs'
 import { RoundData } from '@/components/round-data'
 import Image from 'next/image'
 
+export async function generateMetadata(props: {
+  params: {roundSlug: string}
+}) {
+  const { roundSlug } = props.params
+  const supabase = createServerClient()
+  const round = await getRoundBySlug(supabase, roundSlug)
+  return {
+    title: round.title
+  }
+}
+
 export default async function RoundPage(props: {
   params: { roundSlug: string }
 }) {
