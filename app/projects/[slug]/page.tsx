@@ -4,7 +4,7 @@ import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
-import { getFullProjectBySlug } from '@/db/project'
+import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
 import { calculateUserBalance } from '@/utils/math'
@@ -25,6 +25,15 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import { Description } from './description'
+
+export async function generateMetadata(props: { params: { slug: string }}) {
+  const { slug } = props.params
+  const supabase = createServerClient()
+  const project = await getProjectBySlug(supabase, slug)
+  return {
+    title: project.title
+  }
+}
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
