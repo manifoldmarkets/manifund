@@ -28,7 +28,7 @@ export function ProjectsDisplay(props: { projects: FullProject[] }) {
   ]
 
   const router = useRouter()
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams() ?? new URLSearchParams()
   const [search, setSearch] = useState<string>(searchParams.get('q') || '')
 
   const selectedProjects = searchProjects(
@@ -68,7 +68,6 @@ export function ProjectsDisplay(props: { projects: FullProject[] }) {
             placeholder="Search..."
             value={search}
             onChange={(event) => {
-              console.log('search event')
               setSearch(event.target.value)
               router.push(`?q=${event.target.value}`)
             }}

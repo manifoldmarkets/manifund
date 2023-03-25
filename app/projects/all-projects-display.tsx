@@ -29,7 +29,7 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
   ]
 
   const router = useRouter()
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams() ?? new URLSearchParams()
   const [search, setSearch] = useState<string>(searchParams.get('q') || '')
 
   const selectedProjects = searchProjects(
