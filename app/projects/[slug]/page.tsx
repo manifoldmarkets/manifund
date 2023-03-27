@@ -24,6 +24,7 @@ import { getBidsByUser } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
+import { Description } from './description'
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
@@ -46,7 +47,11 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       <div>
         <h2 className="text-3xl font-bold">{project.title}</h2>
       </div>
-      {project.description && <RichContent content={project.description} />}
+      {project.description && (
+        <Description>
+          <RichContent content={project.description} />
+        </Description>
+      )}
       {isOwnProject && <EditDescription project={project} />}
       <hr className="mb-3 mt-5 h-0.5 rounded-sm bg-gray-500" />
       {project.stage == 'proposal' && (
