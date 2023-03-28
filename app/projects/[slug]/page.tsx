@@ -70,7 +70,9 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
             userShares={userShares}
           />
         ))}
-      {user && !profile?.accreditation_status && <NotAccredited />}
+      {user &&
+        !profile?.accreditation_status &&
+        !(profile?.id === project.creator) && <NotAccredited />}
       {!user && <SignInButton />}
       <div className="h-6" />
       <ProjectTabs
@@ -109,7 +111,7 @@ function NotAccredited() {
   )
 }
 
-async function getUserFundsAndShares(
+export async function getUserFundsAndShares(
   supabase: SupabaseClient,
   userId: string,
   projectId: string
@@ -151,6 +153,5 @@ async function getUserFundsAndShares(
     return balanceMinusBids
   }
   const userSpendableFunds = await getUserSpendableFunds()
-
   return { userSpendableFunds, userSellableShares, userShares }
 }

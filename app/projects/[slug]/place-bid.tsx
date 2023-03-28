@@ -38,8 +38,10 @@ export function PlaceBid(props: {
 
   const sellablePortion = 1 - project.founder_portion / 10000000
   const minValuation = Math.round(project.min_funding / sellablePortion)
-
-  const [valuation, setValuation] = useState<number>(minValuation)
+  const DEFAULT_SCALE_MAX = 1000
+  const [valuation, setValuation] = useState<number>(
+    isNaN(minValuation) ? DEFAULT_SCALE_MAX : minValuation
+  )
   const fundable =
     project.stage === 'proposal' ? valuation * sellablePortion : valuation
   const [amount, setAmount] = useState<number>(0)
@@ -48,13 +50,16 @@ export function PlaceBid(props: {
   )
   const [submitting, setSubmitting] = useState(false)
   const [marks, setMarks] = useState<{ [key: number]: string }>({})
+  const fundableValid = !isNaN(fundable)
   useEffect(() => {
     setMarks({
       0: '$0',
-      25: formatMoney(fundable / 4),
-      50: formatMoney(fundable / 2),
-      75: formatMoney((fundable / 4) * 3),
-      100: formatMoney(fundable),
+      25: formatMoney(fundableValid ? fundable / 4 : DEFAULT_SCALE_MAX / 4),
+      50: formatMoney(fundableValid ? fundable / 2 : DEFAULT_SCALE_MAX / 2),
+      75: formatMoney(
+        fundableValid ? (fundable / 4) * 3 : (DEFAULT_SCALE_MAX / 4) * 3
+      ),
+      100: formatMoney(fundableValid ? fundable : DEFAULT_SCALE_MAX),
     })
   }, [valuation, sellablePortion])
 
@@ -73,7 +78,7 @@ export function PlaceBid(props: {
     )} left.`
   } else if (valuation < minValuation && project.stage == 'proposal') {
     errorMessage = `Valuation must be at least $${minValuation} for this project to have enough funding to proceed.`
-  } else if (amount > fundable) {
+  } else if ((amount > fundable && fundableValid) || amount > valuation) {
     errorMessage = `You can't bid more than ${formatMoney(
       fundable
     )} at the valuation you've set.`
@@ -131,10 +136,15 @@ export function PlaceBid(props: {
           onChange={(event) => setAmount(Number(event.target.value))}
         />
         <MySlider
-          value={100 * (amount / fundable)}
+          value={
+            100 *
+            (fundableValid ? amount / fundable : amount / DEFAULT_SCALE_MAX)
+          }
           marks={marks}
           onChange={(value) => {
-            const amount = ((value as number) / 100) * fundable
+            const amount = fundableValid
+              ? ((value as number) / 100) * fundable
+              : ((value as number) / 100) * DEFAULT_SCALE_MAX
             setAmount(roundLargeNumber(amount))
           }}
         />
@@ -155,7 +165,6 @@ export function PlaceBid(props: {
         onChange={(event) => setValuation(Number(event.target.value))}
       />
       <div className="text-center text-red-500">{errorMessage}</div>
-
       <Button
         type="submit"
         disabled={submitting || !!errorMessage || amount === 0}
