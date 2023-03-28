@@ -66,9 +66,9 @@ export default async function handler(req: NextRequest) {
   if (error) {
     console.error('create-project', error)
   }
-  addTxn(supabase, id, user.id)
+  await giveCreatorShares(supabase, id, user.id)
   if (stage === 'active') {
-    addBid(
+    await addBid(
       supabase,
       id,
       user.id,
@@ -79,7 +79,11 @@ export default async function handler(req: NextRequest) {
   return NextResponse.json(project)
 }
 
-async function addTxn(supabase: SupabaseClient, id: string, creator: string) {
+export async function giveCreatorShares(
+  supabase: SupabaseClient,
+  id: string,
+  creator: string
+) {
   const txn = {
     from_id: null,
     to_id: creator,

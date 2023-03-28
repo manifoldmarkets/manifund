@@ -8,6 +8,8 @@ import { RoundBidAmounts } from './round-bid-amounts'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { roundLargeNumber } from '@/utils/formatting'
 import { Txn } from '@/db/txn'
+import { getUserFundsAndShares } from '../projects/[slug]/page'
+import { GiveCreatorShares } from './give-creator-shares'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -37,6 +39,11 @@ export default async function Admin() {
     .eq('token', 'USD')
     .order('created_at')
   const balances = userBalances(txns ?? [])
+
+  const { data: projects } = await supabaseAdmin
+    .from('projects')
+    .select('*, txns(*)')
+    .order('created_at')
 
   return (
     <div>
@@ -96,6 +103,38 @@ export default async function Admin() {
           ))}
         </tbody>
       </Table>
+
+      <h2>Projects</h2>
+      <Table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Creator</th>
+            <th>Creator shares</th>
+            <th>Give creator shares</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(projects ?? []).map((project) => {
+            return (
+              <tr key={project.id}>
+                <td className="max-w-sm overflow-hidden">{project.title}</td>
+                <td>{getName(project.creator)}</td>
+                {/* @ts-expect-error Server Component */}
+                <CreatorShares
+                  supabase={supabaseAdmin}
+                  projectId={project.id}
+                  projectCreator={project.creator}
+                />
+                <GiveCreatorShares
+                  projectId={project.id}
+                  creatorId={project.creator}
+                />
+              </tr>
+            )
+          })}
+        </tbody>
+      </Table>
       <h2>Round Bid Amounts</h2>
       <RoundBidAmounts />
     </div>
@@ -137,4 +176,18 @@ async function roundDbBidAmounts(supabase: SupabaseClient) {
       }
     })
   }
+}
+
+async function CreatorShares(props: {
+  supabase: SupabaseClient
+  projectId: string
+  projectCreator: string
+}) {
+  const { supabase, projectId, projectCreator } = props
+  const userData = await getUserFundsAndShares(
+    supabase,
+    projectCreator,
+    projectId
+  )
+  return <td>{userData.userShares}</td>
 }
