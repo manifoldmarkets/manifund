@@ -83,10 +83,9 @@ export async function getFullProjectsByRound(
 ) {
   const { data, error } = await supabase
     .from('projects')
-    // .select(
-    //   'title, id, creator, slug, blurb, stage, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug)'
-    // )
-    .select('*, profiles(*), bids(*), txns(*), comments(*), rounds(*)')
+    .select(
+      'title, id, creator, slug, blurb, stage, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug)'
+    )
     .eq('round', roundTitle)
   console.log('getFullProjectsByRound', getObjectSize(data))
   if (error) {
