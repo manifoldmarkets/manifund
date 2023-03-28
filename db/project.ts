@@ -5,6 +5,7 @@ import { Txn } from './txn'
 import { Profile } from './profile'
 import { Comment } from '@/db/comment'
 import { Round } from './round'
+import { getObjectSize } from '@/utils/debug'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 
@@ -75,14 +76,19 @@ export async function getFullProjectBySlug(
   return data[0] as FullProject
 }
 
+// Note: This does not include project or round descriptions, for a smaller payload
 export async function getFullProjectsByRound(
   supabase: SupabaseClient,
   roundTitle: string
 ) {
   const { data, error } = await supabase
     .from('projects')
+    // .select(
+    //   'title, id, creator, slug, blurb, stage, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug)'
+    // )
     .select('*, profiles(*), bids(*), txns(*), comments(*), rounds(*)')
     .eq('round', roundTitle)
+  console.log('getFullProjectsByRound', getObjectSize(data))
   if (error) {
     throw error
   }
