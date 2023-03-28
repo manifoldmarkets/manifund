@@ -20,7 +20,7 @@ export function Tabs(props: { tabs: Tab[]; preTabSlug?: string }) {
               <button
                 key={tab.name}
                 onClick={() => {
-                  router.push(`${preTabSlug}${tab.href}`)
+                  router.replace(`${preTabSlug}${tab.href}`)
                 }}
                 className={clsx(
                   tab.current
