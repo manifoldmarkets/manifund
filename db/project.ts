@@ -54,7 +54,9 @@ export type FullProject = Project & { profiles: Profile } & {
 export async function listProjects(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('projects')
-    .select('*, profiles(*), bids(*), txns(*), comments(*), rounds(*)')
+    .select(
+      'title, id, creator, slug, blurb, stage, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug)'
+    )
     .order('created_at', { ascending: false })
   if (error) {
     throw error
