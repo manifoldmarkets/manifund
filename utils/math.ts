@@ -18,10 +18,18 @@ type MathTrade = {
   date: Date
   bundle: string
 }
-export function getActiveValuation(txns: Txn[], minValuation: number) {
+export function getActiveValuation(
+  txns: Txn[],
+  bids: Bid[],
+  minValuation: number
+) {
   const tradeTxns = txns.filter((txn) => txn.bundle !== null)
   if (tradeTxns.length === 0) {
-    return minValuation
+    if (bids.length === 0) {
+      return minValuation
+    } else {
+      return bids[bids.length - 1].valuation
+    }
   }
   const trades = Object.fromEntries(
     tradeTxns.map((txn) => [txn.bundle, {} as MathTrade])

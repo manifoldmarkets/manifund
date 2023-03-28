@@ -4,7 +4,7 @@ import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { BidAndProfile, deleteBid } from '@/db/bid'
-import { TOTAL_SHARES } from '@/db/project'
+import { Project, TOTAL_SHARES } from '@/db/project'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { Dialog } from '@headlessui/react'
 import { CircleStackIcon, TrashIcon } from '@heroicons/react/24/outline'
@@ -18,12 +18,12 @@ import { Profile } from '@/db/profile'
 
 export function Bids(props: {
   bids: BidAndProfile[]
-  stage: string
+  project: Project
   user: Profile | null
   userSpendableFunds: number
   userSellableShares: number
 }) {
-  const { bids, stage, user, userSpendableFunds, userSellableShares } = props
+  const { bids, project, user, userSpendableFunds, userSellableShares } = props
 
   if (bids.length === 0)
     return (
@@ -31,17 +31,22 @@ export function Bids(props: {
         There are no bids on this project.
       </p>
     )
-  if (stage === 'proposal') {
+  if (project.stage === 'proposal') {
     return (
       <Row className="justify-center">
         <Col className="w-full max-w-xl">
           {bids.map((bid) => (
-            <Bid key={bid.id} bid={bid} showValuation={false} />
+            <Bid
+              key={bid.id}
+              bid={bid}
+              project={project}
+              showValuation={false}
+            />
           ))}
         </Col>
       </Row>
     )
-  } else if (stage === 'active') {
+  } else if (project.stage === 'active') {
     const buyBids = bids.filter((bid) => bid.type === 'buy')
     const sellBids = bids.filter((bid) => bid.type === 'sell')
     return (
@@ -53,6 +58,7 @@ export function Bids(props: {
               <Bid
                 key={bid.id}
                 bid={bid}
+                project={project}
                 user={user}
                 showValuation={true}
                 userSellableShares={userSellableShares}
@@ -67,6 +73,7 @@ export function Bids(props: {
                 key={bid.id}
                 bid={bid}
                 user={user}
+                project={project}
                 showValuation={true}
                 userSellableShares={userSellableShares}
                 userSpendableFunds={userSpendableFunds}
@@ -84,12 +91,19 @@ export function Bids(props: {
 function Bid(props: {
   bid: BidAndProfile
   showValuation: boolean
+  project: Project
   user?: Profile | null
   userSpendableFunds?: number
   userSellableShares?: number
 }) {
-  const { bid, showValuation, user, userSpendableFunds, userSellableShares } =
-    props
+  const {
+    bid,
+    showValuation,
+    project,
+    user,
+    userSpendableFunds,
+    userSellableShares,
+  } = props
   return (
     <Row className="w-full justify-between gap-3 rounded p-3 hover:bg-gray-200">
       <UserAvatarAndBadge profile={bid.profiles} />
@@ -102,7 +116,7 @@ function Bid(props: {
       ) : (
         <div className="relative top-1.5">{formatMoney(bid.amount)}</div>
       )}
-      {user && user.accreditation_status && (
+      {user && (user.accreditation_status || user.id === project.creator) && (
         <div>
           {bid.bidder === user.id ? (
             <DeleteBid bidId={bid.id} />

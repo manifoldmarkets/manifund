@@ -82,6 +82,8 @@ export function PlaceBid(props: {
     errorMessage = `You can't bid more than ${formatMoney(
       fundable
     )} at the valuation you've set.`
+  } else {
+    errorMessage = null
   }
 
   return (
