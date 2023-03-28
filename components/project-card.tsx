@@ -34,7 +34,7 @@ export function ProjectCard(props: {
     project.stage == 'proposal'
       ? formatLargeNumber(getProposalValuation(project))
       : formatLargeNumber(
-          getActiveValuation(txns, getProposalValuation(project))
+          getActiveValuation(txns, bids, getProposalValuation(project))
         )
   return (
     <Col

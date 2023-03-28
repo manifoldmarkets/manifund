@@ -58,7 +58,7 @@ export function ProjectTabs(props: {
       display: (
         <Bids
           bids={bids}
-          stage={project.stage}
+          project={project}
           user={user}
           userSpendableFunds={userSpendableFunds}
           userSellableShares={userSellableShares}
