@@ -114,10 +114,12 @@ async function getUserFundsAndShares(
   userId: string,
   projectId: string
 ) {
+  if (!userId) {
+    return { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
+  }
   const incomingTxns = await getIncomingTxnsByUser(supabase, userId)
   const outgoingTxns = await getOutgoingTxnsByUser(supabase, userId)
   const userBids = await getBidsByUser(supabase, userId)
-
   const getUserShares = () => {
     const incomingShares = incomingTxns
       .filter((txn) => txn.token === projectId)
