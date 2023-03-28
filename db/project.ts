@@ -5,7 +5,6 @@ import { Txn } from './txn'
 import { Profile } from './profile'
 import { Comment } from '@/db/comment'
 import { Round } from './round'
-import { getObjectSize } from '@/utils/debug'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 
@@ -89,7 +88,6 @@ export async function getFullProjectsByRound(
       'title, id, creator, slug, blurb, stage, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug)'
     )
     .eq('round', roundTitle)
-  console.log('getFullProjectsByRound', getObjectSize(data))
   if (error) {
     throw error
   }
