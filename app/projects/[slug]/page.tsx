@@ -70,15 +70,15 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         />
       )}
       {profile?.accreditation_status ||
-        (profile?.id === project.creator && project.stage === 'active' && (
-          <PlaceBid
-            project={project}
-            user={profile}
-            userSpendableFunds={userSpendableFunds}
-            userSellableShares={userSellableShares}
-            userShares={userShares}
-          />
-        ))}
+      (profile?.id === project.creator && project.stage === 'active') ? (
+        <PlaceBid
+          project={project}
+          user={profile}
+          userSpendableFunds={userSpendableFunds}
+          userSellableShares={userSellableShares}
+          userShares={userShares}
+        />
+      ) : null}
       {user &&
         !profile?.accreditation_status &&
         !(profile?.id === project.creator) && <NotAccredited />}
