@@ -53,7 +53,9 @@ export type FullProject = Project & { profiles: Profile } & {
 export async function listProjects(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('projects')
-    .select('*, profiles(*), bids(*), txns(*), comments(*), rounds(*)')
+    .select(
+      'title, id, creator, slug, blurb, stage, profiles(*), bids(id), txns(*), comments(id), rounds(title, slug)'
+    )
     .order('created_at', { ascending: false })
   if (error) {
     throw error
@@ -75,13 +77,16 @@ export async function getFullProjectBySlug(
   return data[0] as FullProject
 }
 
+// Note: This does not include project or round descriptions, for a smaller payload
 export async function getFullProjectsByRound(
   supabase: SupabaseClient,
   roundTitle: string
 ) {
   const { data, error } = await supabase
     .from('projects')
-    .select('*, profiles(*), bids(*), txns(*), comments(*), rounds(*)')
+    .select(
+      'title, id, creator, slug, blurb, stage, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug)'
+    )
     .eq('round', roundTitle)
   if (error) {
     throw error
