@@ -123,6 +123,7 @@ function Bid(props: {
           ) : (
             <Trade
               bid={bid}
+              project={project}
               userId={user.id}
               userSpendableFunds={userSpendableFunds ?? 0}
               userSellableShares={userSellableShares ?? 0}
@@ -136,14 +137,16 @@ function Bid(props: {
 
 function Trade(props: {
   bid: BidAndProfile
+  project: Project
   userId: string
   userSpendableFunds: number
   userSellableShares: number
 }) {
-  const { bid, userId, userSpendableFunds, userSellableShares } = props
+  const { bid, project, userId, userSpendableFunds, userSellableShares } = props
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [tradeAmount, setTradeAmount] = useState(bid.amount)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
   const enoughMoney = tradeAmount <= (userSpendableFunds ?? 0)
   const enoughShares =
     (tradeAmount / bid.valuation) * TOTAL_SHARES <= (userSellableShares ?? 0)
@@ -171,6 +174,13 @@ function Trade(props: {
     )}% for ${formatMoney(tradeAmount)}.`
   } else if (tradeAmount <= 0) {
     errorMessage = `You must trade over $0.`
+  } else if (
+    !agreedToTerms &&
+    project.creator === userId &&
+    project.round === 'OP AI Worldviews Contest' &&
+    bid.type === 'sell'
+  ) {
+    errorMessage = `Confirm that you understand the terms of this trade.`
   }
   return (
     <div>
@@ -223,6 +233,37 @@ function Trade(props: {
                 />
               </div>
             </div>
+            {project.creator === userId &&
+              project.round === 'OP AI Worldviews Contest' && (
+                <div className="mb-3 flex">
+                  <div className="flex h-6 items-center">
+                    <input
+                      id="terms"
+                      aria-describedby="terms-description"
+                      name="terms"
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
+                      checked={agreedToTerms}
+                      onChange={() => setAgreedToTerms(!agreedToTerms)}
+                    />
+                  </div>
+                  <div className="ml-3 text-sm leading-6">
+                    <label
+                      htmlFor="terms"
+                      className="font-medium text-gray-900"
+                    >
+                      I understand
+                    </label>{' '}
+                    <span id="terms-description" className="text-gray-500">
+                      <span className="sr-only">I understand </span>that by
+                      making this trade, I am agreeing to pay{' '}
+                      {formatLargeNumber((tradeAmount / bid.valuation) * 100)}%
+                      of any prize money I win to Manifund, which will be
+                      distributed to the investor who holds these shares.
+                    </span>
+                  </div>
+                </div>
+              )}
           </div>
         </div>
         <div className="text-center text-red-500">{errorMessage}</div>
