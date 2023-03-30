@@ -11,6 +11,7 @@ import { ProjectGroup } from '../../components/project-group'
 import { useRouter, useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
 import { getPercentFunded } from '@/utils/math'
+import { orderBy, sortBy } from 'lodash'
 
 type SortOption =
   | 'percent funded'
@@ -20,7 +21,7 @@ type SortOption =
 
 export function AllProjectsDisplay(props: { projects: FullProject[] }) {
   const { projects } = props
-  const [sortBy, setSortBy] = useState<SortOption>('newest first')
+  const [sortChoice, setSortChoice] = useState<SortOption>('newest first')
   const options: SortOption[] = [
     'percent funded',
     'number of comments',
@@ -33,16 +34,13 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
   const [search, setSearch] = useState<string>(searchParams.get('q') || '')
 
   const selectedProjects = searchProjects(
-    sortProjects(projects, sortBy),
+    sortProjects(projects, sortChoice),
     search
   )
 
-  const acxProposals = selectedProjects
-    .filter((project) => project.stage == 'proposal')
-    .filter((project) => project.round == 'ACX Mini-Grants')
-  const indieProposals = selectedProjects
-    .filter((project) => project.stage == 'proposal')
-    .filter((project) => project.round == 'Independent')
+  const proposals = selectedProjects.filter(
+    (project) => project.stage == 'proposal'
+  )
   const activeProjects = selectedProjects.filter(
     (project) => project.stage == 'active'
   )
@@ -79,28 +77,23 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
           <Listbox
             value={sortBy}
             onChange={(event) => {
-              setSortBy(event)
+              setSortChoice(event as unknown as SortOption)
               router.refresh()
             }}
           >
             {({ open }) => (
-              <SortSelect sortBy={sortBy} open={open} options={options} />
+              <SortSelect
+                sortChoice={sortChoice}
+                open={open}
+                options={options}
+              />
             )}
           </Listbox>
         </div>
       </div>
       <div className="flex flex-col gap-10 p-4">
-        {acxProposals.length > 0 && (
-          <ProjectGroup
-            projects={acxProposals}
-            category="ACX Mini-Grants Proposals"
-          />
-        )}
-        {indieProposals.length > 0 && (
-          <ProjectGroup
-            projects={indieProposals}
-            category="Independent Proposals"
-          />
+        {proposals.length > 0 && (
+          <ProjectGroup projects={proposals} category="Proposals" />
         )}
         {activeProjects.length > 0 && (
           <ProjectGroup projects={activeProjects} category="Active Projects" />
@@ -116,15 +109,20 @@ export function AllProjectsDisplay(props: { projects: FullProject[] }) {
   )
 }
 
-function sortProjects(projects: FullProject[], sortBy: string) {
+function sortProjects(projects: FullProject[], sortChoice: string) {
   projects.forEach((project) => {
     project.bids = project.bids.filter((bid) => bid.status == 'pending')
   })
-  switch (sortBy) {
+  console.log('sorting by', sortChoice)
+  switch (sortChoice) {
     case 'oldest first':
-      return projects.sort((a, b) => (a.created_at > b.created_at ? 1 : -1))
+      return sortBy(projects, function (project) {
+        return new Date(project.created_at).getTime()
+      }).reverse()
     case 'newest first':
-      return projects.sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+      return sortBy(projects, function (project) {
+        return new Date(project.created_at).getTime()
+      })
     case 'percent funded':
       return projects.sort((a, b) =>
         getPercentFunded(a.bids, a.min_funding) <
@@ -157,17 +155,17 @@ function searchProjects(projects: FullProject[], search: string) {
 }
 
 function SortSelect(props: {
-  sortBy: string
+  sortChoice: string
   open: boolean
   options: SortOption[]
 }) {
-  const { sortBy, open, options } = props
+  const { sortChoice, open, options } = props
   return (
     <div>
       <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
         <div className="truncate">
           <span className="text-gray-500">Sort by </span>
-          {sortBy}
+          {sortChoice}
         </div>
         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
           <ChevronUpDownIcon
