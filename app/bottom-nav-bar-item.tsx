@@ -14,8 +14,8 @@ import {
 } from '@heroicons/react/24/outline'
 
 const itemClass =
-  'sm:hover:bg-gray-200 block w-full py-1 px-3 text-center sm:hover:text-orange-700 transition-colors'
-const selectedItemClass = 'bg-gray-100 text-orange-700'
+  'sm:hover:bg-gray-200 block w-full py-1 px-3 text-center sm:hover:text-orange-600 transition-colors'
+const selectedItemClass = 'bg-gray-100 text-orange-600'
 const touchItemClass = 'bg-orange-100'
 
 function findIcon(name: string) {
@@ -38,32 +38,6 @@ export function NavBarItem(props: {
   const { item, children } = props
   const isCurrentPage = item.href === usePathname() && item.href != null
   const [touched, setTouched] = useState(false)
-  // if (item.name === 'Profile' && user) {
-  //   return (
-  //     <Link
-  //       href={item.href ?? '#'}
-  //       className={clsx(
-  //         itemClass,
-  //         touched && touchItemClass,
-  //         currentPage === '/[username]' && selectedItemClass
-  //       )}
-  //       onTouchStart={() => setTouched(true)}
-  //       onTouchEnd={() => setTouched(false)}
-  //     >
-  //       <Col>
-  //         <div className="mx-auto my-1">
-  //           <Avatar
-  //             className="h-6 w-6"
-  //             username={user.username}
-  //             // avatarUrl={user.avatarUrl}
-  //             noLink
-  //           />
-  //         </div>
-  //         {formatMoney(user.balance)}
-  //       </Col>
-  //     </Link>
-  //   )
-  // }
   const i = {
     icon: findIcon(item.name),
   }

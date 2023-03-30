@@ -1,6 +1,13 @@
 import { getProfileById, getUser } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
+import clsx from 'clsx'
 import { NavBarItem } from './bottom-nav-bar-item'
+import Link from 'next/link'
+import { Avatar } from '@/components/avatar'
+import { Col } from '@/components/layout/col'
+import { calculateUserBalance } from '@/utils/math'
+import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
+import { formatMoney } from '@/utils/formatting'
 
 export const BOTTOM_NAV_BAR_HEIGHT = 58
 
@@ -14,10 +21,19 @@ export async function BottomNavBar() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
+  const incomingTxns = profile
+    ? await getIncomingTxnsByUser(supabase, profile.id)
+    : []
+  const outgoingTxns = profile
+    ? await getOutgoingTxnsByUser(supabase, profile.id)
+    : []
   const navigationOptions = [
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
-    { name: 'Profile', href: user ? `/${profile?.username}` : '/login' },
+    {
+      name: user ? 'Profile' : 'Login',
+      href: user ? `/${profile?.username}` : '/login',
+    },
     {
       name: 'Discord',
       href: 'https://discord.gg/zPnPtx6jBS',
@@ -27,12 +43,36 @@ export async function BottomNavBar() {
       href: '/create',
     },
   ]
-
+  const navOptionsDisplay = navigationOptions.map((item) => {
+    if (item.name === 'Profile' && profile !== null) {
+      return (
+        <Link
+          key={item.name}
+          href={item.href ?? '#'}
+          className="block w-full py-1 px-3 text-center transition-colors sm:hover:bg-gray-200 sm:hover:text-orange-600"
+        >
+          <Col>
+            <div className="mx-auto my-1">
+              <Avatar
+                size={6}
+                profile={profile}
+                // avatarUrl={user.avatarUrl}
+                noLink
+              />
+            </div>
+            <p className="text-center">
+              {formatMoney(calculateUserBalance(incomingTxns, outgoingTxns))}
+            </p>
+          </Col>
+        </Link>
+      )
+    } else {
+      return <NavBarItem key={item.name} item={item} />
+    }
+  })
   return (
     <nav className="fixed inset-x-0 bottom-0 z-20 flex select-none items-center justify-between border-t-2 bg-white text-xs text-gray-700 md:hidden">
-      {navigationOptions.map((item) => (
-        <NavBarItem key={item.name} item={item} />
-      ))}
+      {navOptionsDisplay}
     </nav>
   )
 }
