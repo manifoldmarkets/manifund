@@ -7,9 +7,12 @@ import { EditDescription } from './edit-description'
 import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
-import { calculateUserBalance } from '@/utils/math'
+import {
+  calculateUserBalance,
+  getActiveValuation,
+  getProposalValuation,
+} from '@/utils/math'
 import { ProposalData } from './proposal-data'
-import { ProjectPageHeader } from './project-page-header'
 import { SiteLink } from '@/components/site-link'
 import { SignInButton } from '@/components/sign-in-button'
 import clsx from 'clsx'
@@ -25,13 +28,15 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import { Description } from './description'
+import { ProjectCardHeader } from '@/components/project-card'
+import { formatLargeNumber } from '@/utils/formatting'
 
-export async function generateMetadata(props: { params: { slug: string }}) {
+export async function generateMetadata(props: { params: { slug: string } }) {
   const { slug } = props.params
   const supabase = createServerClient()
   const project = await getProjectBySlug(supabase, slug)
   return {
-    title: project.title
+    title: project.title,
   }
 }
 
@@ -47,12 +52,22 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const comments = await getCommentsByProject(supabase, project.id)
   const bids = await getBidsByProject(supabase, project.id)
   const txns = await getTxnsByProject(supabase, project.id)
+  const valuation =
+    project.stage == 'proposal'
+      ? formatLargeNumber(getProposalValuation(project))
+      : formatLargeNumber(
+          getActiveValuation(txns, bids, getProposalValuation(project))
+        )
 
   const isOwnProject = user?.id === project.profiles.id
 
   return (
     <div className="flex flex-col gap-4 px-4">
-      <ProjectPageHeader round={project.rounds} creator={project.profiles} />
+      <ProjectCardHeader
+        round={project.rounds}
+        creator={project.profiles}
+        valuation={valuation === 'NaN' ? undefined : valuation}
+      />
       <div>
         <h2 className="text-3xl font-bold">{project.title}</h2>
       </div>
