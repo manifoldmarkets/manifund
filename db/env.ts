@@ -24,3 +24,7 @@ export const STRIPE_SECRET_KEY =
   SUPABASE_ENV === 'PROD'
     ? process.env.STRIPE_LIVE_SECRET_KEY
     : process.env.STRIPE_TEST_SECRET_KEY
+
+export function isProd() {
+  return SUPABASE_ENV === 'PROD'
+}

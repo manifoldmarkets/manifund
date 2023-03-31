@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { STRIPE_SECRET_KEY } from '@/db/env'
+import { isProd, STRIPE_SECRET_KEY } from '@/db/env'
 
 const stripe = require('stripe')(STRIPE_SECRET_KEY)
 
@@ -18,10 +18,14 @@ const initStripe = () => {
   return new Stripe(apiKey, { apiVersion: '2022-11-15', typescript: true })
 }
 
-// manage at https://dashboard.stripe.com/test/products?active=true
-const dollarStripePrice = {
-  10: 'price_1MrnJEEsVtaUUvWWa0Z1MoEF',
-}
+// manage at https://dashboard.stripe.com/products
+export const dollarStripePrice = isProd()
+  ? {
+      10: 'price_1MrmNZEsVtaUUvWW5lc83bpz',
+    }
+  : {
+      10: 'price_1MrnJEEsVtaUUvWWa0Z1MoEF',
+    }
 
 type CheckoutProps = {
   dollarQuantity: 10
@@ -46,8 +50,10 @@ export default async function handler(
           },
         ],
         mode: 'payment',
-        success_url: `http://localhost:3000`,
-        cancel_url: `http://localhost:3000`,
+        success_url: isProd()
+          ? 'https://manifund.org'
+          : 'http://localhost:3000',
+        cancel_url: isProd() ? 'https://manifund.org' : 'http://localhost:3000',
         automatic_tax: { enabled: true },
       })
       // res.redirect(303, session.url)
