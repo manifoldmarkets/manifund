@@ -13,18 +13,19 @@ export type StripeSession = Stripe.Event.Data.Object & {
   }
 }
 
-const initStripe = () => {
-  const apiKey = process.env.STRIPE_APIKEY as string
-  return new Stripe(apiKey, { apiVersion: '2022-11-15', typescript: true })
-}
-
 // manage at https://dashboard.stripe.com/products
 export const dollarStripePrice = isProd()
   ? {
       10: 'price_1MrmNZEsVtaUUvWW5lc83bpz',
+      50: 'price_1Mrre3EsVtaUUvWWBLXAhwbs',
+      100: 'price_1MrrhAEsVtaUUvWWeQAIkjpR',
+      500: 'price_1MrrhrEsVtaUUvWWlrHd0My5',
     }
   : {
       10: 'price_1MrnJEEsVtaUUvWWa0Z1MoEF',
+      50: 'price_1MrrjdEsVtaUUvWWBP4yq8W3',
+      100: 'price_1MrrkgEsVtaUUvWWXqJT7jha',
+      500: 'price_1MrrlIEsVtaUUvWWQuuRcE1G',
     }
 
 type CheckoutProps = {

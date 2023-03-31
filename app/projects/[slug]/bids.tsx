@@ -116,21 +116,23 @@ function Bid(props: {
       ) : (
         <div className="relative top-1.5">{formatMoney(bid.amount)}</div>
       )}
-      {user && (user.accreditation_status || user.id === project.creator) && (
-        <div>
-          {bid.bidder === user.id ? (
-            <DeleteBid bidId={bid.id} />
-          ) : (
-            <Trade
-              bid={bid}
-              project={project}
-              userId={user.id}
-              userSpendableFunds={userSpendableFunds ?? 0}
-              userSellableShares={userSellableShares ?? 0}
-            />
-          )}
-        </div>
-      )}
+      {user &&
+        (user.accreditation_status ||
+          (user.id === project.creator && bid.type === 'sell')) && (
+          <div>
+            {bid.bidder === user.id ? (
+              <DeleteBid bidId={bid.id} />
+            ) : (
+              <Trade
+                bid={bid}
+                project={project}
+                userId={user.id}
+                userSpendableFunds={userSpendableFunds ?? 0}
+                userSellableShares={userSellableShares ?? 0}
+              />
+            )}
+          </div>
+        )}
     </Row>
   )
 }
