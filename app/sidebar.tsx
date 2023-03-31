@@ -29,7 +29,7 @@ export default async function Sidebar() {
               width={60}
               height={60}
             />
-            <span className="bg-gradient-to-r from-orange-500  to-rose-400 bg-clip-text font-josefin text-2xl font-[650] text-transparent lg:text-4xl">
+            <span className="bg-gradient-to-r from-orange-500  to-rose-400 bg-clip-text font-josefin text-4xl font-[650] text-transparent">
               {SUPABASE_ENV === 'PROD' ? 'Manifund' : 'Devifund'}
             </span>
           </div>
@@ -66,9 +66,9 @@ export async function ProfileSummary(props: { user: User }) {
   const outgoingTxns = await getOutgoingTxnsByUser(supabase, user.id)
   return (
     <div className="group mb-3 flex flex-row items-center gap-2 truncate rounded-md py-3 px-1 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
-      <Avatar profile={profile} size={16} />
+      <Avatar profile={profile} />
       <Link href={`/${profile.username}?tab=portfolio`} className="truncate">
-        <div className="text-lg font-medium">{profile.full_name}</div>
+        <div className=" font-medium">{profile.full_name}</div>
         <div className="text-sm">
           {formatMoney(calculateUserBalance(incomingTxns, outgoingTxns))}
         </div>

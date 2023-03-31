@@ -16,7 +16,7 @@ export function Avatar(props: {
   const { profile, noLink, size, className } = props
   const router = useRouter()
   const s =
-    size == 'xxs' ? 4 : size == 'xs' ? 6 : size === 'sm' ? 8 : size || 10
+    size == 'xxs' ? 4 : size == 'xs' ? 6 : size === 'sm' ? 8 : size || 12
   const sizeInPx = s * 4
 
   const onClick = (e: MouseEvent) => {
