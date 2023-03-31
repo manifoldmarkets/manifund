@@ -34,7 +34,12 @@ export function ProfileHeader(props: {
               <div className="text-3xl font-bold">{profile.full_name}</div>
               <p className="text-gray-500">@{profile.username}</p>
             </div>
-            {isOwnProfile && <BalanceBox balance={balance} />}
+            {isOwnProfile && (
+              <BalanceBox
+                balance={balance}
+                accredited={profile.accreditation_status}
+              />
+            )}
           </div>
         </div>
       </div>
