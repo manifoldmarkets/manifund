@@ -5,7 +5,7 @@ import { RoundTabs } from './round-tabs'
 import { RoundData } from '@/components/round-data'
 import Image from 'next/image'
 
-export const revalidate = 60
+export const revalidate = 0
 
 export async function generateMetadata(props: {
   params: { roundSlug: string }
