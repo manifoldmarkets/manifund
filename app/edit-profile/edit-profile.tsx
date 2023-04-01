@@ -98,7 +98,7 @@ export function EditProfileForm(props: { profile: Profile }) {
         <p className="font-medium">
           {profile.accreditation_status ? 'Accredited' : 'Not Accredited'}
         </p>
-        {!profile.accreditation_status ? (
+        {profile.accreditation_status ? (
           <div className="mt-3 rounded-md bg-emerald-100 p-3 text-center text-emerald-600">
             You can invest in projects with real money and withdraw your
             profits.
