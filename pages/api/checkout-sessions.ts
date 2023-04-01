@@ -38,10 +38,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { dollarQuantity, userId } = (await req.body) as CheckoutProps
-  console.log('in request')
   if (req.method === 'POST') {
     try {
-      // Create Checkout Sessions from body params.
       const session = await stripe.checkout.sessions.create({
         metadata: {
           userId,
@@ -49,7 +47,6 @@ export default async function handler(
         },
         line_items: [
           {
-            // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
             price: dollarStripePrice[dollarQuantity],
             quantity: 1,
           },
@@ -61,7 +58,6 @@ export default async function handler(
         cancel_url: isProd() ? 'https://manifund.org' : 'http://localhost:3000',
         automatic_tax: { enabled: true },
       })
-      // res.redirect(303, session.url)
       res.json({ url: session.url, id: session.id })
     } catch (error: any) {
       console.log(error)
