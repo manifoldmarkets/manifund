@@ -52,27 +52,17 @@ export function BalanceBox(props: {
         <Col className="flex rounded bg-gray-200 py-2 px-3 text-center">
           <div className="text-md text-gray-500">Balance</div>
           {accredited ? (
-            // <div className=" flex text-2xl font-bold text-gray-500">
-            //   <CurrencyDollarIcon className="h-8 w-8" />
-            //   <p>{balance}</p>
-            // </div>
-            <>
-              <Col className="flex text-xl font-bold text-gray-500">
-                <Row className="justify-center">
-                  hM{}
-                  <p>{balance}</p>
-                </Row>
-              </Col>
-            </>
-          ) : (
-            <div className="flex text-xl font-bold text-gray-500">
-              hM{}
+            <div className=" flex text-2xl font-bold text-gray-500">
+              <CurrencyDollarIcon className="h-8 w-8" />
               <p>{balance}</p>
-              <p className="text-sm">
-                <CurrencyDollarIcon className="h-4 w-4" />
-                {withdrawBalance} withdrawable
-              </p>
             </div>
+          ) : (
+            <Col className="flex text-xl font-bold text-gray-500">
+              <Row className="justify-center">
+                hM{}
+                <p>{balance}</p>
+              </Row>
+            </Col>
           )}
         </Col>
       </Row>
