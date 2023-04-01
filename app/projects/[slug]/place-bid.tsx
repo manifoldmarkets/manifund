@@ -97,9 +97,7 @@ export function PlaceBid(props: {
               value={bidType}
               onChange={(event) => setBidType(event.target.value as BidType)}
             >
-              <option value="buy" disabled={!user.accreditation_status}>
-                buy shares
-              </option>
+              <option value="buy">buy shares</option>
               <option value="sell">sell shares</option>
             </Select>
           </div>
