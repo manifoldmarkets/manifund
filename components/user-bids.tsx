@@ -98,7 +98,7 @@ function BidText(props: { bid: Bid; stage: string; showValuation: boolean }) {
       )
     case 'active':
       return (
-        <p className="flex items-center text-sm text-gray-500">
+        <div className="flex items-center text-sm text-gray-500">
           Offer to&nbsp;
           <BuySellTag bidType={bid.type} />
           <span className="text-black">&nbsp;{formatMoney(bid.amount)}</span>
@@ -107,7 +107,7 @@ function BidText(props: { bid: Bid; stage: string; showValuation: boolean }) {
             <span className="text-black">{formatMoney(bid.valuation)}</span>
             &nbsp;valuation
           </span>
-        </p>
+        </div>
       )
     default:
       return <></>

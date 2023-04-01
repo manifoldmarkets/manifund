@@ -249,3 +249,14 @@ CREATE POLICY "Give edit access to rachel 1w84ji1_0" ON storage.objects FOR DELE
 CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
 CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR UPDATE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
 CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR DELETE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
+
+-- Stripe txns
+create table if not exists public.stripe_txns (
+  id uuid not null default gen_random_uuid(),
+  created_at timestamptz not null,
+  session_id string not null,
+  customer_id uuid not null references auth.users(id) on delete cascade,
+  txn_id uuid not null references public.txns(id),
+  amount float8 not null,
+  primary key (id)
+);
