@@ -113,7 +113,6 @@ function sortProjects(projects: FullProject[], sortChoice: string) {
   projects.forEach((project) => {
     project.bids = project.bids.filter((bid) => bid.status == 'pending')
   })
-  console.log('sorting by', sortChoice)
   switch (sortChoice) {
     case 'oldest first':
       return sortBy(projects, function (project) {

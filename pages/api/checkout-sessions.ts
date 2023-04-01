@@ -9,7 +9,7 @@ export type StripeSession = Stripe.Event.Data.Object & {
   url: string
   metadata: {
     userId: string
-    manticDollarQuantity: string
+    dollarQuantity: string
   }
 }
 
@@ -43,6 +43,10 @@ export default async function handler(
     try {
       // Create Checkout Sessions from body params.
       const session = await stripe.checkout.sessions.create({
+        metadata: {
+          userId,
+          dollarQuantity,
+        },
         line_items: [
           {
             // Provide the exact Price ID (for example, pr_1234) of the product you want to sell

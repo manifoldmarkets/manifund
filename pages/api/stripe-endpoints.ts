@@ -1,7 +1,30 @@
 import Stripe from 'stripe'
 import { STRIPE_SECRET_KEY, isProd } from '@/db/env'
-import { NextApiRequest, NextApiResponse } from 'next'
+// import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from './_db'
+import { sendTemplateEmail } from '@/utils/email'
+import { NextApiRequest, NextApiResponse } from 'next'
+import { Readable } from 'node:stream'
+import uuid from 'react-uuid'
+
+// export const config = {
+//   runtime: 'edge',
+//   regions: ['sfo1'],
+// }
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
+async function buffer(readable: Readable) {
+  const chunks = []
+  for await (const chunk of readable) {
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk)
+  }
+  return Buffer.concat(chunks)
+}
 
 export type StripeSession = Stripe.Event.Data.Object & {
   id: string
@@ -20,43 +43,72 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  //   const res = NextResponse.next()
+  console.log('in webhook handler')
   const stripe = initStripe()
+  const buf = await buffer(req)
   let event
+  //   const json = await req.body
 
   try {
+    // console.log('values', json, req.headers.get('stripe-signature'))
+    console.log('signature', req.headers['stripe-signature'])
+    // SubtleCryptoProvider cannot be used in a synchronous context
     event = stripe.webhooks.constructEvent(
-      req.body,
-      req.body.headers['stripe-signature'] as string,
+      buf,
+      req.headers['stripe-signature'] as string,
       process.env.STRIPE_WEBHOOKSECRET as string
     )
   } catch (err: any) {
+    console.log('error in webhook handler', err.message)
+    // return NextResponse.json({ msg: `Webhook Error: ${err.message}` })
     return res.status(400).send(`Webhook Error: ${err.message}`)
   }
+  console.log('event', event.type)
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as StripeSession
     await issueMoneys(session)
+    const MailgunVars = JSON.stringify({
+      amount: session.metadata.dollarQuantity,
+    })
+    await sendTemplateEmail(
+      session.metadata.userId,
+      'Manifund payment confirmation',
+      'payment_confirmation',
+      MailgunVars
+    )
   }
-  res.status(200).send('success')
+  //   NextResponse.json({ msg: 'success' })
+  return res.status(200).send('success')
 }
+
+const BANK_ID = isProd()
+  ? '758e68da-c37c-4a9d-a82b-f4aaedde31b9'
+  : '9a3a1419-2f01-4006-b744-887faf56551d'
 
 const issueMoneys = async (session: StripeSession) => {
   const { id: sessionId } = session
   const { userId, dollarQuantity } = session.metadata
   const deposit = Number.parseInt(dollarQuantity)
+  const txnId = uuid()
   const supabase = createAdminClient()
 
-  await fetch('/api/pay-user', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ userId, amount: deposit }),
+  const { data: txn, error: e1 } = await supabase.from('txns').insert({
+    id: txnId,
+    amount: deposit,
+    from_id: BANK_ID,
+    to_id: userId,
+    token: 'USD',
   })
+  if (e1) {
+    throw e1
+  }
 
   const { error } = await supabase.from('stripe_txns').insert({
     session_id: sessionId,
     customer_id: userId,
+    txn_id: txnId,
     amount: deposit,
   })
   if (error) {
