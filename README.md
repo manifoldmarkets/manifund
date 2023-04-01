@@ -52,3 +52,13 @@ You'll want to do this if we've changed the prod database schema (eg through the
    ```
 
 4. Restart the database on eg https://app.supabase.com/project/oucjhqqretizqonyfyqu/settings/general to clear the cache
+
+## Testing the Stripe payments flow locally
+
+To test the Stripe webhook integration, you'll need to install the Stripe CLI, then run
+
+```
+stripe listen --forward-to localhost:3000/api/stripe-endpoints
+```
+
+To receive webhook calls
