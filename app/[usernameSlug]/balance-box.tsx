@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation'
 import { Modal } from '@/components/modal'
 import { Button } from '@/components/button'
 import { Dialog } from '@headlessui/react'
+import { formatLargeNumber } from '@/utils/formatting'
 
 export function BalanceBox(props: {
   balance: number
@@ -60,7 +61,7 @@ export function BalanceBox(props: {
             <Col className="flex text-xl font-bold text-gray-500">
               <Row className="justify-center">
                 hM{}
-                <p>{balance}</p>
+                <p>{balance - withdrawBalance}</p>
               </Row>
             </Col>
           )}
