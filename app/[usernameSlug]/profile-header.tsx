@@ -11,8 +11,9 @@ export function ProfileHeader(props: {
   profile: Profile
   isOwnProfile: boolean
   balance: number
+  withdrawBalance: number
 }) {
-  const { profile, isOwnProfile, balance } = props
+  const { profile, isOwnProfile, balance, withdrawBalance } = props
   // Add https:// to website if it doesn't have it
   const website = profile.website?.startsWith('http')
     ? profile.website
@@ -37,6 +38,7 @@ export function ProfileHeader(props: {
             {isOwnProfile && (
               <BalanceBox
                 balance={balance}
+                withdrawBalance={withdrawBalance}
                 accredited={profile.accreditation_status}
               />
             )}

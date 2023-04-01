@@ -14,51 +14,77 @@ import { NEXT_PUBLIC_STRIPE_KEY } from '@/db/env'
 import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { Modal } from '@/components/modal'
-import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { Button } from '@/components/button'
 import { Dialog } from '@headlessui/react'
-import Image from 'next/image'
 
-export function BalanceBox(props: { balance: number; accredited: boolean }) {
-  const { balance, accredited } = props
+export function BalanceBox(props: {
+  balance: number
+  withdrawBalance: number
+  accredited: boolean
+}) {
+  const { balance, withdrawBalance, accredited } = props
   return (
-    <Row className="h-fit gap-1">
-      <Col className="my-2 justify-between">
-        {accredited ? (
+    <Col className="h-fit">
+      <Row className="h-fit gap-1">
+        <Col className="my-2 justify-between">
+          {accredited ? (
+            <a
+              href="https://airtable.com/shrIB5yGc56DoQBhJ"
+              className="rounded bg-gray-200 p-1"
+            >
+              <Tooltip text="Add funds">
+                <PlusSmallIcon className="h-4 w-4 text-gray-500" />
+              </Tooltip>
+            </a>
+          ) : (
+            <StripeDepositButton />
+          )}
+
           <a
-            href="https://airtable.com/shrIB5yGc56DoQBhJ"
+            href="https://airtable.com/shrI3XFPivduhbnGa"
             className="rounded bg-gray-200 p-1"
           >
-            <Tooltip text="Add funds">
-              <PlusSmallIcon className="h-4 w-4 text-gray-500" />
+            <Tooltip text="Withdraw funds">
+              <MinusSmallIcon className="h-4 w-4 text-gray-500" />
             </Tooltip>
           </a>
-        ) : (
-          <StripeDepositButton />
-        )}
-
-        <a
-          href="https://airtable.com/shrI3XFPivduhbnGa"
-          className="rounded bg-gray-200 p-1"
-        >
-          <Tooltip text="Withdraw funds">
-            <MinusSmallIcon className="h-4 w-4 text-gray-500" />
-          </Tooltip>
-        </a>
-      </Col>
-      <Col className="flex rounded bg-gray-200 py-2 px-3 text-center">
-        <div className="text-md text-gray-500">Balance</div>
-        <div className=" flex text-2xl font-bold text-gray-500">
-          <CurrencyDollarIcon className="h-8 w-8" />
-          <p>{balance}</p>
-        </div>
-      </Col>
-    </Row>
+        </Col>
+        <Col className="flex rounded bg-gray-200 py-2 px-3 text-center">
+          <div className="text-md text-gray-500">Balance</div>
+          {accredited ? (
+            // <div className=" flex text-2xl font-bold text-gray-500">
+            //   <CurrencyDollarIcon className="h-8 w-8" />
+            //   <p>{balance}</p>
+            // </div>
+            <>
+              <Col className="flex text-xl font-bold text-gray-500">
+                <Row className="justify-center">
+                  hM{}
+                  <p>{balance}</p>
+                </Row>
+              </Col>
+            </>
+          ) : (
+            <div className="flex text-xl font-bold text-gray-500">
+              hM{}
+              <p>{balance}</p>
+              <p className="text-sm">
+                <CurrencyDollarIcon className="h-4 w-4" />
+                {withdrawBalance} withdrawable
+              </p>
+            </div>
+          )}
+        </Col>
+      </Row>
+      {!accredited && (
+        <Row className="justify-center text-sm font-normal text-gray-500">
+          ${withdrawBalance} withdrawable
+        </Row>
+      )}
+    </Col>
   )
 }
 
-// Make sure to call `loadStripe` outside of a component’s render to avoid
-// recreating the `Stripe` object on every render.
 const stripePromise = loadStripe(NEXT_PUBLIC_STRIPE_KEY ?? '')
 function StripeDepositButton() {
   React.useEffect(() => {

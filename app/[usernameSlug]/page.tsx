@@ -38,12 +38,14 @@ export default async function UserProfilePage(props: {
     return investment.project && investment.project.creator !== profile.id
   })
   const balance = calculateBalance(investments)
+  const withdrawBalance = calculateWithdrawBalance(investments, profile.id)
   return (
     <div className="flex flex-col p-5">
       <ProfileHeader
         profile={profile}
         isOwnProfile={isOwnProfile}
         balance={balance}
+        withdrawBalance={withdrawBalance}
       />
       <div className="flex flex-col gap-10">
         {proposalBids.length > 0 && (
@@ -142,4 +144,14 @@ function calculateBalance(investments: investment[]) {
     balance += investment.price_usd
   })
   return balance
+}
+
+function calculateWithdrawBalance(investments: investment[], userId: string) {
+  let withdrawableAmount = 0
+  investments.forEach((investment) => {
+    if (investment.project?.creator === userId) {
+      withdrawableAmount += investment.price_usd
+    }
+  })
+  return withdrawableAmount
 }
