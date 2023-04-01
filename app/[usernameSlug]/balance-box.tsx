@@ -17,6 +17,7 @@ import { Modal } from '@/components/modal'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { Button } from '@/components/button'
 import { Dialog } from '@headlessui/react'
+import Image from 'next/image'
 
 export function BalanceBox(props: { balance: number; accredited: boolean }) {
   const { balance, accredited } = props
@@ -24,15 +25,14 @@ export function BalanceBox(props: { balance: number; accredited: boolean }) {
     <Row className="h-fit gap-1">
       <Col className="my-2 justify-between">
         {accredited ? (
-          // <a
-          //   href="https://airtable.com/shrIB5yGc56DoQBhJ"
-          //   className="rounded bg-gray-200 p-1"
-          // >
-          //   <Tooltip text="Add funds">
-          //     <PlusSmallIcon className="h-4 w-4 text-gray-500" />
-          //   </Tooltip>
-          // </a>
-          <StripeDepositButton />
+          <a
+            href="https://airtable.com/shrIB5yGc56DoQBhJ"
+            className="rounded bg-gray-200 p-1"
+          >
+            <Tooltip text="Add funds">
+              <PlusSmallIcon className="h-4 w-4 text-gray-500" />
+            </Tooltip>
+          </a>
         ) : (
           <StripeDepositButton />
         )}
@@ -160,6 +160,7 @@ function StripeDepositButton() {
             className="sm:flex-2 inline-flex w-full justify-center"
             loading={isSubmitting}
             onClick={async () => {
+              setIsSubmitting(true)
               const response = await fetch('/api/checkout-sessions', {
                 method: 'POST',
                 headers: {
@@ -171,10 +172,12 @@ function StripeDepositButton() {
                 }),
               })
               const json = await response.json()
+              setIsSubmitting(false)
               router.push(json.url)
             }}
           >
-            Purchase hM{amount}
+            Purchase hM
+            {amount}
           </Button>
         </div>
       </Modal>
