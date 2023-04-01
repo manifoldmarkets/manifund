@@ -256,6 +256,7 @@ create table if not exists public.stripe_txns (
   created_at timestamptz not null,
   session_id string not null,
   customer_id uuid not null references auth.users(id) on delete cascade,
+  txn_id uuid not null references public.txns(id),
   amount float8 not null,
   primary key (id)
 );
