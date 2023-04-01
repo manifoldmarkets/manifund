@@ -31,6 +31,8 @@ import { Description } from './description'
 import { ProjectCardHeader } from '@/components/project-card'
 import { formatLargeNumber } from '@/utils/formatting'
 
+export const revalidate = 0
+
 export async function generateMetadata(props: { params: { slug: string } }) {
   const { slug } = props.params
   const supabase = createServerClient()
@@ -84,8 +86,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           bids={project.bids.filter((bid) => bid.status === 'pending')}
         />
       )}
-      {profile?.accreditation_status ||
-      (profile?.id === project.creator && project.stage === 'active') ? (
+      {profile !== null && (
         <PlaceBid
           project={project}
           user={profile}
@@ -93,10 +94,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           userSellableShares={userSellableShares}
           userShares={userShares}
         />
-      ) : null}
-      {user &&
-        !profile?.accreditation_status &&
-        !(profile?.id === project.creator) && <NotAccredited />}
+      )}
       {!user && <SignInButton />}
       <div className="h-6" />
       <ProjectTabs
@@ -119,7 +117,7 @@ function NotAccredited() {
       <Row className="w-full justify-center">
         <Col className="w-full">
           You&apos;ll need to demonstrate that you&apos;re an accredited
-          investor before you can invest in projects.
+          investor in order to withdraw your profits on investments.
           <SiteLink
             href="https://airtable.com/shrZVLeo6f34NBfR0"
             className={clsx(
