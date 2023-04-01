@@ -2,7 +2,10 @@ import Stripe from 'stripe'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { isProd, STRIPE_SECRET_KEY } from '@/db/env'
 
-const stripe = require('stripe')(STRIPE_SECRET_KEY)
+const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
+  apiVersion: '2022-11-15',
+  typescript: true,
+})
 
 export type StripeSession = Stripe.Event.Data.Object & {
   id: string
@@ -13,7 +16,7 @@ export type StripeSession = Stripe.Event.Data.Object & {
   }
 }
 
-// manage at https://dashboard.stripe.com/products
+// Manage at https://dashboard.stripe.com/products
 export const dollarStripePrice = isProd()
   ? {
       10: 'price_1MrmNZEsVtaUUvWW5lc83bpz',
@@ -56,7 +59,6 @@ export default async function handler(
           ? 'https://manifund.org'
           : 'http://localhost:3000',
         cancel_url: isProd() ? 'https://manifund.org' : 'http://localhost:3000',
-        automatic_tax: { enabled: true },
       })
       res.json({ url: session.url, id: session.id })
     } catch (error: any) {

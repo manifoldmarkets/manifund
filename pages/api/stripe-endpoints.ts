@@ -45,7 +45,7 @@ export default async function handler(
     event = stripe.webhooks.constructEvent(
       buf,
       req.headers['stripe-signature'] as string,
-      //update to CLI var in dev
+      // Update to CLI var in dev
       process.env.STRIPE_WEBHOOKSECRET as string
     )
   } catch (err: any) {
