@@ -78,25 +78,11 @@ export function BalanceBox(props: {
 
 const stripePromise = loadStripe(NEXT_PUBLIC_STRIPE_KEY ?? '')
 function StripeDepositButton() {
-  React.useEffect(() => {
-    // Check to see if this is a redirect back from Checkout
-    const query = new URLSearchParams(window.location.search)
-    if (query.get('success')) {
-      console.log('Order placed! You will receive an email confirmation.')
-    }
-
-    if (query.get('canceled')) {
-      console.log(
-        'Order canceled -- continue to shop around and checkout when you’re ready.'
-      )
-    }
-  }, [])
-
   const { session } = useSupabase()
   const user = session?.user
   const router = useRouter()
   const [open, setOpen] = useState(false)
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState(10)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const purchaseOptions = [10, 50, 100, 500]
   return (
@@ -123,13 +109,12 @@ function StripeDepositButton() {
             as="h3"
             className="text-base font-semibold leading-6 text-gray-900"
           >
-            Select purchase amount
+            Buy hectoMana (hM)
           </Dialog.Title>
           <div className="mt-2">
-            <p className="text-sm text-gray-500">
-              hM is the play-money currency used to participate in Manifund as a
-              non-accredited investor. hM has zero monetary value and is not
-              redeemable for cash, but can be donated to charity. hM1 = $1.
+            <p className="text-gray-500">
+              hectoMana is used to fund projects on
+              <br /> Manifund as a non-accredited investor.
             </p>
           </div>
           <Row className="mt-3 justify-center">
@@ -139,6 +124,7 @@ function StripeDepositButton() {
                   <Row className="h-6 items-center">
                     <input
                       id={option.toString()}
+                      checked={amount === option}
                       name="amount-option"
                       type="radio"
                       onChange={() => {
@@ -193,10 +179,15 @@ function StripeDepositButton() {
               router.push(json.url)
             }}
           >
-            Purchase hM
-            {amount}
+            Buy hM
+            {amount} for ${amount}
           </Button>
         </div>
+        <p className="mt-4 text-xs text-gray-500">
+          Your purchase constitutes a donation to Manifold for Charity, a
+          registered 501(c)(3) nonprofit. hM has zero monetary value and is not
+          redeemable for cash, but can be donated to charity.
+        </p>
       </Modal>
     </>
   )
