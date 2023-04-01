@@ -7,7 +7,7 @@ import { Avatar } from '@/components/avatar'
 import { Col } from '@/components/layout/col'
 import { calculateUserBalance } from '@/utils/math'
 import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
-import { formatMoney } from '@/utils/formatting'
+import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 
 export const BOTTOM_NAV_BAR_HEIGHT = 58
 
@@ -61,7 +61,11 @@ export async function BottomNavBar() {
               />
             </div>
             <p className="text-center">
-              {formatMoney(calculateUserBalance(incomingTxns, outgoingTxns))}
+              {profile.accreditation_status
+                ? formatMoney(calculateUserBalance(incomingTxns, outgoingTxns))
+                : `hM${formatLargeNumber(
+                    calculateUserBalance(incomingTxns, outgoingTxns)
+                  )}`}
             </p>
           </Col>
         </Link>
