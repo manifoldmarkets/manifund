@@ -118,6 +118,11 @@ export function EditProfileForm(props: { profile: Profile }) {
               this form.
             </a>{' '}
             to get verified as an accredited investor.
+            <br />
+            <p className="font-bold">
+              You need to hold 0 hectoMana to be verified as an accredited
+              investor.
+            </p>
           </div>
         )}
       </div>
