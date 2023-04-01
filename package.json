@@ -19,6 +19,7 @@
     "@headlessui/react": "^1.7.13",
     "@heroicons/react": "^2.0.15",
     "@next/font": "13.1.6",
+    "@stripe/stripe-js": "^1.52.0",
     "@supabase/auth-helpers-nextjs": "^0.5.4",
     "@supabase/auth-ui-react": "^0.2.7",
     "@supabase/supabase-js": "^2.8.0",
@@ -45,6 +46,7 @@
     "react-dom": "^18.2.0",
     "react-uuid": "^2.0.0",
     "server-only": "^0.0.1",
+    "stripe": "^11.17.0",
     "tailwind-scrollbar-hide": "^1.1.7",
     "typescript": "4.9.5"
   },
