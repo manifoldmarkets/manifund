@@ -15,7 +15,8 @@ import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { Modal } from '@/components/modal'
 import { Button } from '@/components/button'
-import { Dialog } from '@headlessui/react'
+import { Dialog, RadioGroup } from '@headlessui/react'
+import clsx from 'clsx'
 
 export function BalanceBox(props: {
   balance: number
@@ -108,35 +109,33 @@ function StripeDepositButton() {
               your earnings to charity. However, you cannot withdraw your funds.
             </p>
           </div>
-          <Row className="mt-3 justify-center">
-            <div>
-              {purchaseOptions.map((option) => (
-                <Row key={option} className="relative items-start">
-                  <Row className="h-6 items-center">
-                    <input
-                      id={option.toString()}
-                      checked={amount === option}
-                      name="amount-option"
-                      type="radio"
-                      onChange={() => {
-                        setAmount(option)
-                      }}
-                      className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
-                    />
-                  </Row>
-                  <div className="ml-3">
-                    <Row>
-                      <label
-                        htmlFor={option.toString()}
-                        className="text-md block font-medium"
-                      >
-                        ${option.toString()}
-                      </label>
-                    </Row>
-                  </div>
-                </Row>
-              ))}
-            </div>
+          <Row className="justify-center">
+            <RadioGroup value={amount} onChange={setAmount} className="mt-2">
+              <RadioGroup.Label className="sr-only">
+                {' '}
+                Choose a memory option{' '}
+              </RadioGroup.Label>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {purchaseOptions.map((option) => (
+                  <RadioGroup.Option
+                    key={option}
+                    value={option}
+                    className={({ active, checked }) =>
+                      clsx(
+                        'cursor-pointer focus:outline-none',
+                        active ? 'ring-2 ring-orange-500 ring-offset-2' : '',
+                        checked
+                          ? 'bg-orange-500 text-white hover:bg-orange-600'
+                          : 'bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50',
+                        'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase sm:flex-1'
+                      )
+                    }
+                  >
+                    <RadioGroup.Label as="span">${option}</RadioGroup.Label>
+                  </RadioGroup.Option>
+                ))}
+              </div>
+            </RadioGroup>
           </Row>
         </div>
 
