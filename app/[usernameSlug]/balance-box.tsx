@@ -16,7 +16,6 @@ import { useRouter } from 'next/navigation'
 import { Modal } from '@/components/modal'
 import { Button } from '@/components/button'
 import { Dialog } from '@headlessui/react'
-import { formatLargeNumber } from '@/utils/formatting'
 
 export function BalanceBox(props: {
   balance: number
@@ -52,19 +51,10 @@ export function BalanceBox(props: {
         </Col>
         <Col className="flex rounded bg-gray-200 py-2 px-3 text-center">
           <div className="text-md text-gray-500">Balance</div>
-          {accredited ? (
-            <div className=" flex text-2xl font-bold text-gray-500">
-              <CurrencyDollarIcon className="h-8 w-8" />
-              <p>{balance}</p>
-            </div>
-          ) : (
-            <Col className="flex text-xl font-bold text-gray-500">
-              <Row className="justify-center">
-                hM{}
-                <p>{balance - withdrawBalance}</p>
-              </Row>
-            </Col>
-          )}
+          <div className=" flex text-2xl font-bold text-gray-500">
+            <CurrencyDollarIcon className="h-8 w-8" />
+            <p>{balance}</p>
+          </div>
         </Col>
       </Row>
       {!accredited && (
@@ -109,12 +99,13 @@ function StripeDepositButton() {
             as="h3"
             className="text-base font-semibold leading-6 text-gray-900"
           >
-            Buy hectoMana (hM)
+            Add money to your Manifund account
           </Dialog.Title>
           <div className="mt-2">
             <p className="text-gray-500">
-              hectoMana is used to fund projects on
-              <br /> Manifund as a non-accredited investor.
+              As a non-accredited investor, you can add money to your Manifund
+              account, grow your portfolio by investing in projects, and donate
+              your earnings to charity. However, you cannot withdraw your funds.
             </p>
           </div>
           <Row className="mt-3 justify-center">
@@ -139,7 +130,7 @@ function StripeDepositButton() {
                         htmlFor={option.toString()}
                         className="text-md block font-medium"
                       >
-                        hM{option.toString()}
+                        ${option.toString()}
                       </label>
                     </Row>
                   </div>
@@ -179,14 +170,14 @@ function StripeDepositButton() {
               router.push(json.url)
             }}
           >
-            Buy hM
-            {amount} for ${amount}
+            Add ${amount} to your account
           </Button>
         </div>
         <p className="mt-4 text-xs text-gray-500">
           Your purchase constitutes a donation to Manifold for Charity, a
-          registered 501(c)(3) nonprofit. hM has zero monetary value and is not
-          redeemable for cash, but can be donated to charity.
+          registered 501(c)(3) nonprofit. Money in your Manifund account has
+          zero monetary value and is not redeemable for cash, but can be donated
+          to charity.
         </p>
       </Modal>
     </>

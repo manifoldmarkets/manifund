@@ -70,11 +70,7 @@ export async function ProfileSummary(props: { user: User }) {
       <Link href={`/${profile.username}?tab=portfolio`} className="truncate">
         <div className=" font-medium">{profile.full_name}</div>
         <div className="text-sm">
-          {profile.accreditation_status
-            ? formatMoney(calculateUserBalance(incomingTxns, outgoingTxns))
-            : `hM${formatLargeNumber(
-                calculateUserBalance(incomingTxns, outgoingTxns)
-              )}`}
+          {formatMoney(calculateUserBalance(incomingTxns, outgoingTxns))}
         </div>
       </Link>
     </div>
