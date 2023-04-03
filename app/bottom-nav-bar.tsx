@@ -61,11 +61,7 @@ export async function BottomNavBar() {
               />
             </div>
             <p className="text-center">
-              {profile.accreditation_status
-                ? formatMoney(calculateUserBalance(incomingTxns, outgoingTxns))
-                : `hM${formatLargeNumber(
-                    calculateUserBalance(incomingTxns, outgoingTxns)
-                  )}`}
+              {formatMoney(calculateUserBalance(incomingTxns, outgoingTxns))}{' '}
             </p>
           </Col>
         </Link>
