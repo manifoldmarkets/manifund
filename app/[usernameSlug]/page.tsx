@@ -7,7 +7,7 @@ import { ActiveBids } from './user-active-bids'
 import { Investments } from './user-investments'
 import { Projects } from './user-projects'
 import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
-import { getBidsByUser } from '@/db/bid'
+import { Bid, getBidsByUser } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { getProjectsByUser, Project } from '@/db/project'
 
@@ -38,7 +38,11 @@ export default async function UserProfilePage(props: {
     return investment.project && investment.project.creator !== profile.id
   })
   const balance = calculateBalance(investments)
-  const withdrawBalance = calculateWithdrawBalance(investments, profile.id)
+  const withdrawBalance = calculateWithdrawBalance(
+    investments,
+    bids,
+    profile.id
+  )
   return (
     <div className="flex flex-col p-5">
       <ProfileHeader
@@ -146,11 +150,20 @@ function calculateBalance(investments: investment[]) {
   return balance
 }
 
-function calculateWithdrawBalance(investments: investment[], userId: string) {
+function calculateWithdrawBalance(
+  investments: investment[],
+  bids: Bid[],
+  userId: string
+) {
   let withdrawableAmount = 0
   investments.forEach((investment) => {
     if (investment.project?.creator === userId) {
       withdrawableAmount += investment.price_usd
+    }
+  })
+  bids.forEach((bid) => {
+    if (bid.status === 'pending' && bid.type === 'buy') {
+      withdrawableAmount -= bid.amount
     }
   })
   return withdrawableAmount
