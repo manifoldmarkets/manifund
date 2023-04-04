@@ -178,7 +178,7 @@ function Trade(props: {
     !agreedToTerms &&
     project.creator === userId &&
     project.round === 'OP AI Worldviews Contest' &&
-    bid.type === 'sell'
+    bid.type === 'buy'
   ) {
     errorMessage = `Confirm that you understand the terms of this trade.`
   }
