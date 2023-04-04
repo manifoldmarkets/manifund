@@ -55,15 +55,9 @@ export default async function handler(
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as StripeSession
     await issueMoneys(session)
-    const MailgunVars = JSON.stringify({
+    await sendTemplateEmail(session.metadata.userId, 31316115, {
       amount: session.metadata.dollarQuantity,
     })
-    await sendTemplateEmail(
-      session.metadata.userId,
-      'Manifund payment confirmation',
-      'payment_confirmation',
-      MailgunVars
-    )
   }
   return res.status(200).send('success')
 }
