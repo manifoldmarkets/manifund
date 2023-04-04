@@ -79,7 +79,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         </Description>
       )}
       {isOwnProject && <EditDescription project={project} />}
-      <hr className="mb-3 mt-5 h-0.5 rounded-sm bg-gray-500" />
+      <hr className="mb-3 h-0.5 rounded-sm bg-gray-500" />
       {project.stage == 'proposal' && (
         <ProposalData
           project={project}
