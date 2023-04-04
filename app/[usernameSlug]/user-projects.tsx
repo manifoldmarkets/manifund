@@ -1,18 +1,14 @@
 import { Project } from '@/db/project'
 import { RoundTag } from '@/components/round-tag'
 import Link from 'next/link'
+import { StageTag } from '@/components/stage-tag'
 
 export async function Projects(props: { projects: Project[] }) {
   const { projects } = props
-  const projectsDisplay = projects.map((item) => (
-    <li key={item.id}>
+  const projectsDisplay = projects.map((project) => (
+    <li key={project.id}>
       {/* @ts-expect-error Server Component */}
-      <ProjectDisplay
-        title={item.title}
-        slug={item.slug}
-        stage={item.stage}
-        round={item.round}
-      />
+      <ProjectDisplay project={project} />
     </li>
   ))
   return (
@@ -38,27 +34,22 @@ function NoProjects() {
   )
 }
 
-async function ProjectDisplay(props: {
-  title: string
-  slug: string
-  stage: string
-  round: string
-}) {
-  const { title, stage, round, slug } = props
+async function ProjectDisplay(props: { project: Project }) {
+  const { project } = props
   return (
-    <Link href={`/projects/${slug}`} className="block hover:bg-gray-50">
+    <Link href={`/projects/${project.slug}`} className="block hover:bg-gray-50">
       <div className="px-4 py-4 sm:px-6">
         <div className="flex items-center justify-between">
-          <p className="text-md text-md truncate text-orange-600">{title}</p>
+          <p className="text-md text-md truncate text-orange-600">
+            {project.title}
+          </p>
           <div className="ml-2 flex flex-shrink-0">
-            <RoundTag roundTitle={round} />
+            <RoundTag roundTitle={project.round} />
           </div>
         </div>
         <div className="mt-2 sm:flex sm:justify-between">
           <div className="sm:flex">
-            <p className="flex items-center text-sm text-gray-500">
-              <span className="truncate">{stage}</span>
-            </p>
+            <StageTag projectStage={project.stage} />
           </div>
         </div>
       </div>
