@@ -166,12 +166,9 @@ export async function getUserFundsAndShares(
 
   const getUserSpendableFunds = async () => {
     const currentBalance = calculateUserBalance(incomingTxns, outgoingTxns)
-    let balanceMinusBids = currentBalance
-    userBids.forEach((bid) => {
-      if (bid.type == 'buy') {
-        balanceMinusBids -= bid.amount
-      }
-    })
+    const balanceMinusBids = userBids
+      .filter((bid) => bid.status === 'pending' && bid.type === 'buy')
+      .reduce((acc, bid) => acc - bid.amount, currentBalance)
     return balanceMinusBids
   }
   const userSpendableFunds = await getUserSpendableFunds()
