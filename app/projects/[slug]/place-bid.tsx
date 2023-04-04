@@ -35,7 +35,6 @@ export function PlaceBid(props: {
     props
   const { supabase } = useSupabase()
   const router = useRouter()
-
   const sellablePortion = 1 - project.founder_portion / 10000000
   const minValuation = Math.round(project.min_funding / sellablePortion)
   const DEFAULT_SCALE_MAX = 1000
@@ -45,9 +44,7 @@ export function PlaceBid(props: {
   const fundable =
     project.stage === 'proposal' ? valuation * sellablePortion : valuation
   const [amount, setAmount] = useState<number>(0)
-  const [bidType, setBidType] = useState<BidType>(
-    user.accreditation_status ? 'buy' : 'sell'
-  )
+  const [bidType, setBidType] = useState<BidType>('buy')
   const [submitting, setSubmitting] = useState(false)
   const [marks, setMarks] = useState<{ [key: number]: string }>({})
   const fundableValid = !isNaN(fundable)
