@@ -17,7 +17,9 @@ export function RoundTabs(props: { round: Round; projects: FullProject[] }) {
       href: `?tab=projects`,
       count: projects.length,
       current: currentTabName === 'projects' || currentTabName === null,
-      display: <ProjectsDisplay projects={projects} />,
+      display: (
+        <ProjectsDisplay projects={projects} defaultSort={'valuation'} />
+      ),
     },
     {
       name: 'About',

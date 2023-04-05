@@ -110,28 +110,6 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   )
 }
 
-function NotAccredited() {
-  return (
-    <div className="rounded-md border border-gray-200 bg-white p-4 text-center shadow-md">
-      <Row className="w-full justify-center">
-        <Col className="w-full">
-          You&apos;ll need to demonstrate that you&apos;re an accredited
-          investor in order to withdraw your profits on investments.
-          <SiteLink
-            href="https://airtable.com/shrZVLeo6f34NBfR0"
-            className={clsx(
-              buttonClass('xl', 'gradient'),
-              'mx-auto mt-4 max-w-md bg-gradient-to-r'
-            )}
-          >
-            Verify status
-          </SiteLink>
-        </Col>
-      </Row>
-    </div>
-  )
-}
-
 export async function getUserFundsAndShares(
   supabase: SupabaseClient,
   userId: string,
