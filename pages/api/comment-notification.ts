@@ -17,6 +17,7 @@ export default async function handler(
   const { commentId, htmlContent } = req.body
   const supabaseAdmin = createAdminClient()
   const comment = await getFullCommentById(supabaseAdmin, commentId)
+  const NEW_COMMENT_TEMPLATE_ID = 31316102
   if (comment.commenter !== comment.projects.creator) {
     const projectCreatorMailgunVars = {
       projectTitle: comment.projects.title,
@@ -27,7 +28,7 @@ export default async function handler(
     }
     await sendTemplateEmail(
       comment.projects.creator,
-      31316102,
+      NEW_COMMENT_TEMPLATE_ID,
       projectCreatorMailgunVars
     )
   }
@@ -46,7 +47,7 @@ export default async function handler(
       }
       await sendTemplateEmail(
         parentComment.commenter,
-        31316102,
+        NEW_COMMENT_TEMPLATE_ID,
         parentCommenterPostmarkVars
       )
     }
@@ -66,7 +67,7 @@ export default async function handler(
         }
         await sendTemplateEmail(
           commenterId,
-          31316102,
+          NEW_COMMENT_TEMPLATE_ID,
           threadCommenterPostmarkVars
         )
       }

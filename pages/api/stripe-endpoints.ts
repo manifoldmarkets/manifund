@@ -55,9 +55,14 @@ export default async function handler(
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as StripeSession
     await issueMoneys(session)
-    await sendTemplateEmail(session.metadata.userId, 31316115, {
-      amount: session.metadata.dollarQuantity,
-    })
+    const PAYMENT_CONFIRMATION_TEMPLATE_ID = 31316115
+    await sendTemplateEmail(
+      session.metadata.userId,
+      PAYMENT_CONFIRMATION_TEMPLATE_ID,
+      {
+        amount: session.metadata.dollarQuantity,
+      }
+    )
   }
   return res.status(200).send('success')
 }
