@@ -1,8 +1,8 @@
 import { createServerClient } from '@/db/supabase-server'
 import { listProjects } from '@/db/project'
-import { AllProjectsDisplay } from './all-projects-display'
 import { getRounds } from '@/db/round'
 import { AllRoundsDisplay } from './all-rounds-display'
+import { ProjectsDisplay } from '@/components/projects-display'
 
 export const revalidate = 0
 
@@ -13,7 +13,7 @@ export default async function Projects() {
   return (
     <div className="bg-dark-200 max-w-4xl pt-5">
       <AllRoundsDisplay rounds={rounds} projects={projects} />
-      <AllProjectsDisplay projects={projects} />
+      <ProjectsDisplay projects={projects} />
     </div>
   )
 }

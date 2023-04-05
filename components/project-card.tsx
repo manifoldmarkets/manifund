@@ -28,14 +28,9 @@ export function ProjectCard(props: {
   numComments: number
   bids: Bid[]
   txns: Txn[]
+  valuation: number
 }) {
-  const { creator, project, numComments, bids, txns } = props
-  const valuation =
-    project.stage == 'proposal'
-      ? formatLargeNumber(getProposalValuation(project))
-      : formatLargeNumber(
-          getActiveValuation(txns, bids, getProposalValuation(project))
-        )
+  const { creator, project, numComments, bids, txns, valuation } = props
   return (
     <Col
       className={clsx(
@@ -161,7 +156,7 @@ function ProjectCardFooter(props: {
 export function ProjectCardHeader(props: {
   round: Round
   creator: Profile
-  valuation?: string
+  valuation?: number
 }) {
   const { round, creator, valuation } = props
   return (
@@ -171,7 +166,7 @@ export function ProjectCardHeader(props: {
         <div className="h-1" />
         <UserAvatarAndBadge profile={creator} />
       </div>
-      {valuation !== 'NaN' && valuation ? (
+      {valuation && !isNaN(valuation) ? (
         <div className="relative top-1">
           <ValuationBox valuation={valuation} />
         </div>
