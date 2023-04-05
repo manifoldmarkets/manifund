@@ -25,9 +25,14 @@ type SortOption =
   | 'newest first'
   | 'oldest first'
 
-export function ProjectsDisplay(props: { projects: FullProject[] }) {
-  const { projects } = props
-  const [sortBy, setSortBy] = useState<SortOption>('newest first')
+export function ProjectsDisplay(props: {
+  projects: FullProject[]
+  defaultSort?: SortOption
+}) {
+  const { projects, defaultSort } = props
+  const [sortBy, setSortBy] = useState<SortOption>(
+    defaultSort ?? 'newest first'
+  )
   const options: SortOption[] = [
     'valuation',
     'percent funded',
