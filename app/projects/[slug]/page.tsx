@@ -1,5 +1,5 @@
 import { createServerClient } from '@/db/supabase-server'
-import { getUser, getProfileById, isAdmin } from '@/db/profile'
+import { getUser, getProfileById, isAdmin, Profile } from '@/db/profile'
 import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
@@ -9,6 +9,7 @@ import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
 import {
   calculateUserBalance,
+  FullTrade,
   getActiveValuation,
   getProposalValuation,
 } from '@/utils/math'
@@ -56,10 +57,8 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const txns = await getTxnsByProject(supabase, project.id)
   const valuation =
     project.stage == 'proposal'
-      ? formatLargeNumber(getProposalValuation(project))
-      : formatLargeNumber(
-          getActiveValuation(txns, bids, getProposalValuation(project))
-        )
+      ? getProposalValuation(project)
+      : getActiveValuation(txns, bids, getProposalValuation(project))
 
   const isOwnProject = user?.id === project.profiles.id
 
@@ -68,7 +67,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       <ProjectCardHeader
         round={project.rounds}
         creator={project.profiles}
-        valuation={valuation === 'NaN' ? undefined : valuation}
+        valuation={isNaN(valuation) ? undefined : valuation}
       />
       <div>
         <h2 className="text-3xl font-bold">{project.title}</h2>
