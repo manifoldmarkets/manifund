@@ -11,26 +11,6 @@ export async function sendTemplateEmail(
 ) {
   const supabase = createAdminClient()
   const toEmail = await getUserEmail(supabase, toId)
-  // const body = new URLSearchParams()
-  // body.append('From', fromEmail ?? 'Manifund <info@manifund.org>')
-  // body.append('To', toEmail ?? '')
-  // body.append('TemplateId', templateId)
-  // body.append('TemplateModel', templateModel)
-  // console.log(body)
-
-  // const resp = await fetch('https://api.postmarkapp.com/email/withTemplate/', {
-  //   method: 'POST',
-  //   headers: {
-  //     'X-Postmark-Server-Token': process.env.POSTMARK_SERVER_TOKEN ?? '',
-  //     Accept: 'application/json',
-  //   },
-  //   body: JSON.stringify({
-  //     From: fromEmail ?? 'Manifund <info@manifund.org',
-  //     To: toEmail ?? '',
-  //     TemplateId: templateId,
-  //     TemplateModel: templateModel,
-  //   }),
-  // })
 
   let client = new postmark.ServerClient(
     process.env.POSTMARK_SERVER_TOKEN ?? ''
@@ -38,8 +18,8 @@ export async function sendTemplateEmail(
 
   client
     .sendEmailWithTemplate({
-      From: 'info@manifund.org',
-      To: 'rachel@manifund.org',
+      From: fromEmail ?? 'info@manifund.org',
+      To: toEmail,
       TemplateId: templateId,
       TemplateModel: templateModel,
     })
