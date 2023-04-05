@@ -17,18 +17,18 @@ export default async function handler(
   const { commentId, htmlContent } = req.body
   const supabaseAdmin = createAdminClient()
   const comment = await getFullCommentById(supabaseAdmin, commentId)
+  const NEW_COMMENT_TEMPLATE_ID = 31316102
   if (comment.commenter !== comment.projects.creator) {
-    const projectCreatorMailgunVars = JSON.stringify({
+    const projectCreatorMailgunVars = {
       projectTitle: comment.projects.title,
       projectUrl: `https://manifund.org/projects/${comment.projects.slug}`,
       commenterUsername: comment.profiles.username,
       commenterAvatarUrl: comment.profiles.avatar_url,
-      htmlContent,
-    })
+      htmlContent: JSON.stringify(htmlContent),
+    }
     await sendTemplateEmail(
       comment.projects.creator,
-      `New comment on ${comment.projects.title}`,
-      'comment_on_project',
+      NEW_COMMENT_TEMPLATE_ID,
       projectCreatorMailgunVars
     )
   }
@@ -38,18 +38,17 @@ export default async function handler(
       comment.replying_to
     )
     if (parentComment.commenter !== comment.projects.creator) {
-      const parentCommenterMailgunVars = JSON.stringify({
+      const parentCommenterPostmarkVars = {
         projectTitle: comment.projects.title,
         projectUrl: `https://manifund.org/projects/${comment.projects.slug}`,
         commenterUsername: comment.profiles.username,
         commenterAvatarUrl: comment.profiles.avatar_url,
-        htmlContent,
-      })
+        htmlContent: JSON.stringify(htmlContent),
+      }
       await sendTemplateEmail(
         parentComment.commenter,
-        `New reply to your comment on ${comment.projects.title}`,
-        'comment_on_project',
-        parentCommenterMailgunVars
+        NEW_COMMENT_TEMPLATE_ID,
+        parentCommenterPostmarkVars
       )
     }
     const threadComments = await getReplies(supabaseAdmin, comment.replying_to)
@@ -59,18 +58,17 @@ export default async function handler(
         commenterId !== comment.projects.creator &&
         commenterId !== parentComment.commenter
       ) {
-        const threadCommenterMailgunVars = JSON.stringify({
+        const threadCommenterPostmarkVars = {
           projectTitle: comment.projects.title,
           projectUrl: `https://manifund.org/projects/${comment.projects.slug}`,
           commenterUsername: comment.profiles.username,
           commenterAvatarUrl: comment.profiles.avatar_url,
-          htmlContent,
-        })
+          htmlContent: JSON.stringify(htmlContent),
+        }
         await sendTemplateEmail(
           commenterId,
-          `New reply to a comment on ${comment.projects.title}`,
-          'comment_on_project',
-          threadCommenterMailgunVars
+          NEW_COMMENT_TEMPLATE_ID,
+          threadCommenterPostmarkVars
         )
       }
     })

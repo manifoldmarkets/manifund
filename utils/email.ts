@@ -1,30 +1,32 @@
 import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient } from '@supabase/supabase-js'
+import * as postmark from 'postmark'
 
 export async function sendTemplateEmail(
   toId: string,
-  subject: string,
-  template: string,
-  mailgunVars?: string,
+  templateId: number,
+  templateModel: object,
   fromEmail?: string
 ) {
   const supabase = createAdminClient()
   const toEmail = await getUserEmail(supabase, toId)
-  const body = new URLSearchParams()
-  body.append('from', fromEmail ?? 'Manifund <no-reply@manifund.org>')
-  body.append('to', toEmail ?? '')
-  body.append('subject', subject)
-  body.append('template', template)
-  body.append('h:X-Mailgun-Variables', mailgunVars ?? '')
-  body.append('o:tag', template)
 
-  const resp = await fetch('https://api.mailgun.net/v3/manifund.org/messages', {
-    method: 'POST',
-    body,
-    headers: {
-      Authorization: 'Basic ' + btoa('api:' + process.env.MAILGUN_KEY),
-    },
-  })
+  let client = new postmark.ServerClient(
+    process.env.POSTMARK_SERVER_TOKEN ?? ''
+  )
+
+  client
+    .sendEmailWithTemplate({
+      From: fromEmail ?? 'info@manifund.org',
+      To: toEmail,
+      TemplateId: templateId,
+      TemplateModel: templateModel,
+    })
+    .then((response) => {
+      console.log('Sending message')
+      console.log(response.To)
+      console.log(response.Message)
+    })
 }
 
 export async function getUserEmail(

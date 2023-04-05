@@ -190,31 +190,32 @@ async function sendAuctionCloseEmails(
   )
   for (const bid of bids) {
     const bidResolutionText = genBidResolutionText(bid, resolution)
-    const bidderMailgunVars = JSON.stringify({
+    const bidderPostmarkVars = {
+      projectTitle: project.title,
+      result: resolution.amountsPaid[bid.id] > 0 ? 'accepted' : 'declined',
       projectUrl,
       auctionResolutionText,
       bidResolutionText,
-    })
+    }
+    const BID_RESOLVED_TEMPLATE_ID = 31316141
     await sendTemplateEmail(
       bid.bidder,
-      `Manifund bid ${
-        resolution.amountsPaid[bid.id] > 0 ? 'accepted' : 'declined'
-      }: ${project.title}`,
-      'bid_resolution',
-      bidderMailgunVars
+      BID_RESOLVED_TEMPLATE_ID,
+      bidderPostmarkVars
     )
   }
   const claimFundsHTML = genClaimFundsHTML(resolution)
-  const creatorMailgunVars = JSON.stringify({
+  const creatorPostmarkVars = {
+    projectTitle: project.title,
     projectUrl,
     claimFundsHTML,
     auctionResolutionText,
-  })
+  }
+  const AUCTION_RESOLVED_TEMPLATE_ID = 31316142
   await sendTemplateEmail(
     project.creator,
-    `Manifund auction for "${project.title}" has resolved!`,
-    'auction_resolution',
-    creatorMailgunVars
+    AUCTION_RESOLVED_TEMPLATE_ID,
+    creatorPostmarkVars
   )
 }
 
