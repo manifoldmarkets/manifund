@@ -9,7 +9,7 @@ import { Bids } from './bids'
 import { BidAndProfile } from '@/db/bid'
 import { TxnAndProfiles } from '@/db/txn'
 import { Shareholders } from './shareholders'
-import { calculateFullTrades } from '@/utils/math'
+import { calculateFullTrades, FullTrade } from '@/utils/math'
 import { Tabs } from '@/components/tabs'
 
 export function ProjectTabs(props: {
@@ -67,14 +67,46 @@ export function ProjectTabs(props: {
     })
   }
   if (project.stage === 'active' || project.stage === 'completed') {
+    const shareholders = calculateShareholders(trades, creator)
     tabs.push({
       name: 'Shareholders',
       href: '?tab=shareholders',
-      count: 0,
+      count: shareholders.length,
       current: currentTabName === 'shareholders',
-      display: <Shareholders trades={trades} creator={creator} />,
+      display: (
+        <Shareholders
+          shareholders={shareholders}
+          trades={trades}
+          creator={creator}
+        />
+      ),
     })
   }
 
   return <Tabs tabs={tabs} preTabSlug={`/projects/${project.slug}`} />
+}
+
+export type Shareholder = {
+  profile: Profile
+  numShares: number
+}
+function calculateShareholders(trades: FullTrade[], creator: Profile) {
+  const shareholders = Object.fromEntries(
+    trades.map((trade) => [trade.toProfile.id, { numShares: 0 } as Shareholder])
+  )
+  shareholders[creator.id] = { profile: creator, numShares: 10000000 }
+  for (const trade of trades) {
+    shareholders[trade.toProfile.id].profile = trade.toProfile
+    shareholders[trade.toProfile.id].numShares += trade.numShares
+    shareholders[trade.fromProfile.id].numShares -= trade.numShares
+  }
+  const shareholdersArray = Object.values(shareholders) as Shareholder[]
+  //round to 2 decimal places for small arithmetic errors
+  shareholdersArray.forEach((shareholder) => {
+    shareholder.numShares = Math.round(shareholder.numShares * 100) / 100
+  })
+  return shareholdersArray.filter(
+    (shareholder) =>
+      shareholder.numShares > 0 || shareholder.profile.id === creator.id
+  )
 }

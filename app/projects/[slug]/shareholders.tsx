@@ -10,10 +10,14 @@ import { Avatar } from '@/components/avatar'
 import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import { formatDistanceToNow } from 'date-fns'
 import { FullTrade } from '@/utils/math'
+import { Shareholder } from './project-tabs'
 
-export function Shareholders(props: { trades: FullTrade[]; creator: Profile }) {
-  const { trades, creator } = props
-  const shareholders = calculateShareholders(trades, creator)
+export function Shareholders(props: {
+  shareholders: Shareholder[]
+  trades: FullTrade[]
+  creator: Profile
+}) {
+  const { shareholders, trades, creator } = props
   const sortedShareholders = orderBy(shareholders, 'numShares', 'desc')
   return (
     <Row className="w-full justify-center">
@@ -35,31 +39,6 @@ export function Shareholders(props: { trades: FullTrade[]; creator: Profile }) {
         <History trades={trades} />
       </Col>
     </Row>
-  )
-}
-
-type Shareholder = {
-  profile: Profile
-  numShares: number
-}
-function calculateShareholders(trades: FullTrade[], creator: Profile) {
-  const shareholders = Object.fromEntries(
-    trades.map((trade) => [trade.toProfile.id, { numShares: 0 } as Shareholder])
-  )
-  shareholders[creator.id] = { profile: creator, numShares: 10000000 }
-  for (const trade of trades) {
-    shareholders[trade.toProfile.id].profile = trade.toProfile
-    shareholders[trade.toProfile.id].numShares += trade.numShares
-    shareholders[trade.fromProfile.id].numShares -= trade.numShares
-  }
-  const shareholdersArray = Object.values(shareholders) as Shareholder[]
-  //round to 2 decimal places for small arithmetic errors
-  shareholdersArray.forEach((shareholder) => {
-    shareholder.numShares = Math.round(shareholder.numShares * 100) / 100
-  })
-  return shareholdersArray.filter(
-    (shareholder) =>
-      shareholder.numShares > 0 || shareholder.profile.id === creator.id
   )
 }
 
