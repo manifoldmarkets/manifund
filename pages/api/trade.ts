@@ -66,17 +66,13 @@ export default async function handler(req: NextRequest) {
     usdTraded,
     tradePartner?.username ?? ''
   )
-  sendTemplateEmail(
-    oldBid.bidder,
-    `Your ${oldBid.type === 'buy' ? 'buy' : 'sell'} offer on "${
-      oldBid.projects.title
-    }" has been traded`,
-    'trade',
-    JSON.stringify({
-      tradeText: tradeText,
-      recipientProfileUrl: `manifund.org/${oldBid.profiles.username}`,
-    })
-  )
+  const TRADE_ACCEPTED_TEMPLATE_ID = 31316920
+  sendTemplateEmail(oldBid.bidder, TRADE_ACCEPTED_TEMPLATE_ID, {
+    tradeText: tradeText,
+    recipientProfileUrl: `manifund.org/${oldBid.profiles.username}`,
+    bidType: oldBid.type === 'buy' ? 'buy' : 'sell',
+    projectTitle: oldBid.projects.title,
+  })
   return NextResponse.json({ success: true })
 }
 
