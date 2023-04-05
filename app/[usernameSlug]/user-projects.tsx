@@ -1,7 +1,7 @@
 import { Project } from '@/db/project'
-import { RoundTag } from '@/components/round-tag'
+import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
-import { StageTag } from '@/components/stage-tag'
+import { StageTag } from '@/components/tags'
 
 export async function Projects(props: { projects: Project[] }) {
   const { projects } = props
