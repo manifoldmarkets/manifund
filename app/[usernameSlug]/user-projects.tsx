@@ -47,8 +47,8 @@ async function ProjectDisplay(props: { project: Project }) {
             <RoundTag roundTitle={project.round} />
           </div>
         </div>
-        <div className="mt-2 sm:flex sm:justify-between">
-          <div className="sm:flex">
+        <div className="mt-2 flex justify-between">
+          <div className="flex">
             <StageTag projectStage={project.stage} />
           </div>
         </div>

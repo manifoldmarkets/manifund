@@ -1,4 +1,4 @@
-import { getProfileByUsername, getUser } from '@/db/profile'
+import { getProfileByUsername, getUser, Profile } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
@@ -23,7 +23,10 @@ export default async function UserProfilePage(props: {
   const { usernameSlug } = props.params
   const supabase = createServerClient()
   const user = await getUser(supabase)
-  const profile = await getProfileByUsername(supabase, usernameSlug)
+  const profile = (await getProfileByUsername(
+    supabase,
+    usernameSlug
+  )) as Profile
   const projects = await getProjectsByUser(supabase, profile.id)
   const bids = await getBidsByUser(supabase, profile.id)
   const proposalBids = bids.filter(
@@ -41,7 +44,9 @@ export default async function UserProfilePage(props: {
   const withdrawBalance = calculateWithdrawBalance(
     investments,
     bids,
-    profile.id
+    profile.id,
+    balance,
+    profile.accreditation_status
   )
   return (
     <div className="flex flex-col p-5">
@@ -153,18 +158,26 @@ function calculateBalance(investments: investment[]) {
 function calculateWithdrawBalance(
   investments: investment[],
   bids: Bid[],
-  userId: string
+  userId: string,
+  balance: number,
+  accredited: boolean
 ) {
-  let withdrawableAmount = 0
-  investments.forEach((investment) => {
-    if (investment.project?.creator === userId) {
-      withdrawableAmount += investment.price_usd
-    }
-  })
+  let withdrawableAmount = accredited ? balance : 0
+  if (!accredited) {
+    investments.forEach((investment) => {
+      if (investment.project?.creator === userId) {
+        withdrawableAmount += investment.price_usd
+      }
+    })
+  }
+  let availableNonWithdrawAmount = balance - withdrawableAmount
   bids.forEach((bid) => {
     if (bid.status === 'pending' && bid.type === 'buy') {
-      withdrawableAmount -= bid.amount
+      availableNonWithdrawAmount -= bid.amount
     }
   })
-  return withdrawableAmount
+  if (availableNonWithdrawAmount < 0) {
+    withdrawableAmount += availableNonWithdrawAmount
+  }
+  return withdrawableAmount > 0 ? withdrawableAmount : 0
 }

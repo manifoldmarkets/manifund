@@ -58,11 +58,9 @@ export function BalanceBox(props: {
           </div>
         </Col>
       </Row>
-      {!accredited && (
-        <Row className="justify-center text-sm font-normal text-gray-500">
-          ${withdrawBalance} withdrawable
-        </Row>
-      )}
+      <Row className="justify-center text-sm font-normal text-gray-500">
+        ${withdrawBalance} withdrawable
+      </Row>
     </Col>
   )
 }
