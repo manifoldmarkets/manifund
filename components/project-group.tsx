@@ -6,17 +6,12 @@ import { CalendarIcon } from '@heroicons/react/24/solid'
 export function ProjectGroup(props: {
   projects: FullProject[]
   category: string
+  valuations: { [k: string]: number }
 }) {
-  const { projects, category } = props
+  const { projects, valuations, category } = props
   return (
     <div>
       <h1 className="text-2xl font-bold">{category}</h1>
-      {category === 'ACX Mini-Grants Proposals' && (
-        <div className="my-2 text-gray-600">
-          <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
-          Auctions close <span className="text-black">Mar 12, 2023</span>
-        </div>
-      )}
       <div className="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {projects.map((project) => (
           <ProjectCard
@@ -26,6 +21,7 @@ export function ProjectGroup(props: {
             numComments={project.comments.length}
             bids={project.bids.filter((bid) => bid.status == 'pending')}
             txns={project.txns}
+            valuation={valuations[project.id]}
           />
         ))}
       </div>

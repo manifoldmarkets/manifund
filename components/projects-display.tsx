@@ -1,3 +1,4 @@
+'use client'
 import { FullProject } from '@/db/project'
 import {
   CheckIcon,
@@ -7,11 +8,18 @@ import {
 import { Listbox, Transition } from '@headlessui/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Fragment, useState } from 'react'
-import { getPercentFunded } from '@/utils/math'
+import {
+  getActiveValuation,
+  getPercentFunded,
+  getProposalValuation,
+} from '@/utils/math'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
+import { formatLargeNumber } from '@/utils/formatting'
+import { sortBy } from 'lodash'
 
 type SortOption =
+  | 'valuation'
   | 'percent funded'
   | 'number of comments'
   | 'newest first'
@@ -21,6 +29,7 @@ export function ProjectsDisplay(props: { projects: FullProject[] }) {
   const { projects } = props
   const [sortBy, setSortBy] = useState<SortOption>('newest first')
   const options: SortOption[] = [
+    'valuation',
     'percent funded',
     'number of comments',
     'newest first',
@@ -29,10 +38,11 @@ export function ProjectsDisplay(props: { projects: FullProject[] }) {
 
   const router = useRouter()
   const searchParams = useSearchParams() ?? new URLSearchParams()
+  const valuations = getValuations(projects)
   const [search, setSearch] = useState<string>(searchParams.get('q') || '')
 
   const selectedProjects = searchProjects(
-    sortProjects(projects, sortBy),
+    sortProjects(projects, valuations, sortBy),
     search
   )
 
@@ -89,21 +99,31 @@ export function ProjectsDisplay(props: { projects: FullProject[] }) {
       </div>
       <div className="flex flex-col gap-10 p-4">
         {proposals.length > 0 && (
-          <ProjectGroup projects={proposals} category="Proposals" />
+          <ProjectGroup
+            projects={proposals}
+            category="Proposals"
+            valuations={valuations}
+          />
         )}
         {activeProjects.length > 0 && (
-          <ProjectGroup projects={activeProjects} category="Active Projects" />
+          <ProjectGroup
+            projects={activeProjects}
+            category="Active Projects"
+            valuations={valuations}
+          />
         )}
         {completeProjects.length > 0 && (
           <ProjectGroup
             projects={completeProjects}
             category="Complete Projects"
+            valuations={valuations}
           />
         )}
         {unfundedProjects.length > 0 && (
           <ProjectGroup
             projects={unfundedProjects}
             category="Unfunded Projects"
+            valuations={valuations}
           />
         )}
       </div>
@@ -111,15 +131,23 @@ export function ProjectsDisplay(props: { projects: FullProject[] }) {
   )
 }
 
-function sortProjects(projects: FullProject[], sortBy: string) {
+function sortProjects(
+  projects: FullProject[],
+  valuations: { [k: string]: number },
+  sortType: SortOption
+) {
   projects.forEach((project) => {
     project.bids = project.bids.filter((bid) => bid.status == 'pending')
   })
-  switch (sortBy) {
+  switch (sortType) {
     case 'oldest first':
-      return projects.sort((a, b) => (a.created_at > b.created_at ? 1 : -1))
+      return sortBy(projects, function (project) {
+        return new Date(project.created_at).getTime()
+      }).reverse()
     case 'newest first':
-      return projects.sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+      return sortBy(projects, function (project) {
+        return new Date(project.created_at).getTime()
+      })
     case 'percent funded':
       return projects.sort((a, b) =>
         getPercentFunded(a.bids, a.min_funding) <
@@ -131,8 +159,10 @@ function sortProjects(projects: FullProject[], sortBy: string) {
       return projects.sort((a, b) =>
         a.comments.length < b.comments.length ? 1 : -1
       )
-    default:
-      return projects
+    case 'valuation':
+      return projects.sort((a, b) =>
+        valuations[a.id] < valuations[b.id] || isNaN(valuations[a.id]) ? 1 : -1
+      )
   }
 }
 
@@ -220,4 +250,21 @@ function SortSelect(props: {
       </Transition>
     </div>
   )
+}
+
+function getValuations(projects: FullProject[]) {
+  const valuations = Object.fromEntries(
+    projects.map((project) => [project.id, 0])
+  )
+  projects.forEach((project) => {
+    valuations[project.id] =
+      project.stage == 'proposal'
+        ? getProposalValuation(project)
+        : getActiveValuation(
+            project.txns,
+            project.bids,
+            getProposalValuation(project)
+          )
+  })
+  return valuations
 }
