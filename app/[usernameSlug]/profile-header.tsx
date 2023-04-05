@@ -35,11 +35,12 @@ export function ProfileHeader(props: {
           <div className="flex justify-between">
             <div className="ml-3 flex flex-col">
               <div className="text-3xl font-bold">{profile.full_name}</div>
-              <div className="flex flex-col gap-2 text-gray-500 md:flex-row">
+              <div className="flex flex-wrap gap-2 text-gray-500">
                 <p>@{profile.username}</p>
                 <InvestorTypeTag
                   accredited={profile.accreditation_status}
                   longTooltip={isOwnProfile}
+                  showText
                 />
               </div>
             </div>
