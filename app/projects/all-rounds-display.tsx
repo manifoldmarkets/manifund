@@ -7,7 +7,7 @@ import { RoundCarousel } from './round-carousel'
 import Image from 'next/image'
 import clsx from 'clsx'
 import { getRoundTheme } from '@/utils/constants'
-import { RoundTag } from '@/components/round-tag'
+import { RoundTag } from '@/components/tags'
 import { orderBy, sortBy } from 'lodash'
 
 export function AllRoundsDisplay(props: {

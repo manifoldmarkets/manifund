@@ -1,5 +1,5 @@
 import { Project } from '@/db/project'
-import { RoundTag } from '@/components/round-tag'
+import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import type { investment } from './page'
 import { formatMoney } from '@/utils/formatting'
