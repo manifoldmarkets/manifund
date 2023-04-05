@@ -39,7 +39,7 @@ export function ProfileHeader(props: {
                 <p>@{profile.username}</p>
                 <InvestorTypeTag
                   accredited={profile.accreditation_status}
-                  showTooltip
+                  longTooltip={isOwnProfile}
                 />
               </div>
             </div>

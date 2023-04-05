@@ -161,7 +161,7 @@ export function PlaceBid(props: {
         value={valuation ?? ''}
         onChange={(event) => setValuation(Number(event.target.value))}
       />
-      <div className="text-center text-red-500">{errorMessage}</div>
+      <div className="text-center text-rose-500">{errorMessage}</div>
       <Button
         type="submit"
         disabled={submitting || !!errorMessage || amount === 0}

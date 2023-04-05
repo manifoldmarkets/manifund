@@ -108,17 +108,17 @@ export function StageTag(props: { projectStage: string }) {
 
 export function InvestorTypeTag(props: {
   accredited: boolean
-  showTooltip?: boolean
+  longTooltip?: boolean
   showText?: boolean
 }) {
-  const { accredited, showText, showTooltip } = props
+  const { accredited, showText, longTooltip } = props
   if (accredited) {
     return (
       <Tooltip
         text={
-          showTooltip
+          longTooltip
             ? 'As an accredited investor, you can invest in impact certificates to grow your Manifund portfolio and withdraw your profits.'
-            : ''
+            : 'accredited investor'
         }
       >
         <Row className="max-w-fit gap-1 rounded-full bg-emerald-100 px-2  pt-1 text-center">
@@ -138,9 +138,9 @@ export function InvestorTypeTag(props: {
     return (
       <Tooltip
         text={
-          showTooltip
+          longTooltip
             ? "As a charity investor, you can invest in impact certificates, grow your Manifund portfolio, and donate your balance to charity. Adding money to your Manifund account is a tax deductible donation. You cannot withdraw money made by investing in other people's projects. Apply to be an accredited investor on the edit profile page if you'd like to be able to withdraw your profits."
-            : ''
+            : 'charity investor'
         }
       >
         <Row className="max-w-fit gap-1 rounded-full bg-rose-100 px-2  pt-1 text-center">
