@@ -1,6 +1,5 @@
 import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { ObjectChain } from 'lodash'
 import * as postmark from 'postmark'
 
 export async function sendTemplateEmail(
