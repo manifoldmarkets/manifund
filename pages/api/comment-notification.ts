@@ -4,6 +4,10 @@ import { HTMLContent } from '@tiptap/react'
 import { getFullCommentById } from '@/db/comment'
 import { sendTemplateEmail } from '@/utils/email'
 import { getReplies } from '@/db/comment'
+import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
+import { getFullProjectBySlug } from '@/db/project'
+import { calculateFullTrades } from '@/utils/math'
+import { getTxnsByProject } from '@/db/txn'
 
 type CommentProps = {
   commentId: string
@@ -31,6 +35,30 @@ export default async function handler(
       NEW_COMMENT_TEMPLATE_ID,
       projectCreatorMailgunVars
     )
+  } else if (!comment.replying_to) {
+    const investorNotifPostmarkVars = {
+      projectTitle: comment.projects.title,
+      projectUrl: `https://manifund.org/projects/${comment.projects.slug}`,
+      creatorFullName: comment.profiles.full_name,
+      commenterAvatarUrl: comment.profiles.avatar_url,
+      htmlContent: JSON.stringify(htmlContent),
+    }
+    const txnsAndProfiles = await getTxnsByProject(
+      supabaseAdmin,
+      comment.projects.id
+    )
+    const trades = calculateFullTrades(txnsAndProfiles)
+    const shareholders = calculateShareholders(trades, comment.profiles)
+    const CREATOR_UPDATE_TEMPLATE_ID = 31328698
+    shareholders.forEach(async (shareholder) => {
+      if (shareholder.profile.id !== comment.projects.creator) {
+        await sendTemplateEmail(
+          shareholder.profile.id,
+          CREATOR_UPDATE_TEMPLATE_ID,
+          investorNotifPostmarkVars
+        )
+      }
+    })
   }
   if (comment.replying_to) {
     const parentComment = await getFullCommentById(
