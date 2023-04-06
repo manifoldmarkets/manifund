@@ -90,7 +90,9 @@ export type Shareholder = {
   profile: Profile
   numShares: number
 }
-function calculateShareholders(trades: FullTrade[], creator: Profile) {
+export function calculateShareholders(trades: FullTrade[], creator: Profile) {
+  console.log('trades in calculateShareholders', trades)
+
   const shareholders = Object.fromEntries(
     trades.map((trade) => [trade.toProfile.id, { numShares: 0 } as Shareholder])
   )
