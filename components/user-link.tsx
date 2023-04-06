@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { Tooltip } from './tooltip'
 import { Avatar } from './avatar'
 import { CheckBadgeIcon } from '@heroicons/react/24/outline'
-import { ShieldCheckIcon } from '@heroicons/react/20/solid'
+import { ShieldCheckIcon, StarIcon } from '@heroicons/react/20/solid'
 import { Profile } from '@/db/profile'
 
 export function shortenName(name: string) {
@@ -24,8 +24,9 @@ export function UserAvatarAndBadge(props: {
   profile: Profile
   className?: string
   short?: boolean
+  creatorBadge?: boolean
 }) {
-  const { profile, className, short } = props
+  const { profile, className, short, creatorBadge } = props
   return (
     <div className={clsx('flex flex-row items-center gap-1', className)}>
       <Avatar profile={profile} size={6} />
@@ -33,6 +34,7 @@ export function UserAvatarAndBadge(props: {
         name={profile.full_name}
         username={profile.username}
         short={short}
+        creatorBadge={creatorBadge}
       />
     </div>
   )
@@ -46,9 +48,18 @@ export function UserLink(props: {
   noLink?: boolean
   createdTime?: number
   hideBadge?: boolean
+  creatorBadge?: boolean
 }) {
-  const { name, username, className, short, noLink, createdTime, hideBadge } =
-    props
+  const {
+    name,
+    username,
+    className,
+    short,
+    noLink,
+    createdTime,
+    hideBadge,
+    creatorBadge,
+  } = props
   const shortName = short ? shortenName(name) : name
   return (
     <SiteLink
@@ -62,6 +73,7 @@ export function UserLink(props: {
     >
       {shortName}
       {!hideBadge && <UserBadge username={username} />}
+      {creatorBadge && <CreatorBadge />}
     </SiteLink>
   )
 }
@@ -92,6 +104,14 @@ function CheckBadge() {
   return (
     <Tooltip text="Accredited investor" placement="right">
       <CheckBadgeIcon className="h-4 w-4 text-orange-600" aria-hidden="true" />
+    </Tooltip>
+  )
+}
+
+function CreatorBadge() {
+  return (
+    <Tooltip text="Project creator" placement="right">
+      <StarIcon className="h-4 w-4 text-amber-400" aria-hidden="true" />
     </Tooltip>
   )
 }

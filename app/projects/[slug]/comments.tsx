@@ -44,7 +44,10 @@ export function Comments(props: {
       <Row className="w-full">
         <div className="MT w-full">
           <CommentWrapper className={clsx('mt-2', user ?? 'pb-0')}>
-            <Comment comment={thread.root} />
+            <Comment
+              comment={thread.root}
+              writtenByCreator={thread.root.commenter === project.creator}
+            />
             {user && (
               <Row className="w-full justify-end">
                 <IconButton onClick={() => setReplyingTo(thread.root)}>
@@ -56,7 +59,10 @@ export function Comments(props: {
 
           {thread.replies.map((reply) => (
             <CommentWrapper key={reply.id} className="ml-8">
-              <Comment comment={reply} />
+              <Comment
+                comment={reply}
+                writtenByCreator={reply.commenter === project.creator}
+              />
             </CommentWrapper>
           ))}
           {replyingTo?.id === thread.root.id && user && (
@@ -111,12 +117,18 @@ function genThreads(
   return orderBy(threadsArray, 'root.created_at', 'desc')
 }
 
-function Comment(props: { comment: CommentAndProfile }) {
-  const { comment } = props
+function Comment(props: {
+  comment: CommentAndProfile
+  writtenByCreator?: boolean
+}) {
+  const { comment, writtenByCreator } = props
   return (
     <div className="w-11/12">
       <Row className="justify-between gap-2">
-        <UserAvatarAndBadge profile={comment.profiles} />
+        <UserAvatarAndBadge
+          profile={comment.profiles}
+          creatorBadge={writtenByCreator}
+        />
         <div className="text-sm text-gray-500">
           {formatDistanceToNow(new Date(comment.created_at), {
             addSuffix: true,
