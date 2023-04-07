@@ -19,11 +19,8 @@ export const mentionSuggestion: Suggestion = {
       (await getAllProfiles(supabase)).filter((u) =>
         searchInAny(query, u.username, u.full_name)
       ),
-      [
-        (u) => [u.full_name, u.username].some((s) => beginsWith(s, query)),
-        'followerCountCached',
-      ],
-      ['desc', 'desc']
+      [(u) => [u.full_name, u.username].some((s) => beginsWith(s, query))],
+      ['desc']
     ).slice(0, 5)
   },
   render: makeMentionRender(MentionList),

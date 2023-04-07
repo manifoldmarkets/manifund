@@ -5,7 +5,6 @@ import { getFullCommentById } from '@/db/comment'
 import { sendTemplateEmail } from '@/utils/email'
 import { getReplies } from '@/db/comment'
 import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
-import { getFullProjectBySlug } from '@/db/project'
 import { calculateFullTrades } from '@/utils/math'
 import { getTxnsByProject } from '@/db/txn'
 

@@ -5,7 +5,6 @@ import {
   EditorContent,
   Editor,
   mergeAttributes,
-  generateHTML,
 } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
@@ -14,7 +13,6 @@ import { linkClass } from './site-link'
 import { generateReact } from './tiptap-utils'
 
 export function useTextEditor(content?: any) {
-  console.log('content', content)
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -63,7 +61,6 @@ export function RichContent(props: {
     DisplayMention,
   ])
 
-  console.log(jsxContent)
   return (
     <div
       className={clsx(
