@@ -75,7 +75,7 @@ export function RichContent(props: {
   )
 }
 
-const DisplayLink = Link.extend({
+export const DisplayLink = Link.extend({
   renderHTML({ HTMLAttributes }) {
     delete HTMLAttributes.class // only use our classes (don't duplicate on paste)
     return ['a', mergeAttributes(HTMLAttributes, { class: linkClass }), 0]

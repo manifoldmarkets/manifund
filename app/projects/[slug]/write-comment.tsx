@@ -50,7 +50,6 @@ export function WriteComment(props: {
                 }
                 await sendComment(
                   supabase,
-                  htmlContent,
                   content,
                   project.id,
                   commenter.id,

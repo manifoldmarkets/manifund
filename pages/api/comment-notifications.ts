@@ -1,56 +1,74 @@
 import { createAdminClient } from './_db'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { HTMLContent } from '@tiptap/react'
+import { generateHTML } from '@tiptap/react'
 import { getFullCommentById } from '@/db/comment'
 import { sendTemplateEmail } from '@/utils/email'
-import { getReplies } from '@/db/comment'
 import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
 import { calculateFullTrades } from '@/utils/math'
 import { getTxnsByProject } from '@/db/txn'
-
-type CommentProps = {
-  commentId: string
-  htmlContent: HTMLContent
-}
+import StarterKit from '@tiptap/starter-kit'
+import { DisplayMention } from '@/components/user-mention/mention-extension'
+import { DisplayLink } from '@/components/editor'
+import { parseMentions } from '@/utils/parse'
+import { getProfileByUsername } from '@/db/profile'
+import { Comment } from '@/db/comment'
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<CommentProps>
+  res: NextApiResponse
 ) {
-  const { commentId, htmlContent } = req.body
+  const { comment } = req.body.record
   const supabaseAdmin = createAdminClient()
-  const comment = await getFullCommentById(supabaseAdmin, commentId)
+  const fullComment = await getFullCommentById(supabaseAdmin, comment.id)
+  const htmlContent = generateHTML(comment.content, [
+    StarterKit,
+    DisplayLink,
+    DisplayMention,
+  ])
+  const mentionedUsernames = parseMentions(comment.content)
+  const mentionedUserIds = await Promise.all(
+    mentionedUsernames.map(async (username) => {
+      const user = await getProfileByUsername(supabaseAdmin, username)
+      return user.id
+    })
+  )
   const NEW_COMMENT_TEMPLATE_ID = 31316102
-  if (comment.commenter !== comment.projects.creator) {
+
+  const sendCreatorEmail = async () => {
     const projectCreatorMailgunVars = {
-      projectTitle: comment.projects.title,
-      projectUrl: `https://manifund.org/projects/${comment.projects.slug}`,
-      commenterUsername: comment.profiles.username,
-      commenterAvatarUrl: comment.profiles.avatar_url,
+      projectTitle: fullComment.projects.title,
+      projectUrl: `https://manifund.org/projects/${fullComment.projects.slug}`,
+      commenterUsername: fullComment.profiles.username,
+      commenterAvatarUrl: fullComment.profiles.avatar_url,
       htmlContent: JSON.stringify(htmlContent),
     }
     await sendTemplateEmail(
-      comment.projects.creator,
+      fullComment.projects.creator,
       NEW_COMMENT_TEMPLATE_ID,
       projectCreatorMailgunVars
     )
-  } else if (!comment.replying_to) {
+  }
+  if (fullComment.profiles.id !== fullComment.projects.creator) {
+    await sendCreatorEmail()
+  }
+
+  const sendInvestorEmail = async () => {
     const investorNotifPostmarkVars = {
-      projectTitle: comment.projects.title,
-      projectUrl: `https://manifund.org/projects/${comment.projects.slug}`,
-      creatorFullName: comment.profiles.full_name,
-      commenterAvatarUrl: comment.profiles.avatar_url,
+      projectTitle: fullComment.projects.title,
+      projectUrl: `https://manifund.org/projects/${fullComment.projects.slug}`,
+      creatorFullName: fullComment.profiles.full_name,
+      commenterAvatarUrl: fullComment.profiles.avatar_url,
       htmlContent: JSON.stringify(htmlContent),
     }
     const txnsAndProfiles = await getTxnsByProject(
       supabaseAdmin,
-      comment.projects.id
+      fullComment.projects.id
     )
     const trades = calculateFullTrades(txnsAndProfiles)
-    const shareholders = calculateShareholders(trades, comment.profiles)
+    const shareholders = calculateShareholders(trades, fullComment.profiles)
     const CREATOR_UPDATE_TEMPLATE_ID = 31328698
     shareholders.forEach(async (shareholder) => {
-      if (shareholder.profile.id !== comment.projects.creator) {
+      if (shareholder.profile.id !== fullComment.projects.creator) {
         await sendTemplateEmail(
           shareholder.profile.id,
           CREATOR_UPDATE_TEMPLATE_ID,
@@ -59,50 +77,65 @@ export default async function handler(
       }
     })
   }
+  if (
+    fullComment.profiles.id === fullComment.projects.creator &&
+    !comment.replying_to
+  ) {
+    await sendInvestorEmail()
+  }
+
+  const sendMentionEmails = async () => {
+    mentionedUserIds.forEach(async (userId) => {
+      if (
+        userId !== fullComment.profiles.id &&
+        userId !== fullComment.projects.creator
+      ) {
+        const mentionPostmarkVars = {
+          projectTitle: fullComment.projects.title,
+          projectUrl: `https://manifund.org/projects/${fullComment.projects.slug}`,
+          commenterUsername: fullComment.profiles.username,
+          commenterAvatarUrl: fullComment.profiles.avatar_url,
+          htmlContent: JSON.stringify(htmlContent),
+        }
+        const COMMENT_WITH_MENTION_TEMPLATE_ID = 31350706
+        await sendTemplateEmail(
+          userId,
+          COMMENT_WITH_MENTION_TEMPLATE_ID,
+          mentionPostmarkVars
+        )
+      }
+    })
+  }
+  await sendMentionEmails()
+
+  const sendReplyEmail = async (parentComment: Comment) => {
+    const parentCommenterPostmarkVars = {
+      projectTitle: fullComment.projects.title,
+      projectUrl: `https://manifund.org/projects/${fullComment.projects.slug}`,
+      commenterUsername: fullComment.profiles.username,
+      commenterAvatarUrl: fullComment.profiles.avatar_url,
+      htmlContent: JSON.stringify(htmlContent),
+    }
+    await sendTemplateEmail(
+      parentComment.commenter,
+      NEW_COMMENT_TEMPLATE_ID,
+      parentCommenterPostmarkVars
+    )
+  }
   if (comment.replying_to) {
     const parentComment = await getFullCommentById(
       supabaseAdmin,
       comment.replying_to
     )
-    if (parentComment.commenter !== comment.projects.creator) {
-      const parentCommenterPostmarkVars = {
-        projectTitle: comment.projects.title,
-        projectUrl: `https://manifund.org/projects/${comment.projects.slug}`,
-        commenterUsername: comment.profiles.username,
-        commenterAvatarUrl: comment.profiles.avatar_url,
-        htmlContent: JSON.stringify(htmlContent),
-      }
-      await sendTemplateEmail(
-        parentComment.commenter,
-        NEW_COMMENT_TEMPLATE_ID,
-        parentCommenterPostmarkVars
-      )
+    if (
+      parentComment.commenter !== fullComment.projects.creator &&
+      !mentionedUsernames.includes(parentComment.profiles.username)
+    ) {
+      await sendReplyEmail(parentComment)
     }
-    const threadComments = await getReplies(supabaseAdmin, comment.replying_to)
-    const threadCommenterIds = new Set(threadComments.map((reply) => reply.id))
-    threadCommenterIds.forEach(async (commenterId) => {
-      if (
-        commenterId !== comment.projects.creator &&
-        commenterId !== parentComment.commenter
-      ) {
-        const threadCommenterPostmarkVars = {
-          projectTitle: comment.projects.title,
-          projectUrl: `https://manifund.org/projects/${comment.projects.slug}`,
-          commenterUsername: comment.profiles.username,
-          commenterAvatarUrl: comment.profiles.avatar_url,
-          htmlContent: JSON.stringify(htmlContent),
-        }
-        await sendTemplateEmail(
-          commenterId,
-          NEW_COMMENT_TEMPLATE_ID,
-          threadCommenterPostmarkVars
-        )
-      }
-    })
   }
   res.status(200).json({
-    commentId,
-    htmlContent,
+    comment,
   })
   return res
 }
