@@ -5,13 +5,16 @@ import {
   EditorContent,
   Editor,
   mergeAttributes,
+  generateHTML,
 } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
+import { DisplayMention } from './user-mention/mention-extension'
 import { linkClass } from './site-link'
 import { generateReact } from './tiptap-utils'
 
 export function useTextEditor(content?: any) {
+  console.log('content', content)
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -21,7 +24,7 @@ export function useTextEditor(content?: any) {
         ),
       },
     },
-    extensions: [StarterKit, DisplayLink],
+    extensions: [StarterKit, DisplayLink, DisplayMention],
     content: content ?? '<p>Edit here...</p>',
   })
   return editor
@@ -36,7 +39,7 @@ export function TextEditor(props: { editor: Editor | null }) {
 const proseClass = (size: 'sm' | 'md' | 'lg') =>
   clsx(
     'prose max-w-none leading-relaxed',
-    'prose-a:text-orange-700 prose-a:no-underline',
+    'prose-a:text-orange-600 prose-a:no-underline',
     size === 'sm' ? 'prose-sm' : 'text-md',
     size !== 'lg' && 'prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0',
     '[&>p]:prose-li:my-0',
@@ -54,7 +57,13 @@ export function RichContent(props: {
   const { className, content, size = 'md' } = props
   if (!content) return null
 
-  const jsxContent = generateReact(content, [StarterKit, DisplayLink])
+  const jsxContent = generateReact(content, [
+    StarterKit,
+    DisplayLink,
+    DisplayMention,
+  ])
+
+  console.log(jsxContent)
   return (
     <div
       className={clsx(

@@ -1,5 +1,8 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient, User } from '@supabase/supabase-js'
+import { QueryClient } from '@tanstack/react-query'
+import { useSupabase } from './supabase-provider'
+import { createServerClient } from './supabase-server'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -45,4 +48,12 @@ export async function getProfileByUsername(
 export async function getUser(supabase: SupabaseClient<Database>) {
   const resp = await supabase.auth.getUser()
   return resp.data.user
+}
+
+export async function getAllProfiles(supabase: SupabaseClient) {
+  const { data, error } = await supabase.from('profiles').select('*')
+  if (error) {
+    throw error
+  }
+  return data as Profile[]
 }
