@@ -33,19 +33,18 @@ export default async function handler(
     })
   )
   const NEW_COMMENT_TEMPLATE_ID = 31316102
-
+  const postmarkVars = {
+    projectTitle: fullComment.projects.title,
+    projectUrl: `https://manifund.org/projects/${fullComment.projects.slug}`,
+    commenterUsername: fullComment.profiles.username,
+    commenterAvatarUrl: fullComment.profiles.avatar_url,
+    htmlContent: JSON.stringify(htmlContent),
+  }
   const sendCreatorEmail = async () => {
-    const projectCreatorMailgunVars = {
-      projectTitle: fullComment.projects.title,
-      projectUrl: `https://manifund.org/projects/${fullComment.projects.slug}`,
-      commenterUsername: fullComment.profiles.username,
-      commenterAvatarUrl: fullComment.profiles.avatar_url,
-      htmlContent: JSON.stringify(htmlContent),
-    }
     await sendTemplateEmail(
       fullComment.projects.creator,
       NEW_COMMENT_TEMPLATE_ID,
-      projectCreatorMailgunVars
+      postmarkVars
     )
   }
   if (fullComment.profiles.id !== fullComment.projects.creator) {
@@ -53,13 +52,6 @@ export default async function handler(
   }
 
   const sendInvestorEmail = async () => {
-    const investorNotifPostmarkVars = {
-      projectTitle: fullComment.projects.title,
-      projectUrl: `https://manifund.org/projects/${fullComment.projects.slug}`,
-      creatorFullName: fullComment.profiles.full_name,
-      commenterAvatarUrl: fullComment.profiles.avatar_url,
-      htmlContent: JSON.stringify(htmlContent),
-    }
     const txnsAndProfiles = await getTxnsByProject(
       supabaseAdmin,
       fullComment.projects.id
@@ -72,7 +64,7 @@ export default async function handler(
         await sendTemplateEmail(
           shareholder.profile.id,
           CREATOR_UPDATE_TEMPLATE_ID,
-          investorNotifPostmarkVars
+          postmarkVars
         )
       }
     })
@@ -90,18 +82,11 @@ export default async function handler(
         userId !== fullComment.profiles.id &&
         userId !== fullComment.projects.creator
       ) {
-        const mentionPostmarkVars = {
-          projectTitle: fullComment.projects.title,
-          projectUrl: `https://manifund.org/projects/${fullComment.projects.slug}`,
-          commenterUsername: fullComment.profiles.username,
-          commenterAvatarUrl: fullComment.profiles.avatar_url,
-          htmlContent: JSON.stringify(htmlContent),
-        }
         const COMMENT_WITH_MENTION_TEMPLATE_ID = 31350706
         await sendTemplateEmail(
           userId,
           COMMENT_WITH_MENTION_TEMPLATE_ID,
-          mentionPostmarkVars
+          postmarkVars
         )
       }
     })
@@ -109,17 +94,10 @@ export default async function handler(
   await sendMentionEmails()
 
   const sendReplyEmail = async (parentComment: Comment) => {
-    const parentCommenterPostmarkVars = {
-      projectTitle: fullComment.projects.title,
-      projectUrl: `https://manifund.org/projects/${fullComment.projects.slug}`,
-      commenterUsername: fullComment.profiles.username,
-      commenterAvatarUrl: fullComment.profiles.avatar_url,
-      htmlContent: JSON.stringify(htmlContent),
-    }
     await sendTemplateEmail(
       parentComment.commenter,
       NEW_COMMENT_TEMPLATE_ID,
-      parentCommenterPostmarkVars
+      postmarkVars
     )
   }
   if (comment.replying_to) {

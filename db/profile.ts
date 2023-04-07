@@ -1,8 +1,5 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient, User } from '@supabase/supabase-js'
-import { QueryClient } from '@tanstack/react-query'
-import { useSupabase } from './supabase-provider'
-import { createServerClient } from './supabase-server'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
