@@ -27,7 +27,6 @@ export async function getCommentsByProject(
 
 export async function sendComment(
   supabase: SupabaseClient,
-  htmlContent: HTMLContent,
   content: JSONContent,
   projectId: string,
   commenterId: string,
@@ -45,18 +44,6 @@ export async function sendComment(
   ])
   if (error) {
     throw error
-  } else {
-    const response = await fetch('/api/comment-notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        commentId,
-        htmlContent,
-      }),
-    })
-    const newProject = await response.json()
   }
 }
 

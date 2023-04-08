@@ -26,7 +26,8 @@ export function WriteComment(props: {
   return (
     <Row className="w-full">
       <Avatar
-        profile={commenter}
+        username={commenter.username}
+        avatarUrl={commenter.avatar_url}
         size={replyingToId ? 6 : 10}
         className={clsx('mr-2', { 'ml-4 mt-1': replyingToId })}
       />
@@ -50,7 +51,6 @@ export function WriteComment(props: {
                 }
                 await sendComment(
                   supabase,
-                  htmlContent,
                   content,
                   project.id,
                   commenter.id,

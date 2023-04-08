@@ -139,7 +139,12 @@ export function EditProfileForm(props: { profile: Profile }) {
               alt="Your new avatar"
             />
           ) : (
-            <Avatar profile={profile} noLink size={24} />
+            <Avatar
+              username={profile.username}
+              avatarUrl={profile.avatar_url}
+              noLink
+              size={24}
+            />
           )}
         </div>
       </div>

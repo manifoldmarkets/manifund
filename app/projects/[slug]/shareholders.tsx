@@ -49,11 +49,19 @@ function History(props: { trades: FullTrade[] }) {
       <Row key={trade.bundle} className="justify-center">
         <Row className="w-full max-w-sm justify-between gap-5 rounded p-3 hover:bg-gray-200 sm:max-w-xl">
           <Row className="gap-3">
-            <Avatar profile={trade.fromProfile} size={6} />
+            <Avatar
+              username={trade.fromProfile.username}
+              avatarUrl={trade.fromProfile.avatar_url}
+              size={6}
+            />
             <Col className="justify-center">
               <ArrowRightIcon className="h-4 w-4" />
             </Col>
-            <Avatar profile={trade.toProfile} size={6} />
+            <Avatar
+              username={trade.toProfile.username}
+              avatarUrl={trade.toProfile.avatar_url}
+              size={6}
+            />
           </Row>
           <div>
             {formatLargeNumber((trade.numShares / TOTAL_SHARES) * 100)}%{' '}

@@ -460,6 +460,11 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-list-item/-/extension-list-item-2.0.0-beta.218.tgz#21ae2c21da9488b05be4e03dc14e3ec9c7fdbf90"
   integrity sha512-ZqSA0dZAzACYgfFAM+RWCRhMPUcZiWT8JhpN/2on0egI+b1gtt2RAA4niBaNFp4skGQS8a4bCy5cttIHUNO7FA==
 
+"@tiptap/extension-mention@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-mention/-/extension-mention-2.0.2.tgz#15c0ce8c33b4848850a0f58e9a31ea686d4299e9"
+  integrity sha512-5nUSlqYi5x+I5Q84+l8OL+4R/NRAN0wBrEN0Cps4GJB3dqINMsTbjSbIwRk8bw79XBHNJI1PndBjVktBgwYxNA==
+
 "@tiptap/extension-ordered-list@^2.0.0-beta.218":
   version "2.0.0-beta.218"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-ordered-list/-/extension-ordered-list-2.0.0-beta.218.tgz#7274adcd088be457db40126a3fb898b32cc1a085"
@@ -536,6 +541,11 @@
     "@tiptap/extension-paragraph" "^2.0.0-beta.218"
     "@tiptap/extension-strike" "^2.0.0-beta.218"
     "@tiptap/extension-text" "^2.0.0-beta.218"
+
+"@tiptap/suggestion@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@tiptap/suggestion/-/suggestion-2.0.2.tgz#f988af5f9a603690d37fdbe7351a7e4f9c09b181"
+  integrity sha512-JTfmLYr0MKigExma/P67kOClCWnqtLkOfPSNA4JmzG5rupjhaesGcoYlsptewbzl7MtJCthJDP81BNcncIEcBg==
 
 "@types/json5@^0.0.29":
   version "0.0.29"

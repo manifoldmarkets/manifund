@@ -29,7 +29,11 @@ export function UserAvatarAndBadge(props: {
   const { profile, className, short, creatorBadge } = props
   return (
     <div className={clsx('flex flex-row items-center gap-1', className)}>
-      <Avatar profile={profile} size={6} />
+      <Avatar
+        username={profile.username}
+        avatarUrl={profile.avatar_url}
+        size={6}
+      />
       <UserLink
         name={profile.full_name}
         username={profile.username}

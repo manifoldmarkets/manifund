@@ -8,27 +8,28 @@ import { UserCircleIcon, UserIcon, UsersIcon } from '@heroicons/react/20/solid'
 import { Profile } from '@/db/profile'
 
 export function Avatar(props: {
-  profile: Profile
+  username: string
+  avatarUrl: string | null
   noLink?: boolean
   size?: number | 'xxs' | 'xs' | 'sm'
   className?: string
 }) {
-  const { profile, noLink, size, className } = props
+  const { username, avatarUrl, noLink, size, className } = props
   const router = useRouter()
   const s =
     size == 'xxs' ? 4 : size == 'xs' ? 6 : size === 'sm' ? 8 : size || 12
   const sizeInPx = s * 4
 
   const onClick = (e: MouseEvent) => {
-    if (!noLink && profile) {
+    if (!noLink && username) {
       e.stopPropagation()
-      router.push(`/${profile.username}`)
+      router.push(`/${username}`)
     }
   }
 
   // there can be no avatar URL or username in the feed, we show a "submit comment"
   // item with a fake grey user circle guy even if you aren't signed in
-  return profile.avatar_url ? (
+  return avatarUrl ? (
     <Image
       width={sizeInPx}
       height={sizeInPx}
@@ -39,9 +40,9 @@ export function Avatar(props: {
         className
       )}
       style={{ maxWidth: `${s * 0.25}rem` }}
-      src={profile.avatar_url}
+      src={avatarUrl}
       onClick={onClick}
-      alt={`${profile.username ?? 'Unknown user'} avatar`}
+      alt={`${username ?? 'Unknown user'} avatar`}
     />
   ) : (
     <UserCircleIcon
