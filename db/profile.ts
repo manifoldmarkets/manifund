@@ -47,10 +47,16 @@ export async function getUser(supabase: SupabaseClient<Database>) {
   return resp.data.user
 }
 
-export async function getAllProfiles(supabase: SupabaseClient) {
-  const { data, error } = await supabase.from('profiles').select('*')
+export type MiniProfile = Pick<
+  Profile,
+  'id' | 'username' | 'avatar_url' | 'full_name'
+>
+export async function getAllMiniProfiles(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, username, avatar_url, full_name')
   if (error) {
     throw error
   }
-  return data as Profile[]
+  return data as MiniProfile[]
 }

@@ -55,7 +55,8 @@ export async function BottomNavBar() {
             <div className="mx-auto my-1">
               <Avatar
                 size={6}
-                profile={profile}
+                username={profile.username}
+                avatarUrl={profile.avatar_url}
                 // avatarUrl={user.avatarUrl}
                 noLink
               />

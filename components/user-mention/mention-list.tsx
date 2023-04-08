@@ -1,12 +1,12 @@
 import { SuggestionProps } from '@tiptap/suggestion'
 import clsx from 'clsx'
-import { Profile } from '@/db/profile'
+import { MiniProfile } from '@/db/profile'
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { Avatar } from '@/components/avatar'
 
 // copied from https://tiptap.dev/api/nodes/mention#usage
 export const MentionList = forwardRef(
-  (props: SuggestionProps<Profile>, ref) => {
+  (props: SuggestionProps<MiniProfile>, ref) => {
     const { items: profiles, command } = props
 
     const [selectedIndex, setSelectedIndex] = useState(0)
@@ -56,7 +56,12 @@ export const MentionList = forwardRef(
               onClick={() => submitUser(i)}
               key={profile.id}
             >
-              <Avatar profile={profile} size="xs" noLink />
+              <Avatar
+                username={profile.username}
+                avatarUrl={profile.avatar_url}
+                size="xs"
+                noLink
+              />
               {profile.username}
             </button>
           ))

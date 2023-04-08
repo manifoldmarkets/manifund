@@ -3,7 +3,7 @@ import { ReactRenderer } from '@tiptap/react'
 import { beginsWith, searchInAny } from '@/utils/parse'
 import { orderBy } from 'lodash'
 import tippy from 'tippy.js'
-import { getAllProfiles } from '@/db/profile'
+import { getAllMiniProfiles } from '@/db/profile'
 import { MentionList } from './mention-list'
 import { createClient } from '@/db/supabase-browser'
 type Render = Suggestion['render']
@@ -16,7 +16,7 @@ export const mentionSuggestion: Suggestion = {
   items: async ({ query }) => {
     const supabase = createClient()
     return orderBy(
-      (await getAllProfiles(supabase)).filter((u) =>
+      (await getAllMiniProfiles(supabase)).filter((u) =>
         searchInAny(query, u.username, u.full_name)
       ),
       [(u) => [u.full_name, u.username].some((s) => beginsWith(s, query))],
