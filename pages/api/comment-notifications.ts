@@ -1,6 +1,6 @@
 import { createAdminClient } from './_db'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { generateHTML, JSONContent } from '@tiptap/react'
+import { generateHTML } from '@tiptap/html'
 import { getFullCommentById } from '@/db/comment'
 import { sendTemplateEmail } from '@/utils/email'
 import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
@@ -12,12 +12,16 @@ import { DisplayLink } from '@/components/editor'
 import { parseMentions } from '@/utils/parse'
 import { getProfileByUsername } from '@/db/profile'
 import { Comment } from '@/db/comment'
+import { JSONContent } from '@tiptap/core'
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log('comment-notifications webhook has been called', req.body.record)
+  console.log(
+    'comment-notifications webhook has been called',
+    JSON.stringify(req.body.record)
+  )
   const comment = req.body.record as Comment
   const supabaseAdmin = createAdminClient()
   const fullComment = await getFullCommentById(supabaseAdmin, comment.id)
