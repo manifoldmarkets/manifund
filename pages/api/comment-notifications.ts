@@ -17,6 +17,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  console.log('comment-notifications webhook has been called', req.body.record)
   const { comment } = req.body.record
   const supabaseAdmin = createAdminClient()
   const fullComment = await getFullCommentById(supabaseAdmin, comment.id)
