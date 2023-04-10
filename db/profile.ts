@@ -63,6 +63,7 @@ export async function getAllMiniProfiles(supabase: SupabaseClient) {
   return data as MiniProfile[]
 }
 
+// Doesn't account for charities giving to other organizations yet
 export async function getAllOrgs(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('profiles')
