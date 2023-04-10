@@ -11,6 +11,11 @@ export async function sendTemplateEmail(
   const supabase = createAdminClient()
   const toEmail = await getUserEmail(supabase, toId)
 
+  if (!toEmail) {
+    console.log('No email found for user', toId)
+    return
+  }
+
   let client = new postmark.ServerClient(
     process.env.POSTMARK_SERVER_TOKEN ?? ''
   )

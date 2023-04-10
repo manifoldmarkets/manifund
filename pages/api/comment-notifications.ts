@@ -10,7 +10,7 @@ import StarterKit from '@tiptap/starter-kit'
 import { DisplayMention } from '@/components/user-mention/mention-extension'
 import { DisplayLink } from '@/components/editor'
 import { parseMentions } from '@/utils/parse'
-import { getProfileByUsername } from '@/db/profile'
+import { getProfileById } from '@/db/profile'
 import { Comment } from '@/db/comment'
 import { JSONContent } from '@tiptap/core'
 
@@ -18,10 +18,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log(
-    'comment-notifications webhook has been called',
-    JSON.stringify(req.body.record)
-  )
   const comment = req.body.record as Comment
   const supabaseAdmin = createAdminClient()
   const fullComment = await getFullCommentById(supabaseAdmin, comment.id)
@@ -30,13 +26,8 @@ export default async function handler(
     DisplayLink,
     DisplayMention,
   ])
-  const mentionedUsernames = parseMentions(comment.content as JSONContent)
-  const mentionedUserIds = await Promise.all(
-    mentionedUsernames.map(async (username) => {
-      const user = await getProfileByUsername(supabaseAdmin, username)
-      return user.id
-    })
-  )
+  const mentionedUserIds = parseMentions(comment.content as JSONContent)
+
   const NEW_COMMENT_TEMPLATE_ID = 31316102
   const postmarkVars = {
     projectTitle: fullComment.projects.title,
@@ -112,7 +103,7 @@ export default async function handler(
     )
     if (
       parentComment.commenter !== fullComment.projects.creator &&
-      !mentionedUsernames.includes(parentComment.profiles.username)
+      !mentionedUserIds.includes(parentComment.profiles.id)
     ) {
       await sendReplyEmail(parentComment)
     }
