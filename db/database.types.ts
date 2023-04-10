@@ -172,6 +172,32 @@ export interface Database {
           title?: string
         }
       }
+      stripe_txns: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_id: string
+          id: string
+          session_id: string
+          txn_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          customer_id: string
+          id?: string
+          session_id: string
+          txn_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_id?: string
+          id?: string
+          session_id?: string
+          txn_id?: string
+        }
+      }
       txns: {
         Row: {
           amount: number

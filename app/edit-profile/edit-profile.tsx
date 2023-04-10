@@ -105,8 +105,8 @@ export function EditProfileForm(props: { profile: Profile }) {
           </div>
         ) : (
           <div className="mt-3 rounded-md bg-rose-100 p-3 text-center text-rose-600">
-            You can invest in projects with hectoMana--the Manifund play
-            currency--grow your portfolio, and donate to real charities, but you
+            You can invest in projects with money in your Manifund account, grow
+            your portfolio, and donate your balance to real charities, but you
             cannot withdraw your money. If you want to invest with real money,
             you will need to fill out{' '}
             <a
@@ -120,8 +120,8 @@ export function EditProfileForm(props: { profile: Profile }) {
             to get verified as an accredited investor.
             <br />
             <p className="font-bold">
-              You need to hold 0 hectoMana to be verified as an accredited
-              investor.
+              You need to hold $0 on your Manifund account to be verified as an
+              accredited investor.
             </p>
           </div>
         )}
