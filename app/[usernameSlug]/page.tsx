@@ -11,6 +11,8 @@ import { Bid, getBidsByUser } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { getProjectsByUser, Project } from '@/db/project'
 
+export const revalidate = 0
+
 export type investment = {
   project?: Project // Undefined eg for txns that are just transfers of money
   num_shares: number
