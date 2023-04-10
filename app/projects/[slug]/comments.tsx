@@ -43,7 +43,7 @@ export function Comments(props: {
     <div key={thread.root.id}>
       <Row className="w-full">
         <div className="MT w-full">
-          <CommentWrapper className={clsx('mt-2', user ?? 'pb-0')}>
+          <CommentWrapper className={clsx('mt-2', user ?? 'pb-4')}>
             <Comment
               comment={thread.root}
               writtenByCreator={thread.root.commenter === project.creator}
