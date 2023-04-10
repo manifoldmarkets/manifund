@@ -1,7 +1,9 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient, User } from '@supabase/supabase-js'
+import { Txn } from '@/db/txn'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
+export type ProfileAndTxns = Profile & { txns: Txn[] }
 
 export function isAdmin(user: User | null) {
   const ADMINS = ['rachel.weinberg12@gmail.com', 'akrolsmir@gmail.com']
@@ -59,4 +61,15 @@ export async function getAllMiniProfiles(supabase: SupabaseClient) {
     throw error
   }
   return data as MiniProfile[]
+}
+
+export async function getAllOrgs(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*, txns!txns_to_id_fkey(*)')
+    .eq('type', 'org')
+  if (error) {
+    throw error
+  }
+  return data as ProfileAndTxns[]
 }

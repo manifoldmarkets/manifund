@@ -19,19 +19,26 @@ export default async function Admin() {
   }
 
   const supabaseAdmin = createAdminClient()
-  const { data, error } = await supabaseAdmin
-    .from('users')
-    .select('*, profiles(username, accreditation_status)')
-  const users = data as {
-    id: string
-    email: string
-    profiles: { username: string; accreditation_status: boolean }
-  }[]
+  const { data, error } = await supabaseAdmin.from('users').select('*')
+  const userPromises = data?.map(async (user) => {
+    const { data: profiles, error } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+    const profile = profiles ? profiles[0] : null
+    return {
+      ...user,
+      profile,
+    }
+  })
+  const users = await Promise.all(userPromises ?? [])
 
   const usersById = new Map(users.map((user) => [user.id, user]))
   const getName = (userId: string | null) => {
-    return usersById.get(userId ?? '')?.profiles?.username
+    return usersById.get(userId ?? '')?.profile?.username
   }
+
+  // await setProfilesToIndividual(supabaseAdmin)
 
   const { data: txns } = await supabaseAdmin
     .from('txns')
@@ -63,17 +70,17 @@ export default async function Admin() {
           {users.map((user) => (
             <tr key={user.id}>
               <td>{user.email}</td>
-              <td>{user.profiles.username}</td>
+              <td>{user.profile?.username}</td>
               <td>{user.id}</td>
               <td>
                 <VerifyInvestor
-                  userId={user.id}
-                  accredited={user.profiles.accreditation_status}
+                  userId={user.id as string}
+                  accredited={user.profile?.accreditation_status as boolean}
                 />
               </td>
-              <td>{balances.get(user.id) ?? 0}</td>
+              <td>{balances.get(user.id as string) ?? 0}</td>
               <td>
-                <PayUser userId={user.id} />
+                <PayUser userId={user.id as string} />
               </td>
             </tr>
           ))}
@@ -190,4 +197,16 @@ async function CreatorShares(props: {
     projectId
   )
   return <td>{userData.userShares}</td>
+}
+
+// used when profile type was added
+async function setProfilesToIndividual(supabase: SupabaseClient) {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ type: 'individual' })
+    .neq('full_name', 'aoiwejdio')
+
+  if (error) {
+    console.error('Updating profiles', error)
+  }
 }

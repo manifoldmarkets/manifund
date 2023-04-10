@@ -1,13 +1,16 @@
 ---- Profiles ----
 -- add public profiles table
+create type profile_type as enum ('individual', 'org');
+
 create table public.profiles (
-  id uuid not null references auth.users on delete cascade,
+  id uuid not null,
   username text not null unique,
   bio text not null,
   website text,
   accreditation_status boolean not null,
   full_name text not null,
   avatar_url text,
+  type profile_type not null default 'individual',
   primary key (id)
 );
 
