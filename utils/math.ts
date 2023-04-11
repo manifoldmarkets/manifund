@@ -1,10 +1,15 @@
-import { Bid } from '@/db/bid'
+import { Bid, getBidsByUser } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
-import { Txn, TxnAndProfiles } from '@/db/txn'
+import {
+  getIncomingTxnsByUser,
+  getOutgoingTxnsByUser,
+  Txn,
+  TxnAndProfiles,
+} from '@/db/txn'
+import { SupabaseClient } from '@supabase/supabase-js'
 import { orderBy } from 'lodash'
-import { formatLargeNumber } from './formatting'
 
 export function getProposalValuation(project: Project) {
   const investorPercent =
@@ -107,4 +112,61 @@ export function calculateFullTrades(txns: TxnAndProfiles[]) {
 
 export function dateDiff(first: number, second: number) {
   return Math.round(second - first) / (1000 * 60 * 60 * 24)
+}
+
+export function calculateUserSpendableFunds(
+  incomingTxns: Txn[],
+  outgoingTxns: Txn[],
+  bids: Bid[],
+  accreditation_status: boolean
+) {
+  const currentBalance = calculateUserBalance(incomingTxns, outgoingTxns)
+  console.log(currentBalance)
+  if (accreditation_status) {
+    return currentBalance
+  }
+  const balanceMinusBids = bids
+    .filter((bid) => bid.status === 'pending' && bid.type === 'buy')
+    .reduce((acc, bid) => acc - bid.amount, currentBalance)
+  return balanceMinusBids
+}
+
+export async function calculateUserFundsAndShares(
+  supabase: SupabaseClient,
+  userId: string,
+  projectId: string,
+  accreditation_status: boolean
+) {
+  if (!userId) {
+    return { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
+  }
+  const incomingTxns = await getIncomingTxnsByUser(supabase, userId)
+  const outgoingTxns = await getOutgoingTxnsByUser(supabase, userId)
+  const userBids = await getBidsByUser(supabase, userId)
+  const calculateUserShares = () => {
+    const incomingShares = incomingTxns
+      .filter((txn) => txn.token === projectId)
+      .reduce((acc, txn) => acc + txn.amount, 0)
+    const outgoingShares = outgoingTxns
+      .filter((txn) => txn.token === projectId)
+      .reduce((acc, txn) => acc + txn.amount, 0)
+    return incomingShares - outgoingShares
+  }
+  const userShares = calculateUserShares()
+  const offeredShares = userBids
+    .filter(
+      (bid) =>
+        bid.type === 'sell' &&
+        bid.status === 'pending' &&
+        bid.project === projectId
+    )
+    .reduce((acc, bid) => acc + bid.amount, 0)
+  const userSellableShares = userShares - offeredShares
+  const userSpendableFunds = calculateUserSpendableFunds(
+    incomingTxns,
+    outgoingTxns,
+    userBids,
+    accreditation_status
+  )
+  return { userSpendableFunds, userSellableShares, userShares }
 }

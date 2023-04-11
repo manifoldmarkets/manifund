@@ -2,7 +2,7 @@ import { createServerClient } from '@/db/supabase-server'
 import { getAllOrgs } from '@/db/profile'
 import { OrgCard } from './org-card'
 
-export default async function CharityPage() {
+export default async function AllCharitiesPage() {
   const supabase = createServerClient()
   const orgs = await getAllOrgs(supabase)
   return (

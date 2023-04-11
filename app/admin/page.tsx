@@ -8,7 +8,7 @@ import { RoundBidAmounts } from './round-bid-amounts'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { roundLargeNumber } from '@/utils/formatting'
 import { Txn } from '@/db/txn'
-import { getUserFundsAndShares } from '../projects/[slug]/page'
+import { calculateUserFundsAndShares } from '@/utils/math'
 import { GiveCreatorShares } from './give-creator-shares'
 
 export default async function Admin() {
@@ -191,10 +191,12 @@ async function CreatorShares(props: {
   projectCreator: string
 }) {
   const { supabase, projectId, projectCreator } = props
-  const userData = await getUserFundsAndShares(
+  // TODO: take getUserShares out into its own function
+  const userData = await calculateUserFundsAndShares(
     supabase,
     projectCreator,
-    projectId
+    projectId,
+    false
   )
   return <td>{userData.userShares}</td>
 }
