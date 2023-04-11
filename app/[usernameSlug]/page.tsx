@@ -6,7 +6,10 @@ import { ProposalBids } from './user-proposal-bids'
 import { ActiveBids } from './user-active-bids'
 import { Investments } from './user-investments'
 import { Projects } from './user-projects'
-import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
+import {
+  getIncomingTxnsByUserWithProject,
+  getOutgoingTxnsByUserWithProject,
+} from '@/db/txn'
 import { Bid, getBidsByUser } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { getProjectsByUser, Project } from '@/db/project'
@@ -91,8 +94,14 @@ async function compileInvestments(
   supabase: SupabaseClient,
   profile_id: string
 ) {
-  const incomingTxns = await getIncomingTxnsByUser(supabase, profile_id)
-  const outgoingTxns = await getOutgoingTxnsByUser(supabase, profile_id)
+  const incomingTxns = await getIncomingTxnsByUserWithProject(
+    supabase,
+    profile_id
+  )
+  const outgoingTxns = await getOutgoingTxnsByUserWithProject(
+    supabase,
+    profile_id
+  )
   let investments: investment[] = []
   incomingTxns.forEach((item) => {
     let aggInvestment = investments.find(
