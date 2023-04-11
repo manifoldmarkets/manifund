@@ -6,6 +6,7 @@ import { Database } from '@/db/database.types'
 import { BalanceBox } from './balance-box'
 import { InvestorTypeTag } from '@/components/tags'
 import { Row } from '@/components/layout/row'
+import { formatUrl } from '@/utils/formatting'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -17,9 +18,7 @@ export function ProfileHeader(props: {
 }) {
   const { profile, isOwnProfile, balance, withdrawBalance } = props
   // Add https:// to website if it doesn't have it
-  const website = profile.website?.startsWith('http')
-    ? profile.website
-    : `https://${profile.website}`
+  const website = formatUrl(profile.website ?? '')
   return (
     <div className="flex flex-col gap-3">
       <div className="flex">

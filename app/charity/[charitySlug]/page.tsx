@@ -17,11 +17,12 @@ import Image from 'next/image'
 import { LinkIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { DataPoint } from '@/components/data-point'
-import { formatMoney } from '@/utils/formatting'
+import { formatMoney, formatUrl } from '@/utils/formatting'
 import { uniq } from 'lodash'
 import { Col } from '@/components/layout/col'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { formatDistanceToNow } from 'date-fns'
+import Link from 'next/link'
 
 export default async function CharityPage(props: {
   params: { charitySlug: string }
@@ -65,14 +66,14 @@ export default async function CharityPage(props: {
       </figure>
       <h1 className="mt-3 text-3xl font-bold">{charity.full_name}</h1>
       {charity.website && (
-        <span className="my-2 text-orange-600">
+        <span className="my-4 text-orange-600">
           <LinkIcon className="mr-1 inline-block h-4 w-4" />
-          <a className="hover:underline" href={charity.website}>
+          <Link className="hover:underline" href={formatUrl(charity.website)}>
             {charity.website}
-          </a>
+          </Link>
         </span>
       )}
-      <p className="mb-5 text-gray-600">{charity.bio}</p>
+      <p className="mb-10 text-gray-600">{charity.bio}</p>
       {profile && (
         <Row className="justify-between">
           <Col className="mx-5 my-3 justify-between">
@@ -88,7 +89,7 @@ export default async function CharityPage(props: {
           </div>
         </Row>
       )}
-      <div className="relative mt-5">
+      <div className="relative mt-10">
         <div className="absolute inset-0 flex items-center" aria-hidden="true">
           <div className="w-full border-t border-gray-300" />
         </div>
