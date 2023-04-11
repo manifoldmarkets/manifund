@@ -19,11 +19,8 @@ export default async function handler(req: NextRequest) {
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
-  console.log(user?.id)
-  console.log('from', fromId)
   // Only initiate transfers from the account currently logged in
   if (user?.id !== fromId) {
-    console.log('user id mismatch')
     return NextResponse.error()
   }
   const supabaseAdmin = createAdminClient()
@@ -34,7 +31,6 @@ export default async function handler(req: NextRequest) {
     token: 'USD',
   })
   if (error) {
-    console.log(error)
     return NextResponse.error()
   } else {
     return NextResponse.json('success')

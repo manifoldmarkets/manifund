@@ -64,7 +64,7 @@ export async function getAllMiniProfiles(supabase: SupabaseClient) {
 }
 
 // Doesn't account for charities giving to other organizations yet
-export async function getAllOrgs(supabase: SupabaseClient) {
+export async function listOrgs(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('profiles')
     .select('*, txns!txns_to_id_fkey(*)')
