@@ -121,7 +121,6 @@ export function calculateUserSpendableFunds(
   accreditation_status: boolean
 ) {
   const currentBalance = calculateUserBalance(incomingTxns, outgoingTxns)
-  console.log(currentBalance)
   if (accreditation_status) {
     return currentBalance
   }

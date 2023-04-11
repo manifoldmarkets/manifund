@@ -18,7 +18,7 @@ export function OrgsDisplay(props: { orgs: ProfileAndTxns[] }) {
             aria-hidden="true"
           />
         </div>
-        <input
+        <Input
           placeholder="Search"
           className="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:leading-6"
           value={search}
@@ -31,11 +31,7 @@ export function OrgsDisplay(props: { orgs: ProfileAndTxns[] }) {
       </div>
       <div className="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {selectedOrgs.map((org) => {
-          return (
-            <div key={org.id} className="m-3">
-              <OrgCard charity={org} />
-            </div>
-          )
+          return <OrgCard key={org.id} charity={org} />
         })}
       </div>
     </>

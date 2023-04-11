@@ -12,7 +12,7 @@ export function OrgCard(props: { charity: ProfileAndTxns }) {
   const raised = calculateUserBalance(charity.txns, [])
   return (
     <Link href={`/charity/${charity.username}`}>
-      <Col className="h-full rounded-md border border-gray-300 bg-white px-6 pb-2 pt-1 shadow">
+      <Col className="h-full justify-between rounded-md border border-gray-300 bg-white px-6 pb-2 pt-1 shadow">
         <div>
           <figure className="relative h-32">
             {charity.avatar_url ? (
@@ -22,7 +22,7 @@ export function OrgCard(props: { charity: ProfileAndTxns }) {
             )}
           </figure>
         </div>
-        <Col className="h-full justify-between py-5 px-3">
+        <Col className="h-full justify-center py-5 px-3">
           <div className="mb-2 text-xl font-bold">{charity.full_name}</div>
           <div className="text-sm text-gray-600 line-clamp-4">
             {charity.bio}
@@ -34,7 +34,7 @@ export function OrgCard(props: { charity: ProfileAndTxns }) {
                   <span className="text-3xl font-semibold">
                     {formatMoney(raised)}
                   </span>
-                  raised
+                  <span className="relative bottom-1">raised</span>
                 </Row>
               </Row>
             </>
