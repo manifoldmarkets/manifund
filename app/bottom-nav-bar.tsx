@@ -6,7 +6,10 @@ import Link from 'next/link'
 import { Avatar } from '@/components/avatar'
 import { Col } from '@/components/layout/col'
 import { calculateUserBalance } from '@/utils/math'
-import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
+import {
+  getIncomingTxnsByUserWithProject,
+  getOutgoingTxnsByUserWithProject,
+} from '@/db/txn'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 
 export const BOTTOM_NAV_BAR_HEIGHT = 58
@@ -22,10 +25,10 @@ export async function BottomNavBar() {
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
   const incomingTxns = profile
-    ? await getIncomingTxnsByUser(supabase, profile.id)
+    ? await getIncomingTxnsByUserWithProject(supabase, profile.id)
     : []
   const outgoingTxns = profile
-    ? await getOutgoingTxnsByUser(supabase, profile.id)
+    ? await getOutgoingTxnsByUserWithProject(supabase, profile.id)
     : []
   const navigationOptions = [
     { name: 'Home', href: '/' },

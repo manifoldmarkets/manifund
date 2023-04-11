@@ -3,8 +3,8 @@ import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import {
-  getIncomingTxnsByUser,
-  getOutgoingTxnsByUser,
+  getIncomingTxnsByUserWithProject,
+  getOutgoingTxnsByUserWithProject,
   Txn,
   TxnAndProfiles,
 } from '@/db/txn'
@@ -140,8 +140,8 @@ export async function calculateUserFundsAndShares(
   if (!userId) {
     return { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
   }
-  const incomingTxns = await getIncomingTxnsByUser(supabase, userId)
-  const outgoingTxns = await getOutgoingTxnsByUser(supabase, userId)
+  const incomingTxns = await getIncomingTxnsByUserWithProject(supabase, userId)
+  const outgoingTxns = await getOutgoingTxnsByUserWithProject(supabase, userId)
   const userBids = await getBidsByUser(supabase, userId)
   const calculateUserShares = () => {
     const incomingShares = incomingTxns

@@ -11,7 +11,10 @@ import { User } from '@supabase/supabase-js'
 import { Avatar } from '@/components/avatar'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { calculateUserBalance } from '@/utils/math'
-import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
+import {
+  getIncomingTxnsByUserWithProject,
+  getOutgoingTxnsByUserWithProject,
+} from '@/db/txn'
 
 export default async function Sidebar() {
   const supabase = createServerClient()
@@ -63,8 +66,8 @@ export async function ProfileSummary(props: { user: User }) {
   const supabase = createServerClient()
   const profile = await getProfileById(supabase, user.id)
   if (profile === null) return null
-  const incomingTxns = await getIncomingTxnsByUser(supabase, user.id)
-  const outgoingTxns = await getOutgoingTxnsByUser(supabase, user.id)
+  const incomingTxns = await getIncomingTxnsByUserWithProject(supabase, user.id)
+  const outgoingTxns = await getOutgoingTxnsByUserWithProject(supabase, user.id)
   return (
     <div className="group mb-3 flex flex-row items-center gap-2 truncate rounded-md py-3 px-1 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
       <Avatar username={profile.username} avatarUrl={profile.avatar_url} />

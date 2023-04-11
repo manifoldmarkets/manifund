@@ -13,7 +13,7 @@ export function isAdmin(user: User | null) {
   return ADMINS.includes(user?.email ?? '')
 }
 
-export async function getIncomingTxnsByUser(
+export async function getIncomingTxnsByUserWithProject(
   supabase: SupabaseClient,
   user: string
 ) {
@@ -27,7 +27,21 @@ export async function getIncomingTxnsByUser(
   return data as TxnAndProject[]
 }
 
-export async function getOutgoingTxnsByUser(
+export async function getIncomingTxnsByUserWithDonor(
+  supabase: SupabaseClient,
+  user: string
+) {
+  const { data, error } = await supabase
+    .from('txns')
+    .select('*, profiles!txns_from_id_fkey(*)')
+    .eq('to_id', user)
+  if (error) {
+    throw error
+  }
+  return data as TxnAndProfiles[]
+}
+
+export async function getOutgoingTxnsByUserWithProject(
   supabase: SupabaseClient,
   user: string
 ) {
