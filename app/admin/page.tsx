@@ -19,9 +19,9 @@ export default async function Admin() {
   }
 
   const supabaseAdmin = createAdminClient()
-  const { data, error } = await supabaseAdmin.from('users').select('*')
+  const { data } = await supabaseAdmin.from('users').select('*')
   const userPromises = data?.map(async (user) => {
-    const { data: profiles, error } = await supabaseAdmin
+    const { data: profiles } = await supabaseAdmin
       .from('profiles')
       .select('*')
       .eq('id', user.id)
@@ -37,8 +37,6 @@ export default async function Admin() {
   const getName = (userId: string | null) => {
     return usersById.get(userId ?? '')?.profile?.username
   }
-
-  // await setProfilesToIndividual(supabaseAdmin)
 
   const { data: txns } = await supabaseAdmin
     .from('txns')

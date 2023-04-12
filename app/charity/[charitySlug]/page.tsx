@@ -17,7 +17,7 @@ import Image from 'next/image'
 import { LinkIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { DataPoint } from '@/components/data-point'
-import { formatMoney, formatUrl } from '@/utils/formatting'
+import { formatMoney, addHttpToUrl } from '@/utils/formatting'
 import { uniq } from 'lodash'
 import { Col } from '@/components/layout/col'
 import { UserAvatarAndBadge } from '@/components/user-link'
@@ -68,7 +68,10 @@ export default async function CharityPage(props: {
       {charity.website && (
         <span className="my-4 text-orange-600">
           <LinkIcon className="mr-1 inline-block h-4 w-4" />
-          <Link className="hover:underline" href={formatUrl(charity.website)}>
+          <Link
+            className="hover:underline"
+            href={addHttpToUrl(charity.website)}
+          >
             {charity.website}
           </Link>
         </span>

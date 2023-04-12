@@ -44,7 +44,7 @@ export function DonateBox(props: {
       <Button
         onClick={async () => {
           setIsSubmitting(true)
-          const res = await fetch('/api/money-transfer', {
+          const res = await fetch('/api/transfer-money', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

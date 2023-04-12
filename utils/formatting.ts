@@ -93,7 +93,7 @@ export function formatDate(date: string) {
   return `${month} ${sections[2]}, ${sections[0]}`
 }
 
-export function formatUrl(url: string) {
+export function addHttpToUrl(url: string) {
   const formattedUrl = url?.startsWith('http') ? url : `https://${url}`
   return formattedUrl
 }
