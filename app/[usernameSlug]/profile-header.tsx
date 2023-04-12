@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Database } from '@/db/database.types'
 import { BalanceBox } from './balance-box'
 import { InvestorTypeTag } from '@/components/tags'
+import { addHttpToUrl } from '@/utils/formatting'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 
@@ -17,10 +18,7 @@ export function ProfileHeader(props: {
   withdrawBalance: number
 }) {
   const { profile, isOwnProfile, balance, withdrawBalance } = props
-  // Add https:// to website if it doesn't have it
-  const website = profile.website?.startsWith('http')
-    ? profile.website
-    : `https://${profile.website}`
+  const website = addHttpToUrl(profile.website ?? '')
   return (
     <div className="flex flex-col gap-3">
       <div className="flex">

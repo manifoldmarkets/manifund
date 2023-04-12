@@ -10,6 +10,7 @@ import {
   InformationCircleIcon,
   HomeIcon,
   ChatBubbleOvalLeftEllipsisIcon,
+  HeartIcon,
 } from '@heroicons/react/24/outline'
 import { SiteLink } from '@/components/site-link'
 
@@ -59,6 +60,8 @@ function findIcon(name: string, isCurrentPage: boolean) {
       return <WrenchIcon className={styling} />
     case 'About':
       return <InformationCircleIcon className={styling} />
+    case 'Charity':
+      return <HeartIcon className={styling} />
     case 'Discord':
       return <ChatBubbleOvalLeftEllipsisIcon className={styling} />
     default:

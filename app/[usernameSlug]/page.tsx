@@ -2,11 +2,11 @@ import { getProfileByUsername, getUser, Profile } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
-import {
-  getIncomingTxnsByUser,
-  getOutgoingTxnsByUser,
-  TxnAndProject,
-} from '@/db/txn'
+import { ProposalBids } from './user-proposal-bids'
+import { ActiveBids } from './user-active-bids'
+import { Investments } from './user-investments'
+import { Projects } from './user-projects'
+import { getTxnAndProjectsByUser, TxnAndProject } from '@/db/txn'
 import { Bid, getBidsByUser } from '@/db/bid'
 import { getProjectsByUser, Project } from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
@@ -33,10 +33,12 @@ export default async function UserProfilePage(props: {
   const projects = await getProjectsByUser(supabase, profile.id)
   const bids = await getBidsByUser(supabase, profile.id)
   const isOwnProfile = user?.id === profile?.id
-  const incomingTxns = await getIncomingTxnsByUser(supabase, profile.id)
-  const outgoingTxns = await getOutgoingTxnsByUser(supabase, profile.id)
-  const investments = await compileInvestments(incomingTxns, outgoingTxns)
-  const balance = calculateUserBalance(incomingTxns, outgoingTxns)
+  const txns = await getTxnAndProjectsByUser(supabase, profile.id)
+  const investments = await compileInvestments(txns, profile.id)
+  const notOwnProjectInvestments = investments.filter((investment) => {
+    return investment.project && investment.project.creator !== profile.id
+  })
+  const balance = calculateUserBalance(txns, profile.id)
   const withdrawBalance = calculateWithdrawBalance(
     investments,
     bids,
@@ -71,61 +73,32 @@ export default async function UserProfilePage(props: {
   )
 }
 
-async function compileInvestments(
-  incomingTxns: TxnAndProject[],
-  outgoingTxns: TxnAndProject[]
-) {
-  const incomingProjectTxns = incomingTxns.filter((txn) => txn.project !== null)
-  const outgoingProjectTxns = outgoingTxns.filter((txn) => txn.project !== null)
-
+async function compileInvestments(txns: TxnAndProject[], userId: string) {
+  const projectTxns = txns.filter((txn) => txn.project)
   let investments: Investment[] = []
-  incomingProjectTxns.forEach((item) => {
+
+  projectTxns.forEach((txn) => {
     let aggInvestment = investments.find(
-      (investment) => investment.project?.id === item.project
+      (investment) => investment.project?.id === txn.project
     )
-    if (item.token === 'USD') {
+    const incoming = txn.to_id === userId
+    if (txn.token === 'USD') {
       if (aggInvestment) {
-        aggInvestment.price_usd += item.amount
+        aggInvestment.price_usd += incoming ? txn.amount : -txn.amount
       } else {
         investments.push({
-          project: item.projects,
+          project: txn.projects,
           num_shares: 0,
-          price_usd: item.amount,
+          price_usd: incoming ? txn.amount : -txn.amount,
         })
       }
     } else {
       if (aggInvestment) {
-        aggInvestment.num_shares += item.amount
+        aggInvestment.num_shares += incoming ? txn.amount : -txn.amount
       } else {
         investments.push({
-          project: item.projects,
-          num_shares: item.amount,
-          price_usd: 0,
-        })
-      }
-    }
-  })
-  outgoingProjectTxns.forEach((item) => {
-    let aggInvestment = investments.find(
-      (investment) => investment.project?.id === item.project
-    )
-    if (item.token === 'USD') {
-      if (aggInvestment) {
-        aggInvestment.price_usd -= item.amount
-      } else {
-        investments.push({
-          project: item.projects,
-          num_shares: 0,
-          price_usd: -item.amount,
-        })
-      }
-    } else {
-      if (aggInvestment) {
-        aggInvestment.num_shares -= item.amount
-      } else {
-        investments.push({
-          project: item.projects,
-          num_shares: -item.amount,
+          project: txn.projects,
+          num_shares: incoming ? txn.amount : -txn.amount,
           price_usd: 0,
         })
       }

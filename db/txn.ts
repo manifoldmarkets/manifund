@@ -12,32 +12,43 @@ export function isAdmin(user: User | null) {
   return ADMINS.includes(user?.email ?? '')
 }
 
-export async function getIncomingTxnsByUser(
+export async function getTxnAndProjectsByUser(
   supabase: SupabaseClient,
   user: string
 ) {
   const { data, error } = await supabase
     .from('txns')
     .select('*, projects(*)')
+    .or(`from_id.eq.${user},to_id.eq.${user}`)
+  if (error) {
+    throw error
+  }
+  return (data as TxnAndProject[]) ?? ([] as TxnAndProject[])
+}
+
+export async function getTxnsByUser(supabase: SupabaseClient, user: string) {
+  const { data, error } = await supabase
+    .from('txns')
+    .select('*')
+    .or(`from_id.eq.${user},to_id.eq.${user}`)
+  if (error) {
+    throw error
+  }
+  return (data as Txn[]) ?? ([] as Txn[])
+}
+
+export async function getIncomingTxnsByUserWithDonor(
+  supabase: SupabaseClient,
+  user: string
+) {
+  const { data, error } = await supabase
+    .from('txns')
+    .select('*, profiles!txns_from_id_fkey(*)')
     .eq('to_id', user)
   if (error) {
     throw error
   }
-  return data as TxnAndProject[]
-}
-
-export async function getOutgoingTxnsByUser(
-  supabase: SupabaseClient,
-  user: string
-) {
-  const { data, error } = await supabase
-    .from('txns')
-    .select('*, projects(*)')
-    .eq('from_id', user)
-  if (error) {
-    throw error
-  }
-  return data as TxnAndProject[]
+  return data as TxnAndProfiles[]
 }
 
 export async function getTxnsByProject(
