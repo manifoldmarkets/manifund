@@ -2,11 +2,15 @@ import { getProfileByUsername, getUser, Profile } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
-import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
+import {
+  getIncomingTxnsByUser,
+  getOutgoingTxnsByUser,
+  TxnAndProject,
+} from '@/db/txn'
 import { Bid, getBidsByUser } from '@/db/bid'
-import { SupabaseClient } from '@supabase/supabase-js'
 import { getProjectsByUser, Project } from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
+import { calculateUserBalance } from '@/utils/math'
 
 export const revalidate = 0
 
@@ -29,8 +33,10 @@ export default async function UserProfilePage(props: {
   const projects = await getProjectsByUser(supabase, profile.id)
   const bids = await getBidsByUser(supabase, profile.id)
   const isOwnProfile = user?.id === profile?.id
-  const investments = await compileInvestments(supabase, profile.id)
-  const balance = calculateBalance(investments)
+  const incomingTxns = await getIncomingTxnsByUser(supabase, profile.id)
+  const outgoingTxns = await getOutgoingTxnsByUser(supabase, profile.id)
+  const investments = await compileInvestments(incomingTxns, outgoingTxns)
+  const balance = calculateUserBalance(incomingTxns, outgoingTxns)
   const withdrawBalance = calculateWithdrawBalance(
     investments,
     bids,
@@ -38,6 +44,7 @@ export default async function UserProfilePage(props: {
     balance,
     profile.accreditation_status
   )
+
   return (
     <div className="flex flex-col p-5">
       <ProfileHeader
@@ -65,17 +72,14 @@ export default async function UserProfilePage(props: {
 }
 
 async function compileInvestments(
-  supabase: SupabaseClient,
-  profile_id: string
+  incomingTxns: TxnAndProject[],
+  outgoingTxns: TxnAndProject[]
 ) {
-  const incomingTxns = (
-    await getIncomingTxnsByUser(supabase, profile_id)
-  ).filter((txn) => txn.project !== null)
-  const outgoingTxns = (
-    await getOutgoingTxnsByUser(supabase, profile_id)
-  ).filter((txn) => txn.project !== null)
+  const incomingProjectTxns = incomingTxns.filter((txn) => txn.project !== null)
+  const outgoingProjectTxns = outgoingTxns.filter((txn) => txn.project !== null)
+
   let investments: Investment[] = []
-  incomingTxns.forEach((item) => {
+  incomingProjectTxns.forEach((item) => {
     let aggInvestment = investments.find(
       (investment) => investment.project?.id === item.project
     )
@@ -101,7 +105,7 @@ async function compileInvestments(
       }
     }
   })
-  outgoingTxns.forEach((item) => {
+  outgoingProjectTxns.forEach((item) => {
     let aggInvestment = investments.find(
       (investment) => investment.project?.id === item.project
     )
@@ -128,14 +132,6 @@ async function compileInvestments(
     }
   })
   return investments as Investment[]
-}
-
-function calculateBalance(investments: Investment[]) {
-  let balance = 0
-  investments.forEach((investment) => {
-    balance += investment.price_usd
-  })
-  return balance
 }
 
 function calculateWithdrawBalance(

@@ -26,6 +26,21 @@ export async function getIncomingTxnsByUser(
   return data as TxnAndProject[]
 }
 
+export async function getIncomingProjectTxnsByUser(
+  supabase: SupabaseClient,
+  user: string
+) {
+  const { data, error } = await supabase
+    .from('txns')
+    .select('*, projects(*)')
+    .eq('to_id', user)
+    .not('project', 'is', 'null')
+  if (error) {
+    throw error
+  }
+  return data as TxnAndProject[]
+}
+
 export async function getOutgoingTxnsByUser(
   supabase: SupabaseClient,
   user: string
@@ -34,6 +49,21 @@ export async function getOutgoingTxnsByUser(
     .from('txns')
     .select('*, projects(*)')
     .eq('from_id', user)
+  if (error) {
+    throw error
+  }
+  return data as TxnAndProject[]
+}
+
+export async function getOutgoingProjectTxnsByUser(
+  supabase: SupabaseClient,
+  user: string
+) {
+  const { data, error } = await supabase
+    .from('txns')
+    .select('*, projects(*)')
+    .eq('from_id', user)
+    .not('project', 'is', 'null')
   if (error) {
     throw error
   }
