@@ -2,10 +2,6 @@ import { getProfileByUsername, getUser, Profile } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
-import { ProposalBids } from './user-proposal-bids'
-import { ActiveBids } from './user-active-bids'
-import { Investments } from './user-investments'
-import { Projects } from './user-projects'
 import { getTxnAndProjectsByUser, TxnAndProject } from '@/db/txn'
 import { Bid, getBidsByUser } from '@/db/bid'
 import { getProjectsByUser, Project } from '@/db/project'
@@ -35,9 +31,6 @@ export default async function UserProfilePage(props: {
   const isOwnProfile = user?.id === profile?.id
   const txns = await getTxnAndProjectsByUser(supabase, profile.id)
   const investments = await compileInvestments(txns, profile.id)
-  const notOwnProjectInvestments = investments.filter((investment) => {
-    return investment.project && investment.project.creator !== profile.id
-  })
   const balance = calculateUserBalance(txns, profile.id)
   const withdrawBalance = calculateWithdrawBalance(
     investments,
