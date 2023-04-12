@@ -28,21 +28,18 @@ export function ProfileTabs(props: {
   const notOwnProjectInvestments = investments.filter((investment) => {
     return investment.project && investment.project.creator !== profile.id
   })
-  console.log('notOwnProjectInvestments', notOwnProjectInvestments)
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
   const tabs = []
 
-  if (
-    proposalBids.length > 0 ||
-    activeBids.length > 0 ||
-    notOwnProjectInvestments.length > 0
-  ) {
+  const portfolioCount =
+    proposalBids.length + activeBids.length + investments.length
+  if (portfolioCount > 0) {
     tabs.push({
       name: 'Portfolio',
       href: '?tab=portfolio',
-      count: proposalBids.length + activeBids.length + investments.length,
-      current: currentTabName === 'portfolio',
+      count: portfolioCount,
+      current: currentTabName === 'portfolio' || currentTabName === null,
       display: (
         <div className="flex flex-col gap-10">
           {proposalBids.length > 0 && (
@@ -63,7 +60,9 @@ export function ProfileTabs(props: {
       name: 'Projects',
       href: '?tab=projects',
       count: projects.length,
-      current: currentTabName === 'projects' || currentTabName === null,
+      current:
+        currentTabName === 'projects' ||
+        (currentTabName === null && tabs.length === 0),
       display: <Projects projects={projects} />,
     })
   }
@@ -72,9 +71,15 @@ export function ProfileTabs(props: {
       name: 'About me',
       href: '?tab=about',
       count: 0,
-      current: currentTabName === 'about',
+      current:
+        currentTabName === 'about' ||
+        (currentTabName === null && tabs.length === 0),
       display: <RichContent content={profile.long_description} />,
     })
   }
-  return <Tabs tabs={tabs} preTabSlug={`/${profile.username}`} />
+  if (tabs.length > 0) {
+    return <Tabs tabs={tabs} preTabSlug={`/${profile.username}`} />
+  } else {
+    return null
+  }
 }

@@ -127,7 +127,6 @@ async function compileInvestments(
       }
     }
   })
-  console.log(investments)
   return investments as Investment[]
 }
 
