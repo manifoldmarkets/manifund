@@ -14,7 +14,7 @@ import { LinkIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { DataPoint } from '@/components/data-point'
 import { formatMoney, addHttpToUrl } from '@/utils/formatting'
-import { uniq } from 'lodash'
+import { sortBy, uniq } from 'lodash'
 import { Col } from '@/components/layout/col'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { formatDistanceToNow } from 'date-fns'
@@ -26,10 +26,10 @@ export default async function CharityPage(props: {
   const { charitySlug } = props.params
   const supabase = createServerClient()
   const charity = await getProfileByUsername(supabase, charitySlug)
-  const incomingCharityTxns = await getIncomingTxnsByUserWithDonor(
-    supabase,
-    charity.id
-  )
+  const incomingCharityTxns = sortBy(
+    await getIncomingTxnsByUserWithDonor(supabase, charity.id),
+    'created_at'
+  ).reverse()
   const raised = incomingCharityTxns.reduce((acc, txn) => acc + txn.amount, 0)
   const numSupporters = uniq(
     incomingCharityTxns.map((txn) => txn.from_id)
