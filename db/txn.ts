@@ -16,6 +16,9 @@ export async function getTxnAndProjectsByUser(
   supabase: SupabaseClient,
   user: string
 ) {
+  if (!user) {
+    return []
+  }
   const { data, error } = await supabase
     .from('txns')
     .select('*, projects(*)')
@@ -27,6 +30,9 @@ export async function getTxnAndProjectsByUser(
 }
 
 export async function getTxnsByUser(supabase: SupabaseClient, user: string) {
+  if (!user) {
+    return []
+  }
   const { data, error } = await supabase
     .from('txns')
     .select('*')

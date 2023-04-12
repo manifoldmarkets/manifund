@@ -4,7 +4,6 @@ import React from 'react'
 import Image from 'next/image'
 import { getUser, getProfileById } from '@/db/profile'
 import { SidebarItem } from './sidebar-item'
-
 import { CreateProjectButton } from './create-project-button'
 import { SUPABASE_ENV } from '@/db/env'
 import { User } from '@supabase/supabase-js'
