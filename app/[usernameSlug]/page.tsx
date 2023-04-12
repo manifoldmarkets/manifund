@@ -75,7 +75,7 @@ export default async function UserProfilePage(props: {
 
 async function compileInvestments(txns: TxnAndProject[], userId: string) {
   const projectTxns = txns.filter((txn) => txn.project)
-  let investments: investment[] = []
+  let investments: Investment[] = []
 
   projectTxns.forEach((txn) => {
     let aggInvestment = investments.find(
@@ -104,7 +104,7 @@ async function compileInvestments(txns: TxnAndProject[], userId: string) {
       }
     }
   })
-  return investments as investment[]
+  return investments as Investment[]
 }
 
 function calculateWithdrawBalance(
