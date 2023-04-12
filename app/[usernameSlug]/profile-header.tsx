@@ -6,6 +6,8 @@ import { Database } from '@/db/database.types'
 import { BalanceBox } from './balance-box'
 import { InvestorTypeTag } from '@/components/tags'
 import { addHttpToUrl } from '@/utils/formatting'
+import { Row } from '@/components/layout/row'
+import { Col } from '@/components/layout/col'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -33,19 +35,19 @@ export function ProfileHeader(props: {
             </Link>
           </div>
         )}
-        <div className="flex w-full flex-col">
-          <div className="flex justify-between">
-            <div className="ml-3 flex flex-col">
+        <Col className="w-full">
+          <Row className="justify-between">
+            <Col className="ml-3">
               <div className="text-3xl font-bold">{profile.full_name}</div>
-              <div className="flex flex-wrap gap-2 text-gray-500">
+              <Row className="mt-1 flex-wrap gap-2 text-gray-500">
                 <p>@{profile.username}</p>
                 <InvestorTypeTag
                   accredited={profile.accreditation_status}
                   longTooltip={isOwnProfile}
                   showText
                 />
-              </div>
-            </div>
+              </Row>
+            </Col>
             {isOwnProfile && (
               <BalanceBox
                 balance={balance}
@@ -53,8 +55,8 @@ export function ProfileHeader(props: {
                 accredited={profile.accreditation_status}
               />
             )}
-          </div>
-        </div>
+          </Row>
+        </Col>
       </div>
       <div>
         <p>{profile.bio}</p>
@@ -67,7 +69,6 @@ export function ProfileHeader(props: {
             {profile.website}
           </a>
         )}
-        <hr className="my-5 h-0.5 rounded-sm bg-gray-500" />
       </div>
     </div>
   )

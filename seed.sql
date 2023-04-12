@@ -11,6 +11,7 @@ create table public.profiles (
   full_name text not null,
   avatar_url text,
   type profile_type not null default 'individual',
+  long_description jsonb,
   primary key (id)
 );
 

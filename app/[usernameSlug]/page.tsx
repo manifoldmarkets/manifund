@@ -9,11 +9,12 @@ import { Projects } from './user-projects'
 import { getTxnAndProjectsByUser, TxnAndProject } from '@/db/txn'
 import { Bid, getBidsByUser } from '@/db/bid'
 import { getProjectsByUser, Project } from '@/db/project'
+import { ProfileTabs } from './profile-tabs'
 import { calculateUserBalance } from '@/utils/math'
 
 export const revalidate = 0
 
-export type investment = {
+export type Investment = {
   project?: Project // Undefined eg for txns that are just transfers of money
   num_shares: number
   price_usd: number
@@ -31,12 +32,6 @@ export default async function UserProfilePage(props: {
   )) as Profile
   const projects = await getProjectsByUser(supabase, profile.id)
   const bids = await getBidsByUser(supabase, profile.id)
-  const proposalBids = bids.filter(
-    (bid) => bid.projects.stage === 'proposal' && bid.status === 'pending'
-  )
-  const activeBids = bids.filter(
-    (bid) => bid.projects.stage === 'active' && bid.status === 'pending'
-  )
   const isOwnProfile = user?.id === profile?.id
   const txns = await getTxnAndProjectsByUser(supabase, profile.id)
   const investments = await compileInvestments(txns, profile.id)
@@ -51,6 +46,7 @@ export default async function UserProfilePage(props: {
     balance,
     profile.accreditation_status
   )
+
   return (
     <div className="flex flex-col p-5">
       <ProfileHeader
@@ -60,24 +56,13 @@ export default async function UserProfilePage(props: {
         withdrawBalance={withdrawBalance}
       />
       <div className="flex flex-col gap-10">
-        {proposalBids.length > 0 && (
-          <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
-        )}
-        {activeBids.length > 0 && (
-          <ActiveBids bids={activeBids} isOwnProfile={isOwnProfile} />
-        )}
-        {notOwnProjectInvestments.length > 0 && (
-          // @ts-expect-error Server Component
-          <Investments
-            investments={notOwnProjectInvestments}
-            profile={profile.id}
-          />
-        )}
-        {(isOwnProfile || projects.length > 0) && (
-          // @ts-expect-error Server Component
-          <Projects projects={projects} />
-        )}
-
+        <ProfileTabs
+          isOwnProfile={isOwnProfile}
+          profile={profile}
+          projects={projects}
+          bids={bids}
+          investments={investments}
+        />
         {isOwnProfile && (
           <div className="mt-5 flex justify-center">
             <SignOutButton />
@@ -123,7 +108,7 @@ async function compileInvestments(txns: TxnAndProject[], userId: string) {
 }
 
 function calculateWithdrawBalance(
-  investments: investment[],
+  investments: Investment[],
   bids: Bid[],
   userId: string,
   balance: number,

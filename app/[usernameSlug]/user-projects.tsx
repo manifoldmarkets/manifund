@@ -1,13 +1,13 @@
+'use client'
 import { Project } from '@/db/project'
 import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { StageTag } from '@/components/tags'
 
-export async function Projects(props: { projects: Project[] }) {
+export function Projects(props: { projects: Project[] }) {
   const { projects } = props
   const projectsDisplay = projects.map((project) => (
     <li key={project.id}>
-      {/* @ts-expect-error Server Component */}
       <ProjectDisplay project={project} />
     </li>
   ))
@@ -34,7 +34,7 @@ function NoProjects() {
   )
 }
 
-async function ProjectDisplay(props: { project: Project }) {
+function ProjectDisplay(props: { project: Project }) {
   const { project } = props
   return (
     <Link href={`/projects/${project.slug}`} className="block hover:bg-gray-50">
