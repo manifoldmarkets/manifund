@@ -21,7 +21,7 @@ export async function BottomNavBar() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
-  const txns = await getTxnsByUser(supabase, user?.id as string)
+  const txns = await getTxnsByUser(supabase, user?.id ?? '')
   const navigationOptions = [
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
@@ -52,7 +52,6 @@ export async function BottomNavBar() {
                 size={6}
                 username={profile.username}
                 avatarUrl={profile.avatar_url}
-                // avatarUrl={user.avatarUrl}
                 noLink
               />
             </div>

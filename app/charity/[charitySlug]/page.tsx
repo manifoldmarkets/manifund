@@ -36,8 +36,8 @@ export default async function CharityPage(props: {
   ).length
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
-  const txns = await getTxnsByUser(supabase, user?.id as string)
-  const bids = await getBidsByUser(supabase, user?.id as string)
+  const txns = await getTxnsByUser(supabase, user?.id ?? '')
+  const bids = await getBidsByUser(supabase, user?.id ?? '')
   const userSpendableFunds = calculateUserSpendableFunds(
     txns,
     profile?.id as string,

@@ -72,13 +72,13 @@ export default async function Admin() {
               <td>{user.id}</td>
               <td>
                 <VerifyInvestor
-                  userId={user.id as string}
+                  userId={user.id ?? ''}
                   accredited={user.profile?.accreditation_status as boolean}
                 />
               </td>
-              <td>{balances.get(user.id as string) ?? 0}</td>
+              <td>{balances.get(user.id ?? '') ?? 0}</td>
               <td>
-                <PayUser userId={user.id as string} />
+                <PayUser userId={user.id ?? ''} />
               </td>
             </tr>
           ))}
