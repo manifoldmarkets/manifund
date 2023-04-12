@@ -5,11 +5,7 @@ import {
   getUser,
   Profile,
 } from '@/db/profile'
-import {
-  getIncomingTxnsByUserWithProject,
-  getOutgoingTxnsByUserWithProject,
-  getIncomingTxnsByUserWithDonor,
-} from '@/db/txn'
+import { getProjectTxnsByUser, getIncomingTxnsByUserWithDonor } from '@/db/txn'
 import { DonateBox } from './donate-box'
 import { calculateUserSpendableFunds } from '@/utils/math'
 import { getBidsByUser } from '@/db/bid'
@@ -40,18 +36,14 @@ export default async function CharityPage(props: {
   ).length
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
-  const incomingUserTxns = await getIncomingTxnsByUserWithProject(
-    supabase,
-    user?.id as string
-  )
-  const outgoingUserTxns = await getOutgoingTxnsByUserWithProject(
+  const { incomingTxns, outgoingTxns } = await getProjectTxnsByUser(
     supabase,
     user?.id as string
   )
   const bids = await getBidsByUser(supabase, user?.id as string)
   const userSpendableFunds = calculateUserSpendableFunds(
-    incomingUserTxns,
-    outgoingUserTxns,
+    incomingTxns,
+    outgoingTxns,
     bids,
     profile?.accreditation_status as boolean
   )

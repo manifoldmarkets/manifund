@@ -1,8 +1,7 @@
 import { Database } from '@/db/database.types'
-import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient, User } from '@supabase/supabase-js'
 import { Profile } from './profile'
-import { Project, TOTAL_SHARES } from './project'
+import { Project } from './project'
 
 export type Txn = Database['public']['Tables']['txns']['Row']
 export type TxnAndProject = Txn & { projects?: Project }
@@ -13,18 +12,24 @@ export function isAdmin(user: User | null) {
   return ADMINS.includes(user?.email ?? '')
 }
 
-export async function getIncomingTxnsByUserWithProject(
+export async function getProjectTxnsByUser(
   supabase: SupabaseClient,
   user: string
 ) {
   const { data, error } = await supabase
     .from('txns')
     .select('*, projects(*)')
-    .eq('to_id', user)
+    .or(`from_id.eq.${user},to_id.eq.${user}`)
   if (error) {
     throw error
   }
-  return data as TxnAndProject[]
+  const incomingTxns = (data as TxnAndProject[]).filter(
+    (txn) => txn.to_id === user
+  )
+  const outgoingTxns = (data as TxnAndProject[]).filter(
+    (txn) => txn.from_id === user
+  )
+  return { incomingTxns, outgoingTxns }
 }
 
 export async function getIncomingTxnsByUserWithDonor(
@@ -39,20 +44,6 @@ export async function getIncomingTxnsByUserWithDonor(
     throw error
   }
   return data as TxnAndProfiles[]
-}
-
-export async function getOutgoingTxnsByUserWithProject(
-  supabase: SupabaseClient,
-  user: string
-) {
-  const { data, error } = await supabase
-    .from('txns')
-    .select('*, projects(*)')
-    .eq('from_id', user)
-  if (error) {
-    throw error
-  }
-  return data as TxnAndProject[]
 }
 
 export async function getTxnsByProject(

@@ -9,12 +9,9 @@ import { CreateProjectButton } from './create-project-button'
 import { SUPABASE_ENV } from '@/db/env'
 import { User } from '@supabase/supabase-js'
 import { Avatar } from '@/components/avatar'
-import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import { formatMoney } from '@/utils/formatting'
 import { calculateUserBalance } from '@/utils/math'
-import {
-  getIncomingTxnsByUserWithProject,
-  getOutgoingTxnsByUserWithProject,
-} from '@/db/txn'
+import { getProjectTxnsByUser } from '@/db/txn'
 
 export default async function Sidebar() {
   const supabase = createServerClient()
@@ -66,8 +63,9 @@ export async function ProfileSummary(props: { user: User }) {
   const supabase = createServerClient()
   const profile = await getProfileById(supabase, user.id)
   if (profile === null) return null
-  const incomingTxns = await getIncomingTxnsByUserWithProject(supabase, user.id)
-  const outgoingTxns = await getOutgoingTxnsByUserWithProject(supabase, user.id)
+  const { incomingTxns, outgoingTxns } = user.id
+    ? await getProjectTxnsByUser(supabase, user.id)
+    : { incomingTxns: [], outgoingTxns: [] }
   return (
     <div className="group mb-3 flex flex-row items-center gap-2 truncate rounded-md py-3 px-1 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
       <Avatar username={profile.username} avatarUrl={profile.avatar_url} />

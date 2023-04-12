@@ -6,13 +6,10 @@ import { ProposalBids } from './user-proposal-bids'
 import { ActiveBids } from './user-active-bids'
 import { Investments } from './user-investments'
 import { Projects } from './user-projects'
-import {
-  getIncomingTxnsByUserWithProject,
-  getOutgoingTxnsByUserWithProject,
-} from '@/db/txn'
+import { getProjectTxnsByUser, TxnAndProject } from '@/db/txn'
 import { Bid, getBidsByUser } from '@/db/bid'
-import { SupabaseClient } from '@supabase/supabase-js'
 import { getProjectsByUser, Project } from '@/db/project'
+import { calculateUserBalance } from '@/utils/math'
 
 export const revalidate = 0
 
@@ -41,11 +38,15 @@ export default async function UserProfilePage(props: {
     (bid) => bid.projects.stage === 'active' && bid.status === 'pending'
   )
   const isOwnProfile = user?.id === profile?.id
-  const investments = await compileInvestments(supabase, profile.id)
+  const { incomingTxns, outgoingTxns } = await getProjectTxnsByUser(
+    supabase,
+    profile.id
+  )
+  const investments = await compileInvestments(incomingTxns, outgoingTxns)
   const notOwnProjectInvestments = investments.filter((investment) => {
     return investment.project && investment.project.creator !== profile.id
   })
-  const balance = calculateBalance(investments)
+  const balance = calculateUserBalance(incomingTxns, outgoingTxns)
   const withdrawBalance = calculateWithdrawBalance(
     investments,
     bids,
@@ -91,19 +92,13 @@ export default async function UserProfilePage(props: {
 }
 
 async function compileInvestments(
-  supabase: SupabaseClient,
-  profile_id: string
+  incomingTxns: TxnAndProject[],
+  outgoingTxns: TxnAndProject[]
 ) {
-  const incomingTxns = await getIncomingTxnsByUserWithProject(
-    supabase,
-    profile_id
-  )
-  const outgoingTxns = await getOutgoingTxnsByUserWithProject(
-    supabase,
-    profile_id
-  )
+  const incomingProjectTxns = incomingTxns.filter((txn) => txn.project)
+  const outgoingProjectTxns = outgoingTxns.filter((txn) => txn.project)
   let investments: investment[] = []
-  incomingTxns.forEach((item) => {
+  incomingProjectTxns.forEach((item) => {
     let aggInvestment = investments.find(
       (investment) => investment.project?.id === item.project
     )
@@ -129,7 +124,7 @@ async function compileInvestments(
       }
     }
   })
-  outgoingTxns.forEach((item) => {
+  outgoingProjectTxns.forEach((item) => {
     let aggInvestment = investments.find(
       (investment) => investment.project?.id === item.project
     )
@@ -156,14 +151,6 @@ async function compileInvestments(
     }
   })
   return investments as investment[]
-}
-
-function calculateBalance(investments: investment[]) {
-  let balance = 0
-  investments.forEach((investment) => {
-    balance += investment.price_usd
-  })
-  return balance
 }
 
 function calculateWithdrawBalance(
