@@ -15,7 +15,6 @@ import {
 } from '@/utils/math'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
-import { formatLargeNumber } from '@/utils/formatting'
 import { sortBy } from 'lodash'
 
 type SortOption =
@@ -176,7 +175,7 @@ function searchProjects(projects: FullProject[], search: string) {
     return field.toLowerCase().includes(search.toLowerCase())
   }
   return projects.filter((project) => {
-    //not currently checking description
+    // Not currently checking description
     return (
       check(project.title) ||
       check(project.blurb ?? '') ||

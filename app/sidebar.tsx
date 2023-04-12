@@ -9,9 +9,9 @@ import { CreateProjectButton } from './create-project-button'
 import { SUPABASE_ENV } from '@/db/env'
 import { User } from '@supabase/supabase-js'
 import { Avatar } from '@/components/avatar'
-import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import { formatMoney } from '@/utils/formatting'
 import { calculateUserBalance } from '@/utils/math'
-import { getIncomingTxnsByUser, getOutgoingTxnsByUser } from '@/db/txn'
+import { getTxnsByUser } from '@/db/txn'
 
 export default async function Sidebar() {
   const supabase = createServerClient()
@@ -48,6 +48,7 @@ export default async function Sidebar() {
           />
         )}
         <SidebarItem item={{ name: 'About', href: '/about' }} />
+        <SidebarItem item={{ name: 'Charity', href: '/charity' }} />
         <SidebarItem
           item={{ name: 'Discord', href: 'https://discord.gg/zPnPtx6jBS' }}
         />
@@ -62,15 +63,14 @@ export async function ProfileSummary(props: { user: User }) {
   const supabase = createServerClient()
   const profile = await getProfileById(supabase, user.id)
   if (profile === null) return null
-  const incomingTxns = await getIncomingTxnsByUser(supabase, user.id)
-  const outgoingTxns = await getOutgoingTxnsByUser(supabase, user.id)
+  const txns = await getTxnsByUser(supabase, user.id)
   return (
     <div className="group mb-3 flex flex-row items-center gap-2 truncate rounded-md py-3 px-1 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
       <Avatar username={profile.username} avatarUrl={profile.avatar_url} />
       <Link href={`/${profile.username}?tab=portfolio`} className="truncate">
-        <div className=" font-medium">{profile.full_name}</div>
+        <div className="font-medium">{profile.full_name}</div>
         <div className="text-sm">
-          {formatMoney(calculateUserBalance(incomingTxns, outgoingTxns))}
+          {formatMoney(calculateUserBalance(txns, profile.id))}
         </div>
       </Link>
     </div>

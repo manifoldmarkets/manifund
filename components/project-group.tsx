@@ -1,7 +1,6 @@
 'use client'
 import { FullProject } from '@/db/project'
 import { ProjectCard } from '@/components/project-card'
-import { CalendarIcon } from '@heroicons/react/24/solid'
 
 export function ProjectGroup(props: {
   projects: FullProject[]

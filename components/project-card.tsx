@@ -32,11 +32,7 @@ export function ProjectCard(props: {
 }) {
   const { creator, project, numComments, bids, txns, valuation } = props
   return (
-    <Col
-      className={clsx(
-        'rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow'
-      )}
-    >
+    <Col className="rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow">
       <ProjectCardHeader
         round={project.rounds}
         creator={creator}

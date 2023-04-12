@@ -1,10 +1,10 @@
-import { Bid } from '@/db/bid'
+import { Bid, getBidsByUser } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
-import { Txn, TxnAndProfiles } from '@/db/txn'
+import { getTxnAndProjectsByUser, Txn, TxnAndProfiles } from '@/db/txn'
+import { SupabaseClient } from '@supabase/supabase-js'
 import { orderBy } from 'lodash'
-import { formatLargeNumber } from './formatting'
 
 export function getProposalValuation(project: Project) {
   const investorPercent =
@@ -52,24 +52,15 @@ export function getActiveValuation(
   return (sortedTrades[0].amountUSD / sortedTrades[0].numShares) * TOTAL_SHARES
 }
 
-export function calculateUserBalance(incomingTxns: Txn[], outgoingTxns: Txn[]) {
-  let incoming = 0
-  let outgoing = 0
-  if (incomingTxns) {
-    incomingTxns.forEach((txn) => {
-      if (txn.token == 'USD') {
-        incoming += txn.amount
-      }
-    })
-  }
-  if (outgoingTxns) {
-    outgoingTxns.forEach((txn) => {
-      if (txn.token == 'USD') {
-        outgoing += txn.amount
-      }
-    })
-  }
-  return incoming - outgoing
+export function calculateUserBalance(txns: Txn[], userId: string) {
+  let balance = 0
+  txns.forEach((txn) => {
+    const incoming = txn.to_id === userId
+    if (txn.token === 'USD') {
+      balance += incoming ? txn.amount : -txn.amount
+    }
+  })
+  return balance
 }
 
 export function getPercentFunded(bids: Bid[], minFunding: number) {
@@ -107,4 +98,60 @@ export function calculateFullTrades(txns: TxnAndProfiles[]) {
 
 export function dateDiff(first: number, second: number) {
   return Math.round(second - first) / (1000 * 60 * 60 * 24)
+}
+
+export function calculateUserSpendableFunds(
+  txns: Txn[],
+  userId: string,
+  bids: Bid[],
+  accreditation_status: boolean
+) {
+  const currentBalance = calculateUserBalance(txns, userId)
+  if (accreditation_status) {
+    return currentBalance
+  }
+  const lockedFunds = bids
+    .filter((bid) => bid.status === 'pending' && bid.type === 'buy')
+    .reduce((acc, bid) => acc + bid.amount, 0)
+  return currentBalance - lockedFunds
+}
+
+export async function calculateUserFundsAndShares(
+  supabase: SupabaseClient,
+  userId: string,
+  projectId: string,
+  accreditation_status: boolean
+) {
+  if (!userId) {
+    return { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
+  }
+  const txns = await getTxnAndProjectsByUser(supabase, userId)
+  const userBids = await getBidsByUser(supabase, userId)
+  const calculateUserShares = () => {
+    let userShares = 0
+    txns.forEach((txn) => {
+      const incoming = txn.to_id === userId
+      if (txn.token === projectId) {
+        userShares += incoming ? txn.amount : -txn.amount
+      }
+    })
+    return userShares
+  }
+  const userShares = calculateUserShares()
+  const offeredShares = userBids
+    .filter(
+      (bid) =>
+        bid.type === 'sell' &&
+        bid.status === 'pending' &&
+        bid.project === projectId
+    )
+    .reduce((acc, bid) => acc + bid.amount, 0)
+  const userSellableShares = userShares - offeredShares
+  const userSpendableFunds = calculateUserSpendableFunds(
+    txns,
+    userId,
+    userBids,
+    accreditation_status
+  )
+  return { userSpendableFunds, userSellableShares, userShares }
 }

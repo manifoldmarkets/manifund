@@ -324,7 +324,7 @@ function ResultsText(props: {
     )
   } else if (totalFunding > 0) {
     return (
-      <div className=" rounded-md  bg-emerald-100 p-3 text-center font-bold text-emerald-500 shadow-sm">
+      <div className="rounded-md  bg-emerald-100 p-3 text-center font-bold text-emerald-500 shadow-sm">
         Funding successful! The project recieved {formatMoney(totalFunding)} in
         funding. {formatLargeNumber(portionSold * 100)}% of shares were sold at
         a valuation of {formatMoney(resolution.valuation)}, the founder holds

@@ -33,7 +33,7 @@ export function ProfileTabs(props: {
   const tabs = []
 
   const portfolioCount =
-    proposalBids.length + activeBids.length + investments.length
+    proposalBids.length + activeBids.length + notOwnProjectInvestments.length
   if (portfolioCount > 0) {
     tabs.push({
       name: 'Portfolio',

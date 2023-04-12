@@ -8,7 +8,7 @@ import { RoundBidAmounts } from './round-bid-amounts'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { roundLargeNumber } from '@/utils/formatting'
 import { Txn } from '@/db/txn'
-import { getUserFundsAndShares } from '../projects/[slug]/page'
+import { calculateUserFundsAndShares } from '@/utils/math'
 import { GiveCreatorShares } from './give-creator-shares'
 
 export default async function Admin() {
@@ -19,18 +19,23 @@ export default async function Admin() {
   }
 
   const supabaseAdmin = createAdminClient()
-  const { data, error } = await supabaseAdmin
-    .from('users')
-    .select('*, profiles(username, accreditation_status)')
-  const users = data as {
-    id: string
-    email: string
-    profiles: { username: string; accreditation_status: boolean }
-  }[]
+  const { data } = await supabaseAdmin.from('users').select('*')
+  const userPromises = data?.map(async (user) => {
+    const { data: profiles } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+    const profile = profiles ? profiles[0] : null
+    return {
+      ...user,
+      profile,
+    }
+  })
+  const users = await Promise.all(userPromises ?? [])
 
   const usersById = new Map(users.map((user) => [user.id, user]))
   const getName = (userId: string | null) => {
-    return usersById.get(userId ?? '')?.profiles?.username
+    return usersById.get(userId ?? '')?.profile?.username
   }
 
   const { data: txns } = await supabaseAdmin
@@ -63,17 +68,17 @@ export default async function Admin() {
           {users.map((user) => (
             <tr key={user.id}>
               <td>{user.email}</td>
-              <td>{user.profiles.username}</td>
+              <td>{user.profile?.username}</td>
               <td>{user.id}</td>
               <td>
                 <VerifyInvestor
-                  userId={user.id}
-                  accredited={user.profiles.accreditation_status}
+                  userId={user.id as string}
+                  accredited={user.profile?.accreditation_status as boolean}
                 />
               </td>
-              <td>{balances.get(user.id) ?? 0}</td>
+              <td>{balances.get(user.id as string) ?? 0}</td>
               <td>
-                <PayUser userId={user.id} />
+                <PayUser userId={user.id as string} />
               </td>
             </tr>
           ))}
@@ -184,10 +189,25 @@ async function CreatorShares(props: {
   projectCreator: string
 }) {
   const { supabase, projectId, projectCreator } = props
-  const userData = await getUserFundsAndShares(
+  // TODO: take getUserShares out into its own function
+  const userData = await calculateUserFundsAndShares(
     supabase,
     projectCreator,
-    projectId
+    projectId,
+    false
   )
   return <td>{userData.userShares}</td>
+}
+
+// used when profile type was added
+async function setProfilesToIndividual(supabase: SupabaseClient) {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ type: 'individual' })
+    // Supabase requres filter for update so I put a weird string that wouldn't apply to any rows
+    .neq('full_name', 'aoiwejdio')
+
+  if (error) {
+    console.error('Updating profiles', error)
+  }
 }
