@@ -1,8 +1,7 @@
 import { Database } from '@/db/database.types'
-import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient, User } from '@supabase/supabase-js'
 import { Profile } from './profile'
-import { Project, TOTAL_SHARES } from './project'
+import { Project } from './project'
 
 export type Txn = Database['public']['Tables']['txns']['Row']
 export type TxnAndProject = Txn & { projects?: Project }

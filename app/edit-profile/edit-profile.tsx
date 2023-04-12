@@ -9,10 +9,12 @@ import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { InformationCircleIcon } from '@heroicons/react/20/solid'
 import { Profile } from '@/db/profile'
-import { Select } from '@/components/select'
 import uuid from 'react-uuid'
 import Image from 'next/image'
 import { SUPABASE_BUCKET_URL } from '@/db/env'
+import { TextEditor, useTextEditor } from '@/components/editor'
+
+export const revalidate = 0
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
@@ -21,6 +23,7 @@ export function EditProfileForm(props: { profile: Profile }) {
   const [bio, setBio] = useState<string>(profile.bio)
   const [website, setWebsite] = useState<string | null>(profile.website)
   const [fullName, setFullName] = useState<string>(profile.full_name)
+  const editor = useTextEditor(profile.long_description)
   const [avatar, setAvatar] = useState<File | null>(null)
   const [submitting, setSubmitting] = useState<boolean>(false)
   const router = useRouter()
@@ -93,6 +96,9 @@ export function EditProfileForm(props: { profile: Profile }) {
         value={website ? website : ''}
         onChange={(event) => setWebsite(event.target.value)}
       />
+      <label htmlFor="long_description">About you</label>
+      <TextEditor editor={editor} />
+
       <label>Investor status</label>
       <div className="rounded-md border border-gray-300 bg-white p-5 shadow-md">
         <p className="font-medium">
@@ -115,7 +121,7 @@ export function EditProfileForm(props: { profile: Profile }) {
               href="https://airtable.com/shrZVLeo6f34NBfR0"
               className="font-bold hover:underline"
             >
-              this form.
+              this form
             </a>{' '}
             to get verified as an accredited investor.
             <br />
@@ -170,6 +176,7 @@ export function EditProfileForm(props: { profile: Profile }) {
               ...profile,
               username,
               bio,
+              long_description: editor?.getJSON() ?? null,
               website,
               full_name: fullName,
             },
@@ -233,6 +240,7 @@ async function saveProfile(
         ?.replace(/ /g, '-')
         .replace(/[^\w-]+/g, ''),
       bio: new_profile.bio,
+      long_description: new_profile.long_description,
       website: new_profile.website,
       full_name: new_profile.full_name,
       avatar_url: avatarUrl,
