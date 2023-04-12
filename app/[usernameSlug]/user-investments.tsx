@@ -1,20 +1,16 @@
+'use client'
 import { Project } from '@/db/project'
 import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
-import type { investment } from './page'
+import type { Investment } from './page'
 import { formatMoney } from '@/utils/formatting'
 
-export async function Investments(props: {
-  investments: investment[]
-  profile: string
-}) {
-  const { investments, profile } = props
+export function Investments(props: { investments: Investment[] }) {
+  const { investments } = props
   const investmentsDisplay = investments.map((item) =>
     item.project ? (
       <li key={item.project.id}>
-        {/* @ts-expect-error Server Component */}
         <InvestmentsDisplay
-          profile={profile}
           project={item.project}
           amount={item.price_usd}
           num_shares={item.num_shares}
@@ -34,13 +30,12 @@ export async function Investments(props: {
   )
 }
 
-async function InvestmentsDisplay(props: {
-  profile: string
+function InvestmentsDisplay(props: {
   project: Project
   amount: number
   num_shares: number
 }) {
-  const { profile, project, amount, num_shares } = props
+  const { project, amount, num_shares } = props
   if (num_shares == 0) {
     return <div className="hidden"></div>
   }

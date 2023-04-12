@@ -11,6 +11,7 @@ export type Tab = {
 export function Tabs(props: { tabs: Tab[]; preTabSlug?: string }) {
   const { tabs, preTabSlug } = props
   const router = useRouter()
+  if (tabs.length === 0) return null
   return (
     <div>
       <div className="block">

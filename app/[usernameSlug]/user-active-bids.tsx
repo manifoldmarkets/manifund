@@ -4,7 +4,7 @@ import { UserBidDisplay } from '@/components/user-bids'
 
 export function ActiveBids(props: {
   bids: BidAndProject[]
-  isOwnProfile: boolean
+  isOwnProfile?: boolean
 }) {
   const { bids, isOwnProfile } = props
   const bidsDisplay = bids.map((bid) => (

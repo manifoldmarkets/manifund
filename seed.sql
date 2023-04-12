@@ -8,6 +8,7 @@ create table public.profiles (
   accreditation_status boolean not null,
   full_name text not null,
   avatar_url text,
+  long_description jsonb,
   primary key (id)
 );
 
