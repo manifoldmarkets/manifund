@@ -74,6 +74,8 @@ export interface Database {
           bio: string
           full_name: string
           id: string
+          long_description: Json
+          type: Database["public"]["Enums"]["profile_type"]
           username: string
           website: string | null
         }
@@ -82,7 +84,9 @@ export interface Database {
           avatar_url?: string | null
           bio?: string
           full_name?: string
-          id: string
+          id?: string
+          long_description?: Json
+          type: Database["public"]["Enums"]["profile_type"]
           username: string
           website?: string | null
         }
@@ -92,6 +96,8 @@ export interface Database {
           bio?: string
           full_name?: string
           id?: string
+          long_description?: Json
+          type?: Database["public"]["Enums"]["profile_type"]
           username?: string
           website?: string | null
         }
@@ -177,7 +183,7 @@ export interface Database {
           amount: number
           created_at: string
           customer_id: string
-          id: string
+          id: number
           session_id: string
           txn_id: string
         }
@@ -185,7 +191,7 @@ export interface Database {
           amount: number
           created_at?: string
           customer_id: string
-          id?: string
+          id?: number
           session_id: string
           txn_id: string
         }
@@ -193,7 +199,7 @@ export interface Database {
           amount?: number
           created_at?: string
           customer_id?: string
-          id?: string
+          id?: number
           session_id?: string
           txn_id?: string
         }
@@ -248,18 +254,12 @@ export interface Database {
       }
     }
     Functions: {
-      get_user_balances: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          id: number
-          username: string
-          balance: number
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
       bid_type: "buy" | "sell" | "ipo"
+      profile_type: "individual" | "org"
     }
     CompositeTypes: {
       [_ in never]: never

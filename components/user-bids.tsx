@@ -16,7 +16,7 @@ import { RoundTag } from './tags'
 export function UserBidDisplay(props: {
   bid: Bid
   project: Project
-  isOwnProfile: boolean
+  isOwnProfile?: boolean
 }) {
   const { bid, project, isOwnProfile } = props
   const { supabase } = useSupabase()
