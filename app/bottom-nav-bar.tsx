@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Avatar } from '@/components/avatar'
 import { Col } from '@/components/layout/col'
 import { calculateUserBalance } from '@/utils/math'
-import { getProjectTxnsByUser } from '@/db/txn'
+import { getTxnsByUser } from '@/db/txn'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 
 export const BOTTOM_NAV_BAR_HEIGHT = 58
@@ -21,9 +21,7 @@ export async function BottomNavBar() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
-  const { incomingTxns, outgoingTxns } = user?.id
-    ? await getProjectTxnsByUser(supabase, user?.id as string)
-    : { incomingTxns: [], outgoingTxns: [] }
+  const txns = await getTxnsByUser(supabase, user?.id as string)
   const navigationOptions = [
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
@@ -59,7 +57,7 @@ export async function BottomNavBar() {
               />
             </div>
             <p className="text-center">
-              {formatMoney(calculateUserBalance(incomingTxns, outgoingTxns))}{' '}
+              {formatMoney(calculateUserBalance(txns, profile.id))}{' '}
             </p>
           </Col>
         </Link>

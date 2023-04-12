@@ -204,6 +204,7 @@ async function setProfilesToIndividual(supabase: SupabaseClient) {
   const { error } = await supabase
     .from('profiles')
     .update({ type: 'individual' })
+    // Supabase requres filter for update so I put a weird string that wouldn't apply to any rows
     .neq('full_name', 'aoiwejdio')
 
   if (error) {

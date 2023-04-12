@@ -5,7 +5,7 @@ import {
   getUser,
   Profile,
 } from '@/db/profile'
-import { getProjectTxnsByUser, getIncomingTxnsByUserWithDonor } from '@/db/txn'
+import { getTxnsByUser, getIncomingTxnsByUserWithDonor } from '@/db/txn'
 import { DonateBox } from './donate-box'
 import { calculateUserSpendableFunds } from '@/utils/math'
 import { getBidsByUser } from '@/db/bid'
@@ -36,19 +36,16 @@ export default async function CharityPage(props: {
   ).length
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
-  const { incomingTxns, outgoingTxns } = await getProjectTxnsByUser(
-    supabase,
-    user?.id as string
-  )
+  const txns = await getTxnsByUser(supabase, user?.id as string)
   const bids = await getBidsByUser(supabase, user?.id as string)
   const userSpendableFunds = calculateUserSpendableFunds(
-    incomingTxns,
-    outgoingTxns,
+    txns,
+    profile?.id as string,
     bids,
     profile?.accreditation_status as boolean
   )
   return (
-    <div>
+    <div className="p-4">
       <figure className="relative h-32 w-full rounded-sm bg-white">
         {charity.avatar_url ? (
           <Image src={charity.avatar_url} alt="" fill objectFit="contain" />
@@ -56,9 +53,9 @@ export default async function CharityPage(props: {
           <div className="h-full w-full bg-gradient-to-r from-slate-300 to-indigo-200" />
         )}
       </figure>
-      <h1 className="mt-3 text-3xl font-bold">{charity.full_name}</h1>
+      <h1 className="mt-3 mb-2 text-3xl font-bold">{charity.full_name}</h1>
       {charity.website && (
-        <span className="my-4 text-orange-600">
+        <span className="text-orange-600">
           <LinkIcon className="mr-1 inline-block h-4 w-4" />
           <Link
             className="hover:underline"
@@ -68,7 +65,7 @@ export default async function CharityPage(props: {
           </Link>
         </span>
       )}
-      <p className="mb-10 text-gray-600">{charity.bio}</p>
+      <p className="mt-1 mb-10 text-gray-600">{charity.bio}</p>
       {profile && (
         <Row className="justify-between">
           <Col className="mx-5 my-3 justify-between">

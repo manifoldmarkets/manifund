@@ -9,7 +9,7 @@ import Link from 'next/link'
 // May want to use later for regrantors as well
 export function OrgCard(props: { charity: ProfileAndTxns }) {
   const { charity } = props
-  const raised = calculateUserBalance(charity.txns, [])
+  const raised = calculateUserBalance(charity.txns, charity.id)
   return (
     <Link href={`/charity/${charity.username}`}>
       <Col className="h-full justify-between rounded-md border border-gray-300 bg-white px-6 pb-2 pt-1 shadow">

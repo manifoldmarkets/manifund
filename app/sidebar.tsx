@@ -11,7 +11,7 @@ import { User } from '@supabase/supabase-js'
 import { Avatar } from '@/components/avatar'
 import { formatMoney } from '@/utils/formatting'
 import { calculateUserBalance } from '@/utils/math'
-import { getProjectTxnsByUser } from '@/db/txn'
+import { getTxnsByUser } from '@/db/txn'
 
 export default async function Sidebar() {
   const supabase = createServerClient()
@@ -63,16 +63,14 @@ export async function ProfileSummary(props: { user: User }) {
   const supabase = createServerClient()
   const profile = await getProfileById(supabase, user.id)
   if (profile === null) return null
-  const { incomingTxns, outgoingTxns } = user.id
-    ? await getProjectTxnsByUser(supabase, user.id)
-    : { incomingTxns: [], outgoingTxns: [] }
+  const txns = await getTxnsByUser(supabase, user.id)
   return (
     <div className="group mb-3 flex flex-row items-center gap-2 truncate rounded-md py-3 px-1 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
       <Avatar username={profile.username} avatarUrl={profile.avatar_url} />
       <Link href={`/${profile.username}?tab=portfolio`} className="truncate">
         <div className="font-medium">{profile.full_name}</div>
         <div className="text-sm">
-          {formatMoney(calculateUserBalance(incomingTxns, outgoingTxns))}
+          {formatMoney(calculateUserBalance(txns, profile.id))}
         </div>
       </Link>
     </div>

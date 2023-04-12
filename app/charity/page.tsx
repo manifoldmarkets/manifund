@@ -3,6 +3,8 @@ import { listOrgs } from '@/db/profile'
 import { OrgsDisplay } from './orgs-display'
 import { SiteLink } from '@/components/site-link'
 
+export const revalidate = 0
+
 export default async function AllCharitiesPage() {
   const supabase = createServerClient()
   const orgs = await listOrgs(supabase)
