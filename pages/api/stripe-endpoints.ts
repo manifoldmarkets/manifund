@@ -4,6 +4,7 @@ import { createAdminClient } from './_db'
 import { sendTemplateEmail } from '@/utils/email'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Readable } from 'node:stream'
+import { BANK_ID } from '@/db/env'
 import uuid from 'react-uuid'
 
 export const config = {
@@ -66,10 +67,6 @@ export default async function handler(
   }
   return res.status(200).send('success')
 }
-
-const BANK_ID = isProd()
-  ? '758e68da-c37c-4a9d-a82b-f4aaedde31b9'
-  : '9a3a1419-2f01-4006-b744-887faf56551d'
 
 const issueMoneys = async (session: StripeSession) => {
   const { id: sessionId } = session
