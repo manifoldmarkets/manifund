@@ -21,6 +21,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { Project, TOTAL_SHARES } from '@/db/project'
 import uuid from 'react-uuid'
 import { Profile } from '@/db/profile'
+import { Card } from '@/components/card'
 
 type BidType = Database['public']['Enums']['bid_type']
 
@@ -84,7 +85,7 @@ export function PlaceBid(props: {
   }
 
   return (
-    <div className="flex w-full flex-col justify-between gap-4 rounded-md border border-gray-200 bg-white p-4 shadow-md">
+    <Card className="flex w-full flex-col justify-between gap-4">
       <div className="flex justify-between">
         {project.stage == 'active' && (
           <div className="mb-4 flex flex-row items-end gap-2">
@@ -191,7 +192,7 @@ export function PlaceBid(props: {
       >
         Offer {formatMoney(amount)} @ {formatMoney(valuation)} Project Valuation
       </Button>
-    </div>
+    </Card>
   )
 }
 

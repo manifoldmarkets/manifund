@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/components/button'
+import { Card } from '@/components/card'
 import { Input } from '@/components/input'
-import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Profile } from '@/db/profile'
 import { useRouter } from 'next/navigation'
@@ -23,7 +23,7 @@ export function DonateBox(props: {
     errorMessage = `You must donate at least $10.`
   }
   return (
-    <Col className="gap-3 border border-gray-300 bg-white p-6 shadow sm:rounded-md">
+    <Card className="flex flex-col gap-3 p-6">
       <Row className="justify-center gap-1">
         <label htmlFor="amount" className="relative top-3">
           Amount: $
@@ -64,6 +64,6 @@ export function DonateBox(props: {
       >
         Donate
       </Button>
-    </Col>
+    </Card>
   )
 }

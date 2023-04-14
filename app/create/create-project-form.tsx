@@ -19,6 +19,7 @@ import { formatMoney } from '@/utils/formatting'
 import { ArrowRightIcon } from '@heroicons/react/24/solid'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
+import { Card } from '@/components/card'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -178,7 +179,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           </div>
         </fieldset>
       </div>
-      <div className="rounded-md border border-gray-300 bg-white p-5 shadow-md">
+      <Card>
         <h1 className="text-xl font-bold">Founder equity & initial pricing</h1>
         <p className="mb-5 text-sm text-gray-500">
           You can choose to buy or sell more of your project at any time.
@@ -291,7 +292,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
             auctionClose === null ? initialValuation : undefined
           )}
         </div>
-      </div>
+      </Card>
       <div className="mt-4 text-center text-rose-500">{errorMessage}</div>
       <Button
         className="mt-4"

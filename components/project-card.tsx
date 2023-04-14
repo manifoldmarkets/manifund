@@ -21,6 +21,7 @@ import { RoundTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { ValuationBox } from './valuation-box'
 import { Round } from '@/db/round'
+import { Card } from './card'
 
 export function ProjectCard(props: {
   project: FullProject
@@ -32,30 +33,32 @@ export function ProjectCard(props: {
 }) {
   const { creator, project, numComments, bids, txns, valuation } = props
   return (
-    <Col className="rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow">
-      <ProjectCardHeader
-        round={project.rounds}
-        creator={creator}
-        valuation={project.stage !== 'not funded' ? valuation : undefined}
-      />
-      <Link
-        href={`/projects/${project.slug}`}
-        className="group flex flex-1 flex-col justify-between hover:cursor-pointer"
-      >
-        <div className="mt-2 mb-4">
-          <h1 className="text-xl font-semibold group-hover:underline">
-            {project.title}
-          </h1>
-          <p className="font-light text-gray-500">{project.blurb}</p>
-        </div>
-        <ProjectCardFooter
-          project={project}
-          numComments={numComments}
-          bids={bids}
-          txns={txns}
+    <Card className="px-4 pb-2 pt-1">
+      <Col>
+        <ProjectCardHeader
+          round={project.rounds}
+          creator={creator}
+          valuation={project.stage !== 'not funded' ? valuation : undefined}
         />
-      </Link>
-    </Col>
+        <Link
+          href={`/projects/${project.slug}`}
+          className="group flex flex-1 flex-col justify-between hover:cursor-pointer"
+        >
+          <div className="mt-2 mb-4">
+            <h1 className="text-xl font-semibold group-hover:underline">
+              {project.title}
+            </h1>
+            <p className="font-light text-gray-500">{project.blurb}</p>
+          </div>
+          <ProjectCardFooter
+            project={project}
+            numComments={numComments}
+            bids={bids}
+            txns={txns}
+          />
+        </Link>
+      </Col>
+    </Card>
   )
 }
 
