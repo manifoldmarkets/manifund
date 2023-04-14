@@ -81,7 +81,8 @@ create table if not exists public.projects (
   title text not null,
   blurb text,
   creator uuid not null references auth.users(id) on delete cascade,
-  min_funding numeric not null,
+  min_funding float8 not null,
+  funding_goal float8  not null default 0,
   founder_portion int8 not null,
   description jsonb,
   primary key (id)

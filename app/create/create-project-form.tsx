@@ -51,6 +51,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   const [projectType, setProjectType] = useState<string>(projectTypeOptions[0])
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number>(250)
+  const [fundingGoal, setFundingGoal] = useState<number>(250)
   const [initialValuation, setInitialValuation] = useState<number>(250)
   const [round, setRound] = useState<Round>(availableRounds[0])
   const [sellingPortion, setSellingPortion] = useState<number>(0)
@@ -73,8 +74,18 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   } else if (initialValuation <= 0 && auctionClose === null) {
     errorMessage =
       'Your initial valuation must be greater than 0. Only post projects with positive expected value.'
-  } else if (minFunding <= 0 && auctionClose !== null) {
+  } else if (
+    minFunding <= 0 &&
+    auctionClose !== null &&
+    projectType === 'Impact certificate'
+  ) {
     errorMessage = 'Your minimum funding must be greater than 0.'
+  } else if (
+    (projectType === 'Grant application' && minFunding > fundingGoal) ||
+    fundingGoal <= 0
+  ) {
+    errorMessage =
+      'Your funding goal must be greater than 0 and greater than or equal to your minimum funding goal.'
   } else {
     errorMessage = null
   }
@@ -88,6 +99,14 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       setAuctionClose(null)
     }
   }, [round])
+
+  useEffect(() => {
+    if (projectType === 'Grant application') {
+      setSellingPortion(0)
+      setRound(availableRounds.find((r) => r.title === 'Independent')!)
+      setAuctionClose(null)
+    }
+  }, [projectType])
 
   const user = session?.user
 
@@ -361,8 +380,8 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               id="fundingGoal"
               autoComplete="off"
               required
-              value={0}
-              // TODO: add funding goal field to form & db
+              value={fundingGoal}
+              onChange={(event) => setFundingGoal(Number(event.target.value))}
             />
           </Col>
         </Row>
@@ -390,6 +409,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                 auctionClose === null
                   ? (sellingPortion / 100) * initialValuation
                   : minFunding.toString(),
+              funding_goal: fundingGoal.toString(),
               founder_portion: founderShares.toString(),
               round: round.title,
               auction_close:

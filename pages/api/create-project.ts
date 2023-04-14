@@ -15,6 +15,7 @@ type ProjectProps = {
   blurb: string
   description: any
   min_funding: number
+  funding_goal: number
   founder_portion: number
   round: string
   auction_close: string
@@ -27,6 +28,7 @@ export default async function handler(req: NextRequest) {
     blurb,
     description,
     min_funding,
+    funding_goal,
     founder_portion,
     round,
     auction_close,
@@ -55,6 +57,7 @@ export default async function handler(req: NextRequest) {
     blurb,
     description,
     min_funding,
+    funding_goal,
     founder_portion,
     creator: user.id,
     slug,
@@ -67,7 +70,7 @@ export default async function handler(req: NextRequest) {
     console.error('create-project', error)
   }
   await giveCreatorShares(supabase, id, user.id)
-  if (stage === 'active') {
+  if (stage === 'active' && founder_portion < TOTAL_SHARES) {
     await addBid(
       supabase,
       id,
