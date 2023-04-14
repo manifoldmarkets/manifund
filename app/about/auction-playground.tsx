@@ -13,6 +13,7 @@ import { resolveBids } from '@/pages/api/close-bidding'
 import { Bid } from '@/db/bid'
 import { Resolution } from '@/pages/api/close-bidding'
 import uuid from 'react-uuid'
+import { Card } from '@/components/card'
 
 export function AuctionPlayground() {
   const INITIAL_BIDS = [
@@ -147,7 +148,7 @@ export function AuctionPlayground() {
   }, [playBids, seeResults])
 
   return (
-    <div className="relative flex flex-col gap-2 rounded-lg border border-gray-300 bg-white px-4 py-7 shadow-md">
+    <Card className="relative flex flex-col gap-2 rounded-lg py-7">
       <ArrowPathIcon
         className="absolute top-4 right-5 h-6 w-6 text-gray-500 hover:cursor-pointer"
         onClick={() => {
@@ -255,7 +256,7 @@ export function AuctionPlayground() {
         </div>
       )}
       {seeResults && resultsText}
-    </div>
+    </Card>
   )
 }
 

@@ -27,8 +27,8 @@ export function Avatar(props: {
     }
   }
 
-  // there can be no avatar URL or username in the feed, we show a "submit comment"
-  // item with a fake grey user circle guy even if you aren't signed in
+  // There can be no avatar URL or username in the feed, we show a "submit comment"
+  // Item with a fake grey user circle guy even if you aren't signed in
   return avatarUrl ? (
     <Image
       width={sizeInPx}

@@ -1,19 +1,19 @@
 'use client'
 import { Profile } from '@/db/profile'
 import { WriteComment } from './write-comment'
-import { CommentAndProfile, getCommentsByProject } from '@/db/comment'
+import { CommentAndProfile } from '@/db/comment'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { formatDistanceToNow } from 'date-fns'
 import { RichContent } from '@/components/editor'
-import { Avatar } from '@/components/avatar'
 import { Divider } from '@/components/divider'
 import { Project } from '@/db/project'
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { IconButton } from '@/components/button'
-import { ReactNode, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import clsx from 'clsx'
+import { Card } from '@/components/card'
 
 export function Comments(props: {
   project: Project
@@ -43,7 +43,9 @@ export function Comments(props: {
     <div key={thread.root.id}>
       <Row className="w-full">
         <div className="MT w-full">
-          <CommentWrapper className={clsx('mt-2', user ?? 'pb-4')}>
+          <Card
+            className={clsx('mt-2', user ?? 'pb-4', 'my-1 p-5 shadow-none')}
+          >
             <Comment
               comment={thread.root}
               writtenByCreator={thread.root.commenter === project.creator}
@@ -55,15 +57,15 @@ export function Comments(props: {
                 </IconButton>
               </Row>
             )}
-          </CommentWrapper>
+          </Card>
 
           {thread.replies.map((reply) => (
-            <CommentWrapper key={reply.id} className="ml-8">
+            <Card key={reply.id} className="ml-8 mt-1 shadow-none">
               <Comment
                 comment={reply}
                 writtenByCreator={reply.commenter === project.creator}
               />
-            </CommentWrapper>
+            </Card>
           ))}
           {replyingTo?.id === thread.root.id && user && (
             <div className="mt-1 ml-8">
@@ -138,20 +140,6 @@ function Comment(props: {
       <div className="relative left-8">
         <RichContent content={comment.content} />
       </div>
-    </div>
-  )
-}
-
-function CommentWrapper(props: { className?: string; children?: ReactNode }) {
-  const { className, children } = props
-  return (
-    <div
-      className={clsx(
-        className,
-        'my-1 rounded-md border border-gray-300 bg-white p-5'
-      )}
-    >
-      {children}
     </div>
   )
 }
