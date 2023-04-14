@@ -164,147 +164,185 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       />
       <label htmlFor="description">Description</label>
       <TextEditor editor={editor} />
-      <div>
-        <label className="text-base font-semibold text-gray-900">
-          Rounds currently accepting submissions
-        </label>
-        <fieldset className="mt-4">
-          <legend className="sr-only">Round options</legend>
-          <div className="space-y-4">
-            {availableRounds.map((availableRound) => (
-              <Row key={availableRound.title} className="relative items-start">
-                <Row className="h-6 items-center">
-                  <input
-                    id={availableRound.title}
-                    name="notification-method"
-                    type="radio"
-                    defaultChecked={availableRound.title === round.title}
-                    onChange={() => {
-                      setRound(availableRound)
-                    }}
-                    className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
-                  />
-                </Row>
-                <div className="ml-3">
-                  <Row>
-                    <label
-                      htmlFor={availableRound.title}
-                      className="text-md block font-medium"
-                    >
-                      {availableRound.title}
-                    </label>
-                    <Link href={`/rounds/${availableRound.slug}`}>
-                      <ArrowRightIcon className="ml-2 h-5 w-5 text-gray-400" />
-                    </Link>
+      {projectType === 'Impact certificate' ? (
+        <>
+          <div>
+            <label className="text-base font-semibold text-gray-900">
+              Rounds currently accepting submissions
+            </label>
+            <fieldset className="mt-4">
+              <legend className="sr-only">Round options</legend>
+              <div className="space-y-4">
+                {availableRounds.map((availableRound) => (
+                  <Row
+                    key={availableRound.title}
+                    className="relative items-start"
+                  >
+                    <Row className="h-6 items-center">
+                      <input
+                        id={availableRound.title}
+                        name="notification-method"
+                        type="radio"
+                        defaultChecked={availableRound.title === round.title}
+                        onChange={() => {
+                          setRound(availableRound)
+                        }}
+                        className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
+                      />
+                    </Row>
+                    <div className="ml-3">
+                      <Row>
+                        <label
+                          htmlFor={availableRound.title}
+                          className="text-md block font-medium"
+                        >
+                          {availableRound.title}
+                        </label>
+                        <Link href={`/rounds/${availableRound.slug}`}>
+                          <ArrowRightIcon className="ml-2 h-5 w-5 text-gray-400" />
+                        </Link>
+                      </Row>
+                      {availableRound.title === 'Independent' && (
+                        <p className="text-sm text-gray-500">
+                          Independent projects do not have a committed oracular
+                          funder. By entering as an Independent project, your
+                          project is less likely to recieve investments and
+                          oracular funding.
+                        </p>
+                      )}
+                    </div>
                   </Row>
-                  {availableRound.title === 'Independent' && (
-                    <p className="text-sm text-gray-500">
-                      Independent projects do not have a committed oracular
-                      funder. By entering as an Independent project, your
-                      project is less likely to recieve investments and oracular
-                      funding.
-                    </p>
-                  )}
-                </div>
-              </Row>
-            ))}
+                ))}
+              </div>
+            </fieldset>
           </div>
-        </fieldset>
-      </div>
-      <Card>
-        <h1 className="text-xl font-bold">Founder equity & initial pricing</h1>
-        <p className="mb-5 text-sm text-gray-500">
-          You can choose to buy or sell more of your project at any time.
-        </p>
-        {round.title === 'Independent' && (
-          <Row className="mt-2 gap-2">
-            <label htmlFor="advanced-settings" className="text-gray-600">
-              Auction for initial valuation
-              <InfoTooltip text="If you use an auction, your project will start in the 'proposal' phase, and you will only recieve funding if there are enough bids to pass the minimum funding bar you set. Otherwise, your project will begin in the 'active' phase and you can sell shares at the valuation of your choice immediately." />
-            </label>
 
-            <button
-              type="button"
-              className={clsx(
-                'relative mb-3 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
-                  (auctionClose === null ? ' bg-gray-200' : ' bg-orange-500'),
-                'focus:ring-offset-gray-100'
-              )}
-              role="switch"
-              aria-checked="false"
-              onClick={() =>
-                setAuctionClose(
-                  auctionClose === null
-                    ? format(add(new Date(), { days: 7 }), 'yyyy-MM-dd')
-                    : null
-                )
-              }
-            >
-              <span className="sr-only">Use auction</span>
-              <span
-                aria-hidden="true"
-                className={clsx(
-                  'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                  auctionClose === null ? 'translate-x-0' : 'translate-x-5'
-                )}
-              ></span>
-            </button>
-          </Row>
-        )}
-        {auctionClose !== null && (
-          <div className="mb-3">
-            <label htmlFor="auction-close">Auction Close Date: </label>
-            <Input
-              type="date"
-              value={auctionClose ?? ''}
-              disabled={round.title !== 'Independent'}
-              onChange={(event) => setAuctionClose(event.target.value)}
-            />
-          </div>
-        )}
-        <label htmlFor="founderPortion">
-          Portion of stake to be sold{' '}
-          <InfoTooltip text="What percent of the project's impact cert will be sold to investors? The rest will be kept by the founding team." />
-        </label>
-        <Row className="justify-center gap-5">
-          <Row className=" gap-1">
-            <Input
-              value={sellingPortion}
-              type="number"
-              onChange={(event) =>
-                setSellingPortion(Number(event.target.value))
-              }
-            ></Input>
-            <p className="relative top-3">%</p>
-          </Row>
-          <MySlider
-            marks={marks}
-            value={sellingPortion}
-            onChange={(value) => setSellingPortion(value as number)}
-            step={5}
-          />
-        </Row>
-        {auctionClose === null ? (
-          <Col>
-            <label htmlFor="valuation" className="mr-3">
-              Initial valuation (USD){' '}
-              <InfoTooltip text="Approximately our expected payout." />
+          <Card>
+            <h1 className="text-xl font-bold">
+              Founder equity & initial pricing
+            </h1>
+            <p className="mb-5 text-sm text-gray-500">
+              You can choose to buy or sell more of your project at any time.
+            </p>
+            {round.title === 'Independent' && (
+              <Row className="mt-2 gap-2">
+                <label htmlFor="advanced-settings" className="text-gray-600">
+                  Auction for initial valuation
+                  <InfoTooltip text="If you use an auction, your project will start in the 'proposal' phase, and you will only recieve funding if there are enough bids to pass the minimum funding bar you set. Otherwise, your project will begin in the 'active' phase and you can sell shares at the valuation of your choice immediately." />
+                </label>
+
+                <button
+                  type="button"
+                  className={clsx(
+                    'relative mb-3 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
+                      (auctionClose === null
+                        ? ' bg-gray-200'
+                        : ' bg-orange-500'),
+                    'focus:ring-offset-gray-100'
+                  )}
+                  role="switch"
+                  aria-checked="false"
+                  onClick={() =>
+                    setAuctionClose(
+                      auctionClose === null
+                        ? format(add(new Date(), { days: 7 }), 'yyyy-MM-dd')
+                        : null
+                    )
+                  }
+                >
+                  <span className="sr-only">Use auction</span>
+                  <span
+                    aria-hidden="true"
+                    className={clsx(
+                      'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                      auctionClose === null ? 'translate-x-0' : 'translate-x-5'
+                    )}
+                  ></span>
+                </button>
+              </Row>
+            )}
+            {auctionClose !== null && (
+              <div className="mb-3">
+                <label htmlFor="auction-close">Auction Close Date: </label>
+                <Input
+                  type="date"
+                  value={auctionClose ?? ''}
+                  disabled={round.title !== 'Independent'}
+                  onChange={(event) => setAuctionClose(event.target.value)}
+                />
+              </div>
+            )}
+            <label htmlFor="founderPortion">
+              Portion of stake to be sold{' '}
+              <InfoTooltip text="What percent of the project's impact cert will be sold to investors? The rest will be kept by the founding team." />
             </label>
-            <Input
-              type="number"
-              id="minFunding"
-              autoComplete="off"
-              required
-              value={initialValuation}
-              onChange={(event) =>
-                setInitialValuation(Number(event.target.value))
-              }
-            />
-          </Col>
-        ) : (
+            <Row className="justify-center gap-5">
+              <Row className=" gap-1">
+                <Input
+                  value={sellingPortion}
+                  type="number"
+                  onChange={(event) =>
+                    setSellingPortion(Number(event.target.value))
+                  }
+                ></Input>
+                <p className="relative top-3">%</p>
+              </Row>
+              <MySlider
+                marks={marks}
+                value={sellingPortion}
+                onChange={(value) => setSellingPortion(value as number)}
+                step={5}
+              />
+            </Row>
+            {auctionClose === null ? (
+              <Col>
+                <label htmlFor="valuation" className="mr-3">
+                  Initial valuation (USD){' '}
+                  <InfoTooltip text="Approximately our expected payout." />
+                </label>
+                <Input
+                  type="number"
+                  id="minFunding"
+                  autoComplete="off"
+                  required
+                  value={initialValuation}
+                  onChange={(event) =>
+                    setInitialValuation(Number(event.target.value))
+                  }
+                />
+              </Col>
+            ) : (
+              <Col>
+                <label htmlFor="minFunding">
+                  Minimum funding (USD){' '}
+                  <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
+                </label>
+                <Input
+                  type="number"
+                  id="minFunding"
+                  autoComplete="off"
+                  required
+                  value={minFunding ?? ''}
+                  onChange={(event) =>
+                    setMinFunding(Number(event.target.value))
+                  }
+                />
+              </Col>
+            )}
+            <div className="m-3 rounded-md bg-orange-100 p-2 text-center text-sm font-medium text-orange-500 shadow-sm">
+              {genEquityPriceSummary(
+                sellingPortion,
+                auctionClose === null ? undefined : minFunding,
+                auctionClose === null ? initialValuation : undefined
+              )}
+            </div>
+          </Card>
+        </>
+      ) : (
+        <Row className="mt-4 justify-between">
           <Col>
-            <label htmlFor="minFunding">
-              Minimum funding (USD){' '}
+            <label htmlFor="minFunding" className="mr-3">
+              Minimum funding (USD):{' '}
               <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
             </label>
             <Input
@@ -312,19 +350,23 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               id="minFunding"
               autoComplete="off"
               required
-              value={minFunding ?? ''}
+              value={minFunding}
               onChange={(event) => setMinFunding(Number(event.target.value))}
             />
           </Col>
-        )}
-        <div className="m-3 rounded-md bg-orange-100 p-2 text-center text-sm font-medium text-orange-500 shadow-sm">
-          {genEquityPriceSummary(
-            sellingPortion,
-            auctionClose === null ? undefined : minFunding,
-            auctionClose === null ? initialValuation : undefined
-          )}
-        </div>
-      </Card>
+          <Col>
+            <label htmlFor="fundingGoal">Funding goal (USD): </label>
+            <Input
+              type="number"
+              id="fundingGoal"
+              autoComplete="off"
+              required
+              value={0}
+              // TODO: add funding goal field to form & db
+            />
+          </Col>
+        </Row>
+      )}
       <div className="mt-4 text-center text-rose-500">{errorMessage}</div>
       <Button
         className="mt-4"
