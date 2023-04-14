@@ -20,6 +20,7 @@ import { ArrowRightIcon } from '@heroicons/react/24/solid'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Card } from '@/components/card'
+import { RadioGroup } from '@headlessui/react'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -46,6 +47,8 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   const { session } = useSupabase()
   const router = useRouter()
   const [title, setTitle] = useState<string>('')
+  const projectTypeOptions = ['Grant application', 'Impact certificate']
+  const [projectType, setProjectType] = useState<string>(projectTypeOptions[0])
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number>(250)
   const [initialValuation, setInitialValuation] = useState<number>(250)
@@ -111,6 +114,35 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
+      <RadioGroup
+        value={projectType}
+        onChange={setProjectType}
+        className="mt-2"
+      >
+        <RadioGroup.Label className="sr-only">
+          {' '}
+          Choose an amount option{' '}
+        </RadioGroup.Label>
+        <div className="flex max-w-fit rounded-md border border-gray-300 bg-white p-2">
+          {projectTypeOptions.map((option) => (
+            <RadioGroup.Option
+              key={option}
+              value={option}
+              className={({ active, checked }) =>
+                clsx(
+                  'cursor-pointer focus:outline-none',
+                  checked
+                    ? 'bg-orange-500 text-white hover:bg-orange-600'
+                    : 'bg-white text-gray-900',
+                  'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold'
+                )
+              }
+            >
+              <RadioGroup.Label as="span">{option}</RadioGroup.Label>
+            </RadioGroup.Option>
+          ))}
+        </div>
+      </RadioGroup>
       <label htmlFor="title">Title</label>
       <Input
         className="text-2xl font-bold"
