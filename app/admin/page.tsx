@@ -10,6 +10,7 @@ import { roundLargeNumber } from '@/utils/formatting'
 import { Txn } from '@/db/txn'
 import { calculateUserFundsAndShares } from '@/utils/math'
 import { GiveCreatorShares } from './give-creator-shares'
+import { Donations } from './donations'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -19,21 +20,18 @@ export default async function Admin() {
   }
 
   const supabaseAdmin = createAdminClient()
-  const { data } = await supabaseAdmin.from('users').select('*')
-  const userPromises = data?.map(async (user) => {
-    const { data: profiles } = await supabaseAdmin
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-    const profile = profiles ? profiles[0] : null
-    return {
-      ...user,
-      profile,
-    }
-  })
-  const users = await Promise.all(userPromises ?? [])
-
-  const usersById = new Map(users.map((user) => [user.id, user]))
+  const { data: users } = await supabaseAdmin.from('users').select('*')
+  const { data: profiles } = await supabaseAdmin.from('profiles').select('*')
+  const userAndProfiles =
+    users?.map((user) => {
+      const profile = profiles?.find((p) => p.id === user.id)
+      return {
+        ...user,
+        profile,
+      }
+    }) ?? []
+  const charities = profiles?.filter((profile) => profile.type === 'org')
+  const usersById = new Map(userAndProfiles.map((user) => [user.id, user]))
   const getName = (userId: string | null) => {
     return usersById.get(userId ?? '')?.profile?.username
   }
@@ -65,7 +63,7 @@ export default async function Admin() {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {userAndProfiles.map((user) => (
             <tr key={user.id}>
               <td>{user.email}</td>
               <td>{user.profile?.username}</td>
@@ -140,6 +138,7 @@ export default async function Admin() {
           })}
         </tbody>
       </Table>
+      <Donations charities={charities ?? []} txns={txns ?? []} />
       <h2>Round Bid Amounts</h2>
       <RoundBidAmounts />
     </div>
