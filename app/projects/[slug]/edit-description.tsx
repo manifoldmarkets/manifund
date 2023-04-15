@@ -9,6 +9,7 @@ import { PencilIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
 import { Input } from '@/components/input'
+import { useRouter } from 'next/navigation'
 
 export function EditDescription(props: { project: Project }) {
   const { project } = props
@@ -17,6 +18,7 @@ export function EditDescription(props: { project: Project }) {
   const [showEditor, setShowEditor] = useState(false)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
   const [saving, setSaving] = useState(false)
+  const router = useRouter()
   const editor = useTextEditor(project.description)
 
   if (!user || user.id !== project.creator) {
@@ -26,8 +28,7 @@ export function EditDescription(props: { project: Project }) {
   async function saveText() {
     setSaving(true)
     const content = editor?.getJSON()
-    // Write this to supabase
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('projects')
       .update({
         description: content,
@@ -39,8 +40,7 @@ export function EditDescription(props: { project: Project }) {
     }
     setShowEditor(false)
     setSaving(false)
-    // Hack: reload the page on save.
-    window.location.reload()
+    router.refresh()
   }
   return (
     <div>
