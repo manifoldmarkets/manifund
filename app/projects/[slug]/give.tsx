@@ -16,10 +16,7 @@ import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
 import { HoldingsBox } from './holdings-box'
 import { Tooltip } from '@/components/tooltip'
-import { Bid } from '@/db/bid'
-import { SupabaseClient } from '@supabase/supabase-js'
 import { Project, TOTAL_SHARES } from '@/db/project'
-import uuid from 'react-uuid'
 import { Profile } from '@/db/profile'
 import { Card } from '@/components/card'
 
@@ -169,22 +166,20 @@ export function PlaceBid(props: {
         loading={submitting}
         onClick={async () => {
           setSubmitting(true)
-          const newBid = {
-            id: uuid(),
-            project: project.id,
-            bidder: user.id,
-            valuation: roundLargeNumber(valuation),
-            amount: roundLargeNumber(amount),
-            status: 'pending',
-            type: bidType,
-          } as Bid
-          const { error } = await supabase.from('bids').insert([newBid])
-          if (error) {
-            throw error
-          }
-          if (project.stage === 'active') {
-            await findAndMakeTrades(newBid, supabase)
-          }
+          const res = await fetch('/api/place-bid', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              projectId: project.id,
+              projectStage: project.stage,
+              bidderId: user.id,
+              valuation: Math.round(valuation),
+              amount: Math.round(amount),
+              type: bidType,
+            }),
+          })
           setSubmitting(false)
           router.refresh()
           setAmount(0)
@@ -194,45 +189,4 @@ export function PlaceBid(props: {
       </Button>
     </Card>
   )
-}
-
-async function findAndMakeTrades(bid: Bid, supabase: SupabaseClient) {
-  const newOfferType = bid.type
-  const { data, error } = await supabase
-    .from('bids')
-    .select()
-    .eq('project', bid.project)
-    .order('valuation', { ascending: newOfferType === 'buy' })
-  if (error) {
-    throw error
-  }
-  const oldBids = data
-    .filter((oldBid) => oldBid.bidder !== bid.bidder)
-    .filter((oldBid) => oldBid.type !== newOfferType)
-    .filter((oldBid) => oldBid.status === 'pending')
-  let i = 0
-  let budget = bid.amount
-  while (budget > 0 && i < oldBids.length) {
-    if (
-      newOfferType === 'buy'
-        ? oldBids[i].valuation > bid.valuation
-        : oldBids[i].valuation < bid.valuation
-    ) {
-      return
-    }
-    const tradeAmount = Math.min(budget, oldBids[i].amount)
-    budget -= tradeAmount
-    const response = await fetch('/api/trade', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        oldBidId: oldBids[i].bidder,
-        usdTraded: tradeAmount,
-        tradePartnerId: bid.bidder,
-      }),
-    })
-    i++
-  }
 }
