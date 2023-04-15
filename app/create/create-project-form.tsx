@@ -14,7 +14,7 @@ import { InfoTooltip } from '@/components/info-tooltip'
 import Link from 'next/link'
 import { Round } from '@/db/round'
 import { sortBy } from 'lodash'
-import { add, format } from 'date-fns'
+import { add, format, isAfter } from 'date-fns'
 import { formatMoney } from '@/utils/formatting'
 import { ArrowRightIcon } from '@heroicons/react/24/solid'
 import { Col } from '@/components/layout/col'
@@ -50,7 +50,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   const projectTypeOptions = ['Grant application', 'Impact certificate']
   const [projectType, setProjectType] = useState<string>(projectTypeOptions[0])
   const [blurb, setBlurb] = useState<string>('')
-  const [minFunding, setMinFunding] = useState<number>(250)
+  const [minFunding, setMinFunding] = useState<number>(0)
   const [fundingGoal, setFundingGoal] = useState<number>(250)
   const [initialValuation, setInitialValuation] = useState<number>(250)
   const [round, setRound] = useState<Round>(availableRounds[0])
@@ -60,7 +60,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       ? format(
           round.auction_close_date
             ? new Date(round.auction_close_date)
-            : add(new Date(), { days: 7 }),
+            : add(new Date(), { weeks: 2 }),
           'yyyy-MM-dd'
         )
       : null
@@ -86,6 +86,13 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   ) {
     errorMessage =
       'Your funding goal must be greater than 0 and greater than or equal to your minimum funding goal.'
+  } else if (
+    projectType === 'Grant application' &&
+    auctionClose &&
+    isAfter(new Date(auctionClose), add(new Date(), { weeks: 6 }))
+  ) {
+    errorMessage =
+      'Your application close date must be no more than 6 weeks from now.'
   } else {
     errorMessage = null
   }
@@ -358,33 +365,49 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           </Card>
         </>
       ) : (
-        <Row className="mt-4 justify-between">
-          <Col>
-            <label htmlFor="minFunding" className="mr-3">
-              Minimum funding (USD):{' '}
-              <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
-            </label>
-            <Input
-              type="number"
-              id="minFunding"
-              autoComplete="off"
-              required
-              value={minFunding}
-              onChange={(event) => setMinFunding(Number(event.target.value))}
-            />
-          </Col>
-          <Col>
-            <label htmlFor="fundingGoal">Funding goal (USD): </label>
-            <Input
-              type="number"
-              id="fundingGoal"
-              autoComplete="off"
-              required
-              value={fundingGoal}
-              onChange={(event) => setFundingGoal(Number(event.target.value))}
-            />
-          </Col>
-        </Row>
+        <>
+          <Row className="mt-4 justify-between">
+            <Col>
+              <label htmlFor="minFunding" className="mr-3">
+                Minimum funding (USD):{' '}
+                <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
+              </label>
+              <Input
+                type="number"
+                id="minFunding"
+                autoComplete="off"
+                required
+                value={minFunding}
+                onChange={(event) => setMinFunding(Number(event.target.value))}
+              />
+            </Col>
+            <Col>
+              <label htmlFor="fundingGoal">Funding goal (USD): </label>
+              <Input
+                type="number"
+                id="fundingGoal"
+                autoComplete="off"
+                required
+                value={fundingGoal}
+                onChange={(event) => setFundingGoal(Number(event.target.value))}
+              />
+            </Col>
+          </Row>
+          {minFunding > 0 && (
+            <Col>
+              <div className="mb-3">
+                <label htmlFor="auction-close">Decision deadline: </label>
+                <InfoTooltip text="After this deadline, if you have not reached your minimum funding goal, your application will close and you will not recieve any money. This date cannot be more than 6 weeks after posting." />
+              </div>
+              <Input
+                type="date"
+                value={auctionClose ?? ''}
+                disabled={round.title !== 'Independent'}
+                onChange={(event) => setAuctionClose(event.target.value)}
+              />
+            </Col>
+          )}
+        </>
       )}
       <div className="mt-4 text-center text-rose-500">{errorMessage}</div>
       <Button
