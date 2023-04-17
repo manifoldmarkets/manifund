@@ -1,12 +1,13 @@
 import { DataPoint } from '@/components/data-point'
 import { ProgressBar } from '@/components/progress-bar'
 import { Bid } from '@/db/bid'
-import { Project } from '@/db/project'
+import { Project, TOTAL_SHARES } from '@/db/project'
 import { formatMoney, showPrecision } from '@/utils/formatting'
 import { dateDiff, getProposalValuation } from '@/utils/math'
 
 export function ProposalData(props: { project: Project; bids: Bid[] }) {
   const { project, bids } = props
+  const isImpactCert = project.founder_portion !== TOTAL_SHARES
   const raised = bids.reduce((acc, bid) => acc + bid.amount, 0)
   const raisedString =
     raised > project.min_funding
@@ -22,16 +23,22 @@ export function ProposalData(props: { project: Project; bids: Bid[] }) {
       <div className="mb-4 flex justify-between">
         <DataPoint
           value={raisedString}
-          label={`raised of ${project.min_funding} goal`}
+          label={`raised of $${project.funding_goal} goal`}
+        />
+        <DataPoint
+          value={`$${project.min_funding}`}
+          label="required to proceed"
         />
         <DataPoint
           value={showPrecision(daysLeft, 3)}
-          label="days left to bid"
+          label="days left to contribute"
         />
-        <DataPoint
-          value={formatMoney(getProposalValuation(project))}
-          label="minimum valuation"
-        />
+        {isImpactCert && (
+          <DataPoint
+            value={formatMoney(getProposalValuation(project))}
+            label="minimum valuation"
+          />
+        )}
       </div>
       <ProgressBar percent={percentRaised} />
     </div>

@@ -17,7 +17,7 @@ export interface Database {
           id: string
           project: string
           status: Database["public"]["Enums"]["bid_status"]
-          type: Database["public"]["Enums"]["bid_type"]
+          type: Database["public"]["Enums"]["bid_type"] | null
           valuation: number
         }
         Insert: {
@@ -27,7 +27,7 @@ export interface Database {
           id?: string
           project: string
           status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"]
+          type?: Database["public"]["Enums"]["bid_type"] | null
           valuation: number
         }
         Update: {
@@ -37,7 +37,7 @@ export interface Database {
           id?: string
           project?: string
           status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"]
+          type?: Database["public"]["Enums"]["bid_type"] | null
           valuation?: number
         }
       }
@@ -74,7 +74,7 @@ export interface Database {
           bio: string
           full_name: string
           id: string
-          long_description: Json
+          long_description: Json | null
           type: Database["public"]["Enums"]["profile_type"]
           username: string
           website: string | null
@@ -85,8 +85,8 @@ export interface Database {
           bio?: string
           full_name?: string
           id?: string
-          long_description?: Json
-          type: Database["public"]["Enums"]["profile_type"]
+          long_description?: Json | null
+          type?: Database["public"]["Enums"]["profile_type"]
           username: string
           website?: string | null
         }
@@ -96,7 +96,7 @@ export interface Database {
           bio?: string
           full_name?: string
           id?: string
-          long_description?: Json
+          long_description?: Json | null
           type?: Database["public"]["Enums"]["profile_type"]
           username?: string
           website?: string | null
@@ -110,6 +110,7 @@ export interface Database {
           creator: string
           description: Json | null
           founder_portion: number
+          funding_goal: number
           id: string
           min_funding: number
           round: string
@@ -124,6 +125,7 @@ export interface Database {
           creator: string
           description?: Json | null
           founder_portion: number
+          funding_goal?: number
           id?: string
           min_funding: number
           round: string
@@ -138,6 +140,7 @@ export interface Database {
           creator?: string
           description?: Json | null
           founder_portion?: number
+          funding_goal?: number
           id?: string
           min_funding?: number
           round?: string
@@ -183,7 +186,7 @@ export interface Database {
           amount: number
           created_at: string
           customer_id: string
-          id: number
+          id: string
           session_id: string
           txn_id: string
         }
@@ -191,7 +194,7 @@ export interface Database {
           amount: number
           created_at?: string
           customer_id: string
-          id?: number
+          id?: string
           session_id: string
           txn_id: string
         }
@@ -199,7 +202,7 @@ export interface Database {
           amount?: number
           created_at?: string
           customer_id?: string
-          id?: number
+          id?: string
           session_id?: string
           txn_id?: string
         }
@@ -254,11 +257,18 @@ export interface Database {
       }
     }
     Functions: {
-      [_ in never]: never
+      get_user_balances: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: number
+          username: string
+          balance: number
+        }[]
+      }
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "ipo"
+      bid_type: "buy" | "sell" | "donate"
       profile_type: "individual" | "org"
     }
     CompositeTypes: {
