@@ -172,7 +172,7 @@ INSERT
 --
 ---- Bids ----
 -- Create an enum type for 'buy' vs 'sell' vs 'auction'
-create type bid_type as enum ('buy', 'sell', 'ipo');
+create type bid_type as enum ('buy', 'sell', 'donate');
 create type bid_status as enum ('deleted', 'pending', 'accepted', 'declined');
 
 create table if not exists public.bids (
