@@ -1,10 +1,5 @@
 import { createServerClient } from '@/db/supabase-server'
-import {
-  getProfileByUsername,
-  getProfileById,
-  getUser,
-  Profile,
-} from '@/db/profile'
+import { getProfileByUsername, getProfileById, getUser } from '@/db/profile'
 import { getTxnsByUser, getIncomingTxnsByUserWithDonor } from '@/db/txn'
 import { DonateBox } from '@/components/donate-box'
 import { calculateUserSpendableFunds } from '@/utils/math'
@@ -16,9 +11,8 @@ import { DataPoint } from '@/components/data-point'
 import { formatMoney, addHttpToUrl } from '@/utils/formatting'
 import { sortBy, uniq } from 'lodash'
 import { Col } from '@/components/layout/col'
-import { UserAvatarAndBadge } from '@/components/user-link'
-import { formatDistanceToNow } from 'date-fns'
 import Link from 'next/link'
+import { Donations } from '@/components/donations'
 
 export default async function CharityPage(props: {
   params: { charitySlug: string }
@@ -26,14 +20,9 @@ export default async function CharityPage(props: {
   const { charitySlug } = props.params
   const supabase = createServerClient()
   const charity = await getProfileByUsername(supabase, charitySlug)
-  const incomingCharityTxns = sortBy(
-    await getIncomingTxnsByUserWithDonor(supabase, charity.id),
-    'created_at'
-  ).reverse()
-  const raised = incomingCharityTxns.reduce((acc, txn) => acc + txn.amount, 0)
-  const numSupporters = uniq(
-    incomingCharityTxns.map((txn) => txn.from_id)
-  ).length
+  const donations = await getIncomingTxnsByUserWithDonor(supabase, charity.id)
+  const raised = donations.reduce((acc, txn) => acc + txn.amount, 0)
+  const numSupporters = uniq(donations.map((txn) => txn.from_id)).length
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
   const txns = await getTxnsByUser(supabase, user?.id ?? '')
@@ -91,31 +80,7 @@ export default async function CharityPage(props: {
           </span>
         </div>
       </div>
-      {incomingCharityTxns.length > 0 ? (
-        <div className="mt-5">
-          {incomingCharityTxns.map((txn) => (
-            <div
-              key={txn.id}
-              className="flex justify-between rounded p-2 hover:bg-gray-200"
-            >
-              <div className="flex items-center gap-1">
-                <UserAvatarAndBadge profile={txn.profiles as Profile} />
-                <span className="text-gray-600"> donated </span>
-                <span>{formatMoney(txn.amount)}</span>
-              </div>
-              <span className="text-gray-600">
-                {formatDistanceToNow(new Date(txn.created_at), {
-                  addSuffix: true,
-                })}
-              </span>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="mt-5 text-center text-gray-600">
-          No donations yet. Be the first!
-        </p>
-      )}
+      <Donations donations={donations} />
     </div>
   )
 }

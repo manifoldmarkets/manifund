@@ -86,11 +86,11 @@ export function calculateFullTrades(txns: TxnAndProfiles[]) {
     if (txn.token === 'USD') {
       trade.amountUSD = txn.amount
       trade.date = new Date(txn.created_at)
-      trade.fromProfile = txn.profiles
+      trade.toProfile = txn.profiles
       trade.bundle = txn.bundle
     } else {
       trade.numShares = txn.amount
-      trade.toProfile = txn.profiles
+      trade.fromProfile = txn.profiles
     }
   }
   return orderBy(Object.values(trades), 'date', 'desc') as FullTrade[]

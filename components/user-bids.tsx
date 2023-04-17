@@ -114,7 +114,7 @@ function BidText(props: { bid: Bid; stage: string; showValuation: boolean }) {
   }
 }
 
-function BuySellTag(props: { bidType: 'buy' | 'sell' | 'ipo' }) {
+function BuySellTag(props: { bidType: 'buy' | 'sell' | 'donate' }) {
   const { bidType } = props
   const tagText = bidType === 'buy' ? 'BUY' : 'SELL'
   const tagColor = bidType === 'buy' ? 'bg-emerald-100' : 'bg-rose-100'

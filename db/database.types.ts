@@ -17,7 +17,7 @@ export interface Database {
           id: string
           project: string
           status: Database["public"]["Enums"]["bid_status"]
-          type: Database["public"]["Enums"]["bid_type"] | null
+          type: Database["public"]["Enums"]["bid_type"]
           valuation: number
         }
         Insert: {
@@ -27,7 +27,7 @@ export interface Database {
           id?: string
           project: string
           status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"] | null
+          type?: Database["public"]["Enums"]["bid_type"]
           valuation: number
         }
         Update: {
@@ -37,7 +37,7 @@ export interface Database {
           id?: string
           project?: string
           status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"] | null
+          type?: Database["public"]["Enums"]["bid_type"]
           valuation?: number
         }
       }
