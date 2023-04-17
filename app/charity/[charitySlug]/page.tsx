@@ -6,7 +6,7 @@ import {
   Profile,
 } from '@/db/profile'
 import { getTxnsByUser, getIncomingTxnsByUserWithDonor } from '@/db/txn'
-import { DonateBox } from './donate-box'
+import { DonateBox } from '@/components/donate-box'
 import { calculateUserSpendableFunds } from '@/utils/math'
 import { getBidsByUser } from '@/db/bid'
 import Image from 'next/image'

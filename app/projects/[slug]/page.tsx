@@ -4,7 +4,11 @@ import { PlaceBid } from './give'
 import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
-import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
+import {
+  getFullProjectBySlug,
+  getProjectBySlug,
+  TOTAL_SHARES,
+} from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
 import { getActiveValuation, getProposalValuation } from '@/utils/math'
@@ -15,6 +19,7 @@ import { getTxnsByProject } from '@/db/txn'
 import { Description } from './description'
 import { ProjectCardHeader } from '@/components/project-card'
 import { calculateUserFundsAndShares } from '@/utils/math'
+import { DonateBox } from '@/components/donate-box'
 
 export const revalidate = 0
 
@@ -74,13 +79,20 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           bids={project.bids.filter((bid) => bid.status === 'pending')}
         />
       )}
-      {profile !== null && (
+      {profile !== null && project.founder_portion !== TOTAL_SHARES && (
         <PlaceBid
           project={project}
           user={profile}
           userSpendableFunds={userSpendableFunds}
           userSellableShares={userSellableShares}
           userShares={userShares}
+        />
+      )}
+      {profile !== null && project.founder_portion === TOTAL_SHARES && (
+        <DonateBox
+          project={project}
+          user={profile}
+          userSpendableFunds={userSpendableFunds}
         />
       )}
       {!user && <SignInButton />}
