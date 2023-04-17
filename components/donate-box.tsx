@@ -47,22 +47,35 @@ export function DonateBox(props: {
       <Button
         onClick={async () => {
           setIsSubmitting(true)
-          if (!charity && !project) {
-            setIsSubmitting(false)
-            return
+          if (project && project.stage === 'proposal') {
+            const res = await fetch('/api/place-bid', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                projectId: project.id,
+                projectStage: project.stage,
+                bidderId: user.id,
+                valuation: 0,
+                amount,
+                type: 'donate',
+              }),
+            })
+          } else if (project || charity) {
+            const res = await fetch('/api/transfer-money', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                fromId: user.id,
+                toId: charity?.id ?? project?.creator,
+                amount,
+                projectId: project?.id,
+              }),
+            })
           }
-          const res = await fetch('/api/transfer-money', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              fromId: user.id,
-              toId: charity?.id ?? project?.creator,
-              amount,
-              projectId: project?.id,
-            }),
-          })
           setIsSubmitting(false)
           router.refresh()
         }}

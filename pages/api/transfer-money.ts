@@ -17,7 +17,6 @@ type MoneyTransferProps = {
 export default async function handler(req: NextRequest) {
   const { fromId, toId, amount, projectId } =
     (await req.json()) as MoneyTransferProps
-  console.log('in handler')
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user

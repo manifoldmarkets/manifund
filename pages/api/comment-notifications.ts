@@ -10,7 +10,6 @@ import StarterKit from '@tiptap/starter-kit'
 import { DisplayMention } from '@/components/user-mention/mention-extension'
 import { DisplayLink } from '@/components/editor'
 import { parseMentions } from '@/utils/parse'
-import { getProfileById } from '@/db/profile'
 import { Comment } from '@/db/comment'
 import { JSONContent } from '@tiptap/core'
 

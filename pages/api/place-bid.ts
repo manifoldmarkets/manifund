@@ -5,6 +5,11 @@ import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 
+export const config = {
+  runtime: 'edge',
+  regions: ['sfo1'],
+}
+
 type BidProps = {
   projectId: string
   projectStage: Project['stage']
@@ -14,7 +19,7 @@ type BidProps = {
   type: 'buy' | 'sell'
 }
 
-export async function handler(req: NextRequest) {
+export default async function handler(req: NextRequest) {
   const { projectId, projectStage, bidderId, valuation, amount, type } =
     (await req.json()) as BidProps
   const supabase = createEdgeClient(req)
