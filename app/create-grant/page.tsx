@@ -4,6 +4,8 @@ import { createServerClient } from '@/db/supabase-server'
 
 export default async function CreateGrantPage() {
   const supabase = createServerClient()
-  const profiles = await getAllMiniProfiles(supabase)
+  const profiles = (await getAllMiniProfiles(supabase)).filter(
+    (profile) => profile.type === 'individual' && profile.full_name.length > 0
+  )
   return <CreateGrantForm profiles={profiles} />
 }

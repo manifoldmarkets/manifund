@@ -9,6 +9,8 @@ import { Combobox, Listbox, Transition } from '@headlessui/react'
 import clsx from 'clsx'
 import { useUser } from '@supabase/auth-ui-react/dist/esm/src/components/Auth/UserContext'
 import { MiniProfile } from '@/db/profile'
+import { Row } from '@/components/layout/row'
+import { Avatar } from '@/components/avatar'
 
 const DEFAULT_DESCRIPTION = `
 <h3>What will the recipient use this funding for?</h3>
@@ -56,7 +58,7 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
 
   const user = useUser()
   const [recipientFullName, setRecipientFullName] = useState('')
-  const [recipientOnManifund, setRecipientOnManifund] = useState(true)
+  const [recipientOnManifund, setRecipientOnManifund] = useState(false)
   const [recipient, setRecipient] = useState(profiles[0])
   const [recipientEmail, setRecipientEmail] = useState('')
   const [title, setTitle] = useState('')
@@ -76,16 +78,43 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
     )
   return (
     <Col>
-      <label htmlFor="recipientFullName">Recipient full name</label>
-      <Input
-        type="text"
-        id="recipientFullName"
-        value={recipientFullName}
-        onChange={(event) => setRecipientFullName(event.target.value)}
-      />
+      <Row>
+        <Row className="h-6 items-center">
+          <input
+            id="terms"
+            aria-describedby="terms-description"
+            name="terms"
+            type="checkbox"
+            className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
+            checked={recipientOnManifund}
+            onChange={() => setRecipientOnManifund(!recipientOnManifund)}
+          />
+        </Row>
+        <span className="ml-3 text-sm leading-6 text-gray-500">
+          Recipient is already a user on Manifund.
+        </span>
+      </Row>
+      {!recipientOnManifund && (
+        <>
+          <label htmlFor="recipientFullName">Recipient full name</label>
+          <Input
+            type="text"
+            id="recipientFullName"
+            value={recipientFullName}
+            onChange={(event) => setRecipientFullName(event.target.value)}
+          />
+          <label htmlFor="recipientEmail">Recipient email</label>
+          <Input
+            type="text"
+            id="recipientEmail"
+            value={recipientEmail}
+            onChange={(event) => setRecipientEmail(event.target.value)}
+          />
+        </>
+      )}
       {recipientOnManifund && (
         <>
-          <label>Recipient username</label>
+          <label>Recipient fullname</label>
           <Combobox as="div" value={recipient} onChange={setRecipient}>
             <div className="relative mt-2">
               <Combobox.Input
@@ -115,7 +144,13 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
                     >
                       {({ active, selected }) => (
                         <>
-                          <div className="flex">
+                          <Row className="gap-2">
+                            <Avatar
+                              avatarUrl={profile.avatar_url}
+                              username={profile.username}
+                              size={'xs'}
+                              className="relative bottom-0.5"
+                            />
                             <span
                               className={clsx(
                                 'truncate',
@@ -126,13 +161,13 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
                             </span>
                             <span
                               className={clsx(
-                                'ml-2 truncate text-gray-500',
+                                'truncate text-gray-500',
                                 active ? 'text-orange-100' : 'text-gray-500'
                               )}
                             >
-                              {profile.username}
+                              @{profile.username}
                             </span>
-                          </div>
+                          </Row>
 
                           {selected && (
                             <span
@@ -157,12 +192,6 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
           </Combobox>
         </>
       )}
-
-      <Input
-        type="text"
-        value={recipientEmail}
-        onChange={(event) => setRecipientEmail(event.target.value)}
-      />
       <Input
         type="text"
         value={title}

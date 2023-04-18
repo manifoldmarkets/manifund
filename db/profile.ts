@@ -51,12 +51,12 @@ export async function getUser(supabase: SupabaseClient<Database>) {
 
 export type MiniProfile = Pick<
   Profile,
-  'id' | 'username' | 'avatar_url' | 'full_name'
+  'id' | 'username' | 'avatar_url' | 'full_name' | 'type'
 >
 export async function getAllMiniProfiles(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, username, avatar_url, full_name')
+    .select('id, username, avatar_url, full_name, type')
   if (error) {
     throw error
   }
