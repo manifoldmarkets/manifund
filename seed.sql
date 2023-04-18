@@ -12,6 +12,7 @@ create table public.profiles (
   avatar_url text,
   type profile_type not null default 'individual',
   long_description jsonb,
+  regranter_status boolean not null,
   primary key (id)
 );
 
