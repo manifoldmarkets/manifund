@@ -1,5 +1,5 @@
 import { Database } from '@/db/database.types'
-import { TOTAL_SHARES } from '@/db/project'
+import { Project, TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
@@ -20,6 +20,7 @@ type ProjectProps = {
   round: string
   auction_close: string
   stage: string
+  type: Project['type']
 }
 
 export default async function handler(req: NextRequest) {
@@ -33,6 +34,7 @@ export default async function handler(req: NextRequest) {
     round,
     auction_close,
     stage,
+    type,
   } = (await req.json()) as ProjectProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
@@ -64,6 +66,7 @@ export default async function handler(req: NextRequest) {
     round,
     auction_close,
     stage,
+    type,
   }
   const { error } = await supabase.from('projects').insert([project])
   if (error) {

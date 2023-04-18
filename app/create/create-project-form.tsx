@@ -7,7 +7,7 @@ import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { MySlider } from '@/components/slider'
-import { TOTAL_SHARES } from '@/db/project'
+import { Project, TOTAL_SHARES } from '@/db/project'
 import { TextEditor, useTextEditor } from '@/components/editor'
 import clsx from 'clsx'
 import { InfoTooltip } from '@/components/info-tooltip'
@@ -47,7 +47,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   const { session } = useSupabase()
   const router = useRouter()
   const [title, setTitle] = useState<string>('')
-  const projectTypeOptions = ['Grant application', 'Impact certificate']
+  const projectTypeOptions = ['Impact certificate', 'Grant application']
   const [projectType, setProjectType] = useState<string>(projectTypeOptions[0])
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number>(0)
@@ -360,32 +360,6 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               </Col>
             )}
           </Card>
-          <div className="mb-3 flex">
-            <div className="flex h-6 items-center">
-              <input
-                id="terms"
-                aria-describedby="terms-description"
-                name="terms"
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
-                checked={agreedToTerms}
-                onChange={() => setAgreedToTerms(!agreedToTerms)}
-              />
-            </div>
-            <div className="ml-3 text-sm leading-6">
-              <label htmlFor="terms" className="font-medium text-gray-900">
-                Check this box to confirm that you understand and commit to the
-                following:
-              </label>{' '}
-              <span id="terms-description" className="text-gray-500">
-                {genEquityPriceSummary(
-                  sellingPortion,
-                  auctionClose === null ? undefined : minFunding,
-                  auctionClose === null ? initialValuation : undefined
-                )}
-              </span>
-            </div>
-          </div>
         </>
       ) : (
         <>
@@ -432,6 +406,33 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           )}
         </>
       )}
+      <Row className="mb-3">
+        <Row className="h-6 items-center">
+          <input
+            id="terms"
+            aria-describedby="terms-description"
+            name="terms"
+            type="checkbox"
+            className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
+            checked={agreedToTerms}
+            onChange={() => setAgreedToTerms(!agreedToTerms)}
+          />
+        </Row>
+        <div className="ml-3 text-sm leading-6">
+          <label htmlFor="terms" className="font-medium text-gray-900">
+            Check this box to confirm that you understand and commit to the
+            following:
+          </label>{' '}
+          <span id="terms-description" className="text-gray-500">
+            {genEquityPriceSummary(
+              sellingPortion,
+              projectType === 'Impact certificate',
+              auctionClose === null ? undefined : minFunding,
+              auctionClose === null ? initialValuation : undefined
+            )}
+          </span>
+        </div>
+      </Row>
       <div className="mt-4 text-center text-rose-500">{errorMessage}</div>
       <Button
         className="mt-4"
@@ -463,6 +464,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                   ? auctionClose
                   : round.auction_close_date,
               stage: auctionClose === null ? 'active' : 'proposal',
+              type: projectType === 'Impact certificate' ? 'cert' : 'grant',
             }),
           })
           const newProject = await response.json()
@@ -478,9 +480,15 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
 
 function genEquityPriceSummary(
   sellingPortion: number,
+  isImpactCert: boolean,
   minFunding?: number,
   minValuation?: number
 ) {
+  if (!isImpactCert) {
+    return `your project is not-for-profit. If your project recieves at least $${
+      minFunding ?? 0
+    }, you will recieve funding. Otherwise, no funds will be transferred to you.`
+  }
   if (minFunding !== undefined) {
     return `${sellingPortion}% of your project will be put up for auction at a minimum valuation of ${
       (100 * minFunding) / sellingPortion
