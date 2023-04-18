@@ -50,7 +50,8 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   const [minFunding, setMinFunding] = useState<number>(250)
   const [initialValuation, setInitialValuation] = useState<number>(250)
   const [round, setRound] = useState<Round>(availableRounds[0])
-  const [sellingPortion, setSellingPortion] = useState<number>(0)
+  const [sellingPortion, setSellingPortion] = useState<number>(20)
+  const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   const [auctionClose, setAuctionClose] = useState(
     round.auction_close_date !== null
       ? format(
@@ -72,6 +73,9 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       'Your initial valuation must be greater than 0. Only post projects with positive expected value.'
   } else if (minFunding <= 0 && auctionClose !== null) {
     errorMessage = 'Your minimum funding must be greater than 0.'
+  } else if (!agreedToTerms) {
+    errorMessage =
+      'Confirm that you have read, understand, and agree to the terms of issuing this certificate.'
   } else {
     errorMessage = null
   }
@@ -285,14 +289,33 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
             />
           </Col>
         )}
-        <div className="m-3 rounded-md bg-orange-100 p-2 text-center text-sm font-medium text-orange-500 shadow-sm">
-          {genEquityPriceSummary(
-            sellingPortion,
-            auctionClose === null ? undefined : minFunding,
-            auctionClose === null ? initialValuation : undefined
-          )}
-        </div>
       </Card>
+      <div className="mb-3 flex">
+        <div className="flex h-6 items-center">
+          <input
+            id="terms"
+            aria-describedby="terms-description"
+            name="terms"
+            type="checkbox"
+            className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
+            checked={agreedToTerms}
+            onChange={() => setAgreedToTerms(!agreedToTerms)}
+          />
+        </div>
+        <div className="ml-3 text-sm leading-6">
+          <label htmlFor="terms" className="font-medium text-gray-900">
+            Check this box to confirm that you understand and commit to the
+            following:
+          </label>{' '}
+          <span id="terms-description" className="text-gray-500">
+            {genEquityPriceSummary(
+              sellingPortion,
+              auctionClose === null ? undefined : minFunding,
+              auctionClose === null ? initialValuation : undefined
+            )}
+          </span>
+        </div>
+      </div>
       <div className="mt-4 text-center text-rose-500">{errorMessage}</div>
       <Button
         className="mt-4"
