@@ -170,10 +170,11 @@ export function ProjectCardHeader(props: {
 export function SimpleProjectCard(props: {
   project: Project
   creator: Profile
-  percentRaised: number
+  bids: Bid[]
   numComments: number
 }) {
-  const { project, creator, percentRaised, numComments } = props
+  const { project, creator, bids, numComments } = props
+  const percentRaised = getPercentRaised(bids, project)
   return (
     <Col
       className={clsx(
