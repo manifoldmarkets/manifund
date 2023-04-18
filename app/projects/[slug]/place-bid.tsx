@@ -4,7 +4,6 @@ import { Input } from 'components/input'
 import { MySlider } from '@/components/slider'
 import { useState, useEffect } from 'react'
 import { Button } from 'components/button'
-import { useSupabase } from '@/db/supabase-provider'
 import { Subtitle } from '@/components/subtitle'
 import {
   formatLargeNumber,
@@ -14,11 +13,11 @@ import {
 import { Database } from '@/db/database.types'
 import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
-import { HoldingsBox } from './holdings-box'
 import { Tooltip } from '@/components/tooltip'
 import { Project, TOTAL_SHARES } from '@/db/project'
 import { Profile } from '@/db/profile'
 import { Card } from '@/components/card'
+import { DataBox } from '@/components/data-box'
 
 type BidType = Database['public']['Enums']['bid_type']
 
@@ -31,7 +30,6 @@ export function PlaceBid(props: {
 }) {
   const { project, user, userSpendableFunds, userSellableShares, userShares } =
     props
-  const { supabase } = useSupabase()
   const router = useRouter()
   const sellablePortion = 1 - project.founder_portion / 10000000
   const minValuation = Math.round(project.min_funding / sellablePortion)
@@ -108,16 +106,18 @@ export function PlaceBid(props: {
               'The founder chose to keep some of the equity in this project. You can only buy up to the percent of the project that they chose to sell.'
             }
           >
-            <HoldingsBox
+            <DataBox
               label="Founder holds"
-              holdings={(project.founder_portion / TOTAL_SHARES) * 100}
+              value={`${(project.founder_portion / TOTAL_SHARES) * 100}%`}
+              color="orange"
             />
           </Tooltip>
         )}
         {project.stage === 'active' && (
-          <HoldingsBox
+          <DataBox
             label="You hold"
-            holdings={(userShares / TOTAL_SHARES) * 100}
+            value={`${(userShares / TOTAL_SHARES) * 100}%`}
+            color="orange"
           />
         )}
       </div>

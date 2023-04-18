@@ -15,7 +15,7 @@ import { orderBy } from 'lodash'
 import { formatDistanceToNow } from 'date-fns'
 import { RoundTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
-import { ValuationBox } from './valuation-box'
+import { DataBox } from './data-box'
 import { Round } from '@/db/round'
 import { Card } from './card'
 
@@ -34,6 +34,7 @@ export function ProjectCard(props: {
       <Col className="h-full justify-between">
         <ProjectCardHeader
           round={project.rounds}
+          projectType={project.type}
           creator={creator}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
         />
@@ -148,9 +149,10 @@ function ProjectCardFooter(props: {
 export function ProjectCardHeader(props: {
   round: Round
   creator: Profile
+  projectType: Project['type']
   valuation?: number
 }) {
-  const { round, creator, valuation } = props
+  const { round, creator, valuation, projectType } = props
   return (
     <div className="flex justify-between">
       <div className="mt-1">
@@ -160,7 +162,10 @@ export function ProjectCardHeader(props: {
       </div>
       {valuation && !isNaN(valuation) ? (
         <div className="relative top-1">
-          <ValuationBox valuation={valuation} />
+          <DataBox
+            value={`$${valuation}`}
+            label={projectType === 'cert' ? 'valuation' : 'raising'}
+          />
         </div>
       ) : null}
     </div>

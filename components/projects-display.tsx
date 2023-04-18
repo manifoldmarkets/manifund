@@ -259,7 +259,9 @@ function getValuations(projects: FullProject[]) {
   )
   projects.forEach((project) => {
     valuations[project.id] =
-      project.stage == 'proposal'
+      project.type === 'grant'
+        ? project.funding_goal
+        : project.stage === 'proposal'
         ? getProposalValuation(project)
         : getActiveValuation(
             project.txns,

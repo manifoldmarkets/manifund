@@ -1,6 +1,6 @@
 import { createServerClient } from '@/db/supabase-server'
 import { getUser, getProfileById, isAdmin } from '@/db/profile'
-import { PlaceBid } from './give'
+import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
@@ -50,7 +50,9 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const bids = await getBidsByProject(supabase, project.id)
   const txns = await getTxnsByProject(supabase, project.id)
   const valuation =
-    project.stage == 'proposal'
+    project.type === 'grant'
+      ? project.funding_goal
+      : project.stage == 'proposal'
       ? getProposalValuation(project)
       : getActiveValuation(txns, bids, getProposalValuation(project))
 
@@ -60,6 +62,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     <div className="flex flex-col gap-4 px-4">
       <ProjectCardHeader
         round={project.rounds}
+        projectType={project.type}
         creator={project.profiles}
         valuation={isNaN(valuation) ? undefined : valuation}
       />

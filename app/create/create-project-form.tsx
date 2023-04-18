@@ -7,7 +7,7 @@ import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { MySlider } from '@/components/slider'
-import { Project, TOTAL_SHARES } from '@/db/project'
+import { TOTAL_SHARES } from '@/db/project'
 import { TextEditor, useTextEditor } from '@/components/editor'
 import clsx from 'clsx'
 import { InfoTooltip } from '@/components/info-tooltip'
@@ -455,9 +455,11 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               min_funding:
                 auctionClose === null
                   ? (sellingPortion / 100) * initialValuation
-                  : minFunding.toString(),
-              funding_goal: fundingGoal.toString(),
-              founder_portion: founderShares.toString(),
+                  : minFunding,
+              // TODO: make funding goal meaningfully different from min for certs
+              funding_goal:
+                projectType === 'Impact certificate' ? minFunding : fundingGoal,
+              founder_portion: founderShares,
               round: round.title,
               auction_close:
                 round.title === 'Independent'
