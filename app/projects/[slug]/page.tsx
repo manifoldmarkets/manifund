@@ -52,7 +52,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const valuation =
     project.type === 'grant'
       ? project.funding_goal
-      : project.stage == 'proposal'
+      : project.stage === 'proposal'
       ? getProposalValuation(project)
       : getActiveValuation(txns, bids, getProposalValuation(project))
 
@@ -76,13 +76,13 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       )}
       {isOwnProject && <EditDescription project={project} />}
       <hr className="mb-3 h-0.5 rounded-sm bg-gray-500" />
-      {project.stage == 'proposal' && (
+      {project.stage === 'proposal' && (
         <ProposalData
           project={project}
           bids={project.bids.filter((bid) => bid.status === 'pending')}
         />
       )}
-      {profile !== null && project.founder_portion !== TOTAL_SHARES && (
+      {profile !== null && project.type === 'cert' && (
         <PlaceBid
           project={project}
           user={profile}
@@ -91,7 +91,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           userShares={userShares}
         />
       )}
-      {profile !== null && project.founder_portion === TOTAL_SHARES && (
+      {profile !== null && project.type === 'grant' && (
         <DonateBox
           project={project}
           user={profile}

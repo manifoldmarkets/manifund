@@ -10,8 +10,7 @@ import { TxnAndProfiles } from '@/db/txn'
 import { Shareholders } from './shareholders'
 import { calculateFullTrades, FullTrade } from '@/utils/math'
 import { Tabs } from '@/components/tabs'
-import { Donations } from '@/components/donations'
-import { sortBy } from 'lodash'
+import { DonationsHistory } from '@/components/donations-history'
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -102,7 +101,7 @@ export function ProjectTabs(props: {
       href: '?tab=donations',
       count: donations.length,
       current: currentTabName === 'donations',
-      display: <Donations donations={donations} />,
+      display: <DonationsHistory donations={donations} />,
     })
   }
 
@@ -124,7 +123,7 @@ export function calculateShareholders(trades: FullTrade[], creator: Profile) {
     shareholders[trade.fromProfile.id].numShares -= trade.numShares
   }
   const shareholdersArray = Object.values(shareholders) as Shareholder[]
-  //round to 2 decimal places for small arithmetic errors
+  // Round to 2 decimal places for small arithmetic errors
   shareholdersArray.forEach((shareholder) => {
     shareholder.numShares = Math.round(shareholder.numShares * 100) / 100
   })

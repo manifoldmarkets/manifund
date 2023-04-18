@@ -9,10 +9,10 @@ import { LinkIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { DataPoint } from '@/components/data-point'
 import { formatMoney, addHttpToUrl } from '@/utils/formatting'
-import { sortBy, uniq } from 'lodash'
+import { uniq } from 'lodash'
 import { Col } from '@/components/layout/col'
 import Link from 'next/link'
-import { Donations } from '@/components/donations'
+import { DonationsHistory } from '@/components/donations-history'
 
 export default async function CharityPage(props: {
   params: { charitySlug: string }
@@ -80,7 +80,7 @@ export default async function CharityPage(props: {
           </span>
         </div>
       </div>
-      <Donations donations={donations} />
+      <DonationsHistory donations={donations} />
     </div>
   )
 }

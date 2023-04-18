@@ -5,14 +5,14 @@ import { formatDistanceToNow } from 'date-fns'
 import { sortBy } from 'lodash'
 import { UserAvatarAndBadge } from './user-link'
 
-export function Donations(props: { donations: TxnAndProfiles[] }) {
+export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
   const { donations } = props
   const sortedDonations = sortBy(donations, (txn) => -txn.created_at)
   return (
     <>
       {donations.length > 0 ? (
         <>
-          {donations.map((txn) => (
+          {sortedDonations.map((txn) => (
             <div
               key={txn.id}
               className="flex justify-between rounded p-2 hover:bg-gray-200"
