@@ -31,7 +31,7 @@ export function ProjectCard(props: {
   const percentRaised = getPercentRaised(bids, project)
   return (
     <Card className="px-4 pb-2 pt-1">
-      <Col>
+      <Col className="h-full justify-between">
         <ProjectCardHeader
           round={project.rounds}
           creator={creator}
