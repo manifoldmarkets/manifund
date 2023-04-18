@@ -7,7 +7,6 @@ import { dateDiff, getProposalValuation } from '@/utils/math'
 
 export function ProposalData(props: { project: Project; bids: Bid[] }) {
   const { project, bids } = props
-  const isImpactCert = project.founder_portion !== TOTAL_SHARES
   const raised = bids.reduce((acc, bid) => {
     if (bid.status === 'pending') {
       return acc + bid.amount
@@ -39,7 +38,7 @@ export function ProposalData(props: { project: Project; bids: Bid[] }) {
           value={showPrecision(daysLeft, 3)}
           label="days left to contribute"
         />
-        {isImpactCert && (
+        {project.type === 'cert' && (
           <DataPoint
             value={formatMoney(getProposalValuation(project))}
             label="minimum valuation"

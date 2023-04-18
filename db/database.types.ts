@@ -117,6 +117,7 @@ export interface Database {
           slug: string
           stage: string
           title: string
+          type: Database["public"]["Enums"]["project_type"]
         }
         Insert: {
           auction_close?: string | null
@@ -132,6 +133,7 @@ export interface Database {
           slug?: string
           stage?: string
           title?: string
+          type?: Database["public"]["Enums"]["project_type"]
         }
         Update: {
           auction_close?: string | null
@@ -147,6 +149,7 @@ export interface Database {
           slug?: string
           stage?: string
           title?: string
+          type?: Database["public"]["Enums"]["project_type"]
         }
       }
       rounds: {
@@ -270,6 +273,7 @@ export interface Database {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
       bid_type: "buy" | "sell" | "donate"
       profile_type: "individual" | "org"
+      project_type: "grant" | "cert"
     }
     CompositeTypes: {
       [_ in never]: never

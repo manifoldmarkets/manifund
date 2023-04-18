@@ -35,7 +35,6 @@ export function ProjectTabs(props: {
   const currentTabName = searchParams.get('tab')
   const trades = calculateFullTrades(txns)
   const creator = project.profiles
-  const isImpactCert = project.founder_portion !== TOTAL_SHARES
 
   const tabs = [
     {
@@ -49,11 +48,14 @@ export function ProjectTabs(props: {
 
   if (
     ((project.stage === 'active' || project.stage === 'completed') &&
-      isImpactCert) ||
+      project.type === 'cert') ||
     project.stage === 'proposal'
   ) {
     tabs.push({
-      name: project.stage === 'active' || !isImpactCert ? 'Offers' : 'Bids',
+      name:
+        project.stage === 'active' || project.type === 'grant'
+          ? 'Offers'
+          : 'Bids',
       href: '?tab=bids',
       count: bids.length,
       current: currentTabName === 'bids',
@@ -70,7 +72,7 @@ export function ProjectTabs(props: {
   }
   if (
     (project.stage === 'active' || project.stage === 'completed') &&
-    isImpactCert
+    project.type === 'cert'
   ) {
     const shareholders = calculateShareholders(trades, creator)
     tabs.push({
@@ -90,7 +92,7 @@ export function ProjectTabs(props: {
 
   if (
     (project.stage === 'active' || project.stage === 'completed') &&
-    !isImpactCert
+    project.type === 'grant'
   ) {
     const donations = txns.filter(
       (txn) => txn.project === project.id && txn.token === 'USD' && !txn.bundle

@@ -74,6 +74,7 @@ from
 --
 --
 ---- Projects ----
+create type project_type as enum ('grant', 'cert');
 create table if not exists public.projects (
   id uuid not null default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -85,6 +86,7 @@ create table if not exists public.projects (
   funding_goal float8  not null default 0,
   founder_portion int8 not null,
   description jsonb,
+  type project_type not null default 'cert',
   primary key (id)
 );
 
