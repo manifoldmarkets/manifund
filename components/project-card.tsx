@@ -2,11 +2,7 @@
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { formatDate, formatLargeNumber } from '@/utils/formatting'
-import {
-  getProposalValuation,
-  getActiveValuation,
-  getPercentFunded,
-} from '@/utils/math'
+import { getPercentRaised } from '@/utils/math'
 import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
 import { CalendarIcon, SparklesIcon } from '@heroicons/react/24/solid'
@@ -32,6 +28,7 @@ export function ProjectCard(props: {
   valuation: number
 }) {
   const { creator, project, numComments, bids, txns, valuation } = props
+  const percentRaised = getPercentRaised(bids, project)
   return (
     <Card className="px-4 pb-2 pt-1">
       <Col>
@@ -53,7 +50,7 @@ export function ProjectCard(props: {
           <ProjectCardFooter
             project={project}
             numComments={numComments}
-            bids={bids}
+            percentRaised={percentRaised}
             txns={txns}
           />
         </Link>
@@ -65,14 +62,10 @@ export function ProjectCard(props: {
 function ProjectCardFooter(props: {
   project: Project
   numComments: number
-  bids: Bid[]
+  percentRaised: number
   txns: Txn[]
 }) {
-  const { project, numComments, bids, txns } = props
-  const percentRaised = Math.min(
-    getPercentFunded(bids, project.min_funding),
-    100
-  )
+  const { project, numComments, percentRaised, txns } = props
   switch (project.stage) {
     case 'proposal':
       return (
@@ -177,14 +170,10 @@ export function ProjectCardHeader(props: {
 export function SimpleProjectCard(props: {
   project: Project
   creator: Profile
-  bids: Bid[]
+  percentRaised: number
   numComments: number
 }) {
-  const { project, creator, bids, numComments } = props
-  const percentRaised = Math.min(
-    getPercentFunded(bids, project.min_funding),
-    100
-  )
+  const { project, creator, percentRaised, numComments } = props
   return (
     <Col
       className={clsx(

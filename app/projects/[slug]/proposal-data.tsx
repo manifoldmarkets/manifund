@@ -8,12 +8,18 @@ import { dateDiff, getProposalValuation } from '@/utils/math'
 export function ProposalData(props: { project: Project; bids: Bid[] }) {
   const { project, bids } = props
   const isImpactCert = project.founder_portion !== TOTAL_SHARES
-  const raised = bids.reduce((acc, bid) => acc + bid.amount, 0)
+  const raised = bids.reduce((acc, bid) => {
+    if (bid.status === 'pending') {
+      return acc + bid.amount
+    } else {
+      return acc
+    }
+  }, 0)
   const raisedString =
-    raised > project.min_funding
-      ? `>${formatMoney(project.min_funding)}`
+    raised > project.funding_goal
+      ? `>${formatMoney(project.funding_goal)}`
       : `${formatMoney(raised)}`
-  const percentRaised = Math.min((raised / project.min_funding) * 100, 100)
+  const percentRaised = Math.min((raised / project.funding_goal) * 100, 100)
   // Close it on 23:59:59 in UTC -12 aka "Anywhere on Earth" time
   const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
   const now = new Date()

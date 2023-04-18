@@ -63,9 +63,9 @@ export function calculateUserBalance(txns: Txn[], userId: string) {
   return balance
 }
 
-export function getPercentFunded(bids: Bid[], minFunding: number) {
+export function getPercentRaised(bids: Bid[], project: Project) {
   const total = bids.reduce((acc, bid) => acc + bid.amount, 0)
-  return (total / minFunding) * 100
+  return (total / project.funding_goal) * 100
 }
 
 export type FullTrade = {
