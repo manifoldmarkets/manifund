@@ -14,7 +14,7 @@ import { InfoTooltip } from '@/components/info-tooltip'
 import Link from 'next/link'
 import { Round } from '@/db/round'
 import { sortBy } from 'lodash'
-import { add, format, isAfter } from 'date-fns'
+import { add, format, isAfter, isBefore } from 'date-fns'
 import { formatMoney } from '@/utils/formatting'
 import { ArrowRightIcon } from '@heroicons/react/24/solid'
 import { Col } from '@/components/layout/col'
@@ -90,10 +90,11 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   } else if (
     projectType === 'Grant application' &&
     auctionClose &&
-    isAfter(new Date(auctionClose), add(new Date(), { weeks: 6 }))
+    (isAfter(new Date(auctionClose), add(new Date(), { weeks: 6 })) ||
+      isBefore(new Date(auctionClose), new Date()))
   ) {
     errorMessage =
-      'Your application close date must be no more than 6 weeks from now.'
+      'Your application close date must be in the future but no more than 6 weeks from now.'
   } else if (!agreedToTerms) {
     errorMessage =
       'Confirm that you have read, understand, and agree to the terms of issuing this certificate.'
