@@ -363,33 +363,30 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
         </>
       ) : (
         <>
-          <Row className="mt-4 justify-between">
-            <Col>
-              <label htmlFor="minFunding" className="mr-3">
-                Minimum funding (USD):{' '}
-                <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
-              </label>
-              <Input
-                type="number"
-                id="minFunding"
-                autoComplete="off"
-                required
-                value={minFunding}
-                onChange={(event) => setMinFunding(Number(event.target.value))}
-              />
-            </Col>
-            <Col>
-              <label htmlFor="fundingGoal">Funding goal (USD): </label>
-              <Input
-                type="number"
-                id="fundingGoal"
-                autoComplete="off"
-                required
-                value={fundingGoal}
-                onChange={(event) => setFundingGoal(Number(event.target.value))}
-              />
-            </Col>
-          </Row>
+          <label htmlFor="minFunding" className="mr-3 mt-4">
+            Minimum funding (USD):{' '}
+            <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
+          </label>
+          <Input
+            type="number"
+            id="minFunding"
+            autoComplete="off"
+            required
+            value={minFunding}
+            onChange={(event) => setMinFunding(Number(event.target.value))}
+          />
+          <label htmlFor="fundingGoal">
+            Funding goal (USD):{' '}
+            <InfoTooltip text="The amount you're asking for. This will be the main number displayed to regranters." />
+          </label>
+          <Input
+            type="number"
+            id="fundingGoal"
+            autoComplete="off"
+            required
+            value={fundingGoal}
+            onChange={(event) => setFundingGoal(Number(event.target.value))}
+          />
           {minFunding > 0 && (
             <Col>
               <div className="mb-3">
@@ -433,7 +430,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           </span>
         </div>
       </Row>
-      <div className="mt-4 text-center text-rose-500">{errorMessage}</div>
+      <div className="mt-3 text-center text-rose-500">{errorMessage}</div>
       <Button
         className="mt-4"
         type="submit"
@@ -487,9 +484,11 @@ function genEquityPriceSummary(
   minValuation?: number
 ) {
   if (!isImpactCert) {
-    return `your project is not-for-profit. If your project recieves at least $${
-      minFunding ?? 0
-    }, you will recieve funding. Otherwise, no funds will be transferred to you.`
+    return `your project is not-for-profit and is not a part of a political campaign. ${
+      minFunding
+        ? `If your project recieves at least $${minFunding}, you will recieve funding. Otherwise, no funds will be transferred to you.`
+        : ''
+    }`
   }
   if (minFunding !== undefined) {
     return `${sellingPortion}% of your project will be put up for auction at a minimum valuation of ${
