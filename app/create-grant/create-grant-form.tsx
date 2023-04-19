@@ -8,7 +8,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Combobox } from '@headlessui/react'
 import clsx from 'clsx'
 import { useUser } from '@supabase/auth-ui-react/dist/esm/src/components/Auth/UserContext'
-import { MiniProfile } from '@/db/profile'
+import { MiniProfile, Profile } from '@/db/profile'
 import { Row } from '@/components/layout/row'
 import { Avatar } from '@/components/avatar'
 import { Button } from '@/components/button'
@@ -33,8 +33,12 @@ const DEFAULT_DESCRIPTION = `
 </br>
 `
 
-export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
-  const { profiles } = props
+export function CreateGrantForm(props: {
+  profiles: MiniProfile[]
+  regranterProfile: Profile
+  regranterSpendableFunds: number
+}) {
+  const { profiles, regranterProfile, regranterSpendableFunds } = props
   const [query, setQuery] = useState('')
   const filteredProfiles =
     query === ''
@@ -66,23 +70,12 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
     errorMessage = 'Please enter the email address of the recipient.'
   } else if (!title) {
     errorMessage = 'Please enter a title for your grant.'
-  } else if (editor?.getHTML() === DEFAULT_DESCRIPTION) {
-    errorMessage = 'Please enter a description for your grant.'
   } else if (!agreedToTerms) {
     errorMessage =
       'Please confirm that you understand and agree to the terms of giving this grant.'
   } else {
     errorMessage = null
   }
-  if (!user)
-    return (
-      <div>
-        <Link href="/login" className="text-orange-500 hover:text-orange-600">
-          Log in
-        </Link>{' '}
-        to give grants!
-      </div>
-    )
   return (
     <Col className="gap-5 p-4">
       <div>
