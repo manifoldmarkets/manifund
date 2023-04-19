@@ -47,7 +47,6 @@ export default async function CreateGrantPage() {
   return (
     <CreateGrantForm
       profiles={profiles}
-      regranterProfile={profile}
       regranterSpendableFunds={regranterSpendableFunds}
     />
   )

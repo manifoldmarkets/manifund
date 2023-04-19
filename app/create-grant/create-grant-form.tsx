@@ -3,16 +3,13 @@ import { TextEditor, useTextEditor } from '@/components/editor'
 import { Input } from '@/components/input'
 import { Col } from '@/components/layout/col'
 import { useState } from 'react'
-import Link from 'next/link'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Combobox } from '@headlessui/react'
 import clsx from 'clsx'
-import { useUser } from '@supabase/auth-ui-react/dist/esm/src/components/Auth/UserContext'
 import { MiniProfile, Profile } from '@/db/profile'
 import { Row } from '@/components/layout/row'
 import { Avatar } from '@/components/avatar'
 import { Button } from '@/components/button'
-import { TOTAL_SHARES } from '@/db/project'
 import { useRouter } from 'next/navigation'
 
 const DEFAULT_DESCRIPTION = `
@@ -35,10 +32,9 @@ const DEFAULT_DESCRIPTION = `
 
 export function CreateGrantForm(props: {
   profiles: MiniProfile[]
-  regranterProfile: Profile
   regranterSpendableFunds: number
 }) {
-  const { profiles, regranterProfile, regranterSpendableFunds } = props
+  const { profiles, regranterSpendableFunds } = props
   const [query, setQuery] = useState('')
   const filteredProfiles =
     query === ''
@@ -49,8 +45,6 @@ export function CreateGrantForm(props: {
             profile.username.toLowerCase().includes(query.toLowerCase())
           )
         })
-
-  const user = useUser()
   const [recipientFullName, setRecipientFullName] = useState('')
   const [recipientOnManifund, setRecipientOnManifund] = useState(false)
   const [recipient, setRecipient] = useState(profiles[0])
@@ -70,6 +64,10 @@ export function CreateGrantForm(props: {
     errorMessage = 'Please enter the email address of the recipient.'
   } else if (!title) {
     errorMessage = 'Please enter a title for your grant.'
+  } else if (amount <= 0) {
+    errorMessage = 'Please enter a positive amount.'
+  } else if (regranterSpendableFunds < amount) {
+    errorMessage = `You currently have $${regranterSpendableFunds} to give away. If you'd like to give a larger grant, you can add money to your account or raise more funds from other users on Manifund.`
   } else if (!agreedToTerms) {
     errorMessage =
       'Please confirm that you understand and agree to the terms of giving this grant.'
