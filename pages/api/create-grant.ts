@@ -91,18 +91,33 @@ export default async function handler(req: NextRequest) {
       throw error3
     }
   }
-  const NEW_USER_GRANT_TEMPLATE_ID = 31479155
-  const postmarkVars = {
-    amount: amount,
-    regranterName: regranterProfile?.full_name ?? 'an anonymous regranter',
-    projectTitle: title,
-    loginUrl: `${getURL()}/login?email=${toEmail}`,
+  if (toUsername) {
+    const postmarkVars = {
+      amount: amount,
+      regranterName: regranterProfile?.full_name ?? 'an anonymous regranter',
+      projectTitle: title,
+      projectUrl: `${getURL()}projects/${slug}`,
+    }
+    const EXISTING_USER_GRANT_TEMPLATE_ID = 31480376
+    await sendTemplateEmail(
+      EXISTING_USER_GRANT_TEMPLATE_ID,
+      postmarkVars,
+      toProfile.id
+    )
+  } else {
+    const postmarkVars = {
+      amount: amount,
+      regranterName: regranterProfile?.full_name ?? 'an anonymous regranter',
+      projectTitle: title,
+      loginUrl: `${getURL()}login?email=${toEmail}`,
+    }
+    const NEW_USER_GRANT_TEMPLATE_ID = 31479155
+    await sendTemplateEmail(
+      NEW_USER_GRANT_TEMPLATE_ID,
+      postmarkVars,
+      undefined,
+      toEmail
+    )
   }
-  await sendTemplateEmail(
-    NEW_USER_GRANT_TEMPLATE_ID,
-    postmarkVars,
-    undefined,
-    toEmail
-  )
   return NextResponse.json(project)
 }

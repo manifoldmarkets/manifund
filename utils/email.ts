@@ -16,22 +16,13 @@ export async function sendTemplateEmail(
   }
   const sendToEmail = toEmail ?? (await getUserEmail(supabase, toId ?? ''))
 
-  if (!toEmail) {
+  if (!sendToEmail) {
     console.log('No email found for user', toId)
     return
   }
-  console.log('got to creating client')
 
   let client = new postmark.ServerClient(
     process.env.POSTMARK_SERVER_TOKEN ?? ''
-  )
-  console.log('got past creating client')
-  console.log(
-    'sending email with attributes:',
-    fromEmail,
-    sendToEmail,
-    templateId,
-    templateModel
   )
   // Using fetch instead of postmark's client because it doesn't work on the edge:
   const response = await fetch(
