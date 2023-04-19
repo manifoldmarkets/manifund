@@ -13,6 +13,7 @@ import { Row } from '@/components/layout/row'
 import { Avatar } from '@/components/avatar'
 import { Button } from '@/components/button'
 import { TOTAL_SHARES } from '@/db/project'
+import { useRouter } from 'next/navigation'
 
 const DEFAULT_DESCRIPTION = `
 <h3>What will the recipient use this funding for?</h3>
@@ -54,7 +55,9 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
   const [subtitle, setSubtitle] = useState('')
   const [amount, setAmount] = useState(0)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const editor = useTextEditor(DEFAULT_DESCRIPTION)
+  const router = useRouter()
 
   let errorMessage = null
   if (!recipientOnManifund && !recipientFullName) {
@@ -266,7 +269,9 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
         type="submit"
         className="mt-4 w-full"
         disabled={errorMessage !== null}
+        loading={isSubmitting}
         onClick={async () => {
+          setIsSubmitting(true)
           const description = editor?.getJSON()
           const response = await fetch('/api/create-grant', {
             method: 'POST',
@@ -282,6 +287,9 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
               toUsername: recipientOnManifund ? recipient.username : undefined,
             }),
           })
+          const newProject = await response.json()
+          setIsSubmitting(false)
+          router.push(`/projects/${newProject.slug}`)
         }}
       >
         Create grant
