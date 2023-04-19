@@ -2,15 +2,17 @@
 import { TextEditor, useTextEditor } from '@/components/editor'
 import { Input } from '@/components/input'
 import { Col } from '@/components/layout/col'
-import { forwardRef, Fragment, Ref, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
-import { Combobox, Listbox, Transition } from '@headlessui/react'
+import { Combobox } from '@headlessui/react'
 import clsx from 'clsx'
 import { useUser } from '@supabase/auth-ui-react/dist/esm/src/components/Auth/UserContext'
 import { MiniProfile } from '@/db/profile'
 import { Row } from '@/components/layout/row'
 import { Avatar } from '@/components/avatar'
+import { Button } from '@/components/button'
+import { TOTAL_SHARES } from '@/db/project'
 
 const DEFAULT_DESCRIPTION = `
 <h3>What will the recipient use this funding for?</h3>
@@ -29,19 +31,6 @@ const DEFAULT_DESCRIPTION = `
 <h3>What other funding is this person or project getting? Where else did this person or project apply for funding in the past?</h3>
 </br>
 `
-
-const people = [
-  { name: 'Wade Cooper', username: '@wadecooper' },
-  { name: 'Arlene Mccoy', username: '@arlenemccoy' },
-  { name: 'Devon Webb', username: '@devonwebb' },
-  { name: 'Tom Cook', username: '@tomcook' },
-  { name: 'Tanya Fox', username: '@tanyafox' },
-  { name: 'Hellen Schmidt', username: '@hellenschmidt' },
-  { name: 'Caroline Schultz', username: '@carolineschultz' },
-  { name: 'Mason Heaney', username: '@masonheaney' },
-  { name: 'Claudie Smitham', username: '@claudiesmitham' },
-  { name: 'Emil Schaefer', username: '@emilschaefer' },
-]
 
 export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
   const { profiles } = props
@@ -64,9 +53,24 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
   const [amount, setAmount] = useState(0)
-  const [description, setDescription] = useState(DEFAULT_DESCRIPTION)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
-  const editor = useTextEditor(description)
+  const editor = useTextEditor(DEFAULT_DESCRIPTION)
+
+  let errorMessage = null
+  if (!recipientOnManifund && !recipientFullName) {
+    errorMessage = 'Please enter the name of the recipient.'
+  } else if (!recipientOnManifund && !recipientEmail) {
+    errorMessage = 'Please enter the email address of the recipient.'
+  } else if (!title) {
+    errorMessage = 'Please enter a title for your grant.'
+  } else if (editor?.getHTML() === DEFAULT_DESCRIPTION) {
+    errorMessage = 'Please enter a description for your grant.'
+  } else if (!agreedToTerms) {
+    errorMessage =
+      'Please confirm that you understand and agree to the terms of giving this grant.'
+  } else {
+    errorMessage = null
+  }
   if (!user)
     return (
       <div>
@@ -221,7 +225,7 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="amount">Amount</label>
+        <label htmlFor="amount">Amount (USD)</label>
         <Input
           type="number"
           id="amount"
@@ -257,6 +261,31 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
           </span>
         </div>
       </Row>
+      <p className="text-center text-rose-500">{errorMessage}</p>
+      <Button
+        type="submit"
+        className="mt-4 w-full"
+        disabled={errorMessage !== null}
+        onClick={async () => {
+          const description = editor?.getJSON()
+          const response = await fetch('/api/create-grant', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              title,
+              subtitle,
+              description,
+              amount,
+              toEmail: recipientOnManifund ? undefined : recipientEmail,
+              toUsername: recipientOnManifund ? recipient.username : undefined,
+            }),
+          })
+        }}
+      >
+        Create grant
+      </Button>
     </Col>
   )
 }

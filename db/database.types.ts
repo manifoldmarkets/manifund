@@ -108,26 +108,26 @@ export interface Database {
       project_transfers: {
         Row: {
           created_at: string
-          email: string
-          from_id: string
+          grant_amount: number | null
           id: string
           project_id: string
+          to_email: string
           transferred: boolean
         }
         Insert: {
           created_at?: string
-          email: string
-          from_id: string
-          id: string
+          grant_amount?: number | null
+          id?: string
           project_id: string
+          to_email: string
           transferred?: boolean
         }
         Update: {
           created_at?: string
-          email?: string
-          from_id?: string
+          grant_amount?: number | null
           id?: string
           project_id?: string
+          to_email?: string
           transferred?: boolean
         }
       }

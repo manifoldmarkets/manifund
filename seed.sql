@@ -269,11 +269,11 @@ create table if not exists public.stripe_txns (
 -- Project transfers
 create table public.project_transfers (
   id uuid not null,
-  from_id uuid not null references auth.users(id) on delete cascade,
   email text not null,
   created_at timestamptz not null default now(),
   project_id uuid not null references public.projects(id) on delete cascade,
   transferred boolean not null default false,
+  grant_amount float8,
   primary key (id)
 );
 
