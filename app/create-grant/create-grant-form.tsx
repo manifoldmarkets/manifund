@@ -15,7 +15,7 @@ import { Avatar } from '@/components/avatar'
 const DEFAULT_DESCRIPTION = `
 <h3>What will the recipient use this funding for?</h3>
 </br>
-<h3>What's the case for this grant?</h3>
+<h3>What's the case in favor of this grant?</h3>
 </br>
 <h3>What are your main reservations about this grant?</h3>
 </br>
@@ -78,6 +78,13 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
     )
   return (
     <Col className="gap-5 p-4">
+      <div>
+        <h1 className="text-2xl font-bold">Create grant</h1>
+        <p className="text-gray-600">
+          Use this form to give a grant for a project that is not already posted
+          on Manifund. Note that all grants are public.
+        </p>
+      </div>
       <Row>
         <Row className="h-6 items-center">
           <input
@@ -122,7 +129,7 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
           <Combobox as="div" value={recipient} onChange={setRecipient}>
             <div className="relative">
               <Combobox.Input
-                className="invalid:border-scarlet-500 invalid:text-scarlet-900 invalid:placeholder-scarlet-300 h-12 w-full rounded-md border border-gray-300 bg-white px-4 shadow-sm transition-colors focus:outline-none disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500"
+                className="invalid:border-scarlet-500 invalid:text-scarlet-900 invalid:placeholder-scarlet-300 h-12 w-full rounded-md border border-gray-300 bg-white px-4 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500"
                 onChange={(event) => setQuery(event.target.value)}
                 displayValue={(profile: MiniProfile) => profile.full_name}
               />
@@ -205,7 +212,7 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="subtitle">Title</label>
+        <label htmlFor="subtitle">Subtitle</label>
         <Input
           type="text"
           id="subtitle"
