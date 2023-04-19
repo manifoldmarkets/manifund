@@ -5,6 +5,8 @@ import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
+import { getProfileById } from '@/db/profile'
+import { sendTemplateEmail } from '@/utils/email'
 
 export const config = {
   runtime: 'edge',
@@ -27,6 +29,7 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
+  const regranterProfile = await getProfileById(supabase, user.id)
   if ((toEmail && toUsername) || (!toEmail && !toUsername)) {
     return NextResponse.error()
   }
@@ -88,5 +91,18 @@ export default async function handler(req: NextRequest) {
       throw error3
     }
   }
-  return NextResponse.redirect(`${getURL()}/projects/${slug}`)
+  const NEW_USER_GRANT_TEMPLATE_ID = 31479155
+  const postmarkVars = {
+    amount: amount,
+    regranterName: regranterProfile?.full_name ?? 'an anonymous regranter',
+    projectTitle: title,
+    loginUrl: `${getURL()}/login?email=${toEmail}`,
+  }
+  await sendTemplateEmail(
+    NEW_USER_GRANT_TEMPLATE_ID,
+    postmarkVars,
+    undefined,
+    toEmail
+  )
+  return NextResponse.json(project)
 }
