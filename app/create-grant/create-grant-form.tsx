@@ -77,7 +77,7 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
       </div>
     )
   return (
-    <Col>
+    <Col className="gap-5 p-4">
       <Row>
         <Row className="h-6 items-center">
           <input
@@ -90,35 +90,39 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
             onChange={() => setRecipientOnManifund(!recipientOnManifund)}
           />
         </Row>
-        <span className="ml-3 text-sm leading-6 text-gray-500">
+        <span className="ml-2 leading-6 text-gray-900">
           Recipient is already a user on Manifund.
         </span>
       </Row>
       {!recipientOnManifund && (
         <>
-          <label htmlFor="recipientFullName">Recipient full name</label>
-          <Input
-            type="text"
-            id="recipientFullName"
-            value={recipientFullName}
-            onChange={(event) => setRecipientFullName(event.target.value)}
-          />
-          <label htmlFor="recipientEmail">Recipient email</label>
-          <Input
-            type="text"
-            id="recipientEmail"
-            value={recipientEmail}
-            onChange={(event) => setRecipientEmail(event.target.value)}
-          />
+          <Col className="gap-1">
+            <label htmlFor="recipientFullName">Recipient full name</label>
+            <Input
+              type="text"
+              id="recipientFullName"
+              value={recipientFullName}
+              onChange={(event) => setRecipientFullName(event.target.value)}
+            />
+          </Col>
+          <Col className="gap-1">
+            <label htmlFor="recipientEmail">Recipient email</label>
+            <Input
+              type="text"
+              id="recipientEmail"
+              value={recipientEmail}
+              onChange={(event) => setRecipientEmail(event.target.value)}
+            />
+          </Col>
         </>
       )}
       {recipientOnManifund && (
-        <>
-          <label>Recipient fullname</label>
+        <Col className="gap-1">
+          <label>Recipient</label>
           <Combobox as="div" value={recipient} onChange={setRecipient}>
-            <div className="relative mt-2">
+            <div className="relative">
               <Combobox.Input
-                className="w-full rounded-md border-0 bg-white py-1.5 pl-3 pr-12 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:text-sm sm:leading-6"
+                className="invalid:border-scarlet-500 invalid:text-scarlet-900 invalid:placeholder-scarlet-300 h-12 w-full rounded-md border border-gray-300 bg-white px-4 shadow-sm transition-colors focus:outline-none disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500"
                 onChange={(event) => setQuery(event.target.value)}
                 displayValue={(profile: MiniProfile) => profile.full_name}
               />
@@ -128,7 +132,6 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
                   aria-hidden="true"
                 />
               </Combobox.Button>
-
               {filteredProfiles.length > 0 && (
                 <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                   {filteredProfiles.map((profile) => (
@@ -190,26 +193,41 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
               )}
             </div>
           </Combobox>
-        </>
+        </Col>
       )}
-      <Input
-        type="text"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-      />
-      <Input
-        type="text"
-        value={subtitle}
-        onChange={(event) => setSubtitle(event.target.value)}
-      />
-      <Input
-        type="number"
-        value={amount}
-        onChange={(event) => setAmount(Number(event.target.value))}
-      />
-      <TextEditor editor={editor} />
-      <div className="flex">
-        <div className="flex h-6 items-center">
+      <Col className="gap-1">
+        <label htmlFor="title">Title</label>
+        <Input
+          type="text"
+          id="title"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+        />
+      </Col>
+      <Col className="gap-1">
+        <label htmlFor="subtitle">Title</label>
+        <Input
+          type="text"
+          id="subtitle"
+          value={subtitle}
+          onChange={(event) => setSubtitle(event.target.value)}
+        />
+      </Col>
+      <Col className="gap-1">
+        <label htmlFor="amount">Amount</label>
+        <Input
+          type="number"
+          id="amount"
+          value={amount}
+          onChange={(event) => setAmount(Number(event.target.value))}
+        />
+      </Col>
+      <Col className="gap-1">
+        <label>Description</label>
+        <TextEditor editor={editor} />
+      </Col>
+      <Row>
+        <Row className="h-6 items-center">
           <input
             id="terms"
             aria-describedby="terms-description"
@@ -219,7 +237,7 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
             checked={agreedToTerms}
             onChange={() => setAgreedToTerms(!agreedToTerms)}
           />
-        </div>
+        </Row>
         <div className="ml-3 text-sm leading-6">
           <label htmlFor="terms" className="font-medium text-gray-900">
             Check this box to confirm:
@@ -231,7 +249,7 @@ export function CreateGrantForm(props: { profiles: MiniProfile[] }) {
             publicly accessible on Manifund.
           </span>
         </div>
-      </div>
+      </Row>
     </Col>
   )
 }
