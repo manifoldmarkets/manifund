@@ -3,12 +3,11 @@ import { Avatar } from '@/components/avatar'
 import { PencilIcon, LinkIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { Database } from '@/db/database.types'
-import { BalanceBox } from './balance-box'
 import { InvestorTypeTag } from '@/components/tags'
 import { addHttpToUrl } from '@/utils/formatting'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -19,7 +18,16 @@ export function ProfileHeader(props: {
   const { profile, isOwnProfile } = props
   const website = addHttpToUrl(profile.website ?? '')
   // Doesn't change when you change window size
-  const windowWidth = useRef([window.innerWidth, window.innerHeight]).current[0]
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+  useEffect(() => {
+    const handleWindowResize = () => {
+      setWindowWidth(window.innerWidth)
+    }
+    window.addEventListener('resize', handleWindowResize)
+    return () => {
+      window.removeEventListener('resize', handleWindowResize)
+    }
+  }, [])
   return (
     <div className="flex flex-col gap-3">
       <div className="flex">
@@ -42,7 +50,7 @@ export function ProfileHeader(props: {
         <Col className="w-full">
           <Row className="justify-between">
             <Col>
-              <div className="text-lg font-bold leading-tight sm:text-2xl">
+              <div className="text-xl font-bold leading-tight sm:text-2xl">
                 {profile.full_name}
               </div>
               <Row className="mt-1 flex-wrap gap-2 text-gray-500">

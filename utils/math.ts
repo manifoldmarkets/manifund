@@ -104,9 +104,10 @@ export function calculateUserSpendableFunds(
   txns: Txn[],
   userId: string,
   bids: Bid[],
-  accreditation_status: boolean
+  accreditation_status: boolean,
+  balance?: number
 ) {
-  const currentBalance = calculateUserBalance(txns, userId)
+  const currentBalance = balance ?? calculateUserBalance(txns, userId)
   if (accreditation_status) {
     return currentBalance
   }

@@ -10,8 +10,8 @@ import { ActiveBids } from './user-active-bids'
 import { Investments } from './user-investments'
 import { Projects } from './user-projects'
 import { RichContent } from '@/components/editor'
-import { BalanceBox } from './balance-box'
-import { calculateUserBalance } from '@/utils/math'
+import { BalanceDisplay } from './balance-display'
+import { calculateUserBalance, calculateUserSpendableFunds } from '@/utils/math'
 import { Txn, TxnAndProject } from '@/db/txn'
 import { sortBy } from 'lodash'
 import { BANK_ID } from '@/db/env'
@@ -45,6 +45,13 @@ export function ProfileTabs(props: {
     balance,
     profile.accreditation_status
   )
+  const spendableBalance = calculateUserSpendableFunds(
+    txns,
+    profile.id,
+    bids,
+    profile.accreditation_status,
+    balance
+  )
 
   const portfolioCount =
     proposalBids.length + activeBids.length + notOwnProjectInvestments.length
@@ -56,9 +63,10 @@ export function ProfileTabs(props: {
       current: currentTabName === 'portfolio' || currentTabName === null,
       display: (
         <div className="flex flex-col gap-6">
-          <BalanceBox
+          <BalanceDisplay
             balance={balance}
             withdrawBalance={withdrawBalance}
+            spendableBalance={spendableBalance}
             accredited={profile.accreditation_status}
           />
           {proposalBids.length > 0 && (

@@ -3,7 +3,6 @@ import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
 import {
-  CurrencyDollarIcon,
   PlusSmallIcon,
   MinusSmallIcon,
   CircleStackIcon,
@@ -20,20 +19,21 @@ import clsx from 'clsx'
 import { DataPoint } from '@/components/data-point'
 import { Card } from '@/components/card'
 
-export function BalanceBox(props: {
+export function BalanceDisplay(props: {
   balance: number
   withdrawBalance: number
+  spendableBalance: number
   accredited: boolean
 }) {
-  const { balance, withdrawBalance, accredited } = props
+  const { balance, withdrawBalance, spendableBalance, accredited } = props
   const stats = [
     { name: 'Balance', value: balance },
     { name: 'Withdrawable', value: withdrawBalance },
-    { name: 'Spendable', value: 382 },
+    { name: 'Spendable', value: spendableBalance },
   ]
   return (
     <Col className="h-fit">
-      <Row className="h-fit justify-between gap-1">
+      <Row className="h-fit justify-between gap-1 sm:gap-4 md:gap-8">
         <Col className="justify-between">
           {accredited ? (
             <a
@@ -58,7 +58,10 @@ export function BalanceBox(props: {
           </a>
         </Col>
         {stats.map((stat) => (
-          <Card key={stat.name} className="border-none py-1">
+          <Card
+            key={stat.name}
+            className="w-full min-w-fit border-none py-1 px-2"
+          >
             <DataPoint label={stat.name} value={`$${stat.value.toString()}`} />
           </Card>
         ))}
