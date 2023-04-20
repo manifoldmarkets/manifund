@@ -55,41 +55,37 @@ export function ProfileTabs(props: {
 
   const portfolioCount =
     proposalBids.length + activeBids.length + notOwnProjectInvestments.length
-  if (portfolioCount > 0) {
-    tabs.push({
-      name: 'Portfolio',
-      href: '?tab=portfolio',
-      count: portfolioCount,
-      current: currentTabName === 'portfolio' || currentTabName === null,
-      display: (
-        <div className="flex flex-col gap-6">
-          <BalanceDisplay
-            balance={balance}
-            withdrawBalance={withdrawBalance}
-            spendableBalance={spendableBalance}
-            accredited={profile.accreditation_status}
-          />
-          {proposalBids.length > 0 && (
-            <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
-          )}
-          {activeBids.length > 0 && (
-            <ActiveBids bids={activeBids} isOwnProfile={isOwnProfile} />
-          )}
-          {notOwnProjectInvestments.length > 0 && (
-            <Investments investments={notOwnProjectInvestments} />
-          )}
-        </div>
-      ),
-    })
-  }
+  tabs.push({
+    name: 'Portfolio',
+    href: '?tab=portfolio',
+    count: portfolioCount,
+    current: currentTabName === 'portfolio' || currentTabName === null,
+    display: (
+      <div className="flex flex-col gap-6">
+        <BalanceDisplay
+          balance={balance}
+          withdrawBalance={withdrawBalance}
+          spendableBalance={spendableBalance}
+          accredited={profile.accreditation_status}
+        />
+        {proposalBids.length > 0 && (
+          <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
+        )}
+        {activeBids.length > 0 && (
+          <ActiveBids bids={activeBids} isOwnProfile={isOwnProfile} />
+        )}
+        {notOwnProjectInvestments.length > 0 && (
+          <Investments investments={notOwnProjectInvestments} />
+        )}
+      </div>
+    ),
+  })
   if (isOwnProfile || projects.length > 0) {
     tabs.push({
       name: 'Projects',
       href: '?tab=projects',
       count: projects.length,
-      current:
-        currentTabName === 'projects' ||
-        (currentTabName === null && tabs.length === 0),
+      current: currentTabName === 'projects',
       display: <Projects projects={projects} />,
     })
   }
@@ -98,9 +94,7 @@ export function ProfileTabs(props: {
       name: 'About me',
       href: '?tab=about',
       count: 0,
-      current:
-        currentTabName === 'about' ||
-        (currentTabName === null && tabs.length === 0),
+      current: currentTabName === 'about',
       display: <RichContent content={profile.long_description} />,
     })
   }
