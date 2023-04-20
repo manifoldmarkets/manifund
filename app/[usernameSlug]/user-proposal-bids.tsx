@@ -19,7 +19,7 @@ export function ProposalBids(props: {
   return (
     <div>
       <h1 className="text-xl sm:text-2xl">Proposal bids</h1>
-      <div className="overflow-hidden bg-white shadow sm:rounded-md">
+      <div className="overflow-hidden rounded-md bg-white shadow">
         <ul role="list" className="divide-y divide-gray-200">
           {bidsDisplay}
         </ul>
