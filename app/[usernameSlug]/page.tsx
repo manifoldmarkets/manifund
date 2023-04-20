@@ -35,7 +35,7 @@ export default async function UserProfilePage(props: {
   const investments = await compileInvestments(txns, profile.id)
 
   return (
-    <div className="flex flex-col p-5">
+    <div className="flex flex-col p-3 sm:p-5">
       <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} />
       <div className="flex flex-col gap-10">
         <ProfileTabs
