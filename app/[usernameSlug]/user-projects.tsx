@@ -12,13 +12,10 @@ export function Projects(props: { projects: Project[] }) {
     </li>
   ))
   return (
-    <div>
-      <h1 className="mb-2 text-2xl">Projects</h1>
-      <div className="overflow-hidden bg-white shadow sm:rounded-md">
-        <ul role="list" className="divide-y divide-gray-200">
-          {projects.length == 0 ? <NoProjects /> : projectsDisplay}
-        </ul>
-      </div>
+    <div className="overflow-hidden bg-white shadow sm:rounded-md">
+      <ul role="list" className="divide-y divide-gray-200">
+        {projects.length == 0 ? <NoProjects /> : projectsDisplay}
+      </ul>
     </div>
   )
 }

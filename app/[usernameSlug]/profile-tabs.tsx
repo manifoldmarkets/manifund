@@ -55,7 +55,7 @@ export function ProfileTabs(props: {
       count: portfolioCount,
       current: currentTabName === 'portfolio' || currentTabName === null,
       display: (
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-6">
           <BalanceBox
             balance={balance}
             withdrawBalance={withdrawBalance}
