@@ -7,14 +7,12 @@ import { Avatar } from '@/components/avatar'
 import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
-import { InformationCircleIcon } from '@heroicons/react/20/solid'
 import { Profile } from '@/db/profile'
 import uuid from 'react-uuid'
 import Image from 'next/image'
 import { SUPABASE_BUCKET_URL } from '@/db/env'
 import { TextEditor, useTextEditor } from '@/components/editor'
-
-export const revalidate = 0
+import clsx from 'clsx'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
@@ -26,6 +24,9 @@ export function EditProfileForm(props: { profile: Profile }) {
   const editor = useTextEditor(profile.long_description)
   const [avatar, setAvatar] = useState<File | null>(null)
   const [submitting, setSubmitting] = useState<boolean>(false)
+  const [regranterStatus, setRegranterStatus] = useState(
+    profile.regranter_status
+  )
   const router = useRouter()
 
   const user = session?.user
@@ -132,7 +133,30 @@ export function EditProfileForm(props: { profile: Profile }) {
           </div>
         )}
       </div>
-
+      <label htmlFor="regranterStatus">Regranter status:</label>
+      <button
+        type="button"
+        id="regranterStatus"
+        className={clsx(
+          'relative mb-3 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
+            (regranterStatus ? ' bg-orange-500' : ' bg-gray-200'),
+          'focus:ring-offset-gray-100'
+        )}
+        role="switch"
+        aria-checked="false"
+        onClick={() =>
+          setRegranterStatus((regranterStatus) => !regranterStatus)
+        }
+      >
+        <span className="sr-only">Use auction</span>
+        <span
+          aria-hidden="true"
+          className={clsx(
+            'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+            regranterStatus ? 'translate-x-5' : 'translate-x-0'
+          )}
+        ></span>
+      </button>
       <label htmlFor="avatar">Choose a profile picture:</label>
       <div className="flex space-x-2">
         <div className="h-24 w-24">
@@ -189,35 +213,6 @@ export function EditProfileForm(props: { profile: Profile }) {
       >
         Save
       </Button>
-    </div>
-  )
-}
-
-function AccreditationInfoBox() {
-  return (
-    <div className="rounded-md bg-orange-50 p-4">
-      <div className="flex">
-        <div className="flex-shrink-0">
-          <InformationCircleIcon
-            className="h-5 w-5 text-orange-400"
-            aria-hidden="true"
-          />
-        </div>
-        <p className="ml-3 text-sm font-light text-orange-600">
-          Anyone may create projects, but only accredited investors may invest
-          in projects.
-          <br />
-          To get verified as an accredited investor, fill out{' '}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://airtable.com/shrZVLeo6f34NBfR0"
-            className="font-bold hover:underline"
-          >
-            this form.
-          </a>
-        </p>
-      </div>
     </div>
   )
 }
