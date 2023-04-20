@@ -17,6 +17,8 @@ import { Modal } from '@/components/modal'
 import { Button } from '@/components/button'
 import { Dialog, RadioGroup } from '@headlessui/react'
 import clsx from 'clsx'
+import { DataPoint } from '@/components/data-point'
+import { Card } from '@/components/card'
 
 export function BalanceBox(props: {
   balance: number
@@ -24,14 +26,19 @@ export function BalanceBox(props: {
   accredited: boolean
 }) {
   const { balance, withdrawBalance, accredited } = props
+  const stats = [
+    { name: 'Balance', value: balance },
+    { name: 'Withdrawable', value: withdrawBalance },
+    { name: 'Spendable', value: 382 },
+  ]
   return (
     <Col className="h-fit">
-      <Row className="h-fit gap-1">
-        <Col className="my-2 justify-between">
+      <Row className="h-fit justify-between gap-1">
+        <Col className="justify-between">
           {accredited ? (
             <a
               href="https://airtable.com/shrIB5yGc56DoQBhJ"
-              className="rounded bg-gray-200 p-1"
+              className="rounded bg-white shadow"
             >
               <Tooltip text="Add funds">
                 <PlusSmallIcon className="h-4 w-4 text-gray-500" />
@@ -43,23 +50,18 @@ export function BalanceBox(props: {
 
           <a
             href="https://airtable.com/shrI3XFPivduhbnGa"
-            className="rounded bg-gray-200 p-1"
+            className="rounded bg-white p-1 shadow"
           >
             <Tooltip text="Withdraw funds">
               <MinusSmallIcon className="h-4 w-4 text-gray-500" />
             </Tooltip>
           </a>
         </Col>
-        <Col className="flex rounded bg-gray-200 py-2 px-3 text-center">
-          <div className="text-md text-gray-500">Balance</div>
-          <div className=" flex text-2xl font-bold text-gray-500">
-            <CurrencyDollarIcon className="h-8 w-8" />
-            <p>{balance}</p>
-          </div>
-        </Col>
-      </Row>
-      <Row className="justify-center text-sm font-normal text-gray-500">
-        ${withdrawBalance} withdrawable
+        {stats.map((stat) => (
+          <Card key={stat.name} className="border-none py-1">
+            <DataPoint label={stat.name} value={`$${stat.value.toString()}`} />
+          </Card>
+        ))}
       </Row>
     </Col>
   )
@@ -78,7 +80,7 @@ function StripeDepositButton() {
     <>
       <button
         type="button"
-        className="rounded bg-gray-200 p-1"
+        className="rounded bg-white p-1 shadow"
         onClick={() => setOpen(true)}
       >
         <Tooltip text="Add funds">
