@@ -88,7 +88,7 @@ export interface Database {
           id?: string
           long_description?: Json | null
           regranter_status?: boolean
-          type?: Database["public"]["Enums"]["profile_type"]
+          type: Database["public"]["Enums"]["profile_type"]
           username: string
           website?: string | null
         }
@@ -107,7 +107,7 @@ export interface Database {
       }
       project_transfers: {
         Row: {
-          created_at: string
+          created_at: string | null
           grant_amount: number | null
           id: string
           project_id: string
@@ -115,7 +115,7 @@ export interface Database {
           transferred: boolean
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           grant_amount?: number | null
           id?: string
           project_id: string
@@ -123,7 +123,7 @@ export interface Database {
           transferred?: boolean
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           grant_amount?: number | null
           id?: string
           project_id?: string
@@ -218,7 +218,7 @@ export interface Database {
           amount: number
           created_at: string
           customer_id: string
-          id: string
+          id: number
           session_id: string
           txn_id: string
         }
@@ -226,7 +226,7 @@ export interface Database {
           amount: number
           created_at?: string
           customer_id: string
-          id?: string
+          id?: number
           session_id: string
           txn_id: string
         }
@@ -234,7 +234,7 @@ export interface Database {
           amount?: number
           created_at?: string
           customer_id?: string
-          id?: string
+          id?: number
           session_id?: string
           txn_id?: string
         }
@@ -289,13 +289,15 @@ export interface Database {
       }
     }
     Functions: {
-      get_user_balances: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          id: number
-          username: string
-          balance: number
-        }[]
+      transfer_project: {
+        Args: {
+          project_id: string
+          to_id: string
+          from_id: string
+          transfer_id: string
+          amount: number
+        }
+        Returns: undefined
       }
     }
     Enums: {
