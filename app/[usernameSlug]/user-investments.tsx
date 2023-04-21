@@ -7,21 +7,23 @@ import { formatMoney } from '@/utils/formatting'
 
 export function Investments(props: { investments: Investment[] }) {
   const { investments } = props
-  const investmentsDisplay = investments.map((item) =>
-    item.project ? (
-      <li key={item.project.id}>
-        <InvestmentsDisplay
-          project={item.project}
-          amount={item.price_usd}
-          num_shares={item.num_shares}
-        />
-      </li>
-    ) : null
-  )
+  const investmentsDisplay = investments
+    .filter((investment) => investment.num_shares !== 0 && investment.project)
+    .map((investment) =>
+      investment.project ? (
+        <li key={investment.project.id}>
+          <InvestmentsDisplay
+            project={investment.project}
+            amount={investment.price_usd}
+            numShares={investment.num_shares}
+          />
+        </li>
+      ) : null
+    )
   return (
     <div>
-      <h1 className="text-2xl">Investments</h1>
-      <div className="overflow-hidden bg-white shadow sm:rounded-md">
+      <h1 className="text-xl sm:text-2xl">Investments</h1>
+      <div className="overflow-hidden rounded-md bg-white shadow">
         <ul role="list" className="divide-y divide-gray-200">
           {investmentsDisplay}
         </ul>
@@ -33,12 +35,9 @@ export function Investments(props: { investments: Investment[] }) {
 function InvestmentsDisplay(props: {
   project: Project
   amount: number
-  num_shares: number
+  numShares: number
 }) {
-  const { project, amount, num_shares } = props
-  if (num_shares == 0) {
-    return <div className="hidden"></div>
-  }
+  const { project, amount, numShares } = props
   return (
     <Link href={`/projects/${project.slug}`} className="block hover:bg-gray-50">
       <div className="px-4 py-4 sm:px-6">
@@ -57,7 +56,7 @@ function InvestmentsDisplay(props: {
               <span className="text-black">{formatMoney(-amount)}</span>
               &nbsp;@&nbsp;
               <span className="text-black">
-                {formatMoney((-amount * 10000000) / num_shares)}
+                {formatMoney((-amount * 10000000) / numShares)}
               </span>
               &nbsp;valuation
             </p>
