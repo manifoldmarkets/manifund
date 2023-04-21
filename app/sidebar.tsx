@@ -66,7 +66,7 @@ export async function ProfileSummary(props: { user: User }) {
   return (
     <div className="group mb-3 flex flex-row items-center gap-2 truncate rounded-md py-3 px-1 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
       <Avatar username={profile.username} avatarUrl={profile.avatar_url} />
-      <Link href={`/${profile.username}?tab=portfolio`} className="truncate">
+      <Link href={`/${profile.username}`} className="truncate">
         <div className="font-medium">{profile.full_name}</div>
         <div className="text-sm">
           {formatMoney(calculateUserBalance(txns, profile.id))}
