@@ -1,6 +1,6 @@
 'use client'
 import { Comments } from './comments'
-import { FullProject } from '@/db/project'
+import { FullProject, TOTAL_SHARES } from '@/db/project'
 import { Profile } from '@/db/profile'
 import { CommentAndProfile } from '@/db/comment'
 import { useSearchParams } from 'next/navigation'
@@ -10,6 +10,7 @@ import { TxnAndProfiles } from '@/db/txn'
 import { Shareholders } from './shareholders'
 import { calculateFullTrades, FullTrade } from '@/utils/math'
 import { Tabs } from '@/components/tabs'
+import { DonationsHistory } from '@/components/donations-history'
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -45,12 +46,15 @@ export function ProjectTabs(props: {
   ]
 
   if (
-    project.stage === 'active' ||
-    project.stage === 'completed' ||
+    ((project.stage === 'active' || project.stage === 'completed') &&
+      project.type === 'cert') ||
     project.stage === 'proposal'
   ) {
     tabs.push({
-      name: project.stage === 'active' ? 'Offers' : 'Bids',
+      name:
+        project.stage === 'active' || project.type === 'grant'
+          ? 'Offers'
+          : 'Bids',
       href: '?tab=bids',
       count: bids.length,
       current: currentTabName === 'bids',
@@ -65,7 +69,10 @@ export function ProjectTabs(props: {
       ),
     })
   }
-  if (project.stage === 'active' || project.stage === 'completed') {
+  if (
+    (project.stage === 'active' || project.stage === 'completed') &&
+    project.type === 'cert'
+  ) {
     const shareholders = calculateShareholders(trades, creator)
     tabs.push({
       name: 'Shareholders',
@@ -82,6 +89,22 @@ export function ProjectTabs(props: {
     })
   }
 
+  if (
+    (project.stage === 'active' || project.stage === 'completed') &&
+    project.type === 'grant'
+  ) {
+    const donations = txns.filter(
+      (txn) => txn.project === project.id && txn.token === 'USD' && !txn.bundle
+    )
+    tabs.push({
+      name: 'Donations',
+      href: '?tab=donations',
+      count: donations.length,
+      current: currentTabName === 'donations',
+      display: <DonationsHistory donations={donations} />,
+    })
+  }
+
   return <Tabs tabs={tabs} preTabSlug={`/projects/${project.slug}`} />
 }
 
@@ -90,8 +113,6 @@ export type Shareholder = {
   numShares: number
 }
 export function calculateShareholders(trades: FullTrade[], creator: Profile) {
-  console.log('trades in calculateShareholders', trades)
-
   const shareholders = Object.fromEntries(
     trades.map((trade) => [trade.toProfile.id, { numShares: 0 } as Shareholder])
   )
@@ -102,7 +123,7 @@ export function calculateShareholders(trades: FullTrade[], creator: Profile) {
     shareholders[trade.fromProfile.id].numShares -= trade.numShares
   }
   const shareholdersArray = Object.values(shareholders) as Shareholder[]
-  //round to 2 decimal places for small arithmetic errors
+  // Round to 2 decimal places for small arithmetic errors
   shareholdersArray.forEach((shareholder) => {
     shareholder.numShares = Math.round(shareholder.numShares * 100) / 100
   })

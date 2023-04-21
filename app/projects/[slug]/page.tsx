@@ -4,7 +4,11 @@ import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
-import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
+import {
+  getFullProjectBySlug,
+  getProjectBySlug,
+  TOTAL_SHARES,
+} from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
 import { getActiveValuation, getProposalValuation } from '@/utils/math'
@@ -15,6 +19,7 @@ import { getTxnsByProject } from '@/db/txn'
 import { Description } from './description'
 import { ProjectCardHeader } from '@/components/project-card'
 import { calculateUserFundsAndShares } from '@/utils/math'
+import { DonateBox } from '@/components/donate-box'
 
 export const revalidate = 0
 
@@ -45,7 +50,9 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const bids = await getBidsByProject(supabase, project.id)
   const txns = await getTxnsByProject(supabase, project.id)
   const valuation =
-    project.stage == 'proposal'
+    project.type === 'grant'
+      ? project.funding_goal
+      : project.stage === 'proposal'
       ? getProposalValuation(project)
       : getActiveValuation(txns, bids, getProposalValuation(project))
 
@@ -55,6 +62,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     <div className="flex flex-col gap-4 px-4">
       <ProjectCardHeader
         round={project.rounds}
+        projectType={project.type}
         creator={project.profiles}
         valuation={isNaN(valuation) ? undefined : valuation}
       />
@@ -68,19 +76,26 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       )}
       {isOwnProject && <EditDescription project={project} />}
       <hr className="mb-3 h-0.5 rounded-sm bg-gray-500" />
-      {project.stage == 'proposal' && (
+      {project.stage === 'proposal' && (
         <ProposalData
           project={project}
           bids={project.bids.filter((bid) => bid.status === 'pending')}
         />
       )}
-      {profile !== null && (
+      {profile !== null && project.type === 'cert' && (
         <PlaceBid
           project={project}
           user={profile}
           userSpendableFunds={userSpendableFunds}
           userSellableShares={userSellableShares}
           userShares={userShares}
+        />
+      )}
+      {profile !== null && project.type === 'grant' && (
+        <DonateBox
+          project={project}
+          user={profile}
+          userSpendableFunds={userSpendableFunds}
         />
       )}
       {!user && <SignInButton />}
