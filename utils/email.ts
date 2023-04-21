@@ -1,6 +1,5 @@
 import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient } from '@supabase/supabase-js'
-import * as postmark from 'postmark'
 
 export async function sendTemplateEmail(
   templateId: number,
@@ -21,9 +20,6 @@ export async function sendTemplateEmail(
     return
   }
 
-  let client = new postmark.ServerClient(
-    process.env.POSTMARK_SERVER_TOKEN ?? ''
-  )
   // Using fetch instead of postmark's client because it doesn't work on the edge:
   const response = await fetch(
     'https://api.postmarkapp.com/email/withTemplate',

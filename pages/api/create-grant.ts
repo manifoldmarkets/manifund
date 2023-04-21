@@ -53,33 +53,28 @@ export default async function handler(req: NextRequest) {
     round: 'Independent', // Create new grants round?
     slug,
   }
-  const { error } = await supabase.from('projects').insert([project])
-  if (error) {
-    throw error
-  }
+  await supabase.from('projects').insert([project]).throwOnError()
   if (toEmail) {
     const project_transfer = {
       to_email: toEmail,
       project_id: id,
       grant_amount: amount,
     }
-    const { error: error2 } = await supabase
+    await supabase
       .from('project_transfers')
       .insert([project_transfer])
-    if (error2) {
-      throw error2
-    }
+      .throwOnError()
   } else {
-    const { error: error3 } = await supabase.from('txns').insert({
-      project: id,
-      amount: amount,
-      from_id: user.id,
-      to_id: toProfile.id,
-      token: 'USD',
-    })
-    if (error3) {
-      throw error3
-    }
+    await supabase
+      .from('txns')
+      .insert({
+        project: id,
+        amount: amount,
+        from_id: user.id,
+        to_id: toProfile.id,
+        token: 'USD',
+      })
+      .throwOnError()
   }
   if (toUsername) {
     const postmarkVars = {
