@@ -4,18 +4,21 @@ import { Card } from '@/components/card'
 import { Input } from '@/components/input'
 import { Row } from '@/components/layout/row'
 import { Profile } from '@/db/profile'
+import { Project } from '@/db/project'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export function DonateBox(props: {
-  charity: Profile
+  charity?: Profile
+  project?: Project
   user: Profile
   userSpendableFunds: number
 }) {
-  const { charity, user, userSpendableFunds } = props
+  const { charity, project, user, userSpendableFunds } = props
   const [amount, setAmount] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
+
   let errorMessage = null
   if (amount && amount > userSpendableFunds) {
     errorMessage = `You don't have enough funds to donate $${amount}. You can donate up to $${userSpendableFunds}.`
@@ -44,18 +47,35 @@ export function DonateBox(props: {
       <Button
         onClick={async () => {
           setIsSubmitting(true)
-          const res = await fetch('/api/transfer-money', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              fromId: user.id,
-              toId: charity.id,
-              amount,
-            }),
-          })
-          const json = await res.json()
+          if (project && project.stage === 'proposal') {
+            const res = await fetch('/api/place-bid', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                projectId: project.id,
+                projectStage: project.stage,
+                bidderId: user.id,
+                valuation: 0,
+                amount,
+                type: 'donate',
+              }),
+            })
+          } else if (project || charity) {
+            const res = await fetch('/api/transfer-money', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                fromId: user.id,
+                toId: charity?.id ?? project?.creator,
+                amount,
+                projectId: project?.id,
+              }),
+            })
+          }
           setIsSubmitting(false)
           router.refresh()
         }}

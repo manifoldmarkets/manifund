@@ -16,8 +16,8 @@ export interface Database {
           created_at: string
           id: string
           project: string
-          status: Database["public"]["Enums"]["bid_status"]
-          type: Database["public"]["Enums"]["bid_type"]
+          status: Database['public']['Enums']['bid_status']
+          type: Database['public']['Enums']['bid_type']
           valuation: number
         }
         Insert: {
@@ -26,8 +26,8 @@ export interface Database {
           created_at?: string
           id?: string
           project: string
-          status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"]
+          status?: Database['public']['Enums']['bid_status']
+          type?: Database['public']['Enums']['bid_type']
           valuation: number
         }
         Update: {
@@ -36,8 +36,8 @@ export interface Database {
           created_at?: string
           id?: string
           project?: string
-          status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"]
+          status?: Database['public']['Enums']['bid_status']
+          type?: Database['public']['Enums']['bid_type']
           valuation?: number
         }
       }
@@ -74,8 +74,9 @@ export interface Database {
           bio: string
           full_name: string
           id: string
-          long_description: Json
-          type: Database["public"]["Enums"]["profile_type"]
+          long_description: Json | null
+          regranter_status: boolean
+          type: Database['public']['Enums']['profile_type']
           username: string
           website: string | null
         }
@@ -85,8 +86,9 @@ export interface Database {
           bio?: string
           full_name?: string
           id?: string
-          long_description?: Json
-          type: Database["public"]["Enums"]["profile_type"]
+          long_description?: Json | null
+          regranter_status?: boolean
+          type: Database['public']['Enums']['profile_type']
           username: string
           website?: string | null
         }
@@ -96,10 +98,37 @@ export interface Database {
           bio?: string
           full_name?: string
           id?: string
-          long_description?: Json
-          type?: Database["public"]["Enums"]["profile_type"]
+          long_description?: Json | null
+          regranter_status?: boolean
+          type?: Database['public']['Enums']['profile_type']
           username?: string
           website?: string | null
+        }
+      }
+      project_transfers: {
+        Row: {
+          created_at: string | null
+          grant_amount: number | null
+          id: string
+          project_id: string
+          to_email: string
+          transferred: boolean
+        }
+        Insert: {
+          created_at?: string | null
+          grant_amount?: number | null
+          id?: string
+          project_id: string
+          to_email: string
+          transferred?: boolean
+        }
+        Update: {
+          created_at?: string | null
+          grant_amount?: number | null
+          id?: string
+          project_id?: string
+          to_email?: string
+          transferred?: boolean
         }
       }
       projects: {
@@ -110,12 +139,14 @@ export interface Database {
           creator: string
           description: Json | null
           founder_portion: number
+          funding_goal: number
           id: string
           min_funding: number
           round: string
           slug: string
           stage: string
           title: string
+          type: Database['public']['Enums']['project_type']
         }
         Insert: {
           auction_close?: string | null
@@ -124,12 +155,14 @@ export interface Database {
           creator: string
           description?: Json | null
           founder_portion: number
+          funding_goal?: number
           id?: string
           min_funding: number
           round: string
           slug?: string
           stage?: string
           title?: string
+          type?: Database['public']['Enums']['project_type']
         }
         Update: {
           auction_close?: string | null
@@ -138,12 +171,14 @@ export interface Database {
           creator?: string
           description?: Json | null
           founder_portion?: number
+          funding_goal?: number
           id?: string
           min_funding?: number
           round?: string
           slug?: string
           stage?: string
           title?: string
+          type?: Database['public']['Enums']['project_type']
         }
       }
       rounds: {
@@ -183,7 +218,7 @@ export interface Database {
           amount: number
           created_at: string
           customer_id: string
-          id: number
+          id: string
           session_id: string
           txn_id: string
         }
@@ -191,7 +226,7 @@ export interface Database {
           amount: number
           created_at?: string
           customer_id: string
-          id?: number
+          id?: string
           session_id: string
           txn_id: string
         }
@@ -199,7 +234,7 @@ export interface Database {
           amount?: number
           created_at?: string
           customer_id?: string
-          id?: number
+          id?: string
           session_id?: string
           txn_id?: string
         }
@@ -254,12 +289,22 @@ export interface Database {
       }
     }
     Functions: {
-      [_ in never]: never
+      transfer_project: {
+        Args: {
+          project_id: string
+          to_id: string
+          from_id: string
+          transfer_id: string
+          amount: number
+        }
+        Returns: undefined
+      }
     }
     Enums: {
-      bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "ipo"
-      profile_type: "individual" | "org"
+      bid_status: 'deleted' | 'pending' | 'accepted' | 'declined'
+      bid_type: 'buy' | 'sell' | 'donate'
+      profile_type: 'individual' | 'org'
+      project_type: 'grant' | 'cert'
     }
     CompositeTypes: {
       [_ in never]: never

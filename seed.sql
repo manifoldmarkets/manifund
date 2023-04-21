@@ -12,6 +12,7 @@ create table public.profiles (
   avatar_url text,
   type profile_type not null default 'individual',
   long_description jsonb,
+  regranter_status boolean not null,
   primary key (id)
 );
 
@@ -74,6 +75,7 @@ from
 --
 --
 ---- Projects ----
+create type project_type as enum ('grant', 'cert');
 create table if not exists public.projects (
   id uuid not null default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -81,9 +83,11 @@ create table if not exists public.projects (
   title text not null,
   blurb text,
   creator uuid not null references auth.users(id) on delete cascade,
-  min_funding numeric not null,
+  min_funding float8 not null,
+  funding_goal float8  not null default 0,
   founder_portion int8 not null,
   description jsonb,
+  type project_type not null default 'cert',
   primary key (id)
 );
 
@@ -171,7 +175,7 @@ INSERT
 --
 ---- Bids ----
 -- Create an enum type for 'buy' vs 'sell' vs 'auction'
-create type bid_type as enum ('buy', 'sell', 'ipo');
+create type bid_type as enum ('buy', 'sell', 'donate');
 create type bid_status as enum ('deleted', 'pending', 'accepted', 'declined');
 
 create table if not exists public.bids (
@@ -264,3 +268,26 @@ create table if not exists public.stripe_txns (
   amount float8 not null,
   primary key (id)
 );
+
+-- Project transfers
+create table public.project_transfers (
+  id uuid not null,
+  email text not null,
+  created_at timestamptz not null default now(),
+  project_id uuid not null references public.projects(id) on delete cascade,
+  transferred boolean not null default false,
+  grant_amount float8,
+  primary key (id)
+);
+
+-- project transfers RLS
+CREATE POLICY "Enable read access for all users" ON "public"."project_transfers"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
+
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."project_transfers"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+
+WITH CHECK (true)

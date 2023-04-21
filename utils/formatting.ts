@@ -1,3 +1,5 @@
+import { SupabaseClient } from '@supabase/supabase-js'
+
 // Formatting functions
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -96,4 +98,19 @@ export function formatDate(date: string) {
 export function addHttpToUrl(url: string) {
   const formattedUrl = url?.startsWith('http') ? url : `https://${url}`
   return formattedUrl
+}
+
+export async function projectSlugify(title: string, supabase: SupabaseClient) {
+  let slug = title
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '')
+  const { data } = await supabase
+    .from('projects')
+    .select('slug')
+    .eq('slug', slug)
+  if (data && data.length > 0) {
+    slug = slug + '-' + Math.random().toString(36).substring(2, 15)
+  }
+  return slug
 }

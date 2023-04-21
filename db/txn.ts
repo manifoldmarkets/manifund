@@ -63,7 +63,7 @@ export async function getTxnsByProject(
 ) {
   const { data, error } = await supabase
     .from('txns')
-    .select('*, profiles!txns_to_id_fkey(*)')
+    .select('*, profiles!txns_from_id_fkey(*)')
     .eq('project', project)
   if (error) {
     throw error

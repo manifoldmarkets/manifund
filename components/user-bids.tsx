@@ -36,6 +36,7 @@ export function UserBidDisplay(props: {
           <div className="sm:flex">
             <BidText
               bid={bid}
+              projectType={project.type}
               stage={project.stage}
               showValuation={isOwnProfile || project.stage !== 'proposal'}
             />
@@ -77,10 +78,25 @@ export function UserBidDisplay(props: {
   )
 }
 
-function BidText(props: { bid: Bid; stage: string; showValuation: boolean }) {
-  const { bid, stage, showValuation } = props
+function BidText(props: {
+  bid: Bid
+  stage: string
+  projectType: Project['type']
+  showValuation: boolean
+}) {
+  const { bid, stage, projectType, showValuation } = props
   switch (stage) {
     case 'proposal':
+      if (projectType === 'grant') {
+        return (
+          <div className="flex items-center">
+            <p className="text-sm text-gray-500">
+              Offered&nbsp;
+              <span className="text-black">{formatMoney(bid.amount)}</span>
+            </p>
+          </div>
+        )
+      }
       return (
         <div className="flex items-center">
           <p className="text-sm text-gray-500">
@@ -114,7 +130,7 @@ function BidText(props: { bid: Bid; stage: string; showValuation: boolean }) {
   }
 }
 
-function BuySellTag(props: { bidType: 'buy' | 'sell' | 'ipo' }) {
+function BuySellTag(props: { bidType: Bid['type'] }) {
   const { bidType } = props
   const tagText = bidType === 'buy' ? 'BUY' : 'SELL'
   const tagColor = bidType === 'buy' ? 'bg-emerald-100' : 'bg-rose-100'

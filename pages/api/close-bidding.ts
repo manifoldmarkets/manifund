@@ -14,7 +14,7 @@ export const config = {
   regions: ['sfo1'],
   // From https://github.com/lodash/lodash/issues/5525
   unstable_allowDynamic: [
-    '**/node_modules/lodash/_root.js', // use a glob to allow anything in the function-bind 3rd party module
+    '**/node_modules/lodash/_root.js', // Use a glob to allow anything in the function-bind 3rd party module
   ],
 }
 
@@ -199,9 +199,9 @@ async function sendAuctionCloseEmails(
     }
     const BID_RESOLVED_TEMPLATE_ID = 31316141
     await sendTemplateEmail(
-      bid.bidder,
       BID_RESOLVED_TEMPLATE_ID,
-      bidderPostmarkVars
+      bidderPostmarkVars,
+      bid.bidder
     )
   }
   const claimFundsHTML = genClaimFundsHTML(resolution)
@@ -213,9 +213,9 @@ async function sendAuctionCloseEmails(
   }
   const AUCTION_RESOLVED_TEMPLATE_ID = 31316142
   await sendTemplateEmail(
-    project.creator,
     AUCTION_RESOLVED_TEMPLATE_ID,
-    creatorPostmarkVars
+    creatorPostmarkVars,
+    project.creator
   )
 }
 

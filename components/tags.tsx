@@ -15,12 +15,15 @@ const COLORS = [
   'bg-indigo-200',
   'bg-gray-200',
   'bg-sky-200',
+  'bg-orange-200',
   'bg-indigo-400',
   'bg-gray-400',
   'bg-sky-400',
+  'bg-orange-400',
   'text-indigo-700',
   'text-gray-700',
   'text-sky-700',
+  'text-orange-700',
 ]
 
 export function RoundTag(props: {

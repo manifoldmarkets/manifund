@@ -1,25 +1,17 @@
-import { Database } from '@/db/database.types'
 import { TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
+import { projectSlugify } from '@/utils/formatting'
+import { Database } from '@/db/database.types'
 
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
 }
 
-type ProjectProps = {
-  title: string
-  blurb: string
-  description: any
-  min_funding: number
-  founder_portion: number
-  round: string
-  auction_close: string
-  stage: string
-}
+type ProjectInsert = Database['public']['Tables']['projects']['Insert']
 
 export default async function handler(req: NextRequest) {
   const {
@@ -27,27 +19,19 @@ export default async function handler(req: NextRequest) {
     blurb,
     description,
     min_funding,
+    funding_goal,
     founder_portion,
     round,
     auction_close,
     stage,
-  } = (await req.json()) as ProjectProps
+    type,
+  } = (await req.json()) as ProjectInsert
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
 
-  let slug = title
-    .toLowerCase()
-    .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '')
-  const { data } = await supabase
-    .from('projects')
-    .select('slug')
-    .eq('slug', slug)
-  if (data && data.length > 0) {
-    slug = slug + '-' + Math.random().toString(36).substring(2, 15)
-  }
+  const slug = await projectSlugify(title ?? '', supabase)
   const id = uuid()
   const project = {
     id,
@@ -55,19 +39,21 @@ export default async function handler(req: NextRequest) {
     blurb,
     description,
     min_funding,
+    funding_goal,
     founder_portion,
     creator: user.id,
     slug,
     round,
     auction_close,
     stage,
+    type,
   }
   const { error } = await supabase.from('projects').insert([project])
   if (error) {
     console.error('create-project', error)
   }
   await giveCreatorShares(supabase, id, user.id)
-  if (stage === 'active') {
+  if (stage === 'active' && type === 'cert') {
     await addBid(
       supabase,
       id,
@@ -87,7 +73,7 @@ export async function giveCreatorShares(
   const txn = {
     from_id: null,
     to_id: creator,
-    amount: 10000000,
+    amount: TOTAL_SHARES,
     token: id,
     project: id,
   }
