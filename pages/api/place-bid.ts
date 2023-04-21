@@ -66,17 +66,17 @@ async function findAndMakeTrades(bid: BidXCreatedAt, supabase: SupabaseClient) {
     .filter((oldBid) => oldBid.bidder !== bid.bidder)
     .filter((oldBid) => oldBid.type !== newOfferType)
     .filter((oldBid) => oldBid.status === 'pending')
-  let i = 0
   let budget = bid.amount
-  while (budget > 0 && i < oldBids.length) {
+  for (const oldBid of oldBids) {
     if (
-      newOfferType === 'buy'
-        ? oldBids[i].valuation > bid.valuation
-        : oldBids[i].valuation < bid.valuation
+      (newOfferType === 'buy'
+        ? oldBid.valuation > bid.valuation
+        : oldBid.valuation < bid.valuation) ||
+      budget <= 0
     ) {
       return
     }
-    const tradeAmount = Math.min(budget, oldBids[i].amount)
+    const tradeAmount = Math.min(budget, oldBid.amount)
     budget -= tradeAmount
     const response = await fetch('/api/trade', {
       method: 'POST',
@@ -84,11 +84,10 @@ async function findAndMakeTrades(bid: BidXCreatedAt, supabase: SupabaseClient) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        oldBidId: oldBids[i].bidder,
+        oldBidId: oldBid.bidder,
         usdTraded: tradeAmount,
         tradePartnerId: bid.bidder,
       }),
     })
-    i++
   }
 }
