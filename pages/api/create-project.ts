@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { projectSlugify } from '@/utils/formatting'
+import { Database } from '@/db/database.types'
 
 export const config = {
   runtime: 'edge',
@@ -30,7 +31,7 @@ export default async function handler(req: NextRequest) {
   const user = resp.data.user
   if (!user) return NextResponse.error()
 
-  const slug = await projectSlugify(title, supabase)
+  const slug = await projectSlugify(title ?? '', supabase)
   const id = uuid()
   const project = {
     id,
