@@ -104,8 +104,11 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   }
 
   useEffect(() => {
-    if (round.title === 'Independent') {
-      setAuctionClose(format(add(new Date(), { days: 7 }), 'yyyy-MM-dd'))
+    if (
+      round.title === 'Independent' ||
+      (round.title === 'Regrants' && minFunding > 0)
+    ) {
+      setAuctionClose(format(add(new Date(), { weeks: 2 }), 'yyyy-MM-dd'))
     } else if (round.auction_close_date) {
       setAuctionClose(format(new Date(round.auction_close_date), 'yyyy-MM-dd'))
     } else {
@@ -116,8 +119,11 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   useEffect(() => {
     if (projectType === 'grant') {
       setSellingPortion(0)
-      setRound(availableRounds.find((r) => r.title === 'Independent')!)
+      setRound(availableRounds.find((r) => r.title === 'Regrants')!)
       setAuctionClose(null)
+    } else {
+      setSellingPortion(20)
+      setRound(availableRounds[0])
     }
   }, [projectType])
 
@@ -156,10 +162,10 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           Choose your project type{' '}
         </RadioGroup.Label>
         <div className="flex max-w-fit rounded-md border border-gray-300 bg-white p-2">
-          {Object.keys(projectTypeLabels).map((option) => (
+          {Object.entries(projectTypeLabels).map(([type, label]) => (
             <RadioGroup.Option
-              key={option}
-              value={option}
+              key={type}
+              value={type}
               className={({ checked }) =>
                 clsx(
                   'cursor-pointer focus:outline-none',
@@ -170,9 +176,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                 )
               }
             >
-              <RadioGroup.Label as="span">
-                {projectTypeLabels[option as Project['type']]}
-              </RadioGroup.Label>
+              <RadioGroup.Label as="span">{label}</RadioGroup.Label>
             </RadioGroup.Option>
           ))}
         </div>
@@ -207,46 +211,48 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
             <fieldset className="mt-4">
               <legend className="sr-only">Round options</legend>
               <div className="space-y-4">
-                {availableRounds.map((availableRound) => (
-                  <Row
-                    key={availableRound.title}
-                    className="relative items-start"
-                  >
-                    <Row className="h-6 items-center">
-                      <input
-                        id={availableRound.title}
-                        name="notification-method"
-                        type="radio"
-                        defaultChecked={availableRound.title === round.title}
-                        onChange={() => {
-                          setRound(availableRound)
-                        }}
-                        className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
-                      />
-                    </Row>
-                    <div className="ml-3">
-                      <Row>
-                        <label
-                          htmlFor={availableRound.title}
-                          className="text-md block font-medium"
-                        >
-                          {availableRound.title}
-                        </label>
-                        <Link href={`/rounds/${availableRound.slug}`}>
-                          <ArrowRightIcon className="ml-2 h-5 w-5 text-gray-400" />
-                        </Link>
+                {availableRounds
+                  .filter((round) => round.title !== 'Regrants')
+                  .map((availableRound) => (
+                    <Row
+                      key={availableRound.title}
+                      className="relative items-start"
+                    >
+                      <Row className="h-6 items-center">
+                        <input
+                          id={availableRound.title}
+                          name="notification-method"
+                          type="radio"
+                          defaultChecked={availableRound.title === round.title}
+                          onChange={() => {
+                            setRound(availableRound)
+                          }}
+                          className="h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
+                        />
                       </Row>
-                      {availableRound.title === 'Independent' && (
-                        <p className="text-sm text-gray-500">
-                          Independent projects do not have a committed oracular
-                          funder. By entering as an Independent project, your
-                          project is less likely to recieve investments and
-                          oracular funding.
-                        </p>
-                      )}
-                    </div>
-                  </Row>
-                ))}
+                      <div className="ml-3">
+                        <Row>
+                          <label
+                            htmlFor={availableRound.title}
+                            className="text-md block font-medium"
+                          >
+                            {availableRound.title}
+                          </label>
+                          <Link href={`/rounds/${availableRound.slug}`}>
+                            <ArrowRightIcon className="ml-2 h-5 w-5 text-gray-400" />
+                          </Link>
+                        </Row>
+                        {availableRound.title === 'Independent' && (
+                          <p className="text-sm text-gray-500">
+                            Independent projects do not have a committed
+                            oracular funder. By entering as an Independent
+                            project, your project is less likely to recieve
+                            investments and oracular funding.
+                          </p>
+                        )}
+                      </div>
+                    </Row>
+                  ))}
               </div>
             </fieldset>
           </div>
@@ -301,7 +307,9 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                 <Input
                   type="date"
                   value={auctionClose ?? ''}
-                  disabled={round.title !== 'Independent'}
+                  disabled={
+                    round.title !== 'Independent' && round.title !== 'Regrants'
+                  }
                   onChange={(event) => setAuctionClose(event.target.value)}
                 />
               </div>
@@ -400,7 +408,9 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               <Input
                 type="date"
                 value={auctionClose ?? ''}
-                disabled={round.title !== 'Independent'}
+                disabled={
+                  round.title !== 'Independent' && round.title !== 'Regrants'
+                }
                 onChange={(event) => setAuctionClose(event.target.value)}
               />
             </Col>
@@ -462,7 +472,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               founder_portion: founderShares,
               round: round.title,
               auction_close:
-                round.title === 'Independent'
+                round.title === 'Independent' || round.title === 'Regrants'
                   ? auctionClose
                   : round.auction_close_date,
               stage: auctionClose === null ? 'active' : 'proposal',
