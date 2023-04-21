@@ -50,7 +50,7 @@ export default async function handler(req: NextRequest) {
     founder_portion: TOTAL_SHARES,
     type: 'grant' as Project['type'],
     stage: 'active',
-    round: 'Independent', // Create new grants round?
+    round: 'Regrants',
     slug,
   }
   await supabase.from('projects').insert([project]).throwOnError()
