@@ -14,10 +14,7 @@ export default async function CreateGrantPage() {
     (profile) => profile.type === 'individual' && profile.full_name.length > 0
   )
   const user = await getUser(supabase)
-  const profile = await getProfileById(supabase, user?.id)
-  const txns = await getTxnsByUser(supabase, user?.id ?? '')
-  const bids = await getBidsByUser(supabase, user?.id ?? '')
-  if (!profile)
+  if (!user) {
     return (
       <div>
         <Link href="/login" className="text-orange-500 hover:text-orange-600">
@@ -26,6 +23,11 @@ export default async function CreateGrantPage() {
         to give grants!
       </div>
     )
+  }
+  const profile = await getProfileById(supabase, user?.id)
+  const txns = await getTxnsByUser(supabase, user?.id ?? '')
+  const bids = await getBidsByUser(supabase, user?.id ?? '')
+
   if (!profile?.regranter_status) {
     return (
       // TODO: make a controllable switch to be a regranter
