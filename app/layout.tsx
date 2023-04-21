@@ -28,12 +28,12 @@ export const revalidate = 0
 export const metadata = {
   title: {
     default: 'Manifund',
-    template: '%s | Manifund'
+    template: '%s | Manifund',
   },
   description: 'A platform for funding impactful projects',
   icons: {
-    icon: '/favicon.ico'
-  }
+    icon: '/favicon.ico',
+  },
 }
 
 export default async function RootLayout({
