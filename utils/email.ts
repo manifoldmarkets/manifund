@@ -1,37 +1,44 @@
 import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient } from '@supabase/supabase-js'
-import * as postmark from 'postmark'
 
 export async function sendTemplateEmail(
-  toId: string,
   templateId: number,
   templateModel: object,
+  toId?: string,
+  toEmail?: string,
   fromEmail?: string
 ) {
   const supabase = createAdminClient()
-  const toEmail = await getUserEmail(supabase, toId)
+  if (!toEmail && !toId) {
+    console.log('No email or user id provided')
+    return
+  }
+  const sendToEmail = toEmail ?? (await getUserEmail(supabase, toId ?? ''))
 
-  if (!toEmail) {
+  if (!sendToEmail) {
     console.log('No email found for user', toId)
     return
   }
 
-  let client = new postmark.ServerClient(
-    process.env.POSTMARK_SERVER_TOKEN ?? ''
+  // Using fetch instead of postmark's client because it doesn't work on the edge:
+  const response = await fetch(
+    'https://api.postmarkapp.com/email/withTemplate',
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'X-Postmark-Server-Token': process.env.POSTMARK_SERVER_TOKEN ?? '',
+      },
+      body: JSON.stringify({
+        From: fromEmail ?? 'info@manifund.org',
+        To: sendToEmail,
+        TemplateId: templateId,
+        TemplateModel: templateModel,
+      }),
+    }
   )
-
-  client
-    .sendEmailWithTemplate({
-      From: fromEmail ?? 'info@manifund.org',
-      To: toEmail,
-      TemplateId: templateId,
-      TemplateModel: templateModel,
-    })
-    .then((response) => {
-      console.log('Sending message')
-      console.log(response.To)
-      console.log(response.Message)
-    })
+  const json = await response.json()
+  console.log('Sent message', json)
 }
 
 export async function getUserEmail(

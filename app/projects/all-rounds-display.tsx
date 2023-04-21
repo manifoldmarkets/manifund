@@ -2,7 +2,6 @@ import { Col } from '@/components/layout/col'
 import { RoundData } from '@/components/round-data'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
-import Link from 'next/link'
 import { RoundCarousel } from './round-carousel'
 import Image from 'next/image'
 import clsx from 'clsx'
@@ -15,10 +14,10 @@ export function AllRoundsDisplay(props: {
   projects: FullProject[]
 }) {
   const { rounds, projects } = props
-  const sortedRounds = sortRoundsForPreview(rounds)
+  const selectedRounds = selectRoundsForPreview(rounds)
   return (
     <Col className="mb-5 gap-3">
-      {sortedRounds.map((round) => {
+      {selectedRounds.map((round) => {
         const roundProjects = projects.filter(
           (project) =>
             project.rounds.title === round.title && project.stage !== 'hidden'
@@ -95,7 +94,7 @@ function sortProjectsForPreview(projects: FullProject[]) {
   return sortedByStage
 }
 
-function sortRoundsForPreview(rounds: Round[]) {
+function selectRoundsForPreview(rounds: Round[]) {
   const sortedByDueDate = orderBy(rounds, 'proposal_due_date', 'desc')
   const independentLast = sortBy(sortedByDueDate, [
     function (round: Round) {
@@ -106,5 +105,6 @@ function sortRoundsForPreview(rounds: Round[]) {
       }
     },
   ])
-  return independentLast
+  // Regrants have custom display so want to exclude them from this list
+  return independentLast.filter((round) => round.title !== 'Regrants')
 }
