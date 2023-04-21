@@ -1,9 +1,9 @@
-import { Database } from '@/db/database.types'
 import { TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
+import { projectSlugify } from '@/utils/formatting'
 
 export const config = {
   runtime: 'edge',
@@ -30,17 +30,7 @@ export default async function handler(req: NextRequest) {
   const user = resp.data.user
   if (!user) return NextResponse.error()
 
-  let slug = (title ?? '')
-    .toLowerCase()
-    .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '')
-  const { data } = await supabase
-    .from('projects')
-    .select('slug')
-    .eq('slug', slug)
-  if (data && data.length > 0) {
-    slug = slug + '-' + Math.random().toString(36).substring(2, 15)
-  }
+  const slug = await projectSlugify(title, supabase)
   const id = uuid()
   const project = {
     id,

@@ -16,8 +16,8 @@ export interface Database {
           created_at: string
           id: string
           project: string
-          status: Database["public"]["Enums"]["bid_status"]
-          type: Database["public"]["Enums"]["bid_type"]
+          status: Database['public']['Enums']['bid_status']
+          type: Database['public']['Enums']['bid_type']
           valuation: number
         }
         Insert: {
@@ -26,8 +26,8 @@ export interface Database {
           created_at?: string
           id?: string
           project: string
-          status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"]
+          status?: Database['public']['Enums']['bid_status']
+          type?: Database['public']['Enums']['bid_type']
           valuation: number
         }
         Update: {
@@ -36,8 +36,8 @@ export interface Database {
           created_at?: string
           id?: string
           project?: string
-          status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"]
+          status?: Database['public']['Enums']['bid_status']
+          type?: Database['public']['Enums']['bid_type']
           valuation?: number
         }
       }
@@ -75,7 +75,8 @@ export interface Database {
           full_name: string
           id: string
           long_description: Json | null
-          type: Database["public"]["Enums"]["profile_type"]
+          regranter_status: boolean
+          type: Database['public']['Enums']['profile_type']
           username: string
           website: string | null
         }
@@ -86,7 +87,8 @@ export interface Database {
           full_name?: string
           id?: string
           long_description?: Json | null
-          type?: Database["public"]["Enums"]["profile_type"]
+          regranter_status?: boolean
+          type: Database['public']['Enums']['profile_type']
           username: string
           website?: string | null
         }
@@ -97,9 +99,36 @@ export interface Database {
           full_name?: string
           id?: string
           long_description?: Json | null
-          type?: Database["public"]["Enums"]["profile_type"]
+          regranter_status?: boolean
+          type?: Database['public']['Enums']['profile_type']
           username?: string
           website?: string | null
+        }
+      }
+      project_transfers: {
+        Row: {
+          created_at: string | null
+          grant_amount: number | null
+          id: string
+          project_id: string
+          to_email: string
+          transferred: boolean
+        }
+        Insert: {
+          created_at?: string | null
+          grant_amount?: number | null
+          id?: string
+          project_id: string
+          to_email: string
+          transferred?: boolean
+        }
+        Update: {
+          created_at?: string | null
+          grant_amount?: number | null
+          id?: string
+          project_id?: string
+          to_email?: string
+          transferred?: boolean
         }
       }
       projects: {
@@ -117,7 +146,7 @@ export interface Database {
           slug: string
           stage: string
           title: string
-          type: Database["public"]["Enums"]["project_type"]
+          type: Database['public']['Enums']['project_type']
         }
         Insert: {
           auction_close?: string | null
@@ -133,7 +162,7 @@ export interface Database {
           slug?: string
           stage?: string
           title?: string
-          type?: Database["public"]["Enums"]["project_type"]
+          type?: Database['public']['Enums']['project_type']
         }
         Update: {
           auction_close?: string | null
@@ -149,7 +178,7 @@ export interface Database {
           slug?: string
           stage?: string
           title?: string
-          type?: Database["public"]["Enums"]["project_type"]
+          type?: Database['public']['Enums']['project_type']
         }
       }
       rounds: {
@@ -260,20 +289,22 @@ export interface Database {
       }
     }
     Functions: {
-      get_user_balances: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          id: number
-          username: string
-          balance: number
-        }[]
+      transfer_project: {
+        Args: {
+          project_id: string
+          to_id: string
+          from_id: string
+          transfer_id: string
+          amount: number
+        }
+        Returns: undefined
       }
     }
     Enums: {
-      bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "donate"
-      profile_type: "individual" | "org"
-      project_type: "grant" | "cert"
+      bid_status: 'deleted' | 'pending' | 'accepted' | 'declined'
+      bid_type: 'buy' | 'sell' | 'donate'
+      profile_type: 'individual' | 'org'
+      project_type: 'grant' | 'cert'
     }
     CompositeTypes: {
       [_ in never]: never

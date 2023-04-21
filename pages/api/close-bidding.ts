@@ -199,9 +199,9 @@ async function sendAuctionCloseEmails(
     }
     const BID_RESOLVED_TEMPLATE_ID = 31316141
     await sendTemplateEmail(
-      bid.bidder,
       BID_RESOLVED_TEMPLATE_ID,
-      bidderPostmarkVars
+      bidderPostmarkVars,
+      bid.bidder
     )
   }
   const claimFundsHTML = genClaimFundsHTML(resolution)
@@ -213,9 +213,9 @@ async function sendAuctionCloseEmails(
   }
   const AUCTION_RESOLVED_TEMPLATE_ID = 31316142
   await sendTemplateEmail(
-    project.creator,
     AUCTION_RESOLVED_TEMPLATE_ID,
-    creatorPostmarkVars
+    creatorPostmarkVars,
+    project.creator
   )
 }
 

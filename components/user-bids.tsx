@@ -130,7 +130,7 @@ function BidText(props: {
   }
 }
 
-function BuySellTag(props: { bidType: 'buy' | 'sell' | 'donate' }) {
+function BuySellTag(props: { bidType: Bid['type'] }) {
   const { bidType } = props
   const tagText = bidType === 'buy' ? 'BUY' : 'SELL'
   const tagColor = bidType === 'buy' ? 'bg-emerald-100' : 'bg-rose-100'

@@ -58,11 +58,11 @@ export default async function handler(
     await issueMoneys(session)
     const PAYMENT_CONFIRMATION_TEMPLATE_ID = 31316115
     await sendTemplateEmail(
-      session.metadata.userId,
       PAYMENT_CONFIRMATION_TEMPLATE_ID,
       {
         amount: session.metadata.dollarQuantity,
-      }
+      },
+      session.metadata.userId
     )
   }
   return res.status(200).send('success')

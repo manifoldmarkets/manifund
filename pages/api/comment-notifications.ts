@@ -37,9 +37,9 @@ export default async function handler(
   }
   const sendCreatorEmail = async () => {
     await sendTemplateEmail(
-      fullComment.projects.creator,
       NEW_COMMENT_TEMPLATE_ID,
-      postmarkVars
+      postmarkVars,
+      fullComment.projects.creator
     )
   }
   if (fullComment.profiles.id !== fullComment.projects.creator) {
@@ -57,9 +57,9 @@ export default async function handler(
     shareholders.forEach(async (shareholder) => {
       if (shareholder.profile.id !== fullComment.projects.creator) {
         await sendTemplateEmail(
-          shareholder.profile.id,
           CREATOR_UPDATE_TEMPLATE_ID,
-          postmarkVars
+          postmarkVars,
+          shareholder.profile.id
         )
       }
     })
@@ -79,9 +79,9 @@ export default async function handler(
       ) {
         const COMMENT_WITH_MENTION_TEMPLATE_ID = 31350706
         await sendTemplateEmail(
-          userId,
           COMMENT_WITH_MENTION_TEMPLATE_ID,
-          postmarkVars
+          postmarkVars,
+          userId
         )
       }
     })
@@ -90,9 +90,9 @@ export default async function handler(
 
   const sendReplyEmail = async (parentComment: Comment) => {
     await sendTemplateEmail(
-      parentComment.commenter,
       NEW_COMMENT_TEMPLATE_ID,
-      postmarkVars
+      postmarkVars,
+      parentComment.commenter
     )
   }
   if (comment.replying_to) {

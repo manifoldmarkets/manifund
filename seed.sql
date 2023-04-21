@@ -12,6 +12,7 @@ create table public.profiles (
   avatar_url text,
   type profile_type not null default 'individual',
   long_description jsonb,
+  regranter_status boolean not null,
   primary key (id)
 );
 
@@ -267,3 +268,26 @@ create table if not exists public.stripe_txns (
   amount float8 not null,
   primary key (id)
 );
+
+-- Project transfers
+create table public.project_transfers (
+  id uuid not null,
+  email text not null,
+  created_at timestamptz not null default now(),
+  project_id uuid not null references public.projects(id) on delete cascade,
+  transferred boolean not null default false,
+  grant_amount float8,
+  primary key (id)
+);
+
+-- project transfers RLS
+CREATE POLICY "Enable read access for all users" ON "public"."project_transfers"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
+
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."project_transfers"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+
+WITH CHECK (true)
