@@ -29,11 +29,10 @@ export function BalanceDisplay(props: {
   const stats = [
     { name: 'Spendable', value: spendableBalance },
     { name: 'In pending offers', value: balance - spendableBalance },
-    { name: 'Withdrawable', value: withdrawBalance },
   ]
   return (
     <Col className="h-fit">
-      <Row className="h-fit justify-between gap-1 sm:gap-4 md:gap-8">
+      <Row className="h-fit justify-between gap-1 sm:gap-4 lg:gap-8">
         <Col className="justify-between">
           {accredited ? (
             <a
@@ -73,6 +72,9 @@ export function BalanceDisplay(props: {
           </Card>
         ))}
       </Row>
+      <p className="mt-2 w-full rounded bg-gray-100 p-1 text-center text-sm tracking-wider text-gray-400">
+        You can withdraw up to ${withdrawBalance}.
+      </p>
     </Col>
   )
 }

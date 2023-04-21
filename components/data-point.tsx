@@ -21,7 +21,14 @@ export function DataPoint(props: {
       >
         {value}
       </span>
-      <span className="text-sm text-gray-500">{label}</span>
+      <span
+        className={clsx(
+          'text-sm',
+          theme === 'white' ? 'text-gray-200' : 'text-gray-500'
+        )}
+      >
+        {label}
+      </span>
     </Col>
   )
 }
