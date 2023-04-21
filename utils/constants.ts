@@ -18,6 +18,8 @@ export function getRoundTheme(roundTitle: string) {
       return 'sky'
     case 'Independent':
       return 'gray'
+    case 'Regrants':
+      return 'orange'
     default:
       return 'pink' //this should never happen
   }

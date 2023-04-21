@@ -2,11 +2,7 @@
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { formatDate, formatLargeNumber } from '@/utils/formatting'
-import {
-  getProposalValuation,
-  getActiveValuation,
-  getPercentFunded,
-} from '@/utils/math'
+import { getPercentRaised } from '@/utils/math'
 import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
 import { CalendarIcon, SparklesIcon } from '@heroicons/react/24/solid'
@@ -19,7 +15,7 @@ import { orderBy } from 'lodash'
 import { formatDistanceToNow } from 'date-fns'
 import { RoundTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
-import { ValuationBox } from './valuation-box'
+import { DataBox } from './data-box'
 import { Round } from '@/db/round'
 import { Card } from './card'
 
@@ -32,11 +28,13 @@ export function ProjectCard(props: {
   valuation: number
 }) {
   const { creator, project, numComments, bids, txns, valuation } = props
+  const percentRaised = getPercentRaised(bids, project)
   return (
     <Card className="px-4 pb-2 pt-1">
       <Col className="h-full justify-between">
         <ProjectCardHeader
           round={project.rounds}
+          projectType={project.type}
           creator={creator}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
         />
@@ -53,7 +51,7 @@ export function ProjectCard(props: {
           <ProjectCardFooter
             project={project}
             numComments={numComments}
-            bids={bids}
+            percentRaised={percentRaised}
             txns={txns}
           />
         </Link>
@@ -65,14 +63,10 @@ export function ProjectCard(props: {
 function ProjectCardFooter(props: {
   project: Project
   numComments: number
-  bids: Bid[]
+  percentRaised: number
   txns: Txn[]
 }) {
-  const { project, numComments, bids, txns } = props
-  const percentRaised = Math.min(
-    getPercentFunded(bids, project.min_funding),
-    100
-  )
+  const { project, numComments, percentRaised, txns } = props
   switch (project.stage) {
     case 'proposal':
       return (
@@ -155,9 +149,10 @@ function ProjectCardFooter(props: {
 export function ProjectCardHeader(props: {
   round: Round
   creator: Profile
+  projectType: Project['type']
   valuation?: number
 }) {
-  const { round, creator, valuation } = props
+  const { round, creator, valuation, projectType } = props
   return (
     <div className="flex justify-between">
       <div className="mt-1">
@@ -167,7 +162,10 @@ export function ProjectCardHeader(props: {
       </div>
       {valuation && !isNaN(valuation) ? (
         <div className="relative top-1">
-          <ValuationBox valuation={valuation} />
+          <DataBox
+            value={`$${valuation}`}
+            label={projectType === 'cert' ? 'valuation' : 'raising'}
+          />
         </div>
       ) : null}
     </div>
@@ -181,10 +179,7 @@ export function SimpleProjectCard(props: {
   numComments: number
 }) {
   const { project, creator, bids, numComments } = props
-  const percentRaised = Math.min(
-    getPercentFunded(bids, project.min_funding),
-    100
-  )
+  const percentRaised = getPercentRaised(bids, project)
   return (
     <Col
       className={clsx(

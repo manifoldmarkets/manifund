@@ -111,7 +111,7 @@ function StripeDepositButton() {
             <RadioGroup value={amount} onChange={setAmount} className="mt-2">
               <RadioGroup.Label className="sr-only">
                 {' '}
-                Choose a memory option{' '}
+                Choose an amount option{' '}
               </RadioGroup.Label>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {purchaseOptions.map((option) => (

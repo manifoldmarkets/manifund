@@ -16,8 +16,8 @@ export interface Database {
           created_at: string
           id: string
           project: string
-          status: Database["public"]["Enums"]["bid_status"]
-          type: Database["public"]["Enums"]["bid_type"]
+          status: Database['public']['Enums']['bid_status']
+          type: Database['public']['Enums']['bid_type']
           valuation: number
         }
         Insert: {
@@ -26,8 +26,8 @@ export interface Database {
           created_at?: string
           id?: string
           project: string
-          status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"]
+          status?: Database['public']['Enums']['bid_status']
+          type?: Database['public']['Enums']['bid_type']
           valuation: number
         }
         Update: {
@@ -36,8 +36,8 @@ export interface Database {
           created_at?: string
           id?: string
           project?: string
-          status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"]
+          status?: Database['public']['Enums']['bid_status']
+          type?: Database['public']['Enums']['bid_type']
           valuation?: number
         }
       }
@@ -76,7 +76,7 @@ export interface Database {
           id: string
           long_description: Json | null
           regranter_status: boolean
-          type: Database["public"]["Enums"]["profile_type"]
+          type: Database['public']['Enums']['profile_type']
           username: string
           website: string | null
         }
@@ -88,7 +88,7 @@ export interface Database {
           id?: string
           long_description?: Json | null
           regranter_status?: boolean
-          type: Database["public"]["Enums"]["profile_type"]
+          type: Database['public']['Enums']['profile_type']
           username: string
           website?: string | null
         }
@@ -100,7 +100,7 @@ export interface Database {
           id?: string
           long_description?: Json | null
           regranter_status?: boolean
-          type?: Database["public"]["Enums"]["profile_type"]
+          type?: Database['public']['Enums']['profile_type']
           username?: string
           website?: string | null
         }
@@ -146,7 +146,7 @@ export interface Database {
           slug: string
           stage: string
           title: string
-          type: Database["public"]["Enums"]["project_type"]
+          type: Database['public']['Enums']['project_type']
         }
         Insert: {
           auction_close?: string | null
@@ -162,7 +162,7 @@ export interface Database {
           slug?: string
           stage?: string
           title?: string
-          type?: Database["public"]["Enums"]["project_type"]
+          type?: Database['public']['Enums']['project_type']
         }
         Update: {
           auction_close?: string | null
@@ -178,7 +178,7 @@ export interface Database {
           slug?: string
           stage?: string
           title?: string
-          type?: Database["public"]["Enums"]["project_type"]
+          type?: Database['public']['Enums']['project_type']
         }
       }
       rounds: {
@@ -218,7 +218,7 @@ export interface Database {
           amount: number
           created_at: string
           customer_id: string
-          id: number
+          id: string
           session_id: string
           txn_id: string
         }
@@ -226,7 +226,7 @@ export interface Database {
           amount: number
           created_at?: string
           customer_id: string
-          id?: number
+          id?: string
           session_id: string
           txn_id: string
         }
@@ -234,7 +234,7 @@ export interface Database {
           amount?: number
           created_at?: string
           customer_id?: string
-          id?: number
+          id?: string
           session_id?: string
           txn_id?: string
         }
@@ -301,10 +301,10 @@ export interface Database {
       }
     }
     Enums: {
-      bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "donate"
-      profile_type: "individual" | "org"
-      project_type: "grant" | "cert"
+      bid_status: 'deleted' | 'pending' | 'accepted' | 'declined'
+      bid_type: 'buy' | 'sell' | 'donate'
+      profile_type: 'individual' | 'org'
+      project_type: 'grant' | 'cert'
     }
     CompositeTypes: {
       [_ in never]: never

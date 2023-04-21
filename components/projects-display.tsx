@@ -10,7 +10,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { Fragment, useState } from 'react'
 import {
   getActiveValuation,
-  getPercentFunded,
+  getPercentRaised,
   getProposalValuation,
 } from '@/utils/math'
 import clsx from 'clsx'
@@ -154,10 +154,7 @@ function sortProjects(
       })
     case 'percent funded':
       return projects.sort((a, b) =>
-        getPercentFunded(a.bids, a.min_funding) <
-        getPercentFunded(b.bids, b.min_funding)
-          ? 1
-          : -1
+        getPercentRaised(a.bids, a) < getPercentRaised(b.bids, b) ? 1 : -1
       )
     case 'number of comments':
       return projects.sort((a, b) =>
@@ -262,7 +259,9 @@ function getValuations(projects: FullProject[]) {
   )
   projects.forEach((project) => {
     valuations[project.id] =
-      project.stage == 'proposal'
+      project.type === 'grant'
+        ? project.funding_goal
+        : project.stage === 'proposal'
         ? getProposalValuation(project)
         : getActiveValuation(
             project.txns,
