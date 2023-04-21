@@ -128,7 +128,7 @@ export function InvestorTypeTag(props: {
           <CurrencyDollarIcon className="relative bottom-0.5 m-auto h-6 w-6 text-emerald-500" />
           <div
             className={clsx(
-              'text-md relative bottom-1 text-emerald-500',
+              'text-md relative bottom-0.5 leading-tight text-emerald-500',
               showText ? 'block' : 'hidden'
             )}
           >
@@ -150,7 +150,7 @@ export function InvestorTypeTag(props: {
           <HeartIcon className="relative bottom-0.5 m-auto h-6 w-6 text-rose-500" />
           <div
             className={clsx(
-              'text-md relative bottom-1 text-rose-500',
+              'text-md relative bottom-0.5 leading-tight text-rose-500',
               showText ? 'block' : 'hidden'
             )}
           >

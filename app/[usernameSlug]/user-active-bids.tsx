@@ -18,8 +18,8 @@ export function ActiveBids(props: {
   ))
   return (
     <div>
-      <h1 className="text-2xl">Trade offers</h1>
-      <div className="overflow-hidden bg-white shadow sm:rounded-md">
+      <h1 className="text-xl sm:text-2xl">Trade offers</h1>
+      <div className="overflow-hidden rounded-md bg-white shadow">
         <ul role="list" className="divide-y divide-gray-200">
           {bidsDisplay}
         </ul>

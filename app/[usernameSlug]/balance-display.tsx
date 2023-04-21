@@ -3,7 +3,6 @@ import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
 import {
-  CurrencyDollarIcon,
   PlusSmallIcon,
   MinusSmallIcon,
   CircleStackIcon,
@@ -17,21 +16,28 @@ import { Modal } from '@/components/modal'
 import { Button } from '@/components/button'
 import { Dialog, RadioGroup } from '@headlessui/react'
 import clsx from 'clsx'
+import { DataPoint } from '@/components/data-point'
+import { Card } from '@/components/card'
 
-export function BalanceBox(props: {
+export function BalanceDisplay(props: {
   balance: number
   withdrawBalance: number
+  spendableBalance: number
   accredited: boolean
 }) {
-  const { balance, withdrawBalance, accredited } = props
+  const { balance, withdrawBalance, spendableBalance, accredited } = props
+  const stats = [
+    { name: 'Spendable', value: spendableBalance },
+    { name: 'In pending offers', value: balance - spendableBalance },
+  ]
   return (
     <Col className="h-fit">
-      <Row className="h-fit gap-1">
-        <Col className="my-2 justify-between">
+      <Row className="h-fit justify-between gap-1 sm:gap-4 lg:gap-8">
+        <Col className="justify-between">
           {accredited ? (
             <a
               href="https://airtable.com/shrIB5yGc56DoQBhJ"
-              className="rounded bg-gray-200 p-1"
+              className="rounded bg-white shadow"
             >
               <Tooltip text="Add funds">
                 <PlusSmallIcon className="h-4 w-4 text-gray-500" />
@@ -43,24 +49,32 @@ export function BalanceBox(props: {
 
           <a
             href="https://airtable.com/shrI3XFPivduhbnGa"
-            className="rounded bg-gray-200 p-1"
+            className="rounded bg-white p-1 shadow"
           >
             <Tooltip text="Withdraw funds">
               <MinusSmallIcon className="h-4 w-4 text-gray-500" />
             </Tooltip>
           </a>
         </Col>
-        <Col className="flex rounded bg-gray-200 py-2 px-3 text-center">
-          <div className="text-md text-gray-500">Balance</div>
-          <div className=" flex text-2xl font-bold text-gray-500">
-            <CurrencyDollarIcon className="h-8 w-8" />
-            <p>{balance}</p>
-          </div>
-        </Col>
+        <div className="w-full min-w-fit rounded border-none bg-orange-500 py-1 px-2">
+          <DataPoint
+            label="Balance"
+            value={`$${balance.toString()}`}
+            theme="white"
+          />
+        </div>
+        {stats.map((stat) => (
+          <Card
+            key={stat.name}
+            className="w-full min-w-fit border-none py-1 px-2"
+          >
+            <DataPoint label={stat.name} value={`$${stat.value.toString()}`} />
+          </Card>
+        ))}
       </Row>
-      <Row className="justify-center text-sm font-normal text-gray-500">
-        ${withdrawBalance} withdrawable
-      </Row>
+      <p className="mt-2 w-full rounded bg-gray-100 p-1 text-center text-sm tracking-wider text-gray-400">
+        You can withdraw up to ${withdrawBalance}.
+      </p>
     </Col>
   )
 }
@@ -78,7 +92,7 @@ function StripeDepositButton() {
     <>
       <button
         type="button"
-        className="rounded bg-gray-200 p-1"
+        className="rounded bg-white p-1 shadow"
         onClick={() => setOpen(true)}
       >
         <Tooltip text="Add funds">
