@@ -96,6 +96,9 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   ) {
     errorMessage =
       'Your application close date must be in the future but no more than 6 weeks from now.'
+  } else if (projectType === 'grant' && minFunding > 0 && !auctionClose) {
+    errorMessage =
+      'Because your minimum funding is greater than 0, you need to set a decision deadline.'
   } else if (!agreedToTerms) {
     errorMessage =
       'Confirm that you have read, understand, and agree to the terms of issuing this certificate.'
