@@ -1,4 +1,5 @@
 import { Bid } from '@/db/bid'
+import { Database } from '@/db/database.types'
 import { Project } from '@/db/project'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
@@ -42,17 +43,9 @@ export default async function handler(req: NextRequest) {
   }
 }
 
-type BidXCreatedAt = {
-  id: string
-  project: any
-  bidder: any
-  valuation: any
-  amount: any
-  status?: 'deleted' | 'pending' | 'accepted' | 'declined'
-  type: any
-}
+type BidInsert = Database['public']['Tables']['bids']['Insert']
 
-async function findAndMakeTrades(bid: BidXCreatedAt, supabase: SupabaseClient) {
+async function findAndMakeTrades(bid: BidInsert, supabase: SupabaseClient) {
   const newOfferType = bid.type
   const { data, error } = await supabase
     .from('bids')

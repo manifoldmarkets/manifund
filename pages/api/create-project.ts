@@ -1,5 +1,5 @@
 import { Database } from '@/db/database.types'
-import { Project, TOTAL_SHARES } from '@/db/project'
+import { TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
@@ -10,18 +10,7 @@ export const config = {
   regions: ['sfo1'],
 }
 
-type ProjectProps = {
-  title: string
-  blurb: string
-  description: any
-  min_funding: number
-  funding_goal: number
-  founder_portion: number
-  round: string
-  auction_close: string
-  stage: string
-  type: Project['type']
-}
+type ProjectInsert = Database['public']['Tables']['projects']['Insert']
 
 export default async function handler(req: NextRequest) {
   const {
@@ -35,13 +24,13 @@ export default async function handler(req: NextRequest) {
     auction_close,
     stage,
     type,
-  } = (await req.json()) as ProjectProps
+  } = (await req.json()) as ProjectInsert
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
 
-  let slug = title
+  let slug = (title ?? '')
     .toLowerCase()
     .replace(/ /g, '-')
     .replace(/[^\w-]+/g, '')
@@ -73,7 +62,7 @@ export default async function handler(req: NextRequest) {
     console.error('create-project', error)
   }
   await giveCreatorShares(supabase, id, user.id)
-  if (stage === 'active' && founder_portion < TOTAL_SHARES) {
+  if (stage === 'active' && type === 'cert') {
     await addBid(
       supabase,
       id,
@@ -93,7 +82,7 @@ export async function giveCreatorShares(
   const txn = {
     from_id: null,
     to_id: creator,
-    amount: 10000000,
+    amount: TOTAL_SHARES,
     token: id,
     project: id,
   }
