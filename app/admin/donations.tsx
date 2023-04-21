@@ -5,7 +5,7 @@ import { Txn } from '@/db/txn'
 import { addHttpToUrl } from '@/utils/formatting'
 import { format, isAfter } from 'date-fns'
 import { useState } from 'react'
-import { Profile } from '../create/create-project-form'
+import { Profile } from '@/db/profile'
 
 export function Donations(props: { charities: Profile[]; txns: Txn[] }) {
   const { charities, txns } = props

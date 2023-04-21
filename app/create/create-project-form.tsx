@@ -7,7 +7,7 @@ import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { MySlider } from '@/components/slider'
-import { TOTAL_SHARES } from '@/db/project'
+import { Project, TOTAL_SHARES } from '@/db/project'
 import { TextEditor, useTextEditor } from '@/components/editor'
 import clsx from 'clsx'
 import { InfoTooltip } from '@/components/info-tooltip'
@@ -21,8 +21,6 @@ import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Card } from '@/components/card'
 import { RadioGroup } from '@headlessui/react'
-
-export type Profile = Database['public']['Tables']['profiles']['Row']
 
 const DEFAULT_DESCRIPTION = `
 <h3>Project description</h3>
@@ -47,8 +45,11 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   const { session } = useSupabase()
   const router = useRouter()
   const [title, setTitle] = useState<string>('')
-  const projectTypeOptions = ['Impact certificate', 'Grant application']
-  const [projectType, setProjectType] = useState<string>(projectTypeOptions[0])
+  const projectTypeLabels = {
+    grant: 'Grant application',
+    cert: 'Impact certificate',
+  } as { [key in Project['type']]: string }
+  const [projectType, setProjectType] = useState<Project['type']>('cert')
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number>(0)
   const [fundingGoal, setFundingGoal] = useState<number>(250)
@@ -78,17 +79,17 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   } else if (
     minFunding <= 0 &&
     auctionClose !== null &&
-    projectType === 'Impact certificate'
+    projectType === 'cert'
   ) {
     errorMessage = 'Your minimum funding must be greater than 0.'
   } else if (
-    (projectType === 'Grant application' && minFunding > fundingGoal) ||
+    (projectType === 'grant' && minFunding > fundingGoal) ||
     fundingGoal <= 0
   ) {
     errorMessage =
       'Your funding goal must be greater than 0 and greater than or equal to your minimum funding goal.'
   } else if (
-    projectType === 'Grant application' &&
+    projectType === 'grant' &&
     auctionClose &&
     (isAfter(new Date(auctionClose), add(new Date(), { weeks: 6 })) ||
       isBefore(new Date(auctionClose), new Date()))
@@ -113,7 +114,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   }, [round])
 
   useEffect(() => {
-    if (projectType === 'Grant application') {
+    if (projectType === 'grant') {
       setSellingPortion(0)
       setRound(availableRounds.find((r) => r.title === 'Independent')!)
       setAuctionClose(null)
@@ -152,14 +153,14 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       >
         <RadioGroup.Label className="sr-only">
           {' '}
-          Choose an amount option{' '}
+          Choose your project type{' '}
         </RadioGroup.Label>
         <div className="flex max-w-fit rounded-md border border-gray-300 bg-white p-2">
-          {projectTypeOptions.map((option) => (
+          {Object.keys(projectTypeLabels).map((option) => (
             <RadioGroup.Option
               key={option}
               value={option}
-              className={({ active, checked }) =>
+              className={({ checked }) =>
                 clsx(
                   'cursor-pointer focus:outline-none',
                   checked
@@ -169,7 +170,9 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                 )
               }
             >
-              <RadioGroup.Label as="span">{option}</RadioGroup.Label>
+              <RadioGroup.Label as="span">
+                {projectTypeLabels[option as Project['type']]}
+              </RadioGroup.Label>
             </RadioGroup.Option>
           ))}
         </div>
@@ -195,7 +198,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       />
       <label htmlFor="description">Description</label>
       <TextEditor editor={editor} />
-      {projectType === 'Impact certificate' ? (
+      {projectType === 'cert' ? (
         <>
           <div>
             <label className="text-base font-semibold text-gray-900">
@@ -424,7 +427,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           <span id="terms-description" className="text-gray-500">
             {genEquityPriceSummary(
               sellingPortion,
-              projectType === 'Impact certificate',
+              projectType === 'cert',
               auctionClose === null ? undefined : minFunding,
               auctionClose === null ? initialValuation : undefined
             )}
@@ -455,8 +458,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                   ? (sellingPortion / 100) * initialValuation
                   : minFunding,
               // TODO: make funding goal meaningfully different from min for certs
-              funding_goal:
-                projectType === 'Impact certificate' ? minFunding : fundingGoal,
+              funding_goal: projectType === 'cert' ? minFunding : fundingGoal,
               founder_portion: founderShares,
               round: round.title,
               auction_close:
@@ -464,7 +466,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                   ? auctionClose
                   : round.auction_close_date,
               stage: auctionClose === null ? 'active' : 'proposal',
-              type: projectType === 'Impact certificate' ? 'cert' : 'grant',
+              type: projectType,
             }),
           })
           const newProject = await response.json()
