@@ -52,7 +52,6 @@ export function ProfileTabs(props: {
     profile.accreditation_status,
     balance
   )
-
   const portfolioCount =
     proposalBids.length + activeBids.length + notOwnProjectInvestments.length
   tabs.push({

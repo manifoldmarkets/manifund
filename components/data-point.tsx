@@ -12,7 +12,11 @@ export function DataPoint(props: {
       <span
         className={clsx(
           'text-xl font-bold',
-          theme ? `text-${theme}-700` : 'text-orange-500'
+          theme
+            ? theme === 'white'
+              ? 'text-white'
+              : `text-${theme}-700`
+            : 'text-orange-500'
         )}
       >
         {value}

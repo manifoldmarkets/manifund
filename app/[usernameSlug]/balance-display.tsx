@@ -27,9 +27,9 @@ export function BalanceDisplay(props: {
 }) {
   const { balance, withdrawBalance, spendableBalance, accredited } = props
   const stats = [
-    { name: 'Balance', value: balance },
-    { name: 'Withdrawable', value: withdrawBalance },
     { name: 'Spendable', value: spendableBalance },
+    { name: 'In pending offers', value: balance - spendableBalance },
+    { name: 'Withdrawable', value: withdrawBalance },
   ]
   return (
     <Col className="h-fit">
@@ -57,6 +57,13 @@ export function BalanceDisplay(props: {
             </Tooltip>
           </a>
         </Col>
+        <div className="w-full min-w-fit rounded border-none bg-orange-500 py-1 px-2">
+          <DataPoint
+            label="Balance"
+            value={`$${balance.toString()}`}
+            theme="white"
+          />
+        </div>
         {stats.map((stat) => (
           <Card
             key={stat.name}
