@@ -1,7 +1,7 @@
 import { getProfileByUsername } from '@/db/profile'
 import { Project, TOTAL_SHARES } from '@/db/project'
 import { getURL } from '@/utils/constants'
-import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
+import { projectSlugify } from '@/utils/formatting'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
@@ -34,17 +34,7 @@ export default async function handler(req: NextRequest) {
     return NextResponse.error()
   }
 
-  let slug = title
-    .toLowerCase()
-    .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '')
-  const { data } = await supabase
-    .from('projects')
-    .select('slug')
-    .eq('slug', slug)
-  if (data && data.length > 0) {
-    slug = slug + '-' + Math.random().toString(36).substring(2, 15)
-  }
+  const slug = await projectSlugify(title, supabase)
   const id = uuid()
   const toProfile = toUsername
     ? await getProfileByUsername(supabase, toUsername)
