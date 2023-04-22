@@ -1,6 +1,8 @@
 'use client'
 import { Carousel } from '@/components/carousel'
 import { SimpleProjectCard } from '@/components/project-card'
+import { RegranterCard } from '@/components/regranter-card'
+import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
 
 export function RoundCarousel(props: {
@@ -18,6 +20,20 @@ export function RoundCarousel(props: {
           numComments={project.comments.length}
           bids={project.bids}
         />
+      ))}
+    </Carousel>
+  )
+}
+
+export function RegranterCarousel(props: {
+  regranters: Profile[]
+  theme: string
+}) {
+  const { regranters, theme } = props
+  return (
+    <Carousel theme={theme}>
+      {regranters.map((regranter) => (
+        <RegranterCard key={regranter.id} regranter={regranter} />
       ))}
     </Carousel>
   )
