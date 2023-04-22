@@ -3,8 +3,7 @@ import { listProjects } from '@/db/project'
 import { getRounds } from '@/db/round'
 import { AllRoundsDisplay } from './all-rounds-display'
 import { ProjectsDisplay } from '@/components/projects-display'
-import { SupabaseClient } from '@supabase/supabase-js'
-import { Profile } from '@/db/profile'
+import { getRegranters, Profile } from '@/db/profile'
 
 export const revalidate = 0
 
@@ -23,13 +22,4 @@ export default async function Projects() {
       <ProjectsDisplay projects={projects} />
     </div>
   )
-}
-
-async function getRegranters(supabase: SupabaseClient) {
-  const { data } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('regranter_status', true)
-    .throwOnError()
-  return data as Profile[]
 }

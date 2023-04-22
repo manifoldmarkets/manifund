@@ -66,7 +66,11 @@ function Round(props: {
         )}
       </div>
       <div className="mx-6">
-        <RoundTag roundTitle={round.title} size="xl" roundSlug={round.slug} />
+        <RoundTag
+          roundTitle={round.title === 'Regrants' ? 'Regranters' : round.title}
+          size="xl"
+          roundSlug={round.slug}
+        />
       </div>
       <div className="px-3">
         {regranters && regranters.length > 0 ? (
@@ -77,6 +81,7 @@ function Round(props: {
       </div>
       <div className="my-2 flex justify-center px-6">
         <div className="w-10/12">
+          {/* @ts-expect-error server component*/}
           <RoundData round={round} projects={projects} />
         </div>
       </div>
@@ -107,16 +112,14 @@ function sortProjectsForPreview(projects: FullProject[]) {
 
 function sortRoundsForPreview(rounds: Round[]) {
   const sortedByDueDate = orderBy(rounds, 'proposal_due_date', 'desc')
-  const independentLast = sortBy(sortedByDueDate, [
+  const customSorted = sortBy(sortedByDueDate, [
     function (round: Round) {
-      if (round.title === 'Independent') {
-        return 2
-      } else if (round.title === 'Regrants') {
+      if (round.title === 'Regrants') {
         return 0
       } else {
         return 1
       }
     },
   ])
-  return independentLast
+  return customSorted.filter((round) => round.title !== 'Independent')
 }
