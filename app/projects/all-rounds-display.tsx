@@ -61,7 +61,7 @@ function Round(props: {
             width={1000}
             height={500}
             alt="round header image"
-            className="absolute -top-10 left-1/2 -z-10 h-64 w-full -translate-x-1/2 object-cover"
+            className="absolute -top-10 left-1/2 -z-10 h-72 w-full -translate-x-1/2 object-cover"
           />
         )}
       </div>
