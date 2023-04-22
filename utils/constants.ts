@@ -20,6 +20,8 @@ export function getRoundTheme(roundTitle: string) {
       return 'gray'
     case 'Regrants':
       return 'orange'
+    case 'Regranters':
+      return 'orange'
     default:
       return 'pink' //this should never happen
   }

@@ -34,5 +34,18 @@ export function RoundTabs(props: { round: Round; projects: FullProject[] }) {
       ),
     },
   ]
+  if (round.title === 'Regrants') {
+    tabs.push({
+      name: 'Regranters',
+      href: `?tab=regrants`,
+      count: 0,
+      current: currentTabName === 'regrants',
+      display: (
+        <div>
+          <p>Regrants are grants made to other grantmakers.</p>
+        </div>
+      ),
+    })
+  }
   return <Tabs tabs={tabs} preTabSlug={`/rounds/${round.slug}`} />
 }

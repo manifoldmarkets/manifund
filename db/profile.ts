@@ -74,3 +74,12 @@ export async function listOrgs(supabase: SupabaseClient) {
   }
   return data as ProfileAndTxns[]
 }
+
+export async function getRegranters(supabase: SupabaseClient) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('regranter_status', true)
+    .throwOnError()
+  return data as Profile[]
+}

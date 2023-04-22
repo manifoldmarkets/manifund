@@ -1,12 +1,14 @@
+import { getRegranters, Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { Round } from '@/db/round'
+import { createServerClient } from '@/db/supabase-server'
 import { getRoundTheme } from '@/utils/constants'
 import { formatMoney, showPrecision } from '@/utils/formatting'
 import { dateDiff } from '@/utils/math'
 import { DataPoint } from './data-point'
 import { Col } from './layout/col'
 
-export function RoundData(props: { round: Round; projects: Project[] }) {
+export async function RoundData(props: { round: Round; projects: Project[] }) {
   const { round, projects } = props
   const auctionCloseDate = new Date(
     `${round.auction_close_date}T23:59:59-12:00`
@@ -20,9 +22,26 @@ export function RoundData(props: { round: Round; projects: Project[] }) {
   )
   const daysTilProposalsDue = dateDiff(now.getTime(), proposalDueDate.getTime())
   const daysTilEvals = dateDiff(now.getTime(), evalDate.getTime())
+  const supabase = createServerClient()
+  const regranters =
+    round.title === 'Regrants' ? await getRegranters(supabase) : []
   return (
     <Col className="w-full">
       <div className="flex justify-between">
+        {round.title === 'Regrants' && (
+          <DataPoint
+            value={regranters.length.toString()}
+            label="regranters"
+            theme={getRoundTheme(round.title)}
+          />
+        )}
+        {round.title === 'Regrants' && (
+          <DataPoint
+            value={projects.length.toString()}
+            label="projects"
+            theme={getRoundTheme(round.title)}
+          />
+        )}
         {round.title === 'Independent' || daysTilAuctionClose > 0 ? (
           <DataPoint
             value={projects
@@ -80,6 +99,18 @@ export function RoundData(props: { round: Round; projects: Project[] }) {
           />
         ) : null}
       </div>
+    </Col>
+  )
+}
+
+export async function RegrantsRoundData(props: {
+  numProjects: number
+  regranters: Profile[]
+}) {
+  const { numProjects } = props
+  return (
+    <Col className="w-full">
+      <div className="flex justify-between"></div>
     </Col>
   )
 }
