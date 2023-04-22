@@ -40,13 +40,13 @@ export default async function RoundPage(props: {
       )}
       <h1 className="my-2 text-4xl font-bold">{round.title}</h1>
       <div className="my-5 mx-5">
-        {/* @ts-expect-error server component*/}
+        {/* @ts-expect-error server component */}
         <RoundData round={round} projects={projects} />
       </div>
       <RoundTabs
         round={round}
         projects={projects}
-        regranters={round.title === 'Regrants' ? regranters : undefined}
+        regranters={round.title === 'Regranters' ? regranters : undefined}
       />
     </div>
   )
