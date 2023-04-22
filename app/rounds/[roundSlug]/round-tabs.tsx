@@ -27,20 +27,8 @@ export function RoundTabs(props: {
         <ProjectsDisplay projects={projects} defaultSort={'valuation'} />
       ),
     },
-    {
-      name: 'About',
-      href: `?tab=about`,
-      count: 0,
-      current: currentTabName === 'about',
-      display: (
-        <div>
-          {round.description && <RichContent content={round.description} />}
-          <EditRound round={round} />
-        </div>
-      ),
-    },
   ]
-  if (round.title === 'Regrants') {
+  if (round.title === 'Regrants' && regranters) {
     tabs.push({
       name: 'Regranters',
       href: `?tab=regrants`,
@@ -48,12 +36,24 @@ export function RoundTabs(props: {
       current: currentTabName === 'regrants',
       display: (
         <div className="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {regranters?.map((regranter) => {
+          {regranters.map((regranter) => {
             return <RegranterCard key={regranter.id} regranter={regranter} />
           })}
         </div>
       ),
     })
   }
+  tabs.push({
+    name: 'About',
+    href: `?tab=about`,
+    count: 0,
+    current: currentTabName === 'about',
+    display: (
+      <div>
+        {round.description && <RichContent content={round.description} />}
+        <EditRound round={round} />
+      </div>
+    ),
+  })
   return <Tabs tabs={tabs} preTabSlug={`/rounds/${round.slug}`} />
 }
