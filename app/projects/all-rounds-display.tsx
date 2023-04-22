@@ -2,22 +2,24 @@ import { Col } from '@/components/layout/col'
 import { RoundData } from '@/components/round-data'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
-import { RoundCarousel } from './round-carousel'
+import { RegranterCarousel, RoundCarousel } from './round-carousel'
 import Image from 'next/image'
 import clsx from 'clsx'
 import { getRoundTheme } from '@/utils/constants'
 import { RoundTag } from '@/components/tags'
 import { orderBy, sortBy } from 'lodash'
+import { Profile } from '@/db/profile'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
   projects: FullProject[]
+  regranters: Profile[]
 }) {
-  const { rounds, projects } = props
-  const selectedRounds = selectRoundsForPreview(rounds)
+  const { rounds, projects, regranters } = props
+  const sortedRounds = sortRoundsForPreview(rounds)
   return (
     <Col className="mb-5 gap-3">
-      {selectedRounds.map((round) => {
+      {sortedRounds.map((round) => {
         const roundProjects = projects.filter(
           (project) =>
             project.rounds.title === round.title && project.stage !== 'hidden'
@@ -28,6 +30,7 @@ export function AllRoundsDisplay(props: {
               key={round.title}
               round={round}
               projects={sortProjectsForPreview(roundProjects)}
+              regranters={round.title === 'Regrants' ? regranters : undefined}
             />
           )
         }
@@ -37,8 +40,12 @@ export function AllRoundsDisplay(props: {
   )
 }
 
-function Round(props: { round: Round; projects: FullProject[] }) {
-  const { round, projects } = props
+function Round(props: {
+  round: Round
+  projects: FullProject[]
+  regranters?: Profile[]
+}) {
+  const { round, projects, regranters } = props
   const theme = getRoundTheme(round.title)
   return (
     <Col
@@ -54,7 +61,7 @@ function Round(props: { round: Round; projects: FullProject[] }) {
             width={1000}
             height={500}
             alt="round header image"
-            className="absolute -top-10 left-1/2 -z-10 h-72 w-full -translate-x-1/2 object-cover"
+            className="absolute -top-10 left-1/2 -z-10 h-64 w-full -translate-x-1/2 object-cover"
           />
         )}
       </div>
@@ -62,7 +69,11 @@ function Round(props: { round: Round; projects: FullProject[] }) {
         <RoundTag roundTitle={round.title} size="xl" roundSlug={round.slug} />
       </div>
       <div className="px-3">
-        <RoundCarousel projects={projects} theme={theme} />
+        {regranters && regranters.length > 0 ? (
+          <RegranterCarousel regranters={regranters} theme={theme} />
+        ) : (
+          <RoundCarousel projects={projects} theme={theme} />
+        )}
       </div>
       <div className="my-2 flex justify-center px-6">
         <div className="w-10/12">
@@ -94,17 +105,18 @@ function sortProjectsForPreview(projects: FullProject[]) {
   return sortedByStage
 }
 
-function selectRoundsForPreview(rounds: Round[]) {
+function sortRoundsForPreview(rounds: Round[]) {
   const sortedByDueDate = orderBy(rounds, 'proposal_due_date', 'desc')
   const independentLast = sortBy(sortedByDueDate, [
     function (round: Round) {
       if (round.title === 'Independent') {
-        return 1
-      } else {
+        return 2
+      } else if (round.title === 'Regrants') {
         return 0
+      } else {
+        return 1
       }
     },
   ])
-  // Regrants have custom display so want to exclude them from this list
-  return independentLast.filter((round) => round.title !== 'Regrants')
+  return independentLast
 }

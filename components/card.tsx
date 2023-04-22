@@ -7,7 +7,7 @@ export function Card(props: { children: ReactNode; className?: string }) {
     <div
       className={clsx(
         className,
-        'overflow-hidden rounded-md border border-gray-300 bg-white p-4 shadow'
+        'overflow-hidden rounded-md bg-white p-4 shadow'
       )}
     >
       {children}

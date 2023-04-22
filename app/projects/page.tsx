@@ -3,6 +3,8 @@ import { listProjects } from '@/db/project'
 import { getRounds } from '@/db/round'
 import { AllRoundsDisplay } from './all-rounds-display'
 import { ProjectsDisplay } from '@/components/projects-display'
+import { SupabaseClient } from '@supabase/supabase-js'
+import { Profile } from '@/db/profile'
 
 export const revalidate = 0
 
@@ -10,10 +12,24 @@ export default async function Projects() {
   const supabase = createServerClient()
   const projects = await listProjects(supabase)
   const rounds = await getRounds(supabase)
+  const regranters = await getRegranters(supabase)
   return (
     <div className="bg-dark-200 max-w-4xl pt-5">
-      <AllRoundsDisplay rounds={rounds} projects={projects} />
+      <AllRoundsDisplay
+        rounds={rounds}
+        projects={projects}
+        regranters={regranters}
+      />
       <ProjectsDisplay projects={projects} />
     </div>
   )
+}
+
+async function getRegranters(supabase: SupabaseClient) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('regranter_status', true)
+    .throwOnError()
+  return data as Profile[]
 }
