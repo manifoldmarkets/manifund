@@ -4,6 +4,7 @@ import { getFullProjectsByRound } from '@/db/project'
 import { RoundTabs } from './round-tabs'
 import { RoundData } from '@/components/round-data'
 import Image from 'next/image'
+import { getRegranters } from '@/db/profile'
 
 export const revalidate = 0
 
@@ -25,6 +26,7 @@ export default async function RoundPage(props: {
   const supabase = createServerClient()
   const round = await getRoundBySlug(supabase, roundSlug)
   const projects = await getFullProjectsByRound(supabase, round.title)
+  const regranters = await getRegranters(supabase)
   return (
     <div className="bg-dark-200 max-w-4xl">
       {round.header_image_url && (
@@ -38,9 +40,14 @@ export default async function RoundPage(props: {
       )}
       <h1 className="my-2 text-4xl font-bold">{round.title}</h1>
       <div className="my-5 mx-5">
+        {/* @ts-expect-error server component*/}
         <RoundData round={round} projects={projects} />
       </div>
-      <RoundTabs round={round} projects={projects} />
+      <RoundTabs
+        round={round}
+        projects={projects}
+        regranters={round.title === 'Regrants' ? regranters : undefined}
+      />
     </div>
   )
 }

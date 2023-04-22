@@ -1,14 +1,20 @@
 'use client'
 import { RichContent } from '@/components/editor'
 import { ProjectsDisplay } from '@/components/projects-display'
+import { RegranterCard } from '@/components/regranter-card'
 import { Tabs } from '@/components/tabs'
+import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
 import { useSearchParams } from 'next/navigation'
 import { EditRound } from './edit-round'
 
-export function RoundTabs(props: { round: Round; projects: FullProject[] }) {
-  const { round, projects } = props
+export function RoundTabs(props: {
+  round: Round
+  projects: FullProject[]
+  regranters?: Profile[]
+}) {
+  const { round, projects, regranters } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
   const tabs = [
@@ -38,11 +44,13 @@ export function RoundTabs(props: { round: Round; projects: FullProject[] }) {
     tabs.push({
       name: 'Regranters',
       href: `?tab=regrants`,
-      count: 0,
+      count: regranters?.length ?? 0,
       current: currentTabName === 'regrants',
       display: (
-        <div>
-          <p>Regrants are grants made to other grantmakers.</p>
+        <div className="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {regranters?.map((regranter) => {
+            return <RegranterCard key={regranter.id} regranter={regranter} />
+          })}
         </div>
       ),
     })
