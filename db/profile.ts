@@ -1,9 +1,11 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient, User } from '@supabase/supabase-js'
 import { Txn } from '@/db/txn'
+import { Bid } from './bid'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 export type ProfileAndTxns = Profile & { txns: Txn[] }
+export type ProfileAndBids = Profile & { bids: Bid[] }
 
 export function isAdmin(user: User | null) {
   const ADMINS = ['rachel.weinberg12@gmail.com', 'akrolsmir@gmail.com']
@@ -11,7 +13,7 @@ export function isAdmin(user: User | null) {
 }
 
 export async function getProfileById(
-  supabase: SupabaseClient<Database>,
+  supabase: SupabaseClient,
   id: string = ''
 ) {
   if (!id) {
@@ -25,6 +27,20 @@ export async function getProfileById(
     throw error
   }
   return data[0] ? data[0] : null
+}
+
+export async function getProfileAndBidsById(
+  supabase: SupabaseClient,
+  id: string
+) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*, bids(*)')
+    .eq('id', id)
+  if (error) {
+    throw error
+  }
+  return data[0] as ProfileAndBids
 }
 
 export async function getProfileByUsername(
@@ -42,6 +58,19 @@ export async function getProfileByUsername(
     throw error
   }
   return data[0] ? data[0] : { id: null, username }
+}
+export async function getProfileAndBidsByUsername(
+  supabase: SupabaseClient,
+  username: string
+) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*, bids(*)')
+    .eq('username', username)
+  if (error) {
+    throw error
+  }
+  return data[0] as ProfileAndBids
 }
 
 export async function getUser(supabase: SupabaseClient<Database>) {

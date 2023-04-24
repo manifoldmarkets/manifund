@@ -1,11 +1,16 @@
-import { getProfileByUsername, getUser, Profile } from '@/db/profile'
+import {
+  getProfileAndBidsById,
+  getProfileByUsername,
+  getUser,
+  Profile,
+} from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
-import { getTxnAndProjectsByUser, Txn, TxnAndProject } from '@/db/txn'
-import { getBidsByUser } from '@/db/bid'
+import { getTxnAndProjectsByUser, getTxnsByUser, TxnAndProject } from '@/db/txn'
 import { getProjectsByUser, Project } from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
+import { getBidsByUser } from '@/db/bid'
 
 export const revalidate = 0
 
@@ -22,23 +27,27 @@ export default async function UserProfilePage(props: {
   const supabase = createServerClient()
   const user = await getUser(supabase)
   const profile = await getProfileByUsername(supabase, usernameSlug)
-  const projects = await getProjectsByUser(supabase, profile.id)
   const bids = await getBidsByUser(supabase, profile.id)
-  const isOwnProfile = user?.id === profile?.id
+  const projects = await getProjectsByUser(supabase, profile.id)
   const txns = await getTxnAndProjectsByUser(supabase, profile.id)
   const investments = await compileInvestments(txns, profile.id)
+
+  const userProfile = await getProfileAndBidsById(supabase, user?.id ?? '')
+  const userTxns = await getTxnsByUser(supabase, user?.id ?? '')
+  const isOwnProfile = user?.id === profile?.id
 
   return (
     <div className="flex flex-col p-3 sm:p-5">
       <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} />
       <div className="flex flex-col gap-10">
         <ProfileTabs
-          userId={user?.id}
           profile={profile}
           projects={projects}
           bids={bids}
           investments={investments}
           txns={txns}
+          userProfile={userProfile}
+          userTxns={userTxns}
         />
         {isOwnProfile && (
           <div className="mt-5 flex justify-center">
