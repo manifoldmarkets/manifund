@@ -12,15 +12,15 @@ export function RegranterCard(props: {
   className?: string
 }) {
   const { regranter, className } = props
-  if (!regranter.avatar_url) {
-    return null
-  }
   return (
     <Link href={`/${regranter.username}`}>
       <Card
-        className={clsx('flex w-52 flex-col gap-4 border-none p-0', className)}
+        className={clsx(
+          'flex h-full flex-col gap-4 border-none p-0',
+          className
+        )}
       >
-        <Col className="gap-2 p-3">
+        <Col className="gap-2">
           <Row className="justify-center">
             <Avatar
               avatarUrl={regranter.avatar_url}

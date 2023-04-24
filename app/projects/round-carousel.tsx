@@ -33,7 +33,11 @@ export function RegranterCarousel(props: {
   return (
     <Carousel theme={theme}>
       {regranters.map((regranter) => (
-        <RegranterCard key={regranter.id} regranter={regranter} />
+        <RegranterCard
+          key={regranter.id}
+          regranter={regranter}
+          className="w-52"
+        />
       ))}
     </Carousel>
   )

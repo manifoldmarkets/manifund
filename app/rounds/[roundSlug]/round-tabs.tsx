@@ -17,6 +17,7 @@ export function RoundTabs(props: {
   const { round, projects, regranters } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
+  console.log(regranters)
   const tabs = [
     {
       name: 'Projects',
@@ -32,10 +33,10 @@ export function RoundTabs(props: {
     tabs.push({
       name: 'Regranters',
       href: `?tab=regrants`,
-      count: regranters?.length ?? 0,
+      count: regranters.length,
       current: currentTabName === 'regrants',
       display: (
-        <div className="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className=" mt-2 grid grid-cols-2 gap-4 lg:grid-cols-3">
           {regranters.map((regranter) => {
             return <RegranterCard key={regranter.id} regranter={regranter} />
           })}
