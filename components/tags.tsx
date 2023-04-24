@@ -9,6 +9,7 @@ import {
   CheckCircleIcon,
   CurrencyDollarIcon,
   HeartIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 
 const COLORS = [
@@ -160,4 +161,19 @@ export function InvestorTypeTag(props: {
       </Tooltip>
     )
   }
+}
+
+export function RegranterTag() {
+  return (
+    <Row className="max-w-fit gap-1 rounded-full bg-orange-100 px-2  pt-1 text-center">
+      <ArrowPathIcon className="relative bottom-0.5 m-auto h-6 w-6 text-orange-500" />
+      <div
+        className={clsx(
+          'text-md relative bottom-0.5 leading-tight text-orange-500'
+        )}
+      >
+        regranter
+      </div>
+    </Row>
+  )
 }

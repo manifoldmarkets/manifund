@@ -3,7 +3,7 @@ import { Avatar } from '@/components/avatar'
 import { PencilIcon, LinkIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { Database } from '@/db/database.types'
-import { InvestorTypeTag } from '@/components/tags'
+import { InvestorTypeTag, RegranterTag } from '@/components/tags'
 import { addHttpToUrl } from '@/utils/formatting'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
@@ -60,6 +60,7 @@ export function ProfileHeader(props: {
                   longTooltip={isOwnProfile}
                   showText
                 />
+                {profile.regranter_status && <RegranterTag />}
               </Row>
             </Col>
           </Row>
