@@ -1,5 +1,5 @@
 'use client'
-import { Profile } from '@/db/profile'
+import { Profile, ProfileAndBids } from '@/db/profile'
 import { useSearchParams } from 'next/navigation'
 import { Bid, BidAndProject } from '@/db/bid'
 import { Tabs } from '@/components/tabs'
@@ -19,14 +19,16 @@ import { DonateBox } from '@/components/donate-box'
 
 export function ProfileTabs(props: {
   profile: Profile
-  userId?: string
   projects: FullProject[]
   bids: BidAndProject[]
   investments: Investment[]
   txns: TxnAndProject[]
+  userProfile: ProfileAndBids | null
+  userTxns: Txn[] | null
 }) {
-  const { profile, userId, projects, bids, investments, txns } = props
-  const isOwnProfile = userId === profile.id
+  const { profile, projects, bids, investments, txns, userProfile, userTxns } =
+    props
+  const isOwnProfile = userProfile?.id === profile.id
   const proposalBids = bids.filter(
     (bid) => bid.projects.stage === 'proposal' && bid.status === 'pending'
   )
@@ -54,6 +56,16 @@ export function ProfileTabs(props: {
     profile.accreditation_status,
     balance
   )
+  const userSpendableBalance =
+    userTxns && userProfile
+      ? calculateUserSpendableFunds(
+          userTxns,
+          userProfile?.id,
+          userProfile?.bids,
+          userProfile?.accreditation_status
+        )
+      : 0
+
   const portfolioCount =
     proposalBids.length + activeBids.length + notOwnProjectInvestments.length
   tabs.push({
@@ -63,11 +75,11 @@ export function ProfileTabs(props: {
     current: currentTabName === 'portfolio' || currentTabName === null,
     display: (
       <div className="flex flex-col gap-6">
-        {profile.regranter_status && !isOwnProfile && userId && (
+        {profile.regranter_status && !isOwnProfile && userProfile && (
           <DonateBox
-            charityId={profile.id}
-            userId={userId}
-            userSpendableFunds={100}
+            charity={profile}
+            userId={userProfile.id}
+            userSpendableFunds={userSpendableBalance}
           />
         )}
         <BalanceDisplay

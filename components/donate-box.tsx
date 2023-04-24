@@ -3,17 +3,18 @@ import { Button } from '@/components/button'
 import { Card } from '@/components/card'
 import { Input } from '@/components/input'
 import { Row } from '@/components/layout/row'
+import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export function DonateBox(props: {
-  charityId?: string
+  charity?: Profile
   project?: Project
   userId: string
   userSpendableFunds: number
 }) {
-  const { charityId, project, userId, userSpendableFunds } = props
+  const { charity, project, userId, userSpendableFunds } = props
   const [amount, setAmount] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -26,9 +27,18 @@ export function DonateBox(props: {
   }
   return (
     <Card className="flex flex-col gap-3 p-6">
-      <Row className="justify-center gap-1">
-        <label htmlFor="amount" className="relative top-3">
-          Amount: $
+      <div>
+        <h2 className="text-center text-xl font-bold">Donate</h2>
+        {charity?.type === 'individual' && (
+          <p className="text-center text-sm text-gray-500">
+            You are donating to this user&apos;s regranting budget, which is not
+            withdrawable.
+          </p>
+        )}
+      </div>
+      <div className="flex flex-col justify-center gap-1 sm:flex-row">
+        <label htmlFor="amount" className="relative text-center sm:top-3">
+          Amount (USD):
         </label>
         <Input
           type="number"
@@ -39,7 +49,7 @@ export function DonateBox(props: {
           placeholder="0"
           onChange={(event) => setAmount(Number(event.target.value))}
         />
-      </Row>
+      </div>
       {errorMessage && (
         <p className="text-center text-sm text-rose-500">{errorMessage}</p>
       )}
@@ -61,7 +71,7 @@ export function DonateBox(props: {
                 type: 'donate',
               }),
             })
-          } else if (project || charityId) {
+          } else if (project || charity) {
             const res = await fetch('/api/transfer-money', {
               method: 'POST',
               headers: {
@@ -69,7 +79,7 @@ export function DonateBox(props: {
               },
               body: JSON.stringify({
                 fromId: userId,
-                toId: charityId ?? project?.creator,
+                toId: charity?.id ?? project?.creator,
                 amount,
                 projectId: project?.id,
               }),
