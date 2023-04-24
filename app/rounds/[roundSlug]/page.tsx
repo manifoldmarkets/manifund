@@ -46,7 +46,7 @@ export default async function RoundPage(props: {
       <RoundTabs
         round={round}
         projects={projects}
-        regranters={round.title === 'Regranters' ? regranters : undefined}
+        regranters={round.title === 'Regrants' ? regranters : undefined}
       />
     </div>
   )
