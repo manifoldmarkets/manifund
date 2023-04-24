@@ -63,8 +63,8 @@ export default async function CharityPage(props: {
           </Col>
           <div className="mx-5">
             <DonateBox
-              charity={charity}
-              user={profile}
+              charityId={charity.id}
+              userId={profile.id}
               userSpendableFunds={userSpendableFunds}
             />
           </div>

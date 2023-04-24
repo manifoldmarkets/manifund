@@ -3,18 +3,17 @@ import { Button } from '@/components/button'
 import { Card } from '@/components/card'
 import { Input } from '@/components/input'
 import { Row } from '@/components/layout/row'
-import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export function DonateBox(props: {
-  charity?: Profile
+  charityId?: string
   project?: Project
-  user: Profile
+  userId: string
   userSpendableFunds: number
 }) {
-  const { charity, project, user, userSpendableFunds } = props
+  const { charityId, project, userId, userSpendableFunds } = props
   const [amount, setAmount] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -56,21 +55,21 @@ export function DonateBox(props: {
               body: JSON.stringify({
                 projectId: project.id,
                 projectStage: project.stage,
-                bidderId: user.id,
+                bidderId: userId,
                 valuation: 0,
                 amount,
                 type: 'donate',
               }),
             })
-          } else if (project || charity) {
+          } else if (project || charityId) {
             const res = await fetch('/api/transfer-money', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                fromId: user.id,
-                toId: charity?.id ?? project?.creator,
+                fromId: userId,
+                toId: charityId ?? project?.creator,
                 amount,
                 projectId: project?.id,
               }),

@@ -15,16 +15,18 @@ import { calculateUserBalance, calculateUserSpendableFunds } from '@/utils/math'
 import { Txn, TxnAndProject } from '@/db/txn'
 import { sortBy } from 'lodash'
 import { BANK_ID } from '@/db/env'
+import { DonateBox } from '@/components/donate-box'
 
 export function ProfileTabs(props: {
   profile: Profile
-  isOwnProfile?: boolean
+  userId?: string
   projects: FullProject[]
   bids: BidAndProject[]
   investments: Investment[]
   txns: TxnAndProject[]
 }) {
-  const { profile, isOwnProfile, projects, bids, investments, txns } = props
+  const { profile, userId, projects, bids, investments, txns } = props
+  const isOwnProfile = userId === profile.id
   const proposalBids = bids.filter(
     (bid) => bid.projects.stage === 'proposal' && bid.status === 'pending'
   )
@@ -61,6 +63,13 @@ export function ProfileTabs(props: {
     current: currentTabName === 'portfolio' || currentTabName === null,
     display: (
       <div className="flex flex-col gap-6">
+        {profile.regranter_status && !isOwnProfile && userId && (
+          <DonateBox
+            charityId={profile.id}
+            userId={userId}
+            userSpendableFunds={100}
+          />
+        )}
         <BalanceDisplay
           balance={balance}
           withdrawBalance={withdrawBalance}

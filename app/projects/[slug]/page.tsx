@@ -94,7 +94,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       {profile !== null && project.type === 'grant' && (
         <DonateBox
           project={project}
-          user={profile}
+          userId={profile.id}
           userSpendableFunds={userSpendableFunds}
         />
       )}
