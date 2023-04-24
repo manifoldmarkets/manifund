@@ -66,6 +66,7 @@ export function ProfileTabs(props: {
           withdrawBalance={withdrawBalance}
           spendableBalance={spendableBalance}
           accredited={profile.accreditation_status}
+          isOwnProfile={isOwnProfile ?? undefined}
         />
         {proposalBids.length > 0 && (
           <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />

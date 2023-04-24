@@ -24,8 +24,15 @@ export function BalanceDisplay(props: {
   withdrawBalance: number
   spendableBalance: number
   accredited: boolean
+  isOwnProfile?: boolean
 }) {
-  const { balance, withdrawBalance, spendableBalance, accredited } = props
+  const {
+    balance,
+    withdrawBalance,
+    spendableBalance,
+    accredited,
+    isOwnProfile,
+  } = props
   const stats = [
     { name: 'Spendable', value: spendableBalance },
     { name: 'In pending offers', value: balance - spendableBalance },
@@ -33,29 +40,31 @@ export function BalanceDisplay(props: {
   return (
     <Col className="h-fit">
       <Row className="h-fit justify-between gap-1 sm:gap-4 lg:gap-8">
-        <Col className="justify-between">
-          {accredited ? (
+        {isOwnProfile && (
+          <Col className="justify-between">
+            {accredited ? (
+              <a
+                href="https://airtable.com/shrIB5yGc56DoQBhJ"
+                className="rounded bg-white shadow"
+              >
+                <Tooltip text="Add funds">
+                  <PlusSmallIcon className="h-4 w-4 text-gray-500" />
+                </Tooltip>
+              </a>
+            ) : (
+              <StripeDepositButton />
+            )}
+
             <a
-              href="https://airtable.com/shrIB5yGc56DoQBhJ"
-              className="rounded bg-white shadow"
+              href="https://airtable.com/shrI3XFPivduhbnGa"
+              className="rounded bg-white p-1 shadow"
             >
-              <Tooltip text="Add funds">
-                <PlusSmallIcon className="h-4 w-4 text-gray-500" />
+              <Tooltip text="Withdraw funds">
+                <MinusSmallIcon className="h-4 w-4 text-gray-500" />
               </Tooltip>
             </a>
-          ) : (
-            <StripeDepositButton />
-          )}
-
-          <a
-            href="https://airtable.com/shrI3XFPivduhbnGa"
-            className="rounded bg-white p-1 shadow"
-          >
-            <Tooltip text="Withdraw funds">
-              <MinusSmallIcon className="h-4 w-4 text-gray-500" />
-            </Tooltip>
-          </a>
-        </Col>
+          </Col>
+        )}
         <div className="w-full min-w-fit rounded border-none bg-orange-500 py-1 px-2">
           <DataPoint
             label="Balance"
@@ -73,7 +82,8 @@ export function BalanceDisplay(props: {
         ))}
       </Row>
       <p className="mt-2 w-full rounded bg-gray-100 p-1 text-center text-sm tracking-wider text-gray-400">
-        You can withdraw up to ${withdrawBalance}.
+        {isOwnProfile ? 'You can ' : 'This user can '} withdraw up to $
+        {withdrawBalance}.
       </p>
     </Col>
   )
