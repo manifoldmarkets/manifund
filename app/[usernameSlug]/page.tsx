@@ -3,12 +3,9 @@ import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
 import { getTxnAndProjectsByUser, Txn, TxnAndProject } from '@/db/txn'
-import { Bid, getBidsByUser } from '@/db/bid'
+import { getBidsByUser } from '@/db/bid'
 import { getProjectsByUser, Project } from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
-import { calculateUserBalance } from '@/utils/math'
-import { BANK_ID } from '@/db/env'
-import { sortBy } from 'lodash'
 
 export const revalidate = 0
 
@@ -24,10 +21,7 @@ export default async function UserProfilePage(props: {
   const { usernameSlug } = props.params
   const supabase = createServerClient()
   const user = await getUser(supabase)
-  const profile = (await getProfileByUsername(
-    supabase,
-    usernameSlug
-  )) as Profile
+  const profile = await getProfileByUsername(supabase, usernameSlug)
   const projects = await getProjectsByUser(supabase, profile.id)
   const bids = await getBidsByUser(supabase, profile.id)
   const isOwnProfile = user?.id === profile?.id
@@ -39,7 +33,7 @@ export default async function UserProfilePage(props: {
       <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} />
       <div className="flex flex-col gap-10">
         <ProfileTabs
-          isOwnProfile={isOwnProfile}
+          userId={user?.id}
           profile={profile}
           projects={projects}
           bids={bids}
