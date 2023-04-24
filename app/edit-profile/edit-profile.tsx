@@ -67,10 +67,11 @@ export function EditProfileForm(props: { profile: Profile }) {
       errorMessage =
         'Please enter a bio. As a regranter, this will be shown in your profile preview.'
     }
-    if (!avatar && !profile.avatar_url) {
-      errorMessage =
-        'Please upload an avatar. As a regranter, this will be shown in your profile preview.'
-    }
+    // Add this back on main; doesn't work on dev because storage doesn't work on dev
+    // if (!avatar && !profile.avatar_url) {
+    //   errorMessage =
+    //     'Please upload an avatar. As a regranter, this will be shown in your profile preview.'
+    // }
   } else {
     errorMessage = null
   }
