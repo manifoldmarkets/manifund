@@ -1,7 +1,7 @@
 'use client'
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
-import { formatDate, formatLargeNumber } from '@/utils/formatting'
+import { formatDate, formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { getPercentRaised } from '@/utils/math'
 import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
@@ -163,7 +163,7 @@ export function ProjectCardHeader(props: {
       {valuation && !isNaN(valuation) ? (
         <div className="relative top-1">
           <DataBox
-            value={`$${valuation}`}
+            value={`${formatMoney(valuation)}`}
             label={projectType === 'cert' ? 'valuation' : 'raising'}
           />
         </div>
