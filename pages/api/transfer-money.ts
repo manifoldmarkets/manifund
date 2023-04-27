@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail } from '@/utils/email'
+import { getURL } from '@/utils/constants'
 
 export const config = {
   runtime: 'edge',
@@ -18,7 +19,6 @@ type MoneyTransferProps = {
 }
 
 export default async function handler(req: NextRequest) {
-  console.log('in handler')
   const { fromId, toId, amount, projectId } =
     (await req.json()) as MoneyTransferProps
   const supabase = createEdgeClient(req)
@@ -39,7 +39,6 @@ export default async function handler(req: NextRequest) {
 
   const donor = await getProfileById(supabaseAdmin, fromId)
   if (projectId) {
-    console.log('about to send email')
     const project = await getProjectById(supabaseAdmin, projectId)
     const postmarkVars = {
       amount: amount,
@@ -49,6 +48,15 @@ export default async function handler(req: NextRequest) {
     }
     const PROJECT_DONATION_TEMPLATE_ID = 31534853
     await sendTemplateEmail(PROJECT_DONATION_TEMPLATE_ID, postmarkVars, toId)
+  } else {
+    const regranterProfile = await getProfileById(supabaseAdmin, toId)
+    const postmarkVars = {
+      amount: amount,
+      donorName: donor.full_name,
+      profileUrl: `${getURL()}/${regranterProfile.username}`,
+    }
+    const REGRANTER_DONATION_TEMPLATE_ID = 31571248
+    await sendTemplateEmail(REGRANTER_DONATION_TEMPLATE_ID, postmarkVars, toId)
   }
 
   if (error) {
