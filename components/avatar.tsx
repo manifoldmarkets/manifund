@@ -5,7 +5,6 @@ import clsx from 'clsx'
 import { MouseEvent } from 'react'
 import Image from 'next/image'
 import { UserCircleIcon, UserIcon, UsersIcon } from '@heroicons/react/20/solid'
-import { Profile } from '@/db/profile'
 
 export function Avatar(props: {
   username: string
