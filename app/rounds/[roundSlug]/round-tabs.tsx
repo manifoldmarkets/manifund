@@ -17,7 +17,6 @@ export function RoundTabs(props: {
   const { round, projects, regranters } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
-  console.log(regranters)
   const tabs = [
     {
       name: 'Projects',
