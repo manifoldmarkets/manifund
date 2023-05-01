@@ -165,15 +165,17 @@ export function InvestorTypeTag(props: {
 
 export function RegranterTag() {
   return (
-    <Row className="max-w-fit gap-1 rounded-full bg-orange-100 px-2  pt-1 text-center">
-      <ArrowPathIcon className="relative bottom-0.5 m-auto h-6 w-6 text-orange-500" />
-      <div
-        className={clsx(
-          'text-md relative bottom-0.5 leading-tight text-orange-500'
-        )}
-      >
-        regranter
-      </div>
-    </Row>
+    <Tooltip text="Regranters can recieve donations from other users and give grants to the projects and organizations of their choice.">
+      <Row className="max-w-fit gap-1 rounded-full bg-orange-100 px-2  pt-1 text-center">
+        <ArrowPathIcon className="relative bottom-0.5 m-auto h-6 w-6 text-orange-500" />
+        <div
+          className={clsx(
+            'text-md relative bottom-0.5 leading-tight text-orange-500'
+          )}
+        >
+          regranter
+        </div>
+      </Row>
+    </Tooltip>
   )
 }

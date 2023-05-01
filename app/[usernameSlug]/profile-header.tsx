@@ -47,7 +47,7 @@ export function ProfileHeader(props: {
             </Link>
           </div>
         )}
-        <Col className="w-full">
+        <Col className="ml-2 w-full">
           <Row className="justify-between">
             <Col>
               <div className="text-xl font-bold leading-tight sm:text-2xl">
