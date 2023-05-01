@@ -5,7 +5,7 @@ import { AllRoundsDisplay } from './all-rounds-display'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { getRegranters, Profile } from '@/db/profile'
 
-export const revalidate = 0
+export const revalidate = 30
 
 export default async function Projects() {
   const supabase = createServerClient()
