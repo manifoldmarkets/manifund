@@ -54,16 +54,17 @@ export default async function RootLayout({
       head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
     */}
       <head />
-      <body
-        className={`${fontVars} mx-auto mt-4 mb-20 min-h-screen w-full bg-gray-50 font-sans md:grid md:max-w-7xl md:grid-cols-12`}
-      >
-        <SupabaseProvider session={session}>
+      <body className="min-h-screen w-full bg-gray-50">
+        <SupabaseProvider
+          session={session}
+          className={`${fontVars} mx-auto mt-4 mb-20 w-full font-sans md:grid md:max-w-7xl md:grid-cols-12 md:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
+        >
           {/* @ts-expect-error Server Component */}
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
-          <div className="mx-2 flex flex-1 flex-col md:col-span-8">
+          <main className="mx-2 flex flex-1 flex-col md:col-span-8">
             {children}
-          </div>
+          </main>
           {/* @ts-expect-error Server Component */}
           <BottomNavBar />
         </SupabaseProvider>

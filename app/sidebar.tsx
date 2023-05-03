@@ -17,8 +17,11 @@ export default async function Sidebar() {
   const user = await getUser(supabase)
 
   return (
-    <div className="sticky top-0 mt-10 hidden h-full gap-1 self-start pl-2 md:col-span-3 md:flex">
-      <nav aria-label="Sidebar" className="flex h-screen flex-col">
+    <>
+      <nav
+        aria-label="Sidebar"
+        className="sticky top-0 hidden max-h-[100vh] divide-gray-300 self-start pt-10 pl-2 pr-2 md:col-span-3 md:flex md:flex-col"
+      >
         <Link href="/">
           <div className="group flex flex-row items-center gap-1">
             <Image
@@ -53,7 +56,7 @@ export default async function Sidebar() {
         />
         <CreateProjectButton />
       </nav>
-    </div>
+    </>
   )
 }
 
