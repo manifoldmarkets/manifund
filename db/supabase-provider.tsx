@@ -16,13 +16,14 @@ const Context = createContext<SupabaseContext | undefined>(undefined)
 export default function SupabaseProvider(props: {
   children: React.ReactNode
   session: Session | null
+  className: string
 }) {
-  const { children, session } = props
+  const { children, session, className } = props
   const [supabase] = useState(() => createClient())
 
   return (
     <Context.Provider value={{ supabase, session }}>
-      <>{children}</>
+      <div className={className}>{children}</div>
     </Context.Provider>
   )
 }
