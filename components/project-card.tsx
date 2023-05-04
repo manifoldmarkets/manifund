@@ -181,11 +181,7 @@ export function SimpleProjectCard(props: {
   const { project, creator, bids, numComments } = props
   const percentRaised = getPercentRaised(bids, project)
   return (
-    <Col
-      className={clsx(
-        'w-60 max-w-min rounded-md border border-gray-200 bg-white px-4 pb-2 pt-1 shadow'
-      )}
-    >
+    <Card className="flex w-60 max-w-min flex-col justify-between overflow-visible pb-2 pt-1">
       <Link
         href={`projects/${project.slug}`}
         className=" group flex min-w-full flex-1 flex-col justify-between hover:cursor-pointer"
@@ -215,6 +211,6 @@ export function SimpleProjectCard(props: {
           <ProgressBar percent={percentRaised} />
         )}
       </Col>
-    </Col>
+    </Card>
   )
 }
