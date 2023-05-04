@@ -7,9 +7,14 @@ import { formatMoney, showPrecision } from '@/utils/formatting'
 import { dateDiff } from '@/utils/math'
 import { DataPoint } from './data-point'
 import { Col } from './layout/col'
+import { Row } from './layout/row'
 
-export async function RoundData(props: { round: Round; projects: Project[] }) {
-  const { round, projects } = props
+export async function RoundData(props: {
+  round: Round
+  projects: Project[]
+  simple?: boolean
+}) {
+  const { round, projects, simple } = props
   const auctionCloseDate = new Date(
     `${round.auction_close_date}T23:59:59-12:00`
   )
@@ -25,6 +30,43 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
   const supabase = createServerClient()
   const regranters =
     round.title === 'Regrants' ? await getRegranters(supabase) : []
+  if (simple) {
+    return (
+      <Row className="items-center gap-x-4 text-xs">
+        {daysTilAuctionClose > 0 && round.auction_close_date !== null ? (
+          <span className="text-gray-500">
+            <span className="text-orange-600">
+              {showPrecision(daysTilAuctionClose, 3)}
+            </span>{' '}
+            days until auction close
+          </span>
+        ) : null}
+        {daysTilProposalsDue > 0 && round.proposal_due_date !== null ? (
+          <span className="text-gray-500">
+            <span className="text-orange-600">
+              {showPrecision(daysTilProposalsDue, 3)}
+            </span>{' '}
+            days to submit projects
+          </span>
+        ) : null}
+        {(daysTilAuctionClose < 0 || round.auction_close_date === null) &&
+        daysTilEvals > 0 &&
+        (daysTilProposalsDue <= 0 || round.proposal_due_date === null) ? (
+          <span className="text-gray-500">
+            <span className="text-orange-600">
+              {showPrecision(daysTilEvals, 3)}
+            </span>{' '}
+            days until project evals
+          </span>
+        ) : null}
+        {round.retro_pool && (
+          <p className="relative z-10 rounded-full bg-gray-100 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">
+            {formatMoney(round.retro_pool)}
+          </p>
+        )}
+      </Row>
+    )
+  }
   return (
     <Col className="w-full">
       <div className="flex justify-between">
@@ -79,14 +121,14 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
         {daysTilAuctionClose > 0 && round.auction_close_date !== null ? (
           <DataPoint
             value={showPrecision(daysTilAuctionClose, 3)}
-            label="days left to bid"
+            label="days to bid"
             theme={getRoundTheme(round.title)}
           />
         ) : null}
         {daysTilProposalsDue > 0 && round.proposal_due_date !== null ? (
           <DataPoint
             value={showPrecision(daysTilProposalsDue, 3)}
-            label="days left to submit projects"
+            label="days to submit projects"
             theme={getRoundTheme(round.title)}
           />
         ) : null}
@@ -99,18 +141,6 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
           />
         ) : null}
       </div>
-    </Col>
-  )
-}
-
-export async function RegrantsRoundData(props: {
-  numProjects: number
-  regranters: Profile[]
-}) {
-  const { numProjects } = props
-  return (
-    <Col className="w-full">
-      <div className="flex justify-between"></div>
     </Col>
   )
 }

@@ -18,27 +18,84 @@ export function AllRoundsDisplay(props: {
   const { rounds, projects, regranters } = props
   const sortedRounds = sortRoundsForPreview(rounds)
   return (
-    <Col className="mb-5 gap-3">
-      {sortedRounds.map((round) => {
-        const roundProjects = projects.filter(
-          (project) =>
-            project.rounds.title === round.title && project.stage !== 'hidden'
-        )
-        if (roundProjects.length > 0) {
-          return (
-            <Round
+    <div className=" py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            Active rounds
+          </h2>
+          <p className="mt-2 text-lg leading-8 text-gray-600">
+            Organized funding rounds for impact certificates and grants.
+          </p>
+        </div>
+        <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+          {sortedRounds.map((round) => (
+            <article
               key={round.title}
-              round={round}
-              projects={sortProjectsForPreview(roundProjects)}
-              regranters={round.title === 'Regrants' ? regranters : undefined}
-            />
-          )
-        }
-        return null
-      })}
-    </Col>
+              className="flex flex-col items-start justify-between"
+            >
+              <div className="relative w-full">
+                <Image
+                  src={round.header_image_url ?? ''}
+                  width="800"
+                  height="500"
+                  alt=""
+                  className="aspect-[16/9] w-full rounded-2xl bg-gray-100 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
+                />
+                <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-900/10" />
+              </div>
+              <div className="max-w-xl">
+                {/* @ts-expect-error server component*/}
+                <RoundData round={round} projects={projects} simple />
+                <div className="group relative">
+                  <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:text-gray-600">
+                    <a href={`/rounds/${round.slug}`}>
+                      <span className="absolute inset-0" />
+                      {round.title}
+                    </a>
+                  </h3>
+                  <p className="mt-5 text-sm leading-6 text-gray-600 line-clamp-3">
+                    {JSON.stringify(round.description)}
+                  </p>
+                </div>
+                <div className="relative mt-8 flex items-center gap-x-4">
+                  <Image
+                    src={round.header_image_url ?? ''}
+                    width="800"
+                    height="500"
+                    alt=""
+                    className="h-10 w-10 rounded-full bg-gray-100"
+                  />
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
   )
 }
+// return (
+//   <Col className="mb-5 gap-3">
+//     {sortedRounds.map((round) => {
+//       const roundProjects = projects.filter(
+//         (project) =>
+//           project.rounds.title === round.title && project.stage !== 'hidden'
+//       )
+//       if (roundProjects.length > 0) {
+//         return (
+//           <Round
+//             key={round.title}
+//             round={round}
+//             projects={sortProjectsForPreview(roundProjects)}
+//             regranters={round.title === 'Regrants' ? regranters : undefined}
+//           />
+//         )
+//       }
+//       return null
+//     })}
+//   </Col>
+// )
 
 function Round(props: {
   round: Round
