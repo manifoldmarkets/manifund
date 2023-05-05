@@ -4,6 +4,7 @@ import { Round } from '@/db/round'
 import Image from 'next/image'
 import { orderBy, sortBy } from 'lodash'
 import { Profile } from '@/db/profile'
+import { Col } from '@/components/layout/col'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
@@ -38,7 +39,7 @@ function Round(props: { round: Round; projects: FullProject[] }) {
   return (
     <article
       key={round.title}
-      className="relative isolate flex flex-col gap-3 lg:flex-row lg:gap-8"
+      className="relative isolate flex h-full flex-col gap-3 lg:flex-row lg:gap-8"
     >
       <div className="relative aspect-[16/9] sm:aspect-[2/1] lg:aspect-square lg:w-64 lg:shrink-0">
         <Image
@@ -49,9 +50,9 @@ function Round(props: { round: Round; projects: FullProject[] }) {
           className="absolute inset-0 h-full w-full rounded-2xl bg-gray-50 object-cover"
         />
       </div>
-      <div>
+      <Col className="justify-between lg:py-3">
         <div className="group relative max-w-xl">
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:underline">
+          <h3 className="text-xl font-semibold text-gray-900 group-hover:underline lg:text-2xl">
             <a href={`/rounds/${round.slug}`}>
               <span className="absolute inset-0" />
               {round.title}
@@ -72,7 +73,7 @@ function Round(props: { round: Round; projects: FullProject[] }) {
             )}
           />
         </div>
-      </div>
+      </Col>
     </article>
   )
 }
