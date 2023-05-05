@@ -19,20 +19,20 @@ export function AllRoundsDisplay(props: {
   const { rounds, projects, regranters } = props
   const sortedRounds = sortRoundsForPreview(rounds)
   return (
-    <div className="py-24 sm:py-32">
+    <div className="pb-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:max-w-4xl">
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             Active rounds
           </h2>
-          <p className="mt-2 text-lg leading-8 text-gray-600">
+          <p className="mt-1 text-gray-600">
             Organized funding rounds with active projects.
           </p>
-          <div className="mt-16 space-y-20 lg:mt-20 lg:space-y-20">
+          <div className="mt-8 space-y-10 lg:mt-12 lg:space-y-14">
             {sortedRounds.map((round) => (
               <article
                 key={round.title}
-                className="relative isolate flex flex-col gap-8 lg:flex-row"
+                className="relative isolate flex flex-col gap-3 lg:flex-row lg:gap-8"
               >
                 <div className="relative aspect-[16/9] sm:aspect-[2/1] lg:aspect-square lg:w-64 lg:shrink-0">
                   <Image
@@ -42,11 +42,10 @@ export function AllRoundsDisplay(props: {
                     alt=""
                     className="absolute inset-0 h-full w-full rounded-2xl bg-gray-50 object-cover"
                   />
-                  <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-gray-900/10" />
                 </div>
                 <div>
                   <div className="group relative max-w-xl">
-                    <h3 className="mt-3 text-lg font-semibold leading-6 text-gray-900 group-hover:underline">
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:underline">
                       <a href={`/rounds/${round.slug}`}>
                         <span className="absolute inset-0" />
                         {round.title}
@@ -58,7 +57,14 @@ export function AllRoundsDisplay(props: {
                   </div>
                   <div className="mt-6 border-t border-gray-900/5 pt-6">
                     {/* @ts-expect-error server component*/}
-                    <RoundData round={round} projects={projects} />
+                    <RoundData
+                      round={round}
+                      projects={projects.filter(
+                        (project) =>
+                          project.rounds.title === round.title &&
+                          project.stage !== 'hidden'
+                      )}
+                    />
                   </div>
                 </div>
               </article>

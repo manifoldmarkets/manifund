@@ -9,12 +9,8 @@ import { DataPoint } from './data-point'
 import { Col } from './layout/col'
 import { Row } from './layout/row'
 
-export async function RoundData(props: {
-  round: Round
-  projects: Project[]
-  simple?: boolean
-}) {
-  const { round, projects, simple } = props
+export async function RoundData(props: { round: Round; projects: Project[] }) {
+  const { round, projects } = props
   const auctionCloseDate = new Date(
     `${round.auction_close_date}T23:59:59-12:00`
   )
@@ -30,43 +26,6 @@ export async function RoundData(props: {
   const supabase = createServerClient()
   const regranters =
     round.title === 'Regrants' ? await getRegranters(supabase) : []
-  if (simple) {
-    return (
-      <Row className="items-center gap-x-4 text-xs">
-        {daysTilAuctionClose > 0 && round.auction_close_date !== null ? (
-          <span className="text-gray-500">
-            <span className="text-orange-600">
-              {showPrecision(daysTilAuctionClose, 3)}
-            </span>{' '}
-            days until auction close
-          </span>
-        ) : null}
-        {daysTilProposalsDue > 0 && round.proposal_due_date !== null ? (
-          <span className="text-gray-500">
-            <span className="text-orange-600">
-              {showPrecision(daysTilProposalsDue, 3)}
-            </span>{' '}
-            days to submit projects
-          </span>
-        ) : null}
-        {(daysTilAuctionClose < 0 || round.auction_close_date === null) &&
-        daysTilEvals > 0 &&
-        (daysTilProposalsDue <= 0 || round.proposal_due_date === null) ? (
-          <span className="text-gray-500">
-            <span className="text-orange-600">
-              {showPrecision(daysTilEvals, 3)}
-            </span>{' '}
-            days until project evals
-          </span>
-        ) : null}
-        {round.retro_pool && (
-          <p className="relative z-10 rounded-full bg-gray-100 px-3 py-1.5 font-medium text-gray-600 hover:bg-gray-100">
-            {formatMoney(round.retro_pool)}
-          </p>
-        )}
-      </Row>
-    )
-  }
   return (
     <Col className="w-full">
       <div className="flex justify-between">
