@@ -7,7 +7,6 @@ import { formatMoney, showPrecision } from '@/utils/formatting'
 import { dateDiff } from '@/utils/math'
 import { DataPoint } from './data-point'
 import { Col } from './layout/col'
-import { Row } from './layout/row'
 
 export async function RoundData(props: { round: Round; projects: Project[] }) {
   const { round, projects } = props
