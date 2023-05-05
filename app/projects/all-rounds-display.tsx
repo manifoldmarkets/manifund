@@ -14,9 +14,9 @@ export function AllRoundsDisplay(props: {
   const sortedRounds = sortRoundsForPreview(rounds)
   return (
     <div className="pb-20">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-2xl lg:max-w-4xl">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
             Active rounds
           </h2>
           <p className="mt-1 text-gray-600">
