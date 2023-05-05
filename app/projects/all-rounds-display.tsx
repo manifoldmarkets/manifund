@@ -110,7 +110,5 @@ function sortRoundsForPreview(rounds: Round[]) {
     },
   ])
   // Exclude Regrants until launch
-  return customSorted.filter(
-    (round) => round.title !== 'Independent' && round.title !== 'Regrants'
-  )
+  return customSorted.filter((round) => round.title !== 'Independent')
 }

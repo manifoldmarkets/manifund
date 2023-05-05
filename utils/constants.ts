@@ -19,9 +19,9 @@ export function getRoundTheme(roundTitle: string) {
     case 'Independent':
       return 'gray'
     case 'Regrants':
-      return 'orange'
+      return 'rose'
     case 'Regranters':
-      return 'orange'
+      return 'rose'
     default:
       return 'pink' //this should never happen
   }
