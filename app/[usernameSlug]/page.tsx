@@ -32,8 +32,10 @@ export default async function UserProfilePage(props: {
   const txns = await getTxnAndProjectsByUser(supabase, profile.id)
   const investments = await compileInvestments(txns, profile.id)
 
-  const userProfile = await getProfileAndBidsById(supabase, user?.id ?? '')
-  const userTxns = await getTxnsByUser(supabase, user?.id ?? '')
+  const userProfile = user?.id
+    ? await getProfileAndBidsById(supabase, user?.id)
+    : null
+  const userTxns = user?.id ? await getTxnsByUser(supabase, user?.id) : null
   const isOwnProfile = user?.id === profile?.id
 
   return (
