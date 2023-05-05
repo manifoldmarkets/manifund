@@ -18,6 +18,7 @@ import { Dialog, RadioGroup } from '@headlessui/react'
 import clsx from 'clsx'
 import { DataPoint } from '@/components/data-point'
 import { Card } from '@/components/card'
+import { Input } from '@/components/input'
 
 export function BalanceDisplay(props: {
   balance: number
@@ -97,7 +98,6 @@ function StripeDepositButton() {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState(10)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const purchaseOptions = [10, 50, 100, 500]
   return (
     <>
       <button
@@ -124,41 +124,23 @@ function StripeDepositButton() {
           >
             Add money to your Manifund account
           </Dialog.Title>
-          <div className="mt-2">
+          <div className="my-2">
             <p className="text-gray-500">
               As a non-accredited investor, you can add money to your Manifund
               account, grow your portfolio by investing in projects, and donate
               your earnings to charity. However, you cannot withdraw your funds.
             </p>
           </div>
-          <Row className="justify-center">
-            <RadioGroup value={amount} onChange={setAmount} className="mt-2">
-              <RadioGroup.Label className="sr-only">
-                {' '}
-                Choose an amount option{' '}
-              </RadioGroup.Label>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {purchaseOptions.map((option) => (
-                  <RadioGroup.Option
-                    key={option}
-                    value={option}
-                    className={({ active, checked }) =>
-                      clsx(
-                        'cursor-pointer focus:outline-none',
-                        active ? 'ring-2 ring-orange-500 ring-offset-2' : '',
-                        checked
-                          ? 'bg-orange-500 text-white hover:bg-orange-600'
-                          : 'bg-white text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50',
-                        'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold uppercase sm:flex-1'
-                      )
-                    }
-                  >
-                    <RadioGroup.Label as="span">${option}</RadioGroup.Label>
-                  </RadioGroup.Option>
-                ))}
-              </div>
-            </RadioGroup>
-          </Row>
+          <label htmlFor="amount">Amount (USD): </label>
+          <Input
+            type="number"
+            step="0.01"
+            id="amount"
+            autoComplete="off"
+            required
+            value={amount ?? ''}
+            onChange={(event) => setAmount(Number(event.target.value))}
+          />
         </div>
 
         <div className="sm:flex-2 mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row">
