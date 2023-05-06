@@ -1,14 +1,10 @@
-import { Col } from '@/components/layout/col'
 import { RoundData } from '@/components/round-data'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
-import { RegranterCarousel, RoundCarousel } from './round-carousel'
 import Image from 'next/image'
-import clsx from 'clsx'
-import { getRoundTheme } from '@/utils/constants'
-import { RoundTag } from '@/components/tags'
 import { orderBy, sortBy } from 'lodash'
 import { Profile } from '@/db/profile'
+import { Col } from '@/components/layout/col'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
@@ -18,74 +14,67 @@ export function AllRoundsDisplay(props: {
   const { rounds, projects, regranters } = props
   const sortedRounds = sortRoundsForPreview(rounds)
   return (
-    <Col className="mb-5 gap-3">
-      {sortedRounds.map((round) => {
-        const roundProjects = projects.filter(
-          (project) =>
-            project.rounds.title === round.title && project.stage !== 'hidden'
-        )
-        if (roundProjects.length > 0) {
-          return (
-            <Round
-              key={round.title}
-              round={round}
-              projects={sortProjectsForPreview(roundProjects)}
-              regranters={round.title === 'Regrants' ? regranters : undefined}
-            />
-          )
-        }
-        return null
-      })}
-    </Col>
+    <div className="pb-20">
+      <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-2xl lg:max-w-4xl">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            Active rounds
+          </h2>
+          <p className="mt-1 text-gray-600">
+            Organized funding rounds with active projects.
+          </p>
+          <div className="mt-8 space-y-10 lg:mt-12 lg:space-y-14">
+            {sortedRounds.map((round) => (
+              <Round round={round} projects={projects} key={round.title} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
-function Round(props: {
-  round: Round
-  projects: FullProject[]
-  regranters?: Profile[]
-}) {
-  const { round, projects, regranters } = props
-  const theme = getRoundTheme(round.title)
+function Round(props: { round: Round; projects: FullProject[] }) {
+  const { round, projects } = props
   return (
-    <Col
-      className={clsx(
-        'isolate mx-4 overflow-hidden rounded-md py-6 md:mx-0',
-        `bg-${theme}-200`
-      )}
+    <article
+      key={round.title}
+      className="relative isolate flex h-full flex-col gap-3 lg:flex-row lg:gap-8"
     >
-      <div className="relative">
-        {round.header_image_url && (
-          <Image
-            src={round.header_image_url}
-            width={1000}
-            height={500}
-            alt="round header image"
-            className="absolute -top-10 left-1/2 -z-10 h-72 w-full -translate-x-1/2 object-cover"
-          />
-        )}
-      </div>
-      <div className="mx-6">
-        <RoundTag
-          roundTitle={round.title === 'Regrants' ? 'Regranters' : round.title}
-          size="xl"
-          roundSlug={round.slug}
+      <div className="relative aspect-[16/9] sm:aspect-[2/1] lg:aspect-square lg:w-64 lg:shrink-0">
+        <Image
+          src={round.header_image_url ?? ''}
+          height="500"
+          width="800"
+          alt=""
+          className="absolute inset-0 h-full w-full rounded-2xl bg-gray-50 object-cover"
         />
       </div>
-      <div className="px-3">
-        {regranters && regranters.length > 0 ? (
-          <RegranterCarousel regranters={regranters} theme={theme} />
-        ) : (
-          <RoundCarousel projects={projects} theme={theme} />
-        )}
-      </div>
-      <div className="my-2 flex justify-center px-6">
-        <div className="w-10/12">
-          {/* @ts-expect-error server component*/}
-          <RoundData round={round} projects={projects} />
+      <Col className="justify-between lg:py-3">
+        <div className="group relative max-w-xl">
+          <h3 className="text-xl font-semibold text-gray-900 group-hover:underline lg:text-2xl">
+            <a href={`/rounds/${round.slug}`}>
+              <span className="absolute inset-0" />
+              {round.title}
+            </a>
+          </h3>
+          <p className="mt-5 text-sm leading-6 text-gray-600">
+            {round.subtitle}
+          </p>
         </div>
-      </div>
-    </Col>
+        <div className="mt-6 border-t border-gray-900/5 pt-6">
+          {/* @ts-expect-error server component*/}
+          <RoundData
+            round={round}
+            projects={projects.filter(
+              (project) =>
+                project.rounds.title === round.title &&
+                project.stage !== 'hidden'
+            )}
+          />
+        </div>
+      </Col>
+    </article>
   )
 }
 
@@ -121,5 +110,8 @@ function sortRoundsForPreview(rounds: Round[]) {
       }
     },
   ])
-  return customSorted.filter((round) => round.title !== 'Independent')
+  // Exclude Regrants until launch
+  return customSorted.filter(
+    (round) => round.title !== 'Independent' && round.title !== 'Regrants'
+  )
 }

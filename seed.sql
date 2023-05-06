@@ -229,6 +229,7 @@ create table if not exists public.rounds (
   retro_pool float8,
   description jsonb,
   slug text not null,
+  subtitle text,
   primary key (title)
 );
 

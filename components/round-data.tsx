@@ -7,6 +7,7 @@ import { formatMoney, showPrecision } from '@/utils/formatting'
 import { dateDiff } from '@/utils/math'
 import { DataPoint } from './data-point'
 import { Col } from './layout/col'
+import { Row } from './layout/row'
 
 export async function RoundData(props: { round: Round; projects: Project[] }) {
   const { round, projects } = props
@@ -27,7 +28,7 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
     round.title === 'Regrants' ? await getRegranters(supabase) : []
   return (
     <Col className="w-full">
-      <div className="flex justify-between">
+      <Row className="flex justify-between gap-3">
         {round.title === 'Regrants' && (
           <DataPoint
             value={regranters.length.toString()}
@@ -79,14 +80,14 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
         {daysTilAuctionClose > 0 && round.auction_close_date !== null ? (
           <DataPoint
             value={showPrecision(daysTilAuctionClose, 3)}
-            label="days left to bid"
+            label="days to bid"
             theme={getRoundTheme(round.title)}
           />
         ) : null}
         {daysTilProposalsDue > 0 && round.proposal_due_date !== null ? (
           <DataPoint
             value={showPrecision(daysTilProposalsDue, 3)}
-            label="days left to submit projects"
+            label="days to submit projects"
             theme={getRoundTheme(round.title)}
           />
         ) : null}
@@ -98,19 +99,7 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
             theme={getRoundTheme(round.title)}
           />
         ) : null}
-      </div>
-    </Col>
-  )
-}
-
-export async function RegrantsRoundData(props: {
-  numProjects: number
-  regranters: Profile[]
-}) {
-  const { numProjects } = props
-  return (
-    <Col className="w-full">
-      <div className="flex justify-between"></div>
+      </Row>
     </Col>
   )
 }
