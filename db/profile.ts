@@ -24,7 +24,6 @@ export async function getProfileById(
     .select('*')
     .eq('id', id)
   if (error) {
-    console.log('get profile by id', error)
     throw error
   }
   return data[0] ? data[0] : null
@@ -39,7 +38,6 @@ export async function getProfileAndBidsById(
     .select('*, bids(*)')
     .eq('id', id)
   if (error) {
-    console.log('get profile & bids by id', error)
     throw error
   }
   return data[0] as ProfileAndBids
@@ -57,8 +55,6 @@ export async function getProfileByUsername(
     .select('*')
     .eq('username', username)
   if (error) {
-    console.log('get profile by username', error)
-
     throw error
   }
   return data[0] ? data[0] : { id: null, username }
@@ -72,7 +68,6 @@ export async function getProfileAndBidsByUsername(
     .select('*, bids(*)')
     .eq('username', username)
   if (error) {
-    console.log('get profile and bids by username', error)
     throw error
   }
   return data[0] as ProfileAndBids

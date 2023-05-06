@@ -101,7 +101,7 @@ export function ProjectsDisplay(props: {
           </Listbox>
         </div>
       </div>
-      <div className="flex flex-col gap-10 p-4">
+      <div className="mt-5 flex flex-col gap-10">
         {proposals.length > 0 && (
           <ProjectGroup
             projects={proposals}

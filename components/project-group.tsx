@@ -10,7 +10,7 @@ export function ProjectGroup(props: {
   const { projects, valuations, category } = props
   return (
     <div>
-      <h1 className="text-2xl font-bold">{category}</h1>
+      <h1 className="text-2xl font-bold text-gray-900">{category}</h1>
       <div className="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {projects.map((project) => (
           <ProjectCard
