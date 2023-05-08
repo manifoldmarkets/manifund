@@ -2,20 +2,22 @@ import { createServerClient } from '@/db/supabase-server'
 import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
-import { getUser, getProfileById } from '@/db/profile'
+import { getUser, getProfileById, Profile } from '@/db/profile'
 import { SidebarItem } from './sidebar-item'
-import { CreateProjectButton } from './create-project-button'
 import { SUPABASE_ENV } from '@/db/env'
 import { User } from '@supabase/supabase-js'
 import { Avatar } from '@/components/avatar'
 import { formatMoney } from '@/utils/formatting'
 import { calculateUserBalance } from '@/utils/math'
 import { getTxnsByUser } from '@/db/txn'
+import { buttonClass } from '@/components/button'
+import clsx from 'clsx'
 
 export default async function Sidebar() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
-
+  const profile = user ? await getProfileById(supabase, user.id) : null
+  const isRegranter = profile?.regranter_status
   return (
     <>
       <nav
@@ -38,7 +40,7 @@ export default async function Sidebar() {
         </Link>
         <div className="h-6" />
         {/* @ts-expect-error Server Component */}
-        {user && <ProfileSummary user={user} />}
+        {profile && <ProfileSummary profile={profile} />}
         {user === undefined && <div className="h-[56px]" />}
         <SidebarItem item={{ name: 'Home', href: '/' }} />
         {user === null && (
@@ -54,18 +56,26 @@ export default async function Sidebar() {
         <SidebarItem
           item={{ name: 'Discord', href: 'https://discord.gg/zPnPtx6jBS' }}
         />
-        <CreateProjectButton />
+        {user && (
+          <Link
+            href={isRegranter ? '/create-grant' : '/create'}
+            className={clsx(
+              buttonClass('xl', 'gradient'),
+              'mt-4 w-full bg-gradient-to-r'
+            )}
+          >
+            {isRegranter ? 'Give a Grant' : 'Create a Project'}
+          </Link>
+        )}
       </nav>
     </>
   )
 }
 
-export async function ProfileSummary(props: { user: User }) {
-  const { user } = props
+export async function ProfileSummary(props: { profile: Profile }) {
+  const { profile } = props
   const supabase = createServerClient()
-  const profile = await getProfileById(supabase, user.id)
-  if (profile === null) return null
-  const txns = await getTxnsByUser(supabase, user.id)
+  const txns = await getTxnsByUser(supabase, profile.id)
   return (
     <div className="group mb-3 flex flex-row items-center gap-2 truncate rounded-md py-3 px-1 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
       <Avatar username={profile.username} avatarUrl={profile.avatar_url} />
@@ -76,5 +86,33 @@ export async function ProfileSummary(props: { user: User }) {
         </div>
       </Link>
     </div>
+  )
+}
+
+export const CreateProjectButton = () => {
+  return (
+    <Link
+      href="/create"
+      className={clsx(
+        buttonClass('xl', 'gradient'),
+        'mt-4 w-full bg-gradient-to-r'
+      )}
+    >
+      Create a Project
+    </Link>
+  )
+}
+
+export const GiveGrantButton = () => {
+  return (
+    <Link
+      href="/create-grant"
+      className={clsx(
+        buttonClass('xl', 'gradient'),
+        'mt-4 w-full bg-gradient-to-r'
+      )}
+    >
+      Give a Grant
+    </Link>
   )
 }

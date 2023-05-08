@@ -20,6 +20,9 @@ export default async function CharityPage(props: {
   const { charitySlug } = props.params
   const supabase = createServerClient()
   const charity = await getProfileByUsername(supabase, charitySlug)
+  if (!charity) {
+    return <div>Charity not found.</div>
+  }
   const donations = await getIncomingTxnsByUserWithDonor(supabase, charity.id)
   const raised = donations.reduce((acc, txn) => acc + txn.amount, 0)
   const numSupporters = uniq(donations.map((txn) => txn.from_id)).length
