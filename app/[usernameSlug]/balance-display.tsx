@@ -14,8 +14,7 @@ import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { Modal } from '@/components/modal'
 import { Button } from '@/components/button'
-import { Dialog, RadioGroup } from '@headlessui/react'
-import clsx from 'clsx'
+import { Dialog } from '@headlessui/react'
 import { DataPoint } from '@/components/data-point'
 import { Card } from '@/components/card'
 import { Input } from '@/components/input'
@@ -98,6 +97,10 @@ function StripeDepositButton() {
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState(10)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  let errorMessage = null
+  if (amount < 10) {
+    errorMessage = 'Minimum deposit is $10.'
+  }
   return (
     <>
       <button
@@ -126,9 +129,9 @@ function StripeDepositButton() {
           </Dialog.Title>
           <div className="my-2">
             <p className="text-gray-500">
-              As a non-accredited investor, you can add money to your Manifund
-              account, grow your portfolio by investing in projects, and donate
-              your earnings to charity. However, you cannot withdraw your funds.
+              As a non-accredited investor, you can donate your deposit and any
+              profits to a charity of your choice, but you can only withdraw
+              money donated or invested in your projects.
             </p>
           </div>
           <label htmlFor="amount">Amount (USD): </label>
@@ -142,8 +145,8 @@ function StripeDepositButton() {
             onChange={(event) => setAmount(Number(event.target.value))}
           />
         </div>
-
-        <div className="sm:flex-2 mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row">
+        <p className="mt-3 mb-2 text-center text-rose-500">{errorMessage}</p>
+        <div className="sm:flex-2 flex flex-col gap-3 sm:flex-row">
           <Button
             type="button"
             color={'gray'}
@@ -173,7 +176,7 @@ function StripeDepositButton() {
               router.push(json.url)
             }}
           >
-            Add ${amount} to your account
+            Proceed to checkout
           </Button>
         </div>
         <p className="mt-4 text-xs text-gray-500">
