@@ -11,16 +11,11 @@ import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
-const poiret = Poiret_One({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-poiret-one',
-})
 const josefin = Josefin_Slab({
   subsets: ['latin'],
   variable: '--font-josefin-slab',
 })
-const fontVars = [readex.variable, poiret.variable, josefin.variable].join(' ')
+const fontVars = [readex.variable, josefin.variable].join(' ')
 
 // do not cache this layout
 export const revalidate = 0
@@ -48,7 +43,7 @@ export default async function RootLayout({
   } = await supabase.auth.getSession()
 
   return (
-    <html lang="en">
+    <html lang="en" className={fontVars}>
       {/*
       <head /> will contain the components returned by the nearest parent
       head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
@@ -57,7 +52,7 @@ export default async function RootLayout({
       <body className="min-h-screen w-full bg-gray-50">
         <SupabaseProvider
           session={session}
-          className={`${fontVars} mx-auto mt-4 mb-20 w-full font-sans md:grid md:max-w-7xl md:grid-cols-12 md:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
+          className={`mx-auto mt-4 mb-20 w-full font-sans md:grid md:max-w-7xl md:grid-cols-12 md:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
         >
           {/* @ts-expect-error Server Component */}
           <Sidebar />
