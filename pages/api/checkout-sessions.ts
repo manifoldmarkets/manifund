@@ -16,23 +16,8 @@ export type StripeSession = Stripe.Event.Data.Object & {
   }
 }
 
-// Manage at https://dashboard.stripe.com/products
-export const dollarStripePrice = isProd()
-  ? {
-      10: 'price_1MrmNZEsVtaUUvWW5lc83bpz',
-      50: 'price_1Mrre3EsVtaUUvWWBLXAhwbs',
-      100: 'price_1MrrhAEsVtaUUvWWeQAIkjpR',
-      500: 'price_1MrrhrEsVtaUUvWWlrHd0My5',
-    }
-  : {
-      10: 'price_1MrnJEEsVtaUUvWWa0Z1MoEF',
-      50: 'price_1MrrjdEsVtaUUvWWBP4yq8W3',
-      100: 'price_1MrrkgEsVtaUUvWWXqJT7jha',
-      500: 'price_1MrrlIEsVtaUUvWWQuuRcE1G',
-    }
-
 type CheckoutProps = {
-  dollarQuantity: 10
+  dollarQuantity: number
   userId: string
 }
 
@@ -41,6 +26,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { dollarQuantity, userId } = (await req.body) as CheckoutProps
+  const amountToCharge = dollarQuantity * 100
   if (req.method === 'POST') {
     try {
       const session = await stripe.checkout.sessions.create({
@@ -50,7 +36,11 @@ export default async function handler(
         },
         line_items: [
           {
-            price: dollarStripePrice[dollarQuantity],
+            price_data: {
+              currency: 'usd',
+              unit_amount: amountToCharge,
+              product: isProd() ? 'prod_NqCUvVOuGcx6jo' : 'prod_NqCWEno6lHiydK',
+            },
             quantity: 1,
           },
         ],
