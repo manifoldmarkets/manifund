@@ -46,8 +46,7 @@ export default async function handler(
       buf,
       req.headers['stripe-signature'] as string,
       // Update to CLI var in dev
-      // process.env.STRIPE_WEBHOOKSECRET as string
-      'whsec_092c420ee67d42c2cd97bcc262c8d054d55b4fc57df7d0f0c2ad67b0a9e7eefb'
+      process.env.STRIPE_WEBHOOKSECRET as string
     )
   } catch (err: any) {
     return res.status(400).send(`Webhook Error: ${err.message}`)
