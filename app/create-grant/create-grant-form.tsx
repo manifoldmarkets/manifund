@@ -12,21 +12,28 @@ import { Avatar } from '@/components/avatar'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 
-const DEFAULT_DESCRIPTION = `
-<h3>What will the recipient use this funding for?</h3>
+const DESCRIPTION_OUTLINE = `
+<h3>Project summary:</h3>
 </br>
-<h3>What's the case in favor of this grant?</h3>
+<h3>Project goals:</h3>
+</br>
+<h3>How will this funding be used?</h3>
+</br>
+<h3>How could this project be actively harmful?</h3>
+</br>
+<h3>What other funding is this person or project getting? Where else did this person or project apply for funding in the past?</h3>
+</br>
+`
+
+const REASONING_OUTLINE = `
+<h3>What are the main points in favor of this grant?</h3>
 </br>
 <h3>What are your main reservations about this grant?</h3>
 </br>
-<h3>How did you choose this amount?</h3>
-</br>
-<h3>Please list any ways in which this grant could be actively harmful.</h3>
+<h3>How did you choose to give this amount?</h3>
 </br>
 <h3>Are there any conflicts of interest associated with this grant?</h3>
-<strong>Please disclose e.g. any romantic, professional, financial, housemate, or familial relationships you have with the grant recipient(s).</strong>
-</br>
-<h3>What other funding is this person or project getting? Where else did this person or project apply for funding in the past?</h3>
+<p>Please disclose e.g. any romantic, professional, financial, housemate, or familial relationships you have with the grant recipient(s).</p>
 </br>
 `
 
@@ -54,7 +61,8 @@ export function CreateGrantForm(props: {
   const [amount, setAmount] = useState(0)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const editor = useTextEditor(DEFAULT_DESCRIPTION)
+  const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE)
+  const reasoningEditor = useTextEditor(REASONING_OUTLINE)
   const router = useRouter()
 
   let errorMessage = null
@@ -228,8 +236,12 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Col className="gap-1">
-        <label>Description</label>
-        <TextEditor editor={editor} />
+        <label>Project description</label>
+        <TextEditor editor={descriptionEditor} />
+      </Col>
+      <Col className="gap-1">
+        <label>Grantmaker notes & reasoning</label>
+        <TextEditor editor={reasoningEditor} />
       </Col>
       <Row>
         <Row className="h-6 items-center">
@@ -263,7 +275,7 @@ export function CreateGrantForm(props: {
         loading={isSubmitting}
         onClick={async () => {
           setIsSubmitting(true)
-          const description = editor?.getJSON()
+          const description = descriptionEditor?.getJSON()
           const response = await fetch('/api/create-grant', {
             method: 'POST',
             headers: {

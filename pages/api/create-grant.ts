@@ -39,9 +39,13 @@ export default async function handler(req: NextRequest) {
   const toProfile = toUsername
     ? await getProfileByUsername(supabase, toUsername)
     : null
+
+  if (!toProfile && toUsername) {
+    return NextResponse.error()
+  }
   const project = {
     id,
-    creator: toUsername ? toProfile.id : user.id,
+    creator: toProfile ? toProfile.id : user.id,
     title,
     blurb: subtitle,
     description,
@@ -64,7 +68,7 @@ export default async function handler(req: NextRequest) {
       .from('project_transfers')
       .insert([project_transfer])
       .throwOnError()
-  } else {
+  } else if (toProfile) {
     await supabase
       .from('txns')
       .insert({
@@ -76,7 +80,7 @@ export default async function handler(req: NextRequest) {
       })
       .throwOnError()
   }
-  if (toUsername) {
+  if (toUsername && toProfile) {
     const postmarkVars = {
       amount: amount,
       regranterName: regranterProfile?.full_name ?? 'an anonymous regranter',
