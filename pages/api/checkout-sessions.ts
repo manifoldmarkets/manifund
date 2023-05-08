@@ -17,7 +17,7 @@ export type StripeSession = Stripe.Event.Data.Object & {
 }
 
 type CheckoutProps = {
-  dollarQuantity: 10
+  dollarQuantity: number
   userId: string
 }
 
