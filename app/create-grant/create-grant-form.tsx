@@ -276,6 +276,7 @@ export function CreateGrantForm(props: {
         onClick={async () => {
           setIsSubmitting(true)
           const description = descriptionEditor?.getJSON()
+          const donorNotes = reasoningEditor?.getJSON()
           const response = await fetch('/api/create-grant', {
             method: 'POST',
             headers: {
@@ -285,6 +286,7 @@ export function CreateGrantForm(props: {
               title,
               subtitle,
               description,
+              donorNotes,
               amount,
               toEmail: recipientOnManifund ? undefined : recipientEmail,
               toUsername: recipientOnManifund ? recipient.username : undefined,
