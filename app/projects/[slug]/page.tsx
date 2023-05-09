@@ -16,6 +16,8 @@ import { Description } from './description'
 import { ProjectCardHeader } from '@/components/project-card'
 import { calculateUserFundsAndShares } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
+import { PerformanceNodeTiming } from 'perf_hooks'
+import { Divider } from '@/components/divider'
 
 export const revalidate = 0
 
@@ -78,7 +80,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         </Description>
       )}
       {isOwnProject && <EditDescription project={project} />}
-      <hr className="mb-3 h-0.5 rounded-sm bg-gray-500" />
+      <Divider />
       {project.stage === 'proposal' && (
         <ProposalData
           project={project}
@@ -94,15 +96,16 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           userShares={userShares}
         />
       )}
-      {profile !== null && project.type === 'grant' && (
-        <DonateBox
-          project={project}
-          userId={profile.id}
-          userSpendableFunds={userSpendableFunds}
-        />
-      )}
+      {profile !== null &&
+        project.type === 'grant' &&
+        pendingProjectTransfers.length === 0 && (
+          <DonateBox
+            project={project}
+            userId={profile.id}
+            userSpendableFunds={userSpendableFunds}
+          />
+        )}
       {!user && <SignInButton />}
-      <div className="h-6" />
       <ProjectTabs
         project={project}
         user={profile}

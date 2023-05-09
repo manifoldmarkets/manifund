@@ -12,7 +12,6 @@ import { Row } from '@/components/layout/row'
 import { IconButton } from '@/components/button'
 import { useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
-import clsx from 'clsx'
 import { Card } from '@/components/card'
 import { TxnTypeTag } from '@/components/tags'
 import { Col } from '@/components/layout/col'
@@ -47,7 +46,7 @@ export function Comments(props: {
     <div key={thread.root.id}>
       <Row className="w-full">
         <div className="w-full">
-          <Card className="mt-2 mb-1 shadow-none">
+          <Card className="mt-2 mb-1">
             <Comment
               comment={thread.root}
               writtenByCreator={thread.root.commenter === project.creator}
@@ -62,7 +61,7 @@ export function Comments(props: {
           </Card>
 
           {thread.replies.map((reply) => (
-            <Card key={reply.id} className="ml-8 mt-1 shadow-none">
+            <Card key={reply.id} className="ml-8 mt-1">
               <Comment
                 comment={reply}
                 writtenByCreator={reply.commenter === project.creator}
