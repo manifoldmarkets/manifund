@@ -47,9 +47,7 @@ export function Comments(props: {
     <div key={thread.root.id}>
       <Row className="w-full">
         <div className="w-full">
-          <Card
-            className={clsx('mt-2 mb-1 !p-3 shadow-none', user ? 'pb-4' : '')}
-          >
+          <Card className="mt-2 mb-1 shadow-none">
             <Comment
               comment={thread.root}
               writtenByCreator={thread.root.commenter === project.creator}
@@ -128,7 +126,6 @@ function Comment(props: {
   writtenByCreator?: boolean
 }) {
   const { comment, writtenByCreator } = props
-  console.log(comment.txns)
   return (
     <div>
       <Row className="w-full items-center justify-between gap-2">

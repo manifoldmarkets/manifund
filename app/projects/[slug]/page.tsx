@@ -4,11 +4,7 @@ import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
-import {
-  getFullProjectBySlug,
-  getProjectBySlug,
-  TOTAL_SHARES,
-} from '@/db/project'
+import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
 import { getActiveValuation, getProposalValuation } from '@/utils/math'
@@ -57,12 +53,19 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       : getActiveValuation(txns, bids, getProposalValuation(project))
 
   const isOwnProject = user?.id === project.profiles.id
-
+  const pendingProjectTransfers = project.project_transfers?.filter(
+    (projectTransfer) => !projectTransfer.transferred
+  )
   return (
     <div className="flex flex-col gap-4 px-4">
       <ProjectCardHeader
         round={project.rounds}
         projectType={project.type}
+        projectTransfer={
+          pendingProjectTransfers?.length === 0
+            ? undefined
+            : project.project_transfers[0]
+        }
         creator={project.profiles}
         valuation={isNaN(valuation) ? undefined : valuation}
       />
