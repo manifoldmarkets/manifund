@@ -1,7 +1,7 @@
 'use client'
 import { Profile } from '@/db/profile'
 import { WriteComment } from './write-comment'
-import { CommentAndProfile } from '@/db/comment'
+import { CommentAndProfileAndTxns } from '@/db/comment'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { formatDistanceToNow } from 'date-fns'
 import { RichContent } from '@/components/editor'
@@ -14,14 +14,18 @@ import { useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import clsx from 'clsx'
 import { Card } from '@/components/card'
+import { TxnTypeTag } from '@/components/tags'
+import { Col } from '@/components/layout/col'
 
 export function Comments(props: {
   project: Project
-  comments: CommentAndProfile[]
+  comments: CommentAndProfileAndTxns[]
   user: Profile | null
 }) {
   const { project, comments, user } = props
-  const [replyingTo, setReplyingTo] = useState<CommentAndProfile | null>(null)
+  const [replyingTo, setReplyingTo] = useState<CommentAndProfileAndTxns | null>(
+    null
+  )
   const rootComments = comments.filter(
     (comment) => comment.replying_to === null
   )
@@ -42,9 +46,9 @@ export function Comments(props: {
   const commentsDisplay = threads.map((thread) => (
     <div key={thread.root.id}>
       <Row className="w-full">
-        <div className="MT w-full">
+        <div className="w-full">
           <Card
-            className={clsx('mt-2', user ?? 'pb-4', 'my-1 p-5 shadow-none')}
+            className={clsx('mt-2 mb-1 !p-3 shadow-none', user ? 'pb-4' : '')}
           >
             <Comment
               comment={thread.root}
@@ -96,12 +100,12 @@ export function Comments(props: {
 }
 
 type Thread = {
-  root: CommentAndProfile
-  replies: CommentAndProfile[]
+  root: CommentAndProfileAndTxns
+  replies: CommentAndProfileAndTxns[]
 }
 function genThreads(
-  rootComments: CommentAndProfile[],
-  replyComments: CommentAndProfile[]
+  rootComments: CommentAndProfileAndTxns[],
+  replyComments: CommentAndProfileAndTxns[]
 ) {
   const threads = Object.fromEntries(
     rootComments.map((comment) => [
@@ -120,22 +124,40 @@ function genThreads(
 }
 
 function Comment(props: {
-  comment: CommentAndProfile
+  comment: CommentAndProfileAndTxns
   writtenByCreator?: boolean
 }) {
   const { comment, writtenByCreator } = props
+  console.log(comment.txns)
   return (
-    <div className="">
-      <Row className="w-full justify-between gap-2">
-        <UserAvatarAndBadge
-          profile={comment.profiles}
-          creatorBadge={writtenByCreator}
-        />
-        <div className=" text-sm text-gray-500">
+    <div>
+      <Row className="w-full items-center justify-between gap-2">
+        <Row className="items-center gap-1">
+          <UserAvatarAndBadge
+            profile={comment.profiles}
+            creatorBadge={writtenByCreator}
+            className="text-sm text-gray-800"
+          />
+          {comment.txns && (
+            <TxnTypeTag
+              text={`DONATED $${comment.txns.amount}`}
+              color="orange"
+              className="hidden sm:block"
+            />
+          )}
+        </Row>
+        <Col className="items-center text-xs text-gray-500">
+          {comment.txns && (
+            <TxnTypeTag
+              text={`DONATED $${comment.txns.amount}`}
+              color="orange"
+              className="sm:hidden"
+            />
+          )}
           {formatDistanceToNow(new Date(comment.created_at), {
             addSuffix: true,
           })}
-        </div>
+        </Col>
       </Row>
       <div className="relative left-8 w-11/12">
         <RichContent content={comment.content} />

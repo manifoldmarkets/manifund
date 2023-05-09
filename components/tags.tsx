@@ -173,3 +173,18 @@ export function RegranterTag() {
     </Tooltip>
   )
 }
+
+export function TxnTypeTag(props: {
+  text: string
+  color: string
+  className?: string
+}) {
+  const { text, color, className } = props
+  return (
+    <div
+      className={`rounded-sm px-2 py-1 text-xs font-bold bg-${color}-100 text-${color}-500 ${className}`}
+    >
+      {text}
+    </div>
+  )
+}
