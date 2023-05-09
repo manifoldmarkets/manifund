@@ -13,7 +13,7 @@ import { IconButton } from '@/components/button'
 import { useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import { Card } from '@/components/card'
-import { TxnTypeTag } from '@/components/tags'
+import { Tag } from '@/components/tags'
 import { Col } from '@/components/layout/col'
 
 export function Comments(props: {
@@ -135,7 +135,7 @@ function Comment(props: {
             className="text-sm text-gray-800"
           />
           {comment.txns && (
-            <TxnTypeTag
+            <Tag
               text={`DONATED $${comment.txns.amount}`}
               color="orange"
               className="hidden sm:block"
@@ -144,7 +144,7 @@ function Comment(props: {
         </Row>
         <Col className="items-center text-xs text-gray-500">
           {comment.txns && (
-            <TxnTypeTag
+            <Tag
               text={`DONATED $${comment.txns.amount}`}
               color="orange"
               className="sm:hidden"

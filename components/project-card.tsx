@@ -13,7 +13,7 @@ import { ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { orderBy } from 'lodash'
 import { formatDistanceToNow } from 'date-fns'
-import { RoundTag, TxnTypeTag } from './tags'
+import { RoundTag, Tag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { DataBox } from './data-box'
 import { Round } from '@/db/round'
@@ -163,11 +163,7 @@ export function ProjectCardHeader(props: {
         <UserAvatarAndBadge profile={creator} />
         {projectTransfer && (
           <Row>
-            <TxnTypeTag
-              text={'PENDING TRANSFER'}
-              className="mt-1"
-              color="orange"
-            />
+            <Tag text={'PENDING TRANSFER'} className="mt-1" color="orange" />
             <span className="text-sm text-gray-500">
               to {projectTransfer.to_email}
             </span>

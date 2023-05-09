@@ -12,7 +12,7 @@ import {
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { RoundTag } from './tags'
-import { TxnTypeTag } from './tags'
+import { Tag } from './tags'
 
 export function UserBidDisplay(props: {
   bid: Bid
@@ -117,7 +117,7 @@ function BidText(props: {
       return (
         <div className="flex items-center text-sm text-gray-500">
           Offer to&nbsp;
-          <TxnTypeTag
+          <Tag
             text={bid.type === 'buy' ? 'BUY' : 'SELL'}
             color={bid.type === 'buy' ? 'emerald' : 'rose'}
           />

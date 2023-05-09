@@ -174,7 +174,7 @@ export function RegranterTag() {
   )
 }
 
-export function TxnTypeTag(props: {
+export function Tag(props: {
   text: string
   color: string
   className?: string
