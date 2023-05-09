@@ -7,6 +7,7 @@ import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail } from '@/utils/email'
+import { JSONContent } from '@tiptap/react'
 
 export const config = {
   runtime: 'edge',
@@ -16,21 +17,33 @@ export const config = {
 type GrantProps = {
   title: string
   subtitle: string
-  description: any
+  description: JSONContent
+  donorNotes: JSONContent
   amount: number
   toEmail?: string
   toUsername?: string
 }
 
 export default async function handler(req: NextRequest) {
-  const { title, subtitle, description, amount, toEmail, toUsername } =
-    (await req.json()) as GrantProps
+  const {
+    title,
+    subtitle,
+    description,
+    donorNotes,
+    amount,
+    toEmail,
+    toUsername,
+  } = (await req.json()) as GrantProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
   const regranterProfile = await getProfileById(supabase, user.id)
-  if ((toEmail && toUsername) || (!toEmail && !toUsername)) {
+  if (
+    (toEmail && toUsername) ||
+    (!toEmail && !toUsername) ||
+    !regranterProfile
+  ) {
     return NextResponse.error()
   }
 
@@ -63,27 +76,29 @@ export default async function handler(req: NextRequest) {
       to_email: toEmail,
       project_id: id,
       grant_amount: amount,
+      donor_notes: donorNotes,
     }
     await supabase
       .from('project_transfers')
       .insert([project_transfer])
       .throwOnError()
   } else if (toProfile) {
-    await supabase
-      .from('txns')
-      .insert({
-        project: id,
-        amount: amount,
-        from_id: user.id,
-        to_id: toProfile.id,
-        token: 'USD',
-      })
-      .throwOnError()
+    const donation = {
+      project: id,
+      amount: amount,
+      from_id: user.id,
+      to_id: toProfile.id,
+      token: 'USD',
+      notes: donorNotes,
+    }
+    await supabase.from('txns').insert([donation]).throwOnError()
+  } else {
+    return NextResponse.error()
   }
   if (toUsername && toProfile) {
     const postmarkVars = {
       amount: amount,
-      regranterName: regranterProfile?.full_name ?? 'an anonymous regranter',
+      regranterName: regranterProfile.full_name,
       projectTitle: title,
       projectUrl: `${getURL()}projects/${slug}`,
     }
@@ -96,7 +111,7 @@ export default async function handler(req: NextRequest) {
   } else {
     const postmarkVars = {
       amount: amount,
-      regranterName: regranterProfile?.full_name ?? 'an anonymous regranter',
+      regranterName: regranterProfile.full_name,
       projectTitle: title,
       loginUrl: `${getURL()}login?email=${toEmail}`,
     }

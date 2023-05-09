@@ -27,6 +27,7 @@ export default async function handler(
         from_id: transfer.projects.creator,
         transfer_id: transfer.id,
         amount: transfer.grant_amount ?? 0,
+        donor_notes: transfer.donor_notes ?? null,
       })
     }
   })

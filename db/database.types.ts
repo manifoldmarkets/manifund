@@ -108,6 +108,7 @@ export interface Database {
       project_transfers: {
         Row: {
           created_at: string
+          donor_notes: Json | null
           grant_amount: number | null
           id: string
           project_id: string
@@ -116,6 +117,7 @@ export interface Database {
         }
         Insert: {
           created_at?: string
+          donor_notes?: Json | null
           grant_amount?: number | null
           id?: string
           project_id: string
@@ -124,6 +126,7 @@ export interface Database {
         }
         Update: {
           created_at?: string
+          donor_notes?: Json | null
           grant_amount?: number | null
           id?: string
           project_id?: string
@@ -249,6 +252,7 @@ export interface Database {
           created_at: string
           from_id: string | null
           id: string
+          notes: Json | null
           project: string | null
           to_id: string
           token: string
@@ -259,6 +263,7 @@ export interface Database {
           created_at?: string
           from_id?: string | null
           id?: string
+          notes?: Json | null
           project?: string | null
           to_id: string
           token: string
@@ -269,6 +274,7 @@ export interface Database {
           created_at?: string
           from_id?: string | null
           id?: string
+          notes?: Json | null
           project?: string | null
           to_id?: string
           token?: string
@@ -300,16 +306,28 @@ export interface Database {
           balance: number
         }[]
       }
-      transfer_project: {
-        Args: {
-          project_id: string
-          to_id: string
-          from_id: string
-          transfer_id: string
-          amount: number
-        }
-        Returns: undefined
-      }
+      transfer_project:
+        | {
+            Args: {
+              project_id: string
+              to_id: string
+              from_id: string
+              transfer_id: string
+              amount: number
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              project_id: string
+              to_id: string
+              from_id: string
+              transfer_id: string
+              amount: number
+              donor_notes: Json
+            }
+            Returns: undefined
+          }
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
