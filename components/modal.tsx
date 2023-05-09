@@ -5,7 +5,11 @@ export function Modal(props: { open: boolean; children: React.ReactNode }) {
   const { open, children } = props
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={() => {}}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-10 overflow-y-auto"
+        onClose={() => {}}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -18,8 +22,8 @@ export function Modal(props: { open: boolean; children: React.ReactNode }) {
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </Transition.Child>
 
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+        <div className="fixed inset-0 z-10 w-full overflow-y-auto">
+          <div className="flex min-h-full w-full items-center justify-center p-4 text-center sm:p-0">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
