@@ -46,13 +46,11 @@ export default async function handler(req: NextRequest) {
   ) {
     return NextResponse.error()
   }
-
   const slug = await projectSlugify(title, supabase)
   const id = uuid()
   const toProfile = toUsername
     ? await getProfileByUsername(supabase, toUsername)
     : null
-
   if (!toProfile && toUsername) {
     return NextResponse.error()
   }
@@ -66,7 +64,7 @@ export default async function handler(req: NextRequest) {
     funding_goal: amount,
     founder_portion: TOTAL_SHARES,
     type: 'grant' as Project['type'],
-    stage: 'active',
+    stage: toEmail ? 'hidden' : 'active',
     round: 'Regrants',
     slug,
   }
