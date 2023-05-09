@@ -39,9 +39,6 @@ export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
                       addSuffix: true,
                     })}
                   </span>
-                  {txn.notes && (
-                    <DonorNotes donorNotes={txn.notes} donor={txn.profiles} />
-                  )}
                 </Row>
               </Row>
             )
@@ -53,38 +50,5 @@ export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
         </p>
       )}{' '}
     </>
-  )
-}
-
-function DonorNotes(props: { donorNotes: Json; donor: Profile }) {
-  const { donorNotes, donor } = props
-  const [open, setOpen] = useState(false)
-
-  return (
-    <div>
-      <IconButton
-        onClick={async () => {
-          setOpen(true)
-        }}
-      >
-        <InformationCircleIcon className="h-6 w-6 text-gray-500" />
-      </IconButton>
-      <Modal open={open}>
-        <div>
-          <p>{donor.full_name}&apos;s notes:</p>
-          <RichContent content={donorNotes} />
-        </div>
-        <div className="sm:flex-2 mt-5 flex flex-col gap-3 sm:mt-6 sm:flex-row">
-          <Button
-            type="button"
-            color={'gray'}
-            className="inline-flex w-full justify-center sm:col-start-1"
-            onClick={() => setOpen(false)}
-          >
-            Close
-          </Button>
-        </div>
-      </Modal>
-    </div>
   )
 }

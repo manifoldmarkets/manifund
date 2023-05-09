@@ -125,19 +125,19 @@ function Comment(props: {
 }) {
   const { comment, writtenByCreator } = props
   return (
-    <div className="w-11/12">
-      <Row className="justify-between gap-2">
+    <div className="">
+      <Row className="w-full justify-between gap-2">
         <UserAvatarAndBadge
           profile={comment.profiles}
           creatorBadge={writtenByCreator}
         />
-        <div className="text-sm text-gray-500">
+        <div className=" text-sm text-gray-500">
           {formatDistanceToNow(new Date(comment.created_at), {
             addSuffix: true,
           })}
         </div>
       </Row>
-      <div className="relative left-8">
+      <div className="relative left-8 w-11/12">
         <RichContent content={comment.content} />
       </div>
     </div>

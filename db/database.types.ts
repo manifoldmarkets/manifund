@@ -49,6 +49,7 @@ export interface Database {
           id: string
           project: string
           replying_to: string | null
+          txn_id: string | null
         }
         Insert: {
           commenter: string
@@ -57,6 +58,7 @@ export interface Database {
           id?: string
           project: string
           replying_to?: string | null
+          txn_id?: string | null
         }
         Update: {
           commenter?: string
@@ -65,6 +67,7 @@ export interface Database {
           id?: string
           project?: string
           replying_to?: string | null
+          txn_id?: string | null
         }
       }
       profiles: {
@@ -108,7 +111,7 @@ export interface Database {
       project_transfers: {
         Row: {
           created_at: string
-          donor_notes: Json | null
+          donor_comment_id: string | null
           grant_amount: number | null
           id: string
           project_id: string
@@ -117,7 +120,7 @@ export interface Database {
         }
         Insert: {
           created_at?: string
-          donor_notes?: Json | null
+          donor_comment_id?: string | null
           grant_amount?: number | null
           id?: string
           project_id: string
@@ -126,7 +129,7 @@ export interface Database {
         }
         Update: {
           created_at?: string
-          donor_notes?: Json | null
+          donor_comment_id?: string | null
           grant_amount?: number | null
           id?: string
           project_id?: string
@@ -252,7 +255,6 @@ export interface Database {
           created_at: string
           from_id: string | null
           id: string
-          notes: Json | null
           project: string | null
           to_id: string
           token: string
@@ -263,7 +265,6 @@ export interface Database {
           created_at?: string
           from_id?: string | null
           id?: string
-          notes?: Json | null
           project?: string | null
           to_id: string
           token: string
@@ -274,7 +275,6 @@ export interface Database {
           created_at?: string
           from_id?: string | null
           id?: string
-          notes?: Json | null
           project?: string | null
           to_id?: string
           token?: string
@@ -298,6 +298,18 @@ export interface Database {
       }
     }
     Functions: {
+      _transfer_project: {
+        Args: {
+          project_id: string
+          to_id: string
+          from_id: string
+          transfer_id: string
+          amount: number
+          txn_id: string
+          donor_comment_id?: string
+        }
+        Returns: undefined
+      }
       get_user_balances: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -325,6 +337,18 @@ export interface Database {
               transfer_id: string
               amount: number
               donor_notes: Json
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              project_id: string
+              to_id: string
+              from_id: string
+              transfer_id: string
+              amount: number
+              donor_comment_id: string
+              txn_id?: string
             }
             Returns: undefined
           }
