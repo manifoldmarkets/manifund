@@ -26,13 +26,13 @@ const DESCRIPTION_OUTLINE = `
 `
 
 const REASONING_OUTLINE = `
-<h3>What are the main points in favor of this grant?</h3>
+<h3>Main points in favor of this grant:</h3>
 </br>
-<h3>What are your main reservations about this grant?</h3>
+<h3>Donor's main reservation's about this grant:</h3>
 </br>
-<h3>How did you choose to give this amount?</h3>
+<h3>Process for deciding grant amount:</h3>
 </br>
-<h3>Are there any conflicts of interest associated with this grant?</h3>
+<h3>Conflicts of interest associated with this grant:</h3>
 <p>Please disclose e.g. any romantic, professional, financial, housemate, or familial relationships you have with the grant recipient(s).</p>
 </br>
 `
