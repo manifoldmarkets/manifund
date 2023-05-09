@@ -12,7 +12,7 @@ export const SignInButton = () => {
         'mx-auto mt-4 max-w-md bg-gradient-to-r'
       )}
     >
-      Sign in to invest
+      Sign in to contribute
     </Link>
   )
 }
