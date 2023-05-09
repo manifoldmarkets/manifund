@@ -116,7 +116,7 @@ function ProjectCardFooter(props: {
           {sortedTxns.length > 0 && (
             <span className="mb-1 text-gray-600">
               <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
-              Last traded{' '}
+              {project.type === 'cert' ? 'Last traded' : 'Last donation'}{' '}
               <span className="text-black">
                 {formatDistanceToNow(lastTraded, {
                   addSuffix: true,
