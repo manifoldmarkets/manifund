@@ -88,31 +88,3 @@ export async function ProfileSummary(props: { profile: Profile }) {
     </div>
   )
 }
-
-export const CreateProjectButton = () => {
-  return (
-    <Link
-      href="/create"
-      className={clsx(
-        buttonClass('xl', 'gradient'),
-        'mt-4 w-full bg-gradient-to-r'
-      )}
-    >
-      Create a Project
-    </Link>
-  )
-}
-
-export const GiveGrantButton = () => {
-  return (
-    <Link
-      href="/create-grant"
-      className={clsx(
-        buttonClass('xl', 'gradient'),
-        'mt-4 w-full bg-gradient-to-r'
-      )}
-    >
-      Give a Grant
-    </Link>
-  )
-}
