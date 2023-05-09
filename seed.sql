@@ -279,6 +279,7 @@ create table public.project_transfers (
   project_id uuid not null references public.projects(id) on delete cascade,
   transferred boolean not null default false,
   grant_amount float8,
+  donor_notes jsonb,
   primary key (id)
 );
 
