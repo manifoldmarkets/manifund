@@ -41,6 +41,20 @@ export interface Database {
           valuation?: number
         }
       }
+      cars: {
+        Row: {
+          make: string | null
+          year: string | null
+        }
+        Insert: {
+          make?: string | null
+          year?: string | null
+        }
+        Update: {
+          make?: string | null
+          year?: string | null
+        }
+      }
       comments: {
         Row: {
           commenter: string
@@ -91,7 +105,7 @@ export interface Database {
           id?: string
           long_description?: Json | null
           regranter_status?: boolean
-          type?: Database["public"]["Enums"]["profile_type"]
+          type: Database["public"]["Enums"]["profile_type"]
           username: string
           website?: string | null
         }
@@ -110,7 +124,7 @@ export interface Database {
       }
       project_transfers: {
         Row: {
-          created_at: string
+          created_at: string | null
           donor_comment_id: string | null
           grant_amount: number | null
           id: string
@@ -119,7 +133,7 @@ export interface Database {
           transferred: boolean
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           donor_comment_id?: string | null
           grant_amount?: number | null
           id?: string
@@ -128,7 +142,7 @@ export interface Database {
           transferred?: boolean
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           donor_comment_id?: string | null
           grant_amount?: number | null
           id?: string
@@ -227,7 +241,7 @@ export interface Database {
           amount: number
           created_at: string
           customer_id: string
-          id: string
+          id: number
           session_id: string
           txn_id: string
         }
@@ -235,7 +249,7 @@ export interface Database {
           amount: number
           created_at?: string
           customer_id: string
-          id?: string
+          id?: number
           session_id: string
           txn_id: string
         }
@@ -243,7 +257,7 @@ export interface Database {
           amount?: number
           created_at?: string
           customer_id?: string
-          id?: string
+          id?: number
           session_id?: string
           txn_id?: string
         }
@@ -298,6 +312,29 @@ export interface Database {
       }
     }
     Functions: {
+      _create_car: {
+        Args: {
+          car: Database["public"]["CompositeTypes"]["car_type"]
+        }
+        Returns: undefined
+      }
+      _create_grant:
+        | {
+            Args: {
+              project: Database["public"]["CompositeTypes"]["project_row"]
+              donor_comment: Database["public"]["CompositeTypes"]["comment_row"][]
+              donation: Database["public"]["CompositeTypes"]["txn_row"]
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              project: Database["public"]["CompositeTypes"]["project_row"]
+              donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
+              donation: Database["public"]["CompositeTypes"]["txn_row"]
+            }
+            Returns: undefined
+          }
       _transfer_project: {
         Args: {
           project_id: string
@@ -310,13 +347,28 @@ export interface Database {
         }
         Returns: undefined
       }
-      get_user_balances: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          id: number
-          username: string
-          balance: number
-        }[]
+      create_grant:
+        | {
+            Args: {
+              donation: Database["public"]["CompositeTypes"]["txn_row"]
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              project: Database["public"]["CompositeTypes"]["project_row"]
+              donor_comment: Database["public"]["CompositeTypes"]["comment_row"][]
+              donation: Database["public"]["CompositeTypes"]["txn_row"]
+            }
+            Returns: undefined
+          }
+      give_grant: {
+        Args: {
+          project: Database["public"]["CompositeTypes"]["project_row"]
+          donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
+          donation: Database["public"]["CompositeTypes"]["txn_row"]
+        }
+        Returns: undefined
       }
       transfer_project:
         | {
@@ -347,8 +399,8 @@ export interface Database {
               from_id: string
               transfer_id: string
               amount: number
-              donor_comment_id: string
-              txn_id?: string
+              txn_id: string
+              donor_comment_id?: string
             }
             Returns: undefined
           }
@@ -360,7 +412,43 @@ export interface Database {
       project_type: "grant" | "cert"
     }
     CompositeTypes: {
-      [_ in never]: never
+      blah: {
+        token: string
+        boken: string
+      }
+      car_type: {
+        make: string
+        year: string
+      }
+      comment_row: {
+        id: string
+        project: string
+        commenter: string
+        content: Json
+        txn_id: string
+      }
+      project_row: {
+        id: string
+        creator: string
+        title: string
+        blurb: string
+        description: Json
+        min_funding: number
+        funding_goal: number
+        founder_portion: number
+        type: Database["public"]["Enums"]["project_type"]
+        stage: string
+        round: string
+        slug: string
+      }
+      txn_row: {
+        id: string
+        project: string
+        amount: number
+        from_id: string
+        to_id: string
+        token: string
+      }
     }
   }
 }

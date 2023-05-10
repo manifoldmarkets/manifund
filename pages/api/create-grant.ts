@@ -67,16 +67,15 @@ export default async function handler(req: NextRequest) {
     round: 'Regrants',
     slug,
   }
-  const donorComment = {
-    id: uuid(),
-    project: project.id,
-    commenter: regranter.id,
-    content: donorNotes,
-    txn_id: toProfile ? uuid() : null,
-  }
-  await supabase.from('projects').insert([project]).throwOnError()
-  await supabase.from('comments').insert([donorComment]).throwOnError()
+  // await supabase.from('projects').insert([project]).throwOnError()
+  // await supabase.from('comments').insert([donorComment]).throwOnError()
   if (toEmail) {
+    const donorComment = {
+      id: uuid(),
+      project: project.id,
+      commenter: regranter.id,
+      content: donorNotes,
+    }
     const projectTransfer = {
       to_email: toEmail,
       project_id: project.id,
@@ -101,6 +100,13 @@ export default async function handler(req: NextRequest) {
       toEmail
     )
   } else if (toProfile) {
+    const donorComment = {
+      id: uuid(),
+      project: project.id,
+      commenter: regranter.id,
+      content: donorNotes,
+      txn_id: uuid(),
+    }
     const donation = {
       id: donorComment.txn_id as string,
       project: project.id,
@@ -109,7 +115,14 @@ export default async function handler(req: NextRequest) {
       to_id: toProfile.id,
       token: 'USD',
     }
-    await supabase.from('txns').insert([donation]).throwOnError()
+    await supabase
+      .rpc('give_grant', {
+        project: project,
+        donor_comment: donorComment,
+        donation: donation,
+      })
+      .throwOnError()
+    // await supabase.from('txns').insert([donation]).throwOnError()
     const postmarkVars = {
       amount: amount,
       regranterName: regranterProfile.full_name,
