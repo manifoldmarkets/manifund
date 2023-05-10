@@ -362,6 +362,14 @@ export interface Database {
             }
             Returns: undefined
           }
+      create_transfer_grant: {
+        Args: {
+          project: Database["public"]["CompositeTypes"]["project_row"]
+          donor_comment: Database["public"]["CompositeTypes"]["comment_row_txnless"]
+          project_transfer: Database["public"]["CompositeTypes"]["transfer_row"]
+        }
+        Returns: undefined
+      }
       give_grant: {
         Args: {
           project: Database["public"]["CompositeTypes"]["project_row"]
@@ -427,6 +435,12 @@ export interface Database {
         content: Json
         txn_id: string
       }
+      comment_row_txnless: {
+        id: string
+        project: string
+        commenter: string
+        content: Json
+      }
       project_row: {
         id: string
         creator: string
@@ -440,6 +454,12 @@ export interface Database {
         stage: string
         round: string
         slug: string
+      }
+      transfer_row: {
+        to_email: string
+        project_id: string
+        grant_amount: number
+        donor_comment_id: string
       }
       txn_row: {
         id: string

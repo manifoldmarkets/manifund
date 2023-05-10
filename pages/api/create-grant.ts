@@ -82,10 +82,11 @@ export default async function handler(req: NextRequest) {
       grant_amount: amount,
       donor_comment_id: donorComment.id,
     }
-    await supabase
-      .from('project_transfers')
-      .insert([projectTransfer])
-      .throwOnError()
+    await supabase.rpc('create_transfer_grant', {
+      project: project,
+      donor_comment: donorComment,
+      project_transfer: projectTransfer,
+    })
     const postmarkVars = {
       amount: amount,
       regranterName: regranterProfile.full_name,
@@ -108,7 +109,7 @@ export default async function handler(req: NextRequest) {
       txn_id: uuid(),
     }
     const donation = {
-      id: donorComment.txn_id as string,
+      id: donorComment.txn_id,
       project: project.id,
       amount: amount,
       from_id: regranter.id,

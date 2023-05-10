@@ -80,12 +80,14 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         </Description>
       )}
       {isOwnProject && <EditDescription project={project} />}
-      <Divider />
       {project.stage === 'proposal' && (
-        <ProposalData
-          project={project}
-          bids={project.bids.filter((bid) => bid.status === 'pending')}
-        />
+        <>
+          <Divider />
+          <ProposalData
+            project={project}
+            bids={project.bids.filter((bid) => bid.status === 'pending')}
+          />
+        </>
       )}
       {profile !== null && project.type === 'cert' && (
         <PlaceBid

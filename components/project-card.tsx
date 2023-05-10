@@ -162,11 +162,8 @@ export function ProjectCardHeader(props: {
         <div className="h-1" />
         <UserAvatarAndBadge profile={creator} />
         {projectTransfer && (
-          <Row>
+          <Row className="gap-1">
             <Tag text={'PENDING TRANSFER'} className="mt-1" color="orange" />
-            <span className="text-sm text-gray-500">
-              to {projectTransfer.to_email}
-            </span>
           </Row>
         )}
       </div>
