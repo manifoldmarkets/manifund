@@ -12,7 +12,7 @@ import { getProjectsByUser, Project } from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
 import { getBidsByUser } from '@/db/bid'
 
-export const revalidate = 0
+export const revalidate = 30
 
 export type Investment = {
   project?: Project // Undefined eg for txns that are just transfers of money
