@@ -5,8 +5,7 @@ import SupabaseProvider from '@/db/supabase-provider'
 import { createServerClient } from '@/db/supabase-server'
 import './globals.css'
 import Sidebar from './sidebar'
-import { Poiret_One, Readex_Pro, Josefin_Slab } from '@next/font/google'
-import BetaBanner from './beta-banner'
+import { Readex_Pro, Josefin_Slab } from '@next/font/google'
 import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
 
@@ -17,8 +16,8 @@ const josefin = Josefin_Slab({
 })
 const fontVars = [readex.variable, josefin.variable].join(' ')
 
-// do not cache this layout
-export const revalidate = 0
+// Do not cache this layout
+export const revalidate = 30
 
 export const metadata = {
   title: {

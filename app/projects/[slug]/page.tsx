@@ -21,7 +21,7 @@ import { ProjectCardHeader } from '@/components/project-card'
 import { calculateUserFundsAndShares } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 
-export const revalidate = 0
+export const revalidate = 30
 
 export async function generateMetadata(props: { params: { slug: string } }) {
   const { slug } = props.params

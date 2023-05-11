@@ -2,7 +2,7 @@ import { createServerClient } from '@/db/supabase-server'
 import { getUser, getProfileById } from '@/db/profile'
 import { EditProfileForm } from './edit-profile'
 
-export const revalidate = 0
+export const revalidate = 30
 
 export default async function Page() {
   const supabase = createServerClient()
