@@ -2,7 +2,7 @@ import { Bid, getBidsByUser } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
-import { getTxnAndProjectsByUser, Txn, TxnAndProfiles } from '@/db/txn'
+import { getFullTxnsByUser, Txn, TxnAndProfiles } from '@/db/txn'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { orderBy } from 'lodash'
 
@@ -126,7 +126,7 @@ export async function calculateUserFundsAndShares(
   if (!userId) {
     return { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
   }
-  const txns = await getTxnAndProjectsByUser(supabase, userId)
+  const txns = await getFullTxnsByUser(supabase, userId)
   const userBids = await getBidsByUser(supabase, userId)
   const calculateUserShares = () => {
     let userShares = 0
