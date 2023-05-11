@@ -4,7 +4,7 @@ import { Profile } from './profile'
 import { Project } from './project'
 
 export type Txn = Database['public']['Tables']['txns']['Row']
-export type TxnAndProject = Txn & { projects?: Project }
+export type FullTxn = Txn & { projects?: Project } & { profiles?: Profile }
 export type TxnAndProfiles = Txn & { profiles?: Profile }
 
 export function isAdmin(user: User | null) {
@@ -12,7 +12,7 @@ export function isAdmin(user: User | null) {
   return ADMINS.includes(user?.email ?? '')
 }
 
-export async function getTxnAndProjectsByUser(
+export async function getFullTxnsByUser(
   supabase: SupabaseClient,
   user: string
 ) {
@@ -21,12 +21,12 @@ export async function getTxnAndProjectsByUser(
   }
   const { data, error } = await supabase
     .from('txns')
-    .select('*, projects(*)')
+    .select('*, projects(*), profiles!txns_to_id_fkey(*)')
     .or(`from_id.eq.${user},to_id.eq.${user}`)
   if (error) {
     throw error
   }
-  return (data as TxnAndProject[]) ?? ([] as TxnAndProject[])
+  return (data as FullTxn[]) ?? ([] as FullTxn[])
 }
 
 export async function getTxnsByUser(supabase: SupabaseClient, user: string) {

@@ -2,20 +2,20 @@
 import { Project } from '@/db/project'
 import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
-import type { Investment } from './page'
 import { formatMoney } from '@/utils/formatting'
+import { Investment } from './profile-tabs'
 
 export function Investments(props: { investments: Investment[] }) {
   const { investments } = props
   const investmentsDisplay = investments
-    .filter((investment) => investment.num_shares !== 0 && investment.project)
+    .filter((investment) => investment.numShares !== 0 && investment.project)
     .map((investment) =>
       investment.project ? (
         <li key={investment.project.id}>
           <InvestmentsDisplay
             project={investment.project}
-            amount={investment.price_usd}
-            numShares={investment.num_shares}
+            amount={investment.priceUsd}
+            numShares={investment.numShares}
           />
         </li>
       ) : null

@@ -3,8 +3,7 @@ import { Profile, ProfileAndBids } from '@/db/profile'
 import { useSearchParams } from 'next/navigation'
 import { Bid, BidAndProject } from '@/db/bid'
 import { Tabs } from '@/components/tabs'
-import { FullProject } from '@/db/project'
-import { Investment } from './page'
+import { FullProject, Project } from '@/db/project'
 import { ProposalBids } from './user-proposal-bids'
 import { ActiveBids } from './user-active-bids'
 import { Investments } from './user-investments'
@@ -12,7 +11,7 @@ import { Projects } from './user-projects'
 import { RichContent } from '@/components/editor'
 import { BalanceDisplay } from './balance-display'
 import { calculateUserBalance, calculateUserSpendableFunds } from '@/utils/math'
-import { Txn, TxnAndProject } from '@/db/txn'
+import { Txn, FullTxn } from '@/db/txn'
 import { sortBy } from 'lodash'
 import { BANK_ID } from '@/db/env'
 import { DonateBox } from '@/components/donate-box'
@@ -21,13 +20,11 @@ export function ProfileTabs(props: {
   profile: Profile
   projects: FullProject[]
   bids: BidAndProject[]
-  investments: Investment[]
-  txns: TxnAndProject[]
+  txns: FullTxn[]
   userProfile: ProfileAndBids | null
   userTxns: Txn[] | null
 }) {
-  const { profile, projects, bids, investments, txns, userProfile, userTxns } =
-    props
+  const { profile, projects, bids, txns, userProfile, userTxns } = props
   const isOwnProfile = userProfile?.id === profile.id
   const proposalBids = bids.filter(
     (bid) => bid.projects.stage === 'proposal' && bid.status === 'pending'
@@ -35,6 +32,7 @@ export function ProfileTabs(props: {
   const activeBids = bids.filter(
     (bid) => bid.projects.stage === 'active' && bid.status === 'pending'
   )
+  const investments = compileInvestments(txns, profile.id)
   const notOwnProjectInvestments = investments.filter((investment) => {
     return investment.project && investment.project.creator !== profile.id
   })
@@ -154,7 +152,7 @@ function calculateWithdrawBalance(
       nonWithdrawBalance += bid.amount
     }
   })
-
+  console.log(balance, nonWithdrawBalance)
   return Math.max(balance - nonWithdrawBalance, 0)
 }
 
@@ -170,7 +168,8 @@ type TxnType =
   | 'outgoing project donation'
   | 'non-dollar'
 
-function categorizeTxn(txn: TxnAndProject, userId: string) {
+function categorizeTxn(txn: FullTxn, userId: string) {
+  console.log('bank id', BANK_ID)
   if (txn.token === 'USD') {
     if (txn.to_id === userId) {
       if (txn.project) {
@@ -236,4 +235,43 @@ function txnCharitable(txnType: TxnType, accreditationStatus: boolean) {
     return true
   }
   return false
+}
+
+export type Investment = {
+  project?: Project // Undefined eg for txns that are just transfers of money
+  numShares: number
+  priceUsd: number
+}
+function compileInvestments(txns: FullTxn[], userId: string) {
+  const projectTxns = txns.filter((txn) => txn.project)
+  let investments: Investment[] = []
+
+  projectTxns.forEach((txn) => {
+    let aggInvestment = investments.find(
+      (investment) => investment.project?.id === txn.project
+    )
+    const incoming = txn.to_id === userId
+    if (txn.token === 'USD') {
+      if (aggInvestment) {
+        aggInvestment.priceUsd += incoming ? txn.amount : -txn.amount
+      } else {
+        investments.push({
+          project: txn.projects,
+          numShares: 0,
+          priceUsd: incoming ? txn.amount : -txn.amount,
+        })
+      }
+    } else {
+      if (aggInvestment) {
+        aggInvestment.numShares += incoming ? txn.amount : -txn.amount
+      } else {
+        investments.push({
+          project: txn.projects,
+          numShares: incoming ? txn.amount : -txn.amount,
+          priceUsd: 0,
+        })
+      }
+    }
+  })
+  return investments as Investment[]
 }
