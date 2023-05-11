@@ -7,7 +7,7 @@ import { InvestorTypeTag, RegranterTag } from '@/components/tags'
 import { addHttpToUrl } from '@/utils/formatting'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -17,7 +17,6 @@ export function ProfileHeader(props: {
 }) {
   const { profile, isOwnProfile } = props
   const website = addHttpToUrl(profile.website ?? '')
-  // Doesn't change when you change window size
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   useEffect(() => {
     const handleWindowResize = () => {

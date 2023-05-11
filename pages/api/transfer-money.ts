@@ -49,14 +49,20 @@ export default async function handler(req: NextRequest) {
     const PROJECT_DONATION_TEMPLATE_ID = 31534853
     await sendTemplateEmail(PROJECT_DONATION_TEMPLATE_ID, postmarkVars, toId)
   } else {
-    const regranterProfile = await getProfileById(supabaseAdmin, toId)
-    const postmarkVars = {
-      amount: amount,
-      donorName: donor.full_name,
-      profileUrl: `${getURL()}/${regranterProfile.username}`,
+    const profile = await getProfileById(supabaseAdmin, toId)
+    if (profile.type === 'individual') {
+      const postmarkVars = {
+        amount: amount,
+        donorName: donor.full_name,
+        profileUrl: `${getURL()}/${profile.username}`,
+      }
+      const REGRANTER_DONATION_TEMPLATE_ID = 31571248
+      await sendTemplateEmail(
+        REGRANTER_DONATION_TEMPLATE_ID,
+        postmarkVars,
+        toId
+      )
     }
-    const REGRANTER_DONATION_TEMPLATE_ID = 31571248
-    await sendTemplateEmail(REGRANTER_DONATION_TEMPLATE_ID, postmarkVars, toId)
   }
 
   if (error) {
