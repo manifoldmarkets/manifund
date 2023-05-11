@@ -14,6 +14,8 @@ import { useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import clsx from 'clsx'
 import { Card } from '@/components/card'
+import { Col } from '@/components/layout/col'
+import { Tooltip } from '@/components/tooltip'
 
 export function Comments(props: {
   project: Project
@@ -42,30 +44,28 @@ export function Comments(props: {
   const commentsDisplay = threads.map((thread) => (
     <div key={thread.root.id}>
       <Row className="w-full">
-        <div className="MT w-full">
-          <Card
-            className={clsx('mt-2', user ?? 'pb-4', 'my-1 p-5 shadow-none')}
-          >
-            <Comment
-              comment={thread.root}
-              writtenByCreator={thread.root.commenter === project.creator}
-            />
-            {user && (
-              <Row className="w-full justify-end">
+        <div className="w-full">
+          <Comment
+            comment={thread.root}
+            writtenByCreator={thread.root.commenter === project.creator}
+          />
+          {user && (
+            <Row className="w-full justify-end">
+              <Tooltip text="Reply">
                 <IconButton onClick={() => setReplyingTo(thread.root)}>
-                  <ArrowUturnRightIcon className="h-5 w-5 rotate-180 text-gray-500 hover:text-gray-700" />
+                  <ArrowUturnRightIcon className="relative bottom-2 h-4 w-4 rotate-180 text-gray-500 hover:text-gray-700" />
                 </IconButton>
-              </Row>
-            )}
-          </Card>
+              </Tooltip>
+            </Row>
+          )}
 
           {thread.replies.map((reply) => (
-            <Card key={reply.id} className="ml-8 mt-1 shadow-none">
+            <div className="ml-8 mt-1" key={reply.id}>
               <Comment
                 comment={reply}
                 writtenByCreator={reply.commenter === project.creator}
               />
-            </Card>
+            </div>
           ))}
           {replyingTo?.id === thread.root.id && user && (
             <div className="mt-1 ml-8">
@@ -83,11 +83,8 @@ export function Comments(props: {
   return (
     <div>
       {user && (
-        <div>
-          <div className="flex gap-3">
-            <WriteComment project={project} commenter={user} />
-          </div>
-          <Divider />
+        <div className="mb-5">
+          <WriteComment project={project} commenter={user} />
         </div>
       )}
       {commentsDisplay}
@@ -125,20 +122,23 @@ function Comment(props: {
 }) {
   const { comment, writtenByCreator } = props
   return (
-    <div className="w-11/12">
-      <Row className="justify-between gap-2">
-        <UserAvatarAndBadge
-          profile={comment.profiles}
-          creatorBadge={writtenByCreator}
-        />
-        <div className="text-sm text-gray-500">
+    <div>
+      <Row className="w-full items-center justify-between gap-2">
+        <Row className="items-center gap-1">
+          <UserAvatarAndBadge
+            profile={comment.profiles}
+            creatorBadge={writtenByCreator}
+            className="text-sm text-gray-800"
+          />
+        </Row>
+        <Col className="items-center text-xs text-gray-500">
           {formatDistanceToNow(new Date(comment.created_at), {
             addSuffix: true,
           })}
-        </div>
+        </Col>
       </Row>
-      <div className="relative left-8">
-        <RichContent content={comment.content} />
+      <div className="relative left-8 w-11/12">
+        <RichContent content={comment.content} size="sm" />
       </div>
     </div>
   )
