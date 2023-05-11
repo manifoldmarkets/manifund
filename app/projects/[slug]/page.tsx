@@ -4,11 +4,7 @@ import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
 import { EditDescription } from './edit-description'
-import {
-  getFullProjectBySlug,
-  getProjectBySlug,
-  TOTAL_SHARES,
-} from '@/db/project'
+import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
 import { getActiveValuation, getProposalValuation } from '@/utils/math'
@@ -21,7 +17,7 @@ import { ProjectCardHeader } from '@/components/project-card'
 import { calculateUserFundsAndShares } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 
-export const revalidate = 30
+export const revalidate = 0
 
 export async function generateMetadata(props: { params: { slug: string } }) {
   const { slug } = props.params

@@ -6,7 +6,7 @@ import { RoundData } from '@/components/round-data'
 import Image from 'next/image'
 import { getRegranters } from '@/db/profile'
 
-export const revalidate = 30
+export const revalidate = 0
 
 export async function generateMetadata(props: {
   params: { roundSlug: string }
