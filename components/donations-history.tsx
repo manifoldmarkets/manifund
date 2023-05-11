@@ -2,12 +2,12 @@ import { Profile } from '@/db/profile'
 import { TxnAndProfiles } from '@/db/txn'
 import { formatMoney } from '@/utils/formatting'
 import { formatDistanceToNow } from 'date-fns'
-import { sortBy } from 'lodash'
+import { orderBy } from 'lodash'
 import { UserAvatarAndBadge } from './user-link'
 
 export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
   const { donations } = props
-  const sortedDonations = sortBy(donations, (txn) => -txn.created_at)
+  const sortedDonations = orderBy(donations, 'created_at', 'desc')
   return (
     <>
       {donations.length > 0 ? (

@@ -15,6 +15,7 @@ import { Txn, FullTxn } from '@/db/txn'
 import { sortBy } from 'lodash'
 import { BANK_ID } from '@/db/env'
 import { DonateBox } from '@/components/donate-box'
+import { OutgoingDonationsHistory } from './user-donations'
 
 export function ProfileTabs(props: {
   profile: Profile
@@ -35,6 +36,13 @@ export function ProfileTabs(props: {
   const investments = compileInvestments(txns, profile.id)
   const notOwnProjectInvestments = investments.filter((investment) => {
     return investment.project && investment.project.creator !== profile.id
+  })
+  const donations = txns.filter((txn) => {
+    const txnType = categorizeTxn(txn, profile.id)
+    return (
+      txnType === 'outgoing cash transfer' ||
+      txnType === 'outgoing project donation'
+    )
   })
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
@@ -87,14 +95,17 @@ export function ProfileTabs(props: {
           accredited={profile.accreditation_status}
           isOwnProfile={isOwnProfile ?? undefined}
         />
-        {proposalBids.length > 0 && (
-          <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
+        {donations.length > 0 && (
+          <OutgoingDonationsHistory donations={donations} />
+        )}
+        {notOwnProjectInvestments.length > 0 && (
+          <Investments investments={notOwnProjectInvestments} />
         )}
         {activeBids.length > 0 && (
           <ActiveBids bids={activeBids} isOwnProfile={isOwnProfile} />
         )}
-        {notOwnProjectInvestments.length > 0 && (
-          <Investments investments={notOwnProjectInvestments} />
+        {proposalBids.length > 0 && (
+          <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
         )}
       </div>
     ),
@@ -169,7 +180,6 @@ type TxnType =
   | 'non-dollar'
 
 function categorizeTxn(txn: FullTxn, userId: string) {
-  console.log('bank id', BANK_ID)
   if (txn.token === 'USD') {
     if (txn.to_id === userId) {
       if (txn.project) {
