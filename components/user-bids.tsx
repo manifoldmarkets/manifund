@@ -23,7 +23,7 @@ export function UserBidDisplay(props: {
   const router = useRouter()
   return (
     <div className="group flex justify-between px-5 py-4 hover:bg-gray-50 sm:px-6">
-      <Link href={`/projects/${project.slug}`} className="w-full">
+      <Link href={`/projects/${project.slug}/?tab=bids`} className="w-full">
         <div className="flex items-center justify-between">
           <p className="text-md text-md truncate text-orange-600">
             {project.title}
