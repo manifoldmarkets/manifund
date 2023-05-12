@@ -40,7 +40,9 @@ export default async function handler(
       throw error
     }
   }
+  console.log('about to add shares txn')
   addSharesTxn()
+  console.log('added shares txn')
   const addUSDTxn = async () => {
     const { error } = await supabase.from('txns').insert({
       amount: usdTraded,
@@ -54,7 +56,9 @@ export default async function handler(
       throw error
     }
   }
+  console.log('about to add usd txn')
   addUSDTxn()
+  console.log('added usd txn')
   updateBidOnTrade(oldBid, usdTraded, supabase)
   if (newBid) {
     updateBidOnTrade(newBid, usdTraded, supabase)
