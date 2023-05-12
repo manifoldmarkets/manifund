@@ -35,18 +35,21 @@ export default async function handler(
     commenterAvatarUrl: fullComment.profiles.avatar_url,
     htmlContent: JSON.stringify(htmlContent),
   }
-  const sendCreatorEmail = async () => {
+
+  // Send creator email
+  if (fullComment.profiles.id !== fullComment.projects.creator) {
     await sendTemplateEmail(
       NEW_COMMENT_TEMPLATE_ID,
       postmarkVars,
       fullComment.projects.creator
     )
   }
-  if (fullComment.profiles.id !== fullComment.projects.creator) {
-    await sendCreatorEmail()
-  }
 
-  const sendInvestorEmail = async () => {
+  // Send investor email
+  if (
+    fullComment.profiles.id === fullComment.projects.creator &&
+    !comment.replying_to
+  ) {
     const txnsAndProfiles = await getTxnsByProject(
       supabaseAdmin,
       fullComment.projects.id
@@ -64,37 +67,26 @@ export default async function handler(
       }
     })
   }
-  if (
-    fullComment.profiles.id === fullComment.projects.creator &&
-    !comment.replying_to
-  ) {
-    await sendInvestorEmail()
-  }
 
-  const sendMentionEmails = async () => {
-    mentionedUserIds.forEach(async (userId) => {
-      if (
-        userId !== fullComment.profiles.id &&
-        userId !== fullComment.projects.creator
-      ) {
-        const COMMENT_WITH_MENTION_TEMPLATE_ID = 31350706
-        await sendTemplateEmail(
+  // Send mentioned user emails
+  const COMMENT_WITH_MENTION_TEMPLATE_ID = 31350706
+  await Promise.all(
+    mentionedUserIds
+      .filter(
+        (userId) =>
+          userId !== fullComment.profiles.id &&
+          userId !== fullComment.projects.creator
+      )
+      .map((userId) =>
+        sendTemplateEmail(
           COMMENT_WITH_MENTION_TEMPLATE_ID,
           postmarkVars,
           userId
         )
-      }
-    })
-  }
-  await sendMentionEmails()
+      )
+  )
 
-  const sendReplyEmail = async (parentComment: Comment) => {
-    await sendTemplateEmail(
-      NEW_COMMENT_TEMPLATE_ID,
-      postmarkVars,
-      parentComment.commenter
-    )
-  }
+  // Send parent commenter email
   if (comment.replying_to) {
     const parentComment = await getFullCommentById(
       supabaseAdmin,
@@ -104,7 +96,11 @@ export default async function handler(
       parentComment.commenter !== fullComment.projects.creator &&
       !mentionedUserIds.includes(parentComment.profiles.id)
     ) {
-      await sendReplyEmail(parentComment)
+      await sendTemplateEmail(
+        NEW_COMMENT_TEMPLATE_ID,
+        postmarkVars,
+        parentComment.commenter
+      )
     }
   }
   res.status(200).json({

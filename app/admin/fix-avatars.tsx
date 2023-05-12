@@ -12,6 +12,7 @@ export function FixAvatars() {
           supabaseAdmin,
           await getCurrentAvatars(supabaseAdmin)
         )
+        console.log('done')
       }}
       disabled
     >
@@ -30,10 +31,7 @@ async function getCurrentAvatars(supabase: SupabaseClient) {
 }
 
 async function setAvatarUrls(supabase: SupabaseClient, userIds: string[]) {
-  userIds.forEach(async (userId) => {
-    await setAvatarUrl(supabase, userId)
-    console.log('set avatar for', userId)
-  })
+  await Promise.all(userIds.map((userId) => setAvatarUrl(supabase, userId)))
 }
 
 async function setAvatarUrl(supabase: SupabaseClient, userId: string) {

@@ -189,7 +189,7 @@ function Trade(props: {
     <div>
       <Button
         className="w-14"
-        onClick={async () => {
+        onClick={() => {
           setOpen(true)
         }}
       >
@@ -322,7 +322,7 @@ function DeleteBid(props: { bidId: string }) {
     <div>
       <Button
         className="w-14 bg-rose-500 hover:bg-rose-600"
-        onClick={async () => {
+        onClick={() => {
           setOpen(true)
         }}
       >
