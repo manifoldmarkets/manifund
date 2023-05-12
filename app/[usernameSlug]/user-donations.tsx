@@ -43,7 +43,7 @@ export function OutgoingDonationsHistory(props: { donations: FullTxn[] }) {
           ? donation.projects?.title
           : donation.profiles?.full_name}
       </td>
-      <td className="py-3 text-right">${donation.amount}</td>
+      <td className="py-3 px-3 text-right sm:px-0">${donation.amount}</td>
       <td className="hidden p-3 text-right text-gray-500 sm:block">
         {formatDistanceToNow(new Date(donation.created_at), {
           addSuffix: true,

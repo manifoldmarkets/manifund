@@ -73,7 +73,10 @@ export function ProfileTabs(props: {
       : 0
 
   const portfolioCount =
-    proposalBids.length + activeBids.length + notOwnProjectInvestments.length
+    proposalBids.length +
+    activeBids.length +
+    notOwnProjectInvestments.length +
+    donations.length
   tabs.push({
     name: 'Portfolio',
     href: '?tab=portfolio',
