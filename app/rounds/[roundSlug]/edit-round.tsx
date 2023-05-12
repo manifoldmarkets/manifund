@@ -49,7 +49,7 @@ export function EditRound(props: { round: Round }) {
     if (error) {
       console.error('saveHeaderImage', error)
     }
-    saveHeaderImageUrl(headerImageId)
+    await saveHeaderImageUrl(headerImageId)
   }
 
   async function saveHeaderImageUrl(headerImageId: string) {

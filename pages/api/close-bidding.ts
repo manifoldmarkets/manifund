@@ -37,20 +37,20 @@ export default async function handler(req: NextRequest) {
   let founderPortion = founderShares / TOTAL_SHARES
   const project = await getProjectById(supabase, id)
   const resolution = resolveBids(bids, minFunding, founderPortion)
-  sendAuctionCloseEmails(
+  await sendAuctionCloseEmails(
     bids,
     project,
     resolution,
     founderShares / TOTAL_SHARES
   )
   if (resolution.valuation === -1) {
-    updateProjectStage(supabase, id, 'not funded')
-    updateBidsStatus(supabase, bids, resolution)
+    await updateProjectStage(supabase, id, 'not funded')
+    await updateBidsStatus(supabase, bids, resolution)
     return NextResponse.json('project not funded')
   } else {
-    updateProjectStage(supabase, id, 'active')
-    addTxns(supabase, id, bids, resolution, creator)
-    updateBidsStatus(supabase, bids, resolution)
+    await updateProjectStage(supabase, id, 'active')
+    await addTxns(supabase, id, bids, resolution, creator)
+    await updateBidsStatus(supabase, bids, resolution)
     return NextResponse.json('project funded!')
   }
 }

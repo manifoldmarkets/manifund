@@ -40,8 +40,9 @@ export function EditProfileForm(props: { profile: Profile }) {
     const newUsername = googleFullname.replace(/\W/g, '')
     setUsername(newUsername)
     setFullName(googleFullname)
-    // Just save their profile now, in the background.
-    /* no await */ saveProfile(
+    // Just save their profile now, in the background. No await here.
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    saveProfile(
       {
         ...profile,
         username: newUsername,
