@@ -43,9 +43,7 @@ export default async function handler(req: NextRequest) {
       })
       .throwOnError()
   }
-  console.log('about to add shares txn')
   await addSharesTxn()
-  console.log('added shares txn')
   const addUSDTxn = async () => {
     await supabase
       .from('txns')
@@ -59,9 +57,7 @@ export default async function handler(req: NextRequest) {
       })
       .throwOnError()
   }
-  console.log('about to add usd txn')
   await addUSDTxn()
-  console.log('added usd txn')
   updateBidOnTrade(oldBid, usdTraded, supabase)
   if (newBid) {
     updateBidOnTrade(newBid, usdTraded, supabase)
