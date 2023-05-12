@@ -30,37 +30,31 @@ export default async function handler(req: NextRequest) {
     ? newBid.profiles
     : await getProfileById(supabase, tradePartnerId)
   const bundle = uuid()
-  const addSharesTxn = async () => {
-    await supabase
-      .from('txns')
-      .insert({
-        amount: (usdTraded / oldBid.valuation) * TOTAL_SHARES,
-        from_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
-        to_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
-        project: oldBid.project,
-        token: oldBid.project,
-        bundle,
-      })
-      .throwOnError()
-  }
-  await addSharesTxn()
-  const addUSDTxn = async () => {
-    await supabase
-      .from('txns')
-      .insert({
-        amount: usdTraded,
-        from_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
-        to_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
-        project: oldBid.project,
-        token: 'USD',
-        bundle,
-      })
-      .throwOnError()
-  }
-  await addUSDTxn()
-  updateBidOnTrade(oldBid, usdTraded, supabase)
+  await supabase
+    .from('txns')
+    .insert({
+      amount: (usdTraded / oldBid.valuation) * TOTAL_SHARES,
+      from_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
+      to_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
+      project: oldBid.project,
+      token: oldBid.project,
+      bundle,
+    })
+    .throwOnError()
+  await supabase
+    .from('txns')
+    .insert({
+      amount: usdTraded,
+      from_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
+      to_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
+      project: oldBid.project,
+      token: 'USD',
+      bundle,
+    })
+    .throwOnError()
+  await updateBidOnTrade(oldBid, usdTraded, supabase)
   if (newBid) {
-    updateBidOnTrade(newBid, usdTraded, supabase)
+    await updateBidOnTrade(newBid, usdTraded, supabase)
   }
   const tradeText = genTradeText(
     oldBid,
@@ -68,7 +62,7 @@ export default async function handler(req: NextRequest) {
     tradePartner?.username ?? ''
   )
   const TRADE_ACCEPTED_TEMPLATE_ID = 31316920
-  sendTemplateEmail(
+  await sendTemplateEmail(
     TRADE_ACCEPTED_TEMPLATE_ID,
     {
       tradeText: tradeText,
