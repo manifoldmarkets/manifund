@@ -1,3 +1,5 @@
+import { Col } from '@/components/layout/col'
+import { Tooltip } from '@/components/tooltip'
 import { FullTxn } from '@/db/txn'
 import { HeartIcon, UserIcon, WrenchIcon } from '@heroicons/react/24/solid'
 import { formatDistanceToNow } from 'date-fns'
@@ -19,24 +21,30 @@ export function OutgoingDonationsHistory(props: { donations: FullTxn[] }) {
       }
       className="table-row w-full"
     >
-      <td className="p-2">
+      <td className="p-3">
         {donation.project && (
-          <WrenchIcon className="h-5 w-5 flex-shrink-0 text-blue-500" />
+          <Tooltip text="project">
+            <WrenchIcon className="relative top-1 h-5 w-5 flex-shrink-0 text-blue-500" />
+          </Tooltip>
         )}
         {!donation.project && donation.profiles?.type === 'individual' && (
-          <UserIcon className="h-5 w-5 flex-shrink-0 text-orange-500" />
+          <Tooltip text="regranter">
+            <UserIcon className="relative top-1 h-5 w-5 flex-shrink-0 text-orange-500" />
+          </Tooltip>
         )}
         {!donation.project && donation.profiles?.type === 'org' && (
-          <HeartIcon className="h-5 w-5 flex-shrink-0 text-rose-500" />
+          <Tooltip text="charity">
+            <HeartIcon className="relative top-1 h-5 w-5 flex-shrink-0 text-rose-500" />
+          </Tooltip>
         )}
       </td>
-      <td className="p-2">
+      <td className="py-3">
         {donation.project
           ? donation.projects?.title
           : donation.profiles?.full_name}
       </td>
-      <td className="p-2 text-right">${donation.amount}</td>
-      <td className="hidden p-2 text-right text-gray-500 sm:block">
+      <td className="py-3 text-right">${donation.amount}</td>
+      <td className="hidden p-3 text-right text-gray-500 sm:block">
         {formatDistanceToNow(new Date(donation.created_at), {
           addSuffix: true,
         })}

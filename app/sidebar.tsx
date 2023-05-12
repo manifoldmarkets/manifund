@@ -12,6 +12,7 @@ import { formatMoney } from '@/utils/formatting'
 import { calculateUserBalance } from '@/utils/math'
 import { getTxnsByUser } from '@/db/txn'
 
+export const revalidate = 0
 export default async function Sidebar() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
