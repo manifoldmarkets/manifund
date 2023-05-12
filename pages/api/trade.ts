@@ -2,16 +2,11 @@ import { Bid, FullBid, getBidById } from '@/db/bid'
 import { TOTAL_SHARES } from '@/db/project'
 import { sendTemplateEmail } from '@/utils/email'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { NextRequest, NextResponse } from 'next/server'
 import { getProfileById } from '@/db/profile'
 import uuid from 'react-uuid'
 import { createAdminClient } from './_db'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
-
-export const config = {
-  runtime: 'edge',
-  regions: ['sfo1'],
-}
+import { NextApiRequest, NextApiResponse } from 'next'
 
 export type TradeProps = {
   oldBidId: string
@@ -19,9 +14,12 @@ export type TradeProps = {
   tradePartnerId: string
   newBidId?: string
 }
-export default async function handler(req: NextRequest) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { oldBidId, usdTraded, newBidId, tradePartnerId } =
-    (await req.json()) as TradeProps
+    (await req.body) as TradeProps
   const supabase = createAdminClient()
   const oldBid = await getBidById(oldBidId, supabase)
   const newBid = newBidId ? await getBidById(newBidId, supabase) : null
@@ -77,7 +75,10 @@ export default async function handler(req: NextRequest) {
     },
     oldBid.bidder
   )
-  return NextResponse.json({ success: true })
+  res.status(200).json({
+    bundle,
+  })
+  return res
 }
 
 export async function updateBidOnTrade(
