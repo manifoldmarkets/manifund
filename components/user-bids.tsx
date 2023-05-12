@@ -61,8 +61,8 @@ export function UserBidDisplay(props: {
                   className={`${
                     active && 'bg-rose-100'
                   } flex h-full w-full justify-between  p-2 text-rose-600`}
-                  onClick={() => {
-                    deleteBid(supabase, bid.id)
+                  onClick={async () => {
+                    await deleteBid(supabase, bid.id)
                     router.refresh()
                   }}
                 >
