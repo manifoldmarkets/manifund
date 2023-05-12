@@ -7,6 +7,12 @@ import uuid from 'react-uuid'
 import { createAdminClient } from './_db'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { NextRequest, NextResponse } from 'next/server'
+
+export const config = {
+  runtime: 'edge',
+  regions: ['sfo1'],
+}
 
 export type TradeProps = {
   oldBidId: string
@@ -14,12 +20,9 @@ export type TradeProps = {
   tradePartnerId: string
   newBidId?: string
 }
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextRequest) {
   const { oldBidId, usdTraded, newBidId, tradePartnerId } =
-    (await req.body) as TradeProps
+    (await req.json()) as TradeProps
   const supabase = createAdminClient()
   const oldBid = await getBidById(oldBidId, supabase)
   const newBid = newBidId ? await getBidById(newBidId, supabase) : null
@@ -28,33 +31,33 @@ export default async function handler(
     : await getProfileById(supabase, tradePartnerId)
   const bundle = uuid()
   const addSharesTxn = async () => {
-    const { error } = await supabase.from('txns').insert({
-      amount: (usdTraded / oldBid.valuation) * TOTAL_SHARES,
-      from_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
-      to_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
-      project: oldBid.project,
-      token: oldBid.project,
-      bundle,
-    })
-    if (error) {
-      throw error
-    }
+    await supabase
+      .from('txns')
+      .insert({
+        amount: (usdTraded / oldBid.valuation) * TOTAL_SHARES,
+        from_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
+        to_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
+        project: oldBid.project,
+        token: oldBid.project,
+        bundle,
+      })
+      .throwOnError()
   }
   console.log('about to add shares txn')
   addSharesTxn()
   console.log('added shares txn')
   const addUSDTxn = async () => {
-    const { error } = await supabase.from('txns').insert({
-      amount: usdTraded,
-      from_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
-      to_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
-      project: oldBid.project,
-      token: 'USD',
-      bundle,
-    })
-    if (error) {
-      throw error
-    }
+    await supabase
+      .from('txns')
+      .insert({
+        amount: usdTraded,
+        from_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
+        to_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
+        project: oldBid.project,
+        token: 'USD',
+        bundle,
+      })
+      .throwOnError()
   }
   console.log('about to add usd txn')
   addUSDTxn()
@@ -79,10 +82,7 @@ export default async function handler(
     },
     oldBid.bidder
   )
-  res.status(200).json({
-    bundle,
-  })
-  return res
+  return NextResponse.json({ success: true })
 }
 
 export async function updateBidOnTrade(
