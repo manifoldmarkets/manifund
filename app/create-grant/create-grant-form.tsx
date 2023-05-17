@@ -209,7 +209,7 @@ export function CreateGrantForm(props: {
         </Col>
       )}
       <Col className="gap-1">
-        <label htmlFor="title">Title</label>
+        <label htmlFor="title">Title:</label>
         <Input
           type="text"
           id="title"
@@ -218,7 +218,7 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="subtitle">Subtitle</label>
+        <label htmlFor="subtitle">Subtitle:</label>
         <Input
           type="text"
           id="subtitle"
@@ -227,7 +227,7 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="amount">Amount (USD)</label>
+        <label htmlFor="amount">Amount (USD):</label>
         <Input
           type="number"
           id="amount"
@@ -236,12 +236,12 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Col className="gap-1">
-        <label>Project description</label>
+        <label>Project description:</label>
         <TextEditor editor={descriptionEditor} />
       </Col>
       <Col className="gap-1">
-        <label>Grantmaker notes & reasoning</label>
-        <p className="text-xs text-gray-500">
+        <label>Grantmaker notes & reasoning:</label>
+        <p className="text-sm text-gray-500">
           This will be displayed as a public comment on this project.
         </p>
         <TextEditor editor={reasoningEditor} />
