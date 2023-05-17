@@ -19,7 +19,6 @@
     "@floating-ui/react": "^0.19.2",
     "@headlessui/react": "^1.7.14",
     "@heroicons/react": "^2.0.15",
-    "@next/font": "^13.3.1",
     "@stripe/stripe-js": "^1.52.0",
     "@supabase/auth-helpers-nextjs": "^0.5.4",
     "@supabase/auth-ui-react": "^0.2.7",
