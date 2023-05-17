@@ -38,7 +38,10 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       const proposalDueDate = new Date(
         `${round.proposal_due_date}T23:59:59-12:00`
       )
-      return new Date() < proposalDueDate || round.proposal_due_date === null
+      return (
+        round.proposal_due_date === null ||
+        isBefore(new Date(), new Date(round.proposal_due_date))
+      )
     }),
     'proposal_due_date'
   )
@@ -122,7 +125,10 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   useEffect(() => {
     if (projectType === 'grant') {
       setSellingPortion(0)
-      setRound(availableRounds.find((r) => r.title === 'Regrants')!)
+      setRound(
+        availableRounds.find((r) => r.title === 'Regrants') ??
+          availableRounds[0]
+      )
       setAuctionClose(null)
     } else {
       setSellingPortion(20)
