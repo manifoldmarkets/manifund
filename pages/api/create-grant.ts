@@ -67,8 +67,6 @@ export default async function handler(req: NextRequest) {
     round: 'Regrants',
     slug,
   }
-  // await supabase.from('projects').insert([project]).throwOnError()
-  // await supabase.from('comments').insert([donorComment]).throwOnError()
   if (toEmail) {
     const donorComment = {
       id: uuid(),
@@ -123,7 +121,6 @@ export default async function handler(req: NextRequest) {
         donation: donation,
       })
       .throwOnError()
-    // await supabase.from('txns').insert([donation]).throwOnError()
     const postmarkVars = {
       amount: amount,
       regranterName: regranterProfile.full_name,

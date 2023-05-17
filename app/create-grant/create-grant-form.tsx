@@ -28,7 +28,7 @@ const DESCRIPTION_OUTLINE = `
 const REASONING_OUTLINE = `
 <h3>Main points in favor of this grant:</h3>
 </br>
-<h3>Donor's main reservation's about this grant:</h3>
+<h3>Donor's main reservations about this grant:</h3>
 </br>
 <h3>Process for deciding grant amount:</h3>
 </br>
@@ -241,6 +241,9 @@ export function CreateGrantForm(props: {
       </Col>
       <Col className="gap-1">
         <label>Grantmaker notes & reasoning</label>
+        <p className="text-xs text-gray-500">
+          This will be displayed as a public comment on this project.
+        </p>
         <TextEditor editor={reasoningEditor} />
       </Col>
       <Row>

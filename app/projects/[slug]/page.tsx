@@ -16,7 +16,6 @@ import { Description } from './description'
 import { ProjectCardHeader } from '@/components/project-card'
 import { calculateUserFundsAndShares } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
-import { PerformanceNodeTiming } from 'perf_hooks'
 import { Divider } from '@/components/divider'
 
 export const revalidate = 0
