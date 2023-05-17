@@ -283,6 +283,7 @@
                             margin-top: 10px;
                           "
                         >
+                                          
                           <tr
                             style="
                               font-family: 'Helvetica Neue', Helvetica, Arial,
@@ -313,13 +314,25 @@
                                   margin: 0;
                                 "
                               >
-                                We've recieved your payment of ${{amount}} and
-                                have added {{amount}} hectoMana to your Manifund
-                                account.
+                                We recieved your donation!
+                                <div style="
+                                  font-family: 'Helvetica Neue', Helvetica,
+                                    Arial, sans-serif;
+                                  box-sizing: border-box;
+                                  font-size: 16px;
+                                  margin: 10px;
+                                ">
+                                  Amount: ${{amount}}
+                                  </br>
+                                  Donation ID: {{id}}
+                                  </br>
+                                  Contact information: {{fullName}}, {{email}}
+                                </div>
+                                We have added ${{amount}} to your Manifund account which you can now distribute to charitable projects.
                               </div>
                             </td>
                           </tr>
-                          <tr
+                           <tr
                             style="
                               font-family: 'Helvetica Neue', Helvetica, Arial,
                                 sans-serif;
@@ -327,7 +340,18 @@
                               font-size: 16px;
                               margin: 0;
                             "
-                          ></tr>
+                          ><td>
+                                                      <div style="
+                                  font-family: 'Helvetica Neue', Helvetica,
+                                    Arial, sans-serif;
+                                  box-sizing: border-box;
+                                  font-size: 12px;
+                                  margin: 0;
+                                ">
+                            Manifold for Charity is a registered 501(c)(3) nonprofit organization and your donation is tax-deductible as allowed by law. No goods or services were provided by Manifund in exchange for your contribution. Our federal EIN is 88-3668801.
+                            </div>
+                            </td>
+                          </tr>
                         </table>
                       </td>
                     </tr>
@@ -422,3 +446,4 @@
     </table>
   </body>
 </html>
+
