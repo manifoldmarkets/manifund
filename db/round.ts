@@ -4,13 +4,11 @@ import { SupabaseClient } from '@supabase/supabase-js'
 export type Round = Database['public']['Tables']['rounds']['Row']
 
 export async function getRounds(supabase: SupabaseClient) {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('rounds')
     .select('*')
     .order('auction_close_date', { ascending: true })
-  if (error) {
-    throw error
-  }
+    .throwOnError()
   return data as Round[]
 }
 
