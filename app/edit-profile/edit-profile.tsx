@@ -67,11 +67,11 @@ export function EditProfileForm(props: { profile: Profile }) {
       errorMessage =
         'Please enter a bio. As a regranter, this will be shown in your profile preview.'
     }
-    // Add this back on main; doesn't work on dev because storage doesn't work on dev
-    // if (!avatar && !profile.avatar_url) {
-    //   errorMessage =
-    //     'Please upload an avatar. As a regranter, this will be shown in your profile preview.'
-    // }
+    // Breaks on dev because storage issues on dev db
+    if (!avatar && !profile.avatar_url) {
+      errorMessage =
+        'Please upload an avatar. As a regranter, this will be shown in your profile preview.'
+    }
   } else {
     errorMessage = null
   }
@@ -101,7 +101,7 @@ export function EditProfileForm(props: { profile: Profile }) {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="bio">Bio</label>
+        <label htmlFor="bio">Short bio</label>
         <Input
           type="text"
           id="bio"
@@ -131,7 +131,7 @@ export function EditProfileForm(props: { profile: Profile }) {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="long_description">About you</label>
+        <label htmlFor="long_description">More about you</label>
         {regranterStatus && (
           <p className="text-sm text-gray-500">
             We stongly recommend regranters include key information about their
