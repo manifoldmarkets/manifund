@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { SupabaseClient, User } from '@supabase/supabase-js'
 import { Database } from '@/db/database.types'
 import { Project } from '@/db/project'
+import uuid from 'react-uuid'
 
 type ProjectTransferAndProject =
   Database['public']['Tables']['project_transfers']['Row'] & {
@@ -21,13 +22,16 @@ export default async function handler(
   )
   projectTransfers.forEach(async (transfer) => {
     if (!transfer.transferred) {
-      await supabaseAdmin.rpc('transfer_project', {
+      let args = {
         project_id: transfer.projects.id,
         to_id: user.id,
         from_id: transfer.projects.creator,
         transfer_id: transfer.id,
         amount: transfer.grant_amount ?? 0,
-      })
+        txn_id: uuid(),
+        donor_comment_id: transfer.donor_comment_id ?? undefined,
+      }
+      await supabaseAdmin.rpc('_transfer_project', args).throwOnError()
     }
   })
   res.status(200).json({

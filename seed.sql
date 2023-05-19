@@ -206,6 +206,8 @@ create table if not exists public.comments (
   project uuid not null references public.projects(id) on delete cascade,
   commenter uuid not null references profiles.users(id) on delete cascade,
   content jsonb,
+  -- Optional link to txn for donation notes
+  txn_id uuid reference public.txns(id),
   primary key (id)
 );
 
@@ -278,6 +280,7 @@ create table public.project_transfers (
   project_id uuid not null references public.projects(id) on delete cascade,
   transferred boolean not null default false,
   grant_amount float8,
+  donor_comment_id uuid references public.comments(id),
   primary key (id)
 );
 

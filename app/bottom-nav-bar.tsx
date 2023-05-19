@@ -35,7 +35,7 @@ export async function BottomNavBar() {
     },
     {
       name: 'Create',
-      href: '/create',
+      href: profile?.regranter_status ? '/create-grant' : '/create',
     },
   ]
   const navOptionsDisplay = navigationOptions.map((item) => {

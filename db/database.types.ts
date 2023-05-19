@@ -49,6 +49,7 @@ export interface Database {
           id: string
           project: string
           replying_to: string | null
+          txn_id: string | null
         }
         Insert: {
           commenter: string
@@ -57,6 +58,7 @@ export interface Database {
           id?: string
           project: string
           replying_to?: string | null
+          txn_id?: string | null
         }
         Update: {
           commenter?: string
@@ -65,6 +67,7 @@ export interface Database {
           id?: string
           project?: string
           replying_to?: string | null
+          txn_id?: string | null
         }
       }
       profiles: {
@@ -108,6 +111,7 @@ export interface Database {
       project_transfers: {
         Row: {
           created_at: string
+          donor_comment_id: string | null
           grant_amount: number | null
           id: string
           project_id: string
@@ -116,6 +120,7 @@ export interface Database {
         }
         Insert: {
           created_at?: string
+          donor_comment_id?: string | null
           grant_amount?: number | null
           id?: string
           project_id: string
@@ -124,6 +129,7 @@ export interface Database {
         }
         Update: {
           created_at?: string
+          donor_comment_id?: string | null
           grant_amount?: number | null
           id?: string
           project_id?: string
@@ -292,6 +298,26 @@ export interface Database {
       }
     }
     Functions: {
+      _transfer_project: {
+        Args: {
+          project_id: string
+          to_id: string
+          from_id: string
+          transfer_id: string
+          amount: number
+          txn_id: string
+          donor_comment_id?: string
+        }
+        Returns: undefined
+      }
+      create_transfer_grant: {
+        Args: {
+          project: Database["public"]["CompositeTypes"]["project_row"]
+          donor_comment: Database["public"]["CompositeTypes"]["comment_row_txnless"]
+          project_transfer: Database["public"]["CompositeTypes"]["transfer_row"]
+        }
+        Returns: undefined
+      }
       get_user_balances: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -300,16 +326,48 @@ export interface Database {
           balance: number
         }[]
       }
-      transfer_project: {
+      give_grant: {
         Args: {
-          project_id: string
-          to_id: string
-          from_id: string
-          transfer_id: string
-          amount: number
+          project: Database["public"]["CompositeTypes"]["project_row"]
+          donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
+          donation: Database["public"]["CompositeTypes"]["txn_row"]
         }
         Returns: undefined
       }
+      transfer_project:
+        | {
+            Args: {
+              project_id: string
+              to_id: string
+              from_id: string
+              transfer_id: string
+              amount: number
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              project_id: string
+              to_id: string
+              from_id: string
+              transfer_id: string
+              amount: number
+              donor_notes: Json
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              project_id: string
+              to_id: string
+              from_id: string
+              transfer_id: string
+              amount: number
+              donor_comment_id: string
+              txn_id?: string
+            }
+            Returns: undefined
+          }
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
@@ -318,7 +376,47 @@ export interface Database {
       project_type: "grant" | "cert"
     }
     CompositeTypes: {
-      [_ in never]: never
+      comment_row: {
+        id: string
+        project: string
+        commenter: string
+        content: Json
+        txn_id: string
+      }
+      comment_row_txnless: {
+        id: string
+        project: string
+        commenter: string
+        content: Json
+      }
+      project_row: {
+        id: string
+        creator: string
+        title: string
+        blurb: string
+        description: Json
+        min_funding: number
+        funding_goal: number
+        founder_portion: number
+        type: Database["public"]["Enums"]["project_type"]
+        stage: string
+        round: string
+        slug: string
+      }
+      transfer_row: {
+        to_email: string
+        project_id: string
+        grant_amount: number
+        donor_comment_id: string
+      }
+      txn_row: {
+        id: string
+        project: string
+        amount: number
+        from_id: string
+        to_id: string
+        token: string
+      }
     }
   }
 }

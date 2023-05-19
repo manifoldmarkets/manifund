@@ -26,7 +26,7 @@ export async function getProfileById(
   if (error) {
     throw error
   }
-  return data[0] ? data[0] : null
+  return data[0] ? (data[0] as Profile) : null
 }
 
 export async function getProfileAndBidsById(
@@ -48,7 +48,7 @@ export async function getProfileByUsername(
   username: string = ''
 ) {
   if (!username) {
-    return { id: null, username }
+    return null
   }
   const { data, error } = await supabase
     .from('profiles')
@@ -57,7 +57,7 @@ export async function getProfileByUsername(
   if (error) {
     throw error
   }
-  return data[0] ? data[0] : { id: null, username }
+  return data[0] ? (data[0] as Profile) : null
 }
 export async function getProfileAndBidsByUsername(
   supabase: SupabaseClient,
