@@ -1,8 +1,10 @@
+'use client'
 import { Profile } from '@/db/profile'
 import { TxnAndProfiles } from '@/db/txn'
 import { formatMoney } from '@/utils/formatting'
 import { formatDistanceToNow } from 'date-fns'
 import { orderBy } from 'lodash'
+import { Row } from './layout/row'
 import { UserAvatarAndBadge } from './user-link'
 
 export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
@@ -12,23 +14,28 @@ export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
     <>
       {donations.length > 0 ? (
         <>
-          {sortedDonations.map((txn) => (
-            <div
-              key={txn.id}
-              className="flex justify-between rounded p-2 hover:bg-gray-200"
-            >
-              <div className="flex items-center gap-1">
-                <UserAvatarAndBadge profile={txn.profiles as Profile} />
-                <span className="text-gray-600"> donated </span>
-                <span>{formatMoney(txn.amount)}</span>
-              </div>
-              <span className="text-gray-600">
-                {formatDistanceToNow(new Date(txn.created_at), {
-                  addSuffix: true,
-                })}
-              </span>
-            </div>
-          ))}
+          {sortedDonations.map((txn) => {
+            if (!txn.profiles) return null
+            return (
+              <Row
+                key={txn.id}
+                className="justify-between rounded p-2 hover:bg-gray-200"
+              >
+                <Row className="items-center gap-1">
+                  <UserAvatarAndBadge profile={txn.profiles as Profile} />
+                  <span className="text-gray-600"> donated </span>
+                  <span>{formatMoney(txn.amount)}</span>
+                </Row>
+                <Row className="items-center">
+                  <span className="text-gray-600">
+                    {formatDistanceToNow(new Date(txn.created_at), {
+                      addSuffix: true,
+                    })}
+                  </span>
+                </Row>
+              </Row>
+            )
+          })}
         </>
       ) : (
         <p className="mt-3 text-center italic text-gray-500">

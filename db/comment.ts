@@ -4,9 +4,12 @@ import { HTMLContent, JSONContent } from '@tiptap/react'
 import { Project } from './project'
 import { Profile } from './profile'
 import uuid from 'react-uuid'
+import { Txn } from './txn'
 
 export type Comment = Database['public']['Tables']['comments']['Row']
-export type CommentAndProfile = Comment & { profiles: Profile }
+export type CommentAndProfileAndTxns = Comment & { profiles: Profile } & {
+  txns: Txn
+}
 export type FullComment = Comment & { profiles: Profile } & {
   projects: Project
 }
@@ -17,12 +20,12 @@ export async function getCommentsByProject(
 ) {
   const { data, error } = await supabase
     .from('comments')
-    .select('*, profiles(*)')
+    .select('*, profiles(*), txns(*)')
     .eq('project', project)
   if (error) {
     throw error
   }
-  return data as CommentAndProfile[]
+  return data as CommentAndProfileAndTxns[]
 }
 
 export async function sendComment(

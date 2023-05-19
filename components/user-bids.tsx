@@ -1,5 +1,5 @@
 import { Bid } from '@/db/bid'
-import { FullProject, Project } from '@/db/project'
+import { Project } from '@/db/project'
 import { useSupabase } from '@/db/supabase-provider'
 import { formatDate, formatMoney } from '@/utils/formatting'
 import { deleteBid } from '@/db/bid'
@@ -12,6 +12,7 @@ import {
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { RoundTag } from './tags'
+import { Tag } from './tags'
 
 export function UserBidDisplay(props: {
   bid: Bid
@@ -116,7 +117,10 @@ function BidText(props: {
       return (
         <div className="flex items-center text-sm text-gray-500">
           Offer to&nbsp;
-          <BuySellTag bidType={bid.type} />
+          <Tag
+            text={bid.type === 'buy' ? 'BUY' : 'SELL'}
+            color={bid.type === 'buy' ? 'emerald' : 'rose'}
+          />
           <span className="text-black">&nbsp;{formatMoney(bid.amount)}</span>
           <span>
             &nbsp;@&nbsp;
@@ -128,18 +132,4 @@ function BidText(props: {
     default:
       return <></>
   }
-}
-
-function BuySellTag(props: { bidType: Bid['type'] }) {
-  const { bidType } = props
-  const tagText = bidType === 'buy' ? 'BUY' : 'SELL'
-  const tagColor = bidType === 'buy' ? 'bg-emerald-100' : 'bg-rose-100'
-  const textColor = bidType === 'buy' ? 'text-emerald-500' : 'text-rose-500'
-  return (
-    <div
-      className={`rounded-sm px-2 py-1 text-xs font-bold ${tagColor} ${textColor}`}
-    >
-      {tagText}
-    </div>
-  )
 }

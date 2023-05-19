@@ -7,6 +7,7 @@ import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail } from '@/utils/email'
+import { JSONContent } from '@tiptap/react'
 
 export const config = {
   runtime: 'edge',
@@ -16,32 +17,45 @@ export const config = {
 type GrantProps = {
   title: string
   subtitle: string
-  description: any
+  description: JSONContent
+  donorNotes: JSONContent
   amount: number
   toEmail?: string
   toUsername?: string
 }
 
 export default async function handler(req: NextRequest) {
-  const { title, subtitle, description, amount, toEmail, toUsername } =
-    (await req.json()) as GrantProps
+  const {
+    title,
+    subtitle,
+    description,
+    donorNotes,
+    amount,
+    toEmail,
+    toUsername,
+  } = (await req.json()) as GrantProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
-  const user = resp.data.user
-  if (!user) return NextResponse.error()
-  const regranterProfile = await getProfileById(supabase, user.id)
-  if ((toEmail && toUsername) || (!toEmail && !toUsername)) {
+  const regranter = resp.data.user
+  if (!regranter) return NextResponse.error()
+  const regranterProfile = await getProfileById(supabase, regranter.id)
+  if (
+    (toEmail && toUsername) ||
+    (!toEmail && !toUsername) ||
+    !regranterProfile
+  ) {
     return NextResponse.error()
   }
-
   const slug = await projectSlugify(title, supabase)
-  const id = uuid()
   const toProfile = toUsername
     ? await getProfileByUsername(supabase, toUsername)
     : null
+  if (!toProfile && toUsername) {
+    return NextResponse.error()
+  }
   const project = {
-    id,
-    creator: toUsername ? toProfile.id : user.id,
+    id: uuid(),
+    creator: toProfile ? toProfile.id : regranter.id,
     title,
     blurb: subtitle,
     description,
@@ -49,50 +63,31 @@ export default async function handler(req: NextRequest) {
     funding_goal: amount,
     founder_portion: TOTAL_SHARES,
     type: 'grant' as Project['type'],
-    stage: 'active',
+    stage: toEmail ? 'hidden' : 'active',
     round: 'Regrants',
     slug,
   }
-  await supabase.from('projects').insert([project]).throwOnError()
   if (toEmail) {
-    const project_transfer = {
+    const donorComment = {
+      id: uuid(),
+      project: project.id,
+      commenter: regranter.id,
+      content: donorNotes,
+    }
+    const projectTransfer = {
       to_email: toEmail,
-      project_id: id,
+      project_id: project.id,
       grant_amount: amount,
+      donor_comment_id: donorComment.id,
     }
-    await supabase
-      .from('project_transfers')
-      .insert([project_transfer])
-      .throwOnError()
-  } else {
-    await supabase
-      .from('txns')
-      .insert({
-        project: id,
-        amount: amount,
-        from_id: user.id,
-        to_id: toProfile.id,
-        token: 'USD',
-      })
-      .throwOnError()
-  }
-  if (toUsername) {
+    await supabase.rpc('create_transfer_grant', {
+      project: project,
+      donor_comment: donorComment,
+      project_transfer: projectTransfer,
+    })
     const postmarkVars = {
       amount: amount,
-      regranterName: regranterProfile?.full_name ?? 'an anonymous regranter',
-      projectTitle: title,
-      projectUrl: `${getURL()}projects/${slug}`,
-    }
-    const EXISTING_USER_GRANT_TEMPLATE_ID = 31480376
-    await sendTemplateEmail(
-      EXISTING_USER_GRANT_TEMPLATE_ID,
-      postmarkVars,
-      toProfile.id
-    )
-  } else {
-    const postmarkVars = {
-      amount: amount,
-      regranterName: regranterProfile?.full_name ?? 'an anonymous regranter',
+      regranterName: regranterProfile.full_name,
       projectTitle: title,
       loginUrl: `${getURL()}login?email=${toEmail}`,
     }
@@ -103,6 +98,43 @@ export default async function handler(req: NextRequest) {
       undefined,
       toEmail
     )
+  } else if (toProfile) {
+    const donorComment = {
+      id: uuid(),
+      project: project.id,
+      commenter: regranter.id,
+      content: donorNotes,
+      txn_id: uuid(),
+    }
+    const donation = {
+      id: donorComment.txn_id,
+      project: project.id,
+      amount: amount,
+      from_id: regranter.id,
+      to_id: toProfile.id,
+      token: 'USD',
+    }
+    await supabase
+      .rpc('give_grant', {
+        project: project,
+        donor_comment: donorComment,
+        donation: donation,
+      })
+      .throwOnError()
+    const postmarkVars = {
+      amount: amount,
+      regranterName: regranterProfile.full_name,
+      projectTitle: title,
+      projectUrl: `${getURL()}projects/${slug}`,
+    }
+    const EXISTING_USER_GRANT_TEMPLATE_ID = 31480376
+    await sendTemplateEmail(
+      EXISTING_USER_GRANT_TEMPLATE_ID,
+      postmarkVars,
+      toProfile.id
+    )
+  } else {
+    return NextResponse.error()
   }
   return NextResponse.json(project)
 }

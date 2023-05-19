@@ -1,29 +1,29 @@
 'use client'
 import { Profile } from '@/db/profile'
 import { WriteComment } from './write-comment'
-import { CommentAndProfile } from '@/db/comment'
+import { CommentAndProfileAndTxns } from '@/db/comment'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { formatDistanceToNow } from 'date-fns'
 import { RichContent } from '@/components/editor'
-import { Divider } from '@/components/divider'
 import { Project } from '@/db/project'
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { IconButton } from '@/components/button'
 import { useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
-import clsx from 'clsx'
-import { Card } from '@/components/card'
 import { Col } from '@/components/layout/col'
 import { Tooltip } from '@/components/tooltip'
+import { Tag } from '@/components/tags'
 
 export function Comments(props: {
   project: Project
-  comments: CommentAndProfile[]
+  comments: CommentAndProfileAndTxns[]
   user: Profile | null
 }) {
   const { project, comments, user } = props
-  const [replyingTo, setReplyingTo] = useState<CommentAndProfile | null>(null)
+  const [replyingTo, setReplyingTo] = useState<CommentAndProfileAndTxns | null>(
+    null
+  )
   const rootComments = comments.filter(
     (comment) => comment.replying_to === null
   )
@@ -93,12 +93,12 @@ export function Comments(props: {
 }
 
 type Thread = {
-  root: CommentAndProfile
-  replies: CommentAndProfile[]
+  root: CommentAndProfileAndTxns
+  replies: CommentAndProfileAndTxns[]
 }
 function genThreads(
-  rootComments: CommentAndProfile[],
-  replyComments: CommentAndProfile[]
+  rootComments: CommentAndProfileAndTxns[],
+  replyComments: CommentAndProfileAndTxns[]
 ) {
   const threads = Object.fromEntries(
     rootComments.map((comment) => [
@@ -117,7 +117,7 @@ function genThreads(
 }
 
 function Comment(props: {
-  comment: CommentAndProfile
+  comment: CommentAndProfileAndTxns
   writtenByCreator?: boolean
 }) {
   const { comment, writtenByCreator } = props
@@ -130,15 +130,29 @@ function Comment(props: {
             creatorBadge={writtenByCreator}
             className="text-sm text-gray-800"
           />
+          {comment.txns && (
+            <Tag
+              text={`DONATED $${comment.txns.amount}`}
+              color="orange"
+              className="hidden sm:block"
+            />
+          )}
         </Row>
         <Col className="items-center text-xs text-gray-500">
+          {comment.txns && (
+            <Tag
+              text={`DONATED $${comment.txns.amount}`}
+              color="orange"
+              className="sm:hidden"
+            />
+          )}
           {formatDistanceToNow(new Date(comment.created_at), {
             addSuffix: true,
           })}
         </Col>
       </Row>
       <div className="relative left-8 w-11/12">
-        <RichContent content={comment.content} size="sm" />
+        <RichContent content={comment.content} />
       </div>
     </div>
   )

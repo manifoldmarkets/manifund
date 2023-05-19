@@ -3,7 +3,7 @@ import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { formatDate, formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { getPercentRaised } from '@/utils/math'
-import { FullProject, Project } from '@/db/project'
+import { FullProject, Project, ProjectTransfer } from '@/db/project'
 import Link from 'next/link'
 import { CalendarIcon, SparklesIcon } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
@@ -13,11 +13,12 @@ import { ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { orderBy } from 'lodash'
 import { formatDistanceToNow } from 'date-fns'
-import { RoundTag } from './tags'
+import { RoundTag, Tag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { DataBox } from './data-box'
 import { Round } from '@/db/round'
 import { Card } from './card'
+import { Row } from './layout/row'
 
 export function ProjectCard(props: {
   project: FullProject
@@ -116,7 +117,7 @@ function ProjectCardFooter(props: {
           {sortedTxns.length > 0 && (
             <span className="mb-1 text-gray-600">
               <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
-              Last traded{' '}
+              {project.type === 'cert' ? 'Last traded' : 'Last donation'}{' '}
               <span className="text-black">
                 {formatDistanceToNow(lastTraded, {
                   addSuffix: true,
@@ -150,15 +151,21 @@ export function ProjectCardHeader(props: {
   round: Round
   creator: Profile
   projectType: Project['type']
+  projectTransfer?: ProjectTransfer
   valuation?: number
 }) {
-  const { round, creator, valuation, projectType } = props
+  const { round, creator, valuation, projectTransfer, projectType } = props
   return (
     <div className="flex justify-between">
       <div className="mt-1">
         <RoundTag roundTitle={round.title} roundSlug={round.slug} />
         <div className="h-1" />
         <UserAvatarAndBadge profile={creator} />
+        {projectTransfer && (
+          <Row className="gap-1">
+            <Tag text={'PENDING TRANSFER'} className="mt-1" color="orange" />
+          </Row>
+        )}
       </div>
       {valuation && !isNaN(valuation) ? (
         <div className="relative top-1">

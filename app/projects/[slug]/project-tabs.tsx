@@ -2,7 +2,6 @@
 import { Comments } from './comments'
 import { FullProject, TOTAL_SHARES } from '@/db/project'
 import { Profile } from '@/db/profile'
-import { CommentAndProfile } from '@/db/comment'
 import { useSearchParams } from 'next/navigation'
 import { Bids } from './bids'
 import { BidAndProfile } from '@/db/bid'
@@ -11,10 +10,11 @@ import { Shareholders } from './shareholders'
 import { calculateFullTrades, FullTrade } from '@/utils/math'
 import { Tabs } from '@/components/tabs'
 import { DonationsHistory } from '@/components/donations-history'
+import { CommentAndProfileAndTxns } from '@/db/comment'
 
 export function ProjectTabs(props: {
   project: FullProject
-  comments: CommentAndProfile[]
+  comments: CommentAndProfileAndTxns[]
   user: Profile | null
   bids: BidAndProfile[]
   txns: TxnAndProfiles[]
