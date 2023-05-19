@@ -1,17 +1,10 @@
 'use client'
-import { Json } from '@/db/database.types'
 import { Profile } from '@/db/profile'
 import { TxnAndProfiles } from '@/db/txn'
 import { formatMoney } from '@/utils/formatting'
-import { InformationCircleIcon } from '@heroicons/react/24/outline'
 import { formatDistanceToNow } from 'date-fns'
 import { orderBy } from 'lodash'
-import { useState } from 'react'
-import { Button, IconButton } from './button'
-import { RichContent } from './editor'
-import { Col } from './layout/col'
 import { Row } from './layout/row'
-import { Modal } from './modal'
 import { UserAvatarAndBadge } from './user-link'
 
 export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
