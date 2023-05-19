@@ -26,7 +26,7 @@ export function getMoneyNumber(amount: number) {
 }
 
 export const showPrecision = (x: number, sigfigs: number) =>
-  // convert back to number for weird formatting reason
+  // Convert back to number for weird formatting reason
   `${Number(x.toPrecision(sigfigs))}`
 
 // Eg 1234567.89 => 1.23M; 5678 => 5.68K
