@@ -8,6 +8,7 @@ import { getBidsByUser } from '@/db/bid'
 import { calculateUserSpendableFunds } from '@/utils/math'
 import Link from 'next/link'
 
+export const revalidate = 0
 export default async function CreateGrantPage() {
   const supabase = createServerClient()
   const profiles = (await getAllMiniProfiles(supabase)).filter(

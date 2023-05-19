@@ -12,7 +12,7 @@ export function Description(props: { children: ReactNode }) {
       <div className={clsx(expanded ? 'line-clamp-none' : 'line-clamp-[20]')}>
         {children}
       </div>
-      <Row className="mt-3 justify-center text-sm">
+      <Row className="mt-3 justify-center pt-2 text-sm">
         <button onClick={() => setExpanded(!expanded)} className="flex">
           See {expanded ? 'less' : 'more'}
           {expanded ? (

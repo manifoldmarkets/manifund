@@ -53,45 +53,48 @@ export default async function handler(
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as StripeSession
-    await issueMoneys(session)
+    console.log(event)
+    const session = event.data.object as Stripe.Checkout.Session
+    const txnId = uuid()
+    await issueMoneys(session, txnId)
     const PAYMENT_CONFIRMATION_TEMPLATE_ID = 31316115
     await sendTemplateEmail(
       PAYMENT_CONFIRMATION_TEMPLATE_ID,
       {
-        amount: session.metadata.dollarQuantity,
+        amount: session.metadata?.dollarQuantity,
+        id: txnId,
+        fullName: session.customer_details?.name,
+        email: session.customer_details?.email,
       },
-      session.metadata.userId
+      session.metadata?.userId
     )
   }
   return res.status(200).send('success')
 }
 
-const issueMoneys = async (session: StripeSession) => {
+const issueMoneys = async (session: Stripe.Checkout.Session, txnId: string) => {
   const { id: sessionId } = session
-  const { userId, dollarQuantity } = session.metadata
+  const { userId, dollarQuantity } = session.metadata ?? {}
   const deposit = Number.parseInt(dollarQuantity)
-  const txnId = uuid()
   const supabase = createAdminClient()
-
-  const { data: txn, error: e1 } = await supabase.from('txns').insert({
-    id: txnId,
-    amount: deposit,
-    from_id: BANK_ID,
-    to_id: userId,
-    token: 'USD',
-  })
-  if (e1) {
-    throw e1
-  }
-
-  const { error } = await supabase.from('stripe_txns').insert({
-    session_id: sessionId,
-    customer_id: userId,
-    txn_id: txnId,
-    amount: deposit,
-  })
-  if (error) {
-    throw error
-  }
+  // TODO: make this an RPC
+  await supabase
+    .from('txns')
+    .insert({
+      id: txnId,
+      amount: deposit,
+      from_id: BANK_ID,
+      to_id: userId,
+      token: 'USD',
+    })
+    .throwOnError()
+  await supabase
+    .from('stripe_txns')
+    .insert({
+      session_id: sessionId,
+      customer_id: userId,
+      txn_id: txnId,
+      amount: deposit,
+    })
+    .throwOnError()
 }

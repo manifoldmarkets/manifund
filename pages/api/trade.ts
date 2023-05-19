@@ -2,11 +2,12 @@ import { Bid, FullBid, getBidById } from '@/db/bid'
 import { TOTAL_SHARES } from '@/db/project'
 import { sendTemplateEmail } from '@/utils/email'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { NextRequest, NextResponse } from 'next/server'
 import { getProfileById } from '@/db/profile'
 import uuid from 'react-uuid'
 import { createAdminClient } from './_db'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import { NextApiRequest, NextApiResponse } from 'next'
+import { NextRequest, NextResponse } from 'next/server'
 
 export const config = {
   runtime: 'edge',
@@ -29,8 +30,9 @@ export default async function handler(req: NextRequest) {
     ? newBid.profiles
     : await getProfileById(supabase, tradePartnerId)
   const bundle = uuid()
-  const addSharesTxn = async () => {
-    const { error } = await supabase.from('txns').insert({
+  await supabase
+    .from('txns')
+    .insert({
       amount: (usdTraded / oldBid.valuation) * TOTAL_SHARES,
       from_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
       to_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
@@ -38,13 +40,10 @@ export default async function handler(req: NextRequest) {
       token: oldBid.project,
       bundle,
     })
-    if (error) {
-      throw error
-    }
-  }
-  addSharesTxn()
-  const addUSDTxn = async () => {
-    const { error } = await supabase.from('txns').insert({
+    .throwOnError()
+  await supabase
+    .from('txns')
+    .insert({
       amount: usdTraded,
       from_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
       to_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
@@ -52,14 +51,10 @@ export default async function handler(req: NextRequest) {
       token: 'USD',
       bundle,
     })
-    if (error) {
-      throw error
-    }
-  }
-  addUSDTxn()
-  updateBidOnTrade(oldBid, usdTraded, supabase)
+    .throwOnError()
+  await updateBidOnTrade(oldBid, usdTraded, supabase)
   if (newBid) {
-    updateBidOnTrade(newBid, usdTraded, supabase)
+    await updateBidOnTrade(newBid, usdTraded, supabase)
   }
   const tradeText = genTradeText(
     oldBid,
@@ -67,7 +62,7 @@ export default async function handler(req: NextRequest) {
     tradePartner?.username ?? ''
   )
   const TRADE_ACCEPTED_TEMPLATE_ID = 31316920
-  sendTemplateEmail(
+  await sendTemplateEmail(
     TRADE_ACCEPTED_TEMPLATE_ID,
     {
       tradeText: tradeText,

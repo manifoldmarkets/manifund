@@ -14,6 +14,8 @@ import { Col } from '@/components/layout/col'
 import Link from 'next/link'
 import { DonationsHistory } from '@/components/donations-history'
 
+export const revalidate = 0
+
 export default async function CharityPage(props: {
   params: { charitySlug: string }
 }) {

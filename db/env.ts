@@ -30,4 +30,6 @@ export function isProd() {
 }
 
 export const BANK_ID =
-  SUPABASE_ENV === 'PROD' ? process.env.PROD_BANK_ID : process.env.DEV_BANK_ID
+  SUPABASE_ENV === 'PROD'
+    ? process.env.NEXT_PUBLIC_PROD_BANK_ID
+    : process.env.NEXT_PUBLIC_DEV_BANK_ID

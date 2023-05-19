@@ -13,6 +13,7 @@ import { getTxnsByUser } from '@/db/txn'
 import { buttonClass } from '@/components/button'
 import clsx from 'clsx'
 
+export const revalidate = 0
 export default async function Sidebar() {
   const supabase = createServerClient()
   const user = await getUser(supabase)

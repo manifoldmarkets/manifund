@@ -2,7 +2,6 @@
 import { Button } from '@/components/button'
 import { Card } from '@/components/card'
 import { Input } from '@/components/input'
-import { Row } from '@/components/layout/row'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { useRouter } from 'next/navigation'

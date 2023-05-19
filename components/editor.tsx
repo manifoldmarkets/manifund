@@ -12,13 +12,14 @@ import { DisplayMention } from './user-mention/mention-extension'
 import { linkClass } from './site-link'
 import { generateReact } from './tiptap-utils'
 
-export function useTextEditor(content?: any) {
+export function useTextEditor(content?: any, className?: string) {
   const editor = useEditor({
     editorProps: {
       attributes: {
         class: clsx(
           proseClass('md'),
-          'focus:border-orange-500 focus:ring-orange-500 py-[.5em] px-4 h-full bg-white border border-gray-300 rounded-md min-h-[5em]'
+          'py-[.5em] px-4 h-full bg-white border border-gray-300 rounded-md min-h-[5em] focus:outline-orange-500',
+          className
         ),
       },
     },
@@ -28,9 +29,17 @@ export function useTextEditor(content?: any) {
   return editor
 }
 
-export function TextEditor(props: { editor: Editor | null }) {
-  const { editor } = props
-  return <EditorContent editor={editor} />
+export function TextEditor(props: {
+  editor: Editor | null
+  children?: React.ReactNode // additional toolbar buttons
+}) {
+  const { editor, children } = props
+  return (
+    <div className="relative w-full overflow-hidden rounded-lg bg-white shadow-sm transition-colors">
+      <EditorContent editor={editor} className="w-full" />
+      {children}
+    </div>
+  )
 }
 
 // From Manifold's editor
@@ -67,7 +76,7 @@ export function RichContent(props: {
         'ProseMirror',
         className,
         proseClass(size),
-        String.raw`empty:prose-p:after:content-["\00a0"]` // make empty paragraphs have height
+        String.raw`empty:prose-p:after:content-["\00a0"]` // Make empty paragraphs have height
       )}
     >
       {jsxContent}
@@ -77,7 +86,7 @@ export function RichContent(props: {
 
 export const DisplayLink = Link.extend({
   renderHTML({ HTMLAttributes }) {
-    delete HTMLAttributes.class // only use our classes (don't duplicate on paste)
+    delete HTMLAttributes.class // Only use our classes (don't duplicate on paste)
     return ['a', mergeAttributes(HTMLAttributes, { class: linkClass }), 0]
   },
 })

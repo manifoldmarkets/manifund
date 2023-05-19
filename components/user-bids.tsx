@@ -24,7 +24,7 @@ export function UserBidDisplay(props: {
   const router = useRouter()
   return (
     <div className="group flex justify-between px-5 py-4 hover:bg-gray-50 sm:px-6">
-      <Link href={`/projects/${project.slug}`} className="w-full">
+      <Link href={`/projects/${project.slug}/?tab=bids`} className="w-full">
         <div className="flex items-center justify-between">
           <p className="text-md text-md truncate text-orange-600">
             {project.title}
@@ -62,8 +62,8 @@ export function UserBidDisplay(props: {
                   className={`${
                     active && 'bg-rose-100'
                   } flex h-full w-full justify-between  p-2 text-rose-600`}
-                  onClick={() => {
-                    deleteBid(supabase, bid.id)
+                  onClick={async () => {
+                    await deleteBid(supabase, bid.id)
                     router.refresh()
                   }}
                 >

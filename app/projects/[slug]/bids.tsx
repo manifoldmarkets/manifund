@@ -15,6 +15,7 @@ import { Input } from '@/components/input'
 import { useSupabase } from '@/db/supabase-provider'
 import { Modal } from '@/components/modal'
 import { Profile } from '@/db/profile'
+import clsx from 'clsx'
 
 export function Bids(props: {
   bids: BidAndProfile[]
@@ -105,16 +106,18 @@ function Bid(props: {
     userSellableShares,
   } = props
   return (
-    <Row className="w-full justify-between gap-3 rounded p-3 hover:bg-gray-200">
+    <Row className="w-full items-center justify-between gap-3 rounded p-3 hover:bg-gray-200">
       <UserAvatarAndBadge profile={bid.profiles} />
       {showValuation ? (
-        <div className="relative top-1.5">
+        <div className={user ? 'relative top-1.5' : ''}>
           {formatMoney(bid.amount)} <span className="text-gray-500"> @ </span>$
           {bid.valuation}
           <span className="text-gray-500"> valuation</span>
         </div>
       ) : (
-        <div className="relative top-1.5">{formatMoney(bid.amount)}</div>
+        <div className={user ? 'relative top-1.5' : ''}>
+          {formatMoney(bid.amount)}
+        </div>
       )}
       {user && (
         <div>
@@ -186,7 +189,7 @@ function Trade(props: {
     <div>
       <Button
         className="w-14"
-        onClick={async () => {
+        onClick={() => {
           setOpen(true)
         }}
       >
@@ -319,7 +322,7 @@ function DeleteBid(props: { bidId: string }) {
     <div>
       <Button
         className="w-14 bg-rose-500 hover:bg-rose-600"
-        onClick={async () => {
+        onClick={() => {
           setOpen(true)
         }}
       >

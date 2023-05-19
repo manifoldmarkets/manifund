@@ -13,8 +13,9 @@ import { IconButton } from '@/components/button'
 import { useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import { Card } from '@/components/card'
-import { Tag } from '@/components/tags'
 import { Col } from '@/components/layout/col'
+import { Tooltip } from '@/components/tooltip'
+import { Tag } from '@/components/tags'
 
 export function Comments(props: {
   project: Project
@@ -46,27 +47,27 @@ export function Comments(props: {
     <div key={thread.root.id}>
       <Row className="w-full">
         <div className="w-full">
-          <Card className="mt-2 mb-1">
-            <Comment
-              comment={thread.root}
-              writtenByCreator={thread.root.commenter === project.creator}
-            />
-            {user && (
-              <Row className="w-full justify-end">
+          <Comment
+            comment={thread.root}
+            writtenByCreator={thread.root.commenter === project.creator}
+          />
+          {user && (
+            <Row className="w-full justify-end">
+              <Tooltip text="Reply">
                 <IconButton onClick={() => setReplyingTo(thread.root)}>
-                  <ArrowUturnRightIcon className="h-5 w-5 rotate-180 text-gray-500 hover:text-gray-700" />
+                  <ArrowUturnRightIcon className="relative bottom-2 h-4 w-4 rotate-180 text-gray-500 hover:text-gray-700" />
                 </IconButton>
-              </Row>
-            )}
-          </Card>
+              </Tooltip>
+            </Row>
+          )}
 
           {thread.replies.map((reply) => (
-            <Card key={reply.id} className="ml-8 mt-1">
+            <div className="ml-8 mt-1" key={reply.id}>
               <Comment
                 comment={reply}
                 writtenByCreator={reply.commenter === project.creator}
               />
-            </Card>
+            </div>
           ))}
           {replyingTo?.id === thread.root.id && user && (
             <div className="mt-1 ml-8">
@@ -84,11 +85,8 @@ export function Comments(props: {
   return (
     <div>
       {user && (
-        <div>
-          <div className="flex gap-3">
-            <WriteComment project={project} commenter={user} />
-          </div>
-          <Divider />
+        <div className="mb-5">
+          <WriteComment project={project} commenter={user} />
         </div>
       )}
       {commentsDisplay}
