@@ -3,7 +3,7 @@ import { Row } from '@/components/layout/row'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { Profile } from '@/db/profile'
 import { TOTAL_SHARES } from '@/db/project'
-import { formatLargeNumber } from '@/utils/formatting'
+import { formatLargeNumber, showPrecision } from '@/utils/formatting'
 import clsx from 'clsx'
 import { orderBy } from 'lodash'
 import { Avatar } from '@/components/avatar'
@@ -32,7 +32,7 @@ export function Shareholders(props: {
             )}
           >
             <UserAvatarAndBadge profile={shareholder.profile} />{' '}
-            {formatLargeNumber((shareholder.numShares / TOTAL_SHARES) * 100)}%
+            {showPrecision((shareholder.numShares / TOTAL_SHARES) * 100, 4)}%
           </Row>
         ))}
         <div className="h-8" />
