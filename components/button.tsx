@@ -5,11 +5,13 @@ export type SizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 export type ColorType =
   | 'green'
   | 'red'
+  | 'rose'
   | 'blue'
   | 'orange'
   | 'yellow'
   | 'gray'
   | 'gray-outline'
+  | 'orange-outline'
   | 'gradient'
   | 'gradient-pink'
   | 'gray-white'
@@ -32,6 +34,8 @@ export function buttonClass(size: SizeType, color: ColorType | 'override') {
       'disabled:bg-gray-200 bg-teal-500 text-white hover:bg-teal-500',
     color === 'red' &&
       'disabled:bg-gray-200 bg-scarlet-300 text-white hover:bg-scarlet-400',
+    color === 'rose' &&
+      'disabled:bg-gray-200 bg-rose-300 text-white hover:bg-rose-400',
     color === 'yellow' &&
       'disabled:bg-gray-200 bg-yellow-400 text-white hover:bg-yellow-500',
     color === 'blue' &&
