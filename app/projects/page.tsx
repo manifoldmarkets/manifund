@@ -17,12 +17,13 @@ export const revalidate = 30
 
 export default async function Projects() {
   const supabase = createServerClient()
+  const user = await getUser(supabase)
   const projects = await listProjects(supabase)
   const rounds = await getRounds(supabase)
   const regranters = await getRegranters(supabase)
   return (
     <div className="bg-dark-200 max-w-4xl px-6 pt-5">
-      <LandingSection />
+      {!user && <LandingSection />}
       <AllRoundsDisplay
         rounds={rounds}
         projects={projects}
