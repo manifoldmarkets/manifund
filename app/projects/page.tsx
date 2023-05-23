@@ -5,6 +5,7 @@ import { AllRoundsDisplay } from './all-rounds-display'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { getRegranters, getUser } from '@/db/profile'
 import { SupabaseClient } from '@supabase/supabase-js'
+import Image from 'next/image'
 import { Row } from '@/components/layout/row'
 import {
   ArrowPathIcon,
@@ -22,8 +23,8 @@ export default async function Projects() {
   const rounds = await getRounds(supabase)
   const regranters = await getRegranters(supabase)
   return (
-    <div className="bg-dark-200 max-w-4xl px-6 pt-5">
-      {!user && <LandingSection />}
+    <div className="bg-dark-200 max-w-4xl px-3 pt-5 sm:px-6">
+      {user === null && <LandingSection />}
       <AllRoundsDisplay
         rounds={rounds}
         projects={projects}
@@ -43,19 +44,28 @@ export default async function Projects() {
 function LandingSection() {
   return (
     <Col className="mb-10 gap-4">
-      <div className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5">
-        <p className="text-4xl font-medium text-white shadow-rose-500 text-shadow-lg">
-          Give impactfully,
-        </p>
-        <p className="text-right text-4xl font-medium text-white shadow-orange-500 text-shadow-lg">
-          get funded efficiently.
-        </p>
-        <p className="mt-5 text-center text-white">
-          Manifund offers charitable funding infrastructure designed to improve
-          incentives, efficiency, and transparency.
-        </p>
-      </div>
-      <Row className="justify-between gap-3">
+      <Row className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5">
+        <div>
+          <p className="text-2xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
+            Give impactfully,
+          </p>
+          <p className="text-right text-2xl font-medium text-white shadow-orange-500 text-shadow-lg sm:text-4xl">
+            get funded efficiently.
+          </p>
+          <p className="mt-3 text-center text-xs text-white sm:mt-5 sm:text-sm">
+            Manifund offers charitable funding infrastructure designed to
+            improve incentives, efficiency, and transparency.
+          </p>
+        </div>
+        <Image
+          className="hidden w-40 xl:block"
+          src="/SolidWhiteManifox.png"
+          alt="Manifox"
+          width={1000}
+          height={1000}
+        />
+      </Row>
+      <div className="flex flex-col justify-between gap-3 sm:flex-row">
         <div className="rounded-lg border-2 border-orange-500 bg-white p-3">
           <Row className="mb-1 gap-1 text-orange-500">
             <ArrowPathIcon className="h-7 w-7 text-orange-500" />
@@ -74,11 +84,11 @@ function LandingSection() {
           </Row>
           <p className="text-sm text-gray-600">
             Align incentives with impact by bringing for-profit funding
-            mechanisms to the non-profit space.
+            mechanisms to the non-profit world.
           </p>
           <LearnMoreButton url="/about" />
         </div>
-      </Row>
+      </div>
     </Col>
   )
 }
