@@ -13,6 +13,7 @@ import {
   ArrowTrendingUpIcon,
 } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
+import { Button } from '@/components/button'
 
 export const revalidate = 30
 
@@ -44,27 +45,37 @@ export default async function Projects() {
 function LandingSection() {
   return (
     <Col className="mb-10 gap-4">
-      <Row className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5">
-        <div>
-          <p className="text-2xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
-            Give impactfully,
-          </p>
-          <p className="text-right text-2xl font-medium text-white shadow-orange-500 text-shadow-lg sm:text-4xl">
-            get funded efficiently.
-          </p>
-          <p className="mt-3 text-center text-xs text-white sm:mt-5 sm:text-sm">
-            Manifund offers charitable funding infrastructure designed to
-            improve incentives, efficiency, and transparency.
-          </p>
-        </div>
-        <Image
-          className="hidden w-40 xl:block"
-          src="/SolidWhiteManifox.png"
-          alt="Manifox"
-          width={1000}
-          height={1000}
-        />
-      </Row>
+      <div className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5">
+        <Row>
+          <div>
+            <p className="text-2xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
+              Give impactfully,
+            </p>
+            <p className="text-right text-2xl font-medium text-white shadow-orange-500 text-shadow-lg sm:text-4xl">
+              get funded efficiently.
+            </p>
+            <p className="mt-3 text-center text-xs text-white sm:mt-5 sm:text-sm">
+              Manifund offers charitable funding infrastructure designed to
+              improve incentives, efficiency, and transparency.
+            </p>
+          </div>
+          <Image
+            className="hidden w-40 xl:block"
+            src="/SolidWhiteManifox.png"
+            alt="Manifox"
+            width={1000}
+            height={1000}
+          />
+        </Row>
+        <Row className="mt-5 justify-center">
+          <a
+            className="rounded bg-white px-3 py-2 text-sm font-medium text-orange-500 shadow hover:bg-orange-500 hover:text-white"
+            href="/login"
+          >
+            Start giving
+          </a>
+        </Row>
+      </div>
       <div className="flex flex-col justify-between gap-3 sm:flex-row">
         <div className="rounded-lg border-2 border-orange-500 bg-white p-3">
           <Row className="mb-1 gap-1 text-orange-500">
