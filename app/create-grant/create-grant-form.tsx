@@ -2,7 +2,7 @@
 import { TextEditor, useTextEditor } from '@/components/editor'
 import { Input } from '@/components/input'
 import { Col } from '@/components/layout/col'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Combobox } from '@headlessui/react'
 import clsx from 'clsx'
@@ -54,7 +54,7 @@ export function CreateGrantForm(props: {
         })
   const [recipientFullName, setRecipientFullName] = useState('')
   const [recipientOnManifund, setRecipientOnManifund] = useState(false)
-  const [recipient, setRecipient] = useState(profiles[0])
+  const [recipient, setRecipient] = useState<MiniProfile | null>(null)
   const [recipientEmail, setRecipientEmail] = useState('')
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
@@ -65,11 +65,35 @@ export function CreateGrantForm(props: {
   const reasoningEditor = useTextEditor(REASONING_OUTLINE)
   const router = useRouter()
 
+  let recipientDoesExistError = false
+  useEffect(() => {
+    if (!recipientOnManifund) {
+      if (
+        profiles.find(
+          (profile) =>
+            profile.full_name === recipientFullName && recipientFullName !== ''
+        )
+      ) {
+        recipientDoesExistError = true
+      } else {
+        recipientDoesExistError = false
+      }
+    } else {
+      setRecipient(
+        profiles.find((profile) => profile.full_name === recipientFullName) ??
+          null
+      )
+      recipientDoesExistError = false
+    }
+  }, [recipientFullName, recipientOnManifund])
+
   let errorMessage = null
   if (!recipientOnManifund && !recipientFullName) {
     errorMessage = 'Please enter the name of the recipient.'
   } else if (!recipientOnManifund && !recipientEmail) {
     errorMessage = 'Please enter the email address of the recipient.'
+  } else if (recipientOnManifund && recipient === null) {
+    errorMessage = 'Please select the recipient.'
   } else if (!title) {
     errorMessage = 'Please enter a title for your grant.'
   } else if (amount <= 0) {
@@ -91,7 +115,13 @@ export function CreateGrantForm(props: {
           on Manifund. Note that all grants are public.
         </p>
       </div>
-      <Row>
+      <Row
+        className={clsx(
+          recipientDoesExistError
+            ? 'rounded-md border-2 border-rose-500 bg-rose-100 p-1'
+            : ''
+        )}
+      >
         <Row className="h-6 items-center">
           <input
             id="terms"
@@ -110,16 +140,21 @@ export function CreateGrantForm(props: {
       {!recipientOnManifund && (
         <>
           <Col className="gap-1">
-            <label htmlFor="recipientFullName">Recipient full name</label>
+            <label htmlFor="recipientFullName">Recipient full name:</label>
             <Input
               type="text"
               id="recipientFullName"
               value={recipientFullName}
               onChange={(event) => setRecipientFullName(event.target.value)}
             />
+            {recipientDoesExistError && (
+              <p className="text-sm text-rose-500">
+                This person is already a user on Manifund.
+              </p>
+            )}
           </Col>
           <Col className="gap-1">
-            <label htmlFor="recipientEmail">Recipient email</label>
+            <label htmlFor="recipientEmail">Recipient email:</label>
             <Input
               type="text"
               id="recipientEmail"
@@ -131,13 +166,15 @@ export function CreateGrantForm(props: {
       )}
       {recipientOnManifund && (
         <Col className="gap-1">
-          <label>Recipient</label>
+          <label>Recipient:</label>
           <Combobox as="div" value={recipient} onChange={setRecipient}>
             <div className="relative">
               <Combobox.Input
                 className="invalid:border-scarlet-500 invalid:text-scarlet-900 invalid:placeholder-scarlet-300 h-12 w-full rounded-md border border-gray-300 bg-white px-4 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500"
                 onChange={(event) => setQuery(event.target.value)}
-                displayValue={(profile: MiniProfile) => profile.full_name}
+                displayValue={(profile: MiniProfile | null) =>
+                  profile?.full_name ?? ''
+                }
               />
               <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
                 <ChevronUpDownIcon
@@ -292,7 +329,7 @@ export function CreateGrantForm(props: {
               donorNotes,
               amount,
               toEmail: recipientOnManifund ? undefined : recipientEmail,
-              toUsername: recipientOnManifund ? recipient.username : undefined,
+              toUsername: recipientOnManifund ? recipient?.username : undefined,
             }),
           })
           const newProject = await response.json()
