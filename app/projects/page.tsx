@@ -3,7 +3,7 @@ import { listProjects } from '@/db/project'
 import { getRounds } from '@/db/round'
 import { AllRoundsDisplay } from './all-rounds-display'
 import { ProjectsDisplay } from '@/components/projects-display'
-import { getRegranters, getUser } from '@/db/profile'
+import { getUser } from '@/db/profile'
 import Image from 'next/image'
 import { Row } from '@/components/layout/row'
 import {
@@ -70,28 +70,32 @@ function LandingSection() {
         </Row>
       </div>
       <div className="flex flex-col justify-between gap-3 sm:flex-row">
-        <div className="rounded-lg border-2 border-orange-500 bg-white p-3">
-          <Row className="mb-1 gap-1 text-orange-500">
-            <ArrowPathIcon className="h-7 w-7 text-orange-500" />
-            <p className="text-lg font-medium">Regranting</p>
-          </Row>
-          <p className="text-sm text-gray-600">
-            Allows donors to outsource their giving to qualified and trusted
-            regrantors.
-          </p>
+        <Col className="justify-between rounded-lg border-2 border-orange-500 bg-white p-3">
+          <div>
+            <Row className="mb-1 gap-1 text-orange-500">
+              <ArrowPathIcon className="h-7 w-7 text-orange-500" />
+              <p className="text-lg font-medium">Regranting</p>
+            </Row>
+            <p className="text-sm text-gray-600">
+              Allows donors to outsource their giving to qualified and trusted
+              regrantors.
+            </p>
+          </div>
           <LearnMoreButton url="/rounds/regrants?tab=about" />
-        </div>
-        <div className="rounded-lg border-2 border-orange-500 bg-white p-3">
-          <Row className="mb-1 gap-1 text-orange-500">
-            <ArrowTrendingUpIcon className="h-7 w-7" />
-            <p className="text-lg font-medium">Impact certificates</p>
-          </Row>
-          <p className="text-sm text-gray-600">
-            Align incentives with impact by bringing for-profit funding
-            mechanisms to the non-profit world.
-          </p>
+        </Col>
+        <Col className="justify-between rounded-lg border-2 border-orange-500 bg-white p-3">
+          <div>
+            <Row className="mb-1 gap-1 text-orange-500">
+              <ArrowTrendingUpIcon className="h-7 w-7" />
+              <p className="text-lg font-medium">Impact certificates</p>
+            </Row>
+            <p className="text-sm text-gray-600">
+              Align incentives with impact by bringing for-profit funding
+              mechanisms to the non-profit world.
+            </p>
+          </div>
           <LearnMoreButton url="/about" />
-        </div>
+        </Col>
       </div>
     </Col>
   )
