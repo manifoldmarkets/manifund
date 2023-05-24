@@ -1,5 +1,4 @@
 import { Profile } from '@/db/profile'
-import Image from 'next/image'
 import clsx from 'clsx'
 import { Card } from './card'
 import Link from 'next/link'
@@ -28,15 +27,13 @@ export function RegranterCard(props: {
               size={24}
             />
           </Row>
-          <div className="flex flex-row items-center gap-4 leading-tight">
-            <div className="flex flex-col gap-1">
-              <span className="text-center text-xl font-bold">
-                {regranter.full_name}
-              </span>
-              <span className="text-center text-sm font-light leading-tight text-gray-500">
-                {regranter.bio}
-              </span>
-            </div>
+          <div className="flex w-full flex-col gap-1">
+            <span className="text-center text-xl font-bold">
+              {regranter.full_name}
+            </span>
+            <span className="text-center text-sm font-light leading-tight text-gray-500">
+              {regranter.bio}
+            </span>
           </div>
           <span className="text-sm text-gray-500">{regranter.website}</span>
         </Col>
