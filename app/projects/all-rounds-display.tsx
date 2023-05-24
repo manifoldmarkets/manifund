@@ -9,10 +9,9 @@ import { Col } from '@/components/layout/col'
 export function AllRoundsDisplay(props: {
   rounds: Round[]
   projects: FullProject[]
-  regranters: Profile[]
 }) {
-  const { rounds, projects, regranters } = props
-  const sortedRounds = sortRoundsForPreview(rounds)
+  const { rounds, projects } = props
+  const sortedRounds = sortRoundsForPreview(rounds, projects)
   return (
     <div className="pb-20">
       <div className="mx-auto max-w-7xl">
@@ -23,7 +22,7 @@ export function AllRoundsDisplay(props: {
           <p className="mt-1 text-gray-600">
             Organized funding rounds with active projects.
           </p>
-          <div className="mt-8 space-y-10 lg:mt-12 lg:space-y-14">
+          <div className="mt-4 space-y-10 lg:mt-12 lg:space-y-14">
             {sortedRounds.map((round) => (
               <Round round={round} projects={projects} key={round.title} />
             ))}
@@ -78,28 +77,7 @@ function Round(props: { round: Round; projects: FullProject[] }) {
   )
 }
 
-function sortProjectsForPreview(projects: FullProject[]) {
-  const sortedByComments = projects.sort((a, b) =>
-    a.comments.length < b.comments.length ? 1 : -1
-  )
-  const sortedByStage = sortBy(sortedByComments, [
-    function (project: FullProject) {
-      switch (project.stage) {
-        case 'proposal':
-          return 0
-        case 'active':
-          return 1
-        case 'complete':
-          return 2
-        default:
-          return 3
-      }
-    },
-  ])
-  return sortedByStage
-}
-
-function sortRoundsForPreview(rounds: Round[]) {
+function sortRoundsForPreview(rounds: Round[], projects: FullProject[]) {
   const sortedByDueDate = orderBy(rounds, 'proposal_due_date', 'desc')
   const customSorted = sortBy(sortedByDueDate, [
     function (round: Round) {
@@ -110,8 +88,12 @@ function sortRoundsForPreview(rounds: Round[]) {
       }
     },
   ])
-  // Exclude Regrants until launch
   return customSorted.filter(
-    (round) => round.title !== 'Independent' && round.title !== 'Regrants'
+    (round) =>
+      round.title !== 'Independent' &&
+      projects.filter(
+        (project) =>
+          project.rounds.title === round.title && project.stage !== 'hidden'
+      ).length > 0
   )
 }

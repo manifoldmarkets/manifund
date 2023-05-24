@@ -20,15 +20,10 @@ export default async function Projects() {
   const user = await getUser(supabase)
   const projects = await listProjects(supabase)
   const rounds = await getRounds(supabase)
-  const regranters = await getRegranters(supabase)
   return (
     <div className="bg-dark-200 max-w-4xl px-3 pt-5 sm:px-6">
       {user === null && <LandingSection />}
-      <AllRoundsDisplay
-        rounds={rounds}
-        projects={projects}
-        regranters={regranters}
-      />
+      <AllRoundsDisplay rounds={rounds} projects={projects} />
       <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
         All projects
       </h2>
