@@ -4,7 +4,6 @@ import { getRounds } from '@/db/round'
 import { AllRoundsDisplay } from './all-rounds-display'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { getRegranters, getUser } from '@/db/profile'
-import { SupabaseClient } from '@supabase/supabase-js'
 import Image from 'next/image'
 import { Row } from '@/components/layout/row'
 import {
@@ -13,7 +12,6 @@ import {
   ArrowTrendingUpIcon,
 } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
-import { Button } from '@/components/button'
 
 export const revalidate = 30
 
@@ -48,32 +46,32 @@ function LandingSection() {
       <div className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5">
         <Row>
           <div>
-            <p className="text-2xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
-              Give impactfully,
+            <p className="text-3xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
+              Impactful giving,
             </p>
-            <p className="text-right text-2xl font-medium text-white shadow-orange-500 text-shadow-lg sm:text-4xl">
-              get funded efficiently.
+            <p className="text-right text-3xl font-medium text-white shadow-orange-500 text-shadow-lg sm:text-4xl">
+              efficient funding.
             </p>
             <p className="mt-3 text-center text-xs text-white sm:mt-5 sm:text-sm">
               Manifund offers charitable funding infrastructure designed to
               improve incentives, efficiency, and transparency.
             </p>
+            <Row className="mt-5 justify-center">
+              <a
+                className="rounded bg-white px-3 py-2 text-sm font-medium text-orange-500 shadow hover:bg-orange-500 hover:text-white"
+                href="/login"
+              >
+                Start giving
+              </a>
+            </Row>
           </div>
           <Image
-            className="hidden w-40 xl:block"
+            className="hidden w-48 lg:block"
             src="/SolidWhiteManifox.png"
             alt="Manifox"
             width={1000}
             height={1000}
           />
-        </Row>
-        <Row className="mt-5 justify-center">
-          <a
-            className="rounded bg-white px-3 py-2 text-sm font-medium text-orange-500 shadow hover:bg-orange-500 hover:text-white"
-            href="/login"
-          >
-            Start giving
-          </a>
         </Row>
       </div>
       <div className="flex flex-col justify-between gap-3 sm:flex-row">
