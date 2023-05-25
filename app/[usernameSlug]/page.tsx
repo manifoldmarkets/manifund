@@ -7,11 +7,7 @@ import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
 import { getFullTxnsByUser, getTxnsByUser, FullTxn } from '@/db/txn'
-import {
-  getProjectsByUser,
-  getProjectTransfersByUser,
-  Project,
-} from '@/db/project'
+import { getProjectsByUser, getProjectTransfersByUser } from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
 import { getBidsByUser } from '@/db/bid'
 

@@ -1,7 +1,9 @@
 import { STRIPE_SECRET_KEY } from '@/db/env'
+import { getUserEmail } from '@/utils/email'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { getURL } from 'next/dist/shared/lib/utils'
 import Stripe from 'stripe'
+import { createAdminClient } from './_db'
+import { getUser } from '@/db/profile'
 
 const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
   apiVersion: '2022-11-15',
@@ -12,10 +14,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { userId } = await req.body
+  const supabase = createAdminClient()
+  const user = await getUser(supabase)
+  if (!user) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+  const userEmail = await getUserEmail(supabase, user.id)
 
   const account = await stripe.accounts.create({
     type: 'express',
+    email: userEmail,
   })
 
   const accountLink = await stripe.accountLinks.create({
