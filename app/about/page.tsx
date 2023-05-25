@@ -5,14 +5,156 @@ import { AuctionPlayground } from './auction-playground'
 export default function AboutPage() {
   return (
     <div className="prose mx-auto font-light">
+      <h1 className="relative top-5">Our mission</h1>
       <p>
-        Manifund is a platform for creating and investing in{' '}
+        Manifund builds funding infrastructure for non-profits, particularly
+        aimed at the effective altruism and longtermist spaces. We aim to
+        provide clean user experiences for grantmakers, donors, and recipients
+        so money moves where it’s needed faster, clear records and communication
+        channels to improve feedback and accountability, and innovative
+        mechanisms that better align incentives with impact.
+      </p>
+      <p>
+        Currently we support two funding mechanisms: regranting and impact
+        certificates, which you can read more about below!
+      </p>
+      <h1 className="relative top-5" id="regranting">
+        Regranting
+      </h1>
+      <p>
+        Regranting is a method of giving money whereby a charitable donor
+        delegates a grantmaking budget to different individuals known as
+        “regrantors”. Regrantors are then empowered to make grant decisions
+        based on the objectives of the original donor.
+      </p>
+      <p>
+        This model was pioneered by the FTX Future Fund; among the grantmaking
+        models they experimented with in 2022, they{' '}
+      </p>
+      <a href="https://forum.effectivealtruism.org/posts/paMYXYFYbbjpdjgbt/future-fund-june-2022-update#Expectations_vs__reality">
+        considered regranting to be the most promising.
+      </a>
+      <h3>Why regranting?</h3>
+      <ul>
+        <li>
+          Regranting surfaces opportunities that a donor might otherwise miss,
+          as regrantors can tap into their personal networks and fields of
+          expertise.
+        </li>
+        <li>
+          The regranting model requires less overhead than traditional
+          grantmaking, as one person is responsible for the budget rather than a
+          committee. This also allows for faster grant turnaround times, solving
+          a key pain point for grantees.
+        </li>
+        <li>
+          Certain cause areas like longtermism can be speculative, opaque, and
+          nascent, making it harder for donors to know where to direct their
+          money. Regranting allows donors to outsource these decisions to
+          trustworthy individuals.
+        </li>
+      </ul>
+      <h3>How does regranting on Manifund work?</h3>
+      <p>Our website makes the regranting process simple and transparent:</p>
+      <ol>
+        <li>
+          A donor contributes money to Manifold for Charity, a registered 501c3
+          nonprofit.
+        </li>
+        <li>
+          The donor then allocates the money between regrantors of their choice.
+        </li>
+        <li>
+          Regrantors choose which opportunities (eg existing charities, new
+          projects, or individuals) to spend their budgets on, writing up an
+          explanation for each grant made.
+        </li>
+        <li>
+          Manifold for Charity reviews the grant to make sure it is legitimate,
+          legal, and aligned with our mission, and then wires the money and
+          publishes the grant writeups.
+        </li>
+      </ol>
+      <h3>Kickoff round</h3>
+      <p>
+        On launch, there will be 5 sponsored regrantors, each of whom will get a
+        regranting budget of $500k to distribute to projects or charities that
+        they believe will most improve the future. These regrants are backed by
+        an anonymous donor’s contribution of $1.5 million; Longtermist Round 1
+        will end after this pool is spent, or after 6 months have passed.
+      </p>
+      <p>
+        Sponsored regranters will be compensated $100 + 0.5% of each grant that
+        they make, excluding grants for their own projects.
+      </p>
+      <p>
+        We plan to launch the program on Friday, June 2nd. At this point,
+        regrantors may begin giving grants.
+      </p>
+      <h3>FAQ</h3>
+      <strong>Who can see the information about grants?</strong>
+      <br />
+      <p>
+        Currently all grant information is made public. This includes the
+        identity of the regrantor and grant recipient, the project description,
+        the grant size, and the regrantor’s writeup.
+      </p>
+      <p>
+        We strongly believe in transparency as it allows for meaningful public
+        feedback, accountability of decisions, and establishment of a regrantor
+        track records. We recognize that not all grants are suited for
+        publishing; for now, we recommend such grants be made through other
+        donors (such as LTFF, SFF, or OpenPhil).
+      </p>
+      <p>
+        If after some time we receive feedback from regranters or recipients
+        that this is significantly restricting their behavior or causing
+        friction, we may add a semi-private or private option.
+      </p>
+      <strong>What kinds of projects are eligible for regranting?</strong>
+      <br />
+      <p>
+        We support regrants to registered charities and individuals. For-profit
+        organizations may also be eligible, pending due diligence. As a
+        US-registered 501c3, we do not permit donations to political campaigns.
+      </p>
+      <p>
+        We will look over all grants before fulfilling withdrawal requests to
+        make sure they meet these requirements. We reserve the right to veto
+        grants for any reason, though will strongly defer to regrantors’
+        judgement.
+      </p>
+      <strong>Can regrantors send money to themselves?</strong>
+      <br />
+      <p>
+        Regranters are allowed to donate to their own projects, though we’ll
+        evaluate these projects with more scrutiny before fulfilling withdrawal
+        requests.
+      </p>
+      <strong>How do I become a regrantor?</strong>
+      <p>
+        Anyone can become a regrantor just be altering a setting on their
+        profile. This will advertise their profile as a regrantor and allow them
+        to create grants out of their budget.
+      </p>
+      <p>
+        Manifund will reach out personally to individuals we want to sponsor as
+        regrantors.
+      </p>
+      <h1 className="relative top-5" id="impact-certificates">
+        Impact certificates
+      </h1>
+      <p>
+        One way to give or receive funding for projects on Manifund is through{' '}
         <a href="https://astralcodexten.substack.com/p/impact-markets-the-annoying-details">
           impact certificates
         </a>
-        . It’s like Kickstarter meets the stock market, for charity!
+        . The impact certificate ecosystem is like Kickstarter meets the stock
+        market, for charity!
       </p>
-      <h2 id="how-does-manifund-work-">How does Manifund work?</h2>
+      <h3 id="how-does-manifund-work-">
+        How do impact certificates work on Manifund?
+      </h3>
       <ul>
         <li>
           Founders create a proposal for a charitable project, with a minimum
@@ -37,9 +179,9 @@ export default function AboutPage() {
           by the project.
         </li>
       </ul>
-      <h2 id="an-example-of-manifund-in-action">
-        An example of Manifund in action
-      </h2>
+      <h3 id="an-example-of-manifund-in-action">
+        An example of Manifund impact certificates in action
+      </h3>
       <ol>
         <li>
           A research team proposes a project to develop a forecasting model to
@@ -65,9 +207,9 @@ export default function AboutPage() {
           claim charitable impact.
         </li>
       </ol>
-      <h2 id="-why-are-impact-certs-better-than-regular-grants-">
+      <h3 id="-why-are-impact-certs-better-than-regular-grants-">
         <strong>Why are impact certs better than regular grants?</strong>
-      </h2>
+      </h3>
       <p>
         <strong>For donors</strong>: “In an impact market, you (as the final
         oracular funder) only need to figure out which projects <em>did</em>{' '}
@@ -100,7 +242,9 @@ export default function AboutPage() {
         Like startup equity, you can keep a portion of your impact cert shares,
         to sell later or distribute to other people who help your project.
       </p>
-      <h2 id="about-us">About us</h2>
+      <h1 id="about-us" className="relative top-5">
+        About us
+      </h1>
       <p>
         Manifund is built by the team behind{' '}
         <a href="http://manifold.markets/">Manifold Markets</a>, primarily{' '}
@@ -132,7 +276,7 @@ export default function AboutPage() {
           by Paul Christiano and Katja Grace
         </li>
       </ul>
-      <h2>Appendix: technical details</h2>
+      <h1 className="relative top-5">Appendix: technical details</h1>
       <h3 id="the-auction-mechanism">The Auction Mechanism</h3>
       <p>
         On Manifund, project proposals start with a fundraising <b>auction</b>,

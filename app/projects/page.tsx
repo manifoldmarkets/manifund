@@ -81,7 +81,7 @@ function LandingSection() {
               regrantors.
             </p>
           </div>
-          <LearnMoreButton url="/rounds/regrants?tab=about" />
+          <LearnMoreButton url="/about#regranting" />
         </Col>
         <Col className="justify-between rounded-lg border-2 border-orange-500 bg-white p-3">
           <div>
@@ -94,7 +94,7 @@ function LandingSection() {
               mechanisms to the non-profit world.
             </p>
           </div>
-          <LearnMoreButton url="/about" />
+          <LearnMoreButton url="/about#impact-certificates" />
         </Col>
       </div>
     </Col>
