@@ -242,20 +242,7 @@ export default function AboutPage() {
         Like startup equity, you can keep a portion of your impact cert shares,
         to sell later or distribute to other people who help your project.
       </p>
-      <h1 id="about-us" className="relative top-5">
-        About us
-      </h1>
-      <p>
-        Manifund is built by the team behind{' '}
-        <a href="http://manifold.markets/">Manifold Markets</a>, primarily{' '}
-        <a href="https://manifold.markets/Austin">Austin Chen</a> and{' '}
-        <a href="https://manifold.markets/RachelWeinberg">Rachel Weinberg</a>.
-      </p>
-      <p>
-        Come chat with us on <a href="https://discord.gg/zPnPtx6jBS">Discord</a>
-        , or reach out to austin@manifold.markets!
-      </p>
-      <h2 id="see-also">See also</h2>
+      <h3 id="see-also">See also</h3>
       <ul>
         <li>
           <a href="https://astralcodexten.substack.com/p/impact-markets-the-annoying-details">
@@ -276,6 +263,19 @@ export default function AboutPage() {
           by Paul Christiano and Katja Grace
         </li>
       </ul>
+      <h1 id="about-us" className="relative top-5">
+        About us
+      </h1>
+      <p>
+        Manifund is built by the team behind{' '}
+        <a href="http://manifold.markets/">Manifold Markets</a>, primarily{' '}
+        <a href="https://manifold.markets/Austin">Austin Chen</a> and{' '}
+        <a href="https://manifold.markets/RachelWeinberg">Rachel Weinberg</a>.
+      </p>
+      <p>
+        Come chat with us on <a href="https://discord.gg/zPnPtx6jBS">Discord</a>
+        , or reach out to austin@manifold.markets!
+      </p>
       <h1 className="relative top-5">Appendix: technical details</h1>
       <h3 id="the-auction-mechanism">The Auction Mechanism</h3>
       <p>
