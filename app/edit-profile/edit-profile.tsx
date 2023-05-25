@@ -15,6 +15,7 @@ import { TextEditor, useTextEditor } from '@/components/editor'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
+import { redirect } from 'next/navigation'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
@@ -257,6 +258,23 @@ export function EditProfileForm(props: { profile: Profile }) {
           setAvatar(event.target.files ? event.target.files[0] : null)
         }}
       ></input>
+      <Button
+        onClick={async () => {
+          const response = await fetch('/api/create-connect-account', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              profileId: profile.id,
+            }),
+          })
+          const json = await response.json()
+          router.push(json.url)
+        }}
+      >
+        Set up withdrawals
+      </Button>
       <p className="text-center text-rose-500">{errorMessage}</p>
       <Button
         type="submit"
