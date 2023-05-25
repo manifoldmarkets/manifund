@@ -3,7 +3,7 @@ import { Profile, ProfileAndBids } from '@/db/profile'
 import { useSearchParams } from 'next/navigation'
 import { Bid, BidAndProject } from '@/db/bid'
 import { Tabs } from '@/components/tabs'
-import { FullProject, Project } from '@/db/project'
+import { FullProject, Project, ProjectTransfer } from '@/db/project'
 import { ProposalBids } from './user-proposal-bids'
 import { ActiveBids } from './user-active-bids'
 import { Investments } from './user-investments'
@@ -19,13 +19,24 @@ import { OutgoingDonationsHistory } from './user-donations'
 
 export function ProfileTabs(props: {
   profile: Profile
+  projectTransfers: ProjectTransfer[]
   projects: FullProject[]
   bids: BidAndProject[]
   txns: FullTxn[]
   userProfile: ProfileAndBids | null
   userTxns: Txn[] | null
+  userProjectTransfers: ProjectTransfer[]
 }) {
-  const { profile, projects, bids, txns, userProfile, userTxns } = props
+  const {
+    profile,
+    projectTransfers,
+    projects,
+    bids,
+    txns,
+    userProfile,
+    userTxns,
+    userProjectTransfers,
+  } = props
   const isOwnProfile = userProfile?.id === profile.id
   const proposalBids = bids.filter(
     (bid) => bid.projects.stage === 'proposal' && bid.status === 'pending'
@@ -37,6 +48,7 @@ export function ProfileTabs(props: {
   const notOwnProjectInvestments = investments.filter((investment) => {
     return investment.project && investment.project.creator !== profile.id
   })
+  console.log('from tabs', projectTransfers)
   const donations = txns.filter((txn) => {
     const txnType = categorizeTxn(txn, profile.id)
     return (
@@ -59,6 +71,7 @@ export function ProfileTabs(props: {
     txns,
     profile.id,
     bids,
+    projectTransfers ?? [],
     profile.accreditation_status,
     balance
   )
@@ -68,6 +81,7 @@ export function ProfileTabs(props: {
           userTxns,
           userProfile?.id,
           userProfile?.bids,
+          userProjectTransfers ?? [],
           userProfile?.accreditation_status
         )
       : 0
