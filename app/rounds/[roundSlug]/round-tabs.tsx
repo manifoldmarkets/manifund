@@ -49,7 +49,7 @@ export function RoundTabs(props: {
       current: currentTabName === 'regrants',
       display: (
         <>
-          {regranters.length !== 0 ? (
+          {regranters.length === 0 ? (
             <EmptyContent
               icon={<UserPlusIcon className="h-10 w-10 text-gray-400" />}
               title={'No regranters yet.'}

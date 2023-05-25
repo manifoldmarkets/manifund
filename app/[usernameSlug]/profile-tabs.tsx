@@ -48,7 +48,6 @@ export function ProfileTabs(props: {
   const notOwnProjectInvestments = investments.filter((investment) => {
     return investment.project && investment.project.creator !== profile.id
   })
-  console.log('from tabs', projectTransfers)
   const donations = txns.filter((txn) => {
     const txnType = categorizeTxn(txn, profile.id)
     return (
@@ -180,7 +179,6 @@ function calculateWithdrawBalance(
       nonWithdrawBalance += bid.amount
     }
   })
-  console.log(balance, nonWithdrawBalance)
   return Math.max(balance - nonWithdrawBalance, 0)
 }
 
