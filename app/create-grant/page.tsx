@@ -7,6 +7,7 @@ import { getTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { calculateUserSpendableFunds } from '@/utils/math'
 import Link from 'next/link'
+import { getProjectTransfersByUser } from '@/db/project'
 
 export const revalidate = 0
 export default async function CreateGrantPage() {
@@ -28,6 +29,7 @@ export default async function CreateGrantPage() {
   const profile = await getProfileById(supabase, user?.id)
   const txns = await getTxnsByUser(supabase, user?.id ?? '')
   const bids = await getBidsByUser(supabase, user?.id ?? '')
+  const projectTransfers = await getProjectTransfersByUser(supabase, user?.id)
 
   if (!profile?.regranter_status) {
     return (
@@ -45,6 +47,7 @@ export default async function CreateGrantPage() {
     txns,
     profile.id,
     bids,
+    projectTransfers,
     profile?.accreditation_status as boolean
   )
   return (

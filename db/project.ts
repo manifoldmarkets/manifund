@@ -99,3 +99,16 @@ export async function getFullProjectsByRound(
   }
   return data as FullProject[]
 }
+
+export async function getProjectTransfersByUser(
+  supabase: SupabaseClient,
+  userId: string
+) {
+  const { data } = await supabase
+    .from('projects')
+    .select('*, project_transfers(*)')
+    .eq('creator', userId)
+  return data
+    ?.map((project) => project.project_transfers[0])
+    .filter((projectTransfer) => projectTransfer) as ProjectTransfer[]
+}

@@ -1,6 +1,10 @@
 import { Bid, getBidsByUser } from '@/db/bid'
 import { Profile } from '@/db/profile'
-import { Project } from '@/db/project'
+import {
+  getProjectTransfersByUser,
+  Project,
+  ProjectTransfer,
+} from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { getFullTxnsByUser, Txn, TxnAndProfiles } from '@/db/txn'
 import { SupabaseClient } from '@supabase/supabase-js'
@@ -104,6 +108,7 @@ export function calculateUserSpendableFunds(
   txns: Txn[],
   userId: string,
   bids: Bid[],
+  projectTransfers: ProjectTransfer[],
   accreditation_status: boolean,
   balance?: number
 ) {
@@ -111,9 +116,13 @@ export function calculateUserSpendableFunds(
   if (accreditation_status) {
     return currentBalance
   }
-  const lockedFunds = bids
-    .filter((bid) => bid.status === 'pending' && bid.type === 'buy')
-    .reduce((acc, bid) => acc + bid.amount, 0)
+  const lockedFunds =
+    bids
+      .filter((bid) => bid.status === 'pending' && bid.type === 'buy')
+      .reduce((acc, bid) => acc + bid.amount, 0) +
+    projectTransfers
+      .filter((transfer) => !transfer.transferred)
+      .reduce((acc, transfer) => acc + (transfer.grant_amount ?? 0), 0)
   return currentBalance - lockedFunds
 }
 
@@ -127,6 +136,7 @@ export async function calculateUserFundsAndShares(
     return { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
   }
   const txns = await getFullTxnsByUser(supabase, userId)
+  const projectTransfers = await getProjectTransfersByUser(supabase, userId)
   const userBids = await getBidsByUser(supabase, userId)
   const calculateUserShares = () => {
     let userShares = 0
@@ -152,6 +162,7 @@ export async function calculateUserFundsAndShares(
     txns,
     userId,
     userBids,
+    projectTransfers,
     accreditation_status
   )
   return { userSpendableFunds, userSellableShares, userShares }
