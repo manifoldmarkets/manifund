@@ -30,10 +30,10 @@ export default function AboutPage() {
       <p>
         This model was pioneered by the FTX Future Fund; among the grantmaking
         models they experimented with in 2022, they{' '}
+        <a href="https://forum.effectivealtruism.org/posts/paMYXYFYbbjpdjgbt/future-fund-june-2022-update#Expectations_vs__reality">
+          considered regranting to be the most promising.
+        </a>
       </p>
-      <a href="https://forum.effectivealtruism.org/posts/paMYXYFYbbjpdjgbt/future-fund-june-2022-update#Expectations_vs__reality">
-        considered regranting to be the most promising.
-      </a>
       <h3>Why regranting?</h3>
       <ul>
         <li>
