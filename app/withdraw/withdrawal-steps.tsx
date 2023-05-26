@@ -1,21 +1,34 @@
 'use client'
 import { Button } from '@/components/button'
 import { Row } from '@/components/layout/row'
-import { CheckIcon } from '@heroicons/react/20/solid'
+import {
+  BuildingLibraryIcon,
+  CheckIcon,
+  CreditCardIcon,
+  HashtagIcon,
+  UserCircleIcon,
+} from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
 import Stripe from 'stripe'
 
 export function WithdrawalSteps(props: {
   account: Stripe.Account | null
   userId: string
+  loginLink: Stripe.LoginLink | null
 }) {
-  const { account, userId } = props
+  const { account, userId, loginLink } = props
   const steps = [
     {
       id: 1,
       name: 'Withdrawal details',
       status: 'current',
-      display: <WithdrawalDetails account={account} userId={userId} />,
+      display: (
+        <WithdrawalDetails
+          account={account}
+          userId={userId}
+          loginLink={loginLink}
+        />
+      ),
     },
     {
       id: 2,
@@ -113,8 +126,9 @@ export function WithdrawalSteps(props: {
 function WithdrawalDetails(props: {
   account: Stripe.Account | null
   userId: string
+  loginLink: Stripe.LoginLink | null
 }) {
-  const { account, userId } = props
+  const { account, userId, loginLink } = props
   const router = useRouter()
   if (!account) {
     // TODO: pull out into pretty component
@@ -138,10 +152,106 @@ function WithdrawalDetails(props: {
       </Button>
     )
   }
+
+  const withdrawalMethod = account.external_accounts?.data[0]
+  if (!withdrawalMethod) {
+    throw new Error('No withdrawal method')
+  }
+  const isBank = withdrawalMethod.object === 'bank_account'
+  console.log(account)
+
   return (
-    <div>
-      Bank details:
-      {account.external_accounts?.data[0]?.last4}
+    <div className="p-10 lg:col-start-3 lg:row-end-1">
+      <h2 className="sr-only">{isBank ? 'Bank details' : 'Card details'}</h2>
+      <div className="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5">
+        <dl className="flex flex-wrap">
+          <div className="flex-auto pl-6 pt-6">
+            <dt className="text-lg font-semibold leading-6 text-gray-900">
+              {isBank ? 'Bank details' : 'Card details'}
+            </dt>
+            <dd className="mt-1 text-sm leading-6 text-gray-500">
+              This is where your funds will be sent.
+            </dd>
+          </div>
+          <div className="self-end px-6 pt-4">
+            {isBank ? (
+              <BuildingLibraryIcon
+                className="h-16 w-16 text-gray-400"
+                aria-hidden="true"
+              />
+            ) : (
+              <CreditCardIcon
+                className="h-16 w-16 text-gray-400"
+                aria-hidden="true"
+              />
+            )}
+          </div>
+          <div className="mt-6 flex w-full flex-none gap-x-4 border-t border-gray-900/5 px-6 pt-6">
+            <dt className="flex-none">
+              <span className="sr-only">Name</span>
+              <UserCircleIcon
+                className="h-6 w-5 text-gray-400"
+                aria-hidden="true"
+              />
+            </dt>
+            <dd className="text-sm font-medium leading-6 text-gray-900">
+              {withdrawalMethod.object === 'bank_account'
+                ? withdrawalMethod.account_holder_name
+                : withdrawalMethod.name}
+            </dd>
+          </div>
+          <div className="mt-4 flex w-full flex-none gap-x-4 px-6">
+            <dt className="flex-none">
+              <span className="sr-only">
+                {isBank ? 'bank name' : 'brand name'}
+              </span>
+              {isBank ? (
+                <BuildingLibraryIcon
+                  className="h-6 w-6 text-gray-400"
+                  aria-hidden="true"
+                />
+              ) : (
+                <CreditCardIcon
+                  className="h-6 w-6 text-gray-400"
+                  aria-hidden="true"
+                />
+              )}
+            </dt>
+            <dd className="text-sm leading-6 text-gray-500">
+              {isBank
+                ? (withdrawalMethod as Stripe.BankAccount).bank_name
+                : (withdrawalMethod as Stripe.Card).brand}
+            </dd>
+          </div>
+          <div className="mt-4 flex w-full flex-none gap-x-4 px-6">
+            <dt className="flex-none">
+              <span className="sr-only">
+                {isBank
+                  ? 'last 4 digits of routing number'
+                  : 'last 4 digits of credit card number'}
+              </span>
+              <HashtagIcon
+                className="h-6 w-5 text-gray-400"
+                aria-hidden="true"
+              />
+            </dt>
+            <dd className="text-sm leading-6 text-gray-500">
+              <dd>
+                {isBank ? '∙∙∙∙∙' : '∙∙∙∙∙∙∙∙∙∙∙∙'}
+                {withdrawalMethod.last4}
+              </dd>
+            </dd>
+          </div>
+        </dl>
+        <div className="mt-6 border-t border-gray-900/5 px-6 py-6">
+          <a
+            href={`${loginLink?.url}#settings`}
+            className="text-sm font-semibold leading-6 text-gray-900"
+          >
+            Edit details <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      </div>
     </div>
   )
 }

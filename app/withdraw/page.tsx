@@ -29,11 +29,16 @@ export default async function WithdrawPage() {
   const account = stripeAccountId
     ? await stripe.accounts.retrieve(stripeAccountId)
     : null
-  // console.log('account', account)
-  // console.log('bank details', account?.external_accounts?.data[0])
+  const loginLink = stripeAccountId
+    ? await stripe.accounts.createLoginLink(stripeAccountId)
+    : null
   return (
     <div className="absolute top-0 left-0 z-30 h-screen w-full bg-gray-50">
-      <WithdrawalSteps account={account} userId={user.id} />
+      <WithdrawalSteps
+        account={account}
+        userId={user.id}
+        loginLink={loginLink}
+      />
     </div>
   )
 }
