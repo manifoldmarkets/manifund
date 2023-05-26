@@ -1,6 +1,8 @@
 import { CheckIcon } from '@heroicons/react/20/solid'
+import Stripe from 'stripe'
 
-export function WithdrawalSteps() {
+export function WithdrawalSteps(props: { account: Stripe.Account | null }) {
+  const { account } = props
   const steps = [
     { id: 0, name: 'Withdrawal details', href: '#', status: 'current' },
     { id: 1, name: 'Select amount', href: '#', status: 'upcoming' },
@@ -58,7 +60,7 @@ export function WithdrawalSteps() {
 
             {stepIdx !== steps.length - 1 ? (
               <>
-                {/* Arrow separator for lg screens and up */}
+                {/* Arrow separator for sm screens and up */}
                 <div
                   className="absolute right-0 top-0 hidden h-full w-5 sm:block"
                   aria-hidden="true"

@@ -79,6 +79,7 @@ export interface Database {
           id: string
           long_description: Json | null
           regranter_status: boolean
+          stripe_connect_id: string | null
           type: Database["public"]["Enums"]["profile_type"]
           username: string
           website: string | null
@@ -91,6 +92,7 @@ export interface Database {
           id?: string
           long_description?: Json | null
           regranter_status?: boolean
+          stripe_connect_id?: string | null
           type?: Database["public"]["Enums"]["profile_type"]
           username: string
           website?: string | null
@@ -103,6 +105,7 @@ export interface Database {
           id?: string
           long_description?: Json | null
           regranter_status?: boolean
+          stripe_connect_id?: string | null
           type?: Database["public"]["Enums"]["profile_type"]
           username?: string
           website?: string | null
@@ -110,7 +113,7 @@ export interface Database {
       }
       project_transfers: {
         Row: {
-          created_at: string
+          created_at: string | null
           donor_comment_id: string | null
           grant_amount: number | null
           id: string
@@ -119,7 +122,7 @@ export interface Database {
           transferred: boolean
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           donor_comment_id?: string | null
           grant_amount?: number | null
           id?: string
@@ -128,7 +131,7 @@ export interface Database {
           transferred?: boolean
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           donor_comment_id?: string | null
           grant_amount?: number | null
           id?: string
@@ -227,7 +230,7 @@ export interface Database {
           amount: number
           created_at: string
           customer_id: string
-          id: string
+          id: number
           session_id: string
           txn_id: string
         }
@@ -235,7 +238,7 @@ export interface Database {
           amount: number
           created_at?: string
           customer_id: string
-          id?: string
+          id?: number
           session_id: string
           txn_id: string
         }
@@ -243,7 +246,7 @@ export interface Database {
           amount?: number
           created_at?: string
           customer_id?: string
-          id?: string
+          id?: number
           session_id?: string
           txn_id?: string
         }
@@ -298,6 +301,29 @@ export interface Database {
       }
     }
     Functions: {
+      _create_car: {
+        Args: {
+          car: Database["public"]["CompositeTypes"]["car_type"]
+        }
+        Returns: undefined
+      }
+      _create_grant:
+        | {
+            Args: {
+              project: Database["public"]["CompositeTypes"]["project_row"]
+              donor_comment: Database["public"]["CompositeTypes"]["comment_row"][]
+              donation: Database["public"]["CompositeTypes"]["txn_row"]
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              project: Database["public"]["CompositeTypes"]["project_row"]
+              donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
+              donation: Database["public"]["CompositeTypes"]["txn_row"]
+            }
+            Returns: undefined
+          }
       _transfer_project: {
         Args: {
           project_id: string
@@ -310,6 +336,21 @@ export interface Database {
         }
         Returns: undefined
       }
+      create_grant:
+        | {
+            Args: {
+              donation: Database["public"]["CompositeTypes"]["txn_row"]
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              project: Database["public"]["CompositeTypes"]["project_row"]
+              donor_comment: Database["public"]["CompositeTypes"]["comment_row"][]
+              donation: Database["public"]["CompositeTypes"]["txn_row"]
+            }
+            Returns: undefined
+          }
       create_transfer_grant: {
         Args: {
           project: Database["public"]["CompositeTypes"]["project_row"]
@@ -317,14 +358,6 @@ export interface Database {
           project_transfer: Database["public"]["CompositeTypes"]["transfer_row"]
         }
         Returns: undefined
-      }
-      get_user_balances: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          id: number
-          username: string
-          balance: number
-        }[]
       }
       give_grant: {
         Args: {
@@ -363,8 +396,8 @@ export interface Database {
               from_id: string
               transfer_id: string
               amount: number
-              donor_comment_id: string
-              txn_id?: string
+              txn_id: string
+              donor_comment_id?: string
             }
             Returns: undefined
           }
@@ -376,6 +409,14 @@ export interface Database {
       project_type: "grant" | "cert"
     }
     CompositeTypes: {
+      blah: {
+        token: string
+        boken: string
+      }
+      car_type: {
+        make: string
+        year: string
+      }
       comment_row: {
         id: string
         project: string
