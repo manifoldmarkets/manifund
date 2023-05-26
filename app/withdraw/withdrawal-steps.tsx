@@ -40,36 +40,34 @@ export function WithdrawalSteps(props: {
       id: 2,
       name: 'Select amount',
       display: (
-        <div className="p-10">
-          <div>
-            <label
-              htmlFor="price"
-              className="block font-medium leading-6 text-gray-900"
-            >
-              Withdrawal amount
-            </label>
-            <p className="mt-1 text-sm text-gray-500">
-              You may withdraw up to ${withdrawBalance}.
-            </p>
-            <div className="relative mt-2 rounded-md shadow-sm">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <span className="text-gray-500 sm:text-sm">$</span>
-              </div>
-              <Input
-                type="text"
-                id="withdrawal-amount"
-                className="block w-full rounded-md border-0 py-2 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
-                placeholder="0.00"
-                aria-describedby="price-currency"
-                onChange={(event) =>
-                  setWithdrawAmount(Number(event.target.value))
-                }
-              />
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                <span className="text-gray-500 sm:text-sm" id="price-currency">
-                  USD
-                </span>
-              </div>
+        <div>
+          <label
+            htmlFor="price"
+            className="block font-medium leading-6 text-gray-900"
+          >
+            Withdrawal amount
+          </label>
+          <p className="mt-1 text-sm text-gray-500">
+            You may withdraw up to ${withdrawBalance}.
+          </p>
+          <div className="relative mt-2 rounded-md shadow-sm">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <span className="text-gray-500 sm:text-sm">$</span>
+            </div>
+            <Input
+              type="text"
+              id="withdrawal-amount"
+              className="block w-full rounded-md border-0 py-2 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
+              placeholder="0.00"
+              aria-describedby="price-currency"
+              onChange={(event) =>
+                setWithdrawAmount(Number(event.target.value))
+              }
+            />
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+              <span className="text-gray-500 sm:text-sm" id="price-currency">
+                USD
+              </span>
             </div>
           </div>
         </div>
@@ -186,26 +184,36 @@ export function WithdrawalSteps(props: {
           ))}
         </ol>
       </nav>
-      {currentStep.display}
-      <Row className="justify-between px-10">
-        <button
-          className="inline-flex items-center gap-x-2 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-          onClick={() => previousStep()}
-        >
-          <ArrowLeftCircleIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
-          Back
-        </button>
-        <Tooltip text={errorMessage ?? ''}>
-          <button
-            type="button"
-            className="inline-flex items-center gap-x-2 rounded-md bg-orange-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:bg-gray-300"
-            onClick={() => nextStep()}
-            disabled={errorMessage !== null}
-          >
-            <CheckCircleIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
-            Confirm & continue
-          </button>
-        </Tooltip>
+      <Row className="w-full justify-center p-10">
+        <div className="w-full max-w-xl">
+          {currentStep.display}
+          <Row className="mt-10 justify-between">
+            <button
+              className="inline-flex items-center gap-x-2 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              onClick={() => previousStep()}
+            >
+              <ArrowLeftCircleIcon
+                className="-ml-0.5 h-5 w-5"
+                aria-hidden="true"
+              />
+              Back
+            </button>
+            <Tooltip text={errorMessage ?? ''}>
+              <button
+                type="button"
+                className="inline-flex items-center gap-x-2 rounded-md bg-orange-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:bg-gray-300"
+                onClick={() => nextStep()}
+                disabled={errorMessage !== null}
+              >
+                <CheckCircleIcon
+                  className="-ml-0.5 h-5 w-5"
+                  aria-hidden="true"
+                />
+                Confirm & continue
+              </button>
+            </Tooltip>
+          </Row>
+        </div>
       </Row>
     </>
   )
@@ -249,7 +257,7 @@ function WithdrawalDetails(props: {
   console.log(account)
 
   return (
-    <div className="p-10 lg:col-start-3 lg:row-end-1">
+    <div className="lg:col-start-3 lg:row-end-1">
       <h2 className="sr-only">{isBank ? 'Bank details' : 'Card details'}</h2>
       <div className="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5">
         <dl className="flex flex-wrap">
@@ -274,21 +282,7 @@ function WithdrawalDetails(props: {
               />
             )}
           </div>
-          <div className="mt-6 flex w-full flex-none gap-x-4 border-t border-gray-900/5 px-6 pt-6">
-            <dt className="flex-none">
-              <span className="sr-only">Name</span>
-              <UserCircleIcon
-                className="h-6 w-5 text-gray-400"
-                aria-hidden="true"
-              />
-            </dt>
-            <dd className="text-sm font-medium leading-6 text-gray-900">
-              {withdrawalMethod.object === 'bank_account'
-                ? withdrawalMethod.account_holder_name
-                : withdrawalMethod.name}
-            </dd>
-          </div>
-          <div className="mt-4 flex w-full flex-none gap-x-4 px-6">
+          <Row className="mt-4 w-full flex-none gap-x-4 px-6">
             <dt className="flex-none">
               <span className="sr-only">
                 {isBank ? 'bank name' : 'brand name'}
@@ -310,8 +304,8 @@ function WithdrawalDetails(props: {
                 ? (withdrawalMethod as Stripe.BankAccount).bank_name
                 : (withdrawalMethod as Stripe.Card).brand}
             </dd>
-          </div>
-          <div className="mt-4 flex w-full flex-none gap-x-4 px-6">
+          </Row>
+          <Row className="mt-4 w-full flex-none gap-x-4 px-6">
             <dt className="flex-none">
               <span className="sr-only">
                 {isBank
@@ -329,7 +323,7 @@ function WithdrawalDetails(props: {
                 {withdrawalMethod.last4}
               </p>
             </dd>
-          </div>
+          </Row>
         </dl>
         <div className="mt-6 border-t border-gray-900/5 px-6 py-6">
           <a
