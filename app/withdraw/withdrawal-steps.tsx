@@ -1,6 +1,8 @@
 'use client'
 import { Button } from '@/components/button'
+import { Input } from '@/components/input'
 import { Row } from '@/components/layout/row'
+import { Tooltip } from '@/components/tooltip'
 import {
   ArrowLeftCircleIcon,
   BuildingLibraryIcon,
@@ -17,9 +19,11 @@ import Stripe from 'stripe'
 export function WithdrawalSteps(props: {
   account: Stripe.Account | null
   userId: string
+  withdrawBalance: number
   loginLink: Stripe.LoginLink | null
 }) {
-  const { account, userId, loginLink } = props
+  const { account, userId, withdrawBalance, loginLink } = props
+  const [withdrawAmount, setWithdrawAmount] = useState(0)
   const steps = [
     {
       id: 1,
@@ -35,7 +39,41 @@ export function WithdrawalSteps(props: {
     {
       id: 2,
       name: 'Select amount',
-      display: <div>Select amount</div>,
+      display: (
+        <div className="p-10">
+          <div>
+            <label
+              htmlFor="price"
+              className="block font-medium leading-6 text-gray-900"
+            >
+              Withdrawal amount
+            </label>
+            <p className="mt-1 text-sm text-gray-500">
+              You may withdraw up to ${withdrawBalance}.
+            </p>
+            <div className="relative mt-2 rounded-md shadow-sm">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <span className="text-gray-500 sm:text-sm">$</span>
+              </div>
+              <Input
+                type="text"
+                id="withdrawal-amount"
+                className="block w-full rounded-md border-0 py-2 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm sm:leading-6"
+                placeholder="0.00"
+                aria-describedby="price-currency"
+                onChange={(event) =>
+                  setWithdrawAmount(Number(event.target.value))
+                }
+              />
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <span className="text-gray-500 sm:text-sm" id="price-currency">
+                  USD
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
     },
     {
       id: 3,
@@ -51,7 +89,12 @@ export function WithdrawalSteps(props: {
     } else {
       setCurrentStep(steps[currentStep.id])
     }
-    console.log(steps)
+  }
+  let errorMessage = null
+  if (withdrawAmount < 10 && currentStep.id === 2) {
+    errorMessage = 'Minimum withdrawal is $10.'
+  } else {
+    errorMessage = null
   }
   return (
     <>
@@ -140,14 +183,17 @@ export function WithdrawalSteps(props: {
           <ArrowLeftCircleIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
           Back
         </button>
-        <button
-          type="button"
-          className="inline-flex items-center gap-x-2 rounded-md bg-orange-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
-          onClick={() => nextStep()}
-        >
-          <CheckCircleIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
-          Confirm & continue
-        </button>
+        <Tooltip text={errorMessage ?? ''}>
+          <button
+            type="button"
+            className="inline-flex items-center gap-x-2 rounded-md bg-orange-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:bg-gray-300"
+            onClick={() => nextStep()}
+            disabled={errorMessage !== null}
+          >
+            <CheckCircleIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+            Confirm & continue
+          </button>
+        </Tooltip>
       </Row>
     </>
   )
@@ -266,10 +312,10 @@ function WithdrawalDetails(props: {
               />
             </dt>
             <dd className="text-sm leading-6 text-gray-500">
-              <dd>
+              <p>
                 {isBank ? '∙∙∙∙∙' : '∙∙∙∙∙∙∙∙∙∙∙∙'}
                 {withdrawalMethod.last4}
-              </dd>
+              </p>
             </dd>
           </div>
         </dl>
