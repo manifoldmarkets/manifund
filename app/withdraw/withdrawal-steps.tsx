@@ -90,9 +90,18 @@ export function WithdrawalSteps(props: {
       setCurrentStep(steps[currentStep.id])
     }
   }
+  const previousStep = () => {
+    if (currentStep.id === 1) {
+      router.push('/')
+    } else {
+      setCurrentStep(steps[currentStep.id - 2])
+    }
+  }
   let errorMessage = null
   if (withdrawAmount < 10 && currentStep.id === 2) {
     errorMessage = 'Minimum withdrawal is $10.'
+  } else if (withdrawAmount > withdrawBalance && currentStep.id === 2) {
+    errorMessage = `You cannot withdraw more than $${withdrawBalance} .`
   } else {
     errorMessage = null
   }
@@ -179,7 +188,10 @@ export function WithdrawalSteps(props: {
       </nav>
       {currentStep.display}
       <Row className="justify-between px-10">
-        <button className="inline-flex items-center gap-x-2 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+        <button
+          className="inline-flex items-center gap-x-2 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          onClick={() => previousStep()}
+        >
           <ArrowLeftCircleIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
           Back
         </button>
