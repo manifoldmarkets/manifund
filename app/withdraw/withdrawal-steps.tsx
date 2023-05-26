@@ -2,13 +2,16 @@
 import { Button } from '@/components/button'
 import { Row } from '@/components/layout/row'
 import {
+  ArrowLeftCircleIcon,
   BuildingLibraryIcon,
+  CheckCircleIcon,
   CheckIcon,
   CreditCardIcon,
   HashtagIcon,
   UserCircleIcon,
 } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import Stripe from 'stripe'
 
 export function WithdrawalSteps(props: {
@@ -21,7 +24,6 @@ export function WithdrawalSteps(props: {
     {
       id: 1,
       name: 'Withdrawal details',
-      status: 'current',
       display: (
         <WithdrawalDetails
           account={account}
@@ -33,16 +35,24 @@ export function WithdrawalSteps(props: {
     {
       id: 2,
       name: 'Select amount',
-      status: 'upcoming',
       display: <div>Select amount</div>,
     },
     {
       id: 3,
       name: 'Confirm withdrawal',
-      status: 'upcoming',
       display: <div>Confirm withdrawal</div>,
     },
   ]
+  const router = useRouter()
+  const [currentStep, setCurrentStep] = useState(steps[0])
+  const nextStep = () => {
+    if (currentStep.id === steps.length) {
+      router.push('/')
+    } else {
+      setCurrentStep(steps[currentStep.id])
+    }
+    console.log(steps)
+  }
   return (
     <>
       <nav aria-label="Progress">
@@ -50,9 +60,15 @@ export function WithdrawalSteps(props: {
           role="list"
           className="mx-5 mt-5 divide-y divide-gray-300 rounded-md border border-gray-300 sm:flex sm:divide-y-0"
         >
+          <a
+            href="/"
+            className="flex justify-center px-3.5 py-1 text-sm text-gray-500 hover:text-orange-500 sm:flex-col sm:border-r sm:border-r-gray-300"
+          >
+            Cancel
+          </a>
           {steps.map((step, stepIdx) => (
             <li key={step.name} className="relative sm:flex sm:flex-1">
-              {step.status === 'complete' ? (
+              {step.id < currentStep.id ? (
                 <Row className="group w-full items-center">
                   <span className="flex items-center px-6 py-4 text-sm font-medium">
                     <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-500 group-hover:bg-orange-700">
@@ -66,7 +82,7 @@ export function WithdrawalSteps(props: {
                     </span>
                   </span>
                 </Row>
-              ) : step.status === 'current' ? (
+              ) : step.id === currentStep.id ? (
                 <Row
                   className="items-center px-6 py-4 text-sm font-medium"
                   aria-current="step"
@@ -118,7 +134,21 @@ export function WithdrawalSteps(props: {
           ))}
         </ol>
       </nav>
-      {steps.find((step) => step.status === 'current')?.display}
+      {currentStep.display}
+      <Row className="justify-between px-10">
+        <button className="inline-flex items-center gap-x-2 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+          <ArrowLeftCircleIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+          Back
+        </button>
+        <button
+          type="button"
+          className="inline-flex items-center gap-x-2 rounded-md bg-orange-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+          onClick={() => nextStep()}
+        >
+          <CheckCircleIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+          Confirm & continue
+        </button>
+      </Row>
     </>
   )
 }
