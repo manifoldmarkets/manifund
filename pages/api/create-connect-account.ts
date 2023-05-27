@@ -26,6 +26,11 @@ export default async function handler(
     email: userEmail,
   })
 
+  await supabase
+    .from('profiles')
+    .update({ stripe_connect_id: account.id })
+    .eq('id', user.id)
+
   const accountLink = await stripe.accountLinks.create({
     account: account.id,
     refresh_url: 'https://manifund.org',

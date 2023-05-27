@@ -1,5 +1,6 @@
 'use client'
 import { Button } from '@/components/button'
+import { EmptyContent } from '@/components/empty-content'
 import { Input } from '@/components/input'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
@@ -9,6 +10,7 @@ import {
   CheckCircleIcon,
   CheckIcon,
   CreditCardIcon,
+  CurrencyDollarIcon,
   HashtagIcon,
 } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
@@ -316,23 +318,29 @@ function WithdrawalDetails(props: {
   if (!account) {
     // TODO: pull out into pretty component
     return (
-      <Button
-        onClick={async () => {
-          const response = await fetch('/api/create-connect-account', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              profileId: userId,
-            }),
-          })
-          const json = await response.json()
-          router.push(json.url)
-        }}
-      >
-        Set up withdrawals
-      </Button>
+      <>
+        <button
+          onClick={async () => {
+            const response = await fetch('/api/create-connect-account', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                profileId: userId,
+              }),
+            })
+            const json = await response.json()
+            router.push(json.url)
+          }}
+        >
+          <EmptyContent
+            icon={<CurrencyDollarIcon className="h-10 w-10 text-gray-400" />}
+            title="Withdrawals not enabled."
+            subtitle="Set up your Stripe connect account to enable withdrawals!"
+          />
+        </button>
+      </>
     )
   }
 
