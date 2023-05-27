@@ -129,6 +129,7 @@ export function WithdrawalSteps(props: {
                     <Button
                       className="font-semibold"
                       onClick={async () => {
+                        setIsSubmitting
                         const response = await fetch(
                           '/api/stripe-connect-withdraw',
                           {
@@ -147,6 +148,7 @@ export function WithdrawalSteps(props: {
                         } else {
                           setComplete(true)
                         }
+                        setIsSubmitting(false)
                       }}
                     >
                       Withdraw
@@ -181,7 +183,9 @@ export function WithdrawalSteps(props: {
     }
   }
   let errorMessage = null
-  if (withdrawAmount < 10 && currentStep.id === 2) {
+  if (!account && currentStep.id === 1) {
+    errorMessage = 'You need to set up your stripe account before continuing.'
+  } else if (withdrawAmount < 10 && currentStep.id === 2) {
     errorMessage = 'Minimum withdrawal is $10.'
   } else if (withdrawAmount > withdrawBalance && currentStep.id === 2) {
     errorMessage = `You cannot withdraw more than $${withdrawBalance} .`
@@ -246,7 +250,6 @@ export function WithdrawalSteps(props: {
 
               {stepIdx !== steps.length - 1 ? (
                 <>
-                  {/* Arrow separator for sm screens and up */}
                   <div
                     className="absolute right-0 top-0 hidden h-full w-5 sm:block"
                     aria-hidden="true"
@@ -315,32 +318,33 @@ function WithdrawalDetails(props: {
 }) {
   const { account, userId, loginLink } = props
   const router = useRouter()
-  if (!account) {
-    // TODO: pull out into pretty component
+  if (!account || !account.charges_enabled || !account.payouts_enabled) {
     return (
-      <>
-        <button
-          onClick={async () => {
-            const response = await fetch('/api/create-connect-account', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                profileId: userId,
-              }),
-            })
-            const json = await response.json()
-            router.push(json.url)
-          }}
-        >
-          <EmptyContent
-            icon={<CurrencyDollarIcon className="h-10 w-10 text-gray-400" />}
-            title="Withdrawals not enabled."
-            subtitle="Set up your Stripe connect account to enable withdrawals!"
-          />
-        </button>
-      </>
+      <button
+        onClick={async () => {
+          const response = await fetch('/api/create-connect-account', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              profileId: userId,
+            }),
+          })
+          const json = await response.json()
+          router.push(json.url)
+        }}
+      >
+        <EmptyContent
+          icon={<CurrencyDollarIcon className="h-10 w-10 text-gray-400" />}
+          title="Withdrawals not enabled."
+          subtitle={
+            !account
+              ? 'Set up your Stripe connect account to enable withdrawals!'
+              : 'Finish setting up your Stripe connect account to enable withdrawals!'
+          }
+        />
+      </button>
     )
   }
 
