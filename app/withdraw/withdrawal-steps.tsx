@@ -11,7 +11,6 @@ import {
   CreditCardIcon,
   HashtagIcon,
 } from '@heroicons/react/20/solid'
-import { set } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Stripe from 'stripe'
@@ -24,7 +23,10 @@ export function WithdrawalSteps(props: {
 }) {
   const { account, userId, withdrawBalance, loginLink } = props
   const [withdrawAmount, setWithdrawAmount] = useState(0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [complete, setComplete] = useState(false)
+  const withdrawalMethod = account?.external_accounts?.data[0]
+  const isBank = withdrawalMethod?.object === 'bank_account'
   const steps = [
     {
       id: 1,
@@ -79,8 +81,78 @@ export function WithdrawalSteps(props: {
       name: 'Confirm withdrawal',
       display: (
         <>
-          {account ? (
-            <AllDetailsCard account={account} amount={withdrawAmount} />
+          {withdrawalMethod ? (
+            <div className="overflow-hidden rounded-lg bg-white shadow">
+              <div className="px-4 py-6 sm:px-6">
+                <h3 className="text-base font-semibold leading-7 text-gray-900">
+                  Withdrawal destination and amount confirmation
+                </h3>
+                <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
+                  Confirm the following details are correct before completing
+                  your withdrawal.
+                </p>
+              </div>
+              <div className="border-t border-gray-100">
+                <dl className="divide-y divide-gray-100">
+                  <div className="grid grid-cols-2 gap-4 py-6 px-6">
+                    <dt className=" text-sm font-medium text-gray-900">
+                      {isBank ? 'Bank name' : 'Card brand name'}
+                    </dt>
+                    <dd className="mt-0 text-sm leading-6 text-gray-700">
+                      {isBank
+                        ? (withdrawalMethod as Stripe.BankAccount).bank_name
+                        : (withdrawalMethod as Stripe.Card).brand}
+                    </dd>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 py-6 px-6">
+                    <dt className=" text-sm font-medium text-gray-900">
+                      {isBank
+                        ? 'last 4 digits of routing number'
+                        : 'last 4 digits of credit card number'}
+                    </dt>
+                    <dd className=" mt-0 text-sm leading-6 text-gray-700">
+                      {isBank ? '∙∙∙∙∙' : '∙∙∙∙∙∙∙∙∙∙∙∙'}
+                      {withdrawalMethod.last4}
+                    </dd>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 py-6 px-6">
+                    <dt className=" text-sm font-medium text-gray-900">
+                      Amount to withdraw
+                    </dt>
+                    <dd className=" mt-0 text-sm leading-6 text-gray-700">
+                      ${withdrawAmount}
+                    </dd>
+                  </div>
+                  <Row className="justify-center py-6 px-6">
+                    <Button
+                      className="font-semibold"
+                      onClick={async () => {
+                        const response = await fetch(
+                          '/api/stripe-connect-withdraw',
+                          {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                              amount: withdrawAmount,
+                            }),
+                          }
+                        )
+                        const json = await response.json()
+                        if (json.error) {
+                          console.error(json.error)
+                        } else {
+                          setComplete(true)
+                        }
+                      }}
+                    >
+                      Withdraw
+                    </Button>
+                  </Row>
+                </dl>
+              </div>
+            </div>
           ) : (
             <div>
               You need to set up your stripe account before withdrawing.
@@ -212,11 +284,11 @@ export function WithdrawalSteps(props: {
               Back
             </button>
             <Tooltip text={errorMessage ?? ''}>
-              <button
-                type="button"
+              <Button
                 className="inline-flex items-center gap-x-2 rounded-md bg-orange-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600 disabled:bg-gray-300"
                 onClick={() => nextStep()}
                 disabled={errorMessage !== null}
+                loading={isSubmitting}
               >
                 <CheckCircleIcon
                   className="-ml-0.5 h-5 w-5"
@@ -225,7 +297,7 @@ export function WithdrawalSteps(props: {
                 {currentStep.id === 3
                   ? 'Return to Manifund'
                   : 'Confirm & continue'}
-              </button>
+              </Button>
             </Tooltip>
           </Row>
         </div>
@@ -347,81 +419,6 @@ function WithdrawalDetails(props: {
             Edit details <span aria-hidden="true">&rarr;</span>
           </a>
         </div>
-      </div>
-    </div>
-  )
-}
-
-function AllDetailsCard(props: { account: Stripe.Account; amount: number }) {
-  const { account, amount } = props
-  const withdrawalMethod = account.external_accounts?.data[0]
-  if (!withdrawalMethod) {
-    throw new Error('No withdrawal method')
-  }
-  const isBank = withdrawalMethod.object === 'bank_account'
-  return (
-    <div className="overflow-hidden rounded-lg bg-white shadow">
-      <div className="px-4 py-6 sm:px-6">
-        <h3 className="text-base font-semibold leading-7 text-gray-900">
-          Withdrawal destination and amount confirmation
-        </h3>
-        <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
-          Confirm the following details are correct before completing your
-          withdrawal.
-        </p>
-      </div>
-      <div className="border-t border-gray-100">
-        <dl className="divide-y divide-gray-100">
-          <div className="grid grid-cols-2 gap-4 py-6 px-6">
-            <dt className=" text-sm font-medium text-gray-900">
-              {isBank ? 'Bank name' : 'Card brand name'}
-            </dt>
-            <dd className="mt-0 text-sm leading-6 text-gray-700">
-              {isBank
-                ? (withdrawalMethod as Stripe.BankAccount).bank_name
-                : (withdrawalMethod as Stripe.Card).brand}
-            </dd>
-          </div>
-          <div className="grid grid-cols-2 gap-4 py-6 px-6">
-            <dt className=" text-sm font-medium text-gray-900">
-              {isBank
-                ? 'last 4 digits of routing number'
-                : 'last 4 digits of credit card number'}
-            </dt>
-            <dd className=" mt-0 text-sm leading-6 text-gray-700">
-              {isBank ? '∙∙∙∙∙' : '∙∙∙∙∙∙∙∙∙∙∙∙'}
-              {withdrawalMethod.last4}
-            </dd>
-          </div>
-          <div className="grid grid-cols-2 gap-4 py-6 px-6">
-            <dt className=" text-sm font-medium text-gray-900">
-              Amount to withdraw
-            </dt>
-            <dd className=" mt-0 text-sm leading-6 text-gray-700">${amount}</dd>
-          </div>
-          <Row className="justify-center py-6 px-6">
-            <Button
-              className="font-semibold"
-              onClick={async () => {
-                const response = await fetch('/api/stripe-connect-withdraw', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    amount: amount,
-                  }),
-                })
-                const json = await response.json()
-                if (json.error) {
-                  console.error(json.error)
-                }
-              }}
-            >
-              Withdraw
-            </Button>
-          </Row>
-        </dl>
       </div>
     </div>
   )

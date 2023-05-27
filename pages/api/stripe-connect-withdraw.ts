@@ -17,17 +17,27 @@ const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
   typescript: true,
 })
 
-export async function handler(req: NextRequest) {
+export default async function handler(req: NextRequest) {
   const { amount } = await req.json()
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
-  if (!user) return NextResponse.error()
+  if (!user) {
+    {
+      console.log('no user')
+      return NextResponse.error()
+    }
+  }
   const profile = await getProfileAndBidsById(supabase, user.id)
-  if (!profile.stripe_connect_id) return NextResponse.error()
-  const account = await stripe.accounts.retrieve(profile.stripe_connect_id)
-  if (!account.payouts_enabled || !account.details_submitted)
+  if (!profile.stripe_connect_id) {
+    console.log('no stripe connect id')
     return NextResponse.error()
+  }
+  const account = await stripe.accounts.retrieve(profile.stripe_connect_id)
+  if (!account.payouts_enabled || !account.details_submitted) {
+    console.log('no payouts enabled')
+    return NextResponse.error()
+  }
   const txns = await getFullTxnsByUser(supabase, user.id)
   const balance = calculateUserBalance(txns, user.id)
   const withdrawBalance = calculateWithdrawBalance(
@@ -38,6 +48,7 @@ export async function handler(req: NextRequest) {
     profile.accreditation_status
   )
   if (amount > withdrawBalance) {
+    console.log('amount too high')
     return NextResponse.error()
   }
   const transfer = await stripe.transfers.create({
