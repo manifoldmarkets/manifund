@@ -11,6 +11,8 @@ const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
   typescript: true,
 })
 
+export const revalidate = 0
+
 export default async function WithdrawPage() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
