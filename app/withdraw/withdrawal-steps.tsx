@@ -11,6 +11,7 @@ import {
   CreditCardIcon,
   HashtagIcon,
 } from '@heroicons/react/20/solid'
+import { set } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Stripe from 'stripe'
@@ -399,7 +400,26 @@ function AllDetailsCard(props: { account: Stripe.Account; amount: number }) {
             <dd className=" mt-0 text-sm leading-6 text-gray-700">${amount}</dd>
           </div>
           <Row className="justify-center py-6 px-6">
-            <Button className="font-semibold">Withdraw</Button>
+            <Button
+              className="font-semibold"
+              onClick={async () => {
+                const response = await fetch('/api/stripe-connect-withdraw', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    amount: amount,
+                  }),
+                })
+                const json = await response.json()
+                if (json.error) {
+                  console.error(json.error)
+                }
+              }}
+            >
+              Withdraw
+            </Button>
           </Row>
         </dl>
       </div>
