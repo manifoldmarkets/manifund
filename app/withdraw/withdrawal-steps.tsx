@@ -10,7 +10,6 @@ import {
   CheckIcon,
   CreditCardIcon,
   HashtagIcon,
-  UserCircleIcon,
 } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -24,6 +23,7 @@ export function WithdrawalSteps(props: {
 }) {
   const { account, userId, withdrawBalance, loginLink } = props
   const [withdrawAmount, setWithdrawAmount] = useState(0)
+  const [complete, setComplete] = useState(false)
   const steps = [
     {
       id: 1,
@@ -76,7 +76,17 @@ export function WithdrawalSteps(props: {
     {
       id: 3,
       name: 'Confirm withdrawal',
-      display: <div>Confirm withdrawal</div>,
+      display: (
+        <>
+          {account ? (
+            <AllDetailsCard account={account} amount={withdrawAmount} />
+          ) : (
+            <div>
+              You need to set up your stripe account before withdrawing.
+            </div>
+          )}
+        </>
+      ),
     },
   ]
   const router = useRouter()
@@ -100,6 +110,8 @@ export function WithdrawalSteps(props: {
     errorMessage = 'Minimum withdrawal is $10.'
   } else if (withdrawAmount > withdrawBalance && currentStep.id === 2) {
     errorMessage = `You cannot withdraw more than $${withdrawBalance} .`
+  } else if (!complete && currentStep.id === 3) {
+    errorMessage = 'Complete your withdrawal to continue.'
   } else {
     errorMessage = null
   }
@@ -209,7 +221,9 @@ export function WithdrawalSteps(props: {
                   className="-ml-0.5 h-5 w-5"
                   aria-hidden="true"
                 />
-                Confirm & continue
+                {currentStep.id === 3
+                  ? 'Return to Manifund'
+                  : 'Confirm & continue'}
               </button>
             </Tooltip>
           </Row>
@@ -254,7 +268,6 @@ function WithdrawalDetails(props: {
     throw new Error('No withdrawal method')
   }
   const isBank = withdrawalMethod.object === 'bank_account'
-  console.log(account)
 
   return (
     <div className="lg:col-start-3 lg:row-end-1">
@@ -333,6 +346,62 @@ function WithdrawalDetails(props: {
             Edit details <span aria-hidden="true">&rarr;</span>
           </a>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function AllDetailsCard(props: { account: Stripe.Account; amount: number }) {
+  const { account, amount } = props
+  const withdrawalMethod = account.external_accounts?.data[0]
+  if (!withdrawalMethod) {
+    throw new Error('No withdrawal method')
+  }
+  const isBank = withdrawalMethod.object === 'bank_account'
+  return (
+    <div className="overflow-hidden rounded-lg bg-white shadow">
+      <div className="px-4 py-6 sm:px-6">
+        <h3 className="text-base font-semibold leading-7 text-gray-900">
+          Withdrawal destination and amount confirmation
+        </h3>
+        <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
+          Confirm the following details are correct before completing your
+          withdrawal.
+        </p>
+      </div>
+      <div className="border-t border-gray-100">
+        <dl className="divide-y divide-gray-100">
+          <div className="grid grid-cols-2 gap-4 py-6 px-6">
+            <dt className=" text-sm font-medium text-gray-900">
+              {isBank ? 'Bank name' : 'Card brand name'}
+            </dt>
+            <dd className="mt-0 text-sm leading-6 text-gray-700">
+              {isBank
+                ? (withdrawalMethod as Stripe.BankAccount).bank_name
+                : (withdrawalMethod as Stripe.Card).brand}
+            </dd>
+          </div>
+          <div className="grid grid-cols-2 gap-4 py-6 px-6">
+            <dt className=" text-sm font-medium text-gray-900">
+              {isBank
+                ? 'last 4 digits of routing number'
+                : 'last 4 digits of credit card number'}
+            </dt>
+            <dd className=" mt-0 text-sm leading-6 text-gray-700">
+              {isBank ? '∙∙∙∙∙' : '∙∙∙∙∙∙∙∙∙∙∙∙'}
+              {withdrawalMethod.last4}
+            </dd>
+          </div>
+          <div className="grid grid-cols-2 gap-4 py-6 px-6">
+            <dt className=" text-sm font-medium text-gray-900">
+              Amount to withdraw
+            </dt>
+            <dd className=" mt-0 text-sm leading-6 text-gray-700">${amount}</dd>
+          </div>
+          <Row className="justify-center py-6 px-6">
+            <Button className="font-semibold">Withdraw</Button>
+          </Row>
+        </dl>
       </div>
     </div>
   )
