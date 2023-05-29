@@ -224,12 +224,14 @@ export function WithdrawalSteps(props: {
           role="list"
           className="mx-5 mt-5 divide-y divide-gray-300 rounded-md border border-gray-300 sm:flex sm:divide-y-0"
         >
-          <a
-            href="/"
-            className="flex justify-center px-3.5 py-1 text-sm text-gray-500 hover:text-orange-500 sm:flex-col sm:border-r sm:border-r-gray-300"
-          >
-            Cancel
-          </a>
+          {!complete && (
+            <a
+              href="/"
+              className="flex justify-center px-3.5 py-1 text-sm text-gray-500 hover:text-orange-500 sm:flex-col sm:border-r sm:border-r-gray-300"
+            >
+              Cancel
+            </a>
+          )}
           {steps.map((step, stepIdx) => (
             <li key={step.name} className="relative sm:flex sm:flex-1">
               {step.id < currentStep.id ? (
