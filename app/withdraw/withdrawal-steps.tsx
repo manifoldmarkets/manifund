@@ -12,6 +12,7 @@ import {
   CheckCircleIcon,
   CheckIcon,
 } from '@heroicons/react/20/solid'
+import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Stripe from 'stripe'
@@ -301,7 +302,10 @@ export function WithdrawalSteps(props: {
           {currentStep.display}
           <Row className="mt-10 justify-between">
             <button
-              className="inline-flex items-center gap-x-2 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+              className={clsx(
+                'inline-flex items-center gap-x-2 rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50',
+                complete ? 'invisible' : ''
+              )}
               onClick={() => previousStep()}
             >
               <ArrowLeftCircleIcon
