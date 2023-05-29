@@ -1,6 +1,6 @@
 import { STRIPE_SECRET_KEY } from '@/db/env'
 import { getUserEmail } from '@/utils/email'
-import { NextApiResponse } from 'next'
+import { NextApiRequest, NextApiResponse } from 'next'
 import Stripe from 'stripe'
 import { createAdminClient } from './_db'
 import { getUser } from '@/db/profile'
@@ -10,7 +10,10 @@ const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
   typescript: true,
 })
 
-export default async function handler(res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const supabase = createAdminClient()
   const user = await getUser(supabase)
   if (!user) {
