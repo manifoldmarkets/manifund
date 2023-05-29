@@ -27,7 +27,7 @@ export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
                   <span>{formatMoney(txn.amount)}</span>
                 </Row>
                 <Row className="items-center">
-                  <span className="text-gray-600">
+                  <span className="text-sm text-gray-500">
                     {formatDistanceToNow(new Date(txn.created_at), {
                       addSuffix: true,
                     })}
