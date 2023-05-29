@@ -1,6 +1,6 @@
 import { Col } from '@/components/layout/col'
 import { Tooltip } from '@/components/tooltip'
-import { ProjectTransfer } from '@/db/project'
+import { Project } from '@/db/project'
 import { FullTxn } from '@/db/txn'
 import { HeartIcon, UserIcon, WrenchIcon } from '@heroicons/react/24/solid'
 import { formatDistanceToNow } from 'date-fns'
@@ -9,7 +9,7 @@ import Link from 'next/link'
 
 export function OutgoingDonationsHistory(props: {
   donations: FullTxn[]
-  pendingTransfers: ProjectTransfer[]
+  pendingTransfers: Project[]
 }) {
   const { donations } = props
   const sortedDonations = orderBy(donations, 'created_at', 'desc')
