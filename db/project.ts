@@ -100,7 +100,7 @@ export async function getFullProjectsByRound(
   return data as FullProject[]
 }
 
-export async function getProjectTransfersByUser(
+export async function getProjectsPendingTransferByUser(
   supabase: SupabaseClient,
   userId: string
 ) {
@@ -108,7 +108,9 @@ export async function getProjectTransfersByUser(
     .from('projects')
     .select('*, project_transfers(*)')
     .eq('creator', userId)
-  return data
-    ?.map((project) => project.project_transfers[0])
-    .filter((projectTransfer) => projectTransfer) as ProjectTransfer[]
+  return (data as FullProject[]).filter(
+    (project) =>
+      project.project_transfers.filter((transfer) => !transfer.transferred)
+        .length > 0
+  ) as Project[]
 }

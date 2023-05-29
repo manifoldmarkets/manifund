@@ -1,12 +1,16 @@
 import { Col } from '@/components/layout/col'
 import { Tooltip } from '@/components/tooltip'
+import { ProjectTransfer } from '@/db/project'
 import { FullTxn } from '@/db/txn'
 import { HeartIcon, UserIcon, WrenchIcon } from '@heroicons/react/24/solid'
 import { formatDistanceToNow } from 'date-fns'
 import { orderBy } from 'lodash'
 import Link from 'next/link'
 
-export function OutgoingDonationsHistory(props: { donations: FullTxn[] }) {
+export function OutgoingDonationsHistory(props: {
+  donations: FullTxn[]
+  pendingTransfers: ProjectTransfer[]
+}) {
   const { donations } = props
   const sortedDonations = orderBy(donations, 'created_at', 'desc')
   const donationsDisplay = sortedDonations.map((donation) => (
@@ -44,7 +48,7 @@ export function OutgoingDonationsHistory(props: { donations: FullTxn[] }) {
           : donation.profiles?.full_name}
       </td>
       <td className="py-3 px-3 text-right sm:px-0">${donation.amount}</td>
-      <td className="hidden p-3 text-right text-gray-500 sm:block">
+      <td className="hidden p-3 text-right text-sm text-gray-500 sm:block">
         {formatDistanceToNow(new Date(donation.created_at), {
           addSuffix: true,
         })}
