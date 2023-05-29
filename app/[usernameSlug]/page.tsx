@@ -9,8 +9,7 @@ import { SignOutButton } from './sign-out-button'
 import { getFullTxnsByUser, getTxnsByUser, FullTxn } from '@/db/txn'
 import {
   getProjectsByUser,
-  getProjectTransfersByUser,
-  Project,
+  getProjectsPendingTransferByUser,
 } from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
 import { getBidsByUser } from '@/db/bid'
@@ -27,16 +26,23 @@ export default async function UserProfilePage(props: {
   if (!profile) {
     return <div>User not found</div>
   }
-  const projectTransfers = await getProjectTransfersByUser(supabase, profile.id)
+  const projectsPendingTransfer = await getProjectsPendingTransferByUser(
+    supabase,
+    profile.id
+  )
   const bids = await getBidsByUser(supabase, profile.id)
-  const projects = await getProjectsByUser(supabase, profile.id)
+  const projects = (await getProjectsByUser(supabase, profile.id)).filter(
+    (project) =>
+      project.project_transfers.filter((transfer) => !transfer.transferred)
+        .length === 0
+  )
   const txns = await getFullTxnsByUser(supabase, profile.id)
 
   const userTxns = user?.id ? await getTxnsByUser(supabase, user?.id) : null
   const userProfile = user?.id
     ? await getProfileAndBidsById(supabase, user?.id)
     : null
-  const userProjectTransfers = await getProjectTransfersByUser(
+  const userProjectsPendingTransfer = await getProjectsPendingTransferByUser(
     supabase,
     user?.id ?? ''
   )
@@ -51,10 +57,10 @@ export default async function UserProfilePage(props: {
           projects={projects}
           bids={bids}
           txns={txns}
-          projectTransfers={projectTransfers}
+          projectsPendingTransfer={projectsPendingTransfer}
           userProfile={userProfile}
           userTxns={userTxns}
-          userProjectTransfers={userProjectTransfers}
+          userProjectsPendingTransfer={userProjectsPendingTransfer}
         />
         {isOwnProfile && (
           <div className="mt-5 flex justify-center">
@@ -63,12 +69,5 @@ export default async function UserProfilePage(props: {
         )}
       </div>
     </div>
-  )
-}
-
-function compileDonations(txns: FullTxn[], userId: string) {
-  const donations = txns.filter(
-    (txn) =>
-      txn.bundle === null && txn.from_id === userId && txn.token === 'USD'
   )
 }
