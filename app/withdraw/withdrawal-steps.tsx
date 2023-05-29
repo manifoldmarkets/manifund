@@ -88,13 +88,30 @@ export function WithdrawalSteps(props: {
           {withdrawalMethod ? (
             <div className="overflow-hidden rounded-lg bg-white shadow">
               <div className="px-4 py-6 sm:px-6">
-                <h3 className="text-base font-semibold leading-7 text-gray-900">
-                  Withdrawal destination and amount confirmation
-                </h3>
-                <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
-                  Confirm the following details are correct before completing
-                  your withdrawal.
-                </p>
+                {complete ? (
+                  <div>
+                    <Row className="justify-center">
+                      <CheckCircleIcon className="h-16 w-16 text-orange-500" />
+                    </Row>
+                    <h3 className="text-center text-lg font-semibold leading-7 text-gray-900">
+                      Withdrawal complete!
+                    </h3>
+                    <p className="mt-1 max-w-2xl text-center text-sm leading-6 text-gray-500">
+                      Your payment is on the way. It may take up to 2 days to
+                      process.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <h3 className="text-base font-semibold leading-7 text-gray-900">
+                      Withdrawal destination and amount confirmation
+                    </h3>
+                    <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
+                      Confirm the following details are correct before
+                      completing your withdrawal.
+                    </p>
+                  </>
+                )}
               </div>
               <div className="border-t border-gray-100">
                 <dl className="divide-y divide-gray-100">
@@ -127,35 +144,37 @@ export function WithdrawalSteps(props: {
                       ${withdrawAmount}
                     </dd>
                   </div>
-                  <Row className="justify-center py-6 px-6">
-                    <Button
-                      className="font-semibold"
-                      onClick={async () => {
-                        setIsSubmitting
-                        const response = await fetch(
-                          '/api/stripe-connect-withdraw',
-                          {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                              amount: withdrawAmount,
-                            }),
+                  {!complete && (
+                    <Row className="justify-center py-6 px-6">
+                      <Button
+                        className="font-semibold"
+                        onClick={async () => {
+                          setIsSubmitting
+                          const response = await fetch(
+                            '/api/stripe-connect-withdraw',
+                            {
+                              method: 'POST',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              body: JSON.stringify({
+                                amount: withdrawAmount,
+                              }),
+                            }
+                          )
+                          const json = await response.json()
+                          if (json.error) {
+                            console.error(json.error)
+                          } else {
+                            setComplete(true)
                           }
-                        )
-                        const json = await response.json()
-                        if (json.error) {
-                          console.error(json.error)
-                        } else {
-                          setComplete(true)
-                        }
-                        setIsSubmitting(false)
-                      }}
-                    >
-                      Withdraw
-                    </Button>
-                  </Row>
+                          setIsSubmitting(false)
+                        }}
+                      >
+                        Withdraw
+                      </Button>
+                    </Row>
+                  )}
                 </dl>
               </div>
             </div>
