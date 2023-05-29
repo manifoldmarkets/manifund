@@ -3,7 +3,10 @@ import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
-import { WithdrawalDetails } from '@/components/withdrawal-details'
+import {
+  AccountStatus,
+  WithdrawalDetails,
+} from '@/components/withdrawal-details'
 import {
   ArrowLeftCircleIcon,
   CheckCircleIcon,
@@ -14,16 +17,18 @@ import { useState } from 'react'
 import Stripe from 'stripe'
 
 export function WithdrawalSteps(props: {
-  account: Stripe.Account | null
+  accountStatus: AccountStatus
+  withdrawalMethod?: Stripe.BankAccount | Stripe.Card
   userId: string
   withdrawBalance: number
-  loginLink: Stripe.LoginLink | null
+  loginUrl?: string
 }) {
-  const { account, userId, withdrawBalance, loginLink } = props
+  const { accountStatus, withdrawalMethod, userId, withdrawBalance, loginUrl } =
+    props
+  const router = useRouter()
   const [withdrawAmount, setWithdrawAmount] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [complete, setComplete] = useState(false)
-  const withdrawalMethod = account?.external_accounts?.data[0]
   const isBank = withdrawalMethod?.object === 'bank_account'
   const steps = [
     {
@@ -31,9 +36,10 @@ export function WithdrawalSteps(props: {
       name: 'Withdrawal details',
       display: (
         <WithdrawalDetails
-          account={account}
+          accountStatus={accountStatus}
+          withdrawalMethod={withdrawalMethod}
           userId={userId}
-          loginLink={loginLink}
+          loginUrl={loginUrl}
         />
       ),
     },
@@ -162,7 +168,7 @@ export function WithdrawalSteps(props: {
       ),
     },
   ]
-  const router = useRouter()
+
   const [currentStep, setCurrentStep] = useState(steps[0])
   const nextStep = () => {
     if (currentStep.id === steps.length) {
@@ -178,8 +184,9 @@ export function WithdrawalSteps(props: {
       setCurrentStep(steps[currentStep.id - 2])
     }
   }
+
   let errorMessage = null
-  if (!account && currentStep.id === 1) {
+  if (accountStatus !== 'complete' && currentStep.id === 1) {
     errorMessage = 'You need to set up your stripe account before continuing.'
   } else if (withdrawAmount < 10 && currentStep.id === 2) {
     errorMessage = 'Minimum withdrawal is $10.'

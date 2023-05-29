@@ -9,14 +9,17 @@ import Stripe from 'stripe'
 import { EmptyContent } from './empty-content'
 import { Row } from './layout/row'
 
+export type AccountStatus = 'nonexistent' | 'incomplete' | 'complete'
+
 export function WithdrawalDetails(props: {
-  account: Stripe.Account | null
+  accountStatus: AccountStatus
   userId: string
-  loginLink: Stripe.LoginLink | null
+  withdrawalMethod?: Stripe.BankAccount | Stripe.Card | null
+  loginUrl?: string
 }) {
-  const { account, userId, loginLink } = props
+  const { accountStatus, withdrawalMethod, userId, loginUrl } = props
   const router = useRouter()
-  if (!account || !account.charges_enabled || !account.payouts_enabled) {
+  if (accountStatus === 'nonexistent') {
     return (
       <button
         onClick={async () => {
@@ -37,7 +40,7 @@ export function WithdrawalDetails(props: {
           icon={<CurrencyDollarIcon className="h-10 w-10 text-gray-400" />}
           title="Withdrawals not enabled."
           subtitle={
-            !account
+            accountStatus === 'nonexistent'
               ? 'Set up your Stripe connect account to enable withdrawals!'
               : 'Finish setting up your Stripe connect account to enable withdrawals!'
           }
@@ -46,7 +49,6 @@ export function WithdrawalDetails(props: {
     )
   }
 
-  const withdrawalMethod = account.external_accounts?.data[0]
   if (!withdrawalMethod) {
     throw new Error('No withdrawal method')
   }
@@ -123,7 +125,7 @@ export function WithdrawalDetails(props: {
         </dl>
         <div className="mt-6 border-t border-gray-900/5 px-6 py-6">
           <a
-            href={`${loginLink?.url}#settings`}
+            href={`${loginUrl}#settings`}
             className="text-sm font-semibold leading-6 text-gray-900"
           >
             Edit details <span aria-hidden="true">&rarr;</span>

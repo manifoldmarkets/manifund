@@ -49,10 +49,17 @@ export default async function WithdrawPage() {
   return (
     <div className="absolute top-0 left-0 z-30 h-screen w-full bg-gray-50">
       <WithdrawalSteps
-        account={account}
+        accountStatus={
+          account
+            ? account.charges_enabled && account.payouts_enabled
+              ? 'complete'
+              : 'incomplete'
+            : 'nonexistent'
+        }
+        withdrawalMethod={account?.external_accounts?.data[0]}
         userId={user.id}
         withdrawBalance={withdrawBalance}
-        loginLink={loginLink}
+        loginUrl={loginLink?.url}
       />
     </div>
   )

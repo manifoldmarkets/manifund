@@ -16,14 +16,23 @@ import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import Stripe from 'stripe'
-import { WithdrawalDetails } from '@/components/withdrawal-details'
+import {
+  AccountStatus,
+  WithdrawalDetails,
+} from '@/components/withdrawal-details'
 
 export function EditProfileForm(props: {
   profile: Profile
-  stripeAccount: Stripe.Account | null
-  stripeLoginLink: Stripe.LoginLink | null
+  stripeAccountStatus: AccountStatus
+  stripeWithdrawalMethod?: Stripe.BankAccount | Stripe.Card
+  stripeLoginUrl?: string
 }) {
-  const { profile, stripeAccount, stripeLoginLink } = props
+  const {
+    profile,
+    stripeAccountStatus,
+    stripeWithdrawalMethod,
+    stripeLoginUrl,
+  } = props
   const { supabase, session } = useSupabase()
   const [username, setUsername] = useState<string>(profile.username)
   const [bio, setBio] = useState<string>(profile.bio)
@@ -265,8 +274,9 @@ export function EditProfileForm(props: {
       ></input>
       <WithdrawalDetails
         userId={profile.id}
-        account={stripeAccount}
-        loginLink={stripeLoginLink}
+        accountStatus={stripeAccountStatus}
+        withdrawalMethod={stripeWithdrawalMethod}
+        loginUrl={stripeLoginUrl}
       />
       <p className="text-center text-rose-500">{errorMessage}</p>
       <Button

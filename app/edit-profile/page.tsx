@@ -28,11 +28,24 @@ export default async function Page() {
     .eq('id', user.id)
     .throwOnError()
   const stripeAccountId = data ? data[0].stripe_connect_id : null
-  const account = stripeAccountId
+  const stripeAccount = stripeAccountId
     ? await stripe.accounts.retrieve(stripeAccountId)
     : null
-  const loginLink = stripeAccountId
+  const stripeLoginLink = stripeAccountId
     ? await stripe.accounts.createLoginLink(stripeAccountId)
     : null
-  return <EditProfileForm profile={profile} />
+  return (
+    <EditProfileForm
+      profile={profile}
+      stripeAccountStatus={
+        stripeAccount
+          ? stripeAccount.charges_enabled && stripeAccount.payouts_enabled
+            ? 'complete'
+            : 'incomplete'
+          : 'nonexistent'
+      }
+      stripeLoginUrl={stripeLoginLink?.url}
+      stripeWithdrawalMethod={stripeAccount?.external_accounts?.data[0]}
+    />
+  )
 }
