@@ -10,7 +10,6 @@ import { getFullTxnsByUser, getTxnsByUser, FullTxn } from '@/db/txn'
 import {
   getProjectsByUser,
   getProjectsPendingTransferByUser,
-  Project,
 } from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
 import { getBidsByUser } from '@/db/bid'
@@ -66,12 +65,5 @@ export default async function UserProfilePage(props: {
         )}
       </div>
     </div>
-  )
-}
-
-function compileDonations(txns: FullTxn[], userId: string) {
-  const donations = txns.filter(
-    (txn) =>
-      txn.bundle === null && txn.from_id === userId && txn.token === 'USD'
   )
 }
