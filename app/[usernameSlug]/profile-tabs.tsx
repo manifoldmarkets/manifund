@@ -135,7 +135,16 @@ export function ProfileTabs(props: {
       href: '?tab=projects',
       count: projects.length,
       current: currentTabName === 'projects',
-      display: <Projects projects={projects} />,
+      display: (
+        <Projects
+          projects={projects.filter(
+            (project) =>
+              project.project_transfers.filter(
+                (transfer) => !transfer.transferred
+              ).length === 0
+          )}
+        />
+      ),
     })
   }
   if (profile.long_description) {

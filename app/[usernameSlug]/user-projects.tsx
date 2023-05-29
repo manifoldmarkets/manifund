@@ -3,10 +3,12 @@ import { Project } from '@/db/project'
 import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { StageTag } from '@/components/tags'
+import { orderBy } from 'lodash'
 
 export function Projects(props: { projects: Project[] }) {
   const { projects } = props
-  const projectsDisplay = projects.map((project) => (
+  const sortedProjects = orderBy(projects, 'created_at', 'desc')
+  const projectsDisplay = sortedProjects.map((project) => (
     <li key={project.id}>
       <ProjectDisplay project={project} />
     </li>

@@ -31,7 +31,11 @@ export default async function UserProfilePage(props: {
     profile.id
   )
   const bids = await getBidsByUser(supabase, profile.id)
-  const projects = await getProjectsByUser(supabase, profile.id)
+  const projects = (await getProjectsByUser(supabase, profile.id)).filter(
+    (project) =>
+      project.project_transfers.filter((transfer) => !transfer.transferred)
+        .length === 0
+  )
   const txns = await getFullTxnsByUser(supabase, profile.id)
 
   const userTxns = user?.id ? await getTxnsByUser(supabase, user?.id) : null
