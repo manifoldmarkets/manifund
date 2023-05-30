@@ -1,15 +1,14 @@
 import { STRIPE_SECRET_KEY } from '@/db/env'
-import { getUserEmail } from '@/utils/email'
-import { NextApiRequest, NextApiResponse } from 'next'
 import Stripe from 'stripe'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createEdgeClient } from './_db'
 import { getUser } from '@/db/profile'
-import { createServerClient } from '@/db/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
+import { getURL } from 'next/dist/shared/lib/utils'
 
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
+  unstable_allowDynamic: ['**/node_modules/function-bind/implementation.js'],
 }
 
 const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
@@ -34,10 +33,11 @@ export default async function handler(req: NextRequest) {
     .update({ stripe_connect_id: account.id })
     .eq('id', user.id)
 
+  const siteUrl = getURL()
   const accountLink = await stripe.accountLinks.create({
     account: account.id,
-    refresh_url: 'https://manifund.org',
-    return_url: 'https://manifund.org',
+    refresh_url: `${siteUrl}/withdraw`,
+    return_url: `${siteUrl}}/withdraw`,
     type: 'account_onboarding',
   })
   if (!accountLink) {

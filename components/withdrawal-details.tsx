@@ -1,12 +1,10 @@
 import {
   BuildingLibraryIcon,
   CreditCardIcon,
-  CurrencyDollarIcon,
   HashtagIcon,
 } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
 import Stripe from 'stripe'
-import { EmptyContent } from './empty-content'
 import { FeatureCard } from './feature-card'
 import { Row } from './layout/row'
 
@@ -24,10 +22,12 @@ export function WithdrawalDetails(props: {
     return (
       <>
         <h1 className="text-center text-xl font-semibold text-gray-900">
-          Withdrawals not enabled.
+          Withdrawals not enabled
         </h1>
         <p className="mt-1 text-center text-sm text-gray-500">
-          Set up your Stripe connect account to enable withdrawals!
+          {accountStatus === 'nonexistent' ? 'Set up' : 'Finish setting up'}{' '}
+          your Stripe connect account to enable withdrawals, or fill out our
+          manual withdraw form.
         </p>
         <div className="mt-5 flex w-full flex-col gap-4 sm:flex-row">
           <button
@@ -55,7 +55,11 @@ export function WithdrawalDetails(props: {
               title="US bank accounts"
               description="Set up your Stripe connect account to enable automatic payouts. Funds will be sent to your bank account within 2 business days. Only available in the United States."
               url=""
-              linkText={'Set up account'}
+              linkText={
+                accountStatus === 'nonexistent'
+                  ? 'Set up account'
+                  : 'Finish setting up account'
+              }
             />
           </button>
           <FeatureCard
@@ -69,12 +73,10 @@ export function WithdrawalDetails(props: {
       </>
     )
   }
-
   if (!withdrawalMethod) {
     throw new Error('No withdrawal method')
   }
   const isBank = withdrawalMethod.object === 'bank_account'
-
   return (
     <div className="lg:col-start-3 lg:row-end-1">
       <h2 className="sr-only">{isBank ? 'Bank details' : 'Card details'}</h2>
