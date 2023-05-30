@@ -141,7 +141,7 @@ export function WithdrawalSteps(props: {
                     <dt className=" text-sm font-medium text-gray-900">
                       Amount to withdraw
                     </dt>
-                    <dd className=" mt-0 text-sm leading-6 text-gray-700">
+                    <dd className="mt-0 text-sm leading-6 text-gray-700">
                       ${withdrawAmount}
                     </dd>
                   </div>
@@ -171,6 +171,7 @@ export function WithdrawalSteps(props: {
                           }
                           setIsSubmitting(false)
                         }}
+                        disabled={isSubmitting}
                       >
                         Withdraw
                       </Button>
