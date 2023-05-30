@@ -108,7 +108,7 @@ export async function getProjectsPendingTransferByUser(
     .from('projects')
     .select('*, project_transfers(*)')
     .eq('creator', userId)
-  return (data as FullProject[]).filter((project) => {
+  return (data as FullProject[])?.filter((project) => {
     const numTransfers = project.project_transfers
       ? project.project_transfers.filter((transfer) => !transfer.transferred)
           .length
