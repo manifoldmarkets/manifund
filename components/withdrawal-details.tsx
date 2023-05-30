@@ -7,6 +7,7 @@ import {
 import { useRouter } from 'next/navigation'
 import Stripe from 'stripe'
 import { EmptyContent } from './empty-content'
+import { FeatureCard } from './feature-card'
 import { Row } from './layout/row'
 
 export type AccountStatus = 'nonexistent' | 'incomplete' | 'complete'
@@ -19,33 +20,49 @@ export function WithdrawalDetails(props: {
 }) {
   const { accountStatus, withdrawalMethod, userId, loginUrl } = props
   const router = useRouter()
-  if (accountStatus === 'nonexistent') {
+  if (accountStatus === 'complete') {
     return (
-      <button
-        onClick={async () => {
-          const response = await fetch('/api/create-connect-account', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              profileId: userId,
-            }),
-          })
-          const json = await response.json()
-          router.push(json.url)
-        }}
-      >
-        <EmptyContent
-          icon={<CurrencyDollarIcon className="h-10 w-10 text-gray-400" />}
-          title="Withdrawals not enabled."
-          subtitle={
-            accountStatus === 'nonexistent'
-              ? 'Set up your Stripe connect account to enable withdrawals!'
-              : 'Finish setting up your Stripe connect account to enable withdrawals!'
-          }
-        />
-      </button>
+      <>
+        <button
+          onClick={async () => {
+            const response = await fetch('/api/create-connect-account', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                profileId: userId,
+              }),
+            })
+            const json = await response.json()
+            router.push(json.url)
+          }}
+        >
+          <EmptyContent
+            icon={<CurrencyDollarIcon className="h-10 w-10 text-gray-400" />}
+            title="Withdrawals not enabled."
+            subtitle={
+              accountStatus === 'nonexistent'
+                ? 'Set up your Stripe connect account to enable withdrawals!'
+                : 'Finish setting up your Stripe connect account to enable withdrawals!'
+            }
+          />
+        </button>
+        <div className="mt-5 flex w-full flex-col gap-4 sm:flex-row">
+          <FeatureCard
+            icon={<div className="mx-1 text-xl">🇺🇸</div>}
+            title="Stripe automatic payouts"
+            description="Set up your Stripe connect account to enable automatic payouts. Funds will be sent to your bank account within 2 business days. Only available in the United States."
+            url=""
+          />
+          <FeatureCard
+            icon={<div className="mx-1 text-xl">🌍</div>}
+            title="Manual payouts"
+            description="Fill out our manual withdraw form with your PayPal account details and we will manually send you money within 10 business days."
+            url="https://airtable.com/shrI3XFPivduhbnGa"
+          />
+        </div>
+      </>
     )
   }
 

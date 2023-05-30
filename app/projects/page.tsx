@@ -12,6 +12,7 @@ import {
   ArrowTrendingUpIcon,
 } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
+import { FeatureCard } from '@/components/feature-card'
 
 export const revalidate = 30
 
@@ -70,46 +71,19 @@ function LandingSection() {
         </Row>
       </div>
       <div className="flex flex-col justify-between gap-3 sm:flex-row">
-        <Col className="justify-between rounded-lg border-2 border-orange-500 bg-white p-3">
-          <div>
-            <Row className="mb-1 gap-1 text-orange-500">
-              <ArrowPathIcon className="h-7 w-7 text-orange-500" />
-              <p className="text-lg font-medium">Regranting</p>
-            </Row>
-            <p className="text-sm text-gray-600">
-              Allows donors to outsource their giving to qualified and trusted
-              regrantors.
-            </p>
-          </div>
-          <LearnMoreButton url="/about#regranting" />
-        </Col>
-        <Col className="justify-between rounded-lg border-2 border-orange-500 bg-white p-3">
-          <div>
-            <Row className="mb-1 gap-1 text-orange-500">
-              <ArrowTrendingUpIcon className="h-7 w-7" />
-              <p className="text-lg font-medium">Impact certificates</p>
-            </Row>
-            <p className="text-sm text-gray-600">
-              Align incentives with impact by bringing for-profit funding
-              mechanisms to the non-profit world.
-            </p>
-          </div>
-          <LearnMoreButton url="/about#impact-certificates" />
-        </Col>
+        <FeatureCard
+          icon={<ArrowPathIcon className="h-7 w-7" />}
+          title="Donor-advised funds"
+          description="A donor-advised fund (DAF) is a charitable giving vehicle administered by a third party and created for the purpose of managing charitable donations on behalf of an organization, family, or individual."
+          url="/about#donor-advised-funds"
+        />
+        <FeatureCard
+          icon={<ArrowTrendingUpIcon className="h-7 w-7" />}
+          title="Impact certificates"
+          description="Align incentives with impact by bringing for-profit funding mechanisms to the non-profit world."
+          url="/about#impact-certificates"
+        />
       </div>
     </Col>
-  )
-}
-
-function LearnMoreButton(props: { url: string }) {
-  const { url } = props
-  return (
-    <a
-      href={url}
-      className="flex w-full justify-end text-xs text-orange-500 hover:underline"
-    >
-      Learn more
-      <ArrowRightIcon className="ml-1 h-4 w-4" />
-    </a>
   )
 }
