@@ -55,8 +55,12 @@ export function DonateBox(props: {
       <Button
         onClick={async () => {
           setIsSubmitting(true)
-          if (project && project.stage === 'proposal') {
-            const res = await fetch('/api/place-bid', {
+          if (
+            project &&
+            (project.stage === 'proposal' ||
+              project.stage === 'pending approval')
+          ) {
+            await fetch('/api/place-bid', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -71,7 +75,7 @@ export function DonateBox(props: {
               }),
             })
           } else if (project || charity) {
-            const res = await fetch('/api/transfer-money', {
+            await fetch('/api/transfer-money', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
