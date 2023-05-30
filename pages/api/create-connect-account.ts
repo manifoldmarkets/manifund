@@ -2,28 +2,31 @@ import { STRIPE_SECRET_KEY } from '@/db/env'
 import { getUserEmail } from '@/utils/email'
 import { NextApiRequest, NextApiResponse } from 'next'
 import Stripe from 'stripe'
-import { createAdminClient } from './_db'
+import { createAdminClient, createEdgeClient } from './_db'
 import { getUser } from '@/db/profile'
+import { createServerClient } from '@/db/supabase-server'
+import { NextRequest, NextResponse } from 'next/server'
+
+export const config = {
+  runtime: 'edge',
+  regions: ['sfo1'],
+}
 
 const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
   apiVersion: '2022-11-15',
   typescript: true,
 })
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const supabase = createAdminClient()
+export default async function handler(req: NextRequest) {
+  const supabase = createEdgeClient(req)
   const user = await getUser(supabase)
   if (!user) {
-    return res.status(401).json({ error: 'Unauthorized' })
+    return NextResponse.error()
   }
-  const userEmail = await getUserEmail(supabase, user.id)
 
   const account = await stripe.accounts.create({
     type: 'express',
-    email: userEmail,
+    email: user.email,
   })
 
   await supabase
@@ -37,5 +40,8 @@ export default async function handler(
     return_url: 'https://manifund.org',
     type: 'account_onboarding',
   })
-  res.json({ url: accountLink.url })
+  if (!accountLink) {
+    return NextResponse.error()
+  }
+  NextResponse.json({ url: accountLink.url })
 }

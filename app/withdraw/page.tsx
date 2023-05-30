@@ -43,8 +43,15 @@ export default async function WithdrawPage() {
   const account = stripeAccountId
     ? await stripe.accounts.retrieve(stripeAccountId)
     : null
-  const loginLink = stripeAccountId
-    ? await stripe.accounts.createLoginLink(stripeAccountId)
+  const loginLink = account
+    ? account.payouts_enabled && account.charges_enabled
+      ? await stripe.accounts.createLoginLink(account.id)
+      : await stripe.accountLinks.create({
+          account: account.id,
+          refresh_url: 'https://manifund.org',
+          return_url: 'https://manifund.org',
+          type: 'account_onboarding',
+        })
     : null
   return (
     <div className="absolute top-0 left-0 z-30 h-screen w-full bg-gray-50">

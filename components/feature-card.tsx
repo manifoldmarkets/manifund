@@ -6,11 +6,12 @@ export function FeatureCard(props: {
   icon: JSX.Element
   title: string
   description: string
-  url: string
+  url?: string
+  linkText?: string
 }) {
-  const { icon, title, description, url } = props
-  return (
-    <Col className="justify-between rounded-lg border-2 border-orange-500 bg-white p-3">
+  const { icon, title, description, url, linkText } = props
+  const content = (
+    <>
       <div>
         <Row className="mb-1 gap-1 text-orange-500">
           {icon}
@@ -18,20 +19,26 @@ export function FeatureCard(props: {
         </Row>
         <p className="text-sm text-gray-600">{description}</p>
       </div>
-      <ArrowLink url={url} />
-    </Col>
+      <p className="flex w-full justify-end text-xs text-orange-500 group-hover:underline">
+        {linkText ?? 'Learn more'}
+        <ArrowRightIcon className="ml-1 h-4 w-4" />
+      </p>
+    </>
   )
-}
-
-export function ArrowLink(props: { url: string }) {
-  const { url } = props
-  return (
-    <a
-      href={url}
-      className="flex w-full justify-end text-xs text-orange-500 hover:underline"
-    >
-      Learn more
-      <ArrowRightIcon className="ml-1 h-4 w-4" />
-    </a>
-  )
+  if (url) {
+    return (
+      <a
+        href={url}
+        className="group flex flex-col justify-between rounded-lg border-2 border-orange-500 bg-white p-3 hover:cursor-pointer"
+      >
+        {content}
+      </a>
+    )
+  } else {
+    return (
+      <Col className="group justify-between rounded-lg border-2 border-orange-500 bg-white p-3 hover:cursor-pointer">
+        {content}
+      </Col>
+    )
+  }
 }

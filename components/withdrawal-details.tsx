@@ -20,46 +20,50 @@ export function WithdrawalDetails(props: {
 }) {
   const { accountStatus, withdrawalMethod, userId, loginUrl } = props
   const router = useRouter()
-  if (accountStatus === 'complete') {
+  if (accountStatus !== 'complete') {
     return (
       <>
-        <button
-          onClick={async () => {
-            const response = await fetch('/api/create-connect-account', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                profileId: userId,
-              }),
-            })
-            const json = await response.json()
-            router.push(json.url)
-          }}
-        >
-          <EmptyContent
-            icon={<CurrencyDollarIcon className="h-10 w-10 text-gray-400" />}
-            title="Withdrawals not enabled."
-            subtitle={
-              accountStatus === 'nonexistent'
-                ? 'Set up your Stripe connect account to enable withdrawals!'
-                : 'Finish setting up your Stripe connect account to enable withdrawals!'
-            }
-          />
-        </button>
+        <h1 className="text-center text-xl font-semibold text-gray-900">
+          Withdrawals not enabled.
+        </h1>
+        <p className="mt-1 text-center text-sm text-gray-500">
+          Set up your Stripe connect account to enable withdrawals!
+        </p>
         <div className="mt-5 flex w-full flex-col gap-4 sm:flex-row">
-          <FeatureCard
-            icon={<div className="mx-1 text-xl">🇺🇸</div>}
-            title="Stripe automatic payouts"
-            description="Set up your Stripe connect account to enable automatic payouts. Funds will be sent to your bank account within 2 business days. Only available in the United States."
-            url=""
-          />
+          <button
+            className="text-left"
+            onClick={async () => {
+              if (!loginUrl) {
+                const response = await fetch('/api/create-connect-account', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    profileId: userId,
+                  }),
+                })
+                const json = await response.json()
+                router.push(json.url)
+              } else {
+                router.push(loginUrl)
+              }
+            }}
+          >
+            <FeatureCard
+              icon={<div className="mx-1 text-xl">🇺🇸</div>}
+              title="US bank accounts"
+              description="Set up your Stripe connect account to enable automatic payouts. Funds will be sent to your bank account within 2 business days. Only available in the United States."
+              url=""
+              linkText={'Set up account'}
+            />
+          </button>
           <FeatureCard
             icon={<div className="mx-1 text-xl">🌍</div>}
-            title="Manual payouts"
+            title="International payouts"
             description="Fill out our manual withdraw form with your PayPal account details and we will manually send you money within 10 business days."
             url="https://airtable.com/shrI3XFPivduhbnGa"
+            linkText={'Go to form'}
           />
         </div>
       </>
