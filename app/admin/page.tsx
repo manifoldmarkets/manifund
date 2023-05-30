@@ -11,6 +11,8 @@ import { Txn } from '@/db/txn'
 import { calculateUserFundsAndShares } from '@/utils/math'
 import { GiveCreatorShares } from './give-creator-shares'
 import { Donations } from './donations'
+import { listProjects } from '@/db/project'
+import { GrantVerdict } from './grant-verdict'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -31,6 +33,7 @@ export default async function Admin() {
       }
     }) ?? []
   const charities = profiles?.filter((profile) => profile.type === 'org')
+  const projects = await listProjects(supabaseAdmin)
   const usersById = new Map(userAndProfiles.map((user) => [user.id, user]))
   const getName = (userId: string | null) => {
     return usersById.get(userId ?? '')?.profile?.username
@@ -42,11 +45,6 @@ export default async function Admin() {
     .eq('token', 'USD')
     .order('created_at')
   const balances = userBalances(txns ?? [])
-
-  const { data: projects } = await supabaseAdmin
-    .from('projects')
-    .select('*, txns(*)')
-    .order('created_at')
 
   return (
     <div>
@@ -80,6 +78,36 @@ export default async function Admin() {
               </td>
             </tr>
           ))}
+        </tbody>
+      </Table>
+
+      <h1>Projects Pending Approval</h1>
+      <Table>
+        <thead>
+          <tr>
+            <th>Creator</th>
+            <th>Project</th>
+            <th>Grant verdict</th>
+          </tr>
+        </thead>
+        <tbody>
+          {projects
+            .filter((project) => project.stage === 'pending approval')
+            .map((project) => (
+              <tr key={project.id}>
+                <td>
+                  <a href={`/${project.profiles.username}`}>
+                    {project.profiles.full_name}
+                  </a>
+                </td>
+                <td>
+                  <a href={`/projects/${project.slug}`}>{project.title}</a>
+                </td>
+                <td>
+                  <GrantVerdict projectId={project.id} />
+                </td>
+              </tr>
+            ))}
         </tbody>
       </Table>
 
