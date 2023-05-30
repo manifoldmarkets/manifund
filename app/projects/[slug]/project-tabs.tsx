@@ -46,9 +46,10 @@ export function ProjectTabs(props: {
   ]
 
   if (
-    ((project.stage === 'active' || project.stage === 'completed') &&
+    ((project.stage === 'active' || project.stage === 'complete') &&
       project.type === 'cert') ||
-    project.stage === 'proposal'
+    project.stage === 'proposal' ||
+    project.stage === 'pending approval'
   ) {
     tabs.push({
       name:
@@ -70,7 +71,7 @@ export function ProjectTabs(props: {
     })
   }
   if (
-    (project.stage === 'active' || project.stage === 'completed') &&
+    (project.stage === 'active' || project.stage === 'complete') &&
     project.type === 'cert'
   ) {
     const shareholders = calculateShareholders(trades, creator)
@@ -90,7 +91,7 @@ export function ProjectTabs(props: {
   }
 
   if (
-    (project.stage === 'active' || project.stage === 'completed') &&
+    (project.stage === 'active' || project.stage === 'complete') &&
     project.type === 'grant'
   ) {
     const donations = txns.filter(

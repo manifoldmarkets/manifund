@@ -150,7 +150,7 @@ export interface Database {
           min_funding: number
           round: string
           slug: string
-          stage: string
+          stage: Database["public"]["Enums"]["project_stage"]
           title: string
           type: Database["public"]["Enums"]["project_type"]
         }
@@ -166,7 +166,7 @@ export interface Database {
           min_funding: number
           round: string
           slug?: string
-          stage?: string
+          stage?: Database["public"]["Enums"]["project_stage"]
           title?: string
           type?: Database["public"]["Enums"]["project_type"]
         }
@@ -182,7 +182,7 @@ export interface Database {
           min_funding?: number
           round?: string
           slug?: string
-          stage?: string
+          stage?: Database["public"]["Enums"]["project_stage"]
           title?: string
           type?: Database["public"]["Enums"]["project_type"]
         }
@@ -373,6 +373,13 @@ export interface Database {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
       bid_type: "buy" | "sell" | "donate"
       profile_type: "individual" | "org"
+      project_stage:
+        | "active"
+        | "proposal"
+        | "not funded"
+        | "hidden"
+        | "pending approval"
+        | "complete"
       project_type: "grant" | "cert"
     }
     CompositeTypes: {
