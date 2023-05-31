@@ -9,22 +9,24 @@ import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
+const DEFAULT_REJECT_MESSAGES = [
+  "outside of Manifund's scope in terms of cause area and mission.",
+  "outside of Manifund's scope legally.",
+  'has downside risks that we believe make it net negative in expectation.',
+  'custom',
+]
+
 export function GrantVerdict(props: { projectId: string }) {
   const { projectId } = props
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [approveGrant, setApproveGrant] = useState(false)
-  const [defaultMessage, setDefaultMessage] = useState<string | null>(null)
+  const [defaultMessage, setDefaultMessage] = useState<string | null>(
+    DEFAULT_REJECT_MESSAGES[0]
+  )
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const editor = useTextEditor()
   console.log(approveGrant)
-
-  const DEFAULT_REJECT_MESSAGES = [
-    "outside of Manifund's scope in terms of cause area and mission.",
-    "outside of Manifund's scope legally.",
-    'has downside risks that we believe make it net negative in expectation.',
-    null,
-  ]
 
   return (
     <>
@@ -64,29 +66,40 @@ export function GrantVerdict(props: { projectId: string }) {
               </RadioGroup.Option>
             </div>
           </RadioGroup>
-          {approveGrant && (
-            <fieldset className="mt-4">
+          {!approveGrant && (
+            <RadioGroup
+              value={defaultMessage}
+              onChange={setDefaultMessage}
+              className="mt-2"
+            >
               <legend className="sr-only">Message choice</legend>
               <div className="space-y-4">
                 {DEFAULT_REJECT_MESSAGES.map((message) => (
                   <Row className="items-center" key={message}>
-                    <input
-                      type="radio"
-                      defaultChecked={message === DEFAULT_REJECT_MESSAGES[0]}
-                      className="h-4 w-4 border-gray-300 text-orange-500 focus:ring-orange-500"
+                    <RadioGroup.Option
+                      value={message}
+                      defaultChecked={message === defaultMessage}
+                      className={({ checked }) =>
+                        clsx(
+                          'cursor-pointer focus:outline-none',
+                          checked
+                            ? 'bg-orange-500 hover:bg-orange-600'
+                            : 'bg-white',
+                          'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold'
+                        )
+                      }
                       onChange={() => {
                         setDefaultMessage(message)
                       }}
-                    />
-                    <label className="ml-3 block text-sm leading-6">
-                      {message ?? 'custom'}
-                    </label>
+                    >
+                      <RadioGroup.Label as="span">{message}</RadioGroup.Label>
+                    </RadioGroup.Option>
                   </Row>
                 ))}
               </div>
-            </fieldset>
+            </RadioGroup>
           )}
-          {!defaultMessage && <TextEditor editor={editor} />}
+          {defaultMessage === 'custom' && <TextEditor editor={editor} />}
         </div>
         <Row className="justify-between">
           <Button
