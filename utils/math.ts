@@ -116,7 +116,7 @@ export function calculateUserSpendableFunds(
     bids
       .filter((bid) => bid.status === 'pending' && bid.type === 'buy')
       .reduce((acc, bid) => acc + bid.amount, 0) +
-    projectsPendingTransfer.reduce(
+    projectsPendingTransfer?.reduce(
       (acc, project) => acc + (project.funding_goal ?? 0),
       0
     )
@@ -156,7 +156,7 @@ export async function calculateUserFundsAndShares(
         bid.status === 'pending' &&
         bid.project === projectId
     )
-    .reduce((acc, bid) => acc + bid.amount, 0)
+    ?.reduce((acc, bid) => acc + bid.amount, 0)
   const userSellableShares = userShares - offeredShares
   const userSpendableFunds = calculateUserSpendableFunds(
     txns,
