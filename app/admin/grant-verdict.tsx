@@ -110,7 +110,7 @@ export function GrantVerdict(props: { projectId: string }) {
               color="gray-outline"
               loading={isSubmitting}
               onClick={() => {
-                console.log(editor?.getHTML())
+                console.log(editor?.getJSON())
                 setOpen(false)
               }}
             >
@@ -127,8 +127,12 @@ export function GrantVerdict(props: { projectId: string }) {
                     'Content-Type': 'application/json',
                   },
                   body: JSON.stringify({
+                    approved: approveGrant,
                     projectId: projectId,
-                    messageContent: editor?.getHTML(),
+                    adminComment:
+                      editor?.getHTML() === '<p></p>'
+                        ? null
+                        : editor?.getJSON(),
                   }),
                 })
                 setIsSubmitting(false)
