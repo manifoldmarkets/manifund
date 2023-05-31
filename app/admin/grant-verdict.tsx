@@ -25,128 +25,116 @@ export function GrantVerdict(props: { projectId: string }) {
   )
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  const editor = useTextEditor()
+  const editor = useTextEditor('')
   console.log(approveGrant)
 
   return (
     <>
       <Button onClick={() => setOpen(true)}>🔔</Button>
       <Modal open={open}>
-        <h1>Grant verdict</h1>
-        <div>
-          <RadioGroup
-            value={approveGrant}
-            onChange={setApproveGrant}
-            className="mt-2"
-          >
-            <div className="flex max-w-fit rounded-md border border-gray-300 bg-white p-2">
-              <RadioGroup.Option
-                value={false}
-                className={({ checked }) =>
-                  clsx(
-                    'cursor-pointer focus:outline-none',
-                    checked ? 'bg-orange-500 hover:bg-orange-600' : 'bg-white',
-                    'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold'
-                  )
-                }
-              >
-                <RadioGroup.Label as="span">❌</RadioGroup.Label>
-              </RadioGroup.Option>
-              <RadioGroup.Option
-                value={true}
-                className={({ checked }) =>
-                  clsx(
-                    'cursor-pointer focus:outline-none',
-                    checked ? 'bg-orange-500 hover:bg-orange-600' : 'bg-white',
-                    'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold'
-                  )
-                }
-              >
-                <RadioGroup.Label as="span">✅</RadioGroup.Label>
-              </RadioGroup.Option>
-            </div>
-          </RadioGroup>
-          {!approveGrant && (
+        <div className="p-3">
+          <h1 className="text-lg font-semibold">Grant verdict</h1>
+          <div>
             <RadioGroup
-              value={defaultMessage}
-              onChange={setDefaultMessage}
+              value={approveGrant}
+              onChange={setApproveGrant}
               className="mt-2"
             >
-              <legend className="sr-only">Message choice</legend>
-              <div className="space-y-4">
-                {DEFAULT_REJECT_MESSAGES.map((message) => (
-                  <Row className="items-center" key={message}>
-                    <RadioGroup.Option
-                      value={message}
-                      defaultChecked={message === defaultMessage}
-                      className={({ checked }) =>
-                        clsx(
-                          'cursor-pointer focus:outline-none',
-                          checked
-                            ? 'bg-orange-500 hover:bg-orange-600'
-                            : 'bg-white',
-                          'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold'
-                        )
-                      }
-                      onChange={() => {
-                        setDefaultMessage(message)
-                      }}
-                    >
-                      <RadioGroup.Label as="span">{message}</RadioGroup.Label>
-                    </RadioGroup.Option>
-                  </Row>
-                ))}
+              <div className="flex max-w-fit rounded-md border border-gray-300 bg-white p-2">
+                <RadioGroup.Option
+                  value={false}
+                  className={({ checked }) =>
+                    clsx(
+                      'cursor-pointer focus:outline-none',
+                      checked
+                        ? 'bg-orange-500 hover:bg-orange-600'
+                        : 'bg-white',
+                      'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold'
+                    )
+                  }
+                >
+                  <RadioGroup.Label as="span">❌</RadioGroup.Label>
+                </RadioGroup.Option>
+                <RadioGroup.Option
+                  value={true}
+                  className={({ checked }) =>
+                    clsx(
+                      'cursor-pointer focus:outline-none',
+                      checked
+                        ? 'bg-orange-500 hover:bg-orange-600'
+                        : 'bg-white',
+                      'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold'
+                    )
+                  }
+                >
+                  <RadioGroup.Label as="span">✅</RadioGroup.Label>
+                </RadioGroup.Option>
               </div>
             </RadioGroup>
-          )}
-          {defaultMessage === 'custom' && <TextEditor editor={editor} />}
+            {!approveGrant && (
+              <div className="my-5">
+                <p>Reason for verdict:</p>
+                <fieldset className="mt-2">
+                  <legend className="sr-only">Message choice</legend>
+                  <div className="space-y-4">
+                    {DEFAULT_REJECT_MESSAGES.map((message) => (
+                      <Row className="gap-2" key={message}>
+                        <input
+                          type="radio"
+                          value={message}
+                          defaultChecked={message === defaultMessage}
+                          checked={message === defaultMessage}
+                          className="relative top-1 h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
+                          onChange={() => {
+                            setDefaultMessage(message)
+                          }}
+                        ></input>
+                        <label>{message}</label>
+                      </Row>
+                    ))}
+                  </div>
+                </fieldset>
+              </div>
+            )}
+            <div className="my-5">
+              {defaultMessage === 'custom' && <TextEditor editor={editor} />}
+            </div>
+          </div>
+          <Row className="justify-between">
+            <Button
+              color="gray-outline"
+              loading={isSubmitting}
+              onClick={() => {
+                console.log(editor?.getHTML())
+                setOpen(false)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              loading={isSubmitting}
+              onClick={async () => {
+                setIsSubmitting(true)
+                // TODO: create this function
+                await fetch('/api/approveGrant', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    projectId: projectId,
+                    messageContent: editor?.getHTML(),
+                  }),
+                })
+                setIsSubmitting(false)
+                setOpen(false)
+                router.refresh()
+              }}
+            >
+              Submit
+            </Button>
+          </Row>
         </div>
-        <Row className="justify-between">
-          <Button
-            loading={isSubmitting}
-            onClick={async () => {
-              setIsSubmitting(true)
-              // TODO: create this function
-              await fetch('/api/rejectGrant', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  projectId: projectId,
-                  messageContent: editor?.getHTML(),
-                }),
-              })
-              setIsSubmitting(false)
-              setOpen(false)
-              router.refresh()
-            }}
-          >
-            ❌
-          </Button>
-          <Button
-            loading={isSubmitting}
-            onClick={async () => {
-              setIsSubmitting(true)
-              // TODO: create this function
-              await fetch('/api/approveGrant', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  projectId: projectId,
-                  messageContent: editor?.getHTML(),
-                }),
-              })
-              setIsSubmitting(false)
-              setOpen(false)
-              router.refresh()
-            }}
-          >
-            ✅
-          </Button>
-        </Row>
       </Modal>
     </>
   )
