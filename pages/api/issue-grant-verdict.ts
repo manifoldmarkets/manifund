@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
 import { getUser, isAdmin } from '@/db/profile'
 import { getProjectById } from '@/db/project'
-import { getURL } from '@/utils/constants'
+import { getAdminName, getURL } from '@/utils/constants'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail } from '@/utils/email'
 
@@ -28,20 +28,13 @@ export default async function handler(req: NextRequest) {
   const supabase = createEdgeClient(req)
   const user = await getUser(supabase)
   if (!user || !isAdmin(user)) {
-    console.log('not authorized', user, isAdmin(user))
     return Response.error()
   }
 
-  const adminName =
-    user.email === 'rachel.weinberg12@gmail.com' ? 'Rachel' : 'Austin'
+  const adminName = getAdminName(user.email ?? '')
   const project = await getProjectById(supabase, projectId)
   const creator = await getProfileById(supabase, project?.creator)
-  if (!project) {
-    console.log('no project')
-    return Response.error()
-  }
-  if (!creator) {
-    console.log('no creator')
+  if (!project || !creator || !adminName) {
     return Response.error()
   }
 
