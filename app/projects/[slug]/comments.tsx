@@ -132,7 +132,6 @@ function Comment(props: {
             creatorBadge={writtenByCreator}
             className="text-sm text-gray-800"
           />
-          {/* TODO: redo this to not depend on there being comment-linked txns */}
           {contributionText && (
             <Tag
               text={contributionText}
