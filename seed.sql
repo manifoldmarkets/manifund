@@ -13,6 +13,7 @@ create table public.profiles (
   type profile_type not null default 'individual',
   long_description jsonb,
   regranter_status boolean not null,
+  stripe_connect_id text,
   primary key (id)
 );
 
@@ -76,7 +77,7 @@ from
 --
 ---- Projects ----
 create type project_type as enum ('grant', 'cert');
-create type project_stage as enum ('active', 'proposal', 'not funded', 'hidden', 'pending approval', 'complete')
+create type project_stage as enum ('active', 'proposal', 'not funded', 'hidden', 'complete')
 create table if not exists public.projects (
   id uuid not null default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -90,6 +91,8 @@ create table if not exists public.projects (
   description jsonb,
   type project_type not null default 'cert',
   stage project_stage not null default 'proposal',
+  approved boolean,
+  signed_agreement boolean not null default false,
   primary key (id)
 );
 
@@ -208,8 +211,6 @@ create table if not exists public.comments (
   project uuid not null references public.projects(id) on delete cascade,
   commenter uuid not null references profiles.users(id) on delete cascade,
   content jsonb,
-  -- Optional link to txn for donation notes
-  txn_id uuid reference public.txns(id),
   primary key (id)
 );
 
