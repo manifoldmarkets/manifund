@@ -66,6 +66,8 @@ export default async function handler(req: NextRequest) {
     stage: 'proposal' as Project['stage'],
     round: 'Regrants',
     slug,
+    approved: null,
+    signed_agreement: false,
   }
   if (toEmail) {
     const donorComment = {

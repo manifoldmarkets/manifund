@@ -47,6 +47,8 @@ export default async function handler(req: NextRequest) {
     auction_close,
     stage,
     type,
+    approved: null,
+    signed_agreement: false,
   }
   const { error } = await supabase.from('projects').insert([project])
   if (error) {

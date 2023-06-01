@@ -484,7 +484,10 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                 round.title === 'Independent' || round.title === 'Regrants'
                   ? auctionClose
                   : round.auction_close_date,
-              stage: auctionClose === null ? 'active' : 'proposal',
+              stage:
+                auctionClose === null && projectType === 'cert'
+                  ? 'active'
+                  : 'proposal',
               type: projectType,
             }),
           })
