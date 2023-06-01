@@ -49,7 +49,6 @@ export interface Database {
           id: string
           project: string
           replying_to: string | null
-          txn_id: string | null
         }
         Insert: {
           commenter: string
@@ -58,7 +57,6 @@ export interface Database {
           id?: string
           project: string
           replying_to?: string | null
-          txn_id?: string | null
         }
         Update: {
           commenter?: string
@@ -67,7 +65,6 @@ export interface Database {
           id?: string
           project?: string
           replying_to?: string | null
-          txn_id?: string | null
         }
       }
       profiles: {

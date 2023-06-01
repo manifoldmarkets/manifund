@@ -1,7 +1,7 @@
 'use client'
 import { Profile } from '@/db/profile'
 import { WriteComment } from './write-comment'
-import { CommentAndProfileAndTxns } from '@/db/comment'
+import { CommentAndProfile } from '@/db/comment'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { formatDistanceToNow } from 'date-fns'
 import { RichContent } from '@/components/editor'
@@ -17,13 +17,12 @@ import { Tag } from '@/components/tags'
 
 export function Comments(props: {
   project: Project
-  comments: CommentAndProfileAndTxns[]
+  comments: CommentAndProfile[]
   user: Profile | null
+  commenterContributions: Record<string, string>
 }) {
-  const { project, comments, user } = props
-  const [replyingTo, setReplyingTo] = useState<CommentAndProfileAndTxns | null>(
-    null
-  )
+  const { project, comments, user, commenterContributions } = props
+  const [replyingTo, setReplyingTo] = useState<CommentAndProfile | null>(null)
   const rootComments = comments.filter(
     (comment) => comment.replying_to === null
   )
@@ -48,6 +47,7 @@ export function Comments(props: {
           <Comment
             comment={thread.root}
             writtenByCreator={thread.root.commenter === project.creator}
+            contributionText={commenterContributions[thread.root.commenter]}
           />
           {user && (
             <Row className="w-full justify-end">
@@ -64,6 +64,7 @@ export function Comments(props: {
               <Comment
                 comment={reply}
                 writtenByCreator={reply.commenter === project.creator}
+                contributionText={commenterContributions[reply.commenter]}
               />
             </div>
           ))}
@@ -93,12 +94,12 @@ export function Comments(props: {
 }
 
 type Thread = {
-  root: CommentAndProfileAndTxns
-  replies: CommentAndProfileAndTxns[]
+  root: CommentAndProfile
+  replies: CommentAndProfile[]
 }
 function genThreads(
-  rootComments: CommentAndProfileAndTxns[],
-  replyComments: CommentAndProfileAndTxns[]
+  rootComments: CommentAndProfile[],
+  replyComments: CommentAndProfile[]
 ) {
   const threads = Object.fromEntries(
     rootComments.map((comment) => [
@@ -117,10 +118,11 @@ function genThreads(
 }
 
 function Comment(props: {
-  comment: CommentAndProfileAndTxns
+  comment: CommentAndProfile
   writtenByCreator?: boolean
+  contributionText?: string
 }) {
-  const { comment, writtenByCreator } = props
+  const { comment, writtenByCreator, contributionText } = props
   return (
     <div>
       <Row className="w-full items-center justify-between gap-2">
@@ -130,21 +132,18 @@ function Comment(props: {
             creatorBadge={writtenByCreator}
             className="text-sm text-gray-800"
           />
-          {comment.txns && (
+          {/* TODO: redo this to not depend on there being comment-linked txns */}
+          {contributionText && (
             <Tag
-              text={`DONATED $${comment.txns.amount}`}
+              text={contributionText}
               color="orange"
               className="hidden sm:block"
             />
           )}
         </Row>
         <Col className="items-center text-xs text-gray-500">
-          {comment.txns && (
-            <Tag
-              text={`DONATED $${comment.txns.amount}`}
-              color="orange"
-              className="sm:hidden"
-            />
+          {contributionText && (
+            <Tag text={contributionText} color="orange" className="sm:hidden" />
           )}
           {formatDistanceToNow(new Date(comment.created_at), {
             addSuffix: true,
