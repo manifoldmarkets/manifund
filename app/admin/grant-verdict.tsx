@@ -7,11 +7,11 @@ import { Modal } from '@/components/modal'
 import { RadioGroup } from '@headlessui/react'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const DEFAULT_REJECT_MESSAGES = [
-  "outside of Manifund's scope in terms of cause area and mission.",
-  "outside of Manifund's scope legally.",
+  'is outside of our scope in terms of cause area and mission.',
+  'is outside of our scope legally.',
   'has downside risks that we believe make it net negative in expectation.',
   'custom',
 ]
@@ -20,13 +20,20 @@ export function GrantVerdict(props: { projectId: string }) {
   const { projectId } = props
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [approveGrant, setApproveGrant] = useState(false)
-  const [defaultMessage, setDefaultMessage] = useState<string | null>(
-    DEFAULT_REJECT_MESSAGES[0]
-  )
+  const [defaultMessage, setDefaultMessage] = useState<string | null>('custom')
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  const editor = useTextEditor('')
+  const editor = useTextEditor(
+    `Manifund has declined to fund this project because we believe it ${
+      defaultMessage === 'custom' ? '...' : defaultMessage
+    }`
+  )
 
+  useEffect(() => {
+    if (approveGrant) {
+      editor?.commands.setContent('')
+    }
+  })
   return (
     <>
       <Button onClick={() => setOpen(true)}>🔔</Button>
@@ -91,6 +98,11 @@ export function GrantVerdict(props: { projectId: string }) {
                             className="relative top-1 h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
                             onChange={() => {
                               setDefaultMessage(message)
+                              editor?.commands.setContent(
+                                `<p>Manifund has declined to fund this project because we believe it ${
+                                  message === 'custom' ? '...' : message
+                                }</p>`
+                              )
                             }}
                           ></input>
                           <label>{message}</label>
@@ -100,10 +112,7 @@ export function GrantVerdict(props: { projectId: string }) {
                   </fieldset>
                 </div>
               )}
-
-              {(defaultMessage === 'custom' || approveGrant) && (
-                <TextEditor editor={editor} />
-              )}
+              <TextEditor editor={editor} />
             </div>
           </div>
           <Row className="justify-between">
