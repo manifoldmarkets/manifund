@@ -22,7 +22,7 @@ type VerdictProps = {
   adminComment: JSONContent | null
 }
 
-export default async function handler(req: NextRequest, res: NextResponse) {
+export default async function handler(req: NextRequest) {
   const { approved, projectId, adminComment } =
     (await req.json()) as VerdictProps
   const supabase = createAdminClient()
@@ -47,7 +47,7 @@ export default async function handler(req: NextRequest, res: NextResponse) {
     ? 'Manifund has approved your project for funding!'
     : 'Manifund has declined to fund your project.'
   const recipientMessage = approved
-    ? `We've decided to fund your project, ${project.title}! You can now withdraw any funds you've recieved for this project from your profile page.`
+    ? `We've decided to fund your project, "${project.title}"! If you've completed your grant agreement and reached your minimum funding goal, you can now withdraw any funds you've recieved for this project from your profile page.`
     : `We regret to inform you that we've decided not to fund your project, "${project.title}." We've left a comment on your project with a short explanation as to why. Please let us know on our discord of you have any questions or feedback about the process.`
   const recipientPostmarkVars = {
     recipientFullName: creator.full_name,
