@@ -1,5 +1,5 @@
 import { JSONContent } from '@tiptap/react'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from './_db'
 import { getUser, isAdmin, Profile } from '@/db/profile'
 import { getProjectById } from '@/db/project'
@@ -25,7 +25,7 @@ type VerdictProps = {
   adminComment: JSONContent | null
 }
 
-export default async function handler(req: NextRequest) {
+export default async function handler(req: NextRequest, res: NextResponse) {
   const { approved, projectId, adminComment } =
     (await req.json()) as VerdictProps
   const supabase = createAdminClient()
@@ -50,8 +50,7 @@ export default async function handler(req: NextRequest) {
     admin_comment_content: adminComment,
   })
 
-  const VERDICT_EMAIL_TEMPLATE_ID = 31974162
-  const siteUrl = getURL()
+  const VERDICT_TEMPLATE_ID = 31974162
   const recipientSubject =
     newStage === 'not funded'
       ? 'Manifund has declined to fund your project.'
@@ -62,36 +61,14 @@ export default async function handler(req: NextRequest) {
   const recipientPostmarkVars = {
     recipientFullName: creator.full_name,
     verdictMessage: recipientMessage,
-    projectUrl: `${siteUrl}/projects/${project.slug}`,
+    projectUrl: `${getURL()}/projects/${project.slug}`,
     subject: recipientSubject,
     adminName: adminName,
   }
   await sendTemplateEmail(
-    VERDICT_EMAIL_TEMPLATE_ID,
+    VERDICT_TEMPLATE_ID,
     recipientPostmarkVars,
     creator.id
   )
-
-  const bids = await getBidsByProject(supabase, project.id)
-  const donors = uniq(bids.map((bid) => bid.profiles)) as Profile[]
-  const donorSubject =
-    newStage === 'not funded'
-      ? `Manifund has declined to fund "${project.title}."`
-      : `Manifund has approved "${project.title}" project for funding!`
-  const donorMessage =
-    newStage === 'not funded'
-      ? `We regret to inform you that we've decided not to fund the project, "${project.title}," which you offered to donate to. We've left a comment on the project with a short explanation as to why. Please let us know on our discord of you have any questions or feedback about the process.`
-      : `We've decided to approve ${creator.full_name}'s project, "${project.title}," for funding! Thank you for your contribution.`
-
-  await Promise.all(
-    donors.map((donor) =>
-      sendTemplateEmail(VERDICT_EMAIL_TEMPLATE_ID, {
-        recipientFullName: donor.full_name,
-        verdictMessage: donorMessage,
-        projectUrl: `${siteUrl}/projects/${project.slug}`,
-        subject: donorSubject,
-        adminName: adminName,
-      })
-    )
-  )
+  return NextResponse.json('success')
 }
