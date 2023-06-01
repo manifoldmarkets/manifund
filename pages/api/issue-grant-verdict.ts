@@ -36,20 +36,34 @@ export default async function handler(req: NextRequest) {
     admin_id: user.id,
     admin_comment_content: adminComment,
   })
-  const RECIPIENT_EMAIL_TEMPLATE_ID = 31974162
-  const subject =
+
+  const VERDICT_EMAIL_TEMPLATE_ID = 31974162
+  const recipientSubject =
     newStage === 'not funded'
       ? 'Manifund has declined to fund your project.'
       : 'Manifund has approved your project for funding!'
-  const message = 'not funded'
+  const recipientMessage = 'not funded'
     ? `We regret to inform you that we've decided not to fund your project, "${project.title}." We've left a comment on your project with a short explanation as to why. Please let us know on our discord of you have any questions or feedback about the process.`
     : `We've decided to fund your project, ${project.title}! You can now withdraw any funds you've recieved for this project from your profile page.`
-  const postmarkVars = {
+  const recipientPostmarkVars = {
     recipientFullName: creator.full_name,
-    verdictMessage: message,
+    verdictMessage: recipientMessage,
     projectUrl: `${getURL()}/projects/${project.slug}`,
-    subject: subject,
+    subject: recipientSubject,
     adminName: adminName,
   }
-  await sendTemplateEmail(RECIPIENT_EMAIL_TEMPLATE_ID, postmarkVars, creator.id)
+  await sendTemplateEmail(
+    VERDICT_EMAIL_TEMPLATE_ID,
+    recipientPostmarkVars,
+    creator.id
+  )
+
+  const donorSubject =
+    newStage === 'not funded'
+      ? `Manifund has declined to fund ${creator.full_name}'s project.`
+      : `Manifund has approved ${creator.full_name}'s project for funding!`
+  const donorMessage =
+    newStage === 'not funded'
+      ? `We regret to inform you that we've decided not to fund ${creator.full_name}'s project, "${project.title}." We've left a comment on the project with a short explanation as to why. Please let us know on our discord of you have any questions or feedback about the process.`
+      : `We've decided to fund ${creator.full_name}'s project, ${project.title}! You can now withdraw any funds you've recieved for this project from your profile page.`
 }

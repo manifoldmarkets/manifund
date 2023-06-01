@@ -26,7 +26,6 @@ export function GrantVerdict(props: { projectId: string }) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const editor = useTextEditor('')
-  console.log(approveGrant)
 
   return (
     <>
@@ -102,7 +101,9 @@ export function GrantVerdict(props: { projectId: string }) {
                 </div>
               )}
 
-              {defaultMessage === 'custom' && <TextEditor editor={editor} />}
+              {(defaultMessage === 'custom' || approveGrant) && (
+                <TextEditor editor={editor} />
+              )}
             </div>
           </div>
           <Row className="justify-between">
@@ -120,7 +121,6 @@ export function GrantVerdict(props: { projectId: string }) {
               loading={isSubmitting}
               onClick={async () => {
                 setIsSubmitting(true)
-                // TODO: create this function
                 await fetch('/api/issue-grant-verdict', {
                   method: 'POST',
                   headers: {
@@ -129,6 +129,7 @@ export function GrantVerdict(props: { projectId: string }) {
                   body: JSON.stringify({
                     approved: approveGrant,
                     projectId: projectId,
+                    // TODO: account for default message case
                     adminComment:
                       editor?.getHTML() === '<p></p>'
                         ? null
