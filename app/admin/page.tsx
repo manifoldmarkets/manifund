@@ -92,7 +92,9 @@ export default async function Admin() {
         </thead>
         <tbody>
           {projects
-            .filter((project) => project.stage === 'proposal')
+            .filter(
+              (project) => project.stage === 'proposal' && !project.approved
+            )
             .map((project) => (
               <tr key={project.id}>
                 <td>
