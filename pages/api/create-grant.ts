@@ -63,7 +63,7 @@ export default async function handler(req: NextRequest) {
     funding_goal: amount,
     founder_portion: TOTAL_SHARES,
     type: 'grant' as Project['type'],
-    stage: 'pending approval',
+    stage: 'proposal' as Project['stage'],
     round: 'Regrants',
     slug,
   }

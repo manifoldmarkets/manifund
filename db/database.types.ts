@@ -139,6 +139,7 @@ export interface Database {
       }
       projects: {
         Row: {
+          approved: boolean | null
           auction_close: string | null
           blurb: string | null
           created_at: string
@@ -149,12 +150,14 @@ export interface Database {
           id: string
           min_funding: number
           round: string
+          signed_agreement: boolean
           slug: string
           stage: Database["public"]["Enums"]["project_stage"]
           title: string
           type: Database["public"]["Enums"]["project_type"]
         }
         Insert: {
+          approved?: boolean | null
           auction_close?: string | null
           blurb?: string | null
           created_at?: string
@@ -165,12 +168,14 @@ export interface Database {
           id?: string
           min_funding: number
           round: string
+          signed_agreement?: boolean
           slug?: string
           stage?: Database["public"]["Enums"]["project_stage"]
           title?: string
           type?: Database["public"]["Enums"]["project_type"]
         }
         Update: {
+          approved?: boolean | null
           auction_close?: string | null
           blurb?: string | null
           created_at?: string
@@ -181,6 +186,7 @@ export interface Database {
           id?: string
           min_funding?: number
           round?: string
+          signed_agreement?: boolean
           slug?: string
           stage?: Database["public"]["Enums"]["project_stage"]
           title?: string
@@ -304,23 +310,6 @@ export interface Database {
         }
         Returns: undefined
       }
-      _create_grant:
-        | {
-            Args: {
-              project: Database["public"]["CompositeTypes"]["project_row"]
-              donor_comment: Database["public"]["CompositeTypes"]["comment_row"][]
-              donation: Database["public"]["CompositeTypes"]["txn_row"]
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              project: Database["public"]["CompositeTypes"]["project_row"]
-              donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
-              donation: Database["public"]["CompositeTypes"]["txn_row"]
-            }
-            Returns: undefined
-          }
       _transfer_project: {
         Args: {
           project_id: string
@@ -333,31 +322,12 @@ export interface Database {
         }
         Returns: undefined
       }
-      approve_grant: {
+      create_grant: {
         Args: {
-          new_stage: Database["public"]["Enums"]["project_stage"]
-          project_id: string
-          project_creator: string
-          admin_id: string
-          admin_comment_content?: Json
+          donation: Database["public"]["CompositeTypes"]["txn_row"]
         }
         Returns: undefined
       }
-      create_grant:
-        | {
-            Args: {
-              donation: Database["public"]["CompositeTypes"]["txn_row"]
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              project: Database["public"]["CompositeTypes"]["project_row"]
-              donor_comment: Database["public"]["CompositeTypes"]["comment_row"][]
-              donation: Database["public"]["CompositeTypes"]["txn_row"]
-            }
-            Returns: undefined
-          }
       create_transfer_grant: {
         Args: {
           project: Database["public"]["CompositeTypes"]["project_row"]
@@ -366,27 +336,16 @@ export interface Database {
         }
         Returns: undefined
       }
-      execute_grant_verdict:
-        | {
-            Args: {
-              new_stage: Database["public"]["Enums"]["project_stage"]
-              project_id: string
-              project_creator: string
-              admin_id: string
-              admin_comment_content?: Json
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              approved: boolean
-              project_id: string
-              project_creator: string
-              admin_id: string
-              admin_comment_content?: Json
-            }
-            Returns: undefined
-          }
+      execute_grant_verdict: {
+        Args: {
+          approved: boolean
+          project_id: string
+          project_creator: string
+          admin_id: string
+          admin_comment_content?: Json
+        }
+        Returns: undefined
+      }
       give_grant: {
         Args: {
           project: Database["public"]["CompositeTypes"]["project_row"]
@@ -438,9 +397,8 @@ export interface Database {
         | "active"
         | "proposal"
         | "not funded"
-        | "hidden"
-        | "pending approval"
         | "complete"
+        | "hidden"
       project_type: "grant" | "cert"
     }
     CompositeTypes: {
@@ -475,7 +433,7 @@ export interface Database {
         funding_goal: number
         founder_portion: number
         type: Database["public"]["Enums"]["project_type"]
-        stage: string
+        stage: Database["public"]["Enums"]["project_stage"]
         round: string
         slug: string
       }
