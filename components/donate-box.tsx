@@ -55,11 +55,7 @@ export function DonateBox(props: {
       <Button
         onClick={async () => {
           setIsSubmitting(true)
-          if (
-            project &&
-            (project.stage === 'proposal' ||
-              project.stage === 'pending approval')
-          ) {
+          if (project && project.stage === 'proposal') {
             await fetch('/api/place-bid', {
               method: 'POST',
               headers: {

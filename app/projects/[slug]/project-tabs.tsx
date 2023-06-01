@@ -67,8 +67,7 @@ export function ProjectTabs(props: {
   if (
     ((project.stage === 'active' || project.stage === 'complete') &&
       project.type === 'cert') ||
-    project.stage === 'proposal' ||
-    project.stage === 'pending approval'
+    project.stage === 'proposal'
   ) {
     tabs.push({
       name:
