@@ -7,17 +7,27 @@ export default function AboutPage() {
     <div className="prose mx-auto font-light">
       <h1 className="relative top-5">Our mission</h1>
       <p>
-        Manifund builds funding infrastructure for non-profits, particularly
-        aimed at the effective altruism and longtermist spaces. We aim to
-        provide clean user experiences for grantmakers, donors, and recipients
-        so money moves where it’s needed faster, clear records and communication
-        channels to improve feedback and accountability, and innovative
-        mechanisms that better align incentives with impact.
+        Manifund builds funding infrastructure for nonprofits, primarily for
+        effective altruism and longtermist causes. We provide:
       </p>
+      <ul>
+        <li>
+          a clean user experience to grantmakers, donors, and recipients so
+          money moves where it’s needed, <em>quickly</em>;
+        </li>
+        <li>
+          open grant proposals, decision rationales, and bookkeeping for public
+          accountability and tight feedback loops; and
+        </li>
+        <li>
+          innovative funding mechanisms that align incentives with impact.
+        </li>
+      </ul>
       <p>
-        Currently we support two funding mechanisms: regranting and impact
-        certificates, which you can read more about below!
+        We currently support two funding mechanisms: <strong>regranting</strong>{' '}
+        and <strong>impact certificates</strong>.
       </p>
+
       <h1 className="relative top-5" id="regranting">
         Regranting
       </h1>
@@ -75,21 +85,14 @@ export default function AboutPage() {
           publishes the grant writeups.
         </li>
       </ol>
-      <h3>Kickoff round</h3>
+      <h3>Kickoff: Longtermist Round 1</h3>
       <p>
-        On launch, there will be 5 sponsored regrantors, each of whom will get a
-        regranting budget of $500k to distribute to projects or charities that
-        they believe will most improve the future. These regrants are backed by
-        an anonymous donor’s contribution of $1.5 million; Longtermist Round 1
-        will end after this pool is spent, or after 6 months have passed.
-      </p>
-      <p>
-        Sponsored regranters will be compensated $100 + 0.5% of each grant that
-        they make, excluding grants for their own projects.
-      </p>
-      <p>
-        We plan to launch the program on Friday, June 2nd. At this point,
-        regrantors may begin giving grants.
+        On launch, there will be ~15 sponsored regrantors, each with a
+        regranting budget of $50k-$400k to distribute to projects or charities
+        that they believe will most improve the long-term future. These regrants
+        are backed by an anonymous donor’s contribution of $1.5 million, as well
+        as smaller grants from EA orgs. Longtermist Round 1 will end after this
+        pool is spent, or after 6 months have passed.
       </p>
       <h3>FAQ</h3>
       <strong>Who can see the information about grants?</strong>
