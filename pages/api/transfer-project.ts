@@ -28,8 +28,6 @@ export default async function handler(
         from_id: transfer.projects.creator,
         transfer_id: transfer.id,
         amount: transfer.grant_amount ?? 0,
-        txn_id: uuid(),
-        donor_comment_id: transfer.donor_comment_id ?? undefined,
       }
       await supabaseAdmin.rpc('_transfer_project', args).throwOnError()
     }

@@ -109,12 +109,9 @@ export default async function handler(req: NextRequest) {
       txn_id: uuid(),
     }
     const donation = {
-      id: donorComment.txn_id,
       project: project.id,
       amount: amount,
-      from_id: regranter.id,
-      to_id: toProfile.id,
-      token: 'USD',
+      bidder: regranter.id,
     }
     await supabase
       .rpc('give_grant', {
