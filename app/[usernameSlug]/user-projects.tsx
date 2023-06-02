@@ -4,6 +4,7 @@ import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { StageTag } from '@/components/tags'
 import { orderBy } from 'lodash'
+import { differenceInMonths } from 'date-fns'
 
 export function Projects(props: { projects: Project[] }) {
   const { projects } = props
@@ -38,19 +39,60 @@ function NoProjects() {
 function ProjectRow(props: { project: Project }) {
   const { project } = props
   return (
-    <Link
-      href={`/projects/${project.slug}`}
-      className="table-row hover:bg-gray-50"
-    >
-      <td className="p-3 align-middle">
-        <StageTag projectStage={project.stage} />
+    <tr className=" hover:bg-gray-50">
+      <td className="p-3 align-middle font-medium text-gray-900">
+        <Link className="hover:underline" href={`/projects/${project.slug}`}>
+          {project.title}
+        </Link>
+        <p className="mt-1 truncate text-xs font-normal text-gray-500">
+          <NextStep project={project} />
+        </p>
       </td>
-      <td className="py-3 align-middle text-gray-900">{project.title}</td>
       <td className="p-3 align-middle">
-        <div className="flex flex-shrink-0 justify-end">
+        <div className="flex flex-shrink-0 justify-end gap-2">
           <RoundTag roundTitle={project.round} />
+          <StageTag projectStage={project.stage} />
         </div>
       </td>
-    </Link>
+    </tr>
   )
+}
+
+// TODO: actually check for previous updates
+function NextStep(props: { project: Project }) {
+  const { project } = props
+  if (project.stage === 'proposal' && !project.signed_agreement) {
+    return (
+      <Link
+        href={`/projects/${project.slug}/agreement`}
+        className="mt-1 truncate text-xs font-normal text-gray-500 hover:underline"
+      >
+        pending grant agreement signature
+      </Link>
+    )
+  }
+
+  let content = ''
+  if (project.stage === 'proposal' && !project.approved) {
+    content = 'pending admin approval'
+  } else if (project.stage === 'active') {
+    const timeSince = differenceInMonths(
+      new Date(),
+      new Date(project.created_at)
+    )
+    content = `update due in ${6 - timeSince} months`
+    const timeSinceLastUpdate = timeSince % 6
+    if (timeSinceLastUpdate < 3) {
+      content = `previous update due ${timeSinceLastUpdate} months ago`
+    } else {
+      content = `next update due in ${6 - timeSinceLastUpdate} months`
+    }
+  }
+  if (content) {
+    return (
+      <p className="mt-1 truncate text-xs font-normal text-gray-500">
+        {content}
+      </p>
+    )
+  } else return null
 }

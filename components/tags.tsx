@@ -4,13 +4,13 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import {
   EllipsisHorizontalCircleIcon,
-  SunIcon,
   XCircleIcon,
   CheckCircleIcon,
   CurrencyDollarIcon,
   HeartIcon,
   ArrowPathIcon,
-} from '@heroicons/react/24/solid'
+} from '@heroicons/react/24/outline'
+import { FireIcon } from '@heroicons/react/24/solid'
 
 const COLORS = [
   'bg-indigo-200',
@@ -48,7 +48,7 @@ export function RoundTag(props: { roundTitle: string; roundSlug?: string }) {
   return (
     <p
       className={clsx(
-        'inline-flex max-h-6 truncate whitespace-nowrap rounded-full px-2 text-xs font-semibold leading-5 hover:underline hover:decoration-2',
+        'inline-flex max-h-6 truncate whitespace-nowrap rounded-full px-2 text-xs font-semibold leading-5',
         `text-${roundTheme}-700`,
         `bg-${roundTheme}-200`
       )}
@@ -66,13 +66,13 @@ export function StageTag(props: { projectStage: string }) {
     case 'proposal':
       return (
         <Tooltip text="proposal">
-          <EllipsisHorizontalCircleIcon className="m-auto h-6 w-6 text-orange-500" />
+          <EllipsisHorizontalCircleIcon className="m-auto h-6 w-6 text-gray-500" />
         </Tooltip>
       )
     case 'active':
       return (
         <Tooltip text="active">
-          <SunIcon className="m-auto h-6 w-6 text-emerald-500" />
+          <FireIcon className="m-auto h-6 w-6 text-orange-500" />
         </Tooltip>
       )
     case 'not funded':
@@ -84,7 +84,7 @@ export function StageTag(props: { projectStage: string }) {
     case 'completed':
       return (
         <Tooltip text="completed">
-          <CheckCircleIcon className="m-auto h-6 w-6 text-blue-500" />
+          <CheckCircleIcon className="m-auto h-6 w-6 text-gray-500" />
         </Tooltip>
       )
     default:
@@ -107,11 +107,11 @@ export function InvestorTypeTag(props: {
             : 'accredited investor'
         }
       >
-        <Row className="max-w-fit gap-1 rounded-full bg-emerald-100 px-2  pt-1 text-center">
-          <CurrencyDollarIcon className="relative bottom-0.5 m-auto h-6 w-6 text-emerald-500" />
+        <Row className="max-w-fit gap-0.5 rounded-full bg-emerald-100 px-2 pt-1 text-center">
+          <CurrencyDollarIcon className="relative bottom-0.5 m-auto h-4 w-4 text-emerald-500" />
           <div
             className={clsx(
-              'text-md relative bottom-0.5 leading-tight text-emerald-500',
+              'text-md relative bottom-0.5 text-sm font-light leading-tight text-emerald-500',
               showText ? 'block' : 'hidden'
             )}
           >
@@ -129,11 +129,11 @@ export function InvestorTypeTag(props: {
             : 'charity investor'
         }
       >
-        <Row className="max-w-fit gap-1 rounded-full bg-rose-100 px-2  pt-1 text-center">
-          <HeartIcon className="relative bottom-0.5 m-auto h-6 w-6 text-rose-500" />
+        <Row className="max-w-fit gap-0.5 rounded-full bg-rose-100 px-2  pt-1 text-center">
+          <HeartIcon className="relative bottom-0.5 m-auto h-4 w-4 text-rose-500" />
           <div
             className={clsx(
-              'text-md relative bottom-0.5 leading-tight text-rose-500',
+              'text-md relative bottom-0.5 text-sm font-light leading-tight text-rose-500',
               showText ? 'block' : 'hidden'
             )}
           >
@@ -148,13 +148,9 @@ export function InvestorTypeTag(props: {
 export function RegranterTag() {
   return (
     <Tooltip text="Regranters can recieve donations from other users and give grants to the projects and organizations of their choice.">
-      <Row className="max-w-fit gap-1 rounded-full bg-orange-100 px-2  pt-1 text-center">
-        <ArrowPathIcon className="relative bottom-0.5 m-auto h-6 w-6 text-orange-500" />
-        <div
-          className={clsx(
-            'text-md relative bottom-0.5 leading-tight text-orange-500'
-          )}
-        >
+      <Row className="max-w-fit gap-0.5 rounded-full bg-orange-100 px-2  pt-1 text-center text-sm">
+        <ArrowPathIcon className="relative bottom-0.5 m-auto h-4 w-4 text-orange-500" />
+        <div className="text-md relative bottom-0.5 font-light leading-tight text-orange-500">
           regranter
         </div>
       </Row>
