@@ -166,7 +166,7 @@ export function Tag(props: {
   const { text, color, className } = props
   return (
     <div
-      className={`max-w-fit rounded-sm px-2 py-1 text-xs font-bold bg-${color}-100 text-${color}-500 ${className}`}
+      className={`max-w-fit rounded-sm px-2 py-1 text-sm font-bold bg-${color}-100 text-${color}-500 ${className}`}
     >
       {text}
     </div>

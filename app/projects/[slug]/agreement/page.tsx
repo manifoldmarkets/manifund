@@ -2,6 +2,9 @@ import { createServerClient } from '@/db/supabase-server'
 import { getUser } from '@/db/profile'
 import { FullProject, getFullProjectBySlug } from '@/db/project'
 import { Col } from '@/components/layout/col'
+import { SignAgreement } from './sign-agreement'
+import { Row } from '@/components/layout/row'
+import { Tag } from '@/components/tags'
 
 export default async function GrantAgreementPage(props: {
   params: { slug: string }
@@ -11,17 +14,30 @@ export default async function GrantAgreementPage(props: {
   const project = await getFullProjectBySlug(supabase, slug)
   const user = await getUser(supabase)
   return (
-    <div>
+    <Col className="gap-5 p-5">
       <GrantAgreement project={project} />
-    </div>
+      {user?.id === project.creator && !project.signed_agreement && (
+        <SignAgreement project={project} />
+      )}
+    </Col>
   )
 }
 
 function GrantAgreement(props: { project: FullProject }) {
   const { project } = props
   return (
-    <div className="p-5">
-      <h1 className="text-xl sm:text-2xl">Grant Agreement</h1>
+    <div>
+      <Row className="gap-3">
+        <h1 className="text-xl font-semibold">Grant Agreement</h1>
+        <Tag
+          text={project.signed_agreement ? 'COMPLETE' : 'AWAITING SIGNATURE'}
+          color={project.signed_agreement ? 'orange' : 'rose'}
+        />
+      </Row>
+      <p className="mb-5 text-sm text-gray-500">
+        All grant recipients are required to agree to the terms and conditions
+        outlined here before recieving funds.
+      </p>
       <table className="text-gray-900">
         <tbody>
           <tr className="font-bold">
