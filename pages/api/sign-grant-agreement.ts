@@ -13,7 +13,7 @@ export default async function handler(req: NextRequest) {
   const project = await getProjectById(supabase, projectId)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
-  if (user?.id !== project.id) {
+  if (user?.id !== project.creator) {
     return Response.error()
   }
   await supabase

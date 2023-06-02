@@ -45,7 +45,7 @@ export function SignAgreement(props: { project: FullProject }) {
               }),
             })
             setIsSubmitting(false)
-            router.refresh()
+            router.push(`/projects/${project.slug}`)
           }}
           loading={isSubmitting}
           disabled={!agreed}
