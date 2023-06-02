@@ -75,6 +75,8 @@ function NextStep(props: { project: Project }) {
   let content = ''
   if (project.stage === 'proposal' && !project.approved) {
     content = 'pending admin approval'
+  } else if (project.stage === 'proposal') {
+    content = 'pending sufficient pledged funds'
   } else if (project.stage === 'active') {
     const timeSince = differenceInMonths(
       new Date(),
