@@ -6,7 +6,6 @@ import { getProfileById } from '@/db/profile'
 import uuid from 'react-uuid'
 import { createAdminClient } from './_db'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
-import { NextApiRequest, NextApiResponse } from 'next'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const config = {
