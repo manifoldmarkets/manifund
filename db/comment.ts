@@ -7,9 +7,7 @@ import uuid from 'react-uuid'
 import { Txn } from './txn'
 
 export type Comment = Database['public']['Tables']['comments']['Row']
-export type CommentAndProfileAndTxns = Comment & { profiles: Profile } & {
-  txns: Txn
-}
+export type CommentAndProfile = Comment & { profiles: Profile }
 export type FullComment = Comment & { profiles: Profile } & {
   projects: Project
 }
@@ -20,12 +18,12 @@ export async function getCommentsByProject(
 ) {
   const { data, error } = await supabase
     .from('comments')
-    .select('*, profiles(*), txns(*)')
+    .select('*, profiles(*)')
     .eq('project', project)
   if (error) {
     throw error
   }
-  return data as CommentAndProfileAndTxns[]
+  return data as CommentAndProfile[]
 }
 
 export async function sendComment(
