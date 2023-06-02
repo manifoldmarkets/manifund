@@ -8,17 +8,19 @@ import { orderBy } from 'lodash'
 export function Projects(props: { projects: Project[] }) {
   const { projects } = props
   const sortedProjects = orderBy(projects, 'created_at', 'desc')
-  const projectsDisplay = sortedProjects.map((project) => (
-    <li key={project.id}>
-      <ProjectDisplay project={project} />
-    </li>
-  ))
   return (
-    <div className="overflow-hidden rounded-md bg-white shadow">
-      <ul role="list" className="divide-y divide-gray-200">
-        {projects.length == 0 ? <NoProjects /> : projectsDisplay}
-      </ul>
-    </div>
+    <table
+      role="list"
+      className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
+    >
+      {projects.length == 0 ? (
+        <NoProjects />
+      ) : (
+        sortedProjects.map((project) => (
+          <ProjectRow key={project.id} project={project} />
+        ))
+      )}
+    </table>
   )
 }
 
@@ -33,25 +35,22 @@ function NoProjects() {
   )
 }
 
-function ProjectDisplay(props: { project: Project }) {
+function ProjectRow(props: { project: Project }) {
   const { project } = props
   return (
-    <Link href={`/projects/${project.slug}`} className="block hover:bg-gray-50">
-      <div className="px-4 py-4 sm:px-6">
-        <div className="flex items-center justify-between">
-          <p className="text-md text-md truncate text-orange-600">
-            {project.title}
-          </p>
-          <div className="ml-2 flex flex-shrink-0">
-            <RoundTag roundTitle={project.round} />
-          </div>
+    <Link
+      href={`/projects/${project.slug}`}
+      className="table-row hover:bg-gray-50"
+    >
+      <td className="p-3 align-middle">
+        <StageTag projectStage={project.stage} />
+      </td>
+      <td className="py-3 align-middle text-gray-900">{project.title}</td>
+      <td className="p-3 align-middle">
+        <div className="flex flex-shrink-0 justify-end">
+          <RoundTag roundTitle={project.round} />
         </div>
-        <div className="mt-2 flex justify-between">
-          <div className="flex">
-            <StageTag projectStage={project.stage} />
-          </div>
-        </div>
-      </div>
+      </td>
     </Link>
   )
 }
