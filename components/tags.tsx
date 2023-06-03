@@ -35,7 +35,7 @@ export function RoundTag(props: { roundTitle: string; roundSlug?: string }) {
       <Link href={`/rounds/${roundSlug}`}>
         <p
           className={clsx(
-            'inline-flex max-h-6 truncate whitespace-nowrap rounded-full px-2 text-xs font-semibold leading-5 hover:underline hover:decoration-2',
+            'inline-flex max-h-5 truncate whitespace-nowrap rounded-full px-2 text-xs font-semibold leading-5 hover:underline hover:decoration-2',
             `text-${roundTheme}-700`,
             `bg-${roundTheme}-200`
           )}
@@ -48,7 +48,7 @@ export function RoundTag(props: { roundTitle: string; roundSlug?: string }) {
   return (
     <p
       className={clsx(
-        'inline-flex max-h-6 truncate whitespace-nowrap rounded-full px-2 text-xs font-semibold leading-5',
+        'inline-flex max-h-5 truncate whitespace-nowrap rounded-full px-2 text-xs font-semibold leading-5',
         `text-${roundTheme}-700`,
         `bg-${roundTheme}-200`
       )}

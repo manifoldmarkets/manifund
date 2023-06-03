@@ -4,7 +4,6 @@ import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { StageTag } from '@/components/tags'
 import { orderBy } from 'lodash'
-import { differenceInMonths } from 'date-fns'
 
 export function Projects(props: { projects: Project[] }) {
   const { projects } = props
@@ -74,8 +73,6 @@ function NextStep(props: { project: Project }) {
       </Link>
     )
   }
-
-  let content = ''
   if (
     project.stage === 'proposal' &&
     project.type === 'grant' &&
