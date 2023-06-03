@@ -17,6 +17,7 @@ import { ProjectCardHeader } from '@/components/project-card'
 import { calculateUserFundsAndShares } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 import { Divider } from '@/components/divider'
+import { ProposalRequirements } from './proposal-requirements'
 
 export const revalidate = 0
 
@@ -33,6 +34,9 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
   const supabase = createServerClient()
   const project = await getFullProjectBySlug(supabase, slug)
+  if (!project) {
+    return <div>404</div>
+  }
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
   const { userSpendableFunds, userSellableShares, userShares } = user
@@ -57,66 +61,80 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred
   )
+  const raised = bids.reduce((acc, bid) => {
+    if (bid.status === 'pending') {
+      return acc + bid.amount
+    } else {
+      return acc
+    }
+  }, 0)
   return (
-    <div className="flex flex-col gap-4 px-4">
-      <ProjectCardHeader
-        round={project.rounds}
-        projectType={project.type}
-        projectTransfer={
-          pendingProjectTransfers?.length === 0
-            ? undefined
-            : project.project_transfers[0]
-        }
-        creator={project.profiles}
-        valuation={isNaN(valuation) ? undefined : valuation}
-      />
-      <div>
-        <h2 className="text-3xl font-bold">{project.title}</h2>
-      </div>
-      {project.description && (
-        <Description>
-          <RichContent content={project.description} />
-        </Description>
-      )}
-      {isOwnProject && <EditDescription project={project} />}
-      {project.stage === 'proposal' && (
-        <>
-          <Divider />
-          <ProposalData
-            project={project}
-            bids={project.bids.filter((bid) => bid.status === 'pending')}
-          />
-        </>
-      )}
-      {profile !== null && project.type === 'cert' && (
-        <PlaceBid
-          project={project}
-          user={profile}
-          userSpendableFunds={userSpendableFunds}
-          userSellableShares={userSellableShares}
-          userShares={userShares}
+    <>
+      {project.type === 'grant' && pendingProjectTransfers.length === 0 && (
+        <ProposalRequirements
+          signedAgreement={project.signed_agreement}
+          approved={project.approved === true}
+          reachedMinFunding={raised >= project.min_funding}
+          projectSlug={project.slug}
         />
       )}
-      {profile !== null &&
-        project.type === 'grant' &&
-        pendingProjectTransfers.length === 0 && (
-          <DonateBox
+      <div className="flex flex-col gap-4 px-4 pt-5">
+        <ProjectCardHeader
+          round={project.rounds}
+          projectType={project.type}
+          projectTransfer={
+            pendingProjectTransfers?.length === 0
+              ? undefined
+              : project.project_transfers[0]
+          }
+          creator={project.profiles}
+          valuation={isNaN(valuation) ? undefined : valuation}
+        />
+        <div>
+          <h2 className="text-3xl font-bold">{project.title}</h2>
+        </div>
+        {project.description && (
+          <Description>
+            <RichContent content={project.description} />
+          </Description>
+        )}
+        {isOwnProject && <EditDescription project={project} />}
+        {project.stage === 'proposal' && (
+          <>
+            <Divider />
+            <ProposalData project={project} raised={raised} />
+          </>
+        )}
+        {profile !== null && project.type === 'cert' && (
+          <PlaceBid
             project={project}
-            userId={profile.id}
+            user={profile}
             userSpendableFunds={userSpendableFunds}
+            userSellableShares={userSellableShares}
+            userShares={userShares}
           />
         )}
-      {!user && <SignInButton />}
-      <ProjectTabs
-        project={project}
-        user={profile}
-        comments={comments}
-        bids={bids}
-        txns={txns}
-        userSpendableFunds={userSpendableFunds}
-        userSellableShares={userSellableShares}
-      />
-      {isAdmin(user) && <CloseBidding project={project} />}
-    </div>
+        {profile !== null &&
+          project.type === 'grant' &&
+          pendingProjectTransfers.length === 0 && (
+            <DonateBox
+              project={project}
+              userId={profile.id}
+              userSpendableFunds={userSpendableFunds}
+            />
+          )}
+        {!user && <SignInButton />}
+        <ProjectTabs
+          project={project}
+          user={profile}
+          comments={comments}
+          bids={bids}
+          txns={txns}
+          userSpendableFunds={userSpendableFunds}
+          userSellableShares={userSellableShares}
+        />
+        {isAdmin(user) && <CloseBidding project={project} />}
+      </div>
+    </>
   )
 }

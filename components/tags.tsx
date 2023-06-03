@@ -4,13 +4,13 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import {
   EllipsisHorizontalCircleIcon,
-  SunIcon,
   XCircleIcon,
   CheckCircleIcon,
   CurrencyDollarIcon,
   HeartIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline'
+import { FireIcon } from '@heroicons/react/24/solid'
 
 const COLORS = [
   'bg-indigo-200',
@@ -35,7 +35,7 @@ export function RoundTag(props: { roundTitle: string; roundSlug?: string }) {
       <Link href={`/rounds/${roundSlug}`}>
         <p
           className={clsx(
-            'inline-flex max-h-6 rounded-full px-2 text-xs font-semibold leading-5 hover:underline hover:decoration-2',
+            'inline-flex max-h-5 truncate whitespace-nowrap rounded-full px-2 text-xs font-semibold leading-5 hover:underline hover:decoration-2',
             `text-${roundTheme}-700`,
             `bg-${roundTheme}-200`
           )}
@@ -48,7 +48,7 @@ export function RoundTag(props: { roundTitle: string; roundSlug?: string }) {
   return (
     <p
       className={clsx(
-        'inline-flex max-h-6 rounded-full px-2 text-xs font-semibold leading-5 hover:underline hover:decoration-2',
+        'inline-flex max-h-5 truncate whitespace-nowrap rounded-full px-2 text-xs font-semibold leading-5',
         `text-${roundTheme}-700`,
         `bg-${roundTheme}-200`
       )}
@@ -65,39 +65,27 @@ export function StageTag(props: { projectStage: string }) {
   switch (projectStage) {
     case 'proposal':
       return (
-        <Row className="gap-1 rounded-full bg-orange-100 px-2 pt-1  text-center">
-          <EllipsisHorizontalCircleIcon className="relative bottom-0.5 m-auto h-6 w-6 text-orange-500" />
-          <div className="text-md relative bottom-0.5 text-orange-500">
-            proposal
-          </div>
-        </Row>
+        <Tooltip text="proposal">
+          <EllipsisHorizontalCircleIcon className="m-auto h-6 w-6 text-gray-500" />
+        </Tooltip>
       )
     case 'active':
       return (
-        <Row className="gap-1 rounded-full bg-emerald-100 px-2 pt-1  text-center">
-          <SunIcon className="relative bottom-0.5 m-auto h-6 w-6 text-emerald-500" />
-          <div className="text-md relative bottom-0.5 text-emerald-500">
-            active
-          </div>
-        </Row>
+        <Tooltip text="active">
+          <FireIcon className="m-auto h-6 w-6 text-orange-500" />
+        </Tooltip>
       )
     case 'not funded':
       return (
-        <Row className="gap-1 rounded-full bg-gray-100 px-2 pt-1  text-center">
-          <XCircleIcon className="relative bottom-0.5 m-auto h-6 w-6 text-gray-500" />
-          <div className="text-md relative bottom-0.5 text-gray-500">
-            not funded
-          </div>
-        </Row>
+        <Tooltip text="not funded">
+          <XCircleIcon className="m-auto h-6 w-6 text-gray-500" />
+        </Tooltip>
       )
     case 'completed':
       return (
-        <Row className="gap-1 rounded-full bg-blue-100 px-2 py-1  text-center">
-          <CheckCircleIcon className="rm-auto relative bottom-0.5 h-6 w-6 text-blue-500" />
-          <div className="text-md relative bottom-0.5 text-blue-500">
-            completed
-          </div>
-        </Row>
+        <Tooltip text="completed">
+          <CheckCircleIcon className="m-auto h-6 w-6 text-gray-500" />
+        </Tooltip>
       )
     default:
       return null
@@ -119,11 +107,11 @@ export function InvestorTypeTag(props: {
             : 'accredited investor'
         }
       >
-        <Row className="max-w-fit gap-1 rounded-full bg-emerald-100 px-2  pt-1 text-center">
-          <CurrencyDollarIcon className="relative bottom-0.5 m-auto h-6 w-6 text-emerald-500" />
+        <Row className="max-w-fit gap-0.5 rounded-full bg-emerald-100 px-2 pt-1 text-center">
+          <CurrencyDollarIcon className="relative bottom-0.5 m-auto h-4 w-4 text-emerald-500" />
           <div
             className={clsx(
-              'text-md relative bottom-0.5 leading-tight text-emerald-500',
+              'text-md relative bottom-0.5 text-sm font-light leading-tight text-emerald-500',
               showText ? 'block' : 'hidden'
             )}
           >
@@ -141,11 +129,11 @@ export function InvestorTypeTag(props: {
             : 'charity investor'
         }
       >
-        <Row className="max-w-fit gap-1 rounded-full bg-rose-100 px-2  pt-1 text-center">
-          <HeartIcon className="relative bottom-0.5 m-auto h-6 w-6 text-rose-500" />
+        <Row className="max-w-fit gap-0.5 rounded-full bg-rose-100 px-2  pt-1 text-center">
+          <HeartIcon className="relative bottom-0.5 m-auto h-4 w-4 text-rose-500" />
           <div
             className={clsx(
-              'text-md relative bottom-0.5 leading-tight text-rose-500',
+              'text-md relative bottom-0.5 text-sm font-light leading-tight text-rose-500',
               showText ? 'block' : 'hidden'
             )}
           >
@@ -160,13 +148,9 @@ export function InvestorTypeTag(props: {
 export function RegranterTag() {
   return (
     <Tooltip text="Regranters can recieve donations from other users and give grants to the projects and organizations of their choice.">
-      <Row className="max-w-fit gap-1 rounded-full bg-orange-100 px-2  pt-1 text-center">
-        <ArrowPathIcon className="relative bottom-0.5 m-auto h-6 w-6 text-orange-500" />
-        <div
-          className={clsx(
-            'text-md relative bottom-0.5 leading-tight text-orange-500'
-          )}
-        >
+      <Row className="max-w-fit gap-0.5 rounded-full bg-orange-100 px-2  pt-1 text-center text-sm">
+        <ArrowPathIcon className="relative bottom-0.5 m-auto h-4 w-4 text-orange-500" />
+        <div className="text-md relative bottom-0.5 font-light leading-tight text-orange-500">
           regranter
         </div>
       </Row>
@@ -182,7 +166,7 @@ export function Tag(props: {
   const { text, color, className } = props
   return (
     <div
-      className={`max-w-fit rounded-sm px-2 py-1 text-xs font-bold bg-${color}-100 text-${color}-500 ${className}`}
+      className={`max-w-fit rounded-sm px-2 py-1 text-sm font-bold bg-${color}-100 text-${color}-500 ${className}`}
     >
       {text}
     </div>

@@ -1,19 +1,14 @@
 import { DataPoint } from '@/components/data-point'
+import { Col } from '@/components/layout/col'
+import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
 import { Bid } from '@/db/bid'
-import { Project, TOTAL_SHARES } from '@/db/project'
+import { Project } from '@/db/project'
 import { formatMoney, showPrecision } from '@/utils/formatting'
 import { dateDiff, getProposalValuation } from '@/utils/math'
 
-export function ProposalData(props: { project: Project; bids: Bid[] }) {
-  const { project, bids } = props
-  const raised = bids.reduce((acc, bid) => {
-    if (bid.status === 'pending') {
-      return acc + bid.amount
-    } else {
-      return acc
-    }
-  }, 0)
+export function ProposalData(props: { project: Project; raised: number }) {
+  const { project, raised } = props
   const raisedString =
     raised > project.funding_goal
       ? `>${formatMoney(project.funding_goal)}`
@@ -24,28 +19,30 @@ export function ProposalData(props: { project: Project; bids: Bid[] }) {
   const now = new Date()
   const daysLeft = dateDiff(now.getTime(), closeDate.getTime())
   return (
-    <div>
-      <div className="mb-4 flex justify-between">
-        <DataPoint
-          value={raisedString}
-          label={`raised of $${project.funding_goal} goal`}
-        />
-        <DataPoint
-          value={`$${project.min_funding}`}
-          label="required to proceed"
-        />
-        <DataPoint
-          value={showPrecision(daysLeft, 3)}
-          label="days left to contribute"
-        />
-        {project.type === 'cert' && (
+    <>
+      <div>
+        <div className="mb-4 flex justify-between">
           <DataPoint
-            value={formatMoney(getProposalValuation(project))}
-            label="minimum valuation"
+            value={raisedString}
+            label={`raised of $${project.funding_goal} goal`}
           />
-        )}
+          <DataPoint
+            value={`$${project.min_funding}`}
+            label="required to proceed"
+          />
+          <DataPoint
+            value={showPrecision(daysLeft, 3)}
+            label="days left to contribute"
+          />
+          {project.type === 'cert' && (
+            <DataPoint
+              value={formatMoney(getProposalValuation(project))}
+              label="minimum valuation"
+            />
+          )}
+        </div>
+        <ProgressBar percent={percentRaised} />
       </div>
-      <ProgressBar percent={percentRaised} />
-    </div>
+    </>
   )
 }
