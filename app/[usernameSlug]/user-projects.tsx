@@ -58,7 +58,6 @@ function ProjectRow(props: { project: Project }) {
   )
 }
 
-// TODO: actually check for previous updates
 function NextStep(props: { project: Project }) {
   const { project } = props
   if (
@@ -82,27 +81,8 @@ function NextStep(props: { project: Project }) {
     project.type === 'grant' &&
     !project.approved
   ) {
-    content = 'pending admin approval'
+    return <p>pending admin approval</p>
   } else if (project.stage === 'proposal') {
-    content = 'pending sufficient pledged funds'
-  } else if (project.stage === 'active') {
-    const timeSince = differenceInMonths(
-      new Date(),
-      new Date(project.created_at)
-    )
-    content = `update due in ${6 - timeSince} months`
-    const timeSinceLastUpdate = timeSince % 6
-    if (timeSinceLastUpdate < 3) {
-      content = `previous update due ${timeSinceLastUpdate} months ago`
-    } else {
-      content = `next update due in ${6 - timeSinceLastUpdate} months`
-    }
-  }
-  if (content) {
-    return (
-      <p className="mt-1 truncate text-xs font-normal text-gray-500">
-        {content}
-      </p>
-    )
+    return <p>pending sufficient pledged funds</p>
   } else return null
 }
