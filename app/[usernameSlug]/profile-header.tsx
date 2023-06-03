@@ -49,7 +49,7 @@ export function ProfileHeader(props: {
         <Col className="ml-2 w-full">
           <Row className="justify-between">
             <Col>
-              <div className="text-xl font-bold leading-tight sm:text-2xl">
+              <div className="text-xl font-bold leading-none sm:text-2xl">
                 {profile.full_name}
               </div>
               <Row className="mt-1 flex-wrap gap-2 text-gray-500">
