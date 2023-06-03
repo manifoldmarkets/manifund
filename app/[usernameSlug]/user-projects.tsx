@@ -61,7 +61,11 @@ function ProjectRow(props: { project: Project }) {
 // TODO: actually check for previous updates
 function NextStep(props: { project: Project }) {
   const { project } = props
-  if (project.stage === 'proposal' && !project.signed_agreement) {
+  if (
+    project.stage === 'proposal' &&
+    !project.signed_agreement &&
+    project.type === 'grant'
+  ) {
     return (
       <Link
         href={`/projects/${project.slug}/agreement`}
@@ -73,7 +77,11 @@ function NextStep(props: { project: Project }) {
   }
 
   let content = ''
-  if (project.stage === 'proposal' && !project.approved) {
+  if (
+    project.stage === 'proposal' &&
+    project.type === 'grant' &&
+    !project.approved
+  ) {
     content = 'pending admin approval'
   } else if (project.stage === 'proposal') {
     content = 'pending sufficient pledged funds'

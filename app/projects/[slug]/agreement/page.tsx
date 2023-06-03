@@ -1,18 +1,26 @@
 import { createServerClient } from '@/db/supabase-server'
 import { getUser } from '@/db/profile'
-import { FullProject, getFullProjectBySlug } from '@/db/project'
+import {
+  FullProject,
+  getProjectAndProfileBySlug,
+  ProjectAndProfile,
+} from '@/db/project'
 import { Col } from '@/components/layout/col'
 import { SignAgreement } from './sign-agreement'
 import { Row } from '@/components/layout/row'
 import { Tag } from '@/components/tags'
+import { format } from 'date-fns'
 
 export default async function GrantAgreementPage(props: {
   params: { slug: string }
 }) {
   const { slug } = props.params
   const supabase = createServerClient()
-  const project = await getFullProjectBySlug(supabase, slug)
+  const project = await getProjectAndProfileBySlug(supabase, slug)
   const user = await getUser(supabase)
+  if (!project || project.type !== 'grant' || project.approved === false) {
+    return <div>404</div>
+  }
   return (
     <Col className="gap-5 p-5">
       <GrantAgreement project={project} />
@@ -23,7 +31,7 @@ export default async function GrantAgreementPage(props: {
   )
 }
 
-function GrantAgreement(props: { project: FullProject }) {
+function GrantAgreement(props: { project: ProjectAndProfile }) {
   const { project } = props
   return (
     <div>
@@ -58,20 +66,25 @@ function GrantAgreement(props: { project: FullProject }) {
                 this grant is to be used exclusively for the following purposes
                 in accordance with the terms and conditions of this letter,
                 unless otherwise approved in advance [in writing] by Manifold
-                for Charity: ● {project.title} (the “Project”).
+                for Charity: &quot;{project.title}&quot; (the “Project”).
               </p>
               <p>
-                1.4 The start date for your grant will be TODAY (the
+                1.4 The start date for your grant will be{' '}
+                {format(new Date(project.created_at), 'MMMM do, yyyy')} (the
                 “Commencement Date”) and will run for the duration (the “Grant
-                Period”) until ALWAYS (the “Expiry Date”).
+                Period”) until the Recipient marks the Project as complete. (the
+                “Expiry Date”).
               </p>
-              <p>
-                1.4 MAYBE The Charity has not yet decided to give this grant.
-                Rather, it has been recommended to the Charity to give this
-                grant. After the signing of this agreement, the Charity will
-                review the grant application and confirm that the Project is
-                consistent with the Charity’s mission, before sending funds.
-              </p>
+              {project.approved === null && (
+                <p>
+                  1.5 The Charity has not yet decided to give this grant.
+                  Rather, it has been recommended to the Charity to give this
+                  grant. After the signing of this agreement, the Charity will
+                  review the grant application and may decide not to send funds
+                  to the Recipient if the Project is not in line with the
+                  Charity’s mission.
+                </p>
+              )}
             </td>
           </tr>
           <tr className="font-bold">

@@ -1,11 +1,11 @@
 'use client'
 import { Button } from '@/components/button'
 import { Row } from '@/components/layout/row'
-import { FullProject } from '@/db/project'
+import { ProjectAndProfile } from '@/db/project'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function SignAgreement(props: { project: FullProject }) {
+export function SignAgreement(props: { project: ProjectAndProfile }) {
   const { project } = props
   const [agreed, setAgreed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
