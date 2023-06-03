@@ -17,8 +17,7 @@ import { ProjectCardHeader } from '@/components/project-card'
 import { calculateUserFundsAndShares } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 import { Divider } from '@/components/divider'
-import { Row } from '@/components/layout/row'
-import { ProposalStepsOutline } from './proposal-steps-outline'
+import { ProposalRequirements } from './proposal-requirements'
 
 export const revalidate = 0
 
@@ -72,7 +71,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   return (
     <>
       {project.type === 'grant' && pendingProjectTransfers.length === 0 && (
-        <ProposalStepsOutline
+        <ProposalRequirements
           signedAgreement={project.signed_agreement}
           approved={project.approved === true}
           reachedMinFunding={raised >= project.min_funding}

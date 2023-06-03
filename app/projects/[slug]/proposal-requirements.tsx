@@ -4,7 +4,7 @@ import {
   EllipsisHorizontalCircleIcon,
 } from '@heroicons/react/20/solid'
 
-export function ProposalStepsOutline(props: {
+export function ProposalRequirements(props: {
   approved: boolean
   signedAgreement: boolean
   reachedMinFunding: boolean
@@ -34,7 +34,7 @@ export function ProposalStepsOutline(props: {
       className="relative w-full justify-between gap-2 rounded-xl border border-gray-300"
     >
       <p className="absolute -top-2 left-2 bg-gray-50 px-2 text-xs text-gray-500">
-        Steps to funding
+        Funding requirements
       </p>
       {requirements.map((req) => (
         <Row key={req.name} className="relative px-2">
