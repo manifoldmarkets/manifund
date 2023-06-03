@@ -72,7 +72,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
                 1.4 The start date for your grant will be{' '}
                 {format(new Date(project.created_at), 'MMMM do, yyyy')} (the
                 “Commencement Date”) and will run for the duration (the “Grant
-                Period”) until the Recipient marks the Project as complete. (the
+                Period”) until the Recipient marks the Project as complete (the
                 “Expiry Date”).
               </p>
               {project.approved === null && (
