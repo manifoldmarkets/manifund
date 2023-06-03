@@ -103,12 +103,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
                 Project without the Charity’s prior written agreement.
               </p>
               <p>
-                2.3 Individuals connected with this grant recommendation will
-                receive no benefits, goods or services in exchange for this
-                grant.
-              </p>
-              <p>
-                2.4 Should any part of the Grant remain unspent at the end of
+                2.3 Should any part of the Grant remain unspent at the end of
                 the Grant Period, the Recipient may request a no-cost grant
                 extension from the Charity in writing, with the supporting
                 reasons. If an extension is not requested or agreed upon, the
