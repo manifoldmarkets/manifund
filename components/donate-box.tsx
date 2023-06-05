@@ -97,7 +97,7 @@ export function DonateBox(props: {
           setIsSubmitting(false)
           router.refresh()
         }}
-        disabled={!amount}
+        disabled={!amount || errorMessage !== null}
         loading={isSubmitting}
       >
         Donate
