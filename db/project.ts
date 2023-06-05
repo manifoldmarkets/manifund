@@ -55,7 +55,7 @@ export type FullProject = Project & { profiles: Profile } & {
 }
 
 export async function listProjects(supabase: SupabaseClient) {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('projects')
     .select(
       'title, id, creator, slug, blurb, stage, funding_goal, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*)'

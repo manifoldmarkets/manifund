@@ -42,12 +42,13 @@ export default async function handler(req: NextRequest) {
   if (type === 'donate') {
     const bids = await getBidsByProject(supabase, projectId)
     if (checkGrantFundingReady(project, bids)) {
-      await supabase
-        .rpc('activate_grant', {
-          project_id: projectId,
-          project_creator: project.creator,
-        })
-        .throwOnError()
+      await fetch('/api/activate-grant', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ projectId: projectId }),
+      })
     }
   }
   if (projectStage === 'active') {
