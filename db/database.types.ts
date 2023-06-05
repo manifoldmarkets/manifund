@@ -333,6 +333,24 @@ export interface Database {
             }
             Returns: undefined
           }
+      activate_grant:
+        | {
+            Args: {
+              approved: boolean
+              project_id: string
+              project_creator: string
+              admin_id: string
+              admin_comment_content?: Json
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              project_id: string
+              project_creator: string
+            }
+            Returns: undefined
+          }
       create_transfer_grant: {
         Args: {
           project: Database["public"]["CompositeTypes"]["project_row"]

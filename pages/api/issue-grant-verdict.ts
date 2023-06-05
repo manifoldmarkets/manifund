@@ -70,7 +70,13 @@ export default async function handler(req: NextRequest) {
     creator.id
   )
   const bids = await getBidsByProject(supabase, projectId)
-  const fundingReady = checkGrantFundingReady(project, bids)
-  // TODO: move project to active if funding ready
+  if (checkGrantFundingReady(project, bids)) {
+    await supabase
+      .rpc('activate_grant', {
+        project_id: projectId,
+        project_creator: project.creator,
+      })
+      .throwOnError()
+  }
   return NextResponse.json('success')
 }

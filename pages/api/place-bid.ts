@@ -41,8 +41,14 @@ export default async function handler(req: NextRequest) {
   await supabase.from('bids').insert([newBid]).throwOnError()
   if (type === 'donate') {
     const bids = await getBidsByProject(supabase, projectId)
-    const fundingReady = checkGrantFundingReady(project, bids)
-    // TODO: add function that moves project to active stage
+    if (checkGrantFundingReady(project, bids)) {
+      await supabase
+        .rpc('activate_grant', {
+          project_id: projectId,
+          project_creator: project.creator,
+        })
+        .throwOnError()
+    }
   }
   if (projectStage === 'active') {
     await findAndMakeTrades(newBid, supabase)
