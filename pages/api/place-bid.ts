@@ -6,6 +6,7 @@ import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { getProjectById } from '@/db/project'
+import { checkGrantFundingReady } from '@/utils/math'
 
 export const config = {
   runtime: 'edge',
@@ -13,6 +14,7 @@ export const config = {
 }
 
 type BidProps = {
+  // TODO: remove project stage & bidder id & get those here
   projectId: string
   projectStage: Project['stage']
   bidderId: string
@@ -38,14 +40,9 @@ export default async function handler(req: NextRequest) {
   }
   await supabase.from('bids').insert([newBid]).throwOnError()
   if (type === 'donate') {
-    const pastPendingBids = (
-      await getBidsByProject(supabase, projectId)
-    ).filter((bid) => bid.type === 'donate')
-    const totalDonated =
-      pastPendingBids.reduce((acc, bid) => acc + bid.amount, 0) + amount
-    if (totalDonated >= project.min_funding) {
-      // TODO: write condition met function
-    }
+    const bids = await getBidsByProject(supabase, projectId)
+    const fundingReady = checkGrantFundingReady(project, bids)
+    // TODO: add function that moves project to active stage
   }
   if (projectStage === 'active') {
     await findAndMakeTrades(newBid, supabase)

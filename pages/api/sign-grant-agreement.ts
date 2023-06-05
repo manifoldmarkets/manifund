@@ -1,6 +1,8 @@
 import { getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
+import { getBidsByProject } from '@/db/bid'
+import { checkGrantFundingReady } from '@/utils/math'
 
 export const config = {
   runtime: 'edge',
@@ -21,7 +23,9 @@ export default async function handler(req: NextRequest) {
     .update({ signed_agreement: true })
     .eq('id', projectId)
     .throwOnError()
-  // TODO: call condition met function
+  const bids = await getBidsByProject(supabase, projectId)
+  const fundingReady = checkGrantFundingReady(project, bids)
+  // TODO: move project to active if funding ready
 
   return NextResponse.json({ success: true })
 }

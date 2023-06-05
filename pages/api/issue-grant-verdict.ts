@@ -6,6 +6,8 @@ import { getProjectById } from '@/db/project'
 import { getAdminName, getURL } from '@/utils/constants'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail } from '@/utils/email'
+import { getBidsByProject } from '@/db/bid'
+import { checkGrantFundingReady } from '@/utils/math'
 
 export const config = {
   runtime: 'edge',
@@ -67,6 +69,8 @@ export default async function handler(req: NextRequest) {
     recipientPostmarkVars,
     creator.id
   )
-  // TODO: call condition met function
+  const bids = await getBidsByProject(supabase, projectId)
+  const fundingReady = checkGrantFundingReady(project, bids)
+  // TODO: move project to active if funding ready
   return NextResponse.json('success')
 }
