@@ -1,10 +1,11 @@
-import { Bid } from '@/db/bid'
+import { Bid, getBidsByProject } from '@/db/bid'
 import { Database } from '@/db/database.types'
 import { Project } from '@/db/project'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
+import { getProjectById } from '@/db/project'
 
 export const config = {
   runtime: 'edge',
@@ -17,13 +18,14 @@ type BidProps = {
   bidderId: string
   valuation: number
   amount: number
-  type: 'buy' | 'sell'
+  type: Bid['type']
 }
 
 export default async function handler(req: NextRequest) {
   const { projectId, projectStage, bidderId, valuation, amount, type } =
     (await req.json()) as BidProps
   const supabase = createEdgeClient(req)
+  const project = await getProjectById(supabase, projectId)
   const id = uuid()
   const newBid = {
     id,
@@ -34,9 +36,16 @@ export default async function handler(req: NextRequest) {
     status: 'pending' as Bid['status'],
     type,
   }
-  const { error } = await supabase.from('bids').insert([newBid])
-  if (error) {
-    throw error
+  await supabase.from('bids').insert([newBid]).throwOnError()
+  if (type === 'donate') {
+    const pastPendingBids = (
+      await getBidsByProject(supabase, projectId)
+    ).filter((bid) => bid.type === 'donate')
+    const totalDonated =
+      pastPendingBids.reduce((acc, bid) => acc + bid.amount, 0) + amount
+    if (totalDonated >= project.min_funding) {
+      // TODO: write condition met function
+    }
   }
   if (projectStage === 'active') {
     await findAndMakeTrades(newBid, supabase)
