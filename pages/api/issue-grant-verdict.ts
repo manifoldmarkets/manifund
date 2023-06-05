@@ -67,5 +67,6 @@ export default async function handler(req: NextRequest) {
     recipientPostmarkVars,
     creator.id
   )
+  // TODO: call condition met function
   return NextResponse.json('success')
 }

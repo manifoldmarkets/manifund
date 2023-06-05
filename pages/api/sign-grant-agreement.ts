@@ -21,5 +21,7 @@ export default async function handler(req: NextRequest) {
     .update({ signed_agreement: true })
     .eq('id', projectId)
     .throwOnError()
+  // TODO: call condition met function
+
   return NextResponse.json({ success: true })
 }
