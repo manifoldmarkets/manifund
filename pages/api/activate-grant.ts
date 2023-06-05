@@ -37,17 +37,17 @@ export default async function handler(req: NextRequest) {
   const donorSubject = `"${project.title}" is active!`
   const donorMessage = `The project you donated to, "${project.title}", has completed the funding process and become active! Your donation has been sent to the project creator to be used for the project.`
   await Promise.all(
-    txns.map(async (txn) => {
+    donors.map(async (donor) => {
       await sendTemplateEmail(
         VERDICT_TEMPLATE_ID,
         {
-          recipientFullName: txn.profiles?.full_name ?? 'donor',
+          recipientFullName: donor?.full_name ?? 'donor',
           verdictMessage: donorMessage,
           projectUrl: `${getURL()}/projects/${project.slug}`,
           subject: donorSubject,
           adminName: 'Rachel from Manifund',
         },
-        txn.from_id ?? ''
+        donor?.id ?? ''
       )
     })
   )

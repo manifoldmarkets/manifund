@@ -70,7 +70,8 @@ export default async function handler(req: NextRequest) {
     creator.id
   )
   const bids = await getBidsByProject(supabase, projectId)
-  if (checkGrantFundingReady(project, bids)) {
+  if (await checkGrantFundingReady(supabase, projectId)) {
+    console.log('funding ready')
     await fetch('/api/activate-grant', {
       method: 'POST',
       headers: {

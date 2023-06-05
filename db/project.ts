@@ -130,3 +130,19 @@ export async function getProjectsPendingTransferByUser(
     return numTransfers > 0
   }) as Project[]
 }
+
+export type ProjectAndBids = Project & { bids: Bid[] }
+export async function getProjectAndBidsById(
+  supabase: SupabaseClient,
+  projectId: string
+) {
+  const { data } = await supabase
+    .from('projects')
+    .select('*, bids(*)')
+    .eq('id', projectId)
+    .throwOnError()
+  if (data === null) {
+    return null
+  }
+  return data[0] as ProjectAndBids
+}

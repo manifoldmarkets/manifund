@@ -1,11 +1,20 @@
-import { Bid } from '@/db/bid'
-import { Project } from '@/db/project'
+import { getProjectAndBidsById } from '@/db/project'
+import { SupabaseClient } from '@supabase/supabase-js'
 
-export function checkGrantFundingReady(project: Project, bids: Bid[]) {
+export async function checkGrantFundingReady(
+  supabase: SupabaseClient,
+  projectId: string
+) {
+  const project = await getProjectAndBidsById(supabase, projectId)
+  if (!project || !project.bids) {
+    console.error('Project not found')
+    return false
+  }
   if (project.type !== 'grant') {
     console.error('Project is not a grant')
+    return false
   } else {
-    const totalDonated = bids
+    const totalDonated = project.bids
       .filter((bid) => bid.status === 'pending' && bid.type === 'donate')
       .reduce((acc, bid) => acc + bid.amount, 0)
     return (

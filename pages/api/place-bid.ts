@@ -45,7 +45,7 @@ export default async function handler(req: NextRequest) {
   await supabase.from('bids').insert([newBid]).throwOnError()
   if (type === 'donate') {
     const bids = await getBidsByProject(supabase, projectId)
-    if (checkGrantFundingReady(project, bids)) {
+    if (await checkGrantFundingReady(supabase, projectId)) {
       await fetch('/api/activate-grant', {
         method: 'POST',
         headers: {

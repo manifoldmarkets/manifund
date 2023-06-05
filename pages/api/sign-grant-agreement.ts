@@ -23,8 +23,8 @@ export default async function handler(req: NextRequest) {
     .update({ signed_agreement: true })
     .eq('id', projectId)
     .throwOnError()
-  const bids = await getBidsByProject(supabase, projectId)
-  if (checkGrantFundingReady(project, bids)) {
+  if (await checkGrantFundingReady(supabase, projectId)) {
+    console.log('Activating grant')
     await fetch('/api/activate-grant', {
       method: 'POST',
       headers: {

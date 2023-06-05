@@ -19,6 +19,7 @@ export type TradeProps = {
   tradePartnerId: string
   newBidId?: string
 }
+
 export default async function handler(req: NextRequest) {
   const { oldBidId, usdTraded, newBidId, tradePartnerId } =
     (await req.json()) as TradeProps
