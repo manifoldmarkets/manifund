@@ -1,8 +1,5 @@
 import { DataPoint } from '@/components/data-point'
-import { Col } from '@/components/layout/col'
-import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
-import { Bid } from '@/db/bid'
 import { Project } from '@/db/project'
 import { formatMoney, showPrecision } from '@/utils/formatting'
 import { dateDiff, getProposalValuation } from '@/utils/math'
