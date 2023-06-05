@@ -6,7 +6,7 @@ import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { getProjectById } from '@/db/project'
-import { checkGrantFundingReady } from '@/utils/math'
+import { checkGrantFundingReady } from '@/utils/checks'
 
 export const config = {
   runtime: 'edge',

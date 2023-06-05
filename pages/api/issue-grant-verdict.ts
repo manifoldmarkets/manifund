@@ -7,7 +7,7 @@ import { getAdminName, getURL } from '@/utils/constants'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail } from '@/utils/email'
 import { getBidsByProject } from '@/db/bid'
-import { checkGrantFundingReady } from '@/utils/math'
+import { checkGrantFundingReady } from '@/utils/checks'
 
 export const config = {
   runtime: 'edge',
