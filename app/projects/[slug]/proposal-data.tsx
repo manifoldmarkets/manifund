@@ -30,10 +30,12 @@ export function ProposalData(props: { project: Project; raised: number }) {
             value={`$${project.min_funding}`}
             label="required to proceed"
           />
-          <DataPoint
-            value={showPrecision(daysLeft, 3)}
-            label="days left to contribute"
-          />
+          {project.auction_close && (
+            <DataPoint
+              value={showPrecision(daysLeft, 3)}
+              label="days left to contribute"
+            />
+          )}
           {project.type === 'cert' && (
             <DataPoint
               value={formatMoney(getProposalValuation(project))}

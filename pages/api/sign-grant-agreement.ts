@@ -1,7 +1,6 @@
 import { getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
-import { getBidsByProject } from '@/db/bid'
 import { checkGrantFundingReady } from '@/utils/checks'
 
 export const config = {

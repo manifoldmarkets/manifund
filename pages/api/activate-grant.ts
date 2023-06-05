@@ -18,11 +18,13 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   const { projectId } = (await req.json()) as { projectId: string }
+  console.log('in activate grant', projectId)
   const supabase = createEdgeClient(req)
   // TODO: create one function to get both of these infos
   const project = await getProjectById(supabase, projectId)
   const creatorProfile = await getProfileById(supabase, project?.creator)
   if (!project || !creatorProfile) {
+    console.error('project', project, 'creatorProfile', creatorProfile)
     return Response.error()
   }
   await supabase

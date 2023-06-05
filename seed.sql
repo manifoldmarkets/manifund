@@ -88,6 +88,7 @@ create table if not exists public.projects (
   min_funding float8 not null,
   funding_goal float8  not null default 0,
   founder_portion int8 not null,
+  auction_close date,
   description jsonb,
   type project_type not null default 'cert',
   stage project_stage not null default 'proposal',
