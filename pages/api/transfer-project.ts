@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { SupabaseClient, User } from '@supabase/supabase-js'
 import { Database } from '@/db/database.types'
 import { Project } from '@/db/project'
-import uuid from 'react-uuid'
 
 type ProjectTransferAndProject =
   Database['public']['Tables']['project_transfers']['Row'] & {
