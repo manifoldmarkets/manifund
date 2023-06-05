@@ -219,10 +219,15 @@ export function EditProfileForm(props: { profile: Profile }) {
               to get verified as an accredited investor.
               <br />
               <br />
-              <p className="font-bold">
-                You need to hold $0 on your Manifund account to be verified as
-                an accredited investor.
-              </p>
+              <span className="font-bold">
+                To avoid potential mixing of funds, you cannot have any balance
+                on your Manifund account when you&apos;re verified as an
+                accredited investor
+              </span>
+              <span>
+                , so if you intend to become verified, please do so first before
+                depositing funds.
+              </span>
             </div>
           )}
         </div>
