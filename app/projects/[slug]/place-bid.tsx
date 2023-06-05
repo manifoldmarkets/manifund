@@ -173,8 +173,6 @@ export function PlaceBid(props: {
             },
             body: JSON.stringify({
               projectId: project.id,
-              projectStage: project.stage,
-              bidderId: user.id,
               valuation: Math.round(valuation),
               amount: Math.round(amount),
               type: bidType,

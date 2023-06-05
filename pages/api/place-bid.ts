@@ -7,6 +7,7 @@ import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { getProjectById } from '@/db/project'
 import { checkGrantFundingReady } from '@/utils/checks'
+import { getUser } from '@/db/profile'
 
 export const config = {
   runtime: 'edge',
@@ -14,25 +15,28 @@ export const config = {
 }
 
 type BidProps = {
-  // TODO: remove project stage & bidder id & get those here
   projectId: string
-  projectStage: Project['stage']
-  bidderId: string
   valuation: number
   amount: number
   type: Bid['type']
 }
 
 export default async function handler(req: NextRequest) {
-  const { projectId, projectStage, bidderId, valuation, amount, type } =
-    (await req.json()) as BidProps
+  const { projectId, valuation, amount, type } = (await req.json()) as BidProps
   const supabase = createEdgeClient(req)
+  const user = await getUser(supabase)
+  if (!user) {
+    return new Response('Unauthorized', { status: 401 })
+  }
   const project = await getProjectById(supabase, projectId)
+  if (!project) {
+    return new Response('Project not found', { status: 404 })
+  }
   const id = uuid()
   const newBid = {
     id,
     project: projectId,
-    bidder: bidderId,
+    bidder: user.id,
     valuation,
     amount,
     status: 'pending' as Bid['status'],
@@ -51,7 +55,7 @@ export default async function handler(req: NextRequest) {
       })
     }
   }
-  if (projectStage === 'active') {
+  if (project.stage === 'active') {
     await findAndMakeTrades(newBid, supabase)
   }
 }
@@ -84,7 +88,7 @@ async function findAndMakeTrades(bid: BidInsert, supabase: SupabaseClient) {
     }
     const tradeAmount = Math.min(budget, oldBid.amount)
     budget -= tradeAmount
-    const response = await fetch('/api/trade', {
+    await fetch('/api/trade', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
