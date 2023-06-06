@@ -1,6 +1,7 @@
 import { Bid } from '@/db/bid'
 import { Database } from '@/db/database.types'
 import { Project } from '@/db/project'
+import { trade } from '@/utils/trade'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
@@ -71,16 +72,6 @@ async function findAndMakeTrades(bid: BidInsert, supabase: SupabaseClient) {
     }
     const tradeAmount = Math.min(budget, oldBid.amount)
     budget -= tradeAmount
-    const response = await fetch('/api/trade', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        oldBidId: oldBid.bidder,
-        usdTraded: tradeAmount,
-        tradePartnerId: bid.bidder,
-      }),
-    })
+    await trade(oldBid, tradeAmount, bid.bidder)
   }
 }
