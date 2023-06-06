@@ -23,6 +23,7 @@ export type TradeProps = {
 export default async function handler(req: NextRequest) {
   const { oldBidId, usdTraded, newBidId, tradePartnerId } =
     (await req.json()) as TradeProps
+  // TODO: pull this out into a non-edge function to call from place-bid
   const supabase = createAdminClient()
   const oldBid = await getBidById(oldBidId, supabase)
   const newBid = newBidId ? await getBidById(newBidId, supabase) : null
