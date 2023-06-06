@@ -7,7 +7,7 @@ import { getAdminName, getURL } from '@/utils/constants'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail } from '@/utils/email'
 import { getBidsByProject } from '@/db/bid'
-import { checkGrantFundingReady } from '@/utils/checks'
+import { maybeActivateGrant } from '@/utils/activate-grant'
 
 export const config = {
   runtime: 'edge',
@@ -69,16 +69,6 @@ export default async function handler(req: NextRequest) {
     recipientPostmarkVars,
     creator.id
   )
-  const bids = await getBidsByProject(supabase, projectId)
-  if (await checkGrantFundingReady(supabase, projectId)) {
-    console.log('funding ready')
-    await fetch('/api/activate-grant', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ projectId: projectId }),
-    })
-  }
+  await maybeActivateGrant(supabase, projectId)
   return NextResponse.json('success')
 }

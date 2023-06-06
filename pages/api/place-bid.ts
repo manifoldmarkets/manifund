@@ -1,13 +1,12 @@
-import { Bid, getBidsByProject } from '@/db/bid'
+import { Bid } from '@/db/bid'
 import { Database } from '@/db/database.types'
-import { Project } from '@/db/project'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { getProjectById } from '@/db/project'
-import { checkGrantFundingReady } from '@/utils/checks'
 import { getUser } from '@/db/profile'
+import { maybeActivateGrant } from '@/utils/activate-grant'
 
 export const config = {
   runtime: 'edge',
@@ -44,16 +43,7 @@ export default async function handler(req: NextRequest) {
   }
   await supabase.from('bids').insert([newBid]).throwOnError()
   if (type === 'donate') {
-    const bids = await getBidsByProject(supabase, projectId)
-    if (await checkGrantFundingReady(supabase, projectId)) {
-      await fetch('/api/activate-grant', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ projectId: projectId }),
-      })
-    }
+    await maybeActivateGrant(supabase, projectId)
   }
   if (project.stage === 'active') {
     await findAndMakeTrades(newBid, supabase)

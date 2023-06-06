@@ -70,14 +70,16 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   }, 0)
   return (
     <>
-      {project.type === 'grant' && pendingProjectTransfers.length === 0 && (
-        <ProposalRequirements
-          signedAgreement={project.signed_agreement}
-          approved={project.approved === true}
-          reachedMinFunding={raised >= project.min_funding}
-          projectSlug={project.slug}
-        />
-      )}
+      {project.type === 'grant' &&
+        project.stage === 'proposal' &&
+        pendingProjectTransfers.length === 0 && (
+          <ProposalRequirements
+            signedAgreement={project.signed_agreement}
+            approved={project.approved === true}
+            reachedMinFunding={raised >= project.min_funding}
+            projectSlug={project.slug}
+          />
+        )}
       <div className="flex flex-col gap-4 px-4 pt-5">
         <ProjectCardHeader
           round={project.rounds}

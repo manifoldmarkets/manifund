@@ -1,27 +1,42 @@
-import { NextRequest } from 'next/server'
-import { createEdgeClient } from './_db'
-import { getProjectById } from '@/db/project'
+import { getProfileById, Profile } from '@/db/profile'
+import { getProjectAndBidsById, Project, ProjectAndBids } from '@/db/project'
 import { getTxnsByProject } from '@/db/txn'
-import { getURL } from 'next/dist/shared/lib/utils'
-import { sendTemplateEmail } from '@/utils/email'
-import { getProfileById } from '@/db/profile'
+import { SupabaseClient } from '@supabase/supabase-js'
 import { uniq } from 'lodash'
+import { getURL } from './constants'
+import { sendTemplateEmail } from './email'
 
-export const config = {
-  runtime: 'edge',
-  regions: ['sfo1'],
-  // From https://github.com/lodash/lodash/issues/5525
-  unstable_allowDynamic: [
-    '**/node_modules/lodash/lodash.js', // Use a glob to allow anything in the function-bind 3rd party module
-  ],
+export async function maybeActivateGrant(
+  supabase: SupabaseClient,
+  projectId: string
+) {
+  const project = await getProjectAndBidsById(supabase, projectId)
+  if (!project || !project.bids) {
+    console.error('Project not found')
+    return
+  }
+  if (checkGrantFundingReady(project)) {
+    await activateGrant(supabase, project)
+  }
 }
 
-export default async function handler(req: NextRequest) {
-  const { projectId } = (await req.json()) as { projectId: string }
-  console.log('in activate grant', projectId)
-  const supabase = createEdgeClient(req)
-  // TODO: create one function to get both of these infos
-  const project = await getProjectById(supabase, projectId)
+function checkGrantFundingReady(project: ProjectAndBids) {
+  if (project.type !== 'grant') {
+    console.error('Project is not a grant')
+    return false
+  } else {
+    const totalDonated = project.bids
+      .filter((bid) => bid.status === 'pending' && bid.type === 'donate')
+      .reduce((acc, bid) => acc + bid.amount, 0)
+    return (
+      totalDonated >= project.min_funding &&
+      project.approved &&
+      project.signed_agreement
+    )
+  }
+}
+
+async function activateGrant(supabase: SupabaseClient, project: Project) {
   const creatorProfile = await getProfileById(supabase, project?.creator)
   if (!project || !creatorProfile) {
     console.error('project', project, 'creatorProfile', creatorProfile)
@@ -29,15 +44,16 @@ export default async function handler(req: NextRequest) {
   }
   await supabase
     .rpc('activate_grant', {
-      project_id: projectId,
+      project_id: project.id,
       project_creator: project.creator,
     })
     .throwOnError()
   const VERDICT_TEMPLATE_ID = 31974162
-  const txns = await getTxnsByProject(supabase, projectId)
+  const txns = await getTxnsByProject(supabase, project.id)
   const donors = uniq(txns.map((txn) => txn.profiles))
   const donorSubject = `"${project.title}" is active!`
   const donorMessage = `The project you donated to, "${project.title}", has completed the funding process and become active! Your donation has been sent to the project creator to be used for the project.`
+  const siteUrl = getURL()
   await Promise.all(
     donors.map(async (donor) => {
       await sendTemplateEmail(
@@ -45,7 +61,7 @@ export default async function handler(req: NextRequest) {
         {
           recipientFullName: donor?.full_name ?? 'donor',
           verdictMessage: donorMessage,
-          projectUrl: `${getURL()}/projects/${project.slug}`,
+          projectUrl: `${siteUrl}/projects/${project.slug}`,
           subject: donorSubject,
           adminName: 'Rachel from Manifund',
         },
