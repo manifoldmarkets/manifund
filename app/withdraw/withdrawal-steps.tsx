@@ -85,107 +85,13 @@ export function WithdrawalSteps(props: {
       id: 3,
       name: 'Confirm withdrawal',
       display: (
-        <>
-          {withdrawalMethod ? (
-            <div className="overflow-hidden rounded-lg bg-white shadow">
-              <div className="px-4 py-6 sm:px-6">
-                {complete ? (
-                  <div>
-                    <Row className="justify-center">
-                      <CheckCircleIcon className="h-16 w-16 text-orange-500" />
-                    </Row>
-                    <h3 className="text-center text-lg font-semibold leading-7 text-gray-900">
-                      Withdrawal complete!
-                    </h3>
-                    <p className="mt-1 max-w-2xl text-center text-sm leading-6 text-gray-500">
-                      Your payment is on the way. It may take up to 2 days to
-                      process.
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <h3 className="text-base font-semibold leading-7 text-gray-900">
-                      Withdrawal destination and amount confirmation
-                    </h3>
-                    <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
-                      Confirm the following details are correct before
-                      completing your withdrawal.
-                    </p>
-                  </>
-                )}
-              </div>
-              <div className="border-t border-gray-100">
-                <dl className="divide-y divide-gray-100">
-                  <div className="grid grid-cols-2 gap-4 py-6 px-6">
-                    <dt className=" text-sm font-medium text-gray-900">
-                      {isBank ? 'Bank name' : 'Card brand name'}
-                    </dt>
-                    <dd className="mt-0 text-sm leading-6 text-gray-700">
-                      {isBank
-                        ? (withdrawalMethod as Stripe.BankAccount).bank_name
-                        : (withdrawalMethod as Stripe.Card).brand}
-                    </dd>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 py-6 px-6">
-                    <dt className=" text-sm font-medium text-gray-900">
-                      {isBank
-                        ? 'last 4 digits of routing number'
-                        : 'last 4 digits of credit card number'}
-                    </dt>
-                    <dd className=" mt-0 text-sm leading-6 text-gray-700">
-                      {isBank ? '∙∙∙∙∙' : '∙∙∙∙∙∙∙∙∙∙∙∙'}
-                      {withdrawalMethod.last4}
-                    </dd>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 py-6 px-6">
-                    <dt className=" text-sm font-medium text-gray-900">
-                      Amount to withdraw
-                    </dt>
-                    <dd className="mt-0 text-sm leading-6 text-gray-700">
-                      ${withdrawAmount}
-                    </dd>
-                  </div>
-                  {!complete && (
-                    <Row className="justify-center py-6 px-6">
-                      <Button
-                        className="font-semibold"
-                        onClick={async () => {
-                          setIsSubmitting
-                          const response = await fetch(
-                            '/api/stripe-connect-withdraw',
-                            {
-                              method: 'POST',
-                              headers: {
-                                'Content-Type': 'application/json',
-                              },
-                              body: JSON.stringify({
-                                amount: withdrawAmount,
-                              }),
-                            }
-                          )
-                          const json = await response.json()
-                          if (json.error) {
-                            console.error(json.error)
-                          } else {
-                            setComplete(true)
-                          }
-                          setIsSubmitting(false)
-                        }}
-                        disabled={isSubmitting}
-                      >
-                        Withdraw
-                      </Button>
-                    </Row>
-                  )}
-                </dl>
-              </div>
-            </div>
-          ) : (
-            <div>
-              You need to set up your stripe account before withdrawing.
-            </div>
-          )}
-        </>
+        <ConfirmWithdrawal
+          withdrawalMethod={withdrawalMethod}
+          isBank={isBank}
+          withdrawAmount={withdrawAmount}
+          complete={complete}
+          setComplete={setComplete}
+        />
       ),
     },
   ]
@@ -336,6 +242,121 @@ export function WithdrawalSteps(props: {
           </Row>
         </div>
       </Row>
+    </>
+  )
+}
+
+function ConfirmWithdrawal(props: {
+  withdrawalMethod?: Stripe.BankAccount | Stripe.Card
+  isBank: boolean
+  withdrawAmount: number
+  complete: boolean
+  setComplete: (complete: boolean) => void
+}) {
+  const { withdrawalMethod, isBank, withdrawAmount, complete, setComplete } =
+    props
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [localComplete, setLocalComplete] = useState(complete)
+  return (
+    <>
+      {withdrawalMethod ? (
+        <div className="overflow-hidden rounded-lg bg-white shadow">
+          <div className="px-4 py-6 sm:px-6">
+            {localComplete ? (
+              <div>
+                <Row className="justify-center">
+                  <CheckCircleIcon className="h-16 w-16 text-orange-500" />
+                </Row>
+                <h3 className="text-center text-lg font-semibold leading-7 text-gray-900">
+                  Withdrawal complete!
+                </h3>
+                <p className="mt-1 max-w-2xl text-center text-sm leading-6 text-gray-500">
+                  Your payment is on the way. It may take up to 2 days to
+                  process.
+                </p>
+              </div>
+            ) : (
+              <>
+                <h3 className="text-base font-semibold leading-7 text-gray-900">
+                  Withdrawal destination and amount confirmation
+                </h3>
+                <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
+                  Confirm the following details are correct before completing
+                  your withdrawal.
+                </p>
+              </>
+            )}
+          </div>
+          <div className="border-t border-gray-100">
+            <dl className="divide-y divide-gray-100">
+              <div className="grid grid-cols-2 gap-4 py-6 px-6">
+                <dt className=" text-sm font-medium text-gray-900">
+                  {isBank ? 'Bank name' : 'Card brand name'}
+                </dt>
+                <dd className="mt-0 text-sm leading-6 text-gray-700">
+                  {isBank
+                    ? (withdrawalMethod as Stripe.BankAccount).bank_name
+                    : (withdrawalMethod as Stripe.Card).brand}
+                </dd>
+              </div>
+              <div className="grid grid-cols-2 gap-4 py-6 px-6">
+                <dt className=" text-sm font-medium text-gray-900">
+                  {isBank
+                    ? 'last 4 digits of routing number'
+                    : 'last 4 digits of credit card number'}
+                </dt>
+                <dd className=" mt-0 text-sm leading-6 text-gray-700">
+                  {isBank ? '∙∙∙∙∙' : '∙∙∙∙∙∙∙∙∙∙∙∙'}
+                  {withdrawalMethod.last4}
+                </dd>
+              </div>
+              <div className="grid grid-cols-2 gap-4 py-6 px-6">
+                <dt className=" text-sm font-medium text-gray-900">
+                  Amount to withdraw
+                </dt>
+                <dd className="mt-0 text-sm leading-6 text-gray-700">
+                  ${withdrawAmount}
+                </dd>
+              </div>
+              {!localComplete && (
+                <Row className="justify-center py-6 px-6">
+                  <Button
+                    className="font-semibold"
+                    onClick={async () => {
+                      setIsSubmitting(true)
+                      const response = await fetch(
+                        '/api/stripe-connect-withdraw',
+                        {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            amount: withdrawAmount,
+                          }),
+                        }
+                      )
+                      const json = await response.json()
+                      if (json.error) {
+                        console.error(json.error)
+                      } else {
+                        setComplete(true)
+                        setLocalComplete(true)
+                      }
+                      setIsSubmitting(false)
+                    }}
+                    disabled={isSubmitting || complete || localComplete}
+                  >
+                    Withdraw
+                  </Button>
+                </Row>
+              )}
+            </dl>
+          </div>
+        </div>
+      ) : (
+        <div>You need to set up your stripe account before withdrawing.</div>
+      )}
     </>
   )
 }
