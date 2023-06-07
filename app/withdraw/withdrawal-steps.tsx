@@ -13,7 +13,6 @@ import {
   CheckIcon,
 } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
-import { set } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Stripe from 'stripe'

@@ -6,6 +6,7 @@ import { calculateUserBalance, calculateWithdrawBalance } from '@/utils/math'
 import Stripe from 'stripe'
 import { BANK_ID, STRIPE_SECRET_KEY } from '@/db/env'
 import uuid from 'react-uuid'
+import { sendTemplateEmail } from '@/utils/email'
 
 export const config = {
   runtime: 'edge',
@@ -82,6 +83,22 @@ export default async function handler(req: NextRequest) {
       txn_id: txnId,
     })
     .throwOnError()
-  // TODO: send confirmation email
+  const CONFIRM_WITHDRAWAL_TEMPLATE_ID = 32048469
+  const usedBank = account.external_accounts?.data[0].object === 'bank_account'
+  const last4 = account.external_accounts?.data[0].last4
+  const postmarkVars = {
+    amount: amount,
+    id: txnId,
+    methodText:
+      (usedBank ? 'Routing number ending in: ' : 'Card ending in: ') + last4,
+    fullName: profile.full_name,
+    email: user.email,
+  }
+  await sendTemplateEmail(
+    CONFIRM_WITHDRAWAL_TEMPLATE_ID,
+    postmarkVars,
+    undefined,
+    user.email
+  )
   return NextResponse.json({ amount })
 }
