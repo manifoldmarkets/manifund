@@ -13,6 +13,7 @@ import {
   CheckIcon,
 } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
+import { set } from 'lodash'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Stripe from 'stripe'
@@ -72,17 +73,21 @@ export function WithdrawalSteps(props: {
 
   const [currentStep, setCurrentStep] = useState(steps[0])
   const nextStep = () => {
+    setIsSubmitting(true)
     if (currentStep.id === steps.length) {
       router.push('/')
     } else {
       setCurrentStep(steps[currentStep.id])
+      setIsSubmitting(false)
     }
   }
   const previousStep = () => {
+    setIsSubmitting(true)
     if (currentStep.id === 1) {
       router.push('/')
     } else {
       setCurrentStep(steps[currentStep.id - 2])
+      setIsSubmitting(false)
     }
   }
 
