@@ -5,6 +5,7 @@ import {
 } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
 import Stripe from 'stripe'
+import { Card } from './card'
 import { FeatureCard } from './feature-card'
 import { Row } from './layout/row'
 
@@ -78,19 +79,19 @@ export function WithdrawalDetails(props: {
   }
   const isBank = withdrawalMethod.object === 'bank_account'
   return (
-    <div className="lg:col-start-3 lg:row-end-1">
-      <h2 className="sr-only">{isBank ? 'Bank details' : 'Card details'}</h2>
-      <div className="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5">
+    <Card>
+      <div className="lg:col-start-3 lg:row-end-1">
+        <h2 className="sr-only">{isBank ? 'Bank details' : 'Card details'}</h2>
         <dl className="flex flex-wrap">
-          <div className="flex-auto pl-6 pt-6">
+          <div className="flex-auto pl-3 pt-3">
             <dt className="text-lg font-semibold leading-6 text-gray-900">
               {isBank ? 'Bank details' : 'Card details'}
             </dt>
             <dd className="mt-1 text-sm leading-6 text-gray-500">
-              This is where your funds will be sent.
+              This is where your funds will be sent when you withdraw.
             </dd>
           </div>
-          <div className="self-end px-6 pt-4">
+          <div className="self-end px-3 pt-3">
             {isBank ? (
               <BuildingLibraryIcon
                 className="h-16 w-16 text-gray-400"
@@ -146,7 +147,7 @@ export function WithdrawalDetails(props: {
             </dd>
           </Row>
         </dl>
-        <div className="mt-6 border-t border-gray-900/5 px-6 py-6">
+        <div className="mt-6 border-t border-gray-900/5 px-3 pt-5 pb-2">
           <a
             href={`${loginUrl}#settings`}
             className="text-sm font-semibold leading-6 text-gray-900"
@@ -155,6 +156,6 @@ export function WithdrawalDetails(props: {
           </a>
         </div>
       </div>
-    </div>
+    </Card>
   )
 }
