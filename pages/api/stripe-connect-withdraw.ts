@@ -82,5 +82,6 @@ export default async function handler(req: NextRequest) {
       txn_id: txnId,
     })
     .throwOnError()
+  // TODO: send confirmation email
   return NextResponse.json({ amount })
 }
