@@ -109,15 +109,13 @@ function Bid(props: {
     <Row className="w-full items-center justify-between gap-3 rounded p-3 hover:bg-gray-200">
       <UserAvatarAndBadge profile={bid.profiles} />
       {showValuation ? (
-        <div className={user ? 'relative top-1.5' : ''}>
+        <div>
           {formatMoney(bid.amount)} <span className="text-gray-500"> @ </span>$
           {bid.valuation}
           <span className="text-gray-500"> valuation</span>
         </div>
       ) : (
-        <div className={user ? 'relative top-1.5' : ''}>
-          {formatMoney(bid.amount)}
-        </div>
+        <div>{formatMoney(bid.amount)}</div>
       )}
       {user && (
         <div>
