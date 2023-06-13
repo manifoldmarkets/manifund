@@ -2,6 +2,10 @@ import { getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
+import { getTxnsByUser } from '@/db/txn'
+import { getBidsByUser } from '@/db/bid'
+import { getProjectsPendingTransferByUser } from '@/db/project'
+import { calculateUserSpendableFunds } from '@/utils/math'
 import { sendTemplateEmail } from '@/utils/email'
 import { getURL } from '@/utils/constants'
 
@@ -24,8 +28,24 @@ export default async function handler(req: NextRequest) {
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
-  // Only initiate transfers from the account currently logged in
   if (user?.id !== fromId) {
+    return NextResponse.error()
+  }
+  const profile = await getProfileById(supabase, user?.id)
+  const txns = await getTxnsByUser(supabase, user?.id ?? '')
+  const bids = await getBidsByUser(supabase, user?.id ?? '')
+  const projectsPendingTransfer = await getProjectsPendingTransferByUser(
+    supabase,
+    user?.id ?? ''
+  )
+  const userSpendableFunds = calculateUserSpendableFunds(
+    txns,
+    user.id,
+    bids,
+    projectsPendingTransfer,
+    profile?.accreditation_status as boolean
+  )
+  if (userSpendableFunds < amount) {
     return NextResponse.error()
   }
   const supabaseAdmin = createAdminClient()
