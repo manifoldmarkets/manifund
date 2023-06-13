@@ -232,7 +232,7 @@ export function EditProfileForm(props: { profile: Profile }) {
           )}
         </div>
       </Col>
-      <label htmlFor="avatar">Choose a profile picture:</label>
+      <label htmlFor="avatar">Choose a profile picture.</label>
       <div className="flex space-x-2">
         <div className="h-24 w-24">
           {avatar ? (
