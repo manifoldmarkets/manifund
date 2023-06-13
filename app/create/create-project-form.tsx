@@ -385,7 +385,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       ) : (
         <>
           <label htmlFor="minFunding" className="mr-3 mt-4">
-            Minimum funding (USD):{' '}
+            Minimum funding (USD){' '}
             <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
           </label>
           <Input
@@ -397,7 +397,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
             onChange={(event) => setMinFunding(Number(event.target.value))}
           />
           <label htmlFor="fundingGoal">
-            Funding goal (USD):{' '}
+            Funding goal (USD){' '}
             <InfoTooltip text="The amount you're asking for. This will be the main number displayed to regranters." />
           </label>
           <Input

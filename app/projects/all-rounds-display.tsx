@@ -11,7 +11,7 @@ export function AllRoundsDisplay(props: {
   projects: FullProject[]
 }) {
   const { rounds, projects } = props
-  const sortedRounds = sortRoundsForPreview(rounds, projects)
+  const sortedRounds = sortRoundsForPreview(rounds)
   return (
     <div className="pb-20">
       <div className="mx-auto max-w-7xl">
@@ -77,7 +77,7 @@ function Round(props: { round: Round; projects: FullProject[] }) {
   )
 }
 
-function sortRoundsForPreview(rounds: Round[], projects: FullProject[]) {
+function sortRoundsForPreview(rounds: Round[]) {
   const sortedByDueDate = orderBy(rounds, 'proposal_due_date', 'desc')
   const customSorted = sortBy(sortedByDueDate, [
     function (round: Round) {

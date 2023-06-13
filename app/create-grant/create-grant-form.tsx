@@ -13,9 +13,9 @@ import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 
 const DESCRIPTION_OUTLINE = `
-<h3>Project summary:</h3>
+<h3>Project summary</h3>
 </br>
-<h3>Project goals:</h3>
+<h3>Project goals</h3>
 </br>
 <h3>How will this funding be used?</h3>
 </br>
@@ -26,13 +26,13 @@ const DESCRIPTION_OUTLINE = `
 `
 
 const REASONING_OUTLINE = `
-<h3>Main points in favor of this grant:</h3>
+<h3>Main points in favor of this grant</h3>
 </br>
-<h3>Donor's main reservations about this grant:</h3>
+<h3>Donor's main reservations about this grant</h3>
 </br>
-<h3>Process for deciding grant amount:</h3>
+<h3>Process for deciding grant amount</h3>
 </br>
-<h3>Conflicts of interest associated with this grant:</h3>
+<h3>Conflicts of interest associated with this grant</h3>
 <p>Please disclose e.g. any romantic, professional, financial, housemate, or familial relationships you have with the grant recipient(s).</p>
 </br>
 `
@@ -140,7 +140,7 @@ export function CreateGrantForm(props: {
       {!recipientOnManifund && (
         <>
           <Col className="gap-1">
-            <label htmlFor="recipientFullName">Recipient full name:</label>
+            <label htmlFor="recipientFullName">Recipient full name</label>
             <Input
               type="text"
               id="recipientFullName"
@@ -154,7 +154,7 @@ export function CreateGrantForm(props: {
             )}
           </Col>
           <Col className="gap-1">
-            <label htmlFor="recipientEmail">Recipient email:</label>
+            <label htmlFor="recipientEmail">Recipient email</label>
             <Input
               type="text"
               id="recipientEmail"
@@ -166,7 +166,7 @@ export function CreateGrantForm(props: {
       )}
       {recipientOnManifund && (
         <Col className="gap-1">
-          <label>Recipient:</label>
+          <label>Recipient</label>
           <Combobox as="div" value={recipient} onChange={setRecipient}>
             <div className="relative">
               <Combobox.Input
@@ -246,7 +246,7 @@ export function CreateGrantForm(props: {
         </Col>
       )}
       <Col className="gap-1">
-        <label htmlFor="title">Title:</label>
+        <label htmlFor="title">Title</label>
         <Input
           type="text"
           id="title"
@@ -255,7 +255,7 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="subtitle">Subtitle:</label>
+        <label htmlFor="subtitle">Subtitle</label>
         <Input
           type="text"
           id="subtitle"
@@ -264,7 +264,7 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="amount">Amount (USD):</label>
+        <label htmlFor="amount">Amount (USD)</label>
         <Input
           type="number"
           id="amount"
@@ -273,11 +273,11 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Col className="gap-1">
-        <label>Project description:</label>
+        <label>Project description</label>
         <TextEditor editor={descriptionEditor} />
       </Col>
       <Col className="gap-1">
-        <label>Grantmaker notes & reasoning:</label>
+        <label>Grantmaker notes & reasoning</label>
         <p className="text-sm text-gray-500">
           This will be displayed as a public comment on this project.
         </p>
@@ -297,7 +297,7 @@ export function CreateGrantForm(props: {
         </Row>
         <div className="ml-3 text-sm leading-6">
           <label htmlFor="terms" className="font-medium text-gray-900">
-            Check this box to confirm:
+            Check this box to confirm
           </label>{' '}
           <span id="terms-description" className="text-gray-500">
             all information provided is true and accurate to the best of my
