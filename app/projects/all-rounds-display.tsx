@@ -88,12 +88,5 @@ function sortRoundsForPreview(rounds: Round[], projects: FullProject[]) {
       }
     },
   ])
-  return customSorted.filter(
-    (round) =>
-      round.title !== 'Independent' &&
-      projects.filter(
-        (project) =>
-          project.rounds.title === round.title && project.stage !== 'hidden'
-      ).length > 0
-  )
+  return customSorted.filter((round) => round.title !== 'Independent')
 }
