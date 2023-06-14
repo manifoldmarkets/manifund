@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Combobox } from '@headlessui/react'
 import clsx from 'clsx'
-import { MiniProfile, Profile } from '@/db/profile'
+import { MiniProfile } from '@/db/profile'
 import { Row } from '@/components/layout/row'
 import { Avatar } from '@/components/avatar'
 import { Button } from '@/components/button'
@@ -110,9 +110,14 @@ export function CreateGrantForm(props: {
     <Col className="gap-5 p-4">
       <div>
         <h1 className="text-2xl font-bold">Create grant</h1>
-        <p className="text-gray-600">
+        <p className="my-1 text-sm text-gray-600">
           Use this form to give a grant for a project that is not already posted
           on Manifund. Note that all grants are public.
+        </p>
+        <p className="my-1 text-sm text-gray-600">
+          We expect this writeup to take 0.5-2 hours, and ask that you take less
+          time and include fewer details for small grants and spend more time
+          and include more details for large grants.
         </p>
       </div>
       <Row
