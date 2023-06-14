@@ -102,7 +102,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   } else if (projectType === 'grant' && minFunding > 0 && !auctionClose) {
     errorMessage =
       'Because your minimum funding is greater than 0, you need to set a decision deadline.'
-  } else if (!agreedToTerms) {
+  } else if (projectType === 'cert' && !agreedToTerms) {
     errorMessage =
       'Confirm that you have read, understand, and agree to the terms of issuing this certificate.'
   } else {
@@ -426,33 +426,35 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           )}
         </>
       )}
-      <Row className="mb-3">
-        <Row className="h-6 items-center">
-          <input
-            id="terms"
-            aria-describedby="terms-description"
-            name="terms"
-            type="checkbox"
-            className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
-            checked={agreedToTerms}
-            onChange={() => setAgreedToTerms(!agreedToTerms)}
-          />
+      {projectType === 'cert' && (
+        <Row className="mb-3">
+          <Row className="h-6 items-center">
+            <input
+              id="terms"
+              aria-describedby="terms-description"
+              name="terms"
+              type="checkbox"
+              className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
+              checked={agreedToTerms}
+              onChange={() => setAgreedToTerms(!agreedToTerms)}
+            />
+          </Row>
+
+          <div className="ml-3 text-sm leading-6">
+            <label htmlFor="terms" className="font-medium text-gray-900">
+              Check this box to confirm that you understand and commit to the
+              following:
+            </label>{' '}
+            <span id="terms-description" className="text-gray-500">
+              {genEquityPriceSummary(
+                sellingPortion,
+                auctionClose === null ? undefined : minFunding,
+                auctionClose === null ? initialValuation : undefined
+              )}
+            </span>
+          </div>
         </Row>
-        <div className="ml-3 text-sm leading-6">
-          <label htmlFor="terms" className="font-medium text-gray-900">
-            Check this box to confirm that you understand and commit to the
-            following:
-          </label>{' '}
-          <span id="terms-description" className="text-gray-500">
-            {genEquityPriceSummary(
-              sellingPortion,
-              projectType === 'cert',
-              auctionClose === null ? undefined : minFunding,
-              auctionClose === null ? initialValuation : undefined
-            )}
-          </span>
-        </div>
-      </Row>
+      )}
       <div className="mt-3 text-center text-rose-500">{errorMessage}</div>
       <Button
         className="mt-4"
@@ -504,17 +506,9 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
 
 function genEquityPriceSummary(
   sellingPortion: number,
-  isImpactCert: boolean,
   minFunding?: number,
   minValuation?: number
 ) {
-  if (!isImpactCert) {
-    return `your project is not-for-profit and is not a part of a political campaign. ${
-      minFunding
-        ? `If your project recieves at least $${minFunding}, you will recieve funding. Otherwise, no funds will be transferred to you.`
-        : ''
-    }`
-  }
   if (minFunding !== undefined) {
     return `${sellingPortion}% of your project will be put up for auction at a minimum valuation of ${
       (100 * minFunding) / sellingPortion
