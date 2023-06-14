@@ -23,7 +23,7 @@ export function EditProfileForm(props: { profile: Profile }) {
   const [bio, setBio] = useState<string>(profile.bio)
   const [website, setWebsite] = useState<string | null>(profile.website)
   const [fullName, setFullName] = useState<string>(profile.full_name)
-  const editor = useTextEditor(profile.long_description)
+  const editor = useTextEditor(profile.long_description ?? '')
   const [avatar, setAvatar] = useState<File | null>(null)
   const [submitting, setSubmitting] = useState<boolean>(false)
   const [regranterStatus, setRegranterStatus] = useState(
@@ -270,12 +270,16 @@ export function EditProfileForm(props: { profile: Profile }) {
         className="max-w-xs"
         onClick={async () => {
           setSubmitting(true)
+          const longDescription =
+            editor?.getJSON() && editor.getHTML() !== '<p></p>'
+              ? editor.getJSON()
+              : null
           await saveProfile(
             {
               ...profile,
               username,
               bio,
-              long_description: editor?.getJSON() ?? null,
+              long_description: longDescription,
               website,
               full_name: fullName,
               regranter_status: regranterStatus,
