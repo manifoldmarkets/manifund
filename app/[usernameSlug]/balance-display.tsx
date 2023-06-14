@@ -6,8 +6,8 @@ import { PlusSmallIcon, MinusSmallIcon } from '@heroicons/react/24/solid'
 import React from 'react'
 import { DataPoint } from '@/components/data-point'
 import { Card } from '@/components/card'
-import Link from 'next/link'
 import { StripeDepositButton } from '@/components/stripe-deposit-button'
+import { roundMoney } from '@/utils/formatting'
 
 export function BalanceDisplay(props: {
   balance: number
@@ -60,7 +60,7 @@ export function BalanceDisplay(props: {
         <div className="w-full min-w-fit rounded border-none bg-orange-500 py-1 px-2">
           <DataPoint
             label="Balance"
-            value={`$${balance.toString()}`}
+            value={`$${roundMoney(balance)}`}
             theme="white"
           />
         </div>
@@ -69,7 +69,7 @@ export function BalanceDisplay(props: {
             key={stat.name}
             className="w-full min-w-fit border-none py-1 px-2"
           >
-            <DataPoint label={stat.name} value={`$${stat.value.toString()}`} />
+            <DataPoint label={stat.name} value={`$${roundMoney(stat.value)}`} />
           </Card>
         ))}
       </Row>
