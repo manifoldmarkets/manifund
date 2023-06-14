@@ -274,12 +274,19 @@ export function CreateGrantForm(props: {
       </Col>
       <Col className="gap-1">
         <label>Project description</label>
+        <p className="text-sm text-gray-500">
+          This will be displayed as the public description of this project, but
+          can be edited by the grant recipient. In this section, please describe
+          in objective terms the nature of the project.
+        </p>
         <TextEditor editor={descriptionEditor} />
       </Col>
       <Col className="gap-1">
         <label>Grantmaker notes & reasoning</label>
         <p className="text-sm text-gray-500">
-          This will be displayed as a public comment on this project.
+          This will be displayed as a public comment on this project. In this
+          section, please describe in subjective terms why you are excited to
+          fund this project.
         </p>
         <TextEditor editor={reasoningEditor} />
       </Col>
