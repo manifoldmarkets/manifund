@@ -18,6 +18,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const comment = req.body.record as Comment
+  console.log('req', req)
+  console.log('body', req.body)
   const supabaseAdmin = createAdminClient()
   const fullComment = await getFullCommentById(supabaseAdmin, comment.id)
   const htmlContent = generateHTML(comment.content as JSONContent, [
