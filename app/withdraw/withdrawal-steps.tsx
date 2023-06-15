@@ -102,6 +102,7 @@ export function WithdrawalSteps(props: {
   } else {
     errorMessage = null
   }
+
   return (
     <>
       <nav aria-label="Progress">
@@ -157,7 +158,6 @@ export function WithdrawalSteps(props: {
                   </span>
                 </Row>
               )}
-
               {stepIdx !== steps.length - 1 ? (
                 <>
                   <div
@@ -274,6 +274,27 @@ function ConfirmWithdrawal(props: {
     props
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [localComplete, setLocalComplete] = useState(complete)
+
+  const completeWithdrawal = async () => {
+    setIsSubmitting(true)
+    const response = await fetch('/api/stripe-connect-withdraw', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: withdrawAmount,
+      }),
+    })
+    const json = await response.json()
+    if (json.error) {
+      console.error(json.error)
+    } else {
+      setComplete(true)
+      setLocalComplete(true)
+    }
+    setIsSubmitting(false)
+  }
   return (
     <>
       {withdrawalMethod ? (
@@ -339,29 +360,7 @@ function ConfirmWithdrawal(props: {
                 <Row className="justify-center py-6 px-6">
                   <Button
                     className="font-semibold"
-                    onClick={async () => {
-                      setIsSubmitting(true)
-                      const response = await fetch(
-                        '/api/stripe-connect-withdraw',
-                        {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          body: JSON.stringify({
-                            amount: withdrawAmount,
-                          }),
-                        }
-                      )
-                      const json = await response.json()
-                      if (json.error) {
-                        console.error(json.error)
-                      } else {
-                        setComplete(true)
-                        setLocalComplete(true)
-                      }
-                      setIsSubmitting(false)
-                    }}
+                    onClick={completeWithdrawal}
                     disabled={isSubmitting || complete || localComplete}
                   >
                     Withdraw
