@@ -29,10 +29,8 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) {
-    {
-      console.log('no user')
-      return NextResponse.error()
-    }
+    console.log('no user')
+    return NextResponse.error()
   }
   const profile = await getProfileAndBidsById(supabase, user.id)
   if (!profile.stripe_connect_id) {
