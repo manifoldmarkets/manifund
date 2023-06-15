@@ -10,6 +10,17 @@ export function getURL() {
   return url
 }
 
+export function getAdminName(adminEmail: string) {
+  switch (adminEmail) {
+    case 'rachel.weinberg12@gmail.com':
+      return 'Rachel'
+    case 'akrolsmir@gmail.com':
+      return 'Austin'
+    default:
+      return null
+  }
+}
+
 export function getRoundTheme(roundTitle: string) {
   switch (roundTitle) {
     case 'ACX Mini-Grants':

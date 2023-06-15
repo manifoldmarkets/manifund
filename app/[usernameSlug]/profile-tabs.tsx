@@ -22,23 +22,23 @@ import { OutgoingDonationsHistory } from './user-donations'
 
 export function ProfileTabs(props: {
   profile: Profile
-  projectTransfers: ProjectTransfer[]
+  projectsPendingTransfer: Project[]
   projects: FullProject[]
   bids: BidAndProject[]
   txns: FullTxn[]
   userProfile: ProfileAndBids | null
   userTxns: Txn[] | null
-  userProjectTransfers: ProjectTransfer[]
+  userProjectsPendingTransfer: Project[]
 }) {
   const {
     profile,
-    projectTransfers,
+    projectsPendingTransfer,
     projects,
     bids,
     txns,
     userProfile,
     userTxns,
-    userProjectTransfers,
+    userProjectsPendingTransfer,
   } = props
   const isOwnProfile = userProfile?.id === profile.id
   const proposalBids = bids.filter(
@@ -73,7 +73,7 @@ export function ProfileTabs(props: {
     txns,
     profile.id,
     bids,
-    projectTransfers ?? [],
+    projectsPendingTransfer ?? [],
     profile.accreditation_status,
     balance
   )
@@ -83,7 +83,7 @@ export function ProfileTabs(props: {
           userTxns,
           userProfile?.id,
           userProfile?.bids,
-          userProjectTransfers ?? [],
+          userProjectsPendingTransfer ?? [],
           userProfile?.accreditation_status
         )
       : 0
@@ -113,9 +113,13 @@ export function ProfileTabs(props: {
           spendableBalance={spendableBalance}
           accredited={profile.accreditation_status}
           isOwnProfile={isOwnProfile ?? undefined}
+          userId={userProfile?.id ?? undefined}
         />
         {donations.length > 0 && (
-          <OutgoingDonationsHistory donations={donations} />
+          <OutgoingDonationsHistory
+            donations={donations}
+            projectsPendingTransfer={projectsPendingTransfer}
+          />
         )}
         {notOwnProjectInvestments.length > 0 && (
           <Investments investments={notOwnProjectInvestments} />
@@ -135,7 +139,16 @@ export function ProfileTabs(props: {
       href: '?tab=projects',
       count: projects.length,
       current: currentTabName === 'projects',
-      display: <Projects projects={projects} />,
+      display: (
+        <Projects
+          projects={projects.filter(
+            (project) =>
+              project.project_transfers.filter(
+                (transfer) => !transfer.transferred
+              ).length === 0
+          )}
+        />
+      ),
     })
   }
   if (profile.long_description) {

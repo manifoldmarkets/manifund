@@ -10,11 +10,12 @@ import { Shareholders } from './shareholders'
 import { calculateFullTrades, FullTrade } from '@/utils/math'
 import { Tabs } from '@/components/tabs'
 import { DonationsHistory } from '@/components/donations-history'
-import { CommentAndProfileAndTxns } from '@/db/comment'
+import { CommentAndProfile } from '@/db/comment'
+import { uniq } from 'lodash'
 
 export function ProjectTabs(props: {
   project: FullProject
-  comments: CommentAndProfileAndTxns[]
+  comments: CommentAndProfile[]
   user: Profile | null
   bids: BidAndProfile[]
   txns: TxnAndProfiles[]
@@ -34,6 +35,17 @@ export function ProjectTabs(props: {
   const currentTabName = searchParams.get('tab')
   const trades = calculateFullTrades(txns)
   const creator = project.profiles
+  const shareholders =
+    (project.stage === 'active' || project.stage === 'complete') &&
+    project.type === 'cert'
+      ? calculateShareholders(trades, creator)
+      : undefined
+  const commenterContributions = getCommenterContributions(
+    comments,
+    bids,
+    txns,
+    shareholders
+  )
 
   const tabs = [
     {
@@ -41,7 +53,14 @@ export function ProjectTabs(props: {
       href: '?tab=comments',
       count: comments.length,
       current: currentTabName === 'comments' || currentTabName === null,
-      display: <Comments project={project} comments={comments} user={user} />,
+      display: (
+        <Comments
+          project={project}
+          comments={comments}
+          user={user}
+          commenterContributions={commenterContributions}
+        />
+      ),
     },
   ]
 
@@ -69,11 +88,7 @@ export function ProjectTabs(props: {
       ),
     })
   }
-  if (
-    (project.stage === 'active' || project.stage === 'complete') &&
-    project.type === 'cert'
-  ) {
-    const shareholders = calculateShareholders(trades, creator)
+  if (shareholders) {
     tabs.push({
       name: 'Shareholders',
       href: '?tab=shareholders',
@@ -131,4 +146,55 @@ export function calculateShareholders(trades: FullTrade[], creator: Profile) {
     (shareholder) =>
       shareholder.numShares > 0 || shareholder.profile.id === creator.id
   )
+}
+
+export function getCommenterContributions(
+  comments: CommentAndProfile[],
+  bids: BidAndProfile[],
+  txns: TxnAndProfiles[],
+  shareholders?: Shareholder[]
+) {
+  const commenterIds = uniq(comments.map((comment) => comment.commenter))
+  const contributions = Object.fromEntries(
+    commenterIds.map((commenterId) => [commenterId, ''])
+  )
+  commenterIds.forEach((commenterId) => {
+    if (shareholders) {
+      const holding = shareholders.find(
+        (shareholder) => shareholder.profile.id === commenterId
+      )
+      if (holding) {
+        contributions[commenterId] = `HOLDS ${
+          (holding.numShares / TOTAL_SHARES) * 100
+        }%`
+      }
+    }
+    if (!contributions[commenterId] && txns) {
+      const donations = txns.filter(
+        (txn) =>
+          txn.from_id === commenterId && txn.token === 'USD' && !txn.bundle
+      )
+      const totalDonated = donations.reduce(
+        (total, txn) => total + txn.amount,
+        0
+      )
+      if (totalDonated > 0) {
+        contributions[commenterId] = `DONATED $${totalDonated}`
+      }
+    }
+    if (!contributions[commenterId]) {
+      const latestBid = bids
+        .reverse()
+        .find((bid) => bid.bidder === commenterId && bid.status === 'pending')
+      if (latestBid) {
+        contributions[commenterId] =
+          latestBid.type === 'donate'
+            ? `OFFERED $${latestBid.amount}`
+            : latestBid.type === 'buy'
+            ? `BUYING at $${latestBid.valuation}`
+            : `SELLING at $${latestBid.valuation}`
+      }
+    }
+  })
+  return contributions
 }

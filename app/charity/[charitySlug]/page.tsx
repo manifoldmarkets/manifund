@@ -13,7 +13,7 @@ import { uniq } from 'lodash'
 import { Col } from '@/components/layout/col'
 import Link from 'next/link'
 import { DonationsHistory } from '@/components/donations-history'
-import { getProjectTransfersByUser } from '@/db/project'
+import { getProjectsPendingTransferByUser } from '@/db/project'
 
 export const revalidate = 0
 
@@ -33,7 +33,7 @@ export default async function CharityPage(props: {
   const profile = await getProfileById(supabase, user?.id)
   const txns = await getTxnsByUser(supabase, user?.id ?? '')
   const bids = await getBidsByUser(supabase, user?.id ?? '')
-  const projectTransfers = await getProjectTransfersByUser(
+  const projectsPendingTransfer = await getProjectsPendingTransferByUser(
     supabase,
     user?.id ?? ''
   )
@@ -41,7 +41,7 @@ export default async function CharityPage(props: {
     txns,
     profile?.id as string,
     bids,
-    projectTransfers,
+    projectsPendingTransfer,
     profile?.accreditation_status as boolean
   )
   return (

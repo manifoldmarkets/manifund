@@ -5,13 +5,14 @@ import Image from 'next/image'
 import { getUser, getProfileById, Profile } from '@/db/profile'
 import { SidebarItem } from './sidebar-item'
 import { SUPABASE_ENV } from '@/db/env'
-import { User } from '@supabase/supabase-js'
 import { Avatar } from '@/components/avatar'
 import { formatMoney } from '@/utils/formatting'
 import { calculateUserBalance } from '@/utils/math'
 import { getTxnsByUser } from '@/db/txn'
 import { buttonClass } from '@/components/button'
 import clsx from 'clsx'
+import { Row } from '@/components/layout/row'
+import { StripeDepositButton } from '@/components/stripe-deposit-button'
 
 export const revalidate = 0
 export default async function Sidebar() {
@@ -82,9 +83,10 @@ export async function ProfileSummary(props: { profile: Profile }) {
       <Avatar username={profile.username} avatarUrl={profile.avatar_url} />
       <Link href={`/${profile.username}`} className="truncate">
         <div className="font-medium">{profile.full_name}</div>
-        <div className="text-sm">
+        <Row className="gap-2 py-0.5 text-sm">
           {formatMoney(calculateUserBalance(txns, profile.id))}
-        </div>
+          <StripeDepositButton userId={profile.id} small />
+        </Row>
       </Link>
     </div>
   )

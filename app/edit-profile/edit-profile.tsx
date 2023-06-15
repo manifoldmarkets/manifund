@@ -24,7 +24,7 @@ export function EditProfileForm(props: { profile: Profile }) {
   const [bio, setBio] = useState<string>(profile.bio)
   const [website, setWebsite] = useState<string | null>(profile.website)
   const [fullName, setFullName] = useState<string>(profile.full_name)
-  const editor = useTextEditor(profile.long_description)
+  const editor = useTextEditor(profile.long_description ?? '')
   const [avatar, setAvatar] = useState<File | null>(null)
   const [submitting, setSubmitting] = useState<boolean>(false)
   const [regranterStatus, setRegranterStatus] = useState(
@@ -220,15 +220,20 @@ export function EditProfileForm(props: { profile: Profile }) {
               to get verified as an accredited investor.
               <br />
               <br />
-              <p className="font-bold">
-                You need to hold $0 on your Manifund account to be verified as
-                an accredited investor.
-              </p>
+              <span className="font-bold">
+                To avoid potential mixing of funds, you cannot have any balance
+                on your Manifund account when you&apos;re verified as an
+                accredited investor
+              </span>
+              <span>
+                , so if you intend to become verified, please do so first before
+                depositing funds.
+              </span>
             </div>
           )}
         </Card>
       </Col>
-      <label htmlFor="avatar">Choose a profile picture:</label>
+      <label htmlFor="avatar">Choose a profile picture.</label>
       <div className="flex space-x-2">
         <div className="h-24 w-24">
           {avatar ? (
@@ -266,12 +271,16 @@ export function EditProfileForm(props: { profile: Profile }) {
         className="max-w-xs"
         onClick={async () => {
           setSubmitting(true)
+          const longDescription =
+            editor?.getJSON() && editor.getHTML() !== '<p></p>'
+              ? editor.getJSON()
+              : null
           await saveProfile(
             {
               ...profile,
               username,
               bio,
-              long_description: editor?.getJSON() ?? null,
+              long_description: longDescription,
               website,
               full_name: fullName,
               regranter_status: regranterStatus,

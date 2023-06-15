@@ -9,6 +9,9 @@ export type BidAndProfile = Bid & { profiles: Profile }
 export type FullBid = Bid & { profiles: Profile } & { projects: Project }
 
 export async function getBidsByUser(supabase: SupabaseClient, user: string) {
+  if (!user) {
+    return []
+  }
   const { data, error } = await supabase
     .from('bids')
     .select('*, projects(*)')

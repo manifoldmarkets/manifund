@@ -6,8 +6,11 @@ import {
 import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
-import { getFullTxnsByUser, getTxnsByUser } from '@/db/txn'
-import { getProjectsByUser, getProjectTransfersByUser } from '@/db/project'
+import { getFullTxnsByUser, getTxnsByUser, FullTxn } from '@/db/txn'
+import {
+  getProjectsByUser,
+  getProjectsPendingTransferByUser,
+} from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
 import { getBidsByUser } from '@/db/bid'
 
@@ -23,7 +26,10 @@ export default async function UserProfilePage(props: {
   if (!profile) {
     return <div>User not found</div>
   }
-  const projectTransfers = await getProjectTransfersByUser(supabase, profile.id)
+  const projectsPendingTransfer = await getProjectsPendingTransferByUser(
+    supabase,
+    profile.id
+  )
   const bids = await getBidsByUser(supabase, profile.id)
   const projects = await getProjectsByUser(supabase, profile.id)
   const txns = await getFullTxnsByUser(supabase, profile.id)
@@ -32,7 +38,7 @@ export default async function UserProfilePage(props: {
   const userProfile = user?.id
     ? await getProfileAndBidsById(supabase, user?.id)
     : null
-  const userProjectTransfers = await getProjectTransfersByUser(
+  const userProjectsPendingTransfer = await getProjectsPendingTransferByUser(
     supabase,
     user?.id ?? ''
   )
@@ -47,10 +53,10 @@ export default async function UserProfilePage(props: {
           projects={projects}
           bids={bids}
           txns={txns}
-          projectTransfers={projectTransfers}
+          projectsPendingTransfer={projectsPendingTransfer}
           userProfile={userProfile}
           userTxns={userTxns}
-          userProjectTransfers={userProjectTransfers}
+          userProjectsPendingTransfer={userProjectsPendingTransfer}
         />
         {isOwnProfile && (
           <div className="mt-5 flex justify-center">

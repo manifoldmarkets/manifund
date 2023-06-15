@@ -58,12 +58,10 @@ export async function listProjects(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('projects')
     .select(
-      'title, id, creator, slug, blurb, stage, funding_goal, type, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*)'
+      'title, id, creator, slug, blurb, stage, funding_goal, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*)'
     )
     .order('created_at', { ascending: false })
-  if (error) {
-    throw error
-  }
+    .throwOnError()
   return data as FullProject[]
 }
 
@@ -71,18 +69,34 @@ export async function getFullProjectBySlug(
   supabase: SupabaseClient,
   slug: string
 ) {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('projects')
     .select(
       '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*)'
     )
     .eq('slug', slug)
-  if (error) {
-    throw error
+    .throwOnError()
+  if (data === null) {
+    return null
   }
   return data[0] as FullProject
 }
 
+export type ProjectAndProfile = Project & { profiles: Profile }
+export async function getProjectAndProfileBySlug(
+  supabase: SupabaseClient,
+  slug: string
+) {
+  const { data } = await supabase
+    .from('projects')
+    .select('*, profiles(*)')
+    .eq('slug', slug)
+    .throwOnError()
+  if (data === null) {
+    return null
+  }
+  return data[0] as ProjectAndProfile
+}
 // Note: This does not include project or round descriptions, for a smaller payload
 export async function getFullProjectsByRound(
   supabase: SupabaseClient,
@@ -100,7 +114,7 @@ export async function getFullProjectsByRound(
   return data as FullProject[]
 }
 
-export async function getProjectTransfersByUser(
+export async function getProjectsPendingTransferByUser(
   supabase: SupabaseClient,
   userId: string
 ) {
@@ -108,7 +122,11 @@ export async function getProjectTransfersByUser(
     .from('projects')
     .select('*, project_transfers(*)')
     .eq('creator', userId)
-  return data
-    ?.map((project) => project.project_transfers[0])
-    .filter((projectTransfer) => projectTransfer) as ProjectTransfer[]
+  return (data as FullProject[])?.filter((project) => {
+    const numTransfers = project.project_transfers
+      ? project.project_transfers.filter((transfer) => !transfer.transferred)
+          .length
+      : 0
+    return numTransfers > 0
+  }) as Project[]
 }

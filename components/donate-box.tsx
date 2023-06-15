@@ -17,6 +17,7 @@ export function DonateBox(props: {
   const [amount, setAmount] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
+  const bid = project && project.stage === 'proposal'
 
   let errorMessage = null
   if (amount && amount > userSpendableFunds) {
@@ -27,7 +28,16 @@ export function DonateBox(props: {
   return (
     <Card className="flex flex-col gap-3 p-6">
       <div>
-        <h2 className="text-center text-xl font-bold">Donate</h2>
+        <h2 className="text-center text-xl font-bold">
+          {bid ? 'Offer to donate' : 'Donate'}
+        </h2>
+        {bid && (
+          <p className="text-center text-sm text-gray-500">
+            You are offering to donate this amount to the project on the
+            condition that it eventually becomes active. Otherwise, your funds
+            will remain in your Manifund account.
+          </p>
+        )}
         {charity?.type === 'individual' && (
           <p className="text-center text-sm text-gray-500">
             You are donating to this user&apos;s regranting budget, which is not
@@ -56,7 +66,7 @@ export function DonateBox(props: {
         onClick={async () => {
           setIsSubmitting(true)
           if (project && project.stage === 'proposal') {
-            const res = await fetch('/api/place-bid', {
+            await fetch('/api/place-bid', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -71,7 +81,7 @@ export function DonateBox(props: {
               }),
             })
           } else if (project || charity) {
-            const res = await fetch('/api/transfer-money', {
+            await fetch('/api/transfer-money', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -87,7 +97,7 @@ export function DonateBox(props: {
           setIsSubmitting(false)
           router.refresh()
         }}
-        disabled={!amount}
+        disabled={!amount || errorMessage !== null}
         loading={isSubmitting}
       >
         Donate
