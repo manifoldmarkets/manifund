@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { SupabaseClient, User } from '@supabase/supabase-js'
 import { Database } from '@/db/database.types'
 import { Project } from '@/db/project'
-import uuid from 'react-uuid'
 
 type ProjectTransferAndProject =
   Database['public']['Tables']['project_transfers']['Row'] & {
@@ -15,6 +14,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const user = req.body.record as User
+  console.log('req', req)
+  console.log('user', user)
   const supabaseAdmin = createAdminClient()
   const projectTransfers = await getTransfersByEmail(
     supabaseAdmin,
