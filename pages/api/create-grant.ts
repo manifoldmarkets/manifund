@@ -63,7 +63,7 @@ export default async function handler(req: NextRequest) {
     funding_goal: amount,
     founder_portion: TOTAL_SHARES,
     type: 'grant' as Project['type'],
-    stage: toEmail ? 'hidden' : 'active',
+    stage: toEmail ? 'hidden' : ('active' as Project['stage']),
     round: 'Regrants',
     slug,
   }
@@ -110,9 +110,7 @@ export default async function handler(req: NextRequest) {
       id: donorComment.txn_id,
       project: project.id,
       amount: amount,
-      from_id: regranter.id,
-      to_id: toProfile.id,
-      token: 'USD',
+      bidder: regranter.id,
     }
     await supabase
       .rpc('give_grant', {
