@@ -14,8 +14,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const user = req.body.record as User
-  console.log('req', req)
-  console.log('user', user)
   const supabaseAdmin = createAdminClient()
   const projectTransfers = await getTransfersByEmail(
     supabaseAdmin,
