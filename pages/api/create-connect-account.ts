@@ -32,6 +32,7 @@ export default async function handler(req: NextRequest) {
     .from('profiles')
     .update({ stripe_connect_id: account.id })
     .eq('id', user.id)
+    .throwOnError()
 
   const siteUrl = getURL()
   const accountLink = await stripe.accountLinks.create({
