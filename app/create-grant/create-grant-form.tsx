@@ -11,6 +11,7 @@ import { Row } from '@/components/layout/row'
 import { Avatar } from '@/components/avatar'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
+import { Card } from '@/components/card'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -268,15 +269,21 @@ export function CreateGrantForm(props: {
           onChange={(event) => setSubtitle(event.target.value)}
         />
       </Col>
-      <Col className="gap-1">
-        <label htmlFor="amount">Amount (USD)</label>
-        <Input
-          type="number"
-          id="amount"
-          value={amount}
-          onChange={(event) => setAmount(Number(event.target.value))}
-        />
-      </Col>
+      <Card>
+        <Col className="gap-1">
+          <label htmlFor="amount">Grant amount (USD)</label>
+          <p className="text-sm text-gray-500">
+            This is the amount of money you are commiting to funding this
+            project.
+          </p>
+          <Input
+            type="number"
+            id="amount"
+            value={amount}
+            onChange={(event) => setAmount(Number(event.target.value))}
+          />
+        </Col>
+      </Card>
       <Col className="gap-1">
         <label>Project description</label>
         <p className="text-sm text-gray-500">
