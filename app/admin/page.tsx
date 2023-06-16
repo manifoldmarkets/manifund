@@ -223,8 +223,7 @@ async function CreatorShares(props: {
   const userData = await calculateUserFundsAndShares(
     supabase,
     projectCreator,
-    projectId,
-    false
+    projectId
   )
   return <td>{userData.userShares}</td>
 }
