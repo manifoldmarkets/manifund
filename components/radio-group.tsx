@@ -1,19 +1,30 @@
 import { RadioGroup } from '@headlessui/react'
 import clsx from 'clsx'
+import { Row } from './layout/row'
 
 export function HorizontalRadioGroup(props: {
   value: string
   onChange: (value: string) => void
   options: { [key: string]: string }
+  wide?: boolean
 }) {
-  const { value, onChange, options } = props
+  const { value, onChange, options, wide } = props
   return (
-    <RadioGroup value={value} onChange={onChange} className="mt-2">
+    <RadioGroup
+      value={value}
+      onChange={onChange}
+      className={clsx('rounded-md shadow-sm', wide ? 'w-full' : 'max-w-fit')}
+    >
       <RadioGroup.Label className="sr-only">
         {' '}
         Choose your project type{' '}
       </RadioGroup.Label>
-      <div className="flex max-w-fit rounded-md border border-gray-300 bg-white p-2">
+      <Row
+        className={clsx(
+          'rounded-md border border-gray-300 bg-white p-2',
+          wide ? 'w-full justify-between' : ''
+        )}
+      >
         {Object.entries(options).map(([type, label]) => (
           <RadioGroup.Option
             key={type}
@@ -31,7 +42,7 @@ export function HorizontalRadioGroup(props: {
             <RadioGroup.Label as="span">{label}</RadioGroup.Label>
           </RadioGroup.Option>
         ))}
-      </div>
+      </Row>
     </RadioGroup>
   )
 }

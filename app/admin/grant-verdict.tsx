@@ -4,6 +4,7 @@ import { Button } from '@/components/button'
 import { TextEditor, useTextEditor } from '@/components/editor'
 import { Row } from '@/components/layout/row'
 import { Modal } from '@/components/modal'
+import { HorizontalRadioGroup } from '@/components/radio-group'
 import { RadioGroup } from '@headlessui/react'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
@@ -28,6 +29,10 @@ export function GrantVerdict(props: { projectId: string }) {
       defaultMessage === 'custom' ? '...' : defaultMessage
     }`
   )
+  const verdictOptions = {
+    approve: 'Approve',
+    reject: 'Reject',
+  }
 
   useEffect(() => {
     if (approveGrant) {
@@ -77,6 +82,11 @@ export function GrantVerdict(props: { projectId: string }) {
                 </RadioGroup.Option>
               </div>
             </RadioGroup>
+            <HorizontalRadioGroup
+              value={approveGrant ? 'approve' : 'reject'}
+              onChange={(event) => setApproveGrant(event === 'approve')}
+              options={verdictOptions}
+            />
             <div className="my-5">
               <p>Reason for verdict:</p>
               <p className="text-sm text-gray-500">

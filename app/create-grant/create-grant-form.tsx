@@ -11,7 +11,8 @@ import { Row } from '@/components/layout/row'
 import { Avatar } from '@/components/avatar'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
-import { Card } from '@/components/card'
+import { HorizontalRadioGroup } from '@/components/radio-group'
+import { InfoTooltip } from '@/components/info-tooltip'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -59,12 +60,19 @@ export function CreateGrantForm(props: {
   const [recipientEmail, setRecipientEmail] = useState('')
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
+  const [fundingOption, setFundingOption] = useState('fullyFund')
   const [amount, setAmount] = useState(0)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE)
   const reasoningEditor = useTextEditor(REASONING_OUTLINE)
   const router = useRouter()
+
+  const fundingOptions = {
+    fullyFund: 'is fully funded by this grant',
+    moreRoom: 'has room for more funding',
+    needsMore: 'needs more funding',
+  }
 
   let recipientDoesExistError = false
   useEffect(() => {
@@ -269,13 +277,33 @@ export function CreateGrantForm(props: {
           onChange={(event) => setSubtitle(event.target.value)}
         />
       </Col>
-      <Card>
+      <Col className="gap-1">
+        <label>This project...</label>
+        <HorizontalRadioGroup
+          value={fundingOption}
+          onChange={(event) => setFundingOption(event)}
+          options={fundingOptions}
+          wide
+        />
+      </Col>
+      <Col className="gap-1">
+        <label htmlFor="amount">Your contribution (USD)</label>
+        <Input
+          type="number"
+          id="amount"
+          value={amount}
+          onChange={(event) => setAmount(Number(event.target.value))}
+        />
+      </Col>
+      {fundingOption !== 'fullyFund' && (
         <Col className="gap-1">
-          <label htmlFor="amount">Grant amount (USD)</label>
-          <p className="text-sm text-gray-500">
-            This is the amount of money you are commiting to funding this
-            project.
-          </p>
+          <label htmlFor="amount">
+            Funding goal (USD){' '}
+            <InfoTooltip
+              text="This will be displayed as the funding goal so other donors know their contributions are valuable.
+"
+            />
+          </label>
           <Input
             type="number"
             id="amount"
@@ -283,7 +311,21 @@ export function CreateGrantForm(props: {
             onChange={(event) => setAmount(Number(event.target.value))}
           />
         </Col>
-      </Card>
+      )}
+      {fundingOption === 'needsMore' && (
+        <Col className="gap-1">
+          <label htmlFor="amount">
+            Minimum funding (USD){' '}
+            <InfoTooltip text="The project will not become active, and no funds will be transferred, until this minimum funding bar is met through your donations and others." />
+          </label>
+          <Input
+            type="number"
+            id="amount"
+            value={amount}
+            onChange={(event) => setAmount(Number(event.target.value))}
+          />
+        </Col>
+      )}
       <Col className="gap-1">
         <label>Project description</label>
         <p className="text-sm text-gray-500">
@@ -316,7 +358,7 @@ export function CreateGrantForm(props: {
         </Row>
         <div className="ml-3 text-sm leading-6">
           <label htmlFor="terms" className="font-medium text-gray-900">
-            Check this box to confirm
+            Check this box to confirm:
           </label>{' '}
           <span id="terms-description" className="text-gray-500">
             all information provided is true and accurate to the best of my
