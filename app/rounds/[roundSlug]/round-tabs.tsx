@@ -43,7 +43,7 @@ export function RoundTabs(props: {
   ]
   if (round.title === 'Regrants' && regranters) {
     tabs.push({
-      name: 'Regranters',
+      name: 'Regrantors',
       href: `?tab=regrants`,
       count: regranters.length,
       current: currentTabName === 'regrants',
@@ -52,7 +52,7 @@ export function RoundTabs(props: {
           {regranters.length === 0 ? (
             <EmptyContent
               icon={<UserPlusIcon className="h-10 w-10 text-gray-400" />}
-              title={'No regranters yet.'}
+              title={'No regrantors yet.'}
               subtitle={'Pending kickoff in early June.'}
             />
           ) : (
