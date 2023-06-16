@@ -49,8 +49,7 @@ export default async function handler(req: NextRequest) {
     txns,
     user.id,
     bids,
-    projectsPendingTransfer,
-    donor?.accreditation_status as boolean
+    projectsPendingTransfer
   )
   if (userSpendableFunds < amount) {
     return NextResponse.error()

@@ -105,16 +105,16 @@ export function calculateUserSpendableFunds(
   userId: string,
   bids: Bid[],
   projectsPendingTransfer: Project[],
-  accreditation_status: boolean,
   balance?: number
 ) {
   const currentBalance = balance ?? calculateUserBalance(txns, userId)
-  if (accreditation_status) {
-    return currentBalance
-  }
   const lockedFunds =
     bids
-      .filter((bid) => bid.status === 'pending' && bid.type === 'buy')
+      .filter(
+        (bid) =>
+          bid.status === 'pending' &&
+          (bid.type === 'buy' || bid.type === 'donate')
+      )
       .reduce((acc, bid) => acc + bid.amount, 0) +
     projectsPendingTransfer?.reduce(
       (acc, project) => acc + (project.funding_goal ?? 0),
@@ -126,8 +126,7 @@ export function calculateUserSpendableFunds(
 export async function calculateUserFundsAndShares(
   supabase: SupabaseClient,
   userId: string,
-  projectId: string,
-  accreditation_status: boolean
+  projectId: string
 ) {
   if (!userId) {
     return { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
@@ -162,8 +161,7 @@ export async function calculateUserFundsAndShares(
     txns,
     userId,
     userBids,
-    projectsPendingTransfer,
-    accreditation_status
+    projectsPendingTransfer
   )
   return { userSpendableFunds, userSellableShares, userShares }
 }

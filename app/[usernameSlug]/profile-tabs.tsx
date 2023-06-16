@@ -71,7 +71,6 @@ export function ProfileTabs(props: {
     profile.id,
     bids,
     projectsPendingTransfer ?? [],
-    profile.accreditation_status,
     balance
   )
   const userSpendableBalance =
@@ -80,8 +79,7 @@ export function ProfileTabs(props: {
           userTxns,
           userProfile?.id,
           userProfile?.bids,
-          userProjectsPendingTransfer ?? [],
-          userProfile?.accreditation_status
+          userProjectsPendingTransfer ?? []
         )
       : 0
 
