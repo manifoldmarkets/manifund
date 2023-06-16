@@ -110,6 +110,7 @@ export function ProfileTabs(props: {
           spendableBalance={spendableBalance}
           accredited={profile.accreditation_status}
           isOwnProfile={isOwnProfile ?? undefined}
+          userId={userProfile?.id ?? undefined}
         />
         {donations.length > 0 && (
           <OutgoingDonationsHistory

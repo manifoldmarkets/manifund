@@ -35,7 +35,7 @@ export function TextEditor(props: {
 }) {
   const { editor, children } = props
   return (
-    <div className="relative w-full overflow-hidden rounded-lg bg-white shadow-sm transition-colors">
+    <div className="relative w-full rounded-lg shadow-sm transition-colors">
       <EditorContent editor={editor} className="w-full" />
       {children}
     </div>

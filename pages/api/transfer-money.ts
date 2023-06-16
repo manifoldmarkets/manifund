@@ -2,12 +2,20 @@ import { getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
+import { getTxnsByUser } from '@/db/txn'
+import { getBidsByUser } from '@/db/bid'
+import { getProjectsPendingTransferByUser } from '@/db/project'
+import { calculateUserSpendableFunds } from '@/utils/math'
 import { sendTemplateEmail } from '@/utils/email'
 import { getURL } from '@/utils/constants'
 
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
+  // From https://github.com/lodash/lodash/issues/5525
+  unstable_allowDynamic: [
+    '**/node_modules/lodash/lodash.js', // Use a glob to allow anything in the function-bind 3rd party module
+  ],
 }
 
 // May add optional project field for regrantors later
@@ -24,8 +32,27 @@ export default async function handler(req: NextRequest) {
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
-  // Only initiate transfers from the account currently logged in
   if (user?.id !== fromId) {
+    return NextResponse.error()
+  }
+  const donor = await getProfileById(supabase, user?.id)
+  if (!donor) {
+    return NextResponse.error()
+  }
+  const txns = await getTxnsByUser(supabase, user?.id ?? '')
+  const bids = await getBidsByUser(supabase, user?.id ?? '')
+  const projectsPendingTransfer = await getProjectsPendingTransferByUser(
+    supabase,
+    user?.id ?? ''
+  )
+  const userSpendableFunds = calculateUserSpendableFunds(
+    txns,
+    user.id,
+    bids,
+    projectsPendingTransfer,
+    donor?.accreditation_status as boolean
+  )
+  if (userSpendableFunds < amount) {
     return NextResponse.error()
   }
   const supabaseAdmin = createAdminClient()
@@ -37,10 +64,6 @@ export default async function handler(req: NextRequest) {
     project: projectId ?? null,
   })
 
-  const donor = await getProfileById(supabaseAdmin, fromId)
-  if (!donor) {
-    return NextResponse.error()
-  }
   if (projectId) {
     const project = await getProjectById(supabaseAdmin, projectId)
     const postmarkVars = {
