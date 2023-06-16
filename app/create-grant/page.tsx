@@ -50,8 +50,7 @@ export default async function CreateGrantPage() {
     txns,
     profile.id,
     bids,
-    projectsPendingTransfer,
-    profile?.accreditation_status as boolean
+    projectsPendingTransfer
   )
   return (
     <CreateGrantForm
