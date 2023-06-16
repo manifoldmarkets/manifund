@@ -61,7 +61,9 @@ export function CreateGrantForm(props: {
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
   const [fundingOption, setFundingOption] = useState('fullyFund')
-  const [amount, setAmount] = useState(0)
+  const [donorContribution, setDonorContribution] = useState(0)
+  const [fundingGoal, setFundingGoal] = useState(0)
+  const [minFunding, setMinFunding] = useState(0)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE)
@@ -69,9 +71,9 @@ export function CreateGrantForm(props: {
   const router = useRouter()
 
   const fundingOptions = {
-    fullyFund: 'is fully funded by this grant',
-    moreRoom: 'has room for more funding',
-    needsMore: 'needs more funding',
+    fullyFund: 'be fully funded',
+    moreRoom: 'have room for more funding',
+    needsMore: 'need more funding',
   }
 
   let recipientDoesExistError = false
@@ -96,6 +98,15 @@ export function CreateGrantForm(props: {
     }
   }, [recipientFullName, recipientOnManifund])
 
+  useEffect(() => {
+    if (fundingOption === 'fullyFund') {
+      setFundingGoal(donorContribution)
+      setMinFunding(donorContribution)
+    } else if (fundingOption === 'moreRoom') {
+      setMinFunding(donorContribution)
+    }
+  }, [fundingOption, donorContribution])
+
   let errorMessage = null
   if (!recipientOnManifund && !recipientFullName) {
     errorMessage = 'Please enter the name of the recipient.'
@@ -105,9 +116,22 @@ export function CreateGrantForm(props: {
     errorMessage = 'Please select the recipient.'
   } else if (!title) {
     errorMessage = 'Please enter a title for your grant.'
-  } else if (amount <= 0) {
-    errorMessage = 'Please enter a positive amount.'
-  } else if (regranterSpendableFunds < amount) {
+  } else if (donorContribution <= 0) {
+    errorMessage = 'Please enter a positive donation amount.'
+  } else if (minFunding <= 0) {
+    errorMessage = 'Please enter a positive minimum funding amount.'
+  } else if (
+    fundingOption !== 'fullyFund' &&
+    fundingGoal <= donorContribution
+  ) {
+    errorMessage =
+      'The funding goal must be greater than your contribution. Otherwise, indicate that the project will be fully funded.'
+  } else if (fundingOption === 'needsMore' && fundingGoal <= minFunding) {
+    errorMessage = 'The funding goal must be greater than the minimum funding.'
+  } else if (fundingOption === 'needsMore' && minFunding <= donorContribution) {
+    errorMessage =
+      'The minimum funding must be greater than your contribution. Otherwise, indicate that the project does not need more funding.'
+  } else if (regranterSpendableFunds < donorContribution) {
     errorMessage = `You currently have $${regranterSpendableFunds} to give away. If you'd like to give a larger grant, you can add money to your account or raise more funds from other users on Manifund.`
   } else if (!agreedToTerms) {
     errorMessage =
@@ -278,7 +302,7 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Col className="gap-1">
-        <label>This project...</label>
+        <label>After recieving this grant, this project will...</label>
         <HorizontalRadioGroup
           value={fundingOption}
           onChange={(event) => setFundingOption(event)}
@@ -287,12 +311,12 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="amount">Your contribution (USD)</label>
+        <label htmlFor="donorContribution">Your contribution (USD)</label>
         <Input
           type="number"
-          id="amount"
-          value={amount}
-          onChange={(event) => setAmount(Number(event.target.value))}
+          id="donorContribution"
+          value={donorContribution}
+          onChange={(event) => setDonorContribution(Number(event.target.value))}
         />
       </Col>
       {fundingOption !== 'fullyFund' && (
@@ -307,8 +331,8 @@ export function CreateGrantForm(props: {
           <Input
             type="number"
             id="amount"
-            value={amount}
-            onChange={(event) => setAmount(Number(event.target.value))}
+            value={fundingGoal}
+            onChange={(event) => setFundingGoal(Number(event.target.value))}
           />
         </Col>
       )}
@@ -321,8 +345,8 @@ export function CreateGrantForm(props: {
           <Input
             type="number"
             id="amount"
-            value={amount}
-            onChange={(event) => setAmount(Number(event.target.value))}
+            value={minFunding}
+            onChange={(event) => setMinFunding(Number(event.target.value))}
           />
         </Col>
       )}
@@ -388,7 +412,9 @@ export function CreateGrantForm(props: {
               subtitle,
               description,
               donorNotes,
-              amount,
+              donorContribution,
+              fundingGoal,
+              minFunding,
               toEmail: recipientOnManifund ? undefined : recipientEmail,
               toUsername: recipientOnManifund ? recipient?.username : undefined,
             }),
