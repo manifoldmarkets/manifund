@@ -330,7 +330,7 @@ export function CreateGrantForm(props: {
           </label>
           <Input
             type="number"
-            id="amount"
+            id="fundingGoal"
             value={fundingGoal}
             onChange={(event) => setFundingGoal(Number(event.target.value))}
           />
@@ -344,7 +344,7 @@ export function CreateGrantForm(props: {
           </label>
           <Input
             type="number"
-            id="amount"
+            id="minFunding"
             value={minFunding}
             onChange={(event) => setMinFunding(Number(event.target.value))}
           />
