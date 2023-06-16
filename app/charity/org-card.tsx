@@ -7,7 +7,6 @@ import { calculateUserBalance } from '@/utils/math'
 import Image from 'next/image'
 import Link from 'next/link'
 
-// May want to use later for regrantors as well
 export function OrgCard(props: { charity: ProfileAndTxns }) {
   const { charity } = props
   const raised = calculateUserBalance(charity.txns, charity.id)

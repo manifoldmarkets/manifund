@@ -41,8 +41,7 @@ export default async function CharityPage(props: {
     txns,
     profile?.id as string,
     bids,
-    projectsPendingTransfer,
-    profile?.accreditation_status as boolean
+    projectsPendingTransfer
   )
   return (
     <div className="p-4">
