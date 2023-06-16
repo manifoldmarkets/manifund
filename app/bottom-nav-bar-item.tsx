@@ -46,9 +46,6 @@ export function NavBarItem(props: {
     return (
       <button
         className={clsx(itemClass, touched && touchItemClass)}
-        // onClick={() => {
-        //   item.onClick?.()
-        // }}
         onTouchStart={() => setTouched(true)}
         onTouchEnd={() => setTouched(false)}
       >

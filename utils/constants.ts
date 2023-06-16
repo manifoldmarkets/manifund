@@ -50,7 +50,7 @@ export function getSponsoredText(regrantorName: string) {
       return '$50K'
     case 'Adam Gleave':
       return '$400K'
-    case 'Dan Hendryks':
+    case 'Dan Hendrycks':
       return '$400K'
     default:
       return null
