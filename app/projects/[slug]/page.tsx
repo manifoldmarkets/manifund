@@ -40,12 +40,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
   const { userSpendableFunds, userSellableShares, userShares } = user
-    ? await calculateUserFundsAndShares(
-        supabase,
-        user.id,
-        project.id,
-        profile?.accreditation_status as boolean
-      )
+    ? await calculateUserFundsAndShares(supabase, user.id, project.id)
     : { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
   const comments = await getCommentsByProject(supabase, project.id)
   const bids = await getBidsByProject(supabase, project.id)
