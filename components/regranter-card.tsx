@@ -42,6 +42,7 @@ export function RegranterCard(props: {
             avatarUrl={regranter.avatar_url}
             username={regranter.username}
             size={24}
+            className="shadow-md"
           />
         </Row>
         <Col className="flex h-full w-full flex-col gap-1">
