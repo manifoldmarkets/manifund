@@ -73,9 +73,9 @@ function LandingSection() {
       <div className="flex flex-col justify-between gap-3 sm:flex-row">
         <FeatureCard
           icon={<ArrowPathIcon className="h-7 w-7" />}
-          title="Donor-advised funds"
-          description="A donor-advised fund (DAF) is a charitable giving vehicle administered by a third party and created for the purpose of managing charitable donations on behalf of an organization, family, or individual."
-          url="/about#donor-advised-funds"
+          title="Regranting"
+          description="Allows donors to outsource their giving to qualified and trusted regrantors."
+          url="/about#regranting"
         />
         <FeatureCard
           icon={<ArrowTrendingUpIcon className="h-7 w-7" />}
