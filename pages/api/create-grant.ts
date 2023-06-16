@@ -19,7 +19,9 @@ type GrantProps = {
   subtitle: string
   description: JSONContent
   donorNotes: JSONContent
-  amount: number
+  donorContribution: number
+  fundingGoal: number
+  minFunding: number
   toEmail?: string
   toUsername?: string
 }
@@ -30,7 +32,9 @@ export default async function handler(req: NextRequest) {
     subtitle,
     description,
     donorNotes,
-    amount,
+    donorContribution,
+    fundingGoal,
+    minFunding,
     toEmail,
     toUsername,
   } = (await req.json()) as GrantProps
@@ -59,8 +63,8 @@ export default async function handler(req: NextRequest) {
     title,
     blurb: subtitle,
     description,
-    min_funding: amount,
-    funding_goal: amount,
+    min_funding: minFunding,
+    funding_goal: fundingGoal,
     founder_portion: TOTAL_SHARES,
     type: 'grant' as Project['type'],
     stage: 'proposal' as Project['stage'],
@@ -79,7 +83,7 @@ export default async function handler(req: NextRequest) {
     const projectTransfer = {
       to_email: toEmail,
       project_id: project.id,
-      grant_amount: amount,
+      grant_amount: donorContribution,
       donor_comment_id: donorComment.id,
     }
     await supabase.rpc('create_transfer_grant', {
@@ -88,7 +92,7 @@ export default async function handler(req: NextRequest) {
       project_transfer: projectTransfer,
     })
     const postmarkVars = {
-      amount: amount,
+      amount: donorContribution,
       regranterName: regranterProfile.full_name,
       projectTitle: title,
       loginUrl: `${getURL()}login?email=${toEmail}`,
@@ -110,7 +114,7 @@ export default async function handler(req: NextRequest) {
     }
     const donation = {
       project: project.id,
-      amount: amount,
+      amount: donorContribution,
       bidder: regranter.id,
     }
     await supabase
@@ -121,7 +125,7 @@ export default async function handler(req: NextRequest) {
       })
       .throwOnError()
     const postmarkVars = {
-      amount: amount,
+      amount: donorContribution,
       regranterName: regranterProfile.full_name,
       projectTitle: title,
       projectUrl: `${getURL()}projects/${slug}`,

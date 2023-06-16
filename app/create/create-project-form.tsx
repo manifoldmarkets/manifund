@@ -1,7 +1,6 @@
 'use client'
 
 import { useSupabase } from '@/db/supabase-provider'
-import { Database } from '@/db/database.types'
 import { useEffect, useState } from 'react'
 import { Input } from '@/components/input'
 import { Button } from '@/components/button'
@@ -21,6 +20,7 @@ import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Card } from '@/components/card'
 import { RadioGroup } from '@headlessui/react'
+import { HorizontalRadioGroup } from '@/components/radio-group'
 
 const DEFAULT_DESCRIPTION = `
 <h3>Project description</h3>
@@ -161,35 +161,11 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
-      <RadioGroup
+      <HorizontalRadioGroup
         value={projectType}
-        onChange={setProjectType}
-        className="mt-2"
-      >
-        <RadioGroup.Label className="sr-only">
-          {' '}
-          Choose your project type{' '}
-        </RadioGroup.Label>
-        <div className="flex max-w-fit rounded-md border border-gray-300 bg-white p-2">
-          {Object.entries(projectTypeLabels).map(([type, label]) => (
-            <RadioGroup.Option
-              key={type}
-              value={type}
-              className={({ checked }) =>
-                clsx(
-                  'cursor-pointer focus:outline-none',
-                  checked
-                    ? 'bg-orange-500 text-white hover:bg-orange-600'
-                    : 'bg-white text-gray-900',
-                  'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold'
-                )
-              }
-            >
-              <RadioGroup.Label as="span">{label}</RadioGroup.Label>
-            </RadioGroup.Option>
-          ))}
-        </div>
-      </RadioGroup>
+        onChange={(event) => setProjectType(event as Project['type'])}
+        options={projectTypeLabels}
+      />
       <label htmlFor="title">Title</label>
       <Input
         className="text-2xl font-bold"
