@@ -73,8 +73,6 @@ export function DonateBox(props: {
               },
               body: JSON.stringify({
                 projectId: project.id,
-                projectStage: project.stage,
-                bidderId: userId,
                 valuation: 0,
                 amount,
                 type: 'donate',

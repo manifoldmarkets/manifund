@@ -6,7 +6,7 @@ import {
 import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
-import { getFullTxnsByUser, getTxnsByUser, FullTxn } from '@/db/txn'
+import { getFullTxnsByUser, getTxnsByUser } from '@/db/txn'
 import {
   getProjectsByUser,
   getProjectsPendingTransferByUser,
