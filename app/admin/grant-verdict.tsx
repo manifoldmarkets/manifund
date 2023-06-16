@@ -46,42 +46,6 @@ export function GrantVerdict(props: { projectId: string }) {
         <div className="p-3">
           <h1 className="text-lg font-semibold">Grant verdict</h1>
           <div>
-            <RadioGroup
-              value={approveGrant}
-              onChange={setApproveGrant}
-              className="mt-2"
-            >
-              <div className="flex max-w-fit rounded-md border border-gray-300 bg-white p-2">
-                <RadioGroup.Option
-                  value={false}
-                  className={({ checked }) =>
-                    clsx(
-                      'cursor-pointer focus:outline-none',
-                      checked
-                        ? 'bg-orange-500 text-white hover:bg-orange-600'
-                        : 'bg-white text-gray-900',
-                      'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold'
-                    )
-                  }
-                >
-                  <RadioGroup.Label as="span">Reject</RadioGroup.Label>
-                </RadioGroup.Option>
-                <RadioGroup.Option
-                  value={true}
-                  className={({ checked }) =>
-                    clsx(
-                      'cursor-pointer focus:outline-none',
-                      checked
-                        ? 'bg-orange-500 text-white hover:bg-orange-600'
-                        : 'bg-white text-gray-900',
-                      'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold'
-                    )
-                  }
-                >
-                  <RadioGroup.Label as="span">Approve</RadioGroup.Label>
-                </RadioGroup.Option>
-              </div>
-            </RadioGroup>
             <HorizontalRadioGroup
               value={approveGrant ? 'approve' : 'reject'}
               onChange={(event) => setApproveGrant(event === 'approve')}
