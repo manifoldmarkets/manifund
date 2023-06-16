@@ -11,6 +11,8 @@ import { Row } from '@/components/layout/row'
 import { Avatar } from '@/components/avatar'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
+import { HorizontalRadioGroup } from '@/components/radio-group'
+import { InfoTooltip } from '@/components/info-tooltip'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -58,12 +60,21 @@ export function CreateGrantForm(props: {
   const [recipientEmail, setRecipientEmail] = useState('')
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
-  const [amount, setAmount] = useState(0)
+  const [fundingOption, setFundingOption] = useState('fullyFund')
+  const [donorContribution, setDonorContribution] = useState(0)
+  const [fundingGoal, setFundingGoal] = useState(0)
+  const [minFunding, setMinFunding] = useState(0)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE)
   const reasoningEditor = useTextEditor(REASONING_OUTLINE)
   const router = useRouter()
+
+  const fundingOptions = {
+    fullyFund: 'be fully funded',
+    moreRoom: 'have room for more funding',
+    needsMore: 'need more funding',
+  }
 
   let recipientDoesExistError = false
   useEffect(() => {
@@ -87,6 +98,15 @@ export function CreateGrantForm(props: {
     }
   }, [recipientFullName, recipientOnManifund])
 
+  useEffect(() => {
+    if (fundingOption === 'fullyFund') {
+      setFundingGoal(donorContribution)
+      setMinFunding(donorContribution)
+    } else if (fundingOption === 'moreRoom') {
+      setMinFunding(donorContribution)
+    }
+  }, [fundingOption, donorContribution])
+
   let errorMessage = null
   if (!recipientOnManifund && !recipientFullName) {
     errorMessage = 'Please enter the name of the recipient.'
@@ -96,9 +116,22 @@ export function CreateGrantForm(props: {
     errorMessage = 'Please select the recipient.'
   } else if (!title) {
     errorMessage = 'Please enter a title for your grant.'
-  } else if (amount <= 0) {
-    errorMessage = 'Please enter a positive amount.'
-  } else if (regranterSpendableFunds < amount) {
+  } else if (donorContribution <= 0) {
+    errorMessage = 'Please enter a positive donation amount.'
+  } else if (minFunding <= 0) {
+    errorMessage = 'Please enter a positive minimum funding amount.'
+  } else if (
+    fundingOption !== 'fullyFund' &&
+    fundingGoal <= donorContribution
+  ) {
+    errorMessage =
+      'The funding goal must be greater than your contribution. Otherwise, indicate that the project will be fully funded.'
+  } else if (fundingOption === 'needsMore' && fundingGoal <= minFunding) {
+    errorMessage = 'The funding goal must be greater than the minimum funding.'
+  } else if (fundingOption === 'needsMore' && minFunding <= donorContribution) {
+    errorMessage =
+      'The minimum funding must be greater than your contribution. Otherwise, indicate that the project does not need more funding.'
+  } else if (regranterSpendableFunds < donorContribution) {
     errorMessage = `You currently have $${regranterSpendableFunds} to give away. If you'd like to give a larger grant, you can add money to your account or raise more funds from other users on Manifund.`
   } else if (!agreedToTerms) {
     errorMessage =
@@ -269,14 +302,54 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="amount">Amount (USD)</label>
-        <Input
-          type="number"
-          id="amount"
-          value={amount}
-          onChange={(event) => setAmount(Number(event.target.value))}
+        <label>After recieving this grant, this project will...</label>
+        <HorizontalRadioGroup
+          value={fundingOption}
+          onChange={(event) => setFundingOption(event)}
+          options={fundingOptions}
+          wide
         />
       </Col>
+      <Col className="gap-1">
+        <label htmlFor="donorContribution">Your contribution (USD)</label>
+        <Input
+          type="number"
+          id="donorContribution"
+          value={donorContribution}
+          onChange={(event) => setDonorContribution(Number(event.target.value))}
+        />
+      </Col>
+      {fundingOption !== 'fullyFund' && (
+        <Col className="gap-1">
+          <label htmlFor="amount">
+            Funding goal (USD){' '}
+            <InfoTooltip
+              text="This will be displayed as the funding goal so other donors know their contributions are valuable.
+"
+            />
+          </label>
+          <Input
+            type="number"
+            id="fundingGoal"
+            value={fundingGoal}
+            onChange={(event) => setFundingGoal(Number(event.target.value))}
+          />
+        </Col>
+      )}
+      {fundingOption === 'needsMore' && (
+        <Col className="gap-1">
+          <label htmlFor="amount">
+            Minimum funding (USD){' '}
+            <InfoTooltip text="The project will not become active, and no funds will be transferred, until this minimum funding bar is met through your donations and others." />
+          </label>
+          <Input
+            type="number"
+            id="minFunding"
+            value={minFunding}
+            onChange={(event) => setMinFunding(Number(event.target.value))}
+          />
+        </Col>
+      )}
       <Col className="gap-1">
         <label>Project description</label>
         <p className="text-sm text-gray-500">
@@ -309,7 +382,7 @@ export function CreateGrantForm(props: {
         </Row>
         <div className="ml-3 text-sm leading-6">
           <label htmlFor="terms" className="font-medium text-gray-900">
-            Check this box to confirm
+            Check this box to confirm:
           </label>{' '}
           <span id="terms-description" className="text-gray-500">
             all information provided is true and accurate to the best of my
@@ -339,7 +412,9 @@ export function CreateGrantForm(props: {
               subtitle,
               description,
               donorNotes,
-              amount,
+              donorContribution,
+              fundingGoal,
+              minFunding,
               toEmail: recipientOnManifund ? undefined : recipientEmail,
               toUsername: recipientOnManifund ? recipient?.username : undefined,
             }),
