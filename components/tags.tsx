@@ -151,7 +151,7 @@ export function RegranterTag() {
       <Row className="max-w-fit gap-0.5 rounded-full bg-orange-100 px-2  pt-1 text-center text-sm">
         <ArrowPathIcon className="relative bottom-0.5 m-auto h-4 w-4 text-orange-500" />
         <div className="text-md relative bottom-0.5 font-light leading-tight text-orange-500">
-          regranter
+          regrantor
         </div>
       </Row>
     </Tooltip>
