@@ -11,6 +11,7 @@ import {
   ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import { FireIcon } from '@heroicons/react/24/solid'
+import Image from 'next/image'
 
 const COLORS = [
   'bg-indigo-200',
@@ -60,6 +61,7 @@ export function RoundTag(props: { roundTitle: string; roundSlug?: string }) {
 
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
+import { Col } from './layout/col'
 export function StageTag(props: { projectStage: string }) {
   const { projectStage } = props
   switch (projectStage) {
@@ -169,6 +171,30 @@ export function Tag(props: {
       className={`max-w-fit rounded-sm px-2 py-1 text-sm font-bold bg-${color}-100 text-${color}-500 ${className}`}
     >
       {text}
+    </div>
+  )
+}
+
+export function SponsoredTag(props: { text: string; className?: string }) {
+  const { text, className } = props
+  return (
+    <div className={clsx('rounded bg-orange-100 p-1', className)}>
+      <Tooltip text={`Sponsored by Manifund for ${text}`}>
+        <Row className="gap-0.5">
+          <Col className="justify-center text-sm font-medium text-orange-500">
+            <Image
+              className="h-4 w-4"
+              src="/SolidOrangeManifox.png"
+              alt="Manifox"
+              width={1000}
+              height={1000}
+            />
+          </Col>
+          <Col className="justify-center text-sm font-medium text-orange-500">
+            {text}
+          </Col>
+        </Row>
+      </Tooltip>
     </div>
   )
 }
