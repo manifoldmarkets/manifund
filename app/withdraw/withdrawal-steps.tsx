@@ -95,7 +95,7 @@ export function WithdrawalSteps(props: {
 
   let errorMessage = null
   if (accountStatus !== 'complete' && currentStep.id === 1) {
-    errorMessage = 'You need to set up your stripe account before continuing.'
+    errorMessage = 'You need to set up your Stripe account before continuing.'
   } else if (withdrawAmount < 10 && currentStep.id === 2) {
     errorMessage = 'Minimum withdrawal is $10.'
   } else if (withdrawAmount > withdrawBalance && currentStep.id === 2) {
@@ -300,7 +300,7 @@ function ConfirmWithdrawal(props: {
           </div>
         </div>
       ) : (
-        <div>You need to set up your stripe account before withdrawing.</div>
+        <div>You need to set up your Stripe account before withdrawing.</div>
       )}
     </>
   )

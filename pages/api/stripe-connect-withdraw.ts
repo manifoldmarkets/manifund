@@ -11,7 +11,7 @@ import { sendTemplateEmail } from '@/utils/email'
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
-  // From https://github.com/lodash/lodash/issues/5525
+  // From https://github.com/lodash/lodash/issues/5525 required for Stripe & lodash to work
   unstable_allowDynamic: [
     '**/node_modules/function-bind/implementation.js',
     '**/node_modules/lodash/lodash.js', // Use a glob to allow anything in the function-bind 3rd party module
