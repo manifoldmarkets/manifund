@@ -33,7 +33,7 @@ export function GrantVerdict(props: { projectId: string }) {
     if (approveGrant) {
       editor?.commands.setContent('')
     }
-  })
+  }, [approveGrant])
   return (
     <>
       <Button onClick={() => setOpen(true)}>🔔</Button>

@@ -55,7 +55,7 @@ export type FullProject = Project & { profiles: Profile } & {
 }
 
 export async function listProjects(supabase: SupabaseClient) {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('projects')
     .select(
       'title, id, creator, slug, blurb, stage, funding_goal, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*)'
@@ -129,4 +129,20 @@ export async function getProjectsPendingTransferByUser(
       : 0
     return numTransfers > 0
   }) as Project[]
+}
+
+export type ProjectAndBids = Project & { bids: Bid[] }
+export async function getProjectAndBidsById(
+  supabase: SupabaseClient,
+  projectId: string
+) {
+  const { data } = await supabase
+    .from('projects')
+    .select('*, bids(*)')
+    .eq('id', projectId)
+    .throwOnError()
+  if (data === null) {
+    return null
+  }
+  return data[0] as ProjectAndBids
 }

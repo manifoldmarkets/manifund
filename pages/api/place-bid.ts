@@ -6,40 +6,52 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
+import { getProjectById } from '@/db/project'
+import { getUser } from '@/db/profile'
+import { maybeActivateGrant } from '@/utils/activate-grant'
 
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
+  // From https://github.com/lodash/lodash/issues/5525
+  unstable_allowDynamic: [
+    '**/node_modules/lodash/lodash.js', // Use a glob to allow anything in the function-bind 3rd party module
+  ],
 }
 
 type BidProps = {
   projectId: string
-  projectStage: Project['stage']
-  bidderId: string
   valuation: number
   amount: number
-  type: 'buy' | 'sell'
+  type: Bid['type']
 }
 
 export default async function handler(req: NextRequest) {
-  const { projectId, projectStage, bidderId, valuation, amount, type } =
-    (await req.json()) as BidProps
+  const { projectId, valuation, amount, type } = (await req.json()) as BidProps
   const supabase = createEdgeClient(req)
+  const user = await getUser(supabase)
+  if (!user) {
+    return new Response('Unauthorized', { status: 401 })
+  }
+  const project = await getProjectById(supabase, projectId)
+  if (!project) {
+    return new Response('Project not found', { status: 404 })
+  }
   const id = uuid()
   const newBid = {
     id,
     project: projectId,
-    bidder: bidderId,
+    bidder: user.id,
     valuation,
     amount,
     status: 'pending' as Bid['status'],
     type,
   }
-  const { error } = await supabase.from('bids').insert([newBid])
-  if (error) {
-    throw error
+  await supabase.from('bids').insert([newBid]).throwOnError()
+  if (type === 'donate') {
+    await maybeActivateGrant(supabase, projectId)
   }
-  if (projectStage === 'active') {
+  if (project.stage === 'active') {
     await findAndMakeTrades(newBid, supabase)
   }
 }
