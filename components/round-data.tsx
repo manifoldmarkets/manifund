@@ -32,14 +32,14 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
         {round.title === 'Regrants' && (
           <DataPoint
             value={regranters.length.toString()}
-            label="regranters"
+            label="regrantors"
             theme={getRoundTheme(round.title)}
           />
         )}
         {round.title === 'Regrants' && (
           <DataPoint
             value={projects.length.toString()}
-            label="projects"
+            label={projects.length === 1 ? 'project' : 'projects'}
             theme={getRoundTheme(round.title)}
           />
         )}
