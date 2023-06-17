@@ -330,12 +330,9 @@ export function CreateGrantForm(props: {
         <Input
           type="number"
           id="donorContribution"
-          value={donorContribution}
+          value={donorContribution !== 0 ? donorContribution : ''}
           onChange={(event) => setDonorContribution(Number(event.target.value))}
-          error={
-            donorContribution <= 0 ||
-            regranterSpendableFunds < donorContribution
-          }
+          error={regranterSpendableFunds < donorContribution}
         />
         {regranterSpendableFunds < donorContribution && (
           <span className="text-sm text-rose-500">
@@ -354,7 +351,7 @@ export function CreateGrantForm(props: {
           <Input
             type="number"
             id="fundingGoal"
-            value={fundingGoal}
+            value={fundingGoal !== 0 ? fundingGoal : ''}
             onChange={(event) => setFundingGoal(Number(event.target.value))}
           />
         </Col>
@@ -368,7 +365,7 @@ export function CreateGrantForm(props: {
           <Input
             type="number"
             id="minFunding"
-            value={minFunding}
+            value={minFunding !== 0 ? minFunding : ''}
             onChange={(event) => setMinFunding(Number(event.target.value))}
           />
         </Col>
