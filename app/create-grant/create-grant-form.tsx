@@ -23,18 +23,18 @@ const DESCRIPTION_OUTLINE = `
 </br>
 <h3>How could this project be actively harmful?</h3>
 </br>
-<h3>What other funding is this person or project getting? Where else did this person or project apply for funding in the past?</h3>
+<h3>What other funding is this person or project getting?</h3>
 </br>
 `
 
 const REASONING_OUTLINE = `
 <h3>Main points in favor of this grant</h3>
 </br>
-<h3>Donor's main reservations about this grant</h3>
+<h3>Donor's main reservations</h3>
 </br>
-<h3>Process for deciding grant amount</h3>
+<h3>Process for deciding amount</h3>
 </br>
-<h3>Conflicts of interest associated with this grant</h3>
+<h3>Conflicts of interest</h3>
 <p>Please disclose e.g. any romantic, professional, financial, housemate, or familial relationships you have with the grant recipient(s).</p>
 </br>
 `
