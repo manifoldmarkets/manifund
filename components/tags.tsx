@@ -198,3 +198,7 @@ export function SponsoredTag(props: { text: string; className?: string }) {
     </div>
   )
 }
+
+export function RequiredStar() {
+  return <span className="relative bottom-1 mx-1 text-rose-500">*</span>
+}
