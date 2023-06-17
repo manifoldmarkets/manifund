@@ -13,6 +13,7 @@ import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 import { InfoTooltip } from '@/components/info-tooltip'
+import { RequiredStar } from '@/components/tags'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -132,7 +133,7 @@ export function CreateGrantForm(props: {
     errorMessage =
       'The minimum funding must be greater than your contribution. Otherwise, indicate that the project does not need more funding.'
   } else if (regranterSpendableFunds < donorContribution) {
-    errorMessage = `You currently have $${regranterSpendableFunds} to give away. If you'd like to give a larger grant, you can add money to your account or raise more funds from other users on Manifund.`
+    errorMessage = `You currently have $${regranterSpendableFunds} to give away. If you would like to give a larger grant, you can add money to your account or raise more funds from other users on Manifund.`
   } else if (!agreedToTerms) {
     errorMessage =
       'Please confirm that you understand and agree to the terms of giving this grant.'
@@ -143,15 +144,15 @@ export function CreateGrantForm(props: {
     <Col className="gap-5 p-4">
       <div>
         <h1 className="text-2xl font-bold">Create grant</h1>
-        <p className="my-1 text-sm text-gray-600">
+        <span className="my-1 text-sm text-gray-600">
           Use this form to give a grant for a project that is not already posted
           on Manifund. Note that all grants are public.
-        </p>
-        <p className="my-1 text-sm text-gray-600">
+        </span>
+        <span className="my-1 text-sm text-gray-600">
           We expect this writeup to take 0.5-2 hours, and ask that you take less
           time and include fewer details for small grants and spend more time
           and include more details for large grants.
-        </p>
+        </span>
       </div>
       <Row
         className={clsx(
@@ -178,7 +179,10 @@ export function CreateGrantForm(props: {
       {!recipientOnManifund && (
         <>
           <Col className="gap-1">
-            <label htmlFor="recipientFullName">Recipient full name</label>
+            <label htmlFor="recipientFullName">
+              Recipient full name
+              <RequiredStar />
+            </label>
             <Input
               type="text"
               id="recipientFullName"
@@ -186,13 +190,16 @@ export function CreateGrantForm(props: {
               onChange={(event) => setRecipientFullName(event.target.value)}
             />
             {recipientDoesExistError && (
-              <p className="text-sm text-rose-500">
+              <span className="text-sm text-rose-500">
                 This person is already a user on Manifund.
-              </p>
+              </span>
             )}
           </Col>
           <Col className="gap-1">
-            <label htmlFor="recipientEmail">Recipient email</label>
+            <label htmlFor="recipientEmail">
+              Recipient email
+              <RequiredStar />
+            </label>
             <Input
               type="text"
               id="recipientEmail"
@@ -204,7 +211,10 @@ export function CreateGrantForm(props: {
       )}
       {recipientOnManifund && (
         <Col className="gap-1">
-          <label>Recipient</label>
+          <label>
+            Recipient
+            <RequiredStar />
+          </label>
           <Combobox as="div" value={recipient} onChange={setRecipient}>
             <div className="relative">
               <Combobox.Input
@@ -259,7 +269,6 @@ export function CreateGrantForm(props: {
                               @{profile.username}
                             </span>
                           </Row>
-
                           {selected && (
                             <span
                               className={clsx(
@@ -284,7 +293,10 @@ export function CreateGrantForm(props: {
         </Col>
       )}
       <Col className="gap-1">
-        <label htmlFor="title">Title</label>
+        <label htmlFor="title">
+          Title
+          <RequiredStar />
+        </label>
         <Input
           type="text"
           id="title"
@@ -311,22 +323,33 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="donorContribution">Your contribution (USD)</label>
+        <label htmlFor="donorContribution">
+          Your contribution (USD)
+          <RequiredStar />
+        </label>
         <Input
           type="number"
           id="donorContribution"
           value={donorContribution}
           onChange={(event) => setDonorContribution(Number(event.target.value))}
+          error={
+            donorContribution <= 0 ||
+            regranterSpendableFunds < donorContribution
+          }
         />
+        {regranterSpendableFunds < donorContribution && (
+          <span className="text-sm text-rose-500">
+            You currently have ${regranterSpendableFunds} to give away. If you
+            would like to give a larger grant, you can add money to your account
+            or raise more funds from other users on Manifund.
+          </span>
+        )}
       </Col>
       {fundingOption !== 'fullyFund' && (
         <Col className="gap-1">
           <label htmlFor="amount">
-            Funding goal (USD){' '}
-            <InfoTooltip
-              text="This will be displayed as the funding goal so other donors know their contributions are valuable.
-"
-            />
+            Funding goal (USD) <RequiredStar />
+            <InfoTooltip text="This will be displayed as the funding goal so other donors know their contributions are valuable." />
           </label>
           <Input
             type="number"
@@ -339,7 +362,7 @@ export function CreateGrantForm(props: {
       {fundingOption === 'needsMore' && (
         <Col className="gap-1">
           <label htmlFor="amount">
-            Minimum funding (USD){' '}
+            Minimum funding (USD) <RequiredStar />
             <InfoTooltip text="The project will not become active, and no funds will be transferred, until this minimum funding bar is met through your donations and others." />
           </label>
           <Input
@@ -351,21 +374,27 @@ export function CreateGrantForm(props: {
         </Col>
       )}
       <Col className="gap-1">
-        <label>Project description</label>
-        <p className="text-sm text-gray-500">
+        <label>
+          Project description
+          <RequiredStar />
+        </label>
+        <span className="text-sm text-gray-500">
           This will be displayed as the public description of this project, but
           can be edited by the grant recipient. In this section, please describe
           in objective terms the nature of the project.
-        </p>
+        </span>
         <TextEditor editor={descriptionEditor} />
       </Col>
       <Col className="gap-1">
-        <label>Grantmaker notes & reasoning</label>
-        <p className="text-sm text-gray-500">
+        <label>
+          Grantmaker notes & reasoning
+          <RequiredStar />
+        </label>
+        <span className="text-sm text-gray-500">
           This will be displayed as a public comment on this project. In this
           section, please describe in subjective terms why you are excited to
           fund this project.
-        </p>
+        </span>
         <TextEditor editor={reasoningEditor} />
       </Col>
       <Row>
@@ -392,7 +421,7 @@ export function CreateGrantForm(props: {
           </span>
         </div>
       </Row>
-      <p className="text-center text-rose-500">{errorMessage}</p>
+      <span className="text-center text-sm text-rose-500">{errorMessage}</span>
       <Button
         type="submit"
         className="mt-4 w-full"
