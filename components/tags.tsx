@@ -94,57 +94,21 @@ export function StageTag(props: { projectStage: string }) {
   }
 }
 
-export function InvestorTypeTag(props: {
-  accredited: boolean
-  longTooltip?: boolean
-  showText?: boolean
-}) {
-  const { accredited, showText, longTooltip } = props
-  if (accredited) {
-    return (
-      <Tooltip
-        text={
-          longTooltip
-            ? 'As an accredited investor, you can invest in impact certificates to grow your Manifund portfolio and withdraw your profits.'
-            : 'accredited investor'
-        }
-      >
-        <Row className="max-w-fit gap-0.5 rounded-full bg-emerald-100 px-2 pt-1 text-center">
-          <CurrencyDollarIcon className="relative bottom-0.5 m-auto h-4 w-4 text-emerald-500" />
-          <div
-            className={clsx(
-              'text-md relative bottom-0.5 text-sm font-light leading-tight text-emerald-500',
-              showText ? 'block' : 'hidden'
-            )}
-          >
-            accredited investor
-          </div>
-        </Row>
-      </Tooltip>
-    )
-  } else {
-    return (
-      <Tooltip
-        text={
-          longTooltip
-            ? "As a charity investor, you can invest in impact certificates, grow your Manifund portfolio, and donate your balance to charity. Adding money to your Manifund account is a tax deductible donation. You cannot withdraw money made by investing in other people's projects. Apply to be an accredited investor on the edit profile page if you'd like to be able to withdraw your profits."
-            : 'charity investor'
-        }
-      >
-        <Row className="max-w-fit gap-0.5 rounded-full bg-rose-100 px-2  pt-1 text-center">
-          <HeartIcon className="relative bottom-0.5 m-auto h-4 w-4 text-rose-500" />
-          <div
-            className={clsx(
-              'text-md relative bottom-0.5 text-sm font-light leading-tight text-rose-500',
-              showText ? 'block' : 'hidden'
-            )}
-          >
-            charity investor
-          </div>
-        </Row>
-      </Tooltip>
-    )
-  }
+export function AccreditedTag() {
+  return (
+    <Tooltip
+      text={
+        'For accredited investors, deposits, investments, and profits impact cash balance rather than charity balance. This means their profits are withdrawable.'
+      }
+    >
+      <Row className="max-w-fit gap-0.5 rounded-full bg-emerald-100 px-2 pt-1 text-center">
+        <CurrencyDollarIcon className="relative bottom-0.5 m-auto h-4 w-4 text-emerald-500" />
+        <div className="text-md relative bottom-0.5 text-sm font-light leading-tight text-emerald-500">
+          accredited investor
+        </div>
+      </Row>
+    </Tooltip>
+  )
 }
 
 export function RegranterTag() {
