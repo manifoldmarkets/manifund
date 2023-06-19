@@ -54,7 +54,7 @@ export function ProfileHeader(props: {
               </div>
               <Row className="mt-1 flex-wrap gap-2 text-gray-500">
                 <p>@{profile.username}</p>
-                <AccreditedTag />
+                {profile.accreditation_status && <AccreditedTag />}
                 {profile.regranter_status && <RegranterTag />}
               </Row>
             </Col>
