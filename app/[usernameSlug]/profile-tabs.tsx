@@ -11,6 +11,7 @@ import { Projects } from './user-projects'
 import { RichContent } from '@/components/editor'
 import { BalanceDisplay } from './balance-display'
 import {
+  calculateCharityBalance,
   calculateUserBalance,
   calculateUserSpendableFunds,
   categorizeTxn,
@@ -68,12 +69,11 @@ export function ProfileTabs(props: {
     profile.id,
     profile.accreditation_status
   )
-  const spendableBalance = calculateUserSpendableFunds(
+  const charityBalance = calculateCharityBalance(
     txns,
-    profile.id,
     bids,
-    projectsPendingTransfer ?? [],
-    balance
+    profile.id,
+    profile.accreditation_status
   )
   const userSpendableBalance =
     userTxns && userProfile
@@ -107,7 +107,7 @@ export function ProfileTabs(props: {
         <BalanceDisplay
           balance={balance}
           withdrawBalance={withdrawBalance}
-          spendableBalance={spendableBalance}
+          charityBalance={charityBalance}
           accredited={profile.accreditation_status}
           isOwnProfile={isOwnProfile ?? undefined}
           userId={userProfile?.id ?? undefined}

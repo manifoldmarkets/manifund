@@ -109,6 +109,14 @@ export function calculateUserSpendableFunds(
   balance?: number
 ) {
   const currentBalance = balance ?? calculateUserBalance(txns, userId)
+  const lockedFunds = calculateUserLockedFunds(bids, projectsPendingTransfer)
+  return currentBalance - lockedFunds
+}
+
+export function calculateUserLockedFunds(
+  bids: Bid[],
+  projectsPendingTransfer: Project[]
+) {
   const lockedFunds =
     bids
       .filter(
@@ -121,7 +129,7 @@ export function calculateUserSpendableFunds(
       (acc, project) => acc + (project.funding_goal ?? 0),
       0
     )
-  return currentBalance - lockedFunds
+  return lockedFunds
 }
 
 export async function calculateUserFundsAndShares(
@@ -177,24 +185,41 @@ export function calculateWithdrawBalance(
   const sortedTxns = sortBy(txns, 'created_at')
   sortedTxns.forEach((txn) => {
     const txnType = categorizeTxn(txn, userId)
-    console.log(
-      'txn',
-      txn,
-      'txnType',
-      txnType,
-      'withdraw multiplier',
-      txnWithdrawMultiplier(txnType, accreditationStatus)
-    )
     withdrawBalance +=
       txn.amount * txnWithdrawMultiplier(txnType, accreditationStatus)
     withdrawBalance = Math.max(withdrawBalance, 0)
   })
   bids.forEach((bid) => {
-    if (bid.status === 'pending' && bid.type === 'buy') {
+    if (bid.status === 'pending' && accreditationStatus && bid.type === 'buy') {
       withdrawBalance -= bid.amount
     }
   })
   return Math.max(withdrawBalance, 0)
+}
+
+export function calculateCharityBalance(
+  txns: Txn[],
+  bids: Bid[],
+  userId: string,
+  accreditationStatus: boolean
+) {
+  let charityBalance = 0
+  const sortedTxns = sortBy(txns, 'created_at')
+  sortedTxns.forEach((txn) => {
+    const txnType = categorizeTxn(txn, userId)
+    charityBalance +=
+      txn.amount * txnCharityMultiplier(txnType, accreditationStatus)
+    charityBalance = Math.max(charityBalance, 0)
+  })
+  bids.forEach((bid) => {
+    if (
+      bid.status === 'pending' &&
+      (bid.type === 'donate' || (!accreditationStatus && bid.type === 'buy'))
+    ) {
+      charityBalance -= bid.amount
+    }
+  })
+  return Math.max(charityBalance, 0)
 }
 
 type TxnType =
@@ -261,7 +286,10 @@ export function txnCharityMultiplier(txnType: TxnType, accredited: boolean) {
     txnType === 'outgoing profile donation'
   ) {
     return -1
-  } else if (txnType === 'withdraw' || 'incoming project donation') {
+  } else if (
+    txnType === 'withdraw' ||
+    txnType === 'incoming project donation'
+  ) {
     return 0
   } else if (txnType === 'share sale') {
     return accredited ? 0 : 1
@@ -271,7 +299,9 @@ export function txnCharityMultiplier(txnType: TxnType, accredited: boolean) {
     return 1
   } else if (txnType === 'deposit') {
     return accredited ? 0 : 1
-  } else return 0
+  } else {
+    return 0
+  }
 }
 
 export function txnWithdrawMultiplier(txnType: TxnType, accredited: boolean) {

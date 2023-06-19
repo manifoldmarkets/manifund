@@ -47,7 +47,7 @@ export function DonateBox(props: {
       </div>
       <div className="flex flex-col justify-center gap-1 sm:flex-row">
         <label htmlFor="amount" className="relative text-center sm:top-3">
-          Amount (USD):
+          Amount (USD)
         </label>
         <Input
           type="number"
