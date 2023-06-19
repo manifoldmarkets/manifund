@@ -3,7 +3,7 @@ import { Avatar } from '@/components/avatar'
 import { PencilIcon, LinkIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { Database } from '@/db/database.types'
-import { InvestorTypeTag, RegranterTag } from '@/components/tags'
+import { AccreditedTag, RegranterTag } from '@/components/tags'
 import { addHttpToUrl } from '@/utils/formatting'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
@@ -54,11 +54,7 @@ export function ProfileHeader(props: {
               </div>
               <Row className="mt-1 flex-wrap gap-2 text-gray-500">
                 <p>@{profile.username}</p>
-                <InvestorTypeTag
-                  accredited={profile.accreditation_status}
-                  longTooltip={isOwnProfile}
-                  showText
-                />
+                <AccreditedTag />
                 {profile.regranter_status && <RegranterTag />}
               </Row>
             </Col>
