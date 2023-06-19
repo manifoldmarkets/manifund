@@ -37,10 +37,10 @@ export function ProfileHeader(props: {
           size={windowWidth > 640 ? 24 : undefined}
         />
         {isOwnProfile && (
-          <div className="relative top-8 right-4 h-5 w-5 rounded-full bg-orange-400 hover:bg-orange-500 sm:top-14 sm:right-6 sm:h-10 sm:w-10">
+          <div className="relative top-8 right-4 h-5 w-5 rounded-full bg-orange-500 hover:bg-orange-600 sm:top-14 sm:right-6 sm:h-10 sm:w-10">
             <Link href="/edit-profile">
               <PencilIcon
-                className="h-5 w-5 p-1 sm:h-10 sm:w-10 sm:p-2"
+                className="h-5 w-5 p-1 text-white sm:h-10 sm:w-10 sm:p-2"
                 aria-hidden
               />
             </Link>
