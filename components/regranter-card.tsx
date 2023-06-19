@@ -8,8 +8,6 @@ import { Col } from './layout/col'
 import { addHttpToUrl } from '@/utils/formatting'
 import { LinkIcon } from '@heroicons/react/20/solid'
 import { getSponsoredText } from '@/utils/constants'
-import Image from 'next/image'
-import { Tooltip } from './tooltip'
 import { SponsoredTag } from './tags'
 
 export function RegranterCard(props: {

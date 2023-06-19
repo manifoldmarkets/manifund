@@ -39,20 +39,15 @@ export function getRoundTheme(roundTitle: string) {
 }
 
 export function getSponsoredText(regrantorName: string) {
-  switch (regrantorName) {
-    case 'Isaak Freeman':
-      return '$50K'
-    case 'Marcus Abramovitch':
-      return '$50K'
-    case 'Rachel Weinberg':
-      return '$50K'
-    case 'Austin Chen':
-      return '$50K'
-    case 'Adam Gleave':
-      return '$400K'
-    case 'Dan Hendrycks':
-      return '$400K'
-    default:
-      return null
-  }
+  // TODO: Switch mapping from full name to username
+  const sponsoredRegrantors = {
+    'Isaak Freeman': '$50K',
+    'Marcus Abramovitch': '$50K',
+    'Rachel Weinberg': '$50K',
+    'Austin Chen': '$50K',
+    'Qualy the lightbulb ': '$50K',
+    'Adam Gleave': '$400K',
+    'Dan Hendrycks': '$400K',
+  } as { [key: string]: string }
+  return sponsoredRegrantors[regrantorName]
 }
