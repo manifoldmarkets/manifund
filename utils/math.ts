@@ -101,63 +101,34 @@ export function dateDiff(first: number, second: number) {
   return Math.round(second - first) / (1000 * 60 * 60 * 24)
 }
 
-export function calculateUserSpendableFunds(
-  txns: Txn[],
-  userId: string,
-  bids: Bid[],
-  projectsPendingTransfer: Project[],
-  balance?: number
-) {
-  const currentBalance = balance ?? calculateUserBalance(txns, userId)
-  const lockedFunds = calculateUserLockedFunds(bids, projectsPendingTransfer)
-  return currentBalance - lockedFunds
-}
-
-export function calculateUserLockedFunds(
-  bids: Bid[],
-  projectsPendingTransfer: Project[]
-) {
-  const lockedFunds =
-    bids
-      .filter(
-        (bid) =>
-          bid.status === 'pending' &&
-          (bid.type === 'buy' || bid.type === 'donate')
-      )
-      .reduce((acc, bid) => acc + bid.amount, 0) +
-    projectsPendingTransfer?.reduce(
-      (acc, project) => acc + (project.funding_goal ?? 0),
-      0
+export function calculateUserLockedFunds(bids: Bid[]) {
+  const lockedFunds = bids
+    .filter(
+      (bid) =>
+        bid.status === 'pending' &&
+        (bid.type === 'buy' || bid.type === 'donate')
     )
+    .reduce((acc, bid) => acc + bid.amount, 0)
   return lockedFunds
 }
 
-export async function calculateUserFundsAndShares(
-  supabase: SupabaseClient,
+export function calculateShares(
+  txns: Txn[],
   userId: string,
   projectId: string
 ) {
-  if (!userId) {
-    return { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
-  }
-  const txns = await getFullTxnsByUser(supabase, userId)
-  const projectsPendingTransfer = await getProjectsPendingTransferByUser(
-    supabase,
-    userId
-  )
-  const userBids = await getBidsByUser(supabase, userId)
-  const calculateUserShares = () => {
-    let userShares = 0
-    txns.forEach((txn) => {
-      const incoming = txn.to_id === userId
-      if (txn.token === projectId) {
-        userShares += incoming ? txn.amount : -txn.amount
-      }
-    })
-    return userShares
-  }
-  const userShares = calculateUserShares()
-  const offeredShares = userBids
+  let shares = 0
+  txns.forEach((txn) => {
+    const incoming = txn.to_id === userId
+    if (txn.token === projectId) {
+      shares += incoming ? txn.amount : -txn.amount
+    }
+  })
+  return shares
+}
+
+export function calculateOfferedShares(bids: Bid[], projectId: string) {
+  const offeredShares = bids
     .filter(
       (bid) =>
         bid.type === 'sell' &&
@@ -165,36 +136,39 @@ export async function calculateUserFundsAndShares(
         bid.project === projectId
     )
     ?.reduce((acc, bid) => acc + bid.amount, 0)
-  const userSellableShares = userShares - offeredShares
-  const userSpendableFunds = calculateUserSpendableFunds(
-    txns,
-    userId,
-    userBids,
-    projectsPendingTransfer
-  )
-  return { userSpendableFunds, userSellableShares, userShares }
+  return offeredShares
 }
 
-export function calculateWithdrawBalance(
+export function calculateSellableShares(
+  txns: Txn[],
+  bids: Bid[],
+  projectId: string,
+  userId: string
+) {
+  const shares = calculateShares(txns, userId, projectId)
+  const offeredShares = calculateOfferedShares(bids, projectId)
+  return shares - offeredShares
+}
+
+export function calculateCashBalance(
   txns: Txn[],
   bids: Bid[],
   userId: string,
   accreditationStatus: boolean
 ) {
-  let withdrawBalance = 0
+  let cashBalance = 0
   const sortedTxns = sortBy(txns, 'created_at')
   sortedTxns.forEach((txn) => {
     const txnType = categorizeTxn(txn, userId)
-    withdrawBalance +=
-      txn.amount * txnWithdrawMultiplier(txnType, accreditationStatus)
-    withdrawBalance = Math.max(withdrawBalance, 0)
+    cashBalance += txn.amount * txnCashMultiplier(txnType, accreditationStatus)
+    cashBalance = Math.max(cashBalance, 0)
   })
   bids.forEach((bid) => {
     if (bid.status === 'pending' && accreditationStatus && bid.type === 'buy') {
-      withdrawBalance -= bid.amount
+      cashBalance -= bid.amount
     }
   })
-  return Math.max(withdrawBalance, 0)
+  return Math.max(cashBalance, 0)
 }
 
 export function calculateCharityBalance(
@@ -304,7 +278,7 @@ export function txnCharityMultiplier(txnType: TxnType, accredited: boolean) {
   }
 }
 
-export function txnWithdrawMultiplier(txnType: TxnType, accredited: boolean) {
+export function txnCashMultiplier(txnType: TxnType, accredited: boolean) {
   if (txnType === 'share purchase') {
     return accredited ? -1 : 0
   } else if (

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
 import { getProfileAndBidsById } from '@/db/profile'
 import { getFullTxnsByUser } from '@/db/txn'
-import { calculateUserBalance, calculateWithdrawBalance } from '@/utils/math'
+import { calculateCashBalance } from '@/utils/math'
 import Stripe from 'stripe'
 import { BANK_ID, STRIPE_SECRET_KEY } from '@/db/env'
 import uuid from 'react-uuid'
@@ -43,7 +43,7 @@ export default async function handler(req: NextRequest) {
     return NextResponse.error()
   }
   const txns = await getFullTxnsByUser(supabase, user.id)
-  const withdrawBalance = calculateWithdrawBalance(
+  const withdrawBalance = calculateCashBalance(
     txns,
     profile.bids,
     user.id,

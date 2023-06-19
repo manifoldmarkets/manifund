@@ -56,7 +56,6 @@ export default async function UserProfilePage(props: {
           projectsPendingTransfer={projectsPendingTransfer}
           userProfile={userProfile}
           userTxns={userTxns}
-          userProjectsPendingTransfer={userProjectsPendingTransfer}
         />
         {isOwnProfile && (
           <div className="mt-5 flex justify-center">

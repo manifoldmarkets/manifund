@@ -82,8 +82,7 @@ export function BalanceDisplay(props: {
         ))}
       </Row>
       <p className="mt-2 w-full rounded bg-gray-100 p-1 text-center text-sm tracking-wider text-gray-400">
-        {isOwnProfile ? 'You have ' : 'This user has '}$
-        {balance - withdrawBalance - charityBalance} in pending offers.
+        ${balance - withdrawBalance - charityBalance} in pending offers
       </p>
     </Col>
   )

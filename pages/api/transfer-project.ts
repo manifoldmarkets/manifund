@@ -24,9 +24,7 @@ export default async function handler(
       let args = {
         project_id: transfer.projects.id,
         to_id: user.id,
-        from_id: transfer.projects.creator,
         transfer_id: transfer.id,
-        amount: transfer.grant_amount ?? 0,
       }
       await supabaseAdmin.rpc('_transfer_project', args).throwOnError()
     }
