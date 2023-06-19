@@ -26,12 +26,10 @@ export default async function WithdrawPage() {
   }
   const profile = await getProfileAndBidsById(supabase, user.id)
   const txns = await getFullTxnsByUser(supabase, user.id)
-  const balance = calculateUserBalance(txns, user.id)
   const withdrawBalance = calculateWithdrawBalance(
     txns,
     profile.bids,
     user.id,
-    balance,
     profile.accreditation_status
   )
   const { data } = await supabase

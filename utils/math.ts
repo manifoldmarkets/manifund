@@ -171,36 +171,35 @@ export function calculateWithdrawBalance(
   txns: Txn[],
   bids: Bid[],
   userId: string,
-  balance: number,
   accreditationStatus: boolean
 ) {
-  let nonWithdrawBalance = 0
+  let withdrawBalance = 0
   const sortedTxns = sortBy(txns, 'created_at')
   sortedTxns.forEach((txn) => {
     const txnType = categorizeTxn(txn, userId)
-    if (txnType === 'non-dollar') return
-    if (txn.to_id === userId) {
-      if (!txnWithdrawable(txnType, accreditationStatus)) {
-        nonWithdrawBalance += txn.amount
-      }
-    } else {
-      if (txnCharitable(txnType, accreditationStatus)) {
-        nonWithdrawBalance -= txn.amount
-      }
-    }
-    nonWithdrawBalance = Math.max(nonWithdrawBalance, 0)
+    console.log(
+      'txn',
+      txn,
+      'txnType',
+      txnType,
+      'withdraw multiplier',
+      txnWithdrawMultiplier(txnType, accreditationStatus)
+    )
+    withdrawBalance +=
+      txn.amount * txnWithdrawMultiplier(txnType, accreditationStatus)
+    withdrawBalance = Math.max(withdrawBalance, 0)
   })
   bids.forEach((bid) => {
     if (bid.status === 'pending' && bid.type === 'buy') {
-      nonWithdrawBalance += bid.amount
+      withdrawBalance -= bid.amount
     }
   })
-  return Math.max(balance - nonWithdrawBalance, 0)
+  return Math.max(withdrawBalance, 0)
 }
 
 type TxnType =
-  | 'incoming cash transfer'
-  | 'outgoing cash transfer'
+  | 'incoming profile donation'
+  | 'outgoing profile donation'
   | 'share purchase'
   | 'share sale'
   | 'own-project share sale'
@@ -227,7 +226,7 @@ export function categorizeTxn(txn: FullTxn, userId: string) {
         if (txn.from_id === BANK_ID) {
           return 'deposit'
         } else {
-          return 'incoming cash transfer'
+          return 'incoming profile donation'
         }
       }
     } else {
@@ -241,7 +240,7 @@ export function categorizeTxn(txn: FullTxn, userId: string) {
         if (txn.to_id === BANK_ID) {
           return 'withdraw'
         } else {
-          return 'outgoing cash transfer'
+          return 'outgoing profile donation'
         }
       }
     }
@@ -250,30 +249,50 @@ export function categorizeTxn(txn: FullTxn, userId: string) {
   }
 }
 
-// For incoming txns only
-function txnWithdrawable(txnType: TxnType, accreditationStatus: boolean) {
-  if (txnType === 'incoming cash transfer') {
-    return false
-  }
-  if (
-    txnType === 'share sale' ||
-    (txnType === 'deposit' && !accreditationStatus)
+// The following functions return -1, 0, or 1, depending on the effect that the transaction has on the user's balance types.
+// E.g. a donation gets a -1 multiplier for charity, and 0 for withdrawable.
+// A deposit gets 1 for charity and 0 for withdrawable for an unaccredited user, and vice versa for accredited users.
+// Withdrawable = investable for accredited investors
+export function txnCharityMultiplier(txnType: TxnType, accredited: boolean) {
+  if (txnType === 'share purchase') {
+    return accredited ? 0 : -1
+  } else if (
+    txnType === 'outgoing project donation' ||
+    txnType === 'outgoing profile donation'
   ) {
-    return false
-  }
-  return true
+    return -1
+  } else if (txnType === 'withdraw' || 'incoming project donation') {
+    return 0
+  } else if (txnType === 'share sale') {
+    return accredited ? 0 : 1
+  } else if (txnType === 'own-project share sale') {
+    return 0
+  } else if (txnType === 'incoming profile donation') {
+    return 1
+  } else if (txnType === 'deposit') {
+    return accredited ? 0 : 1
+  } else return 0
 }
 
-// For outgoing txns only
-function txnCharitable(txnType: TxnType, accreditationStatus: boolean) {
-  if (
-    txnType === 'outgoing cash transfer' ||
-    txnType === 'outgoing project donation'
+export function txnWithdrawMultiplier(txnType: TxnType, accredited: boolean) {
+  if (txnType === 'share purchase') {
+    return accredited ? -1 : 0
+  } else if (
+    txnType === 'outgoing project donation' ||
+    txnType === 'outgoing profile donation'
   ) {
-    return true
-  }
-  if (txnType === 'share purchase' && !accreditationStatus) {
-    return true
-  }
-  return false
+    return 0
+  } else if (txnType === 'withdraw') {
+    return -1
+  } else if (txnType === 'incoming project donation') {
+    return 1
+  } else if (txnType === 'share sale') {
+    return accredited ? 1 : 0
+  } else if (txnType === 'own-project share sale') {
+    return 1
+  } else if (txnType === 'incoming profile donation') {
+    return 0
+  } else if (txnType === 'deposit') {
+    return accredited ? 1 : 0
+  } else return 0
 }
