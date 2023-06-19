@@ -12,7 +12,7 @@ import Link from 'next/link'
 export function BalanceDisplay(props: {
   balance: number
   withdrawBalance: number
-  spendableBalance: number
+  charityBalance: number
   accredited: boolean
   isOwnProfile?: boolean
   userId?: string
@@ -20,14 +20,14 @@ export function BalanceDisplay(props: {
   const {
     balance,
     withdrawBalance,
-    spendableBalance,
+    charityBalance,
     accredited,
     isOwnProfile,
     userId,
   } = props
   const stats = [
-    { name: 'Spendable', value: spendableBalance },
-    { name: 'In pending offers', value: balance - spendableBalance },
+    { name: 'charity balance', value: charityBalance },
+    { name: 'cash balance', value: withdrawBalance },
   ]
   return (
     <Col className="h-fit">
@@ -56,7 +56,7 @@ export function BalanceDisplay(props: {
         )}
         <div className="w-full min-w-fit rounded border-none bg-orange-500 py-1 px-2">
           <DataPoint
-            label="Balance"
+            label="total balance"
             value={balance.toLocaleString('en-US', {
               style: 'currency',
               currency: 'USD',
@@ -82,8 +82,8 @@ export function BalanceDisplay(props: {
         ))}
       </Row>
       <p className="mt-2 w-full rounded bg-gray-100 p-1 text-center text-sm tracking-wider text-gray-400">
-        {isOwnProfile ? 'You can ' : 'This user can '} withdraw up to $
-        {withdrawBalance}.
+        {isOwnProfile ? 'You have ' : 'This user has '}$
+        {balance - withdrawBalance - charityBalance} in pending offers.
       </p>
     </Col>
   )
