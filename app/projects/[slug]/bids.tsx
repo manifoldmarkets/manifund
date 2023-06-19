@@ -1,5 +1,5 @@
 'use client'
-import { Button, IconButton } from '@/components/button'
+import { Button } from '@/components/button'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { UserAvatarAndBadge } from '@/components/user-link'
@@ -15,7 +15,6 @@ import { Input } from '@/components/input'
 import { useSupabase } from '@/db/supabase-provider'
 import { Modal } from '@/components/modal'
 import { Profile } from '@/db/profile'
-import clsx from 'clsx'
 
 export function Bids(props: {
   bids: BidAndProfile[]

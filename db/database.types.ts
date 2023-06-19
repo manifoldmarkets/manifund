@@ -145,7 +145,7 @@ export interface Database {
       }
       project_transfers: {
         Row: {
-          created_at: string | null
+          created_at: string
           donor_comment_id: string | null
           grant_amount: number | null
           id: string
@@ -154,7 +154,7 @@ export interface Database {
           transferred: boolean
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           donor_comment_id?: string | null
           grant_amount?: number | null
           id?: string
@@ -163,7 +163,7 @@ export interface Database {
           transferred?: boolean
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           donor_comment_id?: string | null
           grant_amount?: number | null
           id?: string
@@ -297,7 +297,7 @@ export interface Database {
           amount: number
           created_at: string
           customer_id: string
-          id: number
+          id: string
           session_id: string
           txn_id: string
         }
@@ -305,7 +305,7 @@ export interface Database {
           amount: number
           created_at?: string
           customer_id: string
-          id?: number
+          id?: string
           session_id: string
           txn_id: string
         }
@@ -313,7 +313,7 @@ export interface Database {
           amount?: number
           created_at?: string
           customer_id?: string
-          id?: number
+          id?: string
           session_id?: string
           txn_id?: string
         }
@@ -502,8 +502,8 @@ export interface Database {
               from_id: string
               transfer_id: string
               amount: number
-              txn_id: string
-              donor_comment_id?: string
+              donor_comment_id: string
+              txn_id?: string
             }
             Returns: undefined
           }

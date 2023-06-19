@@ -7,7 +7,6 @@ import React from 'react'
 import { DataPoint } from '@/components/data-point'
 import { Card } from '@/components/card'
 import { StripeDepositButton } from '@/components/stripe-deposit-button'
-import { roundMoney } from '@/utils/formatting'
 import Link from 'next/link'
 
 export function BalanceDisplay(props: {
@@ -58,7 +57,11 @@ export function BalanceDisplay(props: {
         <div className="w-full min-w-fit rounded border-none bg-orange-500 py-1 px-2">
           <DataPoint
             label="Balance"
-            value={`$${roundMoney(balance)}`}
+            value={balance.toLocaleString('en-US', {
+              style: 'currency',
+              currency: 'USD',
+              minimumFractionDigits: 0,
+            })}
             theme="white"
           />
         </div>
@@ -67,7 +70,14 @@ export function BalanceDisplay(props: {
             key={stat.name}
             className="w-full min-w-fit border-none py-1 px-2"
           >
-            <DataPoint label={stat.name} value={`$${roundMoney(stat.value)}`} />
+            <DataPoint
+              label={stat.name}
+              value={stat.value.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+              })}
+            />
           </Card>
         ))}
       </Row>

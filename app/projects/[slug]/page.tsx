@@ -40,12 +40,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
   const { userSpendableFunds, userSellableShares, userShares } = user
-    ? await calculateUserFundsAndShares(
-        supabase,
-        user.id,
-        project.id,
-        profile?.accreditation_status as boolean
-      )
+    ? await calculateUserFundsAndShares(supabase, user.id, project.id)
     : { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
   const comments = await getCommentsByProject(supabase, project.id)
   const bids = await getBidsByProject(supabase, project.id)
@@ -70,14 +65,16 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   }, 0)
   return (
     <>
-      {project.type === 'grant' && pendingProjectTransfers.length === 0 && (
-        <ProposalRequirements
-          signedAgreement={project.signed_agreement}
-          approved={project.approved === true}
-          reachedMinFunding={raised >= project.min_funding}
-          projectSlug={project.slug}
-        />
-      )}
+      {project.type === 'grant' &&
+        project.stage === 'proposal' &&
+        pendingProjectTransfers.length === 0 && (
+          <ProposalRequirements
+            signedAgreement={project.signed_agreement}
+            approved={project.approved === true}
+            reachedMinFunding={raised >= project.min_funding}
+            projectSlug={project.slug}
+          />
+        )}
       <div className="flex flex-col gap-4 px-4 pt-5">
         <ProjectCardHeader
           round={project.rounds}

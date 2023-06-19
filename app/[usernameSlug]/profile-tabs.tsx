@@ -3,7 +3,7 @@ import { Profile, ProfileAndBids } from '@/db/profile'
 import { useSearchParams } from 'next/navigation'
 import { Bid, BidAndProject } from '@/db/bid'
 import { Tabs } from '@/components/tabs'
-import { FullProject, Project, ProjectTransfer } from '@/db/project'
+import { FullProject, Project } from '@/db/project'
 import { ProposalBids } from './user-proposal-bids'
 import { ActiveBids } from './user-active-bids'
 import { Investments } from './user-investments'
@@ -74,7 +74,6 @@ export function ProfileTabs(props: {
     profile.id,
     bids,
     projectsPendingTransfer ?? [],
-    profile.accreditation_status,
     balance
   )
   const userSpendableBalance =
@@ -83,8 +82,7 @@ export function ProfileTabs(props: {
           userTxns,
           userProfile?.id,
           userProfile?.bids,
-          userProjectsPendingTransfer ?? [],
-          userProfile?.accreditation_status
+          userProjectsPendingTransfer ?? []
         )
       : 0
 

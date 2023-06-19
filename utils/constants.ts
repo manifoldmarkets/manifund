@@ -37,3 +37,22 @@ export function getRoundTheme(roundTitle: string) {
       return 'pink' //this should never happen
   }
 }
+
+export function getSponsoredText(regrantorName: string) {
+  switch (regrantorName) {
+    case 'Isaak Freeman':
+      return '$50K'
+    case 'Marcus Abramovitch':
+      return '$50K'
+    case 'Rachel Weinberg':
+      return '$50K'
+    case 'Austin Chen':
+      return '$50K'
+    case 'Adam Gleave':
+      return '$400K'
+    case 'Dan Hendrycks':
+      return '$400K'
+    default:
+      return null
+  }
+}

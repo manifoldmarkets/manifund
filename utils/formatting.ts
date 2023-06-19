@@ -17,10 +17,6 @@ export function formatMoney(amount: number) {
   return `$${formatLargeNumber(amount)}`
 }
 
-export function roundMoney(amount: number) {
-  return (Math.round(amount * 100) / 100).toFixed(2)
-}
-
 export function getMoneyNumber(amount: number) {
   // Handle 499.9999999999999 case
   const plusEpsilon = (amount > 0 ? Math.floor : Math.ceil)(
