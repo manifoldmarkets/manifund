@@ -54,7 +54,7 @@ export function ProfileTabs(props: {
   const donations = txns.filter((txn) => {
     const txnType = categorizeTxn(txn, profile.id)
     return (
-      txnType === 'outgoing cash transfer' ||
+      txnType === 'outgoing profile donation' ||
       txnType === 'outgoing project donation'
     )
   })
@@ -66,7 +66,6 @@ export function ProfileTabs(props: {
     txns,
     bids,
     profile.id,
-    balance,
     profile.accreditation_status
   )
   const spendableBalance = calculateUserSpendableFunds(

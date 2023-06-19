@@ -43,12 +43,10 @@ export default async function handler(req: NextRequest) {
     return NextResponse.error()
   }
   const txns = await getFullTxnsByUser(supabase, user.id)
-  const balance = calculateUserBalance(txns, user.id)
   const withdrawBalance = calculateWithdrawBalance(
     txns,
     profile.bids,
     user.id,
-    balance,
     profile.accreditation_status
   )
   if (amount > withdrawBalance) {
