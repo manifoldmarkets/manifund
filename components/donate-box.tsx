@@ -14,7 +14,7 @@ export function DonateBox(props: {
   userSpendableFunds: number
 }) {
   const { charity, project, userId, userSpendableFunds } = props
-  const [amount, setAmount] = useState<number | null>(null)
+  const [amount, setAmount] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const bid = project && project.stage === 'proposal'
@@ -53,8 +53,7 @@ export function DonateBox(props: {
           type="number"
           id="amount"
           autoComplete="off"
-          required
-          value={amount ? amount : ''}
+          value={amount !== 0 ? amount : ''}
           placeholder="0"
           onChange={(event) => setAmount(Number(event.target.value))}
         />
