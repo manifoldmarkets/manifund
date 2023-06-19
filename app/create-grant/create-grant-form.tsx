@@ -412,9 +412,9 @@ export function CreateGrantForm(props: {
           </label>{' '}
           <span id="terms-description" className="text-gray-500">
             all information provided is true and accurate to the best of my
-            knowledge. This project is not-for-profit and not part of a
-            political campaign. I understand that all of my answers here will be
-            publicly accessible on Manifund.
+            knowledge. This project is not part of a political campaign. I
+            understand that all of my answers here will be publicly accessible
+            on Manifund.
           </span>
         </div>
       </Row>
