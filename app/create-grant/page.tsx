@@ -5,9 +5,9 @@ import { getUser } from '@/db/profile'
 import { getProfileById } from '@/db/profile'
 import { getTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
-import { calculateUserSpendableFunds } from '@/utils/math'
 import Link from 'next/link'
 import { getProjectsPendingTransferByUser } from '@/db/project'
+import { calculateCharityBalance } from '@/utils/math'
 
 export const revalidate = 0
 export default async function CreateGrantPage() {
@@ -46,16 +46,16 @@ export default async function CreateGrantPage() {
       </div>
     )
   }
-  const regranterSpendableFunds = calculateUserSpendableFunds(
+  const regranterCharityBalance = calculateCharityBalance(
     txns,
-    profile.id,
     bids,
-    projectsPendingTransfer
+    profile.id,
+    profile.accreditation_status
   )
   return (
     <CreateGrantForm
       profiles={profiles}
-      regranterSpendableFunds={regranterSpendableFunds}
+      maxDonation={regranterCharityBalance}
     />
   )
 }

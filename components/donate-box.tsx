@@ -11,17 +11,17 @@ export function DonateBox(props: {
   charity?: Profile
   project?: Project
   userId: string
-  userSpendableFunds: number
+  maxDonation: number
 }) {
-  const { charity, project, userId, userSpendableFunds } = props
+  const { charity, project, userId, maxDonation } = props
   const [amount, setAmount] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const bid = project && project.stage === 'proposal'
 
   let errorMessage = null
-  if (amount && amount > userSpendableFunds) {
-    errorMessage = `You don't have enough funds to donate $${amount}. You can donate up to $${userSpendableFunds}.`
+  if (amount && amount > maxDonation) {
+    errorMessage = `You don't have enough funds to donate $${amount}. You can donate up to $${maxDonation}.`
   } else if (amount && amount < 10) {
     errorMessage = `You must donate at least $10.`
   }

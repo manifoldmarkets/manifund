@@ -7,14 +7,22 @@ import { EditDescription } from './edit-description'
 import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
-import { getActiveValuation, getProposalValuation } from '@/utils/math'
+import {
+  calculateShares,
+  getActiveValuation,
+  getProposalValuation,
+} from '@/utils/math'
 import { ProposalData } from './proposal-data'
 import { SignInButton } from '@/components/sign-in-button'
 import { ProjectTabs } from './project-tabs'
 import { getTxnsByProject } from '@/db/txn'
 import { Description } from './description'
 import { ProjectCardHeader } from '@/components/project-card'
-import { calculateUserFundsAndShares } from '@/utils/math'
+import {
+  calculateSellableShares,
+  calculateCharityBalance,
+  calculateCashBalance,
+} from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 import { Divider } from '@/components/divider'
 import { ProposalRequirements } from './proposal-requirements'
@@ -39,12 +47,23 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   }
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
-  const { userSpendableFunds, userSellableShares, userShares } = user
-    ? await calculateUserFundsAndShares(supabase, user.id, project.id)
-    : { userSpendableFunds: 0, userSellableShares: 0, userShares: 0 }
   const comments = await getCommentsByProject(supabase, project.id)
   const bids = await getBidsByProject(supabase, project.id)
   const txns = await getTxnsByProject(supabase, project.id)
+  const userSpendableFunds = profile
+    ? profile.accreditation_status && project.type === 'cert'
+      ? calculateCashBalance(txns, bids, profile.id, true)
+      : calculateCharityBalance(
+          txns,
+          bids,
+          profile.id,
+          profile.accreditation_status
+        )
+    : 0
+  const userSellableShares = profile
+    ? calculateSellableShares(txns, bids, project.id, profile.id)
+    : 0
+  const userShares = profile ? calculateShares(txns, project.id, profile.id) : 0
   const valuation =
     project.type === 'grant'
       ? project.funding_goal
@@ -117,7 +136,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
             <DonateBox
               project={project}
               userId={profile.id}
-              userSpendableFunds={userSpendableFunds}
+              maxDonation={userSpendableFunds}
             />
           )}
         {!user && <SignInButton />}

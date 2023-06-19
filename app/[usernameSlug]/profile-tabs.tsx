@@ -13,11 +13,10 @@ import { BalanceDisplay } from './balance-display'
 import {
   calculateCharityBalance,
   calculateUserBalance,
-  calculateUserSpendableFunds,
   categorizeTxn,
 } from '@/utils/math'
 import { Txn, FullTxn } from '@/db/txn'
-import { calculateWithdrawBalance } from '@/utils/math'
+import { calculateCashBalance } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 import { OutgoingDonationsHistory } from './user-donations'
 
@@ -29,7 +28,6 @@ export function ProfileTabs(props: {
   txns: FullTxn[]
   userProfile: ProfileAndBids | null
   userTxns: Txn[] | null
-  userProjectsPendingTransfer: Project[]
 }) {
   const {
     profile,
@@ -39,7 +37,6 @@ export function ProfileTabs(props: {
     txns,
     userProfile,
     userTxns,
-    userProjectsPendingTransfer,
   } = props
   const isOwnProfile = userProfile?.id === profile.id
   const proposalBids = bids.filter(
@@ -63,7 +60,7 @@ export function ProfileTabs(props: {
   const currentTabName = searchParams.get('tab')
   const tabs = []
   const balance = calculateUserBalance(txns, profile.id)
-  const withdrawBalance = calculateWithdrawBalance(
+  const withdrawBalance = calculateCashBalance(
     txns,
     bids,
     profile.id,
@@ -75,13 +72,13 @@ export function ProfileTabs(props: {
     profile.id,
     profile.accreditation_status
   )
-  const userSpendableBalance =
+  const userCharityBalance =
     userTxns && userProfile
-      ? calculateUserSpendableFunds(
+      ? calculateCharityBalance(
           userTxns,
-          userProfile?.id,
           userProfile?.bids,
-          userProjectsPendingTransfer ?? []
+          userProfile?.id,
+          userProfile?.accreditation_status
         )
       : 0
 
@@ -101,7 +98,7 @@ export function ProfileTabs(props: {
           <DonateBox
             charity={profile}
             userId={userProfile.id}
-            userSpendableFunds={userSpendableBalance}
+            maxDonation={userCharityBalance}
           />
         )}
         <BalanceDisplay

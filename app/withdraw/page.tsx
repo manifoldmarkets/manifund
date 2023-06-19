@@ -2,7 +2,7 @@ import { createServerClient } from '@/db/supabase-server'
 import { WithdrawalSteps } from './withdrawal-steps'
 import { getProfileAndBidsById, getUser } from '@/db/profile'
 import { STRIPE_SECRET_KEY } from '@/db/env'
-import { calculateUserBalance, calculateWithdrawBalance } from '@/utils/math'
+import { calculateCashBalance } from '@/utils/math'
 import Stripe from 'stripe'
 import { getFullTxnsByUser } from '@/db/txn'
 
@@ -26,7 +26,7 @@ export default async function WithdrawPage() {
   }
   const profile = await getProfileAndBidsById(supabase, user.id)
   const txns = await getFullTxnsByUser(supabase, user.id)
-  const withdrawBalance = calculateWithdrawBalance(
+  const withdrawBalance = calculateCashBalance(
     txns,
     profile.bids,
     user.id,

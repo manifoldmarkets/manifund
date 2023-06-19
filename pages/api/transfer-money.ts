@@ -4,8 +4,7 @@ import { createAdminClient, createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
 import { getTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
-import { getProjectsPendingTransferByUser } from '@/db/project'
-import { calculateUserSpendableFunds } from '@/utils/math'
+import { calculateCharityBalance } from '@/utils/math'
 import { sendTemplateEmail } from '@/utils/email'
 import { getURL } from '@/utils/constants'
 
@@ -35,21 +34,21 @@ export default async function handler(req: NextRequest) {
   if (user?.id !== fromId) {
     return NextResponse.error()
   }
+  const profile = await getProfileById(supabase, user?.id)
+  if (!profile) {
+    return NextResponse.error()
+  }
   const donor = await getProfileById(supabase, user?.id)
   if (!donor) {
     return NextResponse.error()
   }
   const txns = await getTxnsByUser(supabase, user?.id ?? '')
   const bids = await getBidsByUser(supabase, user?.id ?? '')
-  const projectsPendingTransfer = await getProjectsPendingTransferByUser(
-    supabase,
-    user?.id ?? ''
-  )
-  const userSpendableFunds = calculateUserSpendableFunds(
+  const userSpendableFunds = calculateCharityBalance(
     txns,
-    user.id,
     bids,
-    projectsPendingTransfer
+    user.id,
+    profile?.accreditation_status
   )
   if (userSpendableFunds < amount) {
     return NextResponse.error()

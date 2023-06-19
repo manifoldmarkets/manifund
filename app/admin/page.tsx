@@ -7,8 +7,8 @@ import { VerifyInvestor } from './verify-investor'
 import { RoundBidAmounts } from './round-bid-amounts'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { roundLargeNumber } from '@/utils/formatting'
-import { Txn } from '@/db/txn'
-import { calculateUserFundsAndShares } from '@/utils/math'
+import { getTxnsByUser, Txn } from '@/db/txn'
+import { calculateShares } from '@/utils/math'
 import { GiveCreatorShares } from './give-creator-shares'
 import { Donations } from './donations'
 import { listProjects } from '@/db/project'
@@ -219,13 +219,8 @@ async function CreatorShares(props: {
   projectCreator: string
 }) {
   const { supabase, projectId, projectCreator } = props
-  // TODO: take getUserShares out into its own function
-  const userData = await calculateUserFundsAndShares(
-    supabase,
-    projectCreator,
-    projectId
-  )
-  return <td>{userData.userShares}</td>
+  const txns = await getTxnsByUser(supabase, projectCreator)
+  return <td>{calculateShares(txns, projectCreator, projectId)}</td>
 }
 
 // used when profile type was added

@@ -42,9 +42,9 @@ const REASONING_OUTLINE = `
 
 export function CreateGrantForm(props: {
   profiles: MiniProfile[]
-  regranterSpendableFunds: number
+  maxDonation: number
 }) {
-  const { profiles, regranterSpendableFunds } = props
+  const { profiles, maxDonation } = props
   const [query, setQuery] = useState('')
   const filteredProfiles =
     query === ''
@@ -132,8 +132,8 @@ export function CreateGrantForm(props: {
   } else if (fundingOption === 'needsMore' && minFunding <= donorContribution) {
     errorMessage =
       'The minimum funding must be greater than your contribution. Otherwise, indicate that the project does not need more funding.'
-  } else if (regranterSpendableFunds < donorContribution) {
-    errorMessage = `You currently have $${regranterSpendableFunds} to give away. If you would like to give a larger grant, you can add money to your account or raise more funds from other users on Manifund.`
+  } else if (maxDonation < donorContribution) {
+    errorMessage = `You currently have $${maxDonation} to give. If you would like to give a larger grant, you can add money to your account or raise more funds from other users on Manifund.`
   } else if (!agreedToTerms) {
     errorMessage =
       'Please confirm that you understand and agree to the terms of giving this grant.'
@@ -332,13 +332,13 @@ export function CreateGrantForm(props: {
           id="donorContribution"
           value={donorContribution !== 0 ? donorContribution : ''}
           onChange={(event) => setDonorContribution(Number(event.target.value))}
-          error={regranterSpendableFunds < donorContribution}
+          error={maxDonation < donorContribution}
         />
-        {regranterSpendableFunds < donorContribution && (
+        {maxDonation < donorContribution && (
           <span className="text-sm text-rose-500">
-            You currently have ${regranterSpendableFunds} to give away. If you
-            would like to give a larger grant, you can add money to your account
-            or raise more funds from other users on Manifund.
+            You currently have ${maxDonation} to give away. If you would like to
+            give a larger grant, you can add money to your account or raise more
+            funds from other users on Manifund.
           </span>
         )}
       </Col>
