@@ -276,6 +276,13 @@ create table if not exists public.stripe_txns (
   primary key (id)
 );
 
+-- Stripe txns RLS
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."stripe_txns"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+
+WITH CHECK (true)
+
 -- Project transfers
 create table public.project_transfers (
   id uuid not null,

@@ -7,6 +7,7 @@ import React from 'react'
 import { DataPoint } from '@/components/data-point'
 import { Card } from '@/components/card'
 import { StripeDepositButton } from '@/components/stripe-deposit-button'
+import Link from 'next/link'
 
 export function BalanceDisplay(props: {
   balance: number
@@ -46,14 +47,11 @@ export function BalanceDisplay(props: {
               <StripeDepositButton userId={userId} />
             )}
 
-            <a
-              href="https://airtable.com/shrI3XFPivduhbnGa"
-              className="rounded bg-white p-1 shadow"
-            >
+            <Link href="/withdraw" className="rounded bg-white p-1 shadow">
               <Tooltip text="Withdraw funds">
                 <MinusSmallIcon className="h-4 w-4 text-gray-500" />
               </Tooltip>
-            </a>
+            </Link>
           </Col>
         )}
         <div className="w-full min-w-fit rounded border-none bg-orange-500 py-1 px-2">

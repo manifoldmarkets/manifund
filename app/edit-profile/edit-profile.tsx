@@ -15,6 +15,7 @@ import { TextEditor, useTextEditor } from '@/components/editor'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
+import { Card } from '@/components/card'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
@@ -144,7 +145,7 @@ export function EditProfileForm(props: { profile: Profile }) {
       </Col>
       <Col className="gap-1">
         <label htmlFor="regranterStatus">Regranter status</label>
-        <div className="rounded-md border border-gray-300 bg-white p-5 shadow-md">
+        <Card>
           <Row className="w-full justify-between">
             <p className="font-medium">
               {regranterStatus ? 'Regranter' : 'Non-regranter'}
@@ -163,11 +164,11 @@ export function EditProfileForm(props: { profile: Profile }) {
                 setRegranterStatus((regranterStatus) => !regranterStatus)
               }
             >
-              <span className="sr-only">Use auction</span>
+              <span className="sr-only">Regranter status</span>
               <span
                 aria-hidden="true"
                 className={clsx(
-                  'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                  'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white ring-0 transition duration-200 ease-in-out',
                   regranterStatus ? 'translate-x-5' : 'translate-x-0'
                 )}
               ></span>
@@ -187,11 +188,11 @@ export function EditProfileForm(props: { profile: Profile }) {
               not listed on Manifund.
             </div>
           )}
-        </div>
+        </Card>
       </Col>
       <Col className="gap-1">
         <label>Investor status</label>
-        <div className="rounded-md border border-gray-300 bg-white p-5 shadow-md">
+        <Card>
           <p className="font-medium">
             {profile.accreditation_status ? 'Accredited' : 'Not Accredited'}
           </p>
@@ -230,7 +231,7 @@ export function EditProfileForm(props: { profile: Profile }) {
               </span>
             </div>
           )}
-        </div>
+        </Card>
       </Col>
       <label htmlFor="avatar">Choose a profile picture.</label>
       <div className="flex space-x-2">
