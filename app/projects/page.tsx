@@ -15,14 +15,14 @@ export const revalidate = 0
 export default async function Projects() {
   const supabase = createServerClient()
   const start = new Date()
-  // const [user, projects, rounds] = await Promise.all([
-  //   getUser(supabase),
-  //   listProjects(supabase),
-  //   getRounds(supabase),
-  // ])
-  const user = await getUser(supabase)
-  const projects = await listProjects(supabase)
-  const rounds = await getRounds(supabase)
+  const [user, projects, rounds] = await Promise.all([
+    getUser(supabase),
+    listProjects(supabase),
+    getRounds(supabase),
+  ])
+  // const user = await getUser(supabase)
+  // const projects = await listProjects(supabase)
+  // const rounds = await getRounds(supabase)
   const end = new Date()
   const loadTime = end.getTime() - start.getTime()
   console.log('Projects page load time:', loadTime)
