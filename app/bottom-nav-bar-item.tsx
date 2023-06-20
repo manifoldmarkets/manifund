@@ -8,7 +8,7 @@ import { useState, Fragment } from 'react'
 import { Item } from './bottom-nav-bar'
 import {
   HomeIcon,
-  ChatBubbleOvalLeftEllipsisIcon,
+  HeartIcon,
   InformationCircleIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline'
@@ -24,7 +24,7 @@ function findIcon(name: string) {
       Home: HomeIcon,
       About: InformationCircleIcon,
       Profile: UserCircleIcon,
-      Discord: ChatBubbleOvalLeftEllipsisIcon,
+      Charity: HeartIcon,
       Create: PlusIcon,
     }[name] ?? UserCircleIcon
   )

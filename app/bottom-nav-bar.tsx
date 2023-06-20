@@ -30,8 +30,8 @@ export async function BottomNavBar() {
       href: user ? `/${profile?.username}` : '/login',
     },
     {
-      name: 'Discord',
-      href: 'https://discord.gg/zPnPtx6jBS',
+      name: 'Charity',
+      href: '/charity',
     },
     {
       name: 'Create',
