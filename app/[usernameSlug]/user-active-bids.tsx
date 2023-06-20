@@ -28,14 +28,12 @@ export function ActiveBids(props: {
   return (
     <div>
       <h1 className="text-xl sm:text-2xl">Trade offers</h1>
-      <div className="overflow-hidden rounded-md bg-white shadow">
-        <table
-          role="list"
-          className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
-        >
-          {bidsDisplay}
-        </table>
-      </div>
+      <table
+        role="list"
+        className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
+      >
+        {bidsDisplay}
+      </table>
     </div>
   )
 }
