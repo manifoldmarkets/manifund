@@ -4,6 +4,7 @@ import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { formatMoney } from '@/utils/formatting'
 import { Investment } from './profile-tabs'
+import { TableRow } from '@/components/user-bids'
 
 export function Investments(props: { investments: Investment[] }) {
   const { investments } = props
@@ -11,22 +12,41 @@ export function Investments(props: { investments: Investment[] }) {
     .filter((investment) => investment.numShares !== 0 && investment.project)
     .map((investment) =>
       investment.project ? (
-        <li key={investment.project.id}>
-          <InvestmentsDisplay
-            project={investment.project}
-            amount={investment.priceUsd}
-            numShares={investment.numShares}
-          />
-        </li>
+        <TableRow
+          key={investment.project.id}
+          title={investment.project.title}
+          subtitle={
+            <div className="sm:flex">
+              <p className="flex items-center text-sm text-gray-500">
+                Bought&nbsp;
+                <span className="text-black">
+                  {formatMoney(-investment.priceUsd)}
+                </span>
+                &nbsp;@&nbsp;
+                <span className="text-black">
+                  {formatMoney(
+                    (-investment.priceUsd * 10000000) / investment.numShares
+                  )}
+                </span>
+                &nbsp;valuation
+              </p>
+            </div>
+          }
+          tag={<RoundTag roundTitle={investment.project.round} />}
+          href={`/projects/${investment.project.slug}/?tab=shareholders`}
+        />
       ) : null
     )
   return (
     <div>
       <h1 className="text-xl sm:text-2xl">Investments</h1>
       <div className="overflow-hidden rounded-md bg-white shadow">
-        <ul role="list" className="divide-y divide-gray-200">
+        <table
+          role="list"
+          className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
+        >
           {investmentsDisplay}
-        </ul>
+        </table>
       </div>
     </div>
   )
