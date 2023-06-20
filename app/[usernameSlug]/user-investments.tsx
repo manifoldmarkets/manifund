@@ -11,61 +11,44 @@ export function Investments(props: { investments: Investment[] }) {
     .filter((investment) => investment.numShares !== 0 && investment.project)
     .map((investment) =>
       investment.project ? (
-        <li key={investment.project.id}>
-          <InvestmentsDisplay
-            project={investment.project}
-            amount={investment.priceUsd}
-            numShares={investment.numShares}
-          />
-        </li>
+        <Link
+          href={`/projects/${investment.project.slug}/?tab=shareholders`}
+          className="table-row w-full"
+          key={investment.project.id}
+        >
+          <td className="p-4">{investment.project.title}</td>
+          <td className="py-4">
+            <p className="flex items-center text-sm text-gray-500">
+              bought&nbsp;
+              <span className="text-black">
+                {formatMoney(-investment.priceUsd)}
+              </span>
+              &nbsp;@&nbsp;
+              <span className="text-black">
+                {formatMoney(
+                  (-investment.priceUsd * 10000000) / investment.numShares
+                )}
+              </span>
+              &nbsp;valuation
+            </p>
+          </td>
+          <td className="hidden p-4 text-right text-sm text-gray-500 sm:block">
+            <RoundTag roundTitle={investment.project.round} />
+          </td>
+        </Link>
       ) : null
     )
   return (
     <div>
       <h1 className="text-xl sm:text-2xl">Investments</h1>
       <div className="overflow-hidden rounded-md bg-white shadow">
-        <ul role="list" className="divide-y divide-gray-200">
+        <table
+          role="list"
+          className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
+        >
           {investmentsDisplay}
-        </ul>
+        </table>
       </div>
     </div>
-  )
-}
-
-function InvestmentsDisplay(props: {
-  project: Project
-  amount: number
-  numShares: number
-}) {
-  const { project, amount, numShares } = props
-  return (
-    <Link
-      href={`/projects/${project.slug}/?tab=shareholders`}
-      className="block hover:bg-gray-50"
-    >
-      <div className="px-4 py-4 sm:px-6">
-        <div className="flex items-center justify-between">
-          <p className="text-md text-md truncate text-orange-600">
-            {project.title}
-          </p>
-          <div className="ml-2 flex flex-shrink-0">
-            <RoundTag roundTitle={project.round} />
-          </div>
-        </div>
-        <div className="mt-2 sm:flex sm:justify-between">
-          <div className="sm:flex">
-            <p className="flex items-center text-sm text-gray-500">
-              Bought&nbsp;
-              <span className="text-black">{formatMoney(-amount)}</span>
-              &nbsp;@&nbsp;
-              <span className="text-black">
-                {formatMoney((-amount * 10000000) / numShares)}
-              </span>
-              &nbsp;valuation
-            </p>
-          </div>
-        </div>
-      </div>
-    </Link>
   )
 }
