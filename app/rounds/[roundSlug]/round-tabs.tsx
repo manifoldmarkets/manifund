@@ -7,7 +7,9 @@ import { Tabs } from '@/components/tabs'
 import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
+import { getSponsoredAmount } from '@/utils/constants'
 import { UserPlusIcon, WrenchIcon } from '@heroicons/react/20/solid'
+import { sortBy } from 'lodash'
 import { useSearchParams } from 'next/navigation'
 import { EditRound } from './edit-round'
 
@@ -42,14 +44,19 @@ export function RoundTabs(props: {
     },
   ]
   if (round.title === 'Regrants' && regranters) {
+    const sortedRegranters = sortBy(regranters, [
+      function (regranter: Profile) {
+        return -getSponsoredAmount(regranter.full_name)
+      },
+    ])
     tabs.push({
       name: 'Regrantors',
       href: `?tab=regrants`,
-      count: regranters.length,
+      count: sortedRegranters.length,
       current: currentTabName === 'regrants',
       display: (
         <>
-          {regranters.length === 0 ? (
+          {sortedRegranters.length === 0 ? (
             <EmptyContent
               icon={<UserPlusIcon className="h-10 w-10 text-gray-400" />}
               title={'No regrantors yet.'}
@@ -57,7 +64,7 @@ export function RoundTabs(props: {
             />
           ) : (
             <div className="mt-2 grid grid-cols-2 gap-4 lg:grid-cols-3">
-              {regranters.map((regranter) => {
+              {sortedRegranters.map((regranter) => {
                 return (
                   <RegranterCard key={regranter.id} regranter={regranter} />
                 )

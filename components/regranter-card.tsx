@@ -5,9 +5,9 @@ import Link from 'next/link'
 import { Avatar } from './avatar'
 import { Row } from './layout/row'
 import { Col } from './layout/col'
-import { addHttpToUrl } from '@/utils/formatting'
+import { addHttpToUrl, formatMoney } from '@/utils/formatting'
 import { LinkIcon } from '@heroicons/react/20/solid'
-import { getSponsoredText } from '@/utils/constants'
+import { getSponsoredAmount } from '@/utils/constants'
 import { SponsoredTag } from './tags'
 
 export function RegranterCard(props: {
@@ -15,7 +15,7 @@ export function RegranterCard(props: {
   className?: string
 }) {
   const { regranter, className } = props
-  const sponsoredText = getSponsoredText(regranter.full_name)
+  const sponsoredAmount = getSponsoredAmount(regranter.full_name)
   return (
     <Card
       className={clsx(
@@ -31,8 +31,11 @@ export function RegranterCard(props: {
           <LinkIcon className="h-5 w-5 rounded bg-gray-300 p-0.5 text-white" />
         </Link>
       )}
-      {sponsoredText && (
-        <SponsoredTag text={sponsoredText} className="absolute top-3 left-3" />
+      {sponsoredAmount !== 0 && (
+        <SponsoredTag
+          text={`${formatMoney(sponsoredAmount)}`}
+          className="absolute top-3 left-3"
+        />
       )}
       <Link href={`/${regranter.username}`} className="flex h-full flex-col">
         <Row className="m-3 justify-center">
