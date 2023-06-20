@@ -1,7 +1,7 @@
 'use client'
 import { Profile, ProfileAndBids } from '@/db/profile'
 import { useSearchParams } from 'next/navigation'
-import { Bid, BidAndProject } from '@/db/bid'
+import { BidAndProject } from '@/db/bid'
 import { Tabs } from '@/components/tabs'
 import { FullProject, Project } from '@/db/project'
 import { ProposalBids } from './user-proposal-bids'

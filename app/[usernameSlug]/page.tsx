@@ -21,29 +21,23 @@ export default async function UserProfilePage(props: {
 }) {
   const { usernameSlug } = props.params
   const supabase = createServerClient()
-  const user = await getUser(supabase)
   const profile = await getProfileByUsername(supabase, usernameSlug)
   if (!profile) {
     return <div>User not found</div>
   }
-  const projectsPendingTransfer = await getProjectsPendingTransferByUser(
-    supabase,
-    profile.id
-  )
-  const bids = await getBidsByUser(supabase, profile.id)
-  const projects = await getProjectsByUser(supabase, profile.id)
-  const txns = await getFullTxnsByUser(supabase, profile.id)
-
-  const userTxns = user?.id ? await getTxnsByUser(supabase, user?.id) : null
-  const userProfile = user?.id
-    ? await getProfileAndBidsById(supabase, user?.id)
-    : null
-  const userProjectsPendingTransfer = await getProjectsPendingTransferByUser(
-    supabase,
-    user?.id ?? ''
-  )
+  const [projectsPendingTransfer, bids, projects, txns, user] =
+    await Promise.all([
+      getProjectsPendingTransferByUser(supabase, profile.id),
+      getBidsByUser(supabase, profile.id),
+      getProjectsByUser(supabase, profile.id),
+      getFullTxnsByUser(supabase, profile.id),
+      getUser(supabase),
+    ])
+  const [userTxns, userProfile] = await Promise.all([
+    user ? getTxnsByUser(supabase, user.id) : null,
+    user ? getProfileAndBidsById(supabase, user.id) : null,
+  ])
   const isOwnProfile = user?.id === profile?.id
-
   return (
     <div className="flex flex-col p-3 sm:p-5">
       <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} />
