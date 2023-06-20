@@ -19,7 +19,7 @@ export function FeatureCard(props: {
         </Row>
         <p className="text-sm text-gray-600">{description}</p>
       </div>
-      <p className="flex w-full justify-end text-xs text-orange-500 group-hover:underline">
+      <p className="mt-1 flex w-full justify-end text-xs text-orange-500 group-hover:underline">
         {linkText ?? 'Learn more'}
         <ArrowRightIcon className="ml-1 h-4 w-4" />
       </p>
