@@ -6,21 +6,19 @@ import { ProjectsDisplay } from '@/components/projects-display'
 import { getUser } from '@/db/profile'
 import Image from 'next/image'
 import { Row } from '@/components/layout/row'
-import {
-  ArrowPathIcon,
-  ArrowRightIcon,
-  ArrowTrendingUpIcon,
-} from '@heroicons/react/20/solid'
+import { ArrowPathIcon, ArrowTrendingUpIcon } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
 import { FeatureCard } from '@/components/feature-card'
 
-export const revalidate = 30
+export const revalidate = 0
 
 export default async function Projects() {
   const supabase = createServerClient()
-  const user = await getUser(supabase)
-  const projects = await listProjects(supabase)
-  const rounds = await getRounds(supabase)
+  const [user, projects, rounds] = await Promise.all([
+    getUser(supabase),
+    listProjects(supabase),
+    getRounds(supabase),
+  ])
   return (
     <div className="bg-dark-200 max-w-4xl px-3 pt-5 sm:px-6">
       {user === null && <LandingSection />}
