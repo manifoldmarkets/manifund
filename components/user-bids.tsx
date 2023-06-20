@@ -79,7 +79,7 @@ export function UserBidDisplay(props: {
   )
 }
 
-function BidText(props: {
+export function BidText(props: {
   bid: Bid
   stage: string
   projectType: Project['type']
@@ -143,8 +143,8 @@ export function TableRow(props: {
 }) {
   const { title, tag, subtitle, href, deleteFunction } = props
   return (
-    <tr className=" hover:bg-gray-50">
-      <td className="p-3 align-middle font-medium text-gray-900">
+    <tr className="hover:bg-gray-50">
+      <td className="py-4 pl-5 align-middle font-medium text-gray-900">
         <Link className="hover:underline" href={href}>
           {title}
         </Link>
@@ -152,29 +152,31 @@ export function TableRow(props: {
           {subtitle}
         </p>
       </td>
-      <td className="p-3 align-middle">{tag}</td>
-      {deleteFunction && (
-        <Menu as="div" className="relative z-10 inline-block">
-          <Menu.Button>
-            <EllipsisVerticalIcon className="relative left-2 h-6 w-6 text-gray-400 hover:cursor-pointer" />
-          </Menu.Button>
-          <Menu.Items className="absolute right-0 top-4 z-10 mt-2 w-24 origin-top-right rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  className={`${
-                    active && 'bg-rose-100'
-                  } flex h-full w-full justify-between  p-2 text-rose-600`}
-                  onClick={deleteFunction}
-                >
-                  <TrashIcon className="h-6 w-6" />
-                  Delete
-                </button>
-              )}
-            </Menu.Item>
-          </Menu.Items>
-        </Menu>
-      )}
+      <td className="flex justify-end gap-1 p-4 align-middle">
+        {tag}
+        {deleteFunction && (
+          <Menu as="div" className="relative z-10 inline-block">
+            <Menu.Button>
+              <EllipsisVerticalIcon className="relative left-2 h-6 w-6 text-gray-400 hover:cursor-pointer" />
+            </Menu.Button>
+            <Menu.Items className="absolute right-0 top-4 z-10 mt-2 w-24 origin-top-right rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    className={`${
+                      active && 'bg-rose-100'
+                    } flex h-full w-full justify-between  p-2 text-rose-600`}
+                    onClick={deleteFunction}
+                  >
+                    <TrashIcon className="h-6 w-6" />
+                    Delete
+                  </button>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Menu>
+        )}
+      </td>
     </tr>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 import { BidAndProject } from '@/db/bid'
-import { UserBidDisplay } from '@/components/user-bids'
+import { BidText, TableRow, UserBidDisplay } from '@/components/user-bids'
+import { RoundTag } from '@/components/tags'
 
 export function ActiveBids(props: {
   bids: BidAndProject[]
@@ -8,21 +9,32 @@ export function ActiveBids(props: {
 }) {
   const { bids, isOwnProfile } = props
   const bidsDisplay = bids.map((bid) => (
-    <li key={bid.id}>
-      <UserBidDisplay
-        bid={bid}
-        project={bid.projects}
-        isOwnProfile={isOwnProfile}
-      />
-    </li>
+    <TableRow
+      key={bid.id}
+      title={bid.projects.title}
+      subtitle={
+        <BidText
+          bid={bid}
+          projectType={bid.projects.type}
+          stage={bid.projects.stage}
+          showValuation={isOwnProfile || bid.projects.stage !== 'proposal'}
+        />
+      }
+      tag={<RoundTag roundTitle={bid.projects.round} />}
+      href={`/projects/${bid.projects.slug}`}
+      deleteFunction={() => {}}
+    />
   ))
   return (
     <div>
       <h1 className="text-xl sm:text-2xl">Trade offers</h1>
       <div className="overflow-hidden rounded-md bg-white shadow">
-        <ul role="list" className="divide-y divide-gray-200">
+        <table
+          role="list"
+          className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
+        >
           {bidsDisplay}
-        </ul>
+        </table>
       </div>
     </div>
   )
