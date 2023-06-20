@@ -7,7 +7,6 @@ import {
   XCircleIcon,
   CheckCircleIcon,
   CurrencyDollarIcon,
-  HeartIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import { FireIcon } from '@heroicons/react/24/solid'
@@ -102,8 +101,8 @@ export function AccreditedTag() {
       }
     >
       <Row className="max-w-fit gap-0.5 rounded-full bg-emerald-100 px-2 pt-1 text-center">
-        <CurrencyDollarIcon className="relative bottom-0.5 m-auto h-4 w-4 text-emerald-500" />
-        <div className="text-md relative bottom-0.5 text-sm font-light leading-tight text-emerald-500">
+        <CurrencyDollarIcon className="relative bottom-0.5 m-auto h-4 w-4 stroke-2 text-emerald-500" />
+        <div className="text-md relative bottom-0.5 text-sm leading-tight text-emerald-500">
           accredited investor
         </div>
       </Row>
@@ -115,8 +114,8 @@ export function RegranterTag() {
   return (
     <Tooltip text="Regranters can recieve donations from other users and give grants to the projects and organizations of their choice.">
       <Row className="max-w-fit gap-0.5 rounded-full bg-orange-100 px-2  pt-1 text-center text-sm">
-        <ArrowPathIcon className="relative bottom-0.5 m-auto h-4 w-4 text-orange-500" />
-        <div className="text-md relative bottom-0.5 font-light leading-tight text-orange-500">
+        <ArrowPathIcon className="relative bottom-0.5 m-auto h-4 w-4 stroke-2 text-orange-500" />
+        <div className="text-md relative bottom-0.5 leading-tight text-orange-500">
           regrantor
         </div>
       </Row>
