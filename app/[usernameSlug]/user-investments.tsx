@@ -4,7 +4,7 @@ import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { formatMoney } from '@/utils/formatting'
 import { Investment } from './profile-tabs'
-import { TableRow } from '@/components/user-bids'
+import { TableRow } from '@/components/tables'
 
 export function Investments(props: { investments: Investment[] }) {
   const { investments } = props

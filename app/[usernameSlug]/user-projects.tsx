@@ -4,6 +4,9 @@ import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { StageTag } from '@/components/tags'
 import { orderBy } from 'lodash'
+import { TableRow } from '@/components/tables'
+import { Row } from '@/components/layout/row'
+import { Col } from '@/components/layout/col'
 
 export function Projects(props: { projects: Project[] }) {
   const { projects } = props
@@ -17,7 +20,24 @@ export function Projects(props: { projects: Project[] }) {
         <NoProjects />
       ) : (
         sortedProjects.map((project) => (
-          <ProjectRow key={project.id} project={project} />
+          <TableRow
+            key={project.id}
+            title={project.title}
+            subtitle={<NextStep project={project} />}
+            href={`/projects/${project.slug}`}
+            tag={
+              <div className="flex h-full flex-col justify-center">
+                <Row className="flex-shrink-0 justify-end gap-2">
+                  <Col className="justify-center">
+                    <RoundTag roundTitle={project.round} />
+                  </Col>
+                  <Col className="justify-center">
+                    <StageTag projectStage={project.stage} />
+                  </Col>
+                </Row>
+              </div>
+            }
+          />
         ))
       )}
     </table>
@@ -67,7 +87,7 @@ function NextStep(props: { project: Project }) {
     return (
       <Link
         href={`/projects/${project.slug}/agreement`}
-        className="mt-1 truncate text-xs font-normal text-gray-500 hover:underline"
+        className="truncate text-xs font-normal text-gray-500 hover:underline"
       >
         pending grant agreement signature
       </Link>
