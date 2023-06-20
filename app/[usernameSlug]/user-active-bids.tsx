@@ -1,13 +1,17 @@
 'use client'
-import { BidAndProject } from '@/db/bid'
+import { BidAndProject, deleteBid } from '@/db/bid'
 import { BidText, TableRow, UserBidDisplay } from '@/components/user-bids'
 import { RoundTag } from '@/components/tags'
+import { useSupabase } from '@/db/supabase-provider'
+import { useRouter } from 'next/navigation'
 
 export function ActiveBids(props: {
   bids: BidAndProject[]
   isOwnProfile?: boolean
 }) {
   const { bids, isOwnProfile } = props
+  const { supabase } = useSupabase()
+  const router = useRouter()
   const bidsDisplay = bids.map((bid) => (
     <TableRow
       key={bid.id}
@@ -22,7 +26,10 @@ export function ActiveBids(props: {
       }
       tag={<RoundTag roundTitle={bid.projects.round} />}
       href={`/projects/${bid.projects.slug}`}
-      deleteFunction={() => {}}
+      deleteFunction={async () => {
+        await deleteBid(supabase, bid.id)
+        router.refresh()
+      }}
     />
   ))
   return (
