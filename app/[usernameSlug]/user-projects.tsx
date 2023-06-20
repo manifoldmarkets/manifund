@@ -55,28 +55,6 @@ function NoProjects() {
   )
 }
 
-function ProjectRow(props: { project: Project }) {
-  const { project } = props
-  return (
-    <tr className=" hover:bg-gray-50">
-      <td className="p-3 align-middle font-medium text-gray-900">
-        <Link className="hover:underline" href={`/projects/${project.slug}`}>
-          {project.title}
-        </Link>
-        <p className="mt-1 truncate text-xs font-normal text-gray-500">
-          <NextStep project={project} />
-        </p>
-      </td>
-      <td className="p-3 align-middle">
-        <div className="flex flex-shrink-0 justify-end gap-2">
-          <RoundTag roundTitle={project.round} />
-          <StageTag projectStage={project.stage} />
-        </div>
-      </td>
-    </tr>
-  )
-}
-
 function NextStep(props: { project: Project }) {
   const { project } = props
   if (
