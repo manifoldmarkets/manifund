@@ -133,3 +133,48 @@ function BidText(props: {
       return <></>
   }
 }
+
+export function TableRow(props: {
+  title: string
+  tag: JSX.Element
+  subtitle: JSX.Element
+  href: string
+  deleteFunction?: () => void
+}) {
+  const { title, tag, subtitle, href, deleteFunction } = props
+  return (
+    <tr className=" hover:bg-gray-50">
+      <td className="p-3 align-middle font-medium text-gray-900">
+        <Link className="hover:underline" href={href}>
+          {title}
+        </Link>
+        <p className="mt-1 truncate text-xs font-normal text-gray-500">
+          {subtitle}
+        </p>
+      </td>
+      <td className="p-3 align-middle">{tag}</td>
+      {deleteFunction && (
+        <Menu as="div" className="relative z-10 inline-block">
+          <Menu.Button>
+            <EllipsisVerticalIcon className="relative left-2 h-6 w-6 text-gray-400 hover:cursor-pointer" />
+          </Menu.Button>
+          <Menu.Items className="absolute right-0 top-4 z-10 mt-2 w-24 origin-top-right rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Item>
+              {({ active }) => (
+                <button
+                  className={`${
+                    active && 'bg-rose-100'
+                  } flex h-full w-full justify-between  p-2 text-rose-600`}
+                  onClick={deleteFunction}
+                >
+                  <TrashIcon className="h-6 w-6" />
+                  Delete
+                </button>
+              )}
+            </Menu.Item>
+          </Menu.Items>
+        </Menu>
+      )}
+    </tr>
+  )
+}
