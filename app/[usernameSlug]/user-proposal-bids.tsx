@@ -1,9 +1,10 @@
 'use client'
 import { BidAndProject, deleteBid } from '@/db/bid'
-import { BidText, TableRow } from '@/components/tables'
+import { ThickTableRow } from '@/components/tables'
 import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { RoundTag } from '@/components/tags'
+import { BidText } from './user-active-bids'
 
 export function ProposalBids(props: {
   bids: BidAndProject[]
@@ -13,7 +14,7 @@ export function ProposalBids(props: {
   const { supabase } = useSupabase()
   const router = useRouter()
   const bidsDisplay = bids.map((bid) => (
-    <TableRow
+    <ThickTableRow
       key={bid.id}
       title={bid.projects.title}
       subtitle={

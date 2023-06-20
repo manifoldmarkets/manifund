@@ -4,7 +4,6 @@ import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { formatMoney } from '@/utils/formatting'
 import { Investment } from './profile-tabs'
-import { TableRow } from '@/components/tables'
 
 export function Investments(props: { investments: Investment[] }) {
   const { investments } = props
@@ -12,29 +11,31 @@ export function Investments(props: { investments: Investment[] }) {
     .filter((investment) => investment.numShares !== 0 && investment.project)
     .map((investment) =>
       investment.project ? (
-        <TableRow
-          key={investment.project.id}
-          title={investment.project.title}
-          subtitle={
-            <div className="sm:flex">
-              <p className="flex items-center text-sm text-gray-500">
-                Bought&nbsp;
-                <span className="text-black">
-                  {formatMoney(-investment.priceUsd)}
-                </span>
-                &nbsp;@&nbsp;
-                <span className="text-black">
-                  {formatMoney(
-                    (-investment.priceUsd * 10000000) / investment.numShares
-                  )}
-                </span>
-                &nbsp;valuation
-              </p>
-            </div>
-          }
-          tag={<RoundTag roundTitle={investment.project.round} />}
+        <Link
           href={`/projects/${investment.project.slug}/?tab=shareholders`}
-        />
+          className="table-row w-full"
+          key={investment.project.id}
+        >
+          <td className="p-4">{investment.project.title}</td>
+          <td className="py-4">
+            <p className="flex items-center text-sm text-gray-500">
+              bought&nbsp;
+              <span className="text-black">
+                {formatMoney(-investment.priceUsd)}
+              </span>
+              &nbsp;@&nbsp;
+              <span className="text-black">
+                {formatMoney(
+                  (-investment.priceUsd * 10000000) / investment.numShares
+                )}
+              </span>
+              &nbsp;valuation
+            </p>
+          </td>
+          <td className="hidden p-4 text-right text-sm text-gray-500 sm:block">
+            <RoundTag roundTitle={investment.project.round} />
+          </td>
+        </Link>
       ) : null
     )
   return (

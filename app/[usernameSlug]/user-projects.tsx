@@ -4,7 +4,7 @@ import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { StageTag } from '@/components/tags'
 import { orderBy } from 'lodash'
-import { TableRow } from '@/components/tables'
+import { ThickTableRow } from '@/components/tables'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 
@@ -20,7 +20,7 @@ export function Projects(props: { projects: Project[] }) {
         <NoProjects />
       ) : (
         sortedProjects.map((project) => (
-          <TableRow
+          <ThickTableRow
             key={project.id}
             title={project.title}
             subtitle={<NextStep project={project} />}

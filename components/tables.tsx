@@ -1,76 +1,8 @@
-import { Bid } from '@/db/bid'
-import { Project } from '@/db/project'
-import { useSupabase } from '@/db/supabase-provider'
-import { formatDate, formatMoney } from '@/utils/formatting'
-import { deleteBid } from '@/db/bid'
 import { Menu } from '@headlessui/react'
-import {
-  CalendarIcon,
-  EllipsisVerticalIcon,
-  TrashIcon,
-} from '@heroicons/react/24/outline'
+import { EllipsisVerticalIcon, TrashIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { RoundTag } from './tags'
-import { Tag } from './tags'
-import { Col } from './layout/col'
 
-export function BidText(props: {
-  bid: Bid
-  stage: string
-  projectType: Project['type']
-  showValuation: boolean
-}) {
-  const { bid, stage, projectType, showValuation } = props
-  switch (stage) {
-    case 'proposal':
-      if (projectType === 'grant') {
-        return (
-          <div className="flex items-center">
-            <p className="text-sm text-gray-500">
-              Offered&nbsp;
-              <span className="text-black">{formatMoney(bid.amount)}</span>
-            </p>
-          </div>
-        )
-      }
-      return (
-        <div className="flex items-center">
-          <p className="text-sm text-gray-500">
-            Bid&nbsp;
-            <span className="text-black">{formatMoney(bid.amount)}</span>
-            {showValuation && (
-              <span>
-                &nbsp;@&nbsp;
-                <span className="text-black">{formatMoney(bid.valuation)}</span>
-                &nbsp;valuation
-              </span>
-            )}
-          </p>
-        </div>
-      )
-    case 'active':
-      return (
-        <div className="flex items-center text-sm text-gray-500">
-          Offer to&nbsp;
-          <Tag
-            text={bid.type === 'buy' ? 'BUY' : 'SELL'}
-            color={bid.type === 'buy' ? 'emerald' : 'rose'}
-          />
-          <span className="text-black">&nbsp;{formatMoney(bid.amount)}</span>
-          <span>
-            &nbsp;@&nbsp;
-            <span className="text-black">{formatMoney(bid.valuation)}</span>
-            &nbsp;valuation
-          </span>
-        </div>
-      )
-    default:
-      return <></>
-  }
-}
-
-export function TableRow(props: {
+export function ThickTableRow(props: {
   title: string
   tag: JSX.Element
   subtitle?: JSX.Element
