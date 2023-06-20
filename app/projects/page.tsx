@@ -14,21 +14,13 @@ export const revalidate = 0
 
 export default async function Projects() {
   const supabase = createServerClient()
-  const start = new Date()
   const [user, projects, rounds] = await Promise.all([
     getUser(supabase),
     listProjects(supabase),
     getRounds(supabase),
   ])
-  // const user = await getUser(supabase)
-  // const projects = await listProjects(supabase)
-  // const rounds = await getRounds(supabase)
-  const end = new Date()
-  const loadTime = end.getTime() - start.getTime()
-  console.log('Projects page load time:', loadTime)
   return (
     <div className="bg-dark-200 max-w-4xl px-3 pt-5 sm:px-6">
-      <p className="text-xl font-bold text-rose-500">{loadTime}</p>
       {user === null && <LandingSection />}
       <AllRoundsDisplay rounds={rounds} projects={projects} />
       <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
