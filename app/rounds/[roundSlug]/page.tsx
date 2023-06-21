@@ -25,8 +25,10 @@ export default async function RoundPage(props: {
   const { roundSlug } = props.params
   const supabase = createServerClient()
   const round = await getRoundBySlug(supabase, roundSlug)
-  const projects = await getFullProjectsByRound(supabase, round.title)
-  const regranters = await getRegranters(supabase)
+  const [projects, regranters] = await Promise.all([
+    getFullProjectsByRound(supabase, round.title),
+    round.title === 'Regrants' ? getRegranters(supabase) : [],
+  ])
   return (
     <div className="bg-dark-200 max-w-4xl">
       {round.header_image_url && (

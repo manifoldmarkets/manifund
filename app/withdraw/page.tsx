@@ -24,22 +24,18 @@ export default async function WithdrawPage() {
       </div>
     )
   }
-  const profile = await getProfileAndBidsById(supabase, user.id)
-  const txns = await getFullTxnsByUser(supabase, user.id)
+  const [profile, txns] = await Promise.all([
+    getProfileAndBidsById(supabase, user.id),
+    getFullTxnsByUser(supabase, user.id),
+  ])
   const withdrawBalance = calculateCashBalance(
     txns,
     profile.bids,
     user.id,
     profile.accreditation_status
   )
-  const { data } = await supabase
-    .from('profiles')
-    .select('stripe_connect_id')
-    .eq('id', user.id)
-    .throwOnError()
-  const stripeAccountId = data ? data[0].stripe_connect_id : null
-  const account = stripeAccountId
-    ? await stripe.accounts.retrieve(stripeAccountId)
+  const account = profile.stripe_connect_id
+    ? await stripe.accounts.retrieve(profile.stripe_connect_id)
     : null
   const loginLink = account
     ? account.payouts_enabled && account.charges_enabled

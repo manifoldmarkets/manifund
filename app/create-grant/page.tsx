@@ -26,17 +26,13 @@ export default async function CreateGrantPage() {
       </div>
     )
   }
-  const profile = await getProfileById(supabase, user?.id)
-  const txns = await getTxnsByUser(supabase, user?.id ?? '')
-  const bids = await getBidsByUser(supabase, user?.id ?? '')
-  const projectsPendingTransfer = await getProjectsPendingTransferByUser(
-    supabase,
-    user?.id
-  )
-
+  const [profile, txns, bids] = await Promise.all([
+    getProfileById(supabase, user.id),
+    getTxnsByUser(supabase, user.id),
+    getBidsByUser(supabase, user.id),
+  ])
   if (!profile?.regranter_status) {
     return (
-      // TODO: make a controllable switch to be a regranter
       <div>
         You must be a regranter to give grants.{' '}
         <Link href="/profile" className="text-orange-500 hover:text-orange-600">

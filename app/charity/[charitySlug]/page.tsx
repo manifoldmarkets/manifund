@@ -25,13 +25,18 @@ export default async function CharityPage(props: {
   if (!charity) {
     return <div>Charity not found.</div>
   }
-  const donations = await getIncomingTxnsByUserWithDonor(supabase, charity.id)
+  const [donations, user] = await Promise.all([
+    getIncomingTxnsByUserWithDonor(supabase, charity.id),
+    getUser(supabase),
+  ])
+  const [profile, txns, bids] = await Promise.all([
+    user ? getProfileById(supabase, user.id) : null,
+    user ? getTxnsByUser(supabase, user.id) : [],
+    user ? getBidsByUser(supabase, user.id) : [],
+  ])
+
   const raised = donations.reduce((acc, txn) => acc + txn.amount, 0)
   const numSupporters = uniq(donations.map((txn) => txn.from_id)).length
-  const user = await getUser(supabase)
-  const profile = await getProfileById(supabase, user?.id)
-  const txns = (await getTxnsByUser(supabase, user?.id ?? '')) ?? []
-  const bids = (await getBidsByUser(supabase, user?.id ?? '')) ?? []
   const userCharityBalance = calculateCharityBalance(
     txns,
     bids,
@@ -50,7 +55,7 @@ export default async function CharityPage(props: {
       <h1 className="mt-3 mb-2 text-3xl font-bold">{charity.full_name}</h1>
       {charity.website && (
         <span className="text-orange-600">
-          <LinkIcon className="mr-1 inline-block h-4 w-4" />
+          <LinkIcon className="mr-1 inline-block h-4 w-4 stroke-2" />
           <Link
             className="hover:underline"
             href={addHttpToUrl(charity.website)}

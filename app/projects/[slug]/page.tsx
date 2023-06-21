@@ -41,15 +41,19 @@ export async function generateMetadata(props: { params: { slug: string } }) {
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
   const supabase = createServerClient()
-  const project = await getFullProjectBySlug(supabase, slug)
+  const [project, user] = await Promise.all([
+    getFullProjectBySlug(supabase, slug),
+    getUser(supabase),
+  ])
   if (!project) {
     return <div>404</div>
   }
-  const user = await getUser(supabase)
-  const profile = await getProfileById(supabase, user?.id)
-  const comments = await getCommentsByProject(supabase, project.id)
-  const bids = await getBidsByProject(supabase, project.id)
-  const txns = await getTxnsByProject(supabase, project.id)
+  const [profile, comments, bids, txns] = await Promise.all([
+    user ? await getProfileById(supabase, user.id) : null,
+    getCommentsByProject(supabase, project.id),
+    getBidsByProject(supabase, project.id),
+    getTxnsByProject(supabase, project.id),
+  ])
   const userSpendableFunds = profile
     ? profile.accreditation_status && project.type === 'cert'
       ? calculateCashBalance(txns, bids, profile.id, true)
@@ -124,7 +128,6 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         {profile !== null && project.type === 'cert' && (
           <PlaceBid
             project={project}
-            user={profile}
             userSpendableFunds={userSpendableFunds}
             userSellableShares={userSellableShares}
             userShares={userShares}
