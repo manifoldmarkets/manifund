@@ -6,6 +6,7 @@ import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, getFullTxnsByUser, Txn, TxnAndProfiles } from '@/db/txn'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { orderBy, sortBy } from 'lodash'
+import { isCharitableDeposit } from './constants'
 
 export function getProposalValuation(project: Project) {
   const investorPercent =
@@ -222,7 +223,7 @@ export function categorizeTxn(txn: FullTxn, userId: string) {
           return 'share sale'
         }
       } else {
-        if (txn.from_id === BANK_ID) {
+        if (txn.from_id === BANK_ID && !isCharitableDeposit(txn.id)) {
           return 'deposit'
         } else {
           return 'incoming profile donation'
@@ -248,8 +249,8 @@ export function categorizeTxn(txn: FullTxn, userId: string) {
   }
 }
 
-// The following functions return -1, 0, or 1, depending on the effect that the transaction has on the user's balance types.
-// E.g. a donation gets a -1 multiplier for charity, and 0 for withdrawable.
+// These functions return -1, 0, or 1, depending on the effect that the transaction has on the user's balance types.
+// E.g. an outgoing donation gets a -1 multiplier for charity, and 0 for withdrawable.
 // A deposit gets 1 for charity and 0 for withdrawable for an unaccredited user, and vice versa for accredited users.
 // Withdrawable = investable for accredited investors
 export function txnCharityMultiplier(txnType: TxnType, accredited: boolean) {
