@@ -286,12 +286,11 @@ WITH CHECK (true)
 -- Project transfers
 create table public.project_transfers (
   id uuid not null,
-  email text not null,
+  recipient_email text not null,
+  recipient_name text not null,
   created_at timestamptz not null default now(),
   project_id uuid not null references public.projects(id) on delete cascade,
   transferred boolean not null default false,
-  grant_amount float8,
-  donor_comment_id uuid references public.comments(id),
   primary key (id)
 );
 
