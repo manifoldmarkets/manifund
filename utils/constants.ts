@@ -41,13 +41,15 @@ export function getRoundTheme(roundTitle: string) {
 export function getSponsoredAmount(regrantorName: string) {
   // TODO: Switch mapping from full name to username
   const sponsoredRegrantors = {
-    'Isaak Freeman': 50000,
-    'Marcus Abramovitch': 50000,
-    'Rachel Weinberg': 50000,
-    'Austin Chen': 50000,
-    'Qualy the lightbulb ': 50000,
-    'Adam Gleave': 400000,
-    'Dan Hendrycks': 400000,
+    'Isaak Freeman': 50_000,
+    'Marcus Abramovitch': 50_000,
+    'Rachel Weinberg': 50_000,
+    'Austin Chen': 50_000,
+    'Qualy the lightbulb ': 50_000,
+    'Gavriel Kleinwaks': 50_000,
+    'Zvi Mowshowitz': 50_000,
+    'Adam Gleave': 400_000,
+    'Dan Hendrycks': 400_000,
   } as { [key: string]: number }
-  return sponsoredRegrantors[regrantorName] ?? 0
+  return sponsoredRegrantors[regrantorName]
 }
