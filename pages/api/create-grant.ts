@@ -22,8 +22,9 @@ type GrantProps = {
   donorContribution: number
   fundingGoal: number
   minFunding: number
-  toEmail?: string
-  toUsername?: string
+  recipientEmail?: string
+  recipientName?: string
+  recipientUsername?: string
 }
 
 export default async function handler(req: NextRequest) {
@@ -35,8 +36,9 @@ export default async function handler(req: NextRequest) {
     donorContribution,
     fundingGoal,
     minFunding,
-    toEmail,
-    toUsername,
+    recipientEmail,
+    recipientName,
+    recipientUsername,
   } = (await req.json()) as GrantProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
@@ -44,17 +46,17 @@ export default async function handler(req: NextRequest) {
   if (!regranter) return NextResponse.error()
   const regranterProfile = await getProfileById(supabase, regranter.id)
   if (
-    (toEmail && toUsername) ||
-    (!toEmail && !toUsername) ||
+    (recipientEmail && recipientUsername) ||
+    ((!recipientEmail || !recipientName) && !recipientUsername) ||
     !regranterProfile
   ) {
     return NextResponse.error()
   }
   const slug = await projectSlugify(title, supabase)
-  const toProfile = toUsername
-    ? await getProfileByUsername(supabase, toUsername)
+  const toProfile = recipientUsername
+    ? await getProfileByUsername(supabase, recipientUsername)
     : null
-  if (!toProfile && toUsername) {
+  if (!toProfile && recipientUsername) {
     return NextResponse.error()
   }
   const project = {
@@ -73,7 +75,7 @@ export default async function handler(req: NextRequest) {
     approved: null,
     signed_agreement: false,
   }
-  if (toEmail) {
+  if (recipientEmail && recipientName) {
     const donorComment = {
       id: uuid(),
       project: project.id,
@@ -81,10 +83,9 @@ export default async function handler(req: NextRequest) {
       content: donorNotes,
     }
     const projectTransfer = {
-      to_email: toEmail,
+      recipient_email: recipientEmail,
+      recipient_name: recipientName,
       project_id: project.id,
-      grant_amount: donorContribution,
-      donor_comment_id: donorComment.id,
     }
     await supabase.rpc('create_transfer_grant', {
       project: project,
@@ -95,14 +96,14 @@ export default async function handler(req: NextRequest) {
       amount: donorContribution,
       regranterName: regranterProfile.full_name,
       projectTitle: title,
-      loginUrl: `${getURL()}login?email=${toEmail}`,
+      loginUrl: `${getURL()}login?email=${recipientEmail}`,
     }
     const NEW_USER_GRANT_TEMPLATE_ID = 31479155
     await sendTemplateEmail(
       NEW_USER_GRANT_TEMPLATE_ID,
       postmarkVars,
       undefined,
-      toEmail
+      recipientEmail
     )
   } else if (toProfile) {
     const donorComment = {
