@@ -55,10 +55,10 @@ export function CreateGrantForm(props: {
             profile.username.toLowerCase().includes(query.toLowerCase())
           )
         })
+  const [recipientFullName, setRecipientFullName] = useState('')
   const [recipientOnManifund, setRecipientOnManifund] = useState(false)
   const [recipient, setRecipient] = useState<MiniProfile | null>(null)
   const [recipientEmail, setRecipientEmail] = useState('')
-  const [recipientFullName, setRecipientFullName] = useState('')
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
   const [fundingOption, setFundingOption] = useState('fullyFund')
@@ -441,13 +441,8 @@ export function CreateGrantForm(props: {
               donorContribution,
               fundingGoal,
               minFunding,
-              recipientEmail: recipientOnManifund ? undefined : recipientEmail,
-              recipientName: recipientOnManifund
-                ? undefined
-                : recipientFullName,
-              recipientUsername: recipientOnManifund
-                ? recipient?.username
-                : undefined,
+              toEmail: recipientOnManifund ? undefined : recipientEmail,
+              toUsername: recipientOnManifund ? recipient?.username : undefined,
             }),
           })
           const newProject = await response.json()
