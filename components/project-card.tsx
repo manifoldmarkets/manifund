@@ -164,6 +164,9 @@ export function ProjectCardHeader(props: {
         {projectTransfer && (
           <Row className="gap-1">
             <Tag text={'PENDING TRANSFER'} className="mt-1" color="orange" />
+            <Col className="relative top-0.5 justify-center text-sm text-gray-500">
+              to {projectTransfer.recipient_name}
+            </Col>
           </Row>
         )}
       </div>
