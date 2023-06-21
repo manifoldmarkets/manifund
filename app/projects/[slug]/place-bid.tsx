@@ -15,7 +15,6 @@ import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
 import { Tooltip } from '@/components/tooltip'
 import { Project, TOTAL_SHARES } from '@/db/project'
-import { Profile } from '@/db/profile'
 import { Card } from '@/components/card'
 import { DataBox } from '@/components/data-box'
 
@@ -23,13 +22,11 @@ type BidType = Database['public']['Enums']['bid_type']
 
 export function PlaceBid(props: {
   project: Project
-  user: Profile
   userSpendableFunds: number
   userSellableShares: number
   userShares: number
 }) {
-  const { project, user, userSpendableFunds, userSellableShares, userShares } =
-    props
+  const { project, userSpendableFunds, userSellableShares, userShares } = props
   const router = useRouter()
   const sellablePortion = 1 - project.founder_portion / 10000000
   const minValuation = Math.round(project.min_funding / sellablePortion)
