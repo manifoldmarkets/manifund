@@ -7,8 +7,10 @@ import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { getProjectById } from '@/db/project'
-import { getUser } from '@/db/profile'
+import { getProfileAndBidsById, getUser } from '@/db/profile'
 import { maybeActivateGrant } from '@/utils/activate-grant'
+import { getTxnsByUser } from '@/db/txn'
+import { calculateCashBalance, calculateCharityBalance } from '@/utils/math'
 
 export const config = {
   runtime: 'edge',
@@ -33,7 +35,28 @@ export default async function handler(req: NextRequest) {
   if (!user) {
     return new Response('Unauthorized', { status: 401 })
   }
-  const project = await getProjectById(supabase, projectId)
+  const [bidder, txns, project] = await Promise.all([
+    getProfileAndBidsById(supabase, user.id),
+    getTxnsByUser(supabase, user.id),
+    getProjectById(supabase, projectId),
+  ])
+  const bidderBalance =
+    bidder.accreditation_status && type === 'buy'
+      ? calculateCashBalance(
+          txns,
+          bidder.bids,
+          bidder.id,
+          bidder.accreditation_status
+        )
+      : calculateCharityBalance(
+          txns,
+          bidder.bids,
+          bidder.id,
+          bidder.accreditation_status
+        )
+  if (type !== 'sell' && bidderBalance < amount) {
+    return new Response('Insufficient funds', { status: 401 })
+  }
   if (!project) {
     return new Response('Project not found', { status: 404 })
   }
