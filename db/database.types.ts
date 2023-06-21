@@ -146,38 +146,29 @@ export interface Database {
       project_transfers: {
         Row: {
           created_at: string
-          donor_comment_id: string | null
-          grant_amount: number | null
           id: string
           project_id: string
-          to_email: string
+          recipient_email: string
+          recipient_name: string
           transferred: boolean
         }
         Insert: {
           created_at?: string
-          donor_comment_id?: string | null
-          grant_amount?: number | null
           id?: string
           project_id: string
-          to_email: string
+          recipient_email: string
+          recipient_name?: string
           transferred?: boolean
         }
         Update: {
           created_at?: string
-          donor_comment_id?: string | null
-          grant_amount?: number | null
           id?: string
           project_id?: string
-          to_email?: string
+          recipient_email?: string
+          recipient_name?: string
           transferred?: boolean
         }
         Relationships: [
-          {
-            foreignKeyName: "project_transfers_donor_comment_id_fkey"
-            columns: ["donor_comment_id"]
-            referencedRelation: "comments"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "project_transfers_project_id_fkey"
             columns: ["project_id"]
@@ -561,10 +552,9 @@ export interface Database {
         slug: string
       }
       transfer_row: {
-        to_email: string
+        recipient_email: string
+        recipient_name: string
         project_id: string
-        grant_amount: number
-        donor_comment_id: string
       }
     }
   }
