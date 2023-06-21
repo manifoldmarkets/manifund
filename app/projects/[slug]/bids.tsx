@@ -290,7 +290,6 @@ function Trade(props: {
                 body: JSON.stringify({
                   oldBidId: bid.id,
                   usdTraded: tradeAmount,
-                  tradePartnerId: userId,
                 }),
               })
               const res = await response.json()
