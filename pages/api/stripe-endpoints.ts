@@ -53,7 +53,6 @@ export default async function handler(
   }
 
   if (event.type === 'checkout.session.completed') {
-    console.log(event)
     const session = event.data.object as Stripe.Checkout.Session
     const txnId = uuid()
     await issueMoneys(session, txnId)

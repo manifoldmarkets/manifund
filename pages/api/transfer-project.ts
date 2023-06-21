@@ -35,11 +35,14 @@ export default async function handler(
   return res
 }
 
-async function getTransfersByEmail(supabase: SupabaseClient, toEmail: string) {
+async function getTransfersByEmail(
+  supabase: SupabaseClient,
+  recipientEmail: string
+) {
   const { data, error } = await supabase
     .from('project_transfers')
     .select('*, projects(*)')
-    .eq('to_email', toEmail)
+    .eq('recipient_email', recipientEmail)
   if (error) {
     throw error
   }
