@@ -51,5 +51,5 @@ export function getSponsoredAmount(regrantorName: string) {
     'Adam Gleave': 400_000,
     'Dan Hendrycks': 400_000,
   } as { [key: string]: number }
-  return sponsoredRegrantors[regrantorName]
+  return sponsoredRegrantors[regrantorName] ?? 0
 }
