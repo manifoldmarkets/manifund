@@ -8,6 +8,9 @@ import { createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail } from '@/utils/email'
 import { JSONContent } from '@tiptap/react'
+import { calculateCharityBalance } from '@/utils/math'
+import { getTxnsByUser } from '@/db/txn'
+import { getBidsByUser } from '@/db/bid'
 
 export const config = {
   runtime: 'edge',
@@ -52,16 +55,27 @@ export default async function handler(req: NextRequest) {
   ) {
     return NextResponse.error()
   }
+  const regranterTxns = await getTxnsByUser(supabase, regranter.id)
+  const regranterBids = await getBidsByUser(supabase, regranter.id)
+  const regranterCharityBalance = calculateCharityBalance(
+    regranterTxns,
+    regranterBids,
+    regranterProfile.id,
+    regranterProfile.accreditation_status
+  )
+  if (regranterCharityBalance < donorContribution) {
+    return NextResponse.error()
+  }
   const slug = await projectSlugify(title, supabase)
-  const toProfile = recipientUsername
+  const recipientProfile = recipientUsername
     ? await getProfileByUsername(supabase, recipientUsername)
     : null
-  if (!toProfile && recipientUsername) {
+  if (!recipientProfile && recipientUsername) {
     return NextResponse.error()
   }
   const project = {
     id: uuid(),
-    creator: toProfile ? toProfile.id : regranter.id,
+    creator: recipientProfile ? recipientProfile.id : regranter.id,
     title,
     blurb: subtitle,
     description,
@@ -105,7 +119,7 @@ export default async function handler(req: NextRequest) {
       undefined,
       recipientEmail
     )
-  } else if (toProfile) {
+  } else if (recipientProfile) {
     const donorComment = {
       id: uuid(),
       project: project.id,
@@ -135,7 +149,7 @@ export default async function handler(req: NextRequest) {
     await sendTemplateEmail(
       EXISTING_USER_GRANT_TEMPLATE_ID,
       postmarkVars,
-      toProfile.id
+      recipientProfile.id
     )
   } else {
     return NextResponse.error()
