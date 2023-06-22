@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { createMiddlewareSupabaseClient } from '@supabase/auth-helpers-nextjs'
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/db/database.types'
 import {
   SUPABASE_ANON_KEY,
@@ -10,7 +10,7 @@ import {
 
 export function createEdgeClient(req: NextRequest) {
   const res = NextResponse.next()
-  return createMiddlewareSupabaseClient<Database>(
+  return createMiddlewareClient<Database>(
     {
       req,
       res,

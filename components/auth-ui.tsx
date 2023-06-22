@@ -1,8 +1,8 @@
 'use client'
 
 import { useSupabase } from '@/db/supabase-provider'
-import { Auth, ThemeSupa } from '@supabase/auth-ui-react'
-import { Theme } from '@supabase/auth-ui-react/dist/esm/src/types'
+import { Auth } from '@supabase/auth-ui-react'
+import { ThemeSupa, Theme } from '@supabase/auth-ui-shared'
 import { Button } from '@/components/button'
 import { getURL } from '@/utils/constants'
 import { useSearchParams } from 'next/navigation'
