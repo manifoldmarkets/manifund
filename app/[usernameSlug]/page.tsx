@@ -7,10 +7,7 @@ import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { SignOutButton } from './sign-out-button'
 import { getFullTxnsByUser, getTxnsByUser } from '@/db/txn'
-import {
-  getProjectsByUser,
-  getProjectsPendingTransferByUser,
-} from '@/db/project'
+import { getProjectsByUser } from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
 import { getBidsByUser } from '@/db/bid'
 
@@ -25,14 +22,12 @@ export default async function UserProfilePage(props: {
   if (!profile) {
     return <div>User not found</div>
   }
-  const [projectsPendingTransfer, bids, projects, txns, user] =
-    await Promise.all([
-      getProjectsPendingTransferByUser(supabase, profile.id),
-      getBidsByUser(supabase, profile.id),
-      getProjectsByUser(supabase, profile.id),
-      getFullTxnsByUser(supabase, profile.id),
-      getUser(supabase),
-    ])
+  const [bids, projects, txns, user] = await Promise.all([
+    getBidsByUser(supabase, profile.id),
+    getProjectsByUser(supabase, profile.id),
+    getFullTxnsByUser(supabase, profile.id),
+    getUser(supabase),
+  ])
   const [userTxns, userProfile] = await Promise.all([
     user ? getTxnsByUser(supabase, user.id) : null,
     user ? getProfileAndBidsById(supabase, user.id) : null,
@@ -47,7 +42,6 @@ export default async function UserProfilePage(props: {
           projects={projects}
           bids={bids}
           txns={txns}
-          projectsPendingTransfer={projectsPendingTransfer}
           userProfile={userProfile}
           userTxns={userTxns}
         />
