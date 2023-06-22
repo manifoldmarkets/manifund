@@ -3,8 +3,6 @@ import Stripe from 'stripe'
 import { createEdgeClient } from './_db'
 import { getUser } from '@/db/profile'
 import { NextRequest, NextResponse } from 'next/server'
-import { getURL } from 'next/dist/shared/lib/utils'
-
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
@@ -22,27 +20,24 @@ export default async function handler(req: NextRequest) {
   if (!user) {
     return NextResponse.error()
   }
-
   const account = await stripe.accounts.create({
     type: 'express',
     email: user.email,
   })
-
   await supabase
     .from('profiles')
     .update({ stripe_connect_id: account.id })
     .eq('id', user.id)
     .throwOnError()
-
-  const siteUrl = getURL()
   const accountLink = await stripe.accountLinks.create({
     account: account.id,
-    refresh_url: `${siteUrl}/withdraw`,
-    return_url: `${siteUrl}}/withdraw`,
+    refresh_url: 'https://manifund.org/withdraw',
+    return_url: 'https://manifund.org/withdraw',
     type: 'account_onboarding',
   })
   if (!accountLink) {
+    console.log('no account link')
     return NextResponse.error()
   }
-  NextResponse.json({ url: accountLink.url })
+  return NextResponse.json({ url: accountLink.url })
 }

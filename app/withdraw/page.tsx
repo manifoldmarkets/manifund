@@ -37,6 +37,7 @@ export default async function WithdrawPage() {
   const account = profile.stripe_connect_id
     ? await stripe.accounts.retrieve(profile.stripe_connect_id)
     : null
+
   const loginLink = account
     ? account.payouts_enabled && account.charges_enabled
       ? await stripe.accounts.createLoginLink(account.id)
