@@ -24,7 +24,7 @@ export function ProposalData(props: { project: Project; raised: number }) {
             label={`raised of $${project.funding_goal} goal`}
           />
           <DataPoint
-            value={`$${formatMoney(project.min_funding)}`}
+            value={`${formatMoney(project.min_funding)}`}
             label="required to proceed"
           />
           {project.auction_close && (
