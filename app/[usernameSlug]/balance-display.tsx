@@ -2,11 +2,14 @@
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
-import { PlusSmallIcon, MinusSmallIcon } from '@heroicons/react/24/solid'
+import { MinusSmallIcon } from '@heroicons/react/24/solid'
 import React from 'react'
 import { DataPoint } from '@/components/data-point'
 import { Card } from '@/components/card'
-import { StripeDepositButton } from '@/components/stripe-deposit-button'
+import {
+  AirtableDepositButton,
+  StripeDepositButton,
+} from '@/components/deposit-buttons'
 import Link from 'next/link'
 
 export function BalanceDisplay(props: {
@@ -35,18 +38,10 @@ export function BalanceDisplay(props: {
         {isOwnProfile && userId && (
           <Col className="justify-between">
             {accredited ? (
-              <a
-                href="https://airtable.com/shrIB5yGc56DoQBhJ"
-                className="rounded bg-white shadow"
-              >
-                <Tooltip text="Add funds">
-                  <PlusSmallIcon className="h-4 w-4 text-gray-500" />
-                </Tooltip>
-              </a>
+              <AirtableDepositButton />
             ) : (
               <StripeDepositButton userId={userId} />
             )}
-
             <Link href="/withdraw" className="rounded bg-white p-1 shadow">
               <Tooltip text="Withdraw funds">
                 <MinusSmallIcon className="h-4 w-4 text-gray-500" />
