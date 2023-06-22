@@ -1,4 +1,3 @@
-'use client'
 import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
 import { AuctionPlayground } from './auction-playground'
 
