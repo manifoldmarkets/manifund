@@ -22,25 +22,19 @@ import { OutgoingDonationsHistory } from './user-donations'
 
 export function ProfileTabs(props: {
   profile: Profile
-  projectsPendingTransfer: Project[]
   projects: FullProject[]
   bids: BidAndProject[]
   txns: FullTxn[]
   userProfile: ProfileAndBids | null
   userTxns: Txn[] | null
 }) {
-  const {
-    profile,
-    projectsPendingTransfer,
-    projects,
-    bids,
-    txns,
-    userProfile,
-    userTxns,
-  } = props
+  const { profile, projects, bids, txns, userProfile, userTxns } = props
   const isOwnProfile = userProfile?.id === profile.id
   const proposalBids = bids.filter(
-    (bid) => bid.projects.stage === 'proposal' && bid.status === 'pending'
+    (bid) =>
+      bid.projects.stage === 'proposal' &&
+      bid.status === 'pending' &&
+      bid.type !== 'donate'
   )
   const activeBids = bids.filter(
     (bid) => bid.projects.stage === 'active' && bid.status === 'pending'
@@ -56,6 +50,9 @@ export function ProfileTabs(props: {
       txnType === 'outgoing project donation'
     )
   })
+  const pendingDonateBids = bids.filter(
+    (bid) => bid.status === 'pending' && bid.type === 'donate'
+  )
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
   const tabs = []
@@ -109,10 +106,10 @@ export function ProfileTabs(props: {
           isOwnProfile={isOwnProfile ?? undefined}
           userId={userProfile?.id ?? undefined}
         />
-        {donations.length > 0 && (
+        {(donations.length > 0 || pendingDonateBids.length > 0) && (
           <OutgoingDonationsHistory
             donations={donations}
-            projectsPendingTransfer={projectsPendingTransfer}
+            pendingDonateBids={pendingDonateBids}
           />
         )}
         {notOwnProjectInvestments.length > 0 && (
