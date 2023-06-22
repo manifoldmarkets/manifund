@@ -104,11 +104,8 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
               </p>
               <p>
                 2.3 Should any part of the Grant remain unspent at the end of
-                the Grant Period, the Recipient may request a no-cost grant
-                extension from the Charity in writing, with the supporting
-                reasons. If an extension is not requested or agreed upon, the
-                Recipient shall ensure that the unspent money is returned to the
-                Charity.
+                the Grant Period, the Recipient shall ensure that the unspent
+                money is returned to the Charity.
               </p>
             </td>
           </tr>
