@@ -14,7 +14,7 @@ import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { StripeDepositButton } from '@/components/stripe-deposit-button'
 
-export const revalidate = 0
+export const revalidate = 30
 export default async function Sidebar() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
