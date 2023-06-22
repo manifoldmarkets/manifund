@@ -172,7 +172,6 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
         type="text"
         id="title"
         autoComplete="off"
-        required
         value={title ?? ''}
         onChange={(event) => setTitle(event.target.value)}
       />
@@ -181,7 +180,6 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
         type="text"
         id="blurb"
         autoComplete="off"
-        required
         value={blurb ?? ''}
         onChange={(event) => setBlurb(event.target.value)}
       />

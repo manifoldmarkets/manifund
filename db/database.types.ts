@@ -438,14 +438,24 @@ export interface Database {
         }
         Returns: undefined
       }
-      create_transfer_grant: {
-        Args: {
-          project: Database["public"]["CompositeTypes"]["project_row"]
-          donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
-          project_transfer: Database["public"]["CompositeTypes"]["transfer_row"]
-        }
-        Returns: undefined
-      }
+      create_transfer_grant:
+        | {
+            Args: {
+              project: Database["public"]["CompositeTypes"]["project_row"]
+              donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
+              project_transfer: Database["public"]["CompositeTypes"]["transfer_row"]
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              project: Database["public"]["CompositeTypes"]["project_row"]
+              donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
+              project_transfer: Database["public"]["CompositeTypes"]["transfer_row"]
+              grant_amount: number
+            }
+            Returns: undefined
+          }
       execute_grant_verdict: {
         Args: {
           approved: boolean
