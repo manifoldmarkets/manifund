@@ -1,7 +1,6 @@
-import { Col } from '@/components/layout/col'
 import { Tag } from '@/components/tags'
 import { Tooltip } from '@/components/tooltip'
-import { Project } from '@/db/project'
+import { BidAndProject } from '@/db/bid'
 import { FullTxn } from '@/db/txn'
 import { HeartIcon, UserIcon, WrenchIcon } from '@heroicons/react/24/solid'
 import { formatDistanceToNow } from 'date-fns'
@@ -10,11 +9,11 @@ import Link from 'next/link'
 
 export function OutgoingDonationsHistory(props: {
   donations: FullTxn[]
-  projectsPendingTransfer: Project[]
+  pendingDonateBids: BidAndProject[]
 }) {
-  const { donations, projectsPendingTransfer } = props
+  const { donations, pendingDonateBids } = props
   const sortedDonations = orderBy(donations, 'created_at', 'desc')
-  const sortedProjects = orderBy(projectsPendingTransfer, 'created_at', 'desc')
+  const sortedBids = orderBy(pendingDonateBids, 'created_at', 'desc')
   const donationsDisplay = sortedDonations.map((donation) => {
     const type = donation.project
       ? 'project'
@@ -44,14 +43,14 @@ export function OutgoingDonationsHistory(props: {
       />
     )
   })
-  const pendingGrantDisplay = sortedProjects.map((project) => {
+  const pendingGrantDisplay = sortedBids.map((bid) => {
     return (
       <DonationRow
-        key={project.id}
+        key={bid.id}
         type="project"
-        name={project.title}
-        url={`/projects/${project.slug}`}
-        amount={project.funding_goal}
+        name={bid.projects.title}
+        url={`/projects/${bid.projects.slug}?tab=bids`}
+        amount={bid.amount}
       />
     )
   })
