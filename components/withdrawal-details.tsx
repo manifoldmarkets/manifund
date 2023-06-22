@@ -55,7 +55,7 @@ export function WithdrawalDetails(props: {
               icon={<div className="mx-1 text-xl">🇺🇸</div>}
               title="US bank accounts"
               description="Set up your Stripe connect account to enable automatic payouts. Funds will be sent to your bank account within 2 business days. Only available in the United States."
-              url=""
+              url={loginUrl}
               linkText={
                 accountStatus === 'nonexistent'
                   ? 'Set up account'
