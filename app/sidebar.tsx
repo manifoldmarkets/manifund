@@ -17,7 +17,7 @@ import {
   StripeDepositButton,
 } from '@/components/deposit-buttons'
 
-export const revalidate = 0
+export const revalidate = 30
 export default async function Sidebar() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
