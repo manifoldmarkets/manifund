@@ -50,13 +50,17 @@ export default async function handler(req: NextRequest) {
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const regranter = resp.data.user
-  if (!regranter) return NextResponse.error()
+  if (!regranter) {
+    console.log('no regranter')
+    return NextResponse.error()
+  }
   const regranterProfile = await getProfileById(supabase, regranter.id)
   if (
     (recipientEmail && recipientUsername) ||
     ((!recipientEmail || !recipientName) && !recipientUsername) ||
     !regranterProfile
   ) {
+    console.log('invalid inputs')
     return NextResponse.error()
   }
   const regranterTxns = await getTxnsByUser(supabase, regranter.id)
@@ -68,6 +72,7 @@ export default async function handler(req: NextRequest) {
     regranterProfile.accreditation_status
   )
   if (regranterCharityBalance < donorContribution) {
+    console.log('insufficient funds')
     return NextResponse.error()
   }
   const slug = await projectSlugify(title, supabase)
@@ -105,11 +110,14 @@ export default async function handler(req: NextRequest) {
       recipient_name: recipientName,
       project_id: project.id,
     }
-    await supabase.rpc('create_transfer_grant', {
-      project: project,
-      donor_comment: donorComment,
-      project_transfer: projectTransfer,
-    })
+    await supabase
+      .rpc('create_transfer_grant', {
+        project: project,
+        donor_comment: donorComment,
+        project_transfer: projectTransfer,
+        grant_amount: donorContribution,
+      })
+      .throwOnError()
     const postmarkVars = {
       amount: donorContribution,
       regranterName: regranterProfile.full_name,
@@ -156,6 +164,7 @@ export default async function handler(req: NextRequest) {
       recipientProfile.id
     )
   } else {
+    console.log('invalid inputs 2')
     return NextResponse.error()
   }
   return NextResponse.json(project)
