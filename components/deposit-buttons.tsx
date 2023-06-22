@@ -111,3 +111,17 @@ export function StripeDepositButton(props: {
     </>
   )
 }
+
+export function AirtableDepositButton(props: { small?: boolean }) {
+  const { small } = props
+  return (
+    <a
+      href="https://airtable.com/shrIB5yGc56DoQBhJ"
+      className={clsx('rounded bg-white shadow', small ? 'p-0.5' : 'p-1')}
+    >
+      <Tooltip text="Add funds">
+        <PlusSmallIcon className="h-4 w-4 text-gray-500" />
+      </Tooltip>
+    </a>
+  )
+}

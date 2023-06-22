@@ -12,7 +12,10 @@ import { getTxnsByUser } from '@/db/txn'
 import { buttonClass } from '@/components/button'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
-import { StripeDepositButton } from '@/components/stripe-deposit-button'
+import {
+  AirtableDepositButton,
+  StripeDepositButton,
+} from '@/components/deposit-buttons'
 
 export const revalidate = 0
 export default async function Sidebar() {
@@ -85,7 +88,11 @@ export async function ProfileSummary(props: { profile: Profile }) {
         <div className="font-medium">{profile.full_name}</div>
         <Row className="gap-2 py-0.5 text-sm">
           {formatMoney(calculateUserBalance(txns, profile.id))}
-          <StripeDepositButton userId={profile.id} small />
+          {profile.accreditation_status ? (
+            <AirtableDepositButton small />
+          ) : (
+            <StripeDepositButton userId={profile.id} small />
+          )}
         </Row>
       </Link>
     </div>

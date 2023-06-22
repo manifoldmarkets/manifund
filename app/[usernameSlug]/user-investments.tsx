@@ -31,7 +31,7 @@ export function Investments(props: { investments: Investment[] }) {
           className="table-row w-full"
           key={investment.project.id}
         >
-          <td className="p-4">
+          <td className="p-4 font-medium">
             {investment.project.title}
             <div className="mt-2 lg:hidden">{priceText}</div>
           </td>
