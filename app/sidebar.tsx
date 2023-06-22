@@ -56,7 +56,7 @@ export default async function Sidebar() {
         <SidebarItem item={{ name: 'About', href: '/about' }} />
         <SidebarItem item={{ name: 'Charity', href: '/charity' }} />
         <SidebarItem
-          item={{ name: 'Discord', href: 'https://discord.gg/zPnPtx6jBS' }}
+          item={{ name: 'Discord', href: 'https://discord.gg/ZGsDMWSA5Q' }}
         />
         {user && (
           <Link
