@@ -62,8 +62,7 @@ export async function listProjects(supabase: SupabaseClient) {
     )
     .order('created_at', { ascending: false })
     .throwOnError()
-  // Scary type conversion!
-  return data as unknown as FullProject[]
+  return data as FullProject[]
 }
 
 export async function getFullProjectBySlug(
@@ -98,7 +97,7 @@ export async function getProjectAndProfileBySlug(
   }
   return data[0] as ProjectAndProfile
 }
-// This does not include project or round descriptions, for a smaller payload
+// Note: This does not include project or round descriptions, for a smaller payload
 export async function getFullProjectsByRound(
   supabase: SupabaseClient,
   roundTitle: string
@@ -112,8 +111,7 @@ export async function getFullProjectsByRound(
   if (error) {
     throw error
   }
-  // Scary type conversion!
-  return data as unknown as FullProject[]
+  return data as FullProject[]
 }
 
 export async function getProjectsPendingTransferByUser(
