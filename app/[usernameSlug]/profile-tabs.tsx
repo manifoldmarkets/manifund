@@ -124,22 +124,18 @@ export function ProfileTabs(props: {
       </div>
     ),
   })
-  if (isOwnProfile || projects.length > 0) {
+  const relevantProjects = projects.filter(
+    (project) =>
+      project.project_transfers.filter((transfer) => !transfer.transferred)
+        .length === 0
+  )
+  if (isOwnProfile || relevantProjects.length > 0) {
     tabs.push({
       name: 'Projects',
       href: '?tab=projects',
-      count: projects.length,
+      count: relevantProjects.length,
       current: currentTabName === 'projects',
-      display: (
-        <Projects
-          projects={projects.filter(
-            (project) =>
-              project.project_transfers.filter(
-                (transfer) => !transfer.transferred
-              ).length === 0
-          )}
-        />
-      ),
+      display: <Projects projects={relevantProjects} />,
     })
   }
   if (profile.long_description) {
