@@ -57,9 +57,10 @@ export function getActiveValuation(
 export function calculateUserBalance(txns: Txn[], userId: string) {
   let balance = 0
   txns.forEach((txn) => {
-    const incoming = txn.to_id === userId
+    const balanceEffect =
+      txn.to_id === userId ? (txn.from_id === userId ? 0 : 1) : -1
     if (txn.token === 'USD') {
-      balance += incoming ? txn.amount : -txn.amount
+      balance += txn.amount * balanceEffect
     }
   })
   return balance
@@ -207,11 +208,16 @@ type TxnType =
   | 'deposit'
   | 'incoming project donation'
   | 'outgoing project donation'
+  | 'self-donation'
   | 'non-dollar'
 
 export function categorizeTxn(txn: FullTxn, userId: string) {
   if (txn.token === 'USD') {
     if (txn.to_id === userId) {
+      // TODO: patch this more nicely. Should be split into multiple types.
+      if (txn.from_id === userId && txn.project && !txn.bundle) {
+        return 'self-donation'
+      }
       if (txn.project) {
         if (txn.projects?.creator === userId) {
           if (txn.bundle) {
@@ -274,6 +280,8 @@ export function txnCharityMultiplier(txnType: TxnType, accredited: boolean) {
     return 1
   } else if (txnType === 'deposit') {
     return accredited ? 0 : 1
+  } else if (txnType === 'self-donation') {
+    return -1
   } else {
     return 0
   }
@@ -299,5 +307,7 @@ export function txnCashMultiplier(txnType: TxnType, accredited: boolean) {
     return 0
   } else if (txnType === 'deposit') {
     return accredited ? 1 : 0
+  } else if (txnType === 'self-donation') {
+    return 1
   } else return 0
 }
