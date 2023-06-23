@@ -1,5 +1,10 @@
 import { createServerClient } from '@/db/supabase-server'
-import { getUser, getProfileById, isAdmin } from '@/db/profile'
+import {
+  getUser,
+  getProfileById,
+  isAdmin,
+  getProfileAndBidsById,
+} from '@/db/profile'
 import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
@@ -15,7 +20,7 @@ import {
 import { ProposalData } from './proposal-data'
 import { SignInButton } from '@/components/sign-in-button'
 import { ProjectTabs } from './project-tabs'
-import { getTxnsByProject } from '@/db/txn'
+import { getTxnsByProject, getTxnsByUser } from '@/db/txn'
 import { Description } from './description'
 import { ProjectCardHeader } from '@/components/project-card'
 import {
@@ -48,38 +53,56 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   if (!project) {
     return <div>404</div>
   }
-  const [profile, comments, bids, txns] = await Promise.all([
-    user ? await getProfileById(supabase, user.id) : null,
-    getCommentsByProject(supabase, project.id),
-    getBidsByProject(supabase, project.id),
-    getTxnsByProject(supabase, project.id),
-  ])
+  const [profile, userTxns, comments, projectBids, projectTxns] =
+    await Promise.all([
+      user ? await getProfileAndBidsById(supabase, user.id) : null,
+      user ? getTxnsByUser(supabase, user.id) : [],
+      getCommentsByProject(supabase, project.id),
+      getBidsByProject(supabase, project.id),
+      getTxnsByProject(supabase, project.id),
+    ])
   const userSpendableFunds = profile
     ? profile.accreditation_status && project.type === 'cert'
-      ? calculateCashBalance(txns, bids, profile.id, true)
+      ? calculateCashBalance(userTxns, profile.bids, profile.id, true)
       : calculateCharityBalance(
-          txns,
-          bids,
+          userTxns,
+          profile.bids,
           profile.id,
           profile.accreditation_status
         )
     : 0
+  console.log('spendable funds', userSpendableFunds)
+  console.log(
+    'charity balance',
+    calculateCharityBalance(
+      userTxns,
+      profile?.bids ?? [],
+      profile?.id ?? '',
+      profile?.accreditation_status ?? false
+    )
+  )
   const userSellableShares = profile
-    ? calculateSellableShares(txns, bids, project.id, profile.id)
+    ? calculateSellableShares(userTxns, profile.bids, project.id, profile.id)
     : 0
-  const userShares = profile ? calculateShares(txns, project.id, profile.id) : 0
+  const userShares = profile
+    ? calculateShares(userTxns, project.id, profile.id)
+    : 0
   const valuation =
     project.type === 'grant'
       ? project.funding_goal
       : project.stage === 'proposal'
       ? getProposalValuation(project)
-      : getActiveValuation(txns, bids, getProposalValuation(project))
+      : getActiveValuation(
+          projectTxns,
+          projectBids,
+          getProposalValuation(project)
+        )
 
   const isOwnProject = user?.id === project.profiles.id
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred
   )
-  const raised = bids.reduce((acc, bid) => {
+  const raised = projectBids.reduce((acc, bid) => {
     if (bid.status === 'pending') {
       return acc + bid.amount
     } else {
@@ -147,8 +170,8 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           project={project}
           user={profile}
           comments={comments}
-          bids={bids}
-          txns={txns}
+          bids={projectBids}
+          txns={projectTxns}
           userSpendableFunds={userSpendableFunds}
           userSellableShares={userSellableShares}
         />

@@ -1,5 +1,4 @@
 'use client'
-import { Project } from '@/db/project'
 import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { formatMoney } from '@/utils/formatting'
