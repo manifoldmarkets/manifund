@@ -212,7 +212,7 @@ function ConfirmWithdrawal(props: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        amount: withdrawAmount,
+        dollarAmount: withdrawAmount,
       }),
     })
     const json = await response.json()

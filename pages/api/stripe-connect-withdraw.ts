@@ -7,6 +7,7 @@ import Stripe from 'stripe'
 import { BANK_ID, STRIPE_SECRET_KEY } from '@/db/env'
 import uuid from 'react-uuid'
 import { sendTemplateEmail } from '@/utils/email'
+import { CENTS_PER_DOLLAR } from '@/utils/constants'
 
 export const config = {
   runtime: 'edge',
@@ -24,7 +25,7 @@ const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
 })
 
 export default async function handler(req: NextRequest) {
-  const { amount } = await req.json()
+  const { dollarAmount } = await req.json()
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
@@ -49,12 +50,12 @@ export default async function handler(req: NextRequest) {
     user.id,
     profile.accreditation_status
   )
-  if (amount > withdrawBalance) {
+  if (dollarAmount > withdrawBalance) {
     console.log('amount too high')
     return NextResponse.error()
   }
   const transfer = await stripe.transfers.create({
-    amount: amount,
+    amount: dollarAmount * CENTS_PER_DOLLAR,
     currency: 'usd',
     destination: profile.stripe_connect_id,
   })
@@ -65,7 +66,7 @@ export default async function handler(req: NextRequest) {
       id: txnId,
       from_id: user.id,
       to_id: BANK_ID ?? '',
-      amount: amount,
+      amount: dollarAmount,
       token: 'USD',
       project: null,
     })
@@ -75,7 +76,7 @@ export default async function handler(req: NextRequest) {
     .insert({
       session_id: transfer.id,
       customer_id: user.id,
-      amount: amount,
+      amount: dollarAmount,
       txn_id: txnId,
     })
     .throwOnError()
@@ -83,7 +84,7 @@ export default async function handler(req: NextRequest) {
   const usedBank = account.external_accounts?.data[0].object === 'bank_account'
   const last4 = account.external_accounts?.data[0].last4
   const postmarkVars = {
-    amount: amount,
+    amount: dollarAmount,
     id: txnId,
     methodText:
       (usedBank ? 'Routing number ending in: ' : 'Card ending in: ') + last4,
@@ -96,5 +97,5 @@ export default async function handler(req: NextRequest) {
     undefined,
     user.email
   )
-  return NextResponse.json({ amount })
+  return NextResponse.json({ dollarAmount })
 }
