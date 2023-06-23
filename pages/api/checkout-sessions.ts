@@ -1,6 +1,7 @@
 import Stripe from 'stripe'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { isProd, STRIPE_SECRET_KEY } from '@/db/env'
+import { CENTS_PER_DOLLAR } from '@/utils/constants'
 
 const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
   apiVersion: '2022-11-15',
@@ -26,7 +27,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const { dollarQuantity, userId } = (await req.body) as CheckoutProps
-  const amountToCharge = dollarQuantity * 100
+  const amountToCharge = dollarQuantity * CENTS_PER_DOLLAR
   if (req.method === 'POST') {
     try {
       const session = await stripe.checkout.sessions.create({
