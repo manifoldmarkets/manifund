@@ -1,10 +1,5 @@
 import { createServerClient } from '@/db/supabase-server'
-import {
-  getUser,
-  getProfileById,
-  isAdmin,
-  getProfileAndBidsById,
-} from '@/db/profile'
+import { getUser, isAdmin, getProfileAndBidsById } from '@/db/profile'
 import { PlaceBid } from './place-bid'
 import { RichContent } from '@/components/editor'
 import { CloseBidding } from './close-bidding'
