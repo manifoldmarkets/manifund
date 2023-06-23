@@ -48,6 +48,7 @@ export function getSponsoredAmount(regrantorName: string) {
     'Qualy the lightbulb ': 50_000,
     'Gavriel Kleinwaks': 50_000,
     'Zvi Mowshowitz': 50_000,
+    'Ted Suzman': 50_000,
     'Adam Gleave': 400_000,
     'Dan Hendrycks': 400_000,
   } as { [key: string]: number }
