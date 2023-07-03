@@ -1,6 +1,7 @@
-import { getProfileById, Profile } from '@/db/profile'
+import { getProfileById } from '@/db/profile'
 import { getProjectAndBidsById, Project, ProjectAndBids } from '@/db/project'
 import { getTxnsByProject } from '@/db/txn'
+import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { uniq } from 'lodash'
 import { getURL } from './constants'
@@ -16,7 +17,7 @@ export async function maybeActivateGrant(
     return
   }
   if (checkGrantFundingReady(project)) {
-    await activateGrant(supabase, project)
+    await activateGrant(project)
   }
 }
 
@@ -36,7 +37,8 @@ function checkGrantFundingReady(project: ProjectAndBids) {
   }
 }
 
-async function activateGrant(supabase: SupabaseClient, project: Project) {
+async function activateGrant(project: Project) {
+  const supabase = createAdminClient()
   const creatorProfile = await getProfileById(supabase, project?.creator)
   if (!project || !creatorProfile) {
     console.error('project', project, 'creatorProfile', creatorProfile)
