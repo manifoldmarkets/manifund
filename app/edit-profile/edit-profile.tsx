@@ -12,11 +12,8 @@ import uuid from 'react-uuid'
 import Image from 'next/image'
 import { SUPABASE_BUCKET_URL } from '@/db/env'
 import { TextEditor, useTextEditor } from '@/components/editor'
-import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
-import { Card } from '@/components/card'
-import Link from 'next/link'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
