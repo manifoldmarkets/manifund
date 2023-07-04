@@ -14,15 +14,13 @@ export function SignAgreement(props: { project: ProjectAndProfile }) {
   return (
     <>
       <Row className="mb-3">
-        <Row className="h-6 items-center">
-          <Checkbox
-            id="terms"
-            aria-describedby="terms-description"
-            name="terms"
-            checked={agreed}
-            onChange={() => setAgreed(!agreed)}
-          />
-        </Row>
+        <Checkbox
+          id="terms"
+          aria-describedby="terms-description"
+          name="terms"
+          checked={agreed}
+          onChange={() => setAgreed(!agreed)}
+        />
         <div className="ml-3 text-sm leading-6">
           <label htmlFor="terms" className="font-medium text-gray-900">
             I, <strong>{project.profiles.full_name}</strong>, agree to the terms

@@ -236,15 +236,13 @@ function Trade(props: {
             {project.creator === userId &&
               project.round === 'OP AI Worldviews Contest' && (
                 <div className="mb-3 flex">
-                  <div className="flex h-6 items-center">
-                    <Checkbox
-                      id="terms"
-                      aria-describedby="terms-description"
-                      name="terms"
-                      checked={agreedToTerms}
-                      onChange={() => setAgreedToTerms(!agreedToTerms)}
-                    />
-                  </div>
+                  <Checkbox
+                    id="terms"
+                    aria-describedby="terms-description"
+                    name="terms"
+                    checked={agreedToTerms}
+                    onChange={() => setAgreedToTerms(!agreedToTerms)}
+                  />
                   <div className="ml-3 text-sm leading-6">
                     <label
                       htmlFor="terms"

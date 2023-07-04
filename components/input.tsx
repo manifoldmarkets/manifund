@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 import clsx from 'clsx'
 import { forwardRef, Ref } from 'react'
+import { Row } from './layout/row'
 
 /** Text input. Wraps html `<input>` */
 export const Input = forwardRef(
@@ -30,15 +31,17 @@ export const Checkbox = forwardRef(
   (props: JSX.IntrinsicElements['input'], ref: Ref<HTMLInputElement>) => {
     const { className, ...rest } = props
     return (
-      <input
-        ref={ref}
-        type="checkbox"
-        className={clsx(
-          'h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600',
-          className
-        )}
-        {...rest}
-      />
+      <Row className="h-6 items-center">
+        <input
+          ref={ref}
+          type="checkbox"
+          className={clsx(
+            'h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600',
+            className
+          )}
+          {...rest}
+        />
+      </Row>
     )
   }
 )
