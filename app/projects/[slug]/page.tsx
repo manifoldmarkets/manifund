@@ -10,6 +10,7 @@ import { getBidsByProject } from '@/db/bid'
 import {
   calculateShares,
   getActiveValuation,
+  getAmountRaised,
   getProposalValuation,
 } from '@/utils/math'
 import { ProposalData } from './proposal-data'
@@ -46,7 +47,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     getUser(supabase),
   ])
   if (!project) {
-    return <div>404</div>
+    return <div>404: Project not found.</div>
   }
   const [profile, userTxns, comments, projectBids, projectTxns] =
     await Promise.all([
@@ -66,16 +67,6 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           profile.accreditation_status
         )
     : 0
-  console.log('spendable funds', userSpendableFunds)
-  console.log(
-    'charity balance',
-    calculateCharityBalance(
-      userTxns,
-      profile?.bids ?? [],
-      profile?.id ?? '',
-      profile?.accreditation_status ?? false
-    )
-  )
   const userSellableShares = profile
     ? calculateSellableShares(userTxns, profile.bids, project.id, profile.id)
     : 0
@@ -97,13 +88,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred
   )
-  const raised = projectBids.reduce((acc, bid) => {
-    if (bid.status === 'pending') {
-      return acc + bid.amount
-    } else {
-      return acc
-    }
-  }, 0)
+  const raised = getAmountRaised(project, projectBids, projectTxns)
   return (
     <>
       {project.type === 'grant' &&
