@@ -1,6 +1,6 @@
 'use client'
 import { TextEditor, useTextEditor } from '@/components/editor'
-import { Input } from '@/components/input'
+import { Checkbox, Input } from '@/components/input'
 import { Col } from '@/components/layout/col'
 import { useEffect, useState } from 'react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
@@ -161,17 +161,13 @@ export function CreateGrantForm(props: {
             : ''
         )}
       >
-        <Row className="h-6 items-center">
-          <input
-            id="terms"
-            aria-describedby="terms-description"
-            name="terms"
-            type="checkbox"
-            className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
-            checked={recipientOnManifund}
-            onChange={() => setRecipientOnManifund(!recipientOnManifund)}
-          />
-        </Row>
+        <Checkbox
+          id="terms"
+          aria-describedby="terms-description"
+          name="terms"
+          checked={recipientOnManifund}
+          onChange={() => setRecipientOnManifund(!recipientOnManifund)}
+        />
         <span className="ml-2 leading-6 text-gray-900">
           Recipient is already a user on Manifund.
         </span>
@@ -395,17 +391,13 @@ export function CreateGrantForm(props: {
         <TextEditor editor={reasoningEditor} />
       </Col>
       <Row>
-        <Row className="h-6 items-center">
-          <input
-            id="terms"
-            aria-describedby="terms-description"
-            name="terms"
-            type="checkbox"
-            className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
-            checked={agreedToTerms}
-            onChange={() => setAgreedToTerms(!agreedToTerms)}
-          />
-        </Row>
+        <Checkbox
+          id="terms"
+          aria-describedby="terms-description"
+          name="terms"
+          checked={agreedToTerms}
+          onChange={() => setAgreedToTerms(!agreedToTerms)}
+        />
         <div className="ml-3 text-sm leading-6">
           <label htmlFor="terms" className="font-medium text-gray-900">
             Check this box to confirm:

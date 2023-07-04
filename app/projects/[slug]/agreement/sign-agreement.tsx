@@ -1,5 +1,6 @@
 'use client'
 import { Button } from '@/components/button'
+import { Checkbox } from '@/components/input'
 import { Row } from '@/components/layout/row'
 import { ProjectAndProfile } from '@/db/project'
 import { useRouter } from 'next/navigation'
@@ -13,17 +14,13 @@ export function SignAgreement(props: { project: ProjectAndProfile }) {
   return (
     <>
       <Row className="mb-3">
-        <Row className="h-6 items-center">
-          <input
-            id="terms"
-            aria-describedby="terms-description"
-            name="terms"
-            type="checkbox"
-            className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
-            checked={agreed}
-            onChange={() => setAgreed(!agreed)}
-          />
-        </Row>
+        <Checkbox
+          id="terms"
+          aria-describedby="terms-description"
+          name="terms"
+          checked={agreed}
+          onChange={() => setAgreed(!agreed)}
+        />
         <div className="ml-3 text-sm leading-6">
           <label htmlFor="terms" className="font-medium text-gray-900">
             I, <strong>{project.profiles.full_name}</strong>, agree to the terms

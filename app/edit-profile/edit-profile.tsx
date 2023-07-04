@@ -4,7 +4,7 @@ import { useSupabase } from '@/db/supabase-provider'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { useState } from 'react'
 import { Avatar } from '@/components/avatar'
-import { Input } from '@/components/input'
+import { Checkbox, Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { Profile } from '@/db/profile'
@@ -12,10 +12,8 @@ import uuid from 'react-uuid'
 import Image from 'next/image'
 import { SUPABASE_BUCKET_URL } from '@/db/env'
 import { TextEditor, useTextEditor } from '@/components/editor'
-import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
-import { Card } from '@/components/card'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
@@ -144,97 +142,58 @@ export function EditProfileForm(props: { profile: Profile }) {
         <TextEditor editor={editor} />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="regranterStatus">Regranter status</label>
-        <Card>
-          <Row className="w-full justify-between">
-            <p className="font-medium">
-              {regranterStatus ? 'Regranter' : 'Non-regranter'}
-            </p>
-            <button
-              type="button"
-              id="regranterStatus"
-              className={clsx(
-                'relative mb-3 inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2' +
-                  (regranterStatus ? ' bg-orange-500' : ' bg-gray-200'),
-                'focus:ring-offset-gray-100'
-              )}
-              role="switch"
-              aria-checked="false"
-              onClick={() =>
-                setRegranterStatus((regranterStatus) => !regranterStatus)
-              }
-            >
-              <span className="sr-only">Regranter status</span>
-              <span
-                aria-hidden="true"
-                className={clsx(
-                  'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white ring-0 transition duration-200 ease-in-out',
-                  regranterStatus ? 'translate-x-5' : 'translate-x-0'
-                )}
-              ></span>
-            </button>
-          </Row>
-          {regranterStatus ? (
-            <div className="mt-3 rounded-md bg-emerald-100 p-3 text-center text-emerald-600">
-              You will be listed as a regranter. Other users will be able to
-              transfer funds to you, and you will be expected to regrant those
-              funds to other projects, including projects not listed on
-              Manifund, to the best of your ability.
-            </div>
-          ) : (
-            <div className="mt-3 rounded-md bg-rose-100 p-3 text-center text-rose-600">
-              You will not be listed as a regranter. You can still give to
-              projects listed on Manifund, but cannot create grants for projects
-              not listed on Manifund.
-            </div>
+        <label>Roles and capabilities</label>
+        <Row className="gap-2">
+          <Checkbox
+            id="regrantor"
+            checked={regranterStatus}
+            onChange={() =>
+              setRegranterStatus((regranterStatus) => !regranterStatus)
+            }
+          />
+          <div className="relative top-0.5 text-sm">
+            <span className="font-semibold">Regrantor: </span>
+            <span className="text-gray-500">
+              as a regrantor, you can recieve charitable funds from other users
+              and give grants to projects, including projects not yet listed on
+              Manifund.
+            </span>
+          </div>
+        </Row>
+        <Row className="relative gap-2">
+          <Checkbox
+            id="accredited-investor"
+            checked={profile.accreditation_status}
+            disabled
+          />
+          {!profile.accreditation_status && (
+            <a
+              className="absolute z-10 h-5 w-5"
+              href="https://airtable.com/shrZVLeo6f34NBfR0"
+            />
           )}
-        </Card>
-      </Col>
-      <Col className="gap-1">
-        <label>Investor status</label>
-        <Card>
-          <p className="font-medium">
-            {profile.accreditation_status ? 'Accredited' : 'Not Accredited'}
-          </p>
-          {profile.accreditation_status ? (
-            <div className="mt-3 rounded-md bg-emerald-100 p-3 text-center text-emerald-600">
-              You can invest in impact certificates with real money and withdraw
-              your profits.
-            </div>
-          ) : (
-            <div className="mt-3 rounded-md bg-rose-100 p-3 text-center text-rose-600">
-              You can invest in impact certificates with money in your Manifund
-              account, grow your portfolio, and donate your balance to real
-              charities, but you cannot withdraw your money. Deposits to your
-              Manifund account are tax-deductible donations, which is not true
-              of accredited investors. If you want to withdraw your profits, you
-              will need to fill out{' '}
+          <div className="relative top-0.5 text-sm">
+            <span className="font-semibold">Accredited investor: </span>
+            <span className="text-gray-500">
+              as an accredited investor, you can invest in impact certificates
+              with real money and withdraw your profits. If you are
+              unaccredited, you can still invest but profits can only be used
+              for charitable purposes.{' '}
               <a
-                target="_blank"
-                rel="noopener noreferrer"
                 href="https://airtable.com/shrZVLeo6f34NBfR0"
-                className="font-bold hover:underline"
+                className="font-semibold text-black hover:underline"
               >
-                this form
+                Use this form
               </a>{' '}
-              to get verified as an accredited investor.
-              <br />
-              <br />
-              <span className="font-bold">
-                To avoid potential mixing of funds, you cannot have any balance
-                on your Manifund account when you&apos;re verified as an
-                accredited investor
-              </span>
-              <span>
-                , so if you intend to become verified, please do so first before
-                depositing funds.
-              </span>
-            </div>
-          )}
-        </Card>
+              to get verified as an accredited investor. To avoid mixing of
+              funds, you cannot hold any money or investments in your Manifund
+              account at the time of verification.
+            </span>
+          </div>
+        </Row>
       </Col>
-      <label htmlFor="avatar">Choose a profile picture.</label>
-      <div className="flex space-x-2">
+      <label htmlFor="avatar">Choose a profile picture</label>
+      <Row className="flex space-x-2">
         <div className="h-24 w-24">
           {avatar ? (
             <Image
@@ -253,7 +212,7 @@ export function EditProfileForm(props: { profile: Profile }) {
             />
           )}
         </div>
-      </div>
+      </Row>
       <input
         type="file"
         id="avatar"
