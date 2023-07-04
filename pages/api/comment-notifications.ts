@@ -94,7 +94,8 @@ export default async function handler(
     )
     if (
       parentComment.commenter !== fullComment.projects.creator &&
-      !mentionedUserIds.includes(parentComment.profiles.id)
+      !mentionedUserIds.includes(parentComment.profiles.id) &&
+      parentComment.commenter !== comment.commenter
     ) {
       await sendTemplateEmail(
         NEW_COMMENT_TEMPLATE_ID,
