@@ -144,7 +144,7 @@ export function CreateGrantForm(props: {
         <h1 className="text-2xl font-bold">Create grant</h1>
         <span className="my-1 text-sm text-gray-600">
           Use this form to give a grant for a project that is not already posted
-          on Manifund. Note that all grants are public.
+          on Manifund. Note that all grants are public.{' '}
         </span>
         <span className="my-1 text-sm text-gray-600">
           We expect this writeup to take 0.5-2 hours, and ask that you take less
@@ -291,21 +291,33 @@ export function CreateGrantForm(props: {
           Title
           <RequiredStar />
         </label>
-        <Input
-          type="text"
-          id="title"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
+        <Col>
+          <Input
+            type="text"
+            id="title"
+            maxLength={80}
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+          />
+          <span className="text-right text-xs text-gray-600">
+            Maximum 80 characters
+          </span>
+        </Col>
       </Col>
       <Col className="gap-1">
         <label htmlFor="subtitle">Subtitle</label>
-        <Input
-          type="text"
-          id="subtitle"
-          value={subtitle}
-          onChange={(event) => setSubtitle(event.target.value)}
-        />
+        <Col>
+          <Input
+            type="text"
+            id="subtitle"
+            maxLength={160}
+            value={subtitle}
+            onChange={(event) => setSubtitle(event.target.value)}
+          />
+          <span className="text-right text-xs text-gray-600">
+            Maximum 160 characters
+          </span>
+        </Col>
       </Col>
       <Col className="gap-1">
         <label>After recieving this grant, this project will...</label>
@@ -369,7 +381,7 @@ export function CreateGrantForm(props: {
           Project description
           <RequiredStar />
         </label>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-gray-600">
           This will be displayed as the public description of this project, but
           can be edited by the grant recipient. In this section, please describe
           in objective terms the nature of the project.
@@ -381,7 +393,7 @@ export function CreateGrantForm(props: {
           Grantmaker notes & reasoning
           <RequiredStar />
         </label>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-gray-600">
           This will be displayed as a public comment on this project. In this
           section, please describe in subjective terms why you are excited to
           fund this project.
