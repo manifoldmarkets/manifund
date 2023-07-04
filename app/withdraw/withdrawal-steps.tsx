@@ -98,8 +98,10 @@ export function WithdrawalSteps(props: {
     errorMessage = 'You need to set up your Stripe account before continuing.'
   } else if (withdrawAmount < 10 && currentStep.id === 2) {
     errorMessage = 'Minimum withdrawal is $10.'
+  } else if (withdrawAmount > 10000) {
+    errorMessage = 'Maximum automatic withdrawal is $10,000.'
   } else if (withdrawAmount > withdrawBalance && currentStep.id === 2) {
-    errorMessage = `You cannot withdraw more than $${withdrawBalance} .`
+    errorMessage = `Your withdrawable balance is only $${withdrawBalance}.`
   } else if (!complete && currentStep.id === 3) {
     errorMessage = 'Complete your withdrawal to continue.'
   } else {
@@ -114,7 +116,7 @@ export function WithdrawalSteps(props: {
         complete={complete}
       />
       <Row className="w-full justify-center p-10">
-        <div className="w-full max-w-xl">
+        <div className="w-full max-w-2xl">
           {currentStep.display}
           <Row className="mt-10 justify-between">
             <button
