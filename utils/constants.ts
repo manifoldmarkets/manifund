@@ -53,6 +53,7 @@ export function getSponsoredAmount(regrantorName: string) {
     'Ted Suzman': 50_000,
     'Adam Gleave': 400_000,
     'Dan Hendrycks': 400_000,
+    'Tristan Hume': 400_000,
   } as { [key: string]: number }
   return sponsoredRegrantors[regrantorName] ?? 0
 }
