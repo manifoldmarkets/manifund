@@ -394,12 +394,10 @@ export function CreateGrantForm(props: {
       </Col>
       <Row>
         <Row className="h-6 items-center">
-          <input
+          <Checkbox
             id="terms"
             aria-describedby="terms-description"
             name="terms"
-            type="checkbox"
-            className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
             checked={agreedToTerms}
             onChange={() => setAgreedToTerms(!agreedToTerms)}
           />

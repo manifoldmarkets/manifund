@@ -19,7 +19,7 @@ import { ArrowRightIcon } from '@heroicons/react/24/solid'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Card } from '@/components/card'
-import { RadioGroup } from '@headlessui/react'
+import { Checkbox } from '@/components/input'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 
 const DEFAULT_DESCRIPTION = `
@@ -403,12 +403,10 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       {projectType === 'cert' && (
         <Row className="mb-3">
           <Row className="h-6 items-center">
-            <input
+            <Checkbox
               id="terms"
               aria-describedby="terms-description"
               name="terms"
-              type="checkbox"
-              className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
               checked={agreedToTerms}
               onChange={() => setAgreedToTerms(!agreedToTerms)}
             />

@@ -11,7 +11,7 @@ import { CircleStackIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { MySlider } from '@/components/slider'
-import { Input } from '@/components/input'
+import { Checkbox, Input } from '@/components/input'
 import { useSupabase } from '@/db/supabase-provider'
 import { Modal } from '@/components/modal'
 import { Profile } from '@/db/profile'
@@ -237,12 +237,10 @@ function Trade(props: {
               project.round === 'OP AI Worldviews Contest' && (
                 <div className="mb-3 flex">
                   <div className="flex h-6 items-center">
-                    <input
+                    <Checkbox
                       id="terms"
                       aria-describedby="terms-description"
                       name="terms"
-                      type="checkbox"
-                      className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
                       checked={agreedToTerms}
                       onChange={() => setAgreedToTerms(!agreedToTerms)}
                     />
