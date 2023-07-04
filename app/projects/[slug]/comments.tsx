@@ -1,12 +1,12 @@
 'use client'
 import { Profile } from '@/db/profile'
-import { WriteComment } from './write-comment'
-import { CommentAndProfile } from '@/db/comment'
+import { CommentAndProfile, sendComment } from '@/db/comment'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { formatDistanceToNow } from 'date-fns'
-import { RichContent } from '@/components/editor'
+import { RichContent, TextEditor, useTextEditor } from '@/components/editor'
 import { Project } from '@/db/project'
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
+import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 import { Row } from '@/components/layout/row'
 import { IconButton } from '@/components/button'
 import { useState } from 'react'
@@ -14,6 +14,9 @@ import { orderBy, sortBy } from 'lodash'
 import { Col } from '@/components/layout/col'
 import { Tooltip } from '@/components/tooltip'
 import { Tag } from '@/components/tags'
+import { Avatar } from '@/components/avatar'
+import { useSupabase } from '@/db/supabase-provider'
+import { useRouter } from 'next/navigation'
 
 export function Comments(props: {
   project: Project
@@ -41,7 +44,7 @@ export function Comments(props: {
     )
   const threads = genThreads(rootComments, replyComments)
   const commentsDisplay = threads.map((thread) => (
-    <div key={thread.root.id} className="my-2">
+    <div key={thread.root.id} className="mt-6">
       <Row className="w-full">
         <div className="w-full">
           <Comment
@@ -53,7 +56,7 @@ export function Comments(props: {
             <Row className="w-full justify-end">
               <Tooltip text="Reply">
                 <IconButton onClick={() => setReplyingTo(thread.root)}>
-                  <ArrowUturnRightIcon className="relative bottom-2 h-4 w-4 rotate-180 text-gray-500 hover:text-gray-700" />
+                  <ArrowUturnRightIcon className="relative bottom-2 h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
                 </IconButton>
               </Tooltip>
             </Row>
@@ -74,6 +77,7 @@ export function Comments(props: {
                 project={project}
                 commenter={user}
                 replyingToId={thread.root.id}
+                setReplyingTo={setReplyingTo}
               />
             </div>
           )}
@@ -151,5 +155,74 @@ function Comment(props: {
         <RichContent content={comment.content} />
       </div>
     </div>
+  )
+}
+
+function WriteComment(props: {
+  project: Project
+  commenter: Profile
+  replyingToId?: string
+  setReplyingTo?: (id: CommentAndProfile | null) => void
+}) {
+  const { project, commenter, replyingToId, setReplyingTo } = props
+  const { supabase } = useSupabase()
+  const editor = useTextEditor('', 'border-0 focus:!outline-none focus:ring-0')
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  return (
+    <Row className="w-full">
+      <Avatar
+        username={commenter.username}
+        avatarUrl={commenter.avatar_url}
+        size={replyingToId ? 6 : 10}
+        className="mr-2"
+      />
+      <div className="w-full overflow-hidden rounded-md shadow">
+        <TextEditor editor={editor}>
+          {/* Spacer element to match the height of the toolbar */}
+          <div className="py-1" aria-hidden="true">
+            {/* Matches height of button in toolbar (1px border + 36px content height) */}
+            <div className="py-px">
+              <div className="h-9" />
+            </div>
+          </div>
+          <div className="absolute inset-x-0 bottom-0 flex justify-end border-t border-t-gray-200 bg-white py-0.5 pl-3">
+            <IconButton
+              loading={isSubmitting}
+              onClick={async () => {
+                if (editor?.getText()?.trim()) {
+                  setIsSubmitting(true)
+                  const content = editor?.getJSON()
+                  const htmlContent = editor?.getHTML()
+                  if (
+                    !content ||
+                    content.length === 0 ||
+                    !editor ||
+                    !htmlContent
+                  ) {
+                    return
+                  }
+                  await sendComment(
+                    supabase,
+                    content,
+                    project.id,
+                    commenter.id,
+                    replyingToId
+                  )
+                  if (setReplyingTo) {
+                    setReplyingTo(null)
+                  }
+                  setIsSubmitting(false)
+                  router.refresh()
+                }
+              }}
+            >
+              <PaperAirplaneIcon className="h-6 w-6 text-gray-500 hover:cursor-pointer hover:text-orange-500" />
+            </IconButton>
+          </div>
+        </TextEditor>
+      </div>
+    </Row>
   )
 }
