@@ -160,12 +160,18 @@ export function EditProfileForm(props: { profile: Profile }) {
             </span>
           </div>
         </Row>
-        <Row className="gap-2">
+        <Row className="relative gap-2">
           <Checkbox
             id="accredited-investor"
             checked={profile.accreditation_status}
             disabled
           />
+          {!profile.accreditation_status && (
+            <a
+              className="absolute z-10 h-5 w-5"
+              href="https://airtable.com/shrZVLeo6f34NBfR0"
+            />
+          )}
           <div className="relative top-0.5 text-sm">
             <span className="font-semibold">Accredited investor: </span>
             <span className="text-gray-500">
