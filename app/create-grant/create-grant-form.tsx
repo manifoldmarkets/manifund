@@ -348,31 +348,36 @@ export function CreateGrantForm(props: {
           </span>
         )}
       </Col>
-      {fundingOption !== 'fullyFund' && (
-        <Col className="gap-1">
-          <label htmlFor="amount">
-            Funding goal (USD) <RequiredStar />
-            <InfoTooltip text="This will be displayed as the funding goal so other donors know their contributions are valuable." />
-          </label>
-          <Input
-            type="number"
-            id="fundingGoal"
-            value={fundingGoal !== 0 ? fundingGoal : ''}
-            onChange={(event) => setFundingGoal(Number(event.target.value))}
-          />
-        </Col>
-      )}
       {fundingOption === 'needsMore' && (
         <Col className="gap-1">
           <label htmlFor="amount">
             Minimum funding (USD) <RequiredStar />
-            <InfoTooltip text="The project will not become active, and no funds will be transferred, until this minimum funding bar is met through your donations and others." />
           </label>
+          <span className="text-sm text-gray-600">
+            No money will be transferred until this amount has been raised.
+          </span>
           <Input
             type="number"
             id="minFunding"
             value={minFunding !== 0 ? minFunding : ''}
             onChange={(event) => setMinFunding(Number(event.target.value))}
+          />
+        </Col>
+      )}
+      {fundingOption !== 'fullyFund' && (
+        <Col className="gap-1">
+          <label htmlFor="amount">
+            Funding goal (USD) <RequiredStar />
+          </label>
+          <span className="text-sm text-gray-600">
+            Until this amount is raised, the project will be marked to other
+            donors as not fully funded.
+          </span>
+          <Input
+            type="number"
+            id="fundingGoal"
+            value={fundingGoal !== 0 ? fundingGoal : ''}
+            onChange={(event) => setFundingGoal(Number(event.target.value))}
           />
         </Col>
       )}
