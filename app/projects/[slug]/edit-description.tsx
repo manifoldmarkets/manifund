@@ -51,19 +51,29 @@ export function EditDescription(props: { project: Project }) {
         <Col className="gap-3">
           <Col className="gap-1">
             <label>Title</label>
-            <Input
-              maxLength={80}
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-            />
+            <Col>
+              <Input
+                maxLength={80}
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+              />
+              <span className="text-right text-xs text-gray-600">
+                Maximum 80 characters
+              </span>
+            </Col>
           </Col>
           <Col className="gap-1">
             <label>Subtitle</label>
-            <Input
-              maxLength={160}
-              value={subtitle}
-              onChange={(event) => setSubtitle(event.target.value)}
-            />
+            <Col>
+              <Input
+                maxLength={160}
+                value={subtitle}
+                onChange={(event) => setSubtitle(event.target.value)}
+              />
+              <span className="text-right text-xs text-gray-600">
+                Maximum 160 characters
+              </span>
+            </Col>
           </Col>
           <Col className="gap-1">
             <label>Description</label>
