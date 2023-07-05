@@ -391,7 +391,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
             </label>
             <p className="text-sm text-gray-600">
               The minimum amount of funding you need to start this project. If
-              this amount isn't reached, no funds will be sent.
+              this amount is not reached, no funds will be sent.
             </p>
             <Input
               type="number"
