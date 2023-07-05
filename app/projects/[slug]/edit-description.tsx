@@ -10,16 +10,18 @@ import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
 import { Input } from '@/components/input'
 import { useRouter } from 'next/navigation'
+import { Col } from '@/components/layout/col'
 
 export function EditDescription(props: { project: Project }) {
   const { project } = props
   const { supabase, session } = useSupabase()
   const user = session?.user
   const [showEditor, setShowEditor] = useState(false)
+  const [title, setTitle] = useState(project.title)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
   const [saving, setSaving] = useState(false)
   const router = useRouter()
-  const editor = useTextEditor(project.description)
+  const editor = useTextEditor(project.description ?? '')
 
   if (!user || user.id !== project.creator) {
     return null
@@ -33,6 +35,7 @@ export function EditDescription(props: { project: Project }) {
       .update({
         description: content,
         blurb: subtitle,
+        title: title,
       })
       .eq('id', project.id)
     if (error) {
@@ -45,29 +48,47 @@ export function EditDescription(props: { project: Project }) {
   return (
     <div>
       {showEditor ? (
-        <div>
-          <h3 className="mb-2 text-xl font-bold text-gray-500">
-            Project subtitle:
-          </h3>
-          <Input
-            className="mb-2 w-full"
-            value={subtitle}
-            onChange={(event) => setSubtitle(event.target.value)}
-          />
-
-          <h3 className="mb-2 text-xl font-bold text-gray-500">
-            Project description:
-          </h3>
-          <TextEditor editor={editor} />
-          <Row className="mt-3 justify-center gap-2">
-            <Button onClick={saveText} disabled={saving} loading={saving}>
-              Save
-            </Button>
-            <Button color="gray" onClick={() => setShowEditor(false)}>
-              Cancel
-            </Button>
-          </Row>
-        </div>
+        <Col className="gap-3">
+          <Col className="gap-1">
+            <label>Title</label>
+            <Input
+              maxLength={80}
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+          </Col>
+          <Col className="gap-1">
+            <label>Subtitle</label>
+            <Input
+              maxLength={160}
+              value={subtitle}
+              onChange={(event) => setSubtitle(event.target.value)}
+            />
+          </Col>
+          <Col className="gap-1">
+            <label>Description</label>
+            <TextEditor editor={editor} />
+            <Row className="mt-3 justify-center gap-5">
+              <Button
+                color="gray"
+                onClick={() => setShowEditor(false)}
+                className="font-semibold"
+              >
+                Cancel
+              </Button>
+              <Tooltip text={title ? '' : 'Enter a project title.'}>
+                <Button
+                  onClick={saveText}
+                  disabled={saving || !title}
+                  loading={saving}
+                  className="font-semibold"
+                >
+                  Save
+                </Button>
+              </Tooltip>
+            </Row>
+          </Col>
+        </Col>
       ) : (
         <Row className=" justify-end">
           <IconButton size="sm" onClick={() => setShowEditor(true)}>
