@@ -12,7 +12,6 @@ import { Avatar } from '@/components/avatar'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { HorizontalRadioGroup } from '@/components/radio-group'
-import { InfoTooltip } from '@/components/info-tooltip'
 import { RequiredStar } from '@/components/tags'
 
 const DESCRIPTION_OUTLINE = `

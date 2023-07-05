@@ -21,23 +21,25 @@ import { Row } from '@/components/layout/row'
 import { Card } from '@/components/card'
 import { Checkbox } from '@/components/input'
 import { HorizontalRadioGroup } from '@/components/radio-group'
+import { RequiredStar } from '@/components/tags'
 
 const DEFAULT_DESCRIPTION = `
-<h3>Project description</h3>
-<p>I want to...</p>
-<h3>What is your track record on similar projects?</h3>
-<p>Our team is...</p>
-<h3>How will you spend your funding?</h3>
-<p>We need...</p>
+<h3>Project summary</h3>
+</br>
+<h3>Project goals</h3>
+</br>
+<h3>How will this funding be used?</h3>
+</br>
+<h3>How could this project be actively harmful?</h3>
+</br>
+<h3>What other funding is this person or project getting?</h3>
+</br>
 `
 
 export function CreateProjectForm(props: { rounds: Round[] }) {
   const { rounds } = props
   const availableRounds = sortBy(
     rounds.filter((round) => {
-      const proposalDueDate = new Date(
-        `${round.proposal_due_date}T23:59:59-12:00`
-      )
       return (
         round.proposal_due_date === null ||
         isBefore(new Date(), new Date(round.proposal_due_date))
@@ -52,10 +54,10 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
     grant: 'Grant application',
     cert: 'Impact certificate',
   } as { [key in Project['type']]: string }
-  const [projectType, setProjectType] = useState<Project['type']>('cert')
+  const [projectType, setProjectType] = useState<Project['type']>('grant')
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number>(0)
-  const [fundingGoal, setFundingGoal] = useState<number>(250)
+  const [fundingGoal, setFundingGoal] = useState<number>(0)
   const [initialValuation, setInitialValuation] = useState<number>(250)
   const [round, setRound] = useState<Round>(availableRounds[0])
   const [sellingPortion, setSellingPortion] = useState<number>(20)
@@ -75,7 +77,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
 
   let errorMessage = null
   if (title === '') {
-    errorMessage = 'Your project needs a title!'
+    errorMessage = 'Your project needs a title.'
   } else if (initialValuation <= 0 && auctionClose === null) {
     errorMessage =
       'Your initial valuation must be greater than 0. Only post projects with positive expected value.'
@@ -166,34 +168,61 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
         onChange={(event) => setProjectType(event as Project['type'])}
         options={projectTypeLabels}
       />
-      <label htmlFor="title">Title</label>
-      <Input
-        className="text-2xl font-bold"
-        type="text"
-        id="title"
-        autoComplete="off"
-        value={title ?? ''}
-        onChange={(event) => setTitle(event.target.value)}
-      />
-      <label htmlFor="blurb">Subtitle</label>
-      <Input
-        type="text"
-        id="blurb"
-        autoComplete="off"
-        value={blurb ?? ''}
-        onChange={(event) => setBlurb(event.target.value)}
-      />
-      <label htmlFor="description">Description</label>
-      <TextEditor editor={editor} />
+      <Col className="gap-1">
+        <label htmlFor="title">
+          Title
+          <RequiredStar />
+        </label>
+        <Col>
+          <Input
+            type="text"
+            id="title"
+            autoComplete="off"
+            maxLength={80}
+            value={title ?? ''}
+            onChange={(event) => setTitle(event.target.value)}
+          />
+          <span className="text-right text-xs text-gray-600">
+            Maximum 80 characters
+          </span>
+        </Col>
+      </Col>
+      <Col className="gap-1">
+        <label htmlFor="blurb">Subtitle</label>
+        <Col>
+          <Input
+            type="text"
+            id="blurb"
+            autoComplete="off"
+            maxLength={160}
+            value={blurb ?? ''}
+            onChange={(event) => setBlurb(event.target.value)}
+          />
+          <span className="text-right text-xs text-gray-600">
+            Maximum 160 characters
+          </span>
+        </Col>
+      </Col>
+      <Col className="gap-1">
+        <label htmlFor="description">
+          Description
+          <RequiredStar />
+        </label>
+        <TextEditor editor={editor} />
+      </Col>
       {projectType === 'cert' ? (
         <>
-          <div>
-            <label className="text-base font-semibold text-gray-900">
-              Rounds currently accepting submissions
+          <Col className="my-3 gap-1">
+            <label>
+              Funding round
+              <RequiredStar />
             </label>
-            <fieldset className="mt-4">
+            <p className="text-sm text-gray-600">
+              The rounds listed below are currently accepting submissions.
+            </p>
+            <fieldset>
               <legend className="sr-only">Round options</legend>
-              <div className="space-y-4">
+              <Col className="gap-4">
                 {availableRounds
                   .filter((round) => round.title !== 'Regrants')
                   .map((availableRound) => (
@@ -226,7 +255,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                           </Link>
                         </Row>
                         {availableRound.title === 'Independent' && (
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-gray-600">
                             Independent projects do not have a committed
                             oracular funder. By entering as an Independent
                             project, your project is less likely to recieve
@@ -236,15 +265,15 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                       </div>
                     </Row>
                   ))}
-              </div>
+              </Col>
             </fieldset>
-          </div>
-
+          </Col>
           <Card>
             <h1 className="text-xl font-bold">
               Founder equity & initial pricing
+              <RequiredStar />
             </h1>
-            <p className="mb-5 text-sm text-gray-500">
+            <p className="mb-5 text-sm text-gray-600">
               You can choose to buy or sell more of your project at any time.
             </p>
             {round.title === 'Independent' && (
@@ -253,7 +282,6 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                   Auction for initial valuation
                   <InfoTooltip text="If you use an auction, your project will start in the 'proposal' phase, and you will only recieve funding if there are enough bids to pass the minimum funding bar you set. Otherwise, your project will begin in the 'active' phase and you can sell shares at the valuation of your choice immediately." />
                 </label>
-
                 <button
                   type="button"
                   className={clsx(
@@ -286,7 +314,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
             )}
             {auctionClose !== null && (
               <div className="mb-3">
-                <label htmlFor="auction-close">Auction Close Date: </label>
+                <label htmlFor="auction-close">Auction Close Date </label>
                 <Input
                   type="date"
                   value={auctionClose ?? ''}
@@ -346,8 +374,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                   type="number"
                   id="minFunding"
                   autoComplete="off"
-                  required
-                  value={minFunding ?? ''}
+                  value={minFunding !== 0 ? minFunding : ''}
                   onChange={(event) =>
                     setMinFunding(Number(event.target.value))
                   }
@@ -358,36 +385,51 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
         </>
       ) : (
         <>
-          <label htmlFor="minFunding" className="mr-3 mt-4">
-            Minimum funding (USD){' '}
-            <InfoTooltip text="The minimum amount of funding you need to start this project. If this amount isn't reached, no funds will be sent." />
-          </label>
-          <Input
-            type="number"
-            id="minFunding"
-            autoComplete="off"
-            required
-            value={minFunding}
-            onChange={(event) => setMinFunding(Number(event.target.value))}
-          />
-          <label htmlFor="fundingGoal">
-            Funding goal (USD){' '}
-            <InfoTooltip text="The amount you're asking for. This will be the main number displayed to regranters." />
-          </label>
-          <Input
-            type="number"
-            id="fundingGoal"
-            autoComplete="off"
-            required
-            value={fundingGoal}
-            onChange={(event) => setFundingGoal(Number(event.target.value))}
-          />
+          <Col className="gap-1">
+            <label htmlFor="minFunding" className="mr-3 mt-4">
+              Minimum funding (USD){' '}
+            </label>
+            <p className="text-sm text-gray-600">
+              The minimum amount of funding you need to start this project. If
+              this amount isn't reached, no funds will be sent.
+            </p>
+            <Input
+              type="number"
+              id="minFunding"
+              autoComplete="off"
+              value={minFunding !== 0 ? minFunding : ''}
+              onChange={(event) => setMinFunding(Number(event.target.value))}
+            />
+          </Col>
+          <Col className="gap-1">
+            <label htmlFor="fundingGoal">
+              Funding goal (USD)
+              <RequiredStar />
+            </label>
+            <p className="text-sm text-gray-600">
+              Until this amount is raised, the project will be marked for donors
+              as not fully funded.
+            </p>
+            <Input
+              type="number"
+              id="fundingGoal"
+              autoComplete="off"
+              value={fundingGoal !== 0 ? fundingGoal : ''}
+              onChange={(event) => setFundingGoal(Number(event.target.value))}
+            />
+          </Col>
           {minFunding > 0 && (
-            <Col>
-              <div className="mb-3">
-                <label htmlFor="auction-close">Decision deadline: </label>
-                <InfoTooltip text="After this deadline, if you have not reached your minimum funding goal, your application will close and you will not recieve any money. This date cannot be more than 6 weeks after posting." />
-              </div>
+            <Col className="gap-1">
+              <label htmlFor="auction-close">
+                Decision deadline
+                <RequiredStar />
+              </label>
+              <p className="text-sm text-gray-600">
+                After this deadline, if you have not reached your minimum
+                funding bar, your application will close and you will not
+                recieve any money. This date cannot be more than 6 weeks after
+                posting.
+              </p>
               <Input
                 type="date"
                 value={auctionClose ?? ''}
@@ -414,7 +456,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               Check this box to confirm that you understand and commit to the
               following:
             </label>{' '}
-            <span id="terms-description" className="text-gray-500">
+            <span id="terms-description" className="text-gray-600">
               {genEquityPriceSummary(
                 sellingPortion,
                 auctionClose === null ? undefined : minFunding,
@@ -424,7 +466,9 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           </div>
         </Row>
       )}
-      <div className="mt-3 text-center text-rose-500">{errorMessage}</div>
+      <div className="mt-3 text-center text-sm text-rose-500">
+        {errorMessage}
+      </div>
       <Button
         className="mt-4"
         type="submit"
@@ -479,9 +523,9 @@ function genEquityPriceSummary(
   minValuation?: number
 ) {
   if (minFunding !== undefined) {
-    return `${sellingPortion}% of your project will be put up for auction at a minimum valuation of ${
+    return `${sellingPortion}% of your project will be put up for auction at a minimum valuation of $${
       (100 * minFunding) / sellingPortion
-    }. If less than ${minFunding} worth of bids are placed before the auction close date, no funds will be sent and your project will not proceed.`
+    }. If less than $${minFunding} worth of bids are placed before the auction close date, no funds will be sent and your project will not proceed.`
   } else if (minValuation !== undefined) {
     return `${sellingPortion}% of your project will immediately be put up for sale at a valuation of ${formatMoney(
       minValuation
