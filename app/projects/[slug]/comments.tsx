@@ -158,7 +158,7 @@ function Comment(props: {
   )
 }
 
-function WriteComment(props: {
+export function WriteComment(props: {
   project: Project
   commenter: Profile
   replyingToId?: string
@@ -178,7 +178,7 @@ function WriteComment(props: {
         size={replyingToId ? 6 : 10}
         className="mr-2"
       />
-      <div className="w-full overflow-hidden rounded-md shadow">
+      <div className="w-full overflow-hidden rounded-md bg-white shadow">
         <TextEditor editor={editor}>
           {/* Spacer element to match the height of the toolbar */}
           <div className="py-1" aria-hidden="true">
