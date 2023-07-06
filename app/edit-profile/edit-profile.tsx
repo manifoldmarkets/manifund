@@ -25,9 +25,7 @@ export function EditProfileForm(props: { profile: Profile }) {
   const editor = useTextEditor(profile.long_description ?? '')
   const [avatar, setAvatar] = useState<File | null>(null)
   const [submitting, setSubmitting] = useState<boolean>(false)
-  const [regranterStatus, setRegranterStatus] = useState(
-    profile.regranter_status
-  )
+
   const router = useRouter()
 
   const user = session?.user
@@ -62,7 +60,7 @@ export function EditProfileForm(props: { profile: Profile }) {
   let errorMessage = null
   if (!fullName) {
     errorMessage = 'Please enter your full name.'
-  } else if (regranterStatus) {
+  } else if (profile.regranter_status) {
     if (!bio) {
       errorMessage =
         'Please enter a bio. As a regranter, this will be shown in your profile preview.'
@@ -115,9 +113,9 @@ export function EditProfileForm(props: { profile: Profile }) {
         <label htmlFor="website">
           Website (e.g. LinkedIn, Twitter, personal website)
         </label>
-        {regranterStatus && (
+        {profile.regranter_status && (
           <p className="text-sm text-gray-500">
-            We strongly recommend regranters add a website here. This will be
+            We strongly recommend regrantors add a website here. This will be
             shown in your profile preview.
           </p>
         )}
@@ -132,9 +130,9 @@ export function EditProfileForm(props: { profile: Profile }) {
       </Col>
       <Col className="gap-1">
         <label htmlFor="long_description">More about you</label>
-        {regranterStatus && (
+        {profile.regranter_status && (
           <p className="text-sm text-gray-500">
-            We stongly recommend regranters include key information about their
+            We stongly recommend regrantors include key information about their
             background, values, cause prioritization, and grant-making history
             to help potential grantees and donors.
           </p>
@@ -144,19 +142,26 @@ export function EditProfileForm(props: { profile: Profile }) {
       <Col className="gap-1">
         <label>Roles and capabilities</label>
         <Row className="gap-2">
-          <Checkbox
-            id="regrantor"
-            checked={regranterStatus}
-            onChange={() =>
-              setRegranterStatus((regranterStatus) => !regranterStatus)
-            }
-          />
+          <Checkbox id="regrantor" checked={profile.regranter_status} />
+          {!profile.regranter_status && (
+            <a
+              className="absolute z-10 h-5 w-5"
+              href="https://airtable.com/appOfJtzt8yUTBFcD/shrZW7S069EmghCSV"
+            />
+          )}
           <div className="relative top-0.5 text-sm">
             <span className="font-semibold">Regrantor: </span>
             <span className="text-gray-500">
               as a regrantor, you can recieve charitable funds from other users
               and give grants to projects, including projects not yet listed on
-              Manifund.
+              Manifund.{' '}
+              <a
+                href="https://airtable.com/appOfJtzt8yUTBFcD/shrZW7S069EmghCSV"
+                className="font-semibold text-black hover:underline"
+              >
+                Use this form
+              </a>{' '}
+              to get verified as a regrantor.
             </span>
           </div>
         </Row>
@@ -242,7 +247,6 @@ export function EditProfileForm(props: { profile: Profile }) {
               long_description: longDescription,
               website,
               full_name: fullName,
-              regranter_status: regranterStatus,
             },
             avatar,
             supabase
