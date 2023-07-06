@@ -10,7 +10,6 @@ export function ProposalData(props: { project: Project; raised: number }) {
     raised > project.funding_goal
       ? `>${formatMoney(project.funding_goal)}`
       : `${formatMoney(raised)}`
-  const percentRaised = Math.min((raised / project.funding_goal) * 100, 100)
   // Close it on 23:59:59 in UTC -12 aka "Anywhere on Earth" time
   const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
   const now = new Date()
@@ -18,7 +17,7 @@ export function ProposalData(props: { project: Project; raised: number }) {
   return (
     <>
       <div>
-        <div className="mb-4 flex justify-between">
+        <div className="flex justify-between">
           <DataPoint
             value={raisedString}
             label={`raised of $${project.funding_goal} goal`}
@@ -40,7 +39,6 @@ export function ProposalData(props: { project: Project; raised: number }) {
             />
           )}
         </div>
-        <ProgressBar percent={percentRaised} />
       </div>
     </>
   )
