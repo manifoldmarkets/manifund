@@ -129,15 +129,21 @@ export default function AboutPage() {
       <strong>Can regrantors send money to themselves?</strong>
       <br />
       <p>
-        Regranters are allowed to donate to their own projects, though we’ll
+        Regrantors are allowed to donate to their own projects, though we’ll
         evaluate these projects with more scrutiny before fulfilling withdrawal
         requests.
       </p>
       <strong>How do I become a regrantor?</strong>
       <p>
-        Anyone can become a regrantor just be altering a setting on their
-        profile. This will advertise their profile as a regrantor and allow them
-        to create grants out of their budget.
+        Apply{' '}
+        <a
+          className="font-bold hover:underline"
+          href="https://airtable.com/appOfJtzt8yUTBFcD/shrZW7S069EmghCSV"
+        >
+          here
+        </a>
+        ! We'll offer some regrantors budgets, and others we'll just list as
+        regrantors so they can recieve donations from other users.
       </p>
       <p>
         Manifund will reach out personally to individuals we want to sponsor as
