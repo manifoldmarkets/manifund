@@ -142,8 +142,8 @@ export default function AboutPage() {
         >
           here
         </a>
-        ! We'll offer some regrantors budgets, and others we'll just list as
-        regrantors so they can recieve donations from other users.
+        ! We&apos;ll offer some regrantors budgets, and others we&apos;ll just
+        list as regrantors so they can recieve donations from other users.
       </p>
       <p>
         Manifund will reach out personally to individuals we want to sponsor as
@@ -222,11 +222,11 @@ export default function AboutPage() {
         <strong>For donors</strong>: “In an impact market, you (as the final
         oracular funder) only need to figure out which projects <em>did</em>{' '}
         work, which is much easier: for example, penicillin obviously worked,
-        and flying cars obviously didn’t. Then you buy the shares of those
+        and flying cars obviously didn&apos;t. Then you buy the shares of those
         projects, and your job is done. Private investors still have to do the
-        prediction behind the scenes, but they’re only risking their own money,
-        not charitable dollars, and they’re properly incentivized to get the
-        right answers.”
+        prediction behind the scenes, but they&apos;re only risking their own
+        money, not charitable dollars, and they&apos;re properly incentivized to
+        get the right answers.”
         <br />
         &nbsp;—
         <a href="https://astralcodexten.substack.com/p/impact-markets-the-annoying-details">
