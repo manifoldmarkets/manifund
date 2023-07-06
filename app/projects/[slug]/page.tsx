@@ -147,7 +147,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           pendingProjectTransfers.length === 0 && (
             <DonateBox
               project={project}
-              userId={profile.id}
+              profile={profile}
               maxDonation={userSpendableFunds}
             />
           )}

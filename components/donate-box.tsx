@@ -1,11 +1,15 @@
 'use client'
-import { Button } from '@/components/button'
+import { WriteComment } from '@/app/projects/[slug]/comments'
+import { Button, IconButton } from '@/components/button'
 import { Card } from '@/components/card'
 import { Input } from '@/components/input'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
+import { XCircleIcon } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { useTextEditor } from './editor'
+import { Col } from './layout/col'
 import { Row } from './layout/row'
 import { Modal } from './modal'
 import { Tooltip } from './tooltip'
@@ -13,12 +17,13 @@ import { Tooltip } from './tooltip'
 export function DonateBox(props: {
   charity?: Profile
   project?: Project
-  userId: string
+  profile: Profile
   maxDonation: number
 }) {
-  const { charity, project, userId, maxDonation } = props
+  const { charity, project, profile, maxDonation } = props
   const [amount, setAmount] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showCommentPrompt, setShowCommentPrompt] = useState(false)
   const router = useRouter()
   const isBid = project && project.stage === 'proposal'
 
@@ -81,7 +86,7 @@ export function DonateBox(props: {
                     'Content-Type': 'application/json',
                   },
                   body: JSON.stringify({
-                    fromId: userId,
+                    fromId: profile.id,
                     toId: charity?.id ?? project?.creator,
                     amount,
                     projectId: project?.id,
@@ -90,6 +95,7 @@ export function DonateBox(props: {
               }
               setIsSubmitting(false)
               router.refresh()
+              setShowCommentPrompt(true)
             }}
             className="font-semibold"
             disabled={!amount || errorMessage !== null}
@@ -99,7 +105,22 @@ export function DonateBox(props: {
           </Button>
         </Tooltip>
       </Row>
-      <Row className="justify-center"></Row>
+      {project && showCommentPrompt && (
+        <Col className="rounded bg-orange-100 p-4">
+          <Row className="justify-between">
+            <p className="font-medium text-orange-500">
+              Comment explaining your donation!
+            </p>
+            <IconButton
+              className="relative bottom-3 left-4"
+              onClick={() => setShowCommentPrompt(false)}
+            >
+              <XCircleIcon className="h-7 w-7 text-orange-500" />
+            </IconButton>
+          </Row>
+          <WriteComment project={project} commenter={profile} />
+        </Col>
+      )}
     </Card>
   )
 }

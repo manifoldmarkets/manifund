@@ -94,7 +94,7 @@ export function ProfileTabs(props: {
         {profile.regranter_status && !isOwnProfile && userProfile && (
           <DonateBox
             charity={profile}
-            userId={userProfile.id}
+            profile={userProfile}
             maxDonation={userCharityBalance}
           />
         )}
