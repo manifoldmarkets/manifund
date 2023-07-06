@@ -53,7 +53,7 @@ export function DonateBox(props: {
           </p>
         )}
       </div>
-      <Row className="items-center justify-between">
+      <Row className="items-center justify-between gap-2">
         <Input
           type="number"
           id="amount"
