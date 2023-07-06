@@ -38,7 +38,7 @@ export function RegranterCard(props: {
         />
       )}
       <Link href={`/${regranter.username}`} className="flex h-full flex-col">
-        <Row className="m-3 justify-center">
+        <Row className="mt-5 mb-3 justify-center">
           <Avatar
             avatarUrl={regranter.avatar_url}
             username={regranter.username}
@@ -47,7 +47,7 @@ export function RegranterCard(props: {
           />
         </Row>
         <Col className="flex h-full w-full flex-col gap-1">
-          <span className="text-center text-lg font-bold">
+          <span className="text-center font-bold sm:text-lg">
             {regranter.full_name}
           </span>
           <Col className="h-full justify-center">
