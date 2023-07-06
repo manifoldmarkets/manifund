@@ -213,6 +213,7 @@ function WriteComment(props: {
                   if (setReplyingTo) {
                     setReplyingTo(null)
                   }
+                  editor.commands.clearContent()
                   setIsSubmitting(false)
                   router.refresh()
                 }
