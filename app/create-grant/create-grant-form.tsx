@@ -21,6 +21,8 @@ const DESCRIPTION_OUTLINE = `
 </br>
 <h3>How will this funding be used?</h3>
 </br>
+<h3>What is the recipient's track record on similar projects?</h3>
+</br>
 <h3>How could this project be actively harmful?</h3>
 </br>
 <h3>What other funding is this person or project getting?</h3>
