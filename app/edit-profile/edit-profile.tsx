@@ -147,7 +147,6 @@ export function EditProfileForm(props: { profile: Profile }) {
           <Checkbox
             id="regrantor"
             checked={regranterStatus}
-            disabled
             onChange={() =>
               setRegranterStatus((regranterStatus) => !regranterStatus)
             }
