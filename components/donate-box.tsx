@@ -6,6 +6,9 @@ import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { Row } from './layout/row'
+import { Modal } from './modal'
+import { Tooltip } from './tooltip'
 
 export function DonateBox(props: {
   charity?: Profile
@@ -17,7 +20,7 @@ export function DonateBox(props: {
   const [amount, setAmount] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
-  const bid = project && project.stage === 'proposal'
+  const isBid = project && project.stage === 'proposal'
 
   let errorMessage = null
   if (amount && amount > maxDonation) {
@@ -26,79 +29,77 @@ export function DonateBox(props: {
     errorMessage = `You must donate at least $10.`
   }
   return (
-    <Card className="flex flex-col gap-3 p-6">
+    <Card className="flex flex-col gap-3 p-5">
       <div>
-        <h2 className="text-center text-xl font-bold">
-          {bid ? 'Offer to donate' : 'Donate'}
+        <h2 className="text-lg font-bold">
+          {isBid ? 'Offer to donate' : 'Donate'}
         </h2>
-        {bid && (
-          <p className="text-center text-sm text-gray-500">
+        {isBid && (
+          <p className="text-sm text-gray-500">
             You are offering to donate this amount to the project on the
             condition that it eventually becomes active. Otherwise, your funds
             will remain in your Manifund account.
           </p>
         )}
         {charity?.type === 'individual' && (
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-sm text-gray-500">
             You are donating to this user&apos;s regranting budget, which is not
             withdrawable.
           </p>
         )}
       </div>
-      <div className="flex flex-col justify-center gap-1 sm:flex-row">
-        <label htmlFor="amount" className="relative text-center sm:top-3">
-          Amount (USD)
-        </label>
+      <Row className="items-center justify-between">
         <Input
           type="number"
           id="amount"
           autoComplete="off"
           value={amount !== 0 ? amount : ''}
-          placeholder="0"
+          placeholder="Amount (USD)"
           onChange={(event) => setAmount(Number(event.target.value))}
         />
-      </div>
-      {errorMessage && (
-        <p className="text-center text-sm text-rose-500">{errorMessage}</p>
-      )}
-      <Button
-        onClick={async () => {
-          setIsSubmitting(true)
-          if (project && project.stage === 'proposal') {
-            await fetch('/api/place-bid', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                projectId: project.id,
-                valuation: 0,
-                amount,
-                type: 'donate',
-              }),
-            })
-          } else if (project || charity) {
-            await fetch('/api/transfer-money', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                fromId: userId,
-                toId: charity?.id ?? project?.creator,
-                amount,
-                projectId: project?.id,
-              }),
-            })
-          }
-          setIsSubmitting(false)
-          router.refresh()
-        }}
-        disabled={!amount || errorMessage !== null}
-        loading={isSubmitting}
-      >
-        Donate
-      </Button>
+        <Tooltip text={errorMessage ?? ''}>
+          <Button
+            onClick={async () => {
+              setIsSubmitting(true)
+              if (project && project.stage === 'proposal') {
+                await fetch('/api/place-bid', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    projectId: project.id,
+                    valuation: 0,
+                    amount,
+                    type: 'donate',
+                  }),
+                })
+              } else if (project || charity) {
+                await fetch('/api/transfer-money', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    fromId: userId,
+                    toId: charity?.id ?? project?.creator,
+                    amount,
+                    projectId: project?.id,
+                  }),
+                })
+              }
+              setIsSubmitting(false)
+              router.refresh()
+            }}
+            className="font-semibold"
+            disabled={!amount || errorMessage !== null}
+            loading={isSubmitting}
+          >
+            Donate
+          </Button>
+        </Tooltip>
+      </Row>
+      <Row className="justify-center"></Row>
     </Card>
   )
 }

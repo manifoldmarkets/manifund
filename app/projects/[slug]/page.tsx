@@ -27,6 +27,7 @@ import {
 import { DonateBox } from '@/components/donate-box'
 import { Divider } from '@/components/divider'
 import { ProposalRequirements } from './proposal-requirements'
+import { ProgressBar } from '@/components/progress-bar'
 
 export const revalidate = 0
 
@@ -57,6 +58,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       getBidsByProject(supabase, project.id),
       getTxnsByProject(supabase, project.id),
     ])
+
   const userSpendableFunds = profile
     ? profile.accreditation_status && project.type === 'cert'
       ? calculateCashBalance(userTxns, profile.bids, profile.id, true)
@@ -83,12 +85,12 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           projectBids,
           getProposalValuation(project)
         )
-
   const isOwnProject = user?.id === project.profiles.id
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred
   )
   const raised = getAmountRaised(project, projectBids, projectTxns)
+  const percentRaised = (100 * raised) / project.funding_goal
   return (
     <>
       {project.type === 'grant' &&
@@ -127,6 +129,10 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
             <Divider />
             <ProposalData project={project} raised={raised} />
           </>
+        )}
+        {(project.stage === 'proposal' ||
+          (project.stage === 'active' && project.type === 'grant')) && (
+          <ProgressBar percent={percentRaised} />
         )}
         {profile !== null && project.type === 'cert' && (
           <PlaceBid
