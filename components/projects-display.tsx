@@ -16,9 +16,10 @@ import {
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
 import { sortBy } from 'lodash'
+import { getTime, compareDesc, compareAsc } from 'date-fns'
 
 type SortOption =
-  | 'valuation'
+  | 'price'
   | 'percent funded'
   | 'number of comments'
   | 'newest first'
@@ -34,7 +35,7 @@ export function ProjectsDisplay(props: {
     defaultSort ?? 'newest first'
   )
   const options: SortOption[] = [
-    'valuation',
+    'price',
     'percent funded',
     'number of comments',
     'newest first',
@@ -43,7 +44,7 @@ export function ProjectsDisplay(props: {
 
   const router = useRouter()
   const searchParams = useSearchParams() ?? new URLSearchParams()
-  const valuations = getValuations(projects)
+  const valuations = getPrices(projects)
   const [search, setSearch] = useState<string>(searchParams.get('q') || '')
 
   const selectedProjects = searchProjects(
@@ -150,13 +151,13 @@ function sortProjects(
   })
   switch (sortType) {
     case 'oldest first':
-      return sortBy(projects, function (project) {
-        return new Date(project.created_at).getTime()
-      }).reverse()
+      return projects.sort((a, b) =>
+        compareAsc(new Date(a.created_at), new Date(b.created_at))
+      )
     case 'newest first':
-      return sortBy(projects, function (project) {
-        return new Date(project.created_at).getTime()
-      })
+      return projects.sort((a, b) =>
+        compareDesc(new Date(a.created_at), new Date(b.created_at))
+      )
     case 'percent funded':
       return projects.sort((a, b) =>
         getAmountRaised(a, a.bids, a.txns) / a.funding_goal <
@@ -168,7 +169,7 @@ function sortProjects(
       return projects.sort((a, b) =>
         a.comments.length < b.comments.length ? 1 : -1
       )
-    case 'valuation':
+    case 'price':
       return projects.sort((a, b) =>
         valuations[a.id] < valuations[b.id] || isNaN(valuations[a.id]) ? 1 : -1
       )
@@ -179,15 +180,17 @@ function searchProjects(projects: FullProject[], search: string) {
   const check = (field: string) => {
     return field.toLowerCase().includes(search.toLowerCase())
   }
-  return projects.filter((project) => {
-    // Not currently checking description
-    return (
-      check(project.title) ||
-      check(project.blurb ?? '') ||
-      check(project.profiles.username) ||
-      check(project.profiles.full_name)
-    )
-  })
+  return (
+    projects?.filter((project) => {
+      // Not currently checking description
+      return (
+        check(project.title) ||
+        check(project.blurb ?? '') ||
+        check(project.profiles.username) ||
+        check(project.profiles.full_name)
+      )
+    }) ?? []
+  )
 }
 
 function SortSelect(props: {
@@ -261,12 +264,10 @@ function SortSelect(props: {
   )
 }
 
-function getValuations(projects: FullProject[]) {
-  const valuations = Object.fromEntries(
-    projects.map((project) => [project.id, 0])
-  )
+function getPrices(projects: FullProject[]) {
+  const prices = Object.fromEntries(projects.map((project) => [project.id, 0]))
   projects.forEach((project) => {
-    valuations[project.id] =
+    prices[project.id] =
       project.type === 'grant'
         ? project.funding_goal
         : project.stage === 'proposal'
@@ -277,5 +278,5 @@ function getValuations(projects: FullProject[]) {
             getProposalValuation(project)
           )
   })
-  return valuations
+  return prices
 }
