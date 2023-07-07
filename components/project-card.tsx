@@ -114,11 +114,16 @@ function ProjectCardFooter(props: {
             </div>
           )}
         </div>
-        <ProgressBar
-          fundingGoal={project.funding_goal}
-          minFunding={project.min_funding}
-          amountRaised={amountRaised}
-        />
+        <Row className="flex-1 items-center gap-1">
+          <ProgressBar
+            fundingGoal={project.funding_goal}
+            minFunding={project.min_funding}
+            amountRaised={amountRaised}
+          />
+          <p className="rounded-xl bg-orange-100 py-0.5 px-1.5 text-center text-xs font-bold text-orange-500">
+            {formatMoney(project.funding_goal)}
+          </p>
+        </Row>
       </div>
     )
   } else if (project.stage === 'active') {
