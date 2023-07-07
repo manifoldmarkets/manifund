@@ -27,8 +27,9 @@ type SortOption =
 export function ProjectsDisplay(props: {
   projects: FullProject[]
   defaultSort?: SortOption
+  hideRound?: boolean
 }) {
-  const { projects, defaultSort } = props
+  const { projects, defaultSort, hideRound } = props
   const [sortBy, setSortBy] = useState<SortOption>(
     defaultSort ?? 'newest first'
   )
@@ -107,6 +108,7 @@ export function ProjectsDisplay(props: {
             projects={proposals}
             category="Proposals"
             valuations={valuations}
+            hideRound={hideRound}
           />
         )}
         {activeProjects.length > 0 && (
@@ -114,6 +116,7 @@ export function ProjectsDisplay(props: {
             projects={activeProjects}
             category="Active Projects"
             valuations={valuations}
+            hideRound={hideRound}
           />
         )}
         {completeProjects.length > 0 && (
@@ -121,6 +124,7 @@ export function ProjectsDisplay(props: {
             projects={completeProjects}
             category="Complete Projects"
             valuations={valuations}
+            hideRound={hideRound}
           />
         )}
         {unfundedProjects.length > 0 && (
@@ -128,6 +132,7 @@ export function ProjectsDisplay(props: {
             projects={unfundedProjects}
             category="Unfunded Projects"
             valuations={valuations}
+            hideRound={hideRound}
           />
         )}
       </div>
