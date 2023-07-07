@@ -5,7 +5,7 @@ import {
   ChevronUpDownIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
-import { Listbox, Transition } from '@headlessui/react'
+import { Listbox, Switch, Transition } from '@headlessui/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Fragment, useState } from 'react'
 import {
@@ -15,8 +15,10 @@ import {
 } from '@/utils/math'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
+import { compareDesc, compareAsc } from 'date-fns'
+import { Row } from './layout/row'
 import { sortBy } from 'lodash'
-import { getTime, compareDesc, compareAsc } from 'date-fns'
+import { getSponsoredAmount } from '@/utils/constants'
 
 type SortOption =
   | 'price'
@@ -41,7 +43,8 @@ export function ProjectsDisplay(props: {
     'newest first',
     'oldest first',
   ]
-
+  const isRegrants = !projects.find((project) => project.type !== 'grant')
+  const [includeOpenCall, setIncludeOpenCall] = useState<boolean>(!isRegrants)
   const router = useRouter()
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const valuations = getPrices(projects)
@@ -51,10 +54,13 @@ export function ProjectsDisplay(props: {
     sortProjects(projects, valuations, sortBy),
     search
   )
-
-  const proposals = selectedProjects.filter(
-    (project) => project.stage == 'proposal'
-  )
+  const proposals = selectedProjects.filter((project) => {
+    if (!includeOpenCall) {
+      return project.stage == 'proposal' && isRegrantorInitiated(project)
+    } else {
+      return project.stage == 'proposal'
+    }
+  })
   const activeProjects = selectedProjects.filter(
     (project) => project.stage == 'active'
   )
@@ -105,36 +111,74 @@ export function ProjectsDisplay(props: {
       </div>
       <div className="mt-5 flex flex-col gap-10">
         {proposals.length > 0 && (
-          <ProjectGroup
-            projects={proposals}
-            category="Proposals"
-            valuations={valuations}
-            hideRound={hideRound}
-          />
+          <div>
+            <Row className="items-center justify-between">
+              <h1 className="mb-2 text-2xl font-bold text-gray-900">
+                Proposals
+              </h1>
+              {isRegrants && (
+                <Row className="items-center gap-1">
+                  <span className="text-xs font-light text-gray-500">
+                    include open call
+                  </span>
+                  <Switch
+                    checked={includeOpenCall}
+                    onChange={setIncludeOpenCall}
+                    className={`${
+                      includeOpenCall ? 'bg-orange-600' : 'bg-gray-200'
+                    } relative inline-flex h-6 w-11 items-center rounded-full`}
+                  >
+                    <span
+                      className={`${
+                        includeOpenCall ? 'translate-x-6' : 'translate-x-1'
+                      } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+                    />
+                  </Switch>
+                </Row>
+              )}
+            </Row>
+            <ProjectGroup
+              projects={proposals}
+              valuations={valuations}
+              hideRound={hideRound}
+            />
+          </div>
         )}
         {activeProjects.length > 0 && (
-          <ProjectGroup
-            projects={activeProjects}
-            category="Active Projects"
-            valuations={valuations}
-            hideRound={hideRound}
-          />
+          <div>
+            <h1 className="mb-2 text-2xl font-bold text-gray-900">
+              Active Projects
+            </h1>
+            <ProjectGroup
+              projects={activeProjects}
+              valuations={valuations}
+              hideRound={hideRound}
+            />
+          </div>
         )}
         {completeProjects.length > 0 && (
-          <ProjectGroup
-            projects={completeProjects}
-            category="Complete Projects"
-            valuations={valuations}
-            hideRound={hideRound}
-          />
+          <div>
+            <h1 className="mb-2 text-2xl font-bold text-gray-900">
+              Complete Projects
+            </h1>
+            <ProjectGroup
+              projects={completeProjects}
+              valuations={valuations}
+              hideRound={hideRound}
+            />
+          </div>
         )}
         {unfundedProjects.length > 0 && (
-          <ProjectGroup
-            projects={unfundedProjects}
-            category="Unfunded Projects"
-            valuations={valuations}
-            hideRound={hideRound}
-          />
+          <div>
+            <h1 className="mb-2 text-2xl font-bold text-gray-900">
+              Unfunded Projects
+            </h1>
+            <ProjectGroup
+              projects={unfundedProjects}
+              valuations={valuations}
+              hideRound={hideRound}
+            />
+          </div>
         )}
       </div>
     </div>
@@ -279,4 +323,12 @@ function getPrices(projects: FullProject[]) {
           )
   })
   return prices
+}
+
+function isRegrantorInitiated(project: FullProject) {
+  const firstDonor =
+    project.stage === 'proposal'
+      ? sortBy(project.bids, 'created_at')[0]?.bidder
+      : sortBy(project.txns, 'created_at')[0]?.from_id
+  return getSponsoredAmount(firstDonor ?? '') !== 0
 }
