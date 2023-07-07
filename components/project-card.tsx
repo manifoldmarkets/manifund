@@ -5,7 +5,7 @@ import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { getAmountRaised } from '@/utils/math'
 import { FullProject, Project, ProjectTransfer } from '@/db/project'
 import Link from 'next/link'
-import { SparklesIcon } from '@heroicons/react/24/solid'
+import { CheckBadgeIcon } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
@@ -14,8 +14,7 @@ import {
   UserIcon,
   CurrencyDollarIcon,
 } from '@heroicons/react/24/solid'
-import { orderBy } from 'lodash'
-import { formatDistanceToNow } from 'date-fns'
+import { orderBy, uniq } from 'lodash'
 import { RoundTag, Tag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { DataBox } from './data-box'
@@ -39,6 +38,11 @@ export function ProjectCard(props: {
     project.stage === 'proposal'
       ? orderBy(bids, 'created_at', 'asc')[0]?.bidder
       : orderBy(txns, 'created_at', 'asc')[0]?.from_id
+  const contributorIds =
+    project.stage === 'proposal'
+      ? bids.map((bid) => bid.bidder)
+      : txns.filter((txn) => txn.token === 'USD').map((txn) => txn.from_id)
+  const numContributors = uniq(contributorIds).length
   const regrantorInitiated = getSponsoredAmount(firstDonorId ?? '') > 0
   return (
     <Card className="px-4 pb-2 pt-1">
@@ -53,6 +57,7 @@ export function ProjectCard(props: {
         <Link
           href={`/projects/${project.slug}`}
           className="group flex flex-1 flex-col justify-between hover:cursor-pointer"
+          scroll={true}
         >
           <div className="mt-2 mb-4">
             <h1 className="text-xl font-semibold group-hover:underline">
@@ -60,28 +65,29 @@ export function ProjectCard(props: {
             </h1>
             <p className="font-light text-gray-500">{project.blurb}</p>
           </div>
-          <Col className="gap-1">
-            {(project.stage === 'proposal' ||
-              (project.stage === 'active' &&
-                amountRaised < project.funding_goal)) && (
-              <Row className="flex-1 items-center gap-1">
-                <ProgressBar
-                  fundingGoal={project.funding_goal}
-                  minFunding={project.min_funding}
-                  amountRaised={amountRaised}
-                />
-                <p className="rounded-xl bg-orange-100 py-0.5 px-1.5 text-center text-xs font-bold text-orange-500">
-                  {formatMoney(project.funding_goal)}
-                </p>
-              </Row>
-            )}
-            <ProjectCardData
-              numContributions={2}
-              numComments={numComments}
-              amountRaised={amountRaised}
-            />
-          </Col>
         </Link>
+        <Col className="gap-1">
+          {(project.stage === 'proposal' ||
+            (project.stage === 'active' &&
+              amountRaised < project.funding_goal)) && (
+            <Row className="flex-1 items-center gap-1">
+              <ProgressBar
+                fundingGoal={project.funding_goal}
+                minFunding={project.min_funding}
+                amountRaised={amountRaised}
+              />
+              <p className="rounded-xl bg-orange-100 py-0.5 px-1.5 text-center text-sm font-bold text-orange-600">
+                {formatMoney(project.funding_goal)}
+              </p>
+            </Row>
+          )}
+          <ProjectCardData
+            numContributions={numContributors}
+            numComments={numComments}
+            amountRaised={amountRaised}
+            projectSlug={project.slug}
+          />
+        </Col>
       </Col>
     </Card>
   )
@@ -91,8 +97,9 @@ function ProjectCardData(props: {
   numComments: number
   numContributions: number
   amountRaised: number
+  projectSlug: string
 }) {
-  const { numComments, numContributions, amountRaised } = props
+  const { numComments, numContributions, amountRaised, projectSlug } = props
   return (
     <Row className="justify-between text-sm">
       <Row className="items-center gap-1">
@@ -105,12 +112,12 @@ function ProjectCardData(props: {
           <span className="text-gray-400">{numContributions}</span>
         </Row>
       )}
-      {numComments > 0 && (
+      <Link href={`/projects/${projectSlug}#tabs`}>
         <Row className="items-center gap-1">
           <ChatBubbleLeftEllipsisIcon className="h-4 w-4 text-gray-400" />
           <span className="text-gray-400">{numComments}</span>
         </Row>
-      )}
+      </Link>
     </Row>
   )
 }
@@ -153,7 +160,7 @@ export function ProjectCardHeader(props: {
       ) : null}
       {projectType === 'grant' && regrantorInitiated && (
         <Tooltip text="Regrantor initiated">
-          <SparklesIcon className="relative top-1 h-6 w-6 text-orange-500" />
+          <CheckBadgeIcon className="relative top-1 h-6 w-6 text-orange-500" />
         </Tooltip>
       )}
     </div>
