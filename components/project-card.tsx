@@ -30,9 +30,11 @@ export function ProjectCard(props: {
   numComments: number
   bids: Bid[]
   txns: Txn[]
-  valuation: number
+  valuation?: number
+  hideRound?: boolean
 }) {
-  const { creator, project, numComments, bids, txns, valuation } = props
+  const { creator, project, numComments, bids, txns, valuation, hideRound } =
+    props
   const amountRaised = getAmountRaised(project, bids, txns)
   const firstDonorId =
     project.stage === 'proposal'
@@ -53,11 +55,11 @@ export function ProjectCard(props: {
           creator={creator}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
           regrantorInitiated={regrantorInitiated}
+          hideRound={hideRound}
         />
         <Link
           href={`/projects/${project.slug}`}
           className="group flex flex-1 flex-col justify-between hover:cursor-pointer"
-          scroll={true}
         >
           <div className="mt-2 mb-4">
             <h1 className="text-xl font-semibold group-hover:underline">
@@ -129,6 +131,7 @@ export function ProjectCardHeader(props: {
   projectTransfer?: ProjectTransfer
   valuation?: number
   regrantorInitiated?: boolean
+  hideRound?: boolean
 }) {
   const {
     round,
@@ -137,11 +140,14 @@ export function ProjectCardHeader(props: {
     projectTransfer,
     projectType,
     regrantorInitiated,
+    hideRound,
   } = props
   return (
     <div className="flex justify-between">
       <div className="mt-1">
-        <RoundTag roundTitle={round.title} roundSlug={round.slug} />
+        {!hideRound && (
+          <RoundTag roundTitle={round.title} roundSlug={round.slug} />
+        )}
         <div className="h-1" />
         <UserAvatarAndBadge profile={creator} />
         {projectTransfer && (

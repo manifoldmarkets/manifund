@@ -37,7 +37,11 @@ export function RoundTabs(props: {
               subtitle={'Create one!'}
             />
           ) : (
-            <ProjectsDisplay projects={projects} defaultSort={'valuation'} />
+            <ProjectsDisplay
+              projects={projects}
+              defaultSort={'valuation'}
+              hideRound
+            />
           )}
         </>
       ),
