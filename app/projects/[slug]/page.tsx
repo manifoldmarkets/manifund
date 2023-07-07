@@ -89,8 +89,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred
   )
-  const raised = getAmountRaised(project, projectBids, projectTxns)
-  const percentRaised = (100 * raised) / project.funding_goal
+  const amountRaised = getAmountRaised(project, projectBids, projectTxns)
   return (
     <>
       {project.type === 'grant' &&
@@ -99,7 +98,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           <ProposalRequirements
             signedAgreement={project.signed_agreement}
             approved={project.approved === true}
-            reachedMinFunding={raised >= project.min_funding}
+            reachedMinFunding={amountRaised >= project.min_funding}
             projectSlug={project.slug}
           />
         )}
@@ -127,12 +126,16 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         {project.stage === 'proposal' && (
           <>
             <Divider />
-            <ProposalData project={project} raised={raised} />
+            <ProposalData project={project} raised={amountRaised} />
           </>
         )}
         {(project.stage === 'proposal' ||
           (project.stage === 'active' && project.type === 'grant')) && (
-          <ProgressBar percent={percentRaised} />
+          <ProgressBar
+            amountRaised={amountRaised}
+            minFunding={project.min_funding}
+            fundingGoal={project.funding_goal}
+          />
         )}
         {profile !== null && project.type === 'cert' && (
           <PlaceBid
