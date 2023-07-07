@@ -46,7 +46,7 @@ export function RoundTabs(props: {
   if (round.title === 'Regrants' && regranters) {
     const sortedRegranters = sortBy(regranters, [
       function (regranter: Profile) {
-        return -getSponsoredAmount(regranter.full_name)
+        return -getSponsoredAmount(regranter.id)
       },
     ])
     tabs.push({

@@ -15,7 +15,7 @@ export function RegranterCard(props: {
   className?: string
 }) {
   const { regranter, className } = props
-  const sponsoredAmount = getSponsoredAmount(regranter.full_name)
+  const sponsoredAmount = getSponsoredAmount(regranter.id)
   return (
     <Card
       className={clsx(

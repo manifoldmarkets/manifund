@@ -20,6 +20,7 @@ import { Round } from '@/db/round'
 import { Card } from './card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
+import { getSponsoredAmount } from '@/utils/constants'
 
 export function ProjectCard(props: {
   project: FullProject
@@ -31,6 +32,11 @@ export function ProjectCard(props: {
 }) {
   const { creator, project, numComments, bids, txns, valuation } = props
   const amountRaised = getAmountRaised(project, bids, txns)
+  const firstDonorId =
+    project.stage === 'proposal'
+      ? orderBy(bids, 'created_at', 'asc')[0]?.bidder
+      : orderBy(txns, 'created_at', 'asc')[0]?.from_id
+  const regrantorInitiated = getSponsoredAmount(firstDonorId ?? '') > 0
   return (
     <Card className="px-4 pb-2 pt-1">
       <Col className="h-full justify-between">
@@ -39,6 +45,7 @@ export function ProjectCard(props: {
           projectType={project.type}
           creator={creator}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
+          regrantorInitiated={regrantorInitiated}
         />
         <Link
           href={`/projects/${project.slug}`}
@@ -84,7 +91,6 @@ function ProjectCardFooter(props: {
                 </span>
               </span>
             )}
-
             <span className="mb-1 flex gap-1 text-gray-600">
               <Tooltip
                 text={
@@ -171,8 +177,16 @@ export function ProjectCardHeader(props: {
   projectType: Project['type']
   projectTransfer?: ProjectTransfer
   valuation?: number
+  regrantorInitiated?: boolean
 }) {
-  const { round, creator, valuation, projectTransfer, projectType } = props
+  const {
+    round,
+    creator,
+    valuation,
+    projectTransfer,
+    projectType,
+    regrantorInitiated,
+  } = props
   return (
     <div className="flex justify-between">
       <div className="mt-1">
@@ -188,14 +202,16 @@ export function ProjectCardHeader(props: {
           </Row>
         )}
       </div>
-      {valuation && !isNaN(valuation) ? (
+      {projectType === 'cert' && valuation && !isNaN(valuation) ? (
         <div className="relative top-1">
-          <DataBox
-            value={`${formatMoney(valuation)}`}
-            label={projectType === 'cert' ? 'valuation' : 'raising'}
-          />
+          <DataBox value={`${formatMoney(valuation)}`} label={'valuation'} />
         </div>
       ) : null}
+      {projectType === 'grant' && regrantorInitiated && (
+        <Tooltip text="Regrantor initiated">
+          <SparklesIcon className="relative top-1 h-6 w-6 text-orange-500" />
+        </Tooltip>
+      )}
     </div>
   )
 }
