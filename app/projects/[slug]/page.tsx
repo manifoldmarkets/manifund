@@ -155,15 +155,17 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
             />
           )}
         {!user && <SignInButton />}
-        <ProjectTabs
-          project={project}
-          user={profile}
-          comments={comments}
-          bids={projectBids}
-          txns={projectTxns}
-          userSpendableFunds={userSpendableFunds}
-          userSellableShares={userSellableShares}
-        />
+        <div id="tabs">
+          <ProjectTabs
+            project={project}
+            user={profile}
+            comments={comments}
+            bids={projectBids}
+            txns={projectTxns}
+            userSpendableFunds={userSpendableFunds}
+            userSellableShares={userSellableShares}
+          />
+        </div>
         {isAdmin(user) && <CloseBidding project={project} />}
       </div>
     </>
