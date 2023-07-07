@@ -114,7 +114,11 @@ function ProjectCardFooter(props: {
             </div>
           )}
         </div>
-        <ProgressBar percent={(amountRaised / project.funding_goal) * 100} />
+        <ProgressBar
+          fundingGoal={project.funding_goal}
+          minFunding={project.min_funding}
+          amountRaised={amountRaised}
+        />
       </div>
     )
   } else if (project.stage === 'active') {
