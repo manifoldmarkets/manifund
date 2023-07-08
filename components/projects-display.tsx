@@ -116,26 +116,30 @@ export function ProjectsDisplay(props: {
               <h1 className="mb-2 text-2xl font-bold text-gray-900">
                 Proposals
               </h1>
-              {isRegrants && (
-                <Row className="items-center gap-1">
-                  <span className="text-xs font-light text-gray-500">
-                    include open call
-                  </span>
-                  <Switch
-                    checked={includeOpenCall}
-                    onChange={setIncludeOpenCall}
-                    className={`${
-                      includeOpenCall ? 'bg-orange-600' : 'bg-gray-200'
-                    } relative inline-flex h-6 w-11 items-center rounded-full`}
-                  >
-                    <span
+
+              {
+                // Toggle to include open call proposals on Regrants page only
+                isRegrants && (
+                  <Row className="items-center gap-1">
+                    <span className="text-xs font-light text-gray-500">
+                      include open call
+                    </span>
+                    <Switch
+                      checked={includeOpenCall}
+                      onChange={setIncludeOpenCall}
                       className={`${
-                        includeOpenCall ? 'translate-x-6' : 'translate-x-1'
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition`}
-                    />
-                  </Switch>
-                </Row>
-              )}
+                        includeOpenCall ? 'bg-orange-600' : 'bg-gray-200'
+                      } relative inline-flex h-6 w-11 items-center rounded-full`}
+                    >
+                      <span
+                        className={`${
+                          includeOpenCall ? 'translate-x-6' : 'translate-x-1'
+                        } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+                      />
+                    </Switch>
+                  </Row>
+                )
+              }
             </Row>
             <ProjectGroup
               projects={proposals}
