@@ -21,15 +21,18 @@ export function RoundTabs(props: {
   const { round, projects, regranters } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
+  const visibleProjects = projects.filter(
+    (project) => project.stage !== 'hidden'
+  )
   const tabs = [
     {
       name: 'Projects',
       href: `?tab=projects`,
-      count: projects.length,
+      count: visibleProjects.length,
       current: currentTabName === 'projects' || currentTabName === null,
       display: (
         <>
-          {projects.length === 0 ? (
+          {visibleProjects.length === 0 ? (
             <EmptyContent
               link={'/create'}
               icon={<WrenchIcon className="h-10 w-10 text-gray-400" />}
@@ -37,7 +40,10 @@ export function RoundTabs(props: {
               subtitle={'Create one!'}
             />
           ) : (
-            <ProjectsDisplay projects={projects} defaultSort={'valuation'} />
+            <ProjectsDisplay
+              projects={visibleProjects}
+              defaultSort={'valuation'}
+            />
           )}
         </>
       ),
