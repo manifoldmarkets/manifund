@@ -144,7 +144,8 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         )}
         {profile !== null &&
           project.type === 'grant' &&
-          pendingProjectTransfers.length === 0 && (
+          pendingProjectTransfers.length === 0 &&
+          (project.stage === 'proposal' || project.stage === 'active') && (
             <DonateBox
               project={project}
               profile={profile}
