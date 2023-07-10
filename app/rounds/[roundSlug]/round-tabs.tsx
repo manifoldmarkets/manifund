@@ -41,8 +41,11 @@ export function RoundTabs(props: {
             />
           ) : (
             <ProjectsDisplay
-              projects={visibleProjects}
-              defaultSort={'valuation'}
+              projects={projects}
+              defaultSort={
+                round.title === 'Regrants' ? 'newest first' : 'price'
+              }
+              hideRound
             />
           )}
         </>
@@ -52,7 +55,7 @@ export function RoundTabs(props: {
   if (round.title === 'Regrants' && regranters) {
     const sortedRegranters = sortBy(regranters, [
       function (regranter: Profile) {
-        return -getSponsoredAmount(regranter.full_name)
+        return -getSponsoredAmount(regranter.id)
       },
     ])
     tabs.push({

@@ -29,6 +29,9 @@ export default async function RoundPage(props: {
     getFullProjectsByRound(supabase, round.title),
     round.title === 'Regrants' ? getRegranters(supabase) : [],
   ])
+  const visibleProjects = projects.filter(
+    (project) => project.stage !== 'hidden'
+  )
   return (
     <div className="bg-dark-200 max-w-4xl">
       {round.header_image_url && (
@@ -43,11 +46,11 @@ export default async function RoundPage(props: {
       <h1 className="my-2 text-4xl font-bold">{round.title}</h1>
       <div className="my-5 mx-5">
         {/* @ts-expect-error server component */}
-        <RoundData round={round} projects={projects} />
+        <RoundData round={round} projects={visibleProjects} />
       </div>
       <RoundTabs
         round={round}
-        projects={projects}
+        projects={visibleProjects}
         regranters={round.title === 'Regrants' ? regranters : undefined}
       />
     </div>
