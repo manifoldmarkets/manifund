@@ -143,8 +143,8 @@ export function ProjectCardHeader(props: {
     hideRound,
   } = props
   return (
-    <div className="flex justify-between">
-      <div className="mt-1">
+    <Row className="mt-1 items-start justify-between">
+      <div>
         {!hideRound && (
           <RoundTag roundTitle={round.title} roundSlug={round.slug} />
         )}
@@ -160,15 +160,17 @@ export function ProjectCardHeader(props: {
         )}
       </div>
       {projectType === 'cert' && valuation && !isNaN(valuation) ? (
-        <div className="relative top-1">
-          <DataBox value={`${formatMoney(valuation)}`} label={'valuation'} />
-        </div>
+        <Tooltip text="valuation">
+          <p className="relative rounded-xl bg-orange-100 py-0.5 px-1.5 text-center text-sm font-bold text-orange-600">
+            {formatMoney(valuation)}
+          </p>
+        </Tooltip>
       ) : null}
       {projectType === 'grant' && regrantorInitiated && (
         <Tooltip text="Regrantor initiated">
-          <CheckBadgeIcon className="relative top-1 h-6 w-6 text-orange-500" />
+          <CheckBadgeIcon className="relative h-6 w-6 text-orange-500" />
         </Tooltip>
       )}
-    </div>
+    </Row>
   )
 }
