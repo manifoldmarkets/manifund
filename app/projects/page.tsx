@@ -29,7 +29,16 @@ export default async function Projects() {
       <p className="mt-1 mb-2 text-gray-600">
         Including projects in all stages and from all rounds.
       </p>
-      <ProjectsDisplay projects={projects} />
+      <ProjectsDisplay
+        projects={projects}
+        sortOptions={[
+          'newest first',
+          'oldest first',
+          'price',
+          'percent funded',
+          'number of comments',
+        ]}
+      />
     </div>
   )
 }

@@ -21,6 +21,8 @@ import { sortBy } from 'lodash'
 import { getSponsoredAmount } from '@/utils/constants'
 
 type SortOption =
+  | 'funding goal'
+  | 'valuation'
   | 'price'
   | 'percent funded'
   | 'number of comments'
@@ -29,20 +31,14 @@ type SortOption =
 
 export function ProjectsDisplay(props: {
   projects: FullProject[]
+  sortOptions: SortOption[]
   defaultSort?: SortOption
   hideRound?: boolean
 }) {
-  const { projects, defaultSort, hideRound } = props
+  const { projects, defaultSort, hideRound, sortOptions } = props
   const [sortBy, setSortBy] = useState<SortOption>(
     defaultSort ?? 'newest first'
   )
-  const options: SortOption[] = [
-    'price',
-    'percent funded',
-    'number of comments',
-    'newest first',
-    'oldest first',
-  ]
   const isRegrants = !projects.find((project) => project.type !== 'grant')
   const [includeOpenCall, setIncludeOpenCall] = useState<boolean>(!isRegrants)
   const router = useRouter()
@@ -104,7 +100,7 @@ export function ProjectsDisplay(props: {
             }}
           >
             {({ open }) => (
-              <SortSelect sortBy={sortBy} open={open} options={options} />
+              <SortSelect sortBy={sortBy} open={open} options={sortOptions} />
             )}
           </Listbox>
         </div>
@@ -221,6 +217,8 @@ function sortProjects(
       return projects.sort((a, b) =>
         valuations[a.id] < valuations[b.id] || isNaN(valuations[a.id]) ? 1 : -1
       )
+    default:
+      return projects
   }
 }
 

@@ -45,6 +45,13 @@ export function RoundTabs(props: {
               defaultSort={
                 round.title === 'Regrants' ? 'newest first' : 'price'
               }
+              sortOptions={[
+                'newest first',
+                'oldest first',
+                round.title === 'Regrants' ? 'funding goal' : 'valuation',
+                'percent funded',
+                'number of comments',
+              ]}
               hideRound
             />
           )}
