@@ -163,8 +163,9 @@ export function WriteComment(props: {
   commenter: Profile
   replyingToId?: string
   setReplyingTo?: (id: CommentAndProfile | null) => void
+  onSubmit?: () => void
 }) {
-  const { project, commenter, replyingToId, setReplyingTo } = props
+  const { project, commenter, replyingToId, setReplyingTo, onSubmit } = props
   const { supabase } = useSupabase()
   const editor = useTextEditor('', 'border-0 focus:!outline-none focus:ring-0')
   const router = useRouter()
@@ -214,6 +215,9 @@ export function WriteComment(props: {
                     setReplyingTo(null)
                   }
                   editor.commands.clearContent()
+                  if (onSubmit) {
+                    onSubmit()
+                  }
                   setIsSubmitting(false)
                   router.refresh()
                 }

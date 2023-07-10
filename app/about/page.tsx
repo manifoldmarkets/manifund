@@ -278,7 +278,7 @@ export default function AboutPage() {
         Manifund is built by the team behind{' '}
         <a href="http://manifold.markets/">Manifold Markets</a>, primarily{' '}
         <a href="https://manifold.markets/Austin">Austin Chen</a> and{' '}
-        <a href="https://manifold.markets/RachelWeinberg">Rachel Weinberg</a>.
+        <a href="https://manifold.markets/rachel">Rachel Weinberg</a>.
       </p>
       <p>
         Come chat with us on <a href="https://discord.gg/zPnPtx6jBS">Discord</a>
