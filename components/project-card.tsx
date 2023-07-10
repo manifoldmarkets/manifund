@@ -185,8 +185,8 @@ export function ProjectCardHeader(props: {
             <Tooltip text="Copy creator email">
               <EnvelopeIcon
                 className="relative h-4 w-4 cursor-pointer stroke-2 text-orange-600"
-                onClick={() => {
-                  navigator.clipboard.writeText(creatorEmail)
+                onClick={async () => {
+                  await navigator.clipboard.writeText(creatorEmail)
                 }}
               />
             </Tooltip>
