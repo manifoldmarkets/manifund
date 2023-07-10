@@ -17,7 +17,6 @@ export function ProgressBar(props: {
           width: `${percentFunded > 0 ? Math.max(percentFunded, 1.5) : 0}%`,
           height: '0.5rem',
           borderRadius: '0.5rem',
-          zIndex: 30,
           position: 'absolute',
           bottom: '0px',
           left: '0px',
