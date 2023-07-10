@@ -43,7 +43,7 @@ export function RoundTabs(props: {
             <ProjectsDisplay
               projects={projects}
               defaultSort={
-                round.title === 'Regrants' ? 'newest first' : 'price'
+                round.title === 'Regrants' ? 'newest first' : 'valuation'
               }
               sortOptions={[
                 'newest first',

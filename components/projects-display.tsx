@@ -43,11 +43,11 @@ export function ProjectsDisplay(props: {
   const [includeOpenCall, setIncludeOpenCall] = useState<boolean>(!isRegrants)
   const router = useRouter()
   const searchParams = useSearchParams() ?? new URLSearchParams()
-  const valuations = getPrices(projects)
+  const prices = getPrices(projects)
   const [search, setSearch] = useState<string>(searchParams.get('q') || '')
 
   const selectedProjects = searchProjects(
-    sortProjects(projects, valuations, sortBy),
+    sortProjects(projects, prices, sortBy),
     search
   )
   const proposals = selectedProjects.filter((project) => {
@@ -139,7 +139,7 @@ export function ProjectsDisplay(props: {
             </Row>
             <ProjectGroup
               projects={proposals}
-              valuations={valuations}
+              prices={prices}
               hideRound={hideRound}
             />
           </div>
@@ -151,7 +151,7 @@ export function ProjectsDisplay(props: {
             </h1>
             <ProjectGroup
               projects={activeProjects}
-              valuations={valuations}
+              prices={prices}
               hideRound={hideRound}
             />
           </div>
@@ -163,7 +163,7 @@ export function ProjectsDisplay(props: {
             </h1>
             <ProjectGroup
               projects={completeProjects}
-              valuations={valuations}
+              prices={prices}
               hideRound={hideRound}
             />
           </div>
@@ -175,7 +175,7 @@ export function ProjectsDisplay(props: {
             </h1>
             <ProjectGroup
               projects={unfundedProjects}
-              valuations={valuations}
+              prices={prices}
               hideRound={hideRound}
             />
           </div>
@@ -187,39 +187,45 @@ export function ProjectsDisplay(props: {
 
 function sortProjects(
   projects: FullProject[],
-  valuations: { [k: string]: number },
+  prices: { [k: string]: number },
   sortType: SortOption
 ) {
   projects.forEach((project) => {
     project.bids = project.bids.filter((bid) => bid.status == 'pending')
   })
-  switch (sortType) {
-    case 'oldest first':
-      return projects.sort((a, b) =>
-        compareAsc(new Date(a.created_at), new Date(b.created_at))
-      )
-    case 'newest first':
-      return projects.sort((a, b) =>
-        compareDesc(new Date(a.created_at), new Date(b.created_at))
-      )
-    case 'percent funded':
-      return projects.sort((a, b) =>
-        getAmountRaised(a, a.bids, a.txns) / a.funding_goal <
-        getAmountRaised(b, b.bids, b.txns) / b.funding_goal
-          ? 1
-          : -1
-      )
-    case 'number of comments':
-      return projects.sort((a, b) =>
-        a.comments.length < b.comments.length ? 1 : -1
-      )
-    case 'price':
-      return projects.sort((a, b) =>
-        valuations[a.id] < valuations[b.id] || isNaN(valuations[a.id]) ? 1 : -1
-      )
-    default:
-      return projects
+  if (sortType === 'oldest first') {
+    return projects.sort((a, b) =>
+      compareAsc(new Date(a.created_at), new Date(b.created_at))
+    )
   }
+  if (sortType === 'newest first') {
+    return projects.sort((a, b) =>
+      compareDesc(new Date(a.created_at), new Date(b.created_at))
+    )
+  }
+  if (sortType === 'percent funded') {
+    return projects.sort((a, b) =>
+      getAmountRaised(a, a.bids, a.txns) / a.funding_goal <
+      getAmountRaised(b, b.bids, b.txns) / b.funding_goal
+        ? 1
+        : -1
+    )
+  }
+  if (sortType === 'number of comments') {
+    return projects.sort((a, b) =>
+      a.comments.length < b.comments.length ? 1 : -1
+    )
+  }
+  if (
+    sortType === 'price' ||
+    sortType === 'funding goal' ||
+    sortType === 'valuation'
+  ) {
+    return projects.sort((a, b) =>
+      prices[a.id] <= prices[b.id] || isNaN(prices[a.id]) ? 1 : -1
+    )
+  }
+  return projects
 }
 
 function searchProjects(projects: FullProject[], search: string) {
