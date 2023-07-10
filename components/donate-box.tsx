@@ -118,7 +118,11 @@ export function DonateBox(props: {
               <XCircleIcon className="h-7 w-7 text-orange-500" />
             </IconButton>
           </Row>
-          <WriteComment project={project} commenter={profile} />
+          <WriteComment
+            project={project}
+            commenter={profile}
+            onSubmit={() => setShowCommentPrompt(false)}
+          />
         </Col>
       )}
     </Card>
