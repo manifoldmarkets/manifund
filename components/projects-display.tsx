@@ -316,6 +316,7 @@ function SortSelect(props: {
   )
 }
 
+// Price here means funding goal for grants and valuation for certs
 function getPrices(projects: FullProject[]) {
   const prices = Object.fromEntries(projects.map((project) => [project.id, 0]))
   projects.forEach((project) => {
