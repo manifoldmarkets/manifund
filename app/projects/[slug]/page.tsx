@@ -28,6 +28,8 @@ import { DonateBox } from '@/components/donate-box'
 import { Divider } from '@/components/divider'
 import { ProposalRequirements } from './proposal-requirements'
 import { ProgressBar } from '@/components/progress-bar'
+import { getUserEmail } from '@/utils/email'
+import { createAdminClient } from '@/pages/api/_db'
 
 export const revalidate = 0
 
@@ -58,7 +60,9 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       getBidsByProject(supabase, project.id),
       getTxnsByProject(supabase, project.id),
     ])
-
+  const creatorEmail = profile?.regranter_status
+    ? await getUserEmail(createAdminClient(), project.creator)
+    : undefined
   const userSpendableFunds = profile
     ? profile.accreditation_status && project.type === 'cert'
       ? calculateCashBalance(userTxns, profile.bids, profile.id, true)
@@ -114,6 +118,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           }
           creator={project.profiles}
           valuation={isNaN(valuation) ? undefined : valuation}
+          creatorEmail={creatorEmail}
         />
         <div>
           <h2 className="text-3xl font-bold">{project.title}</h2>

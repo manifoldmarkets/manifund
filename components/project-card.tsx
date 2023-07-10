@@ -20,6 +20,7 @@ import { Round } from '@/db/round'
 import { Card } from './card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
+import { EnvelopeIcon } from '@heroicons/react/24/solid'
 
 export function ProjectCard(props: {
   project: FullProject
@@ -28,6 +29,7 @@ export function ProjectCard(props: {
   bids: Bid[]
   txns: Txn[]
   valuation: number
+  creatorEmail?: string
 }) {
   const { creator, project, numComments, bids, txns, valuation } = props
   const amountRaised = getAmountRaised(project, bids, txns)
@@ -162,14 +164,34 @@ export function ProjectCardHeader(props: {
   projectType: Project['type']
   projectTransfer?: ProjectTransfer
   valuation?: number
+  creatorEmail?: string
 }) {
-  const { round, creator, valuation, projectTransfer, projectType } = props
+  const {
+    round,
+    creator,
+    valuation,
+    projectTransfer,
+    projectType,
+    creatorEmail,
+  } = props
   return (
-    <div className="flex justify-between">
+    <Row className="justify-between">
       <div className="mt-1">
         <RoundTag roundTitle={round.title} roundSlug={round.slug} />
         <div className="h-1" />
-        <UserAvatarAndBadge profile={creator} />
+        <Row className="items-center gap-1">
+          <UserAvatarAndBadge profile={creator} />
+          {creatorEmail && (
+            <Tooltip text="Copy creator email">
+              <EnvelopeIcon
+                className="relative h-4 w-4 cursor-pointer stroke-2 text-orange-600"
+                onClick={() => {
+                  navigator.clipboard.writeText(creatorEmail)
+                }}
+              />
+            </Tooltip>
+          )}
+        </Row>
         {projectTransfer && (
           <Row className="gap-1">
             <Tag text={'PENDING TRANSFER'} className="mt-1" color="orange" />
@@ -187,6 +209,6 @@ export function ProjectCardHeader(props: {
           />
         </div>
       ) : null}
-    </div>
+    </Row>
   )
 }
