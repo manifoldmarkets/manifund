@@ -1,18 +1,20 @@
 'use client'
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
-import { formatDate, formatLargeNumber, formatMoney } from '@/utils/formatting'
+import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { getAmountRaised } from '@/utils/math'
 import { FullProject, Project, ProjectTransfer } from '@/db/project'
 import Link from 'next/link'
-import { CalendarIcon, SparklesIcon } from '@heroicons/react/24/solid'
+import { CheckBadgeIcon } from '@heroicons/react/24/solid'
 import { Txn } from '@/db/txn'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
-import { ChatBubbleLeftEllipsisIcon } from '@heroicons/react/24/outline'
-import clsx from 'clsx'
-import { orderBy } from 'lodash'
-import { formatDistanceToNow } from 'date-fns'
+import {
+  ChatBubbleLeftEllipsisIcon,
+  UserIcon,
+  CurrencyDollarIcon,
+} from '@heroicons/react/24/solid'
+import { orderBy, uniq } from 'lodash'
 import { RoundTag, Tag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { DataBox } from './data-box'
@@ -21,6 +23,7 @@ import { Card } from './card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { EnvelopeIcon } from '@heroicons/react/24/solid'
+import { getSponsoredAmount } from '@/utils/constants'
 
 export function ProjectCard(props: {
   project: FullProject
@@ -28,11 +31,23 @@ export function ProjectCard(props: {
   numComments: number
   bids: Bid[]
   txns: Txn[]
-  valuation: number
+  valuation?: number
+  hideRound?: boolean
   creatorEmail?: string
 }) {
-  const { creator, project, numComments, bids, txns, valuation } = props
+  const { creator, project, numComments, bids, txns, valuation, hideRound } =
+    props
   const amountRaised = getAmountRaised(project, bids, txns)
+  const firstDonorId =
+    project.stage === 'proposal'
+      ? orderBy(bids, 'created_at', 'asc')[0]?.bidder
+      : orderBy(txns, 'created_at', 'asc')[0]?.from_id
+  const contributorIds =
+    project.stage === 'proposal'
+      ? bids.map((bid) => bid.bidder)
+      : txns.filter((txn) => txn.token === 'USD').map((txn) => txn.from_id)
+  const numContributors = uniq(contributorIds).length
+  const regrantorInitiated = getSponsoredAmount(firstDonorId ?? '') > 0
   return (
     <Card className="px-4 pb-2 pt-1">
       <Col className="h-full justify-between">
@@ -41,6 +56,8 @@ export function ProjectCard(props: {
           projectType={project.type}
           creator={creator}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
+          regrantorInitiated={regrantorInitiated}
+          hideRound={hideRound}
         />
         <Link
           href={`/projects/${project.slug}`}
@@ -52,110 +69,61 @@ export function ProjectCard(props: {
             </h1>
             <p className="font-light text-gray-500">{project.blurb}</p>
           </div>
-          <ProjectCardFooter
-            project={project}
+        </Link>
+        <Col className="gap-1">
+          {(project.stage === 'proposal' ||
+            (project.stage === 'active' &&
+              amountRaised < project.funding_goal)) && (
+            <Row className="flex-1 items-center gap-1">
+              <ProgressBar
+                fundingGoal={project.funding_goal}
+                minFunding={project.min_funding}
+                amountRaised={amountRaised}
+              />
+              <p className="rounded-xl bg-orange-100 py-0.5 px-1.5 text-center text-sm font-bold text-orange-600">
+                {formatMoney(project.funding_goal)}
+              </p>
+            </Row>
+          )}
+          <ProjectCardData
+            numContributions={numContributors}
             numComments={numComments}
             amountRaised={amountRaised}
-            txns={txns}
+            projectSlug={project.slug}
           />
-        </Link>
+        </Col>
       </Col>
     </Card>
   )
 }
 
-function ProjectCardFooter(props: {
-  project: Project
+function ProjectCardData(props: {
   numComments: number
+  numContributions: number
   amountRaised: number
-  txns: Txn[]
+  projectSlug: string
 }) {
-  const { project, numComments, amountRaised, txns } = props
-  const reachedFundingMin = amountRaised >= project.min_funding
-  if (project.stage === 'proposal' || amountRaised < project.funding_goal) {
-    return (
-      <div>
-        <div className="flex justify-between">
-          <div className="flex flex-col">
-            {project.auction_close && (
-              <span className="mb-1 text-gray-600">
-                <CalendarIcon className="relative bottom-0.5 mr-1 inline h-6 w-6 text-orange-500" />
-                Auction closes{' '}
-                <span className="text-black">
-                  {formatDate(project.auction_close)}
-                </span>
-              </span>
-            )}
-
-            <span className="mb-1 flex gap-1 text-gray-600">
-              <Tooltip
-                text={
-                  reachedFundingMin
-                    ? 'cleared minimum funding bar'
-                    : 'below minimum funding bar'
-                }
-              >
-                <SparklesIcon
-                  className={clsx(
-                    'h-6 w-6 ',
-                    reachedFundingMin ? 'text-orange-500' : 'text-gray-400'
-                  )}
-                />
-              </Tooltip>
-              <span className="text-black">
-                {formatLargeNumber((amountRaised / project.funding_goal) * 100)}
-                %
-              </span>
-              raised
-            </span>
-          </div>
-          {numComments > 0 && (
-            <div className="flex flex-row items-center gap-2">
-              <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-gray-400" />
-              <span className="text-gray-500">{numComments}</span>
-            </div>
-          )}
-        </div>
-        <ProgressBar percent={(amountRaised / project.funding_goal) * 100} />
-      </div>
-    )
-  } else if (project.stage === 'active') {
-    const sortedTxns = orderBy(txns, 'created_at', 'desc')
-    const lastTraded = new Date(
-      sortedTxns.length > 0 ? sortedTxns[0].created_at : 0
-    )
-    return (
-      <div className="flex justify-between">
-        {sortedTxns.length > 0 && (
-          <span className="mb-1 text-sm text-gray-600">
-            {project.type === 'cert' ? 'Last traded' : 'Last donation'}{' '}
-            <span className="text-black">
-              {formatDistanceToNow(lastTraded, {
-                addSuffix: true,
-              })}
-            </span>
-          </span>
-        )}
-        {numComments > 0 && (
-          <div className="flex flex-row items-center gap-2">
-            <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-gray-400" />
-            <span className="text-gray-500">{numComments}</span>
-          </div>
-        )}
-      </div>
-    )
-  } else {
-    return (
-      <div className="flex justify-end">
-        {numComments > 0 && (
-          <div className="flex flex-row items-center gap-2">
-            <ChatBubbleLeftEllipsisIcon className="h-6 w-6 text-gray-400" />
-            <span className="text-gray-500">{numComments}</span>
-          </div>
-        )}
-      </div>
-    )
-  }
+  const { numComments, numContributions, amountRaised, projectSlug } = props
+  return (
+    <Row className="justify-between text-sm">
+      <Row className="items-center gap-1">
+        <CurrencyDollarIcon className="h-4 w-4 text-gray-400" />
+        <span className="text-gray-400">{formatLargeNumber(amountRaised)}</span>
+      </Row>
+      {numContributions > 0 && (
+        <Row className="items-center gap-1">
+          <UserIcon className="h-4 w-4 text-gray-400" />
+          <span className="text-gray-400">{numContributions}</span>
+        </Row>
+      )}
+      <Link href={`/projects/${projectSlug}#tabs`}>
+        <Row className="items-center gap-1">
+          <ChatBubbleLeftEllipsisIcon className="h-4 w-4 text-gray-400" />
+          <span className="text-gray-400">{numComments}</span>
+        </Row>
+      </Link>
+    </Row>
+  )
 }
 
 export function ProjectCardHeader(props: {
@@ -164,20 +132,30 @@ export function ProjectCardHeader(props: {
   projectType: Project['type']
   projectTransfer?: ProjectTransfer
   valuation?: number
+  regrantorInitiated?: boolean
+  hideRound?: boolean
   creatorEmail?: string
 }) {
   const {
     round,
+
     creator,
+
     valuation,
+
     projectTransfer,
+
     projectType,
+    regrantorInitiated,
+    hideRound,
     creatorEmail,
   } = props
   return (
-    <Row className="justify-between">
-      <div className="mt-1">
-        <RoundTag roundTitle={round.title} roundSlug={round.slug} />
+    <Row className="mt-1 items-start justify-between">
+      <div>
+        {!hideRound && (
+          <RoundTag roundTitle={round.title} roundSlug={round.slug} />
+        )}
         <div className="h-1" />
         <Row className="items-center gap-1">
           <UserAvatarAndBadge profile={creator} />
@@ -201,14 +179,18 @@ export function ProjectCardHeader(props: {
           </Row>
         )}
       </div>
-      {valuation && !isNaN(valuation) ? (
-        <div className="relative top-1">
-          <DataBox
-            value={`${formatMoney(valuation)}`}
-            label={projectType === 'cert' ? 'valuation' : 'raising'}
-          />
-        </div>
+      {projectType === 'cert' && valuation && !isNaN(valuation) ? (
+        <Tooltip text="valuation">
+          <p className="relative rounded-xl bg-orange-100 py-0.5 px-1.5 text-center text-sm font-bold text-orange-600">
+            {formatMoney(valuation)}
+          </p>
+        </Tooltip>
       ) : null}
+      {projectType === 'grant' && regrantorInitiated && (
+        <Tooltip text="Regrantor initiated">
+          <CheckBadgeIcon className="relative h-6 w-6 text-orange-500" />
+        </Tooltip>
+      )}
     </Row>
   )
 }
