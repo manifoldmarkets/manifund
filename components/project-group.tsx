@@ -4,10 +4,10 @@ import { ProjectCard } from '@/components/project-card'
 
 export function ProjectGroup(props: {
   projects: FullProject[]
-  valuations?: { [k: string]: number }
+  prices?: { [k: string]: number }
   hideRound?: boolean
 }) {
-  const { projects, valuations, hideRound } = props
+  const { projects, prices, hideRound } = props
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       {projects.map((project) => (
@@ -18,7 +18,7 @@ export function ProjectGroup(props: {
           numComments={project.comments.length}
           bids={project.bids.filter((bid) => bid.status == 'pending')}
           txns={project.txns}
-          valuation={valuations ? valuations[project.id] : undefined}
+          valuation={prices ? prices[project.id] : undefined}
           hideRound={hideRound}
         />
       ))}
