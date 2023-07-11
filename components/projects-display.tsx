@@ -25,6 +25,7 @@ type SortOption =
   | 'valuation'
   | 'price'
   | 'percent funded'
+  | 'distance from minimum funding'
   | 'number of comments'
   | 'newest first'
   | 'oldest first'
@@ -223,6 +224,14 @@ function sortProjects(
   ) {
     return projects.sort((a, b) =>
       prices[a.id] <= prices[b.id] || isNaN(prices[a.id]) ? 1 : -1
+    )
+  }
+  if (sortType === 'distance from minimum funding') {
+    return projects.sort((a, b) =>
+      a.min_funding - getAmountRaised(a, a.bids, a.txns) <
+      b.min_funding - getAmountRaised(b, b.bids, b.txns)
+        ? 1
+        : -1
     )
   }
   return projects

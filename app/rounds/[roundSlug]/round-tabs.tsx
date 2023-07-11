@@ -50,6 +50,7 @@ export function RoundTabs(props: {
                 'oldest first',
                 round.title === 'Regrants' ? 'funding goal' : 'valuation',
                 'percent funded',
+                'distance from minimum funding',
                 'number of comments',
               ]}
               hideRound
