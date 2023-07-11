@@ -17,6 +17,7 @@ import { Tag } from '@/components/tags'
 import { Avatar } from '@/components/avatar'
 import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
+import { JSONContent } from '@tiptap/react'
 
 export function Comments(props: {
   project: Project
@@ -61,7 +62,6 @@ export function Comments(props: {
               </Tooltip>
             </Row>
           )}
-
           {thread.replies.map((reply) => (
             <div className="ml-8 mt-1" key={reply.id}>
               <Comment
@@ -69,18 +69,27 @@ export function Comments(props: {
                 writtenByCreator={reply.commenter === project.creator}
                 contributionText={commenterContributions[reply.commenter]}
               />
+              <Row className="w-full justify-end">
+                <Tooltip text="Reply">
+                  <IconButton onClick={() => setReplyingTo(reply)}>
+                    <ArrowUturnRightIcon className="relative bottom-2 h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
+                  </IconButton>
+                </Tooltip>
+              </Row>
             </div>
           ))}
-          {replyingTo?.id === thread.root.id && user && (
-            <div className="mt-1 ml-8">
-              <WriteComment
-                project={project}
-                commenter={user}
-                replyingToId={thread.root.id}
-                setReplyingTo={setReplyingTo}
-              />
-            </div>
-          )}
+          {(replyingTo?.id === thread.root.id ||
+            replyingTo?.replying_to === thread.root.id) &&
+            user && (
+              <div className="mt-1 ml-8">
+                <WriteComment
+                  project={project}
+                  commenter={user}
+                  replyingTo={replyingTo}
+                  setReplyingTo={setReplyingTo}
+                />
+              </div>
+            )}
         </div>
       </Row>
     </div>
@@ -161,22 +170,47 @@ function Comment(props: {
 export function WriteComment(props: {
   project: Project
   commenter: Profile
-  replyingToId?: string
+  replyingTo?: CommentAndProfile
   setReplyingTo?: (id: CommentAndProfile | null) => void
   onSubmit?: () => void
 }) {
-  const { project, commenter, replyingToId, setReplyingTo, onSubmit } = props
+  const { project, commenter, replyingTo, setReplyingTo, onSubmit } = props
   const { supabase } = useSupabase()
-  const editor = useTextEditor('', 'border-0 focus:!outline-none focus:ring-0')
+  const startingText: JSONContent | string = replyingTo?.replying_to
+    ? {
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              {
+                type: 'mention',
+                attrs: {
+                  id: replyingTo.commenter,
+                  label: replyingTo.profiles.username,
+                },
+              },
+              {
+                text: ' ',
+                type: 'text',
+              },
+            ],
+          },
+        ],
+      }
+    : ''
+  const editor = useTextEditor(
+    startingText,
+    'border-0 focus:!outline-none focus:ring-0'
+  )
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-
   return (
     <Row className="w-full">
       <Avatar
         username={commenter.username}
         avatarUrl={commenter.avatar_url}
-        size={replyingToId ? 6 : 10}
+        size={replyingTo?.id ? 6 : 10}
         className="mr-2"
       />
       <div className="w-full overflow-hidden rounded-md bg-white shadow">
@@ -209,7 +243,9 @@ export function WriteComment(props: {
                     content,
                     project.id,
                     commenter.id,
-                    replyingToId
+                    replyingTo?.replying_to
+                      ? (replyingTo.replying_to as string)
+                      : replyingTo?.id
                   )
                   if (setReplyingTo) {
                     setReplyingTo(null)
