@@ -31,7 +31,9 @@ export default async function Projects() {
       </p>
       <ProjectsDisplay
         projects={projects}
+        defaultSort={'newest first'}
         sortOptions={[
+          'votes',
           'newest first',
           'oldest first',
           'price',
