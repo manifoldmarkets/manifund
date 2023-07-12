@@ -202,7 +202,7 @@ export function WriteComment(props: {
   const editor = useTextEditor(
     startingText,
     'border-0 focus:!outline-none focus:ring-0',
-    replyingTo ? 'Write a comment...' : 'Write your reply...'
+    replyingTo ? 'Write your reply...' : 'Write a comment...'
   )
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
