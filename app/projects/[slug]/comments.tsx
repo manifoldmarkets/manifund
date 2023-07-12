@@ -213,7 +213,7 @@ export function WriteComment(props: {
     'border-0 focus:!outline-none focus:ring-0',
     specialPrompt ?? replyingTo ? 'Write your reply...' : 'Write a comment...'
   )
-  if (replyingTo) {
+  if (replyingTo || specialPrompt) {
     editor?.commands.focus()
   }
   const router = useRouter()
@@ -256,7 +256,12 @@ export function WriteComment(props: {
         size={replyingTo?.id ? 6 : 10}
         className="mr-2"
       />
-      <div className="w-full overflow-hidden rounded-md bg-white shadow">
+      <div
+        className={clsx(
+          'w-full overflow-hidden rounded-md bg-white shadow',
+          specialPrompt && 'shadow-[0_0px_10px_5px_rgb(249,115,22,0.5)]'
+        )}
+      >
         <TextEditor editor={editor}>
           {/* Spacer element to match the height of the toolbar */}
           <div className="py-1" aria-hidden="true">
