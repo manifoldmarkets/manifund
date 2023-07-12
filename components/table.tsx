@@ -1,3 +1,4 @@
+'use client'
 import clsx from 'clsx'
 import { Menu } from '@headlessui/react'
 import { EllipsisVerticalIcon, TrashIcon } from '@heroicons/react/24/outline'
