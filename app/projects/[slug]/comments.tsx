@@ -8,7 +8,7 @@ import { Project } from '@/db/project'
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 import { Row } from '@/components/layout/row'
-import { IconButton } from '@/components/button'
+import { Button, IconButton } from '@/components/button'
 import { useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import { Col } from '@/components/layout/col'
@@ -18,6 +18,7 @@ import { Avatar } from '@/components/avatar'
 import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { JSONContent } from '@tiptap/react'
+import clsx from 'clsx'
 
 export function Comments(props: {
   project: Project
@@ -204,6 +205,9 @@ export function WriteComment(props: {
     'border-0 focus:!outline-none focus:ring-0',
     replyingTo ? 'Write your reply...' : 'Write a comment...'
   )
+  if (replyingTo) {
+    editor?.commands.focus()
+  }
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -253,7 +257,20 @@ export function WriteComment(props: {
               <div className="h-9" />
             </div>
           </div>
-          <div className="absolute inset-x-0 bottom-0 flex justify-end border-t border-t-gray-200 bg-white py-0.5 pl-3">
+          <Row
+            className={clsx(
+              'absolute inset-x-0 bottom-0 border-t border-t-gray-200 bg-white py-0.5 pl-3',
+              setReplyingTo ? 'justify-between' : 'justify-end'
+            )}
+          >
+            {setReplyingTo && (
+              <button
+                onClick={() => setReplyingTo(null)}
+                className="text-sm text-gray-500 hover:cursor-pointer hover:text-gray-700"
+              >
+                Cancel
+              </button>
+            )}
             <IconButton
               loading={isSubmitting}
               onClick={async () => {
@@ -262,7 +279,7 @@ export function WriteComment(props: {
             >
               <PaperAirplaneIcon className="h-6 w-6 text-gray-500 hover:cursor-pointer hover:text-orange-500" />
             </IconButton>
-          </div>
+          </Row>
         </TextEditor>
       </div>
     </Row>
