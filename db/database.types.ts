@@ -181,22 +181,22 @@ export interface Database {
         Row: {
           created_at: string | null
           id: number
+          magnitude: number
           project_id: string
-          vote: number
           voter_id: string
         }
         Insert: {
           created_at?: string | null
           id?: number
+          magnitude?: number
           project_id: string
-          vote?: number
           voter_id: string
         }
         Update: {
           created_at?: string | null
           id?: number
+          magnitude?: number
           project_id?: string
-          vote?: number
           voter_id?: string
         }
         Relationships: [

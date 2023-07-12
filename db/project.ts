@@ -149,3 +149,16 @@ export async function getProjectAndBidsById(
   }
   return data[0] as ProjectAndBids
 }
+
+export async function getUserProjectVote(
+  supabase: SupabaseClient,
+  projectId: string,
+  userId: string
+) {
+  const { data } = await supabase
+    .from('project_votes')
+    .select('*')
+    .eq('project_id', projectId)
+    .throwOnError()
+  return data?.find((vote) => vote.voter_id === userId) as ProjectVote | null
+}
