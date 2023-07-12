@@ -174,8 +174,16 @@ export function WriteComment(props: {
   replyingTo?: CommentAndProfile
   setReplyingTo?: (id: CommentAndProfile | null) => void
   onSubmit?: () => void
+  specialPrompt?: string
 }) {
-  const { project, commenter, replyingTo, setReplyingTo, onSubmit } = props
+  const {
+    project,
+    commenter,
+    replyingTo,
+    setReplyingTo,
+    onSubmit,
+    specialPrompt,
+  } = props
   const { supabase } = useSupabase()
   const startingText: JSONContent | string = replyingTo?.replying_to
     ? {
@@ -203,7 +211,7 @@ export function WriteComment(props: {
   const editor = useTextEditor(
     startingText,
     'border-0 focus:!outline-none focus:ring-0',
-    replyingTo ? 'Write your reply...' : 'Write a comment...'
+    specialPrompt ?? replyingTo ? 'Write your reply...' : 'Write a comment...'
   )
   if (replyingTo) {
     editor?.commands.focus()
