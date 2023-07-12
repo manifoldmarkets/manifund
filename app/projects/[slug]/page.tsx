@@ -110,32 +110,32 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           />
         )}
       <Col className="gap-4 px-4 pt-5">
-        <Row className="items-center justify-between">
-          <ProjectCardHeader
-            round={project.rounds}
-            projectType={project.type}
-            projectTransfer={
-              pendingProjectTransfers?.length === 0
-                ? undefined
-                : project.project_transfers[0]
-            }
-            creator={project.profiles}
-            valuation={isNaN(valuation) ? undefined : valuation}
-            creatorEmail={creatorEmail}
-          />
+        <ProjectCardHeader
+          round={project.rounds}
+          projectType={project.type}
+          projectTransfer={
+            pendingProjectTransfers?.length === 0
+              ? undefined
+              : project.project_transfers[0]
+          }
+          creator={project.profiles}
+          valuation={isNaN(valuation) ? undefined : valuation}
+          creatorEmail={creatorEmail}
+        />
+        <Row className="flex-2 gap-3">
           <Vote
             projectId={project.id}
             userId={user?.id}
             votes={project.project_votes}
           />
+          <h2 className="text-3xl font-bold text-gray-900">{project.title}</h2>
         </Row>
-        <div>
-          <h2 className="text-3xl font-bold">{project.title}</h2>
-        </div>
         {project.description && (
-          <Description>
-            <RichContent content={project.description} />
-          </Description>
+          <div className="px-3">
+            <Description>
+              <RichContent content={project.description} />
+            </Description>
+          </div>
         )}
         {isOwnProject && <EditDescription project={project} />}
         {project.stage === 'proposal' && (
