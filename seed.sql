@@ -305,3 +305,32 @@ AS PERMISSIVE FOR INSERT
 TO authenticated
 
 WITH CHECK (true)
+
+
+-- Project votes
+CREATE TABLE public.project_votes (
+  id int8 NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
+  voter_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  vote int2 NOT NULL DEFAULT 0
+  PRIMARY KEY (id)
+);
+
+-- Project votes RLS
+CREATE POLICY "Enable read access for all users" ON "public"."project_votes"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
+
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."project_votes"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+
+WITH CHECK (true)
+
+CREATE POLICY "Users can update their votes" ON "public"."project_votes"
+AS PERMISSIVE FOR UPDATE
+TO public
+USING (auth.uid() = voter_id)
+WITH CHECK (auth.uid() = voter_id)
