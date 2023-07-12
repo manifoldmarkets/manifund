@@ -10,11 +10,11 @@ export const config = {
 
 type VoteProps = {
   projectId: string
-  magnitude: number
+  newMagnitude: number
 }
 
 export default async function handler(req: NextRequest) {
-  const { projectId, magnitude } = (await req.json()) as VoteProps
+  const { projectId, newMagnitude } = (await req.json()) as VoteProps
   const supabase = createEdgeClient(req)
   const user = await getUser(supabase)
   if (!user) {
@@ -22,17 +22,16 @@ export default async function handler(req: NextRequest) {
   }
   const oldVote = await getUserProjectVote(supabase, projectId, user.id)
   if (oldVote) {
-    if (oldVote.magnitude === magnitude) {
-      return NextResponse.error()
-    }
     await supabase
       .from('project_votes')
-      .update({ magnitude })
+      .update({ magnitude: newMagnitude })
       .eq('id', oldVote.id)
   } else {
     await supabase
       .from('project_votes')
-      .insert([{ project_id: projectId, voter_id: user.id, magnitude }])
+      .insert([
+        { project_id: projectId, voter_id: user.id, magnitude: newMagnitude },
+      ])
   }
   return NextResponse.json('voted!')
 }
