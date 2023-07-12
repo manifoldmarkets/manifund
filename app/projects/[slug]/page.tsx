@@ -32,7 +32,7 @@ import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
-import { Vote } from './vote'
+import { Vote } from '@/components/vote'
 
 export const revalidate = 0
 

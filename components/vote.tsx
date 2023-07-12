@@ -28,23 +28,28 @@ export function Vote(props: {
     router.refresh()
   }
   return (
-    <Col className="relative items-center gap-2">
+    <Col
+      className={clsx(
+        'relative items-center gap-2',
+        userId && 'cursor-pointer'
+      )}
+    >
       <ChevronUpIcon
         className={clsx(
-          'h-8 w-8 cursor-pointer stroke-2',
+          'h-8 w-8 stroke-2',
           userVoteMagnitude > 0 ? 'text-orange-500' : ' text-gray-400'
         )}
         onClick={async () => await vote(1)}
       />
       <span
-        className="absolute top-6 cursor-pointer text-gray-400"
+        className="absolute top-6 text-gray-400"
         onClick={async () => await vote(0)}
       >
         {votes.reduce((acc, vote) => vote.magnitude + acc, 0)}
       </span>
       <ChevronDownIcon
         className={clsx(
-          'h-8 w-8 cursor-pointer stroke-2',
+          'h-8 w-8 stroke-2',
           userVoteMagnitude < 0 ? 'text-orange-500' : ' text-gray-400'
         )}
         onClick={async () => await vote(-1)}
