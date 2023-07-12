@@ -9,6 +9,7 @@ import { Round } from './round'
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectTransfer =
   Database['public']['Tables']['project_transfers']['Row']
+export type ProjectVote = Database['public']['Tables']['project_votes']['Row']
 
 export const TOTAL_SHARES = 10_000_000
 
@@ -52,7 +53,7 @@ export type FullProject = Project & { profiles: Profile } & {
   bids: Bid[]
 } & { txns: Txn[] } & { comments: Comment[] } & { rounds: Round } & {
   project_transfers: ProjectTransfer[]
-}
+} & { project_votes: ProjectVote[] }
 
 export async function listProjects(supabase: SupabaseClient) {
   const { data } = await supabase
@@ -73,7 +74,7 @@ export async function getFullProjectBySlug(
   const { data } = await supabase
     .from('projects')
     .select(
-      '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*)'
+      '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*)'
     )
     .eq('slug', slug)
     .throwOnError()
@@ -148,5 +149,3 @@ export async function getProjectAndBidsById(
   }
   return data[0] as ProjectAndBids
 }
-
-export type ProjectVote = Database['public']['Tables']['project_votes']['Row']

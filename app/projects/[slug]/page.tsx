@@ -30,6 +30,9 @@ import { ProposalRequirements } from './proposal-requirements'
 import { ProgressBar } from '@/components/progress-bar'
 import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
+import { Col } from '@/components/layout/col'
+import { Row } from '@/components/layout/row'
+import { Vote } from './vote'
 
 export const revalidate = 0
 
@@ -106,19 +109,26 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
             projectSlug={project.slug}
           />
         )}
-      <div className="flex flex-col gap-4 px-4 pt-5">
-        <ProjectCardHeader
-          round={project.rounds}
-          projectType={project.type}
-          projectTransfer={
-            pendingProjectTransfers?.length === 0
-              ? undefined
-              : project.project_transfers[0]
-          }
-          creator={project.profiles}
-          valuation={isNaN(valuation) ? undefined : valuation}
-          creatorEmail={creatorEmail}
-        />
+      <Col className="gap-4 px-4 pt-5">
+        <Row className="items-center justify-between">
+          <ProjectCardHeader
+            round={project.rounds}
+            projectType={project.type}
+            projectTransfer={
+              pendingProjectTransfers?.length === 0
+                ? undefined
+                : project.project_transfers[0]
+            }
+            creator={project.profiles}
+            valuation={isNaN(valuation) ? undefined : valuation}
+            creatorEmail={creatorEmail}
+          />
+          <Vote
+            projectId={project.id}
+            userId={user?.id}
+            votes={project.project_votes}
+          />
+        </Row>
         <div>
           <h2 className="text-3xl font-bold">{project.title}</h2>
         </div>
@@ -173,7 +183,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           />
         </div>
         {isAdmin(user) && <CloseBidding project={project} />}
-      </div>
+      </Col>
     </>
   )
 }
