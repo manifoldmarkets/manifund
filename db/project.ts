@@ -59,7 +59,7 @@ export async function listProjects(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude)'
     )
     .order('created_at', { ascending: false })
     .throwOnError()
@@ -107,7 +107,7 @@ export async function getFullProjectsByRound(
   const { data, error } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(*)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude)'
     )
     .eq('round', roundTitle)
   if (error) {
