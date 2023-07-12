@@ -201,10 +201,41 @@ export function WriteComment(props: {
     : ''
   const editor = useTextEditor(
     startingText,
-    'border-0 focus:!outline-none focus:ring-0'
+    'border-0 focus:!outline-none focus:ring-0',
+    replyingTo ? 'Write a comment...' : 'Write your reply...'
   )
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async () => {
+    if (editor?.getText()?.trim()) {
+      setIsSubmitting(true)
+      const content = editor?.getJSON()
+      const htmlContent = editor?.getHTML()
+      if (!content || content.length === 0 || !editor || !htmlContent) {
+        return
+      }
+      await sendComment(
+        supabase,
+        content,
+        project.id,
+        commenter.id,
+        replyingTo?.replying_to
+          ? (replyingTo.replying_to as string)
+          : replyingTo?.id
+      )
+      if (setReplyingTo) {
+        setReplyingTo(null)
+      }
+      editor.commands.clearContent()
+      if (onSubmit) {
+        onSubmit()
+      }
+      setIsSubmitting(false)
+      router.refresh()
+    }
+  }
+
   return (
     <Row className="w-full">
       <Avatar
@@ -226,37 +257,7 @@ export function WriteComment(props: {
             <IconButton
               loading={isSubmitting}
               onClick={async () => {
-                if (editor?.getText()?.trim()) {
-                  setIsSubmitting(true)
-                  const content = editor?.getJSON()
-                  const htmlContent = editor?.getHTML()
-                  if (
-                    !content ||
-                    content.length === 0 ||
-                    !editor ||
-                    !htmlContent
-                  ) {
-                    return
-                  }
-                  await sendComment(
-                    supabase,
-                    content,
-                    project.id,
-                    commenter.id,
-                    replyingTo?.replying_to
-                      ? (replyingTo.replying_to as string)
-                      : replyingTo?.id
-                  )
-                  if (setReplyingTo) {
-                    setReplyingTo(null)
-                  }
-                  editor.commands.clearContent()
-                  if (onSubmit) {
-                    onSubmit()
-                  }
-                  setIsSubmitting(false)
-                  router.refresh()
-                }
+                await handleSubmit()
               }}
             >
               <PaperAirplaneIcon className="h-6 w-6 text-gray-500 hover:cursor-pointer hover:text-orange-500" />

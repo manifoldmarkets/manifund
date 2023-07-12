@@ -28,6 +28,7 @@
     "@tailwindcss/line-clamp": "^0.4.2",
     "@tiptap/extension-link": "^2.0.0-beta.218",
     "@tiptap/extension-mention": "^2.0.2",
+    "@tiptap/extension-placeholder": "^2.0.3",
     "@tiptap/html": "^2.0.2",
     "@tiptap/pm": "^2.0.0-beta.218",
     "@tiptap/react": "^2.0.0-beta.218",

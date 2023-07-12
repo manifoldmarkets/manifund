@@ -11,8 +11,13 @@ import clsx from 'clsx'
 import { DisplayMention } from './user-mention/mention-extension'
 import { linkClass } from './site-link'
 import { generateReact } from './tiptap-utils'
+import Placeholder from '@tiptap/extension-placeholder'
 
-export function useTextEditor(content?: any, className?: string) {
+export function useTextEditor(
+  content?: any,
+  className?: string,
+  placeholder?: string
+) {
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -23,8 +28,17 @@ export function useTextEditor(content?: any, className?: string) {
         ),
       },
     },
-    extensions: [StarterKit, DisplayLink, DisplayMention],
-    content: content ?? '<p>Edit here...</p>',
+    extensions: [
+      StarterKit,
+      DisplayLink,
+      DisplayMention,
+      Placeholder.configure({
+        placeholder,
+        emptyEditorClass:
+          'before:content-[attr(data-placeholder)] before:text-gray-500 before:float-left before:h-0 cursor-text',
+      }),
+    ],
+    content: content ?? '',
   })
   return editor
 }
