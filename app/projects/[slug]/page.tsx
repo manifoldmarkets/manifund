@@ -122,13 +122,13 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           valuation={isNaN(valuation) ? undefined : valuation}
           creatorEmail={creatorEmail}
         />
-        <Row className="flex-2 gap-3">
+        <Row className="flex-2 items-center gap-3">
           <Vote
             projectId={project.id}
             userId={user?.id}
             votes={project.project_votes}
           />
-          <h2 className="text-3xl font-bold text-gray-900">{project.title}</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{project.title}</h2>
         </Row>
         {project.description && (
           <div className="px-3">
