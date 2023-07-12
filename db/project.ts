@@ -148,3 +148,5 @@ export async function getProjectAndBidsById(
   }
   return data[0] as ProjectAndBids
 }
+
+export type ProjectVote = Database['public']['Tables']['project_votes']['Row']

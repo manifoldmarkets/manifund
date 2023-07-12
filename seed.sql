@@ -313,7 +313,7 @@ CREATE TABLE public.project_votes (
   created_at timestamptz NOT NULL DEFAULT now(),
   project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
   voter_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
-  vote int2 NOT NULL DEFAULT 0
+  vote int2 NOT NULL DEFAULT 0,
   PRIMARY KEY (id)
 );
 
