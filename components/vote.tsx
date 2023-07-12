@@ -15,7 +15,7 @@ export function Vote(props: {
 }) {
   const { projectId, votes, userId } = props
   const oldVote = votes.find((vote) => vote.voter_id === userId)
-  const oldMagnitude = oldVote?.magnitude ?? 0
+  const oldMagnitude = oldVote ? oldVote.magnitude : 0
   const [newMagnitude, setNewMagnitude] = useState<null | number>(null)
   const router = useRouter()
   const displayMagnitude = newMagnitude ?? oldMagnitude
@@ -28,22 +28,18 @@ export function Vote(props: {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         projectId,
-        newMagnitude,
+        newMagnitude: displayMagnitude === magnitude ? 0 : magnitude,
       }),
     })
     router.refresh()
   }
   return (
-    <Col
-      className={clsx(
-        'relative items-center gap-2',
-        userId && 'cursor-pointer'
-      )}
-    >
+    <Col className="relative items-center gap-2">
       <ChevronUpIcon
         className={clsx(
           'h-8 w-8 stroke-2',
-          displayMagnitude > 0 ? 'text-orange-500' : ' text-gray-400'
+          displayMagnitude > 0 ? 'text-orange-500' : ' text-gray-400',
+          userId && 'cursor-pointer'
         )}
         onClick={async () => await vote(1)}
       />
@@ -55,7 +51,8 @@ export function Vote(props: {
       <ChevronDownIcon
         className={clsx(
           'h-8 w-8 stroke-2',
-          displayMagnitude < 0 ? 'text-orange-500' : ' text-gray-400'
+          displayMagnitude < 0 ? 'text-orange-500' : ' text-gray-400',
+          userId && 'cursor-pointer'
         )}
         onClick={async () => await vote(-1)}
       />

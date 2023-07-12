@@ -20,7 +20,9 @@ export default async function handler(req: NextRequest) {
   if (!user) {
     return NextResponse.error()
   }
+  console.log('newMagnitude', newMagnitude)
   const oldVote = await getUserProjectVote(supabase, projectId, user.id)
+  console.log('oldVote', oldVote)
   if (oldVote) {
     await supabase
       .from('project_votes')
