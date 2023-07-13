@@ -25,8 +25,15 @@ export function Comments(props: {
   comments: CommentAndProfile[]
   commenterContributions: Record<string, string>
   userProfile?: Profile
+  specialPrompt?: string
 }) {
-  const { project, comments, commenterContributions, userProfile } = props
+  const {
+    project,
+    comments,
+    commenterContributions,
+    userProfile,
+    specialPrompt,
+  } = props
   const [replyingTo, setReplyingTo] = useState<CommentAndProfile | null>(null)
   const rootComments = comments.filter(
     (comment) => comment.replying_to === null
@@ -99,7 +106,11 @@ export function Comments(props: {
     <div>
       {userProfile && (
         <div className="mb-5">
-          <WriteComment project={project} commenter={userProfile} />
+          <WriteComment
+            project={project}
+            commenter={userProfile}
+            specialPrompt={specialPrompt}
+          />
         </div>
       )}
       {commentsDisplay}

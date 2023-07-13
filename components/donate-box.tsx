@@ -8,10 +8,8 @@ import { Project } from '@/db/project'
 import { XCircleIcon } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { useTextEditor } from './editor'
 import { Col } from './layout/col'
 import { Row } from './layout/row'
-import { Modal } from './modal'
 import { Tooltip } from './tooltip'
 
 export function DonateBox(props: {
@@ -19,11 +17,11 @@ export function DonateBox(props: {
   project?: Project
   profile: Profile
   maxDonation: number
+  setCommentPrompt?: (value: string) => void
 }) {
-  const { charity, project, profile, maxDonation } = props
+  const { charity, project, profile, maxDonation, setCommentPrompt } = props
   const [amount, setAmount] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showCommentPrompt, setShowCommentPrompt] = useState(false)
   const router = useRouter()
   const isBid = project && project.stage === 'proposal'
 
@@ -95,7 +93,9 @@ export function DonateBox(props: {
               }
               setIsSubmitting(false)
               router.refresh()
-              setShowCommentPrompt(true)
+              if (setCommentPrompt) {
+                setCommentPrompt('Write a comment explaining your donation!')
+              }
             }}
             className="font-semibold"
             disabled={!amount || errorMessage !== null}
@@ -105,26 +105,6 @@ export function DonateBox(props: {
           </Button>
         </Tooltip>
       </Row>
-      {project && showCommentPrompt && (
-        <Col className="rounded bg-orange-100 p-4">
-          <Row className="justify-between">
-            <p className="font-medium text-orange-500">
-              Comment explaining your donation!
-            </p>
-            <IconButton
-              className="relative bottom-3 left-4"
-              onClick={() => setShowCommentPrompt(false)}
-            >
-              <XCircleIcon className="h-7 w-7 text-orange-500" />
-            </IconButton>
-          </Row>
-          <WriteComment
-            project={project}
-            commenter={profile}
-            onSubmit={() => setShowCommentPrompt(false)}
-          />
-        </Col>
-      )}
     </Card>
   )
 }

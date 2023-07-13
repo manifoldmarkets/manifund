@@ -21,6 +21,7 @@ export function ProjectTabs(props: {
   userSpendableFunds: number
   userSellableShares: number
   userProfile?: Profile
+  specialCommentPrompt?: string
 }) {
   const {
     project,
@@ -30,6 +31,7 @@ export function ProjectTabs(props: {
     userSpendableFunds,
     userSellableShares,
     userProfile,
+    specialCommentPrompt,
   } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
@@ -58,6 +60,7 @@ export function ProjectTabs(props: {
           comments={comments}
           userProfile={userProfile}
           commenterContributions={commenterContributions}
+          specialPrompt={specialCommentPrompt}
         />
       ),
     },

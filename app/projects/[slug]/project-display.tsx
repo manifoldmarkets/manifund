@@ -9,7 +9,7 @@ import { BidAndProfile } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
 import { ProfileAndBids } from '@/db/profile'
 import { FullProject } from '@/db/project'
-import { isAdmin, Txn, TxnAndProfiles } from '@/db/txn'
+import { Txn, TxnAndProfiles } from '@/db/txn'
 import {
   calculateCashBalance,
   calculateCharityBalance,
@@ -19,6 +19,7 @@ import {
   getAmountRaised,
   getProposalValuation,
 } from '@/utils/math'
+import { useState } from 'react'
 import { Description } from './description'
 import { EditDescription } from './edit-description'
 import { PlaceBid } from './place-bid'
@@ -80,6 +81,9 @@ export function ProjectDisplay(props: {
     (projectTransfer) => !projectTransfer.transferred
   )
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
+  const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
+    undefined | string
+  >(undefined)
   return (
     <>
       {project.type === 'grant' &&
@@ -144,6 +148,7 @@ export function ProjectDisplay(props: {
               project={project}
               profile={userProfile}
               maxDonation={userSpendableFunds}
+              setCommentPrompt={setSpecialCommentPrompt}
             />
           )}
         {!userProfile && <SignInButton />}
@@ -156,6 +161,7 @@ export function ProjectDisplay(props: {
             txns={projectTxns}
             userSpendableFunds={userSpendableFunds}
             userSellableShares={userSellableShares}
+            specialCommentPrompt={specialCommentPrompt}
           />
         </div>
       </div>
