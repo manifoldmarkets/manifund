@@ -65,7 +65,7 @@ export function DonateBox(props: {
     setIsSubmitting(false)
     router.refresh()
     if (setCommentPrompt) {
-      setCommentPrompt('Write a comment explaining your donation!')
+      setCommentPrompt('why did you donate?')
     }
   }
   return (

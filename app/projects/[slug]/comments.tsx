@@ -272,10 +272,15 @@ export function WriteComment(props: {
       />
       <div
         className={clsx(
-          'w-full overflow-hidden rounded-md bg-white shadow',
+          'relative w-full overflow-hidden rounded-md bg-white shadow',
           specialPrompt && 'shadow-[0_0px_10px_5px_rgb(249,115,22,0.5)]'
         )}
       >
+        {specialPrompt && (
+          <p className="z-10 w-full bg-orange-500 text-center text-xs text-white">
+            {specialPrompt}
+          </p>
+        )}
         <TextEditor editor={editor}>
           {/* Spacer element to match the height of the toolbar */}
           <div className="py-1" aria-hidden="true">
