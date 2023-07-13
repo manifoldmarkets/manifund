@@ -21,6 +21,7 @@ import { sortBy } from 'lodash'
 import { getSponsoredAmount } from '@/utils/constants'
 
 type SortOption =
+  | 'votes'
   | 'funding goal'
   | 'valuation'
   | 'price'
@@ -36,10 +37,8 @@ export function ProjectsDisplay(props: {
   defaultSort?: SortOption
   hideRound?: boolean
 }) {
-  const { projects, defaultSort, hideRound, sortOptions } = props
-  const [sortBy, setSortBy] = useState<SortOption>(
-    defaultSort ?? 'newest first'
-  )
+  const { projects, sortOptions, defaultSort, hideRound } = props
+  const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
   const isRegrants = !projects.find((project) => project.type !== 'grant')
   const [includeOpenCall, setIncludeOpenCall] = useState<boolean>(!isRegrants)
   const router = useRouter()
@@ -194,6 +193,14 @@ function sortProjects(
   projects.forEach((project) => {
     project.bids = project.bids.filter((bid) => bid.status == 'pending')
   })
+  if (sortType === 'votes') {
+    return projects.sort((a, b) =>
+      a.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0) <
+      b.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
+        ? 1
+        : -1
+    )
+  }
   if (sortType === 'oldest first') {
     return projects.sort((a, b) =>
       compareAsc(new Date(a.created_at), new Date(b.created_at))

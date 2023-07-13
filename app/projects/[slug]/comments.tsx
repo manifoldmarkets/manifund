@@ -173,7 +173,7 @@ function Comment(props: {
         </Col>
       </Row>
       <div className="relative left-8 w-11/12">
-        <RichContent content={comment.content} />
+        <RichContent content={comment.content} className="sm:text-md text-sm" />
       </div>
     </div>
   )
@@ -221,8 +221,8 @@ export function WriteComment(props: {
     : ''
   const editor = useTextEditor(
     startingText,
-    'border-0 focus:!outline-none focus:ring-0',
-    specialPrompt ?? replyingTo ? 'Write your reply...' : 'Write a comment...'
+    'border-0 focus:!outline-none focus:ring-0 text-sm sm:text-md',
+    replyingTo ? 'Write your reply...' : 'Write a comment...'
   )
   useEffect(() => {
     if (editor && !editor.isDestroyed && (replyingTo || specialPrompt)) {

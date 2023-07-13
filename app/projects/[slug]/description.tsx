@@ -9,9 +9,7 @@ export function Description(props: { children: ReactNode }) {
   const [expanded, setExpanded] = useState(false)
   return (
     <div className="text-gray-500">
-      <div className={clsx(expanded ? 'line-clamp-none' : 'line-clamp-[20]')}>
-        {children}
-      </div>
+      <div className={clsx(!expanded && 'line-clamp-[20]')}>{children}</div>
       <Row className="mt-3 justify-center pt-2 text-sm">
         <button onClick={() => setExpanded(!expanded)} className="flex">
           See {expanded ? 'less' : 'more'}

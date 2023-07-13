@@ -82,7 +82,6 @@ export function EditProfileForm(props: { profile: Profile }) {
           type="text"
           id="username"
           autoComplete="off"
-          required
           value={username ? username : ''}
           onChange={(event) => setUsername(event.target.value)}
         />
@@ -93,7 +92,6 @@ export function EditProfileForm(props: { profile: Profile }) {
           type="text"
           id="full_name"
           autoComplete="off"
-          required
           value={fullName ? fullName : ''}
           onChange={(event) => setFullName(event.target.value)}
         />
@@ -104,7 +102,6 @@ export function EditProfileForm(props: { profile: Profile }) {
           type="text"
           id="bio"
           autoComplete="off"
-          required
           value={bio ? bio : ''}
           onChange={(event) => setBio(event.target.value)}
         />
@@ -123,7 +120,6 @@ export function EditProfileForm(props: { profile: Profile }) {
           type="text"
           id="website"
           autoComplete="off"
-          required
           value={website ? website : ''}
           onChange={(event) => setWebsite(event.target.value)}
         />

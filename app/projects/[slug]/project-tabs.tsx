@@ -12,6 +12,7 @@ import { Tabs } from '@/components/tabs'
 import { DonationsHistory } from '@/components/donations-history'
 import { CommentAndProfile } from '@/db/comment'
 import { uniq } from 'lodash'
+import { useEffect } from 'react'
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -33,6 +34,9 @@ export function ProjectTabs(props: {
     userProfile,
     specialCommentPrompt,
   } = props
+  useEffect(() => {
+    window.scrollTo({ top: 0 })
+  })
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
   const trades = calculateFullTrades(txns)

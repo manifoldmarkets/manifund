@@ -9,6 +9,7 @@ import { Round } from './round'
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectTransfer =
   Database['public']['Tables']['project_transfers']['Row']
+export type ProjectVote = Database['public']['Tables']['project_votes']['Row']
 
 export const TOTAL_SHARES = 10_000_000
 
@@ -52,13 +53,13 @@ export type FullProject = Project & { profiles: Profile } & {
   bids: Bid[]
 } & { txns: Txn[] } & { comments: Comment[] } & { rounds: Round } & {
   project_transfers: ProjectTransfer[]
-}
+} & { project_votes: ProjectVote[] }
 
 export async function listProjects(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude)'
     )
     .order('created_at', { ascending: false })
     .throwOnError()
@@ -73,7 +74,7 @@ export async function getFullProjectBySlug(
   const { data } = await supabase
     .from('projects')
     .select(
-      '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*)'
+      '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*)'
     )
     .eq('slug', slug)
     .throwOnError()
@@ -106,7 +107,7 @@ export async function getFullProjectsByRound(
   const { data, error } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude)'
     )
     .eq('round', roundTitle)
   if (error) {
@@ -147,4 +148,17 @@ export async function getProjectAndBidsById(
     return null
   }
   return data[0] as ProjectAndBids
+}
+
+export async function getUserProjectVote(
+  supabase: SupabaseClient,
+  projectId: string,
+  userId: string
+) {
+  const { data } = await supabase
+    .from('project_votes')
+    .select('*')
+    .eq('project_id', projectId)
+    .throwOnError()
+  return data?.find((vote) => vote.voter_id === userId) as ProjectVote | null
 }

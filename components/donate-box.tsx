@@ -94,6 +94,7 @@ export function DonateBox(props: {
           value={amount !== 0 ? amount : ''}
           placeholder="Amount (USD)"
           onChange={(event) => setAmount(Number(event.target.value))}
+          className="w-48 max-w-full"
         />
         <Tooltip text={errorMessage ?? ''}>
           <Button
