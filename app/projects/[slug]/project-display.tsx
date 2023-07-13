@@ -143,9 +143,7 @@ export function ProjectDisplay(props: {
         {userProfile &&
           project.type === 'grant' &&
           pendingProjectTransfers.length === 0 &&
-          (project.stage === 'proposal' ||
-            project.stage === 'active' ||
-            project.stage === 'hidden') && (
+          (project.stage === 'proposal' || project.stage === 'active') && (
             <DonateBox
               project={project}
               profile={userProfile}

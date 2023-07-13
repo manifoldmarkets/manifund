@@ -5,10 +5,8 @@ import { Card } from '@/components/card'
 import { Input } from '@/components/input'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
-import { XCircleIcon } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { Col } from './layout/col'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 
@@ -28,7 +26,7 @@ export function DonateBox(props: {
   let errorMessage = null
   if (amount && amount > maxDonation) {
     errorMessage = `You don't have enough funds to donate $${amount}. You can donate up to $${maxDonation}.`
-  } else if (amount && amount < 1) {
+  } else if (amount && amount < 10) {
     errorMessage = `You must donate at least $10.`
   }
 
