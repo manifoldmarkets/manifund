@@ -16,20 +16,20 @@ import { uniq } from 'lodash'
 export function ProjectTabs(props: {
   project: FullProject
   comments: CommentAndProfile[]
-  user: Profile | null
   bids: BidAndProfile[]
   txns: TxnAndProfiles[]
   userSpendableFunds: number
   userSellableShares: number
+  userProfile?: Profile
 }) {
   const {
     project,
     comments,
-    user,
     bids,
     txns,
     userSpendableFunds,
     userSellableShares,
+    userProfile,
   } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
@@ -46,7 +46,6 @@ export function ProjectTabs(props: {
     txns,
     shareholders
   )
-
   const tabs = [
     {
       name: 'Comments',
@@ -57,7 +56,7 @@ export function ProjectTabs(props: {
         <Comments
           project={project}
           comments={comments}
-          user={user}
+          userProfile={userProfile}
           commenterContributions={commenterContributions}
         />
       ),
@@ -81,7 +80,7 @@ export function ProjectTabs(props: {
         <Bids
           bids={bids}
           project={project}
-          user={user}
+          userProfile={userProfile}
           userSpendableFunds={userSpendableFunds}
           userSellableShares={userSellableShares}
         />

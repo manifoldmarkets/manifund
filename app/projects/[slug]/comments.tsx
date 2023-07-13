@@ -23,10 +23,10 @@ import clsx from 'clsx'
 export function Comments(props: {
   project: Project
   comments: CommentAndProfile[]
-  user: Profile | null
   commenterContributions: Record<string, string>
+  userProfile?: Profile
 }) {
-  const { project, comments, user, commenterContributions } = props
+  const { project, comments, commenterContributions, userProfile } = props
   const [replyingTo, setReplyingTo] = useState<CommentAndProfile | null>(null)
   const rootComments = comments.filter(
     (comment) => comment.replying_to === null
@@ -34,7 +34,7 @@ export function Comments(props: {
   const replyComments = comments.filter(
     (comment) => comment.replying_to !== null
   )
-  if (comments.length === 0 && !user)
+  if (comments.length === 0 && !userProfile)
     return (
       <p className="text-center italic text-gray-500">
         No comments yet.{' '}
@@ -54,7 +54,7 @@ export function Comments(props: {
             writtenByCreator={thread.root.commenter === project.creator}
             contributionText={commenterContributions[thread.root.commenter]}
           />
-          {user && (
+          {userProfile && (
             <Row className="w-full justify-end">
               <Tooltip text="Reply">
                 <IconButton onClick={() => setReplyingTo(thread.root)}>
@@ -81,11 +81,11 @@ export function Comments(props: {
           ))}
           {(replyingTo?.id === thread.root.id ||
             replyingTo?.replying_to === thread.root.id) &&
-            user && (
+            userProfile && (
               <div className="mt-1 ml-8">
                 <WriteComment
                   project={project}
-                  commenter={user}
+                  commenter={userProfile}
                   replyingTo={replyingTo}
                   setReplyingTo={setReplyingTo}
                 />
@@ -97,9 +97,9 @@ export function Comments(props: {
   ))
   return (
     <div>
-      {user && (
+      {userProfile && (
         <div className="mb-5">
-          <WriteComment project={project} commenter={user} />
+          <WriteComment project={project} commenter={userProfile} />
         </div>
       )}
       {commentsDisplay}

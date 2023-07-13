@@ -19,11 +19,12 @@ import { Profile } from '@/db/profile'
 export function Bids(props: {
   bids: BidAndProfile[]
   project: Project
-  user: Profile | null
   userSpendableFunds: number
   userSellableShares: number
+  userProfile?: Profile
 }) {
-  const { bids, project, user, userSpendableFunds, userSellableShares } = props
+  const { bids, project, userSpendableFunds, userSellableShares, userProfile } =
+    props
 
   if (bids.length === 0)
     return (
@@ -59,7 +60,7 @@ export function Bids(props: {
                 key={bid.id}
                 bid={bid}
                 project={project}
-                user={user}
+                userProfile={userProfile}
                 showValuation={true}
                 userSellableShares={userSellableShares}
                 userSpendableFunds={userSpendableFunds}
@@ -72,7 +73,7 @@ export function Bids(props: {
               <Bid
                 key={bid.id}
                 bid={bid}
-                user={user}
+                userProfile={userProfile}
                 project={project}
                 showValuation={true}
                 userSellableShares={userSellableShares}
@@ -92,7 +93,7 @@ function Bid(props: {
   bid: BidAndProfile
   showValuation: boolean
   project: Project
-  user?: Profile | null
+  userProfile?: Profile
   userSpendableFunds?: number
   userSellableShares?: number
 }) {
@@ -100,7 +101,7 @@ function Bid(props: {
     bid,
     showValuation,
     project,
-    user,
+    userProfile,
     userSpendableFunds,
     userSellableShares,
   } = props
@@ -116,15 +117,15 @@ function Bid(props: {
       ) : (
         <div>{formatMoney(bid.amount)}</div>
       )}
-      {user && (
+      {userProfile && (
         <div>
-          {bid.bidder === user.id ? (
+          {bid.bidder === userProfile.id ? (
             <DeleteBid bidId={bid.id} />
           ) : (
             <Trade
               bid={bid}
               project={project}
-              userId={user.id}
+              userId={userProfile.id}
               userSpendableFunds={userSpendableFunds ?? 0}
               userSellableShares={userSellableShares ?? 0}
             />
