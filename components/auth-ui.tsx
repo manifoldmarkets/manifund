@@ -40,7 +40,7 @@ export default function ClientAuth() {
             supabaseClient={supabase}
             appearance={{ theme: manifundTheme }}
             providers={['google']}
-            redirectTo={`${getURL()}edit-profile`}
+            redirectTo={`${getURL()}`}
           />
         </>
       )}
