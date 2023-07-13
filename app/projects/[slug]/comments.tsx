@@ -9,7 +9,7 @@ import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 import { Row } from '@/components/layout/row'
 import { IconButton } from '@/components/button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import { Col } from '@/components/layout/col'
 import { Tooltip } from '@/components/tooltip'
@@ -224,9 +224,12 @@ export function WriteComment(props: {
     'border-0 focus:!outline-none focus:ring-0',
     specialPrompt ?? replyingTo ? 'Write your reply...' : 'Write a comment...'
   )
-  if (replyingTo || specialPrompt) {
-    editor?.commands.focus()
-  }
+  useEffect(() => {
+    if (editor) {
+      editor.commands?.focus()
+    }
+  }, [replyingTo, specialPrompt])
+
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 

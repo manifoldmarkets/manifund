@@ -28,8 +28,45 @@ export function DonateBox(props: {
   let errorMessage = null
   if (amount && amount > maxDonation) {
     errorMessage = `You don't have enough funds to donate $${amount}. You can donate up to $${maxDonation}.`
-  } else if (amount && amount < 10) {
+  } else if (amount && amount < 1) {
     errorMessage = `You must donate at least $10.`
+  }
+
+  const donate = async () => {
+    setIsSubmitting(true)
+    if (project && project.stage === 'proposal') {
+      await fetch('/api/place-bid', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectId: project.id,
+          valuation: 0,
+          amount,
+          type: 'donate',
+        }),
+      })
+    } else if (project || charity) {
+      await fetch('/api/transfer-money', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fromId: profile.id,
+          toId: charity?.id ?? project?.creator,
+          amount,
+          projectId: project?.id,
+        }),
+      })
+    }
+    setAmount(0)
+    setIsSubmitting(false)
+    router.refresh()
+    if (setCommentPrompt) {
+      setCommentPrompt('Write a comment explaining your donation!')
+    }
   }
   return (
     <Card className="flex flex-col gap-3 p-5">
@@ -62,41 +99,7 @@ export function DonateBox(props: {
         />
         <Tooltip text={errorMessage ?? ''}>
           <Button
-            onClick={async () => {
-              setIsSubmitting(true)
-              if (project && project.stage === 'proposal') {
-                await fetch('/api/place-bid', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    projectId: project.id,
-                    valuation: 0,
-                    amount,
-                    type: 'donate',
-                  }),
-                })
-              } else if (project || charity) {
-                await fetch('/api/transfer-money', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    fromId: profile.id,
-                    toId: charity?.id ?? project?.creator,
-                    amount,
-                    projectId: project?.id,
-                  }),
-                })
-              }
-              setIsSubmitting(false)
-              router.refresh()
-              if (setCommentPrompt) {
-                setCommentPrompt('Write a comment explaining your donation!')
-              }
-            }}
+            onClick={donate}
             className="font-semibold"
             disabled={!amount || errorMessage !== null}
             loading={isSubmitting}
