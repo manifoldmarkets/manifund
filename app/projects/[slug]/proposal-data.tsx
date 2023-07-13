@@ -1,4 +1,5 @@
 import { DataPoint } from '@/components/data-point'
+import { Row } from '@/components/layout/row'
 import { Project } from '@/db/project'
 import { formatMoney, showPrecision } from '@/utils/formatting'
 import { dateDiff, getProposalValuation } from '@/utils/math'
@@ -14,31 +15,27 @@ export function ProposalData(props: { project: Project; raised: number }) {
   const now = new Date()
   const daysLeft = dateDiff(now.getTime(), closeDate.getTime())
   return (
-    <>
-      <div>
-        <div className="flex justify-between">
-          <DataPoint
-            value={raisedString}
-            label={`raised of $${project.funding_goal} goal`}
-          />
-          <DataPoint
-            value={`${formatMoney(project.min_funding)}`}
-            label="required to proceed"
-          />
-          {project.auction_close && (
-            <DataPoint
-              value={showPrecision(daysLeft, 3)}
-              label="days left to contribute"
-            />
-          )}
-          {project.type === 'cert' && (
-            <DataPoint
-              value={formatMoney(getProposalValuation(project))}
-              label="minimum valuation"
-            />
-          )}
-        </div>
-      </div>
-    </>
+    <Row className="justify-between">
+      <DataPoint
+        value={raisedString}
+        label={`raised of $${project.funding_goal} goal`}
+      />
+      <DataPoint
+        value={`${formatMoney(project.min_funding)}`}
+        label="required to proceed"
+      />
+      {project.auction_close && (
+        <DataPoint
+          value={showPrecision(daysLeft, 3)}
+          label="days left to contribute"
+        />
+      )}
+      {project.type === 'cert' && (
+        <DataPoint
+          value={formatMoney(getProposalValuation(project))}
+          label="minimum valuation"
+        />
+      )}
+    </Row>
   )
 }

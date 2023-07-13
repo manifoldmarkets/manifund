@@ -162,7 +162,7 @@ function Comment(props: {
         </Col>
       </Row>
       <div className="relative left-8 w-11/12">
-        <RichContent content={comment.content} />
+        <RichContent content={comment.content} className="sm:text-md text-sm" />
       </div>
     </div>
   )
