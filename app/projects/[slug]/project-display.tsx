@@ -2,6 +2,7 @@
 import { Divider } from '@/components/divider'
 import { DonateBox } from '@/components/donate-box'
 import { RichContent } from '@/components/editor'
+import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
 import { ProjectCardHeader } from '@/components/project-card'
 import { SignInButton } from '@/components/sign-in-button'
@@ -26,6 +27,7 @@ import { PlaceBid } from './place-bid'
 import { ProjectTabs } from './project-tabs'
 import { ProposalData } from './proposal-data'
 import { ProposalRequirements } from './proposal-requirements'
+import { Vote } from './vote'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -109,13 +111,23 @@ export function ProjectDisplay(props: {
           valuation={isNaN(valuation) ? undefined : valuation}
           creatorEmail={creatorEmail}
         />
-        <div>
-          <h2 className="text-3xl font-bold">{project.title}</h2>
-        </div>
+        <Row className="flex-2 items-center gap-3">
+          <Vote
+            projectId={project.id}
+            userId={userProfile?.id}
+            votes={project.project_votes}
+          />
+          <h2 className="text-2xl font-bold text-gray-900">{project.title}</h2>
+        </Row>
         {project.description && (
-          <Description>
-            <RichContent content={project.description} />
-          </Description>
+          <div className="px-3">
+            <Description>
+              <RichContent
+                content={project.description}
+                className="sm:text-md text-sm"
+              />
+            </Description>
+          </div>
         )}
         {isOwnProject && <EditDescription project={project} />}
         {project.stage === 'proposal' && (
@@ -132,7 +144,7 @@ export function ProjectDisplay(props: {
             fundingGoal={project.funding_goal}
           />
         )}
-        {userProfile !== null && project.type === 'cert' && (
+        {userProfile && project.type === 'cert' && (
           <PlaceBid
             project={project}
             userSpendableFunds={userSpendableFunds}

@@ -4,18 +4,7 @@ import { CloseBidding } from './close-bidding'
 import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
-import {
-  calculateShares,
-  getActiveValuation,
-  getAmountRaised,
-  getProposalValuation,
-} from '@/utils/math'
 import { getTxnsByProject, getTxnsByUser } from '@/db/txn'
-import {
-  calculateSellableShares,
-  calculateCharityBalance,
-  calculateCashBalance,
-} from '@/utils/math'
 import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
 import { ProjectDisplay } from './project-display'
