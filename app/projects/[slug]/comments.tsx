@@ -202,7 +202,7 @@ export function WriteComment(props: {
     : ''
   const editor = useTextEditor(
     startingText,
-    'border-0 focus:!outline-none focus:ring-0',
+    'border-0 focus:!outline-none focus:ring-0 text-sm sm:text-md',
     replyingTo ? 'Write your reply...' : 'Write a comment...'
   )
   if (replyingTo) {
