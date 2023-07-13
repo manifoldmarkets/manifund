@@ -225,11 +225,10 @@ export function WriteComment(props: {
     specialPrompt ?? replyingTo ? 'Write your reply...' : 'Write a comment...'
   )
   useEffect(() => {
-    if (editor) {
-      editor.commands?.focus()
+    if (editor && !editor.isDestroyed && (replyingTo || specialPrompt)) {
+      editor.commands.focus()
     }
-  }, [replyingTo, specialPrompt])
-
+  }, [replyingTo, specialPrompt, editor])
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
