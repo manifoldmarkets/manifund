@@ -4,7 +4,7 @@ import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { StageTag } from '@/components/tags'
 import { orderBy } from 'lodash'
-import { ThickTableRow } from '@/components/tables'
+import { ThickTableRow } from '@/components/table'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 
