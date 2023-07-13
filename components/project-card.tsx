@@ -11,13 +11,12 @@ import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
 import {
   ChatBubbleLeftEllipsisIcon,
-  UserIcon,
+  ChevronUpDownIcon,
   CurrencyDollarIcon,
-} from '@heroicons/react/24/solid'
+} from '@heroicons/react/20/solid'
 import { orderBy, uniq } from 'lodash'
 import { RoundTag, Tag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
-import { DataBox } from './data-box'
 import { Round } from '@/db/round'
 import { Card } from './card'
 import { Row } from './layout/row'
@@ -42,12 +41,11 @@ export function ProjectCard(props: {
     project.stage === 'proposal'
       ? orderBy(bids, 'created_at', 'asc')[0]?.bidder
       : orderBy(txns, 'created_at', 'asc')[0]?.from_id
-  const contributorIds =
-    project.stage === 'proposal'
-      ? bids.map((bid) => bid.bidder)
-      : txns.filter((txn) => txn.token === 'USD').map((txn) => txn.from_id)
-  const numContributors = uniq(contributorIds).length
   const regrantorInitiated = getSponsoredAmount(firstDonorId ?? '') > 0
+  const voteCount = project.project_votes.reduce(
+    (acc, vote) => vote.magnitude + acc,
+    0
+  )
   return (
     <Card className="px-4 pb-2 pt-1">
       <Col className="h-full justify-between">
@@ -63,12 +61,14 @@ export function ProjectCard(props: {
           href={`/projects/${project.slug}`}
           className="group flex flex-1 flex-col justify-between hover:cursor-pointer"
         >
-          <div className="mt-2 mb-4">
-            <h1 className="text-xl font-semibold group-hover:underline">
-              {project.title}
-            </h1>
-            <p className="font-light text-gray-500">{project.blurb}</p>
-          </div>
+          <Row className="flex-2 mt-2 mb-4 items-center gap-2">
+            <div>
+              <h1 className="text-xl font-semibold group-hover:underline">
+                {project.title}
+              </h1>
+              <p className="font-light text-gray-500">{project.blurb}</p>
+            </div>
+          </Row>
         </Link>
         <Col className="gap-1">
           {(project.stage === 'proposal' ||
@@ -86,7 +86,7 @@ export function ProjectCard(props: {
             </Row>
           )}
           <ProjectCardData
-            numContributions={numContributors}
+            voteCount={voteCount}
             numComments={numComments}
             amountRaised={amountRaised}
             projectSlug={project.slug}
@@ -99,30 +99,28 @@ export function ProjectCard(props: {
 
 function ProjectCardData(props: {
   numComments: number
-  numContributions: number
+  voteCount: number
   amountRaised: number
   projectSlug: string
 }) {
-  const { numComments, numContributions, amountRaised, projectSlug } = props
+  const { numComments, voteCount, amountRaised, projectSlug } = props
   return (
-    <Row className="justify-between text-sm">
-      <Row className="items-center gap-1">
-        <CurrencyDollarIcon className="h-4 w-4 text-gray-400" />
-        <span className="text-gray-400">{formatLargeNumber(amountRaised)}</span>
+    <div className="grid grid-cols-3 text-sm text-gray-400">
+      <Row className="items-center justify-start gap-0">
+        <ChevronUpDownIcon className="h-4 w-4 stroke-2" />
+        <span>{voteCount}</span>
       </Row>
-      {numContributions > 0 && (
-        <Row className="items-center gap-1">
-          <UserIcon className="h-4 w-4 text-gray-400" />
-          <span className="text-gray-400">{numContributions}</span>
-        </Row>
-      )}
       <Link href={`/projects/${projectSlug}#tabs`}>
-        <Row className="items-center gap-1">
-          <ChatBubbleLeftEllipsisIcon className="h-4 w-4 text-gray-400" />
-          <span className="text-gray-400">{numComments}</span>
+        <Row className="items-center justify-center gap-1">
+          <ChatBubbleLeftEllipsisIcon className="h-4 w-4 stroke-2" />
+          <span>{numComments}</span>
         </Row>
       </Link>
-    </Row>
+      <Row className="items-center justify-end gap-0.5">
+        <CurrencyDollarIcon className="h-4 w-4 stroke-2" />
+        <span>{formatLargeNumber(amountRaised)}</span>
+      </Row>
+    </div>
   )
 }
 
@@ -138,13 +136,9 @@ export function ProjectCardHeader(props: {
 }) {
   const {
     round,
-
     creator,
-
     valuation,
-
     projectTransfer,
-
     projectType,
     regrantorInitiated,
     hideRound,

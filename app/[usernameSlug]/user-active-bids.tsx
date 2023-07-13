@@ -1,6 +1,6 @@
 'use client'
 import { Bid, BidAndProject, deleteBid } from '@/db/bid'
-import { ThickTableRow } from '@/components/tables'
+import { ThickTableRow } from '@/components/table'
 import { RoundTag, Tag } from '@/components/tags'
 import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'

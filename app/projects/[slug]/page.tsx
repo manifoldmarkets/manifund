@@ -30,6 +30,9 @@ import { ProposalRequirements } from './proposal-requirements'
 import { ProgressBar } from '@/components/progress-bar'
 import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
+import { Col } from '@/components/layout/col'
+import { Row } from '@/components/layout/row'
+import { Vote } from '@/app/projects/[slug]/vote'
 
 export const revalidate = 0
 
@@ -106,7 +109,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
             projectSlug={project.slug}
           />
         )}
-      <div className="flex flex-col gap-4 px-4 pt-5">
+      <Col className="gap-4 px-4 pt-5">
         <ProjectCardHeader
           round={project.rounds}
           projectType={project.type}
@@ -119,13 +122,20 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           valuation={isNaN(valuation) ? undefined : valuation}
           creatorEmail={creatorEmail}
         />
-        <div>
-          <h2 className="text-3xl font-bold">{project.title}</h2>
-        </div>
+        <Row className="flex-2 items-center gap-3">
+          <Vote
+            projectId={project.id}
+            userId={user?.id}
+            votes={project.project_votes}
+          />
+          <h2 className="text-2xl font-bold text-gray-900">{project.title}</h2>
+        </Row>
         {project.description && (
-          <Description>
-            <RichContent content={project.description} />
-          </Description>
+          <div className="px-3">
+            <Description>
+              <RichContent content={project.description} />
+            </Description>
+          </div>
         )}
         {isOwnProject && <EditDescription project={project} />}
         {project.stage === 'proposal' && (
@@ -173,7 +183,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
           />
         </div>
         {isAdmin(user) && <CloseBidding project={project} />}
-      </div>
+      </Col>
     </>
   )
 }
