@@ -18,12 +18,12 @@ export function ProposalRequirements(props: {
       href: `/projects/${projectSlug}/agreement`,
     },
     {
-      name: 'Reach minimum funding goal',
+      name: 'Reach min funding',
       complete: reachedMinFunding,
       href: null,
     },
     {
-      name: 'Get Manifund admin approval',
+      name: 'Get Manifund approval',
       complete: approved,
       href: null,
     },
