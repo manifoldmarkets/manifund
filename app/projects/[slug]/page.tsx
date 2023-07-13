@@ -133,7 +133,10 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         {project.description && (
           <div className="px-3">
             <Description>
-              <RichContent content={project.description} />
+              <RichContent
+                content={project.description}
+                className="sm:text-md text-sm"
+              />
             </Description>
           </div>
         )}
