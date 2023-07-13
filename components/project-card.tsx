@@ -105,20 +105,20 @@ function ProjectCardData(props: {
 }) {
   const { numComments, voteCount, amountRaised, projectSlug } = props
   return (
-    <div className="grid grid-cols-3">
+    <div className="grid grid-cols-3 text-sm text-gray-400">
       <Row className="items-center justify-start gap-0">
-        <ChevronUpDownIcon className="h-4 w-4 stroke-2 text-gray-400" />
-        <span className="text-gray-400">{voteCount}</span>
+        <ChevronUpDownIcon className="h-4 w-4 stroke-2" />
+        <span>{voteCount}</span>
       </Row>
       <Link href={`/projects/${projectSlug}#tabs`}>
-        <Row className="items-center justify-center gap-0.5">
-          <ChatBubbleLeftEllipsisIcon className="h-4 w-4 stroke-2 text-gray-400" />
-          <span className="text-gray-400">{numComments}</span>
+        <Row className="items-center justify-center gap-1">
+          <ChatBubbleLeftEllipsisIcon className="h-4 w-4 stroke-2" />
+          <span>{numComments}</span>
         </Row>
       </Link>
       <Row className="items-center justify-end gap-0.5">
-        <CurrencyDollarIcon className="h-4 w-4 stroke-2 text-gray-400" />
-        <span className="text-gray-400">{formatLargeNumber(amountRaised)}</span>
+        <CurrencyDollarIcon className="h-4 w-4 stroke-2" />
+        <span>{formatLargeNumber(amountRaised)}</span>
       </Row>
     </div>
   )
