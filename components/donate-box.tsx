@@ -5,13 +5,9 @@ import { Card } from '@/components/card'
 import { Input } from '@/components/input'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
-import { XCircleIcon } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { useTextEditor } from './editor'
-import { Col } from './layout/col'
 import { Row } from './layout/row'
-import { Modal } from './modal'
 import { Tooltip } from './tooltip'
 
 export function DonateBox(props: {
@@ -19,11 +15,11 @@ export function DonateBox(props: {
   project?: Project
   profile: Profile
   maxDonation: number
+  setCommentPrompt?: (value: string) => void
 }) {
-  const { charity, project, profile, maxDonation } = props
+  const { charity, project, profile, maxDonation, setCommentPrompt } = props
   const [amount, setAmount] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showCommentPrompt, setShowCommentPrompt] = useState(false)
   const router = useRouter()
   const isBid = project && project.stage === 'proposal'
 
@@ -32,6 +28,43 @@ export function DonateBox(props: {
     errorMessage = `You don't have enough funds to donate $${amount}. You can donate up to $${maxDonation}.`
   } else if (amount && amount < 10) {
     errorMessage = `You must donate at least $10.`
+  }
+
+  const donate = async () => {
+    setIsSubmitting(true)
+    if (project && project.stage === 'proposal') {
+      await fetch('/api/place-bid', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectId: project.id,
+          valuation: 0,
+          amount,
+          type: 'donate',
+        }),
+      })
+    } else if (project || charity) {
+      await fetch('/api/transfer-money', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fromId: profile.id,
+          toId: charity?.id ?? project?.creator,
+          amount,
+          projectId: project?.id,
+        }),
+      })
+    }
+    setAmount(0)
+    setIsSubmitting(false)
+    router.refresh()
+    if (setCommentPrompt) {
+      setCommentPrompt('why did you donate?')
+    }
   }
   return (
     <Card className="flex flex-col gap-3 p-5">
@@ -65,39 +98,7 @@ export function DonateBox(props: {
         />
         <Tooltip text={errorMessage ?? ''}>
           <Button
-            onClick={async () => {
-              setIsSubmitting(true)
-              if (project && project.stage === 'proposal') {
-                await fetch('/api/place-bid', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    projectId: project.id,
-                    valuation: 0,
-                    amount,
-                    type: 'donate',
-                  }),
-                })
-              } else if (project || charity) {
-                await fetch('/api/transfer-money', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    fromId: profile.id,
-                    toId: charity?.id ?? project?.creator,
-                    amount,
-                    projectId: project?.id,
-                  }),
-                })
-              }
-              setIsSubmitting(false)
-              router.refresh()
-              setShowCommentPrompt(true)
-            }}
+            onClick={donate}
             className="font-semibold"
             disabled={!amount || errorMessage !== null}
             loading={isSubmitting}
@@ -106,26 +107,6 @@ export function DonateBox(props: {
           </Button>
         </Tooltip>
       </Row>
-      {project && showCommentPrompt && (
-        <Col className="rounded bg-orange-100 p-4">
-          <Row className="justify-between">
-            <p className="font-medium text-orange-500">
-              Comment explaining your donation!
-            </p>
-            <IconButton
-              className="relative bottom-3 left-4"
-              onClick={() => setShowCommentPrompt(false)}
-            >
-              <XCircleIcon className="h-7 w-7 text-orange-500" />
-            </IconButton>
-          </Row>
-          <WriteComment
-            project={project}
-            commenter={profile}
-            onSubmit={() => setShowCommentPrompt(false)}
-          />
-        </Col>
-      )}
     </Card>
   )
 }

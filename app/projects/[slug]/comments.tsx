@@ -9,7 +9,7 @@ import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 import { Row } from '@/components/layout/row'
 import { IconButton } from '@/components/button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import { Col } from '@/components/layout/col'
 import { Tooltip } from '@/components/tooltip'
@@ -23,10 +23,17 @@ import clsx from 'clsx'
 export function Comments(props: {
   project: Project
   comments: CommentAndProfile[]
-  user: Profile | null
   commenterContributions: Record<string, string>
+  userProfile?: Profile
+  specialPrompt?: string
 }) {
-  const { project, comments, user, commenterContributions } = props
+  const {
+    project,
+    comments,
+    commenterContributions,
+    userProfile,
+    specialPrompt,
+  } = props
   const [replyingTo, setReplyingTo] = useState<CommentAndProfile | null>(null)
   const rootComments = comments.filter(
     (comment) => comment.replying_to === null
@@ -34,7 +41,7 @@ export function Comments(props: {
   const replyComments = comments.filter(
     (comment) => comment.replying_to !== null
   )
-  if (comments.length === 0 && !user)
+  if (comments.length === 0 && !userProfile)
     return (
       <p className="text-center italic text-gray-500">
         No comments yet.{' '}
@@ -54,7 +61,7 @@ export function Comments(props: {
             writtenByCreator={thread.root.commenter === project.creator}
             contributionText={commenterContributions[thread.root.commenter]}
           />
-          {user && (
+          {userProfile && (
             <Row className="w-full justify-end">
               <Tooltip text="Reply">
                 <IconButton onClick={() => setReplyingTo(thread.root)}>
@@ -81,11 +88,11 @@ export function Comments(props: {
           ))}
           {(replyingTo?.id === thread.root.id ||
             replyingTo?.replying_to === thread.root.id) &&
-            user && (
+            userProfile && (
               <div className="mt-1 ml-8">
                 <WriteComment
                   project={project}
-                  commenter={user}
+                  commenter={userProfile}
                   replyingTo={replyingTo}
                   setReplyingTo={setReplyingTo}
                 />
@@ -97,9 +104,13 @@ export function Comments(props: {
   ))
   return (
     <div>
-      {user && (
+      {userProfile && (
         <div className="mb-5">
-          <WriteComment project={project} commenter={user} />
+          <WriteComment
+            project={project}
+            commenter={userProfile}
+            specialPrompt={specialPrompt}
+          />
         </div>
       )}
       {commentsDisplay}
@@ -174,8 +185,16 @@ export function WriteComment(props: {
   replyingTo?: CommentAndProfile
   setReplyingTo?: (id: CommentAndProfile | null) => void
   onSubmit?: () => void
+  specialPrompt?: string
 }) {
-  const { project, commenter, replyingTo, setReplyingTo, onSubmit } = props
+  const {
+    project,
+    commenter,
+    replyingTo,
+    setReplyingTo,
+    onSubmit,
+    specialPrompt,
+  } = props
   const { supabase } = useSupabase()
   const startingText: JSONContent | string = replyingTo?.replying_to
     ? {
@@ -205,9 +224,11 @@ export function WriteComment(props: {
     'border-0 focus:!outline-none focus:ring-0 text-sm sm:text-md',
     replyingTo ? 'Write your reply...' : 'Write a comment...'
   )
-  if (replyingTo) {
-    editor?.commands.focus()
-  }
+  useEffect(() => {
+    if (editor && !editor.isDestroyed && (replyingTo || specialPrompt)) {
+      editor.commands.focus()
+    }
+  }, [replyingTo, specialPrompt, editor])
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -248,7 +269,17 @@ export function WriteComment(props: {
         size={replyingTo?.id ? 6 : 10}
         className="mr-2"
       />
-      <div className="w-full overflow-hidden rounded-md bg-white shadow">
+      <div
+        className={clsx(
+          'relative w-full overflow-hidden rounded-md bg-white shadow',
+          specialPrompt && 'shadow-[0_0px_10px_5px_rgb(249,115,22,0.5)]'
+        )}
+      >
+        {specialPrompt && (
+          <p className="z-10 w-full bg-orange-500 text-center text-xs text-white">
+            {specialPrompt}
+          </p>
+        )}
         <TextEditor editor={editor}>
           {/* Spacer element to match the height of the toolbar */}
           <div className="py-1" aria-hidden="true">
