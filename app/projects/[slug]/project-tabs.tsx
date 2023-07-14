@@ -36,7 +36,7 @@ export function ProjectTabs(props: {
   } = props
   useEffect(() => {
     window.scrollTo({ top: 0 })
-  })
+  }, [project.id])
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
   const trades = calculateFullTrades(txns)

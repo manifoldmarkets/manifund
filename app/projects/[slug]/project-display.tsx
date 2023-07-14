@@ -20,6 +20,7 @@ import {
   getAmountRaised,
   getProposalValuation,
 } from '@/utils/math'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context'
 import { useState } from 'react'
 import { Description } from './description'
 import { EditDescription } from './edit-description'
@@ -116,6 +117,7 @@ export function ProjectDisplay(props: {
             projectId={project.id}
             userId={userProfile?.id}
             votes={project.project_votes}
+            setCommentPrompt={setSpecialCommentPrompt}
           />
           <h2 className="text-2xl font-bold text-gray-900">{project.title}</h2>
         </Row>
@@ -179,4 +181,14 @@ export function ProjectDisplay(props: {
       </div>
     </>
   )
+}
+
+export function scrollToComments(router: AppRouterInstance) {
+  router.push('?tab=comments')
+  const tabsElement = document.getElementById('tabs')
+  tabsElement?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+    inline: 'start',
+  })
 }

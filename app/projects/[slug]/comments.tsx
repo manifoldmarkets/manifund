@@ -105,7 +105,7 @@ export function Comments(props: {
   return (
     <div>
       {userProfile && (
-        <div className="mb-5">
+        <div className="mb-5" id="main-write-comment">
           <WriteComment
             project={project}
             commenter={userProfile}

@@ -5,15 +5,17 @@ import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { scrollToComments } from './project-display'
 
 export const revalidate = 0
 
 export function Vote(props: {
   projectId: string
   votes: ProjectVote[]
+  setCommentPrompt: (value: string) => void
   userId?: string
 }) {
-  const { projectId, votes, userId } = props
+  const { projectId, votes, setCommentPrompt, userId } = props
   const oldVote = votes.find((vote) => vote.voter_id === userId)
   const oldMagnitude = oldVote ? oldVote.magnitude : 0
   const [newMagnitude, setNewMagnitude] = useState<null | number>(null)
@@ -31,7 +33,10 @@ export function Vote(props: {
         newMagnitude: displayMagnitude === magnitude ? 0 : magnitude,
       }),
     })
-    router.refresh()
+    if (displayMagnitude !== magnitude) {
+      scrollToComments(router)
+      setCommentPrompt(`why did you ${magnitude > 0 ? 'up' : 'down'}vote?`)
+    }
   }
   return (
     <Col className="relative items-center gap-2">
