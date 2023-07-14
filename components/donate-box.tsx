@@ -1,5 +1,6 @@
 'use client'
 import { WriteComment } from '@/app/projects/[slug]/comments'
+import { scrollToComments } from '@/app/projects/[slug]/project-display'
 import { Button, IconButton } from '@/components/button'
 import { Card } from '@/components/card'
 import { Input } from '@/components/input'
@@ -63,6 +64,7 @@ export function DonateBox(props: {
     setIsSubmitting(false)
     router.refresh()
     if (setCommentPrompt) {
+      scrollToComments(router)
       setCommentPrompt('why did you donate?')
     }
   }
