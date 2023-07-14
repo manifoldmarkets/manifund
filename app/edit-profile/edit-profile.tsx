@@ -14,11 +14,14 @@ import { SUPABASE_BUCKET_URL } from '@/db/env'
 import { TextEditor, useTextEditor } from '@/components/editor'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
+import { RequiredStar } from '@/components/tags'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
   const { supabase, session } = useSupabase()
-  const [username, setUsername] = useState<string>(profile.username)
+  const [username, setUsername] = useState<string>(
+    profile.username === profile.id ? '' : profile.username
+  )
   const [bio, setBio] = useState<string>(profile.bio)
   const [website, setWebsite] = useState<string | null>(profile.website)
   const [fullName, setFullName] = useState<string>(profile.full_name)
@@ -77,7 +80,10 @@ export function EditProfileForm(props: { profile: Profile }) {
   return (
     <Col className="gap-4 p-4">
       <Col className="gap-1">
-        <label htmlFor="username">Username</label>
+        <label htmlFor="username">
+          Username
+          <RequiredStar />
+        </label>
         <Input
           type="text"
           id="username"
@@ -87,7 +93,10 @@ export function EditProfileForm(props: { profile: Profile }) {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="full_name">Full, legal name</label>
+        <label htmlFor="full_name">
+          Full name
+          <RequiredStar />
+        </label>
         <Input
           type="text"
           id="full_name"
