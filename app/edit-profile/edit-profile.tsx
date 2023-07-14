@@ -128,7 +128,7 @@ export function EditProfileForm(props: { profile: Profile }) {
         <label htmlFor="long_description">More about you</label>
         {profile.regranter_status && (
           <p className="text-sm text-gray-500">
-            We stongly recommend regrantors include key information about their
+            We strongly recommend regrantors include key information about their
             background, values, cause prioritization, and grant-making history
             to help potential grantees and donors.
           </p>
