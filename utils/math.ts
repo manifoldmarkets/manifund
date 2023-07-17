@@ -217,20 +217,15 @@ type TxnType =
   | 'deposit'
   | 'incoming project donation'
   | 'outgoing project donation'
-  | 'own project donation'
-  | 'cash to charity transfer'
+  | 'self-donation'
   | 'non-dollar'
-  | 'other'
 
 export function categorizeTxn(txn: FullTxn, userId: string) {
   if (txn.token === 'USD') {
     if (txn.to_id === userId) {
-      if (txn.from_id === userId) {
-        if (txn.project && !txn.bundle) {
-          return 'own project donation'
-        } else if (!txn.bundle) {
-          return 'cash to charity transfer'
-        } else return 'other' // This shouldn't happen: bundle should come with project
+      // TODO: patch this more nicely. Should be split into multiple types.
+      if (txn.from_id === userId && txn.project && !txn.bundle) {
+        return 'self-donation'
       }
       if (txn.project) {
         if (txn.projects?.creator === userId) {
@@ -294,10 +289,8 @@ export function txnCharityMultiplier(txnType: TxnType, accredited: boolean) {
     return 1
   } else if (txnType === 'deposit') {
     return accredited ? 0 : 1
-  } else if (txnType === 'own project donation') {
+  } else if (txnType === 'self-donation') {
     return -1
-  } else if (txnType === 'cash to charity transfer') {
-    return 1
   } else {
     return 0
   }
@@ -323,9 +316,7 @@ export function txnCashMultiplier(txnType: TxnType, accredited: boolean) {
     return 0
   } else if (txnType === 'deposit') {
     return accredited ? 1 : 0
-  } else if (txnType === 'own project donation') {
+  } else if (txnType === 'self-donation') {
     return 1
-  } else if (txnType === 'cash to charity transfer') {
-    return -1
   } else return 0
 }
