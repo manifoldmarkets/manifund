@@ -17,16 +17,14 @@ export type StripeSession = Stripe.Event.Data.Object & {
   }
 }
 
-type CheckoutProps = {
-  dollarQuantity: number
-  userId: string
-}
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { dollarQuantity, userId } = (await req.body) as CheckoutProps
+  const { dollarQuantity, userId } = (await req.body) as {
+    dollarQuantity: number
+    userId: string
+  }
   const amountToCharge = dollarQuantity * CENTS_PER_DOLLAR
   if (req.method === 'POST') {
     try {
