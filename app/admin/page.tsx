@@ -9,10 +9,10 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { roundLargeNumber } from '@/utils/formatting'
 import { getTxnsByUser, Txn } from '@/db/txn'
 import { calculateShares } from '@/utils/math'
-import { GiveCreatorShares } from './give-creator-shares'
 import { Donations } from './donations'
 import { listProjects } from '@/db/project'
 import { GrantVerdict } from './grant-verdict'
+import { RaiseMinFunding } from './raise-min-funding'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -144,8 +144,8 @@ export default async function Admin() {
           <tr>
             <th>Title</th>
             <th>Creator</th>
-            <th>Creator shares</th>
-            <th>Give creator shares</th>
+            <th>Min funding</th>
+            <th>Raise min funding to $500</th>
           </tr>
         </thead>
         <tbody>
@@ -154,15 +154,10 @@ export default async function Admin() {
               <tr key={project.id}>
                 <td className="max-w-sm overflow-hidden">{project.title}</td>
                 <td>{getName(project.creator)}</td>
-                {/* @ts-expect-error Server Component */}
-                <CreatorShares
-                  supabase={supabaseAdmin}
+                <td>{project.min_funding}</td>
+                <RaiseMinFunding
                   projectId={project.id}
-                  projectCreator={project.creator}
-                />
-                <GiveCreatorShares
-                  projectId={project.id}
-                  creatorId={project.creator}
+                  minFunding={project.min_funding}
                 />
               </tr>
             )
@@ -223,7 +218,7 @@ async function CreatorShares(props: {
   return <td>{calculateShares(txns, projectCreator, projectId)}</td>
 }
 
-// used when profile type was added
+// Used when profile type was added
 async function setProfilesToIndividual(supabase: SupabaseClient) {
   const { error } = await supabase
     .from('profiles')
