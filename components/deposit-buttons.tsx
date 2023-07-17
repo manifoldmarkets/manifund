@@ -1,5 +1,4 @@
 'use client'
-import { useSupabase } from '@/db/supabase-provider'
 import { Dialog } from '@headlessui/react'
 import { CircleStackIcon, PlusSmallIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
@@ -49,20 +48,16 @@ export function StripeDepositButton(props: {
           >
             Add money to your Manifund account
           </Dialog.Title>
-          <div className="my-2">
-            <p className="text-gray-500">
-              As a non-accredited investor, you can donate your deposit and any
-              profits to a charity of your choice, but you can only withdraw
-              money donated or invested in your projects.
-            </p>
-          </div>
+          <p className="my-2 text-sm text-gray-500">
+            This money will go into your charity balance, which can be donated
+            but not withdrawn.
+          </p>
           <label htmlFor="amount">Amount (USD): </label>
           <Input
             type="number"
             step="0.01"
             id="amount"
             autoComplete="off"
-            required
             value={amount ?? ''}
             onChange={(event) => setAmount(Number(event.target.value))}
           />
@@ -90,7 +85,7 @@ export function StripeDepositButton(props: {
                 },
                 body: JSON.stringify({
                   dollarQuantity: amount,
-                  userId: userId,
+                  userId,
                 }),
               })
               const json = await response.json()
@@ -103,9 +98,9 @@ export function StripeDepositButton(props: {
         </div>
         <p className="mt-4 text-xs text-gray-500">
           Your purchase constitutes a donation to Manifold for Charity, a
-          registered 501(c)(3) nonprofit. Money in your Manifund account has
-          zero monetary value and is not redeemable for cash, but can be donated
-          to charity.
+          registered 501(c)(3) nonprofit. Money in your charity balance has zero
+          monetary value and is not redeemable for cash, but can be donated to
+          charity.
         </p>
       </Modal>
     </>

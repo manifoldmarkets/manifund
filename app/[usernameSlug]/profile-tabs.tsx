@@ -160,7 +160,7 @@ export type Investment = {
   priceUsd: number
 }
 function compileInvestments(txns: FullTxn[], userId: string) {
-  const projectTxns = txns.filter((txn) => txn.project)
+  const projectTxns = txns.filter((txn) => txn.project && txn.bundle)
   let investments: Investment[] = []
 
   projectTxns.forEach((txn) => {
