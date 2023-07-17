@@ -58,7 +58,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   } as { [key in Project['type']]: string }
   const [projectType, setProjectType] = useState<Project['type']>('grant')
   const [blurb, setBlurb] = useState<string>('')
-  const [minFunding, setMinFunding] = useState<number>(0)
+  const [minFunding, setMinFunding] = useState<number>(500)
   const [fundingGoal, setFundingGoal] = useState<number>(0)
   const [initialValuation, setInitialValuation] = useState<number>(250)
   const [round, setRound] = useState<Round>(availableRounds[0])
@@ -83,12 +83,8 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   } else if (initialValuation <= 0 && auctionClose === null) {
     errorMessage =
       'Your initial valuation must be greater than 0. Only post projects with positive expected value.'
-  } else if (
-    minFunding <= 0 &&
-    auctionClose !== null &&
-    projectType === 'cert'
-  ) {
-    errorMessage = 'Your minimum funding must be greater than 0.'
+  } else if (minFunding < 500) {
+    errorMessage = 'Your minimum funding must be at least $500.'
   } else if (
     (projectType === 'grant' && minFunding > fundingGoal) ||
     fundingGoal <= 0
@@ -114,11 +110,8 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   }
 
   useEffect(() => {
-    if (
-      round.title === 'Independent' ||
-      (round.title === 'Regrants' && minFunding > 0)
-    ) {
-      setAuctionClose(format(add(new Date(), { weeks: 2 }), 'yyyy-MM-dd'))
+    if (round.title === 'Independent' || round.title === 'Regrants') {
+      setAuctionClose(format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'))
     } else if (round.auction_close_date) {
       setAuctionClose(format(new Date(round.auction_close_date), 'yyyy-MM-dd'))
     } else {
@@ -320,9 +313,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                 <Input
                   type="date"
                   value={auctionClose ?? ''}
-                  disabled={
-                    round.title !== 'Independent' && round.title !== 'Regrants'
-                  }
+                  disabled={round.title !== 'Independent'}
                   onChange={(event) => setAuctionClose(event.target.value)}
                 />
               </div>
@@ -389,7 +380,8 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
         <>
           <Col className="gap-1">
             <label htmlFor="minFunding" className="mr-3 mt-4">
-              Minimum funding (USD){' '}
+              Minimum funding (USD)
+              <RequiredStar />
             </label>
             <p className="text-sm text-gray-600">
               The minimum amount of funding you need to start this project. If
@@ -420,28 +412,23 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
               onChange={(event) => setFundingGoal(Number(event.target.value))}
             />
           </Col>
-          {minFunding > 0 && (
-            <Col className="gap-1">
-              <label htmlFor="auction-close">
-                Decision deadline
-                <RequiredStar />
-              </label>
-              <p className="text-sm text-gray-600">
-                After this deadline, if you have not reached your minimum
-                funding bar, your application will close and you will not
-                recieve any money. This date cannot be more than 6 weeks after
-                posting.
-              </p>
-              <Input
-                type="date"
-                value={auctionClose ?? ''}
-                disabled={
-                  round.title !== 'Independent' && round.title !== 'Regrants'
-                }
-                onChange={(event) => setAuctionClose(event.target.value)}
-              />
-            </Col>
-          )}
+          <Col className="gap-1">
+            <label htmlFor="auction-close">
+              Decision deadline
+              <RequiredStar />
+            </label>
+            <p className="text-sm text-gray-600">
+              After this deadline, if you have not reached your minimum funding
+              bar, your application will close and you will not recieve any
+              money. This date cannot be more than 6 weeks after posting.
+            </p>
+            <Input
+              type="date"
+              value={auctionClose ?? ''}
+              disabled={round.title !== 'Regrants'}
+              onChange={(event) => setAuctionClose(event.target.value)}
+            />
+          </Col>
         </>
       )}
       {projectType === 'cert' && (
