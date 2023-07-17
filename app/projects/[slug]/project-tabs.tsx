@@ -13,6 +13,7 @@ import { DonationsHistory } from '@/components/donations-history'
 import { CommentAndProfile } from '@/db/comment'
 import { uniq } from 'lodash'
 import { useEffect } from 'react'
+import { compareDesc } from 'date-fns'
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -189,13 +190,20 @@ export function getCommenterContributions(
       }
     }
     if (!contributions[commenterId]) {
-      const latestBid = bids
-        .reverse()
-        .find((bid) => bid.bidder === commenterId && bid.status === 'pending')
+      const relevantBids = bids.filter(
+        (bid) => bid.status === 'pending' && bid.bidder === commenterId
+      )
+      const sortedBids = relevantBids.sort((a, b) =>
+        compareDesc(new Date(a.created_at), new Date(b.created_at))
+      )
+      const latestBid = sortedBids[0]
       if (latestBid) {
         contributions[commenterId] =
           latestBid.type === 'donate'
-            ? `OFFERED $${latestBid.amount}`
+            ? `OFFERED $${relevantBids.reduce(
+                (acc, bid) => acc + bid.amount,
+                0
+              )}`
             : latestBid.type === 'buy'
             ? `BUYING at $${latestBid.valuation}`
             : `SELLING at $${latestBid.valuation}`
