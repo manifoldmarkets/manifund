@@ -2,8 +2,6 @@ import Stripe from 'stripe'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { isProd, STRIPE_SECRET_KEY } from '@/db/env'
 import { CENTS_PER_DOLLAR } from '@/utils/constants'
-import { createAdminClient } from './_db'
-import { getUser } from '@/db/profile'
 
 const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
   apiVersion: '2022-11-15',
@@ -23,18 +21,16 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { dollarQuantity } = (await req.body) as { dollarQuantity: number }
-  const supabase = createAdminClient()
-  const user = await getUser(supabase)
-  if (!user) {
-    return res.status(401).json({ error: 'Unauthorized' })
+  const { dollarQuantity, userId } = (await req.body) as {
+    dollarQuantity: number
+    userId: string
   }
   const amountToCharge = dollarQuantity * CENTS_PER_DOLLAR
   if (req.method === 'POST') {
     try {
       const session = await stripe.checkout.sessions.create({
         metadata: {
-          userId: user.id,
+          userId,
           dollarQuantity,
         },
         line_items: [

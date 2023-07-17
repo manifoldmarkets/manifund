@@ -85,6 +85,7 @@ export function StripeDepositButton(props: {
                 },
                 body: JSON.stringify({
                   dollarQuantity: amount,
+                  userId,
                 }),
               })
               const json = await response.json()
