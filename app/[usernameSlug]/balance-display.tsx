@@ -113,9 +113,7 @@ function CashToCharityButton(props: { cashBalance: number }) {
         className="absolute top-0 right-0 rounded bg-white p-0 shadow-none"
         onClick={() => setOpen(true)}
       >
-        <Tooltip text="Transfer cash balance to charity balance">
-          <ArrowLeftIcon className="h-4 w-4 stroke-2 text-orange-500" />
-        </Tooltip>
+        <ArrowLeftIcon className="h-4 w-4 stroke-2 text-orange-500" />
       </IconButton>
 
       <Modal open={open}>
