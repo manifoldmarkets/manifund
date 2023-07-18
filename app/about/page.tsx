@@ -12,7 +12,7 @@ export default function AboutPage() {
       <ul>
         <li>
           a clean user experience to grantmakers, donors, and recipients so
-          money moves where it’s needed, <em>quickly</em>;
+          money moves where it is needed, <em>quickly</em>;
         </li>
         <li>
           open grant proposals, decision rationales, and bookkeeping for public
