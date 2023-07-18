@@ -28,6 +28,8 @@ const DEFAULT_DESCRIPTION = `
 </br>
 <h3>Project goals</h3>
 </br>
+<h3>Concrete steps to acheive those goals</h3>
+</br>
 <h3>How will this funding be used?</h3>
 </br>
 <h3>What is your (team's) track record on similar projects?</h3>
@@ -203,6 +205,16 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           Description
           <RequiredStar />
         </label>
+        <p className="text-sm text-gray-500">
+          Note that the editor offers formatting shortcuts{' '}
+          <Link
+            className="hover:underline"
+            href="https://www.notion.so/help/keyboard-shortcuts#markdown-style"
+          >
+            like Notion
+          </Link>{' '}
+          for hyperlinks, bullet points, headers, and more.
+        </p>
         <TextEditor editor={editor} />
       </Col>
       {projectType === 'cert' ? (
