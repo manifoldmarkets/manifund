@@ -14,7 +14,7 @@ import Link from 'next/link'
 import { DonationsHistory } from '@/components/donations-history'
 import { calculateCharityBalance } from '@/utils/math'
 
-export const revalidate = 0
+export const revalidate = 60
 
 export default async function CharityPage(props: {
   params: { charitySlug: string }
