@@ -496,8 +496,8 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
             }),
           })
           const newProject = await response.json()
-          setIsSubmitting(false)
           router.push(`/projects/${newProject.slug}`)
+          setIsSubmitting(false)
         }}
       >
         Publish project
