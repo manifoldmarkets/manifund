@@ -11,7 +11,7 @@ import { getProjectsByUser } from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
 import { getBidsByUser } from '@/db/bid'
 
-export const revalidate = 0
+export const revalidate = 60
 
 export default async function UserProfilePage(props: {
   params: { usernameSlug: string }

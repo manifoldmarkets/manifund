@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { scrollToComments } from './project-display'
 
-export const revalidate = 0
+export const revalidate = 60
 
 export function Vote(props: {
   projectId: string

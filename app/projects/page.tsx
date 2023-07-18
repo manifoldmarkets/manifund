@@ -10,7 +10,7 @@ import { ArrowPathIcon, ArrowTrendingUpIcon } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
 import { FeatureCard } from '@/components/feature-card'
 
-export const revalidate = 0
+export const revalidate = 60
 
 export default async function Projects() {
   const supabase = createServerClient()

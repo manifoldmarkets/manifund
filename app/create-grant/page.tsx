@@ -6,10 +6,9 @@ import { getProfileById } from '@/db/profile'
 import { getTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import Link from 'next/link'
-import { getProjectsPendingTransferByUser } from '@/db/project'
 import { calculateCharityBalance } from '@/utils/math'
 
-export const revalidate = 0
+export const revalidate = 60
 export default async function CreateGrantPage() {
   const supabase = createServerClient()
   const profiles = (await getAllMiniProfiles(supabase)).filter(
