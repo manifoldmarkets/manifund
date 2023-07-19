@@ -40,7 +40,7 @@ export function ProjectsDisplay(props: {
   const { projects, sortOptions, defaultSort, hideRound } = props
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
   const isRegrants = !projects.find((project) => project.type !== 'grant')
-  const [excludeOpenCall, setExcludeOpenCall] = useState<boolean>(!isRegrants)
+  const [excludeOpenCall, setExcludeOpenCall] = useState<boolean>(false)
   const router = useRouter()
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const prices = getPrices(projects)
