@@ -73,7 +73,7 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
         {round.retro_pool && (
           <DataPoint
             value={formatMoney(round.retro_pool)}
-            label="available retro funding"
+            label="available funding"
             theme={getRoundTheme(round.title)}
           />
         )}
