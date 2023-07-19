@@ -7,7 +7,7 @@ import { Col } from '@/components/layout/col'
 import { Profile } from '@/db/profile'
 import { Row } from '@/components/layout/row'
 import { RegranterCard } from '@/components/regranter-card'
-import { ProjectCard } from '@/components/project-card'
+import { MiniProjectCard, ProjectCard } from '@/components/project-card'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
@@ -101,15 +101,9 @@ function RegrantsHighlight(props: {
           <RegranterCard regranter={regrantor} />
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="flex flex-col gap-3 lg:grid lg:grid-cols-3">
         {highlightedProjects.map((project) => (
-          <ProjectCard
-            project={project}
-            creator={project.profiles}
-            numComments={project.comments.length}
-            bids={project.bids}
-            txns={project.txns}
-          />
+          <MiniProjectCard project={project} />
         ))}
       </div>
     </>

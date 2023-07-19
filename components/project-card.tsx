@@ -14,7 +14,7 @@ import {
   ChevronUpDownIcon,
   CurrencyDollarIcon,
 } from '@heroicons/react/20/solid'
-import { orderBy, uniq } from 'lodash'
+import { orderBy } from 'lodash'
 import { RoundTag, Tag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { Round } from '@/db/round'
@@ -23,6 +23,7 @@ import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { EnvelopeIcon } from '@heroicons/react/24/solid'
 import { getSponsoredAmount } from '@/utils/constants'
+import { Avatar } from './avatar'
 
 export function ProjectCard(props: {
   project: FullProject
@@ -59,18 +60,14 @@ export function ProjectCard(props: {
         />
         <Link
           href={`/projects/${project.slug}`}
-          className="group flex flex-1 flex-col justify-between hover:cursor-pointer"
+          className="group flex h-full flex-col justify-start gap-1 py-2 hover:cursor-pointer"
         >
-          <Row className="flex-2 mt-2 mb-4 items-center gap-2">
-            <div>
-              <h1 className="text-xl font-semibold group-hover:underline">
-                {project.title}
-              </h1>
-              <p className="font-light text-gray-500">{project.blurb}</p>
-            </div>
-          </Row>
+          <h1 className="text-xl font-semibold group-hover:underline">
+            {project.title}
+          </h1>
+          <p className="text-sm font-light text-gray-500">{project.blurb}</p>
         </Link>
-        <Col className="gap-1">
+        <Col>
           {(project.stage === 'proposal' ||
             (project.stage === 'active' &&
               amountRaised < project.funding_goal)) && (
@@ -186,5 +183,65 @@ export function ProjectCardHeader(props: {
         </Tooltip>
       )}
     </Row>
+  )
+}
+
+export function MiniProjectCard(props: { project: FullProject }) {
+  const { project } = props
+  const voteCount = project.project_votes.reduce(
+    (acc, vote) => vote.magnitude + acc,
+    0
+  )
+  const amountRaised = getAmountRaised(project, project.bids, project.txns)
+  return (
+    <Card className="pb-2">
+      <div className="flex h-full flex-row justify-between gap-3 lg:flex-col">
+        <Col className="justify-center lg:hidden">
+          <Avatar
+            username={project.profiles.username}
+            avatarUrl={project.profiles.avatar_url}
+            className="lg:hidden"
+            size="sm"
+          />
+        </Col>
+        <UserAvatarAndBadge
+          profile={project.profiles}
+          className="hidden lg:flex"
+        />
+        <div>
+          <Link
+            href={`/projects/${project.slug}`}
+            className="group flex flex-col hover:cursor-pointer"
+          >
+            <h1 className="text-lg font-semibold group-hover:underline">
+              {project.title}
+            </h1>
+            <p className="text-sm font-light text-gray-500">{project.blurb}</p>
+          </Link>
+          <Col>
+            {(project.stage === 'proposal' ||
+              (project.stage === 'active' &&
+                amountRaised < project.funding_goal)) && (
+              <Row className="flex-1 items-center gap-1">
+                <ProgressBar
+                  fundingGoal={project.funding_goal}
+                  minFunding={project.min_funding}
+                  amountRaised={amountRaised}
+                />
+                <p className="rounded-xl bg-orange-100 py-0.5 px-1.5 text-center text-sm font-bold text-orange-600">
+                  {formatMoney(project.funding_goal)}
+                </p>
+              </Row>
+            )}
+          </Col>
+          <ProjectCardData
+            voteCount={voteCount}
+            numComments={project.comments.length}
+            amountRaised={amountRaised}
+            projectSlug={project.slug}
+          />
+        </div>
+      </div>
+    </Card>
   )
 }
