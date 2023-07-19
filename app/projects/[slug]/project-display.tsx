@@ -2,6 +2,7 @@
 import { Divider } from '@/components/divider'
 import { DonateBox } from '@/components/donate-box'
 import { RichContent } from '@/components/editor'
+import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
 import { ProjectCardHeader } from '@/components/project-card'
@@ -112,15 +113,21 @@ export function ProjectDisplay(props: {
           valuation={isNaN(valuation) ? undefined : valuation}
           creatorEmail={creatorEmail}
         />
-        <Row className="flex-2 items-center gap-3">
-          <Vote
-            projectId={project.id}
-            userId={userProfile?.id}
-            votes={project.project_votes}
-            setCommentPrompt={setSpecialCommentPrompt}
-          />
-          <h2 className="text-2xl font-bold text-gray-900">{project.title}</h2>
-        </Row>
+        <Col className="gap-1">
+          <Row className="flex-2 items-center gap-3">
+            <Vote
+              projectId={project.id}
+              userId={userProfile?.id}
+              votes={project.project_votes}
+              setCommentPrompt={setSpecialCommentPrompt}
+            />
+            <h2 className="text-2xl font-bold text-gray-900">
+              {project.title}
+            </h2>
+          </Row>
+          <p className="text-sm italic text-gray-600">{project.blurb}</p>
+        </Col>
+
         {project.description && (
           <div className="px-3">
             <Description>
