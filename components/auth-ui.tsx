@@ -5,11 +5,15 @@ import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa, Theme } from '@supabase/auth-ui-shared'
 import { Button } from '@/components/button'
 import { getURL } from '@/utils/constants'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function ClientAuth() {
   const { supabase, session } = useSupabase()
   const user = session?.user
+  const router = useRouter()
+  if (user) {
+    router.push('/projects')
+  }
   const params = useSearchParams()
   const recommendedEmail = params?.get('email')
 
@@ -40,7 +44,7 @@ export default function ClientAuth() {
             supabaseClient={supabase}
             appearance={{ theme: manifundTheme }}
             providers={['google']}
-            redirectTo={`${getURL()}`}
+            redirectTo={`${getURL()}/edit-profile`}
           />
         </>
       )}
