@@ -3,14 +3,18 @@ import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
 import Image from 'next/image'
 import { orderBy, sortBy } from 'lodash'
-import { Profile } from '@/db/profile'
 import { Col } from '@/components/layout/col'
+import { Profile } from '@/db/profile'
+import { Row } from '@/components/layout/row'
+import { RegranterCard } from '@/components/regranter-card'
+import { ProjectCard } from '@/components/project-card'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
   projects: FullProject[]
+  regrantors: Profile[]
 }) {
-  const { rounds, projects } = props
+  const { rounds, projects, regrantors } = props
   const sortedRounds = sortRoundsForPreview(rounds)
   return (
     <div className="pb-20">
@@ -26,6 +30,11 @@ export function AllRoundsDisplay(props: {
             {sortedRounds.map((round) => (
               <Round round={round} projects={projects} key={round.title} />
             ))}
+            <RegrantsHighlight
+              round={rounds[0]}
+              projects={projects}
+              regrantors={regrantors}
+            />
           </div>
         </div>
       </div>
@@ -74,6 +83,36 @@ function Round(props: { round: Round; projects: FullProject[] }) {
         </div>
       </Col>
     </article>
+  )
+}
+
+function RegrantsHighlight(props: {
+  round: Round
+  projects: FullProject[]
+  regrantors: Profile[]
+}) {
+  const { round, projects, regrantors } = props
+  const highlightedRegrantors = regrantors.slice(0, 3)
+  const highlightedProjects = projects.slice(0, 3)
+  return (
+    <>
+      <div className="grid grid-cols-3 gap-3">
+        {highlightedRegrantors.map((regrantor) => (
+          <RegranterCard regranter={regrantor} />
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        {highlightedProjects.map((project) => (
+          <ProjectCard
+            project={project}
+            creator={project.profiles}
+            numComments={project.comments.length}
+            bids={project.bids}
+            txns={project.txns}
+          />
+        ))}
+      </div>
+    </>
   )
 }
 

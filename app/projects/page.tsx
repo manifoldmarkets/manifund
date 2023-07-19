@@ -9,20 +9,26 @@ import { Row } from '@/components/layout/row'
 import { ArrowPathIcon, ArrowTrendingUpIcon } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
 import { FeatureCard } from '@/components/feature-card'
+import { getRegranters } from '@/db/profile'
 
 export const revalidate = 60
 
 export default async function Projects() {
   const supabase = createServerClient()
-  const [user, projects, rounds] = await Promise.all([
+  const [user, projects, rounds, regrantors] = await Promise.all([
     getUser(supabase),
     listProjects(supabase),
     getRounds(supabase),
+    getRegranters(supabase),
   ])
   return (
     <div className="bg-dark-200 max-w-4xl px-3 pt-5 sm:px-6">
       {user === null && <LandingSection />}
-      <AllRoundsDisplay rounds={rounds} projects={projects} />
+      <AllRoundsDisplay
+        rounds={rounds}
+        projects={projects}
+        regrantors={regrantors}
+      />
       <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
         All projects
       </h2>
