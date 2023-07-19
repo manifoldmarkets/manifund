@@ -40,7 +40,7 @@ export function ProjectsDisplay(props: {
   const { projects, sortOptions, defaultSort, hideRound } = props
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
   const isRegrants = !projects.find((project) => project.type !== 'grant')
-  const [includeOpenCall, setIncludeOpenCall] = useState<boolean>(!isRegrants)
+  const [excludeOpenCall, setExcludeOpenCall] = useState<boolean>(!isRegrants)
   const router = useRouter()
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const prices = getPrices(projects)
@@ -51,7 +51,7 @@ export function ProjectsDisplay(props: {
     search
   )
   const proposals = selectedProjects.filter((project) => {
-    if (!includeOpenCall) {
+    if (excludeOpenCall) {
       return project.stage == 'proposal' && isRegrantorInitiated(project)
     } else {
       return project.stage == 'proposal'
@@ -118,18 +118,18 @@ export function ProjectsDisplay(props: {
                 isRegrants && (
                   <Row className="items-center gap-1">
                     <span className="text-xs font-light text-gray-500">
-                      include open call
+                      exclude open call
                     </span>
                     <Switch
-                      checked={includeOpenCall}
-                      onChange={setIncludeOpenCall}
+                      checked={excludeOpenCall}
+                      onChange={setExcludeOpenCall}
                       className={`${
-                        includeOpenCall ? 'bg-orange-600' : 'bg-gray-200'
+                        excludeOpenCall ? 'bg-orange-600' : 'bg-gray-200'
                       } relative inline-flex h-6 w-11 items-center rounded-full`}
                     >
                       <span
                         className={`${
-                          includeOpenCall ? 'translate-x-6' : 'translate-x-1'
+                          excludeOpenCall ? 'translate-x-6' : 'translate-x-1'
                         } inline-block h-4 w-4 transform rounded-full bg-white transition`}
                       />
                     </Switch>
