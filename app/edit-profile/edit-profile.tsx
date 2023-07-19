@@ -150,6 +150,7 @@ export function EditProfileForm(props: { profile: Profile }) {
           <Checkbox id="regrantor" checked={profile.regranter_status} />
           {!profile.regranter_status && (
             <a
+              target="_blank"
               className="absolute z-10 h-5 w-5"
               href="https://airtable.com/appOfJtzt8yUTBFcD/shrZW7S069EmghCSV"
             />
@@ -178,6 +179,7 @@ export function EditProfileForm(props: { profile: Profile }) {
           />
           {!profile.accreditation_status && (
             <a
+              target="_blank"
               className="absolute z-10 h-5 w-5"
               href="https://airtable.com/shrZVLeo6f34NBfR0"
             />
