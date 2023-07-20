@@ -195,30 +195,32 @@ export function MiniProjectCard(props: { project: FullProject }) {
   const amountRaised = getAmountRaised(project, project.bids, project.txns)
   return (
     <Card className="pb-2">
-      <div className="flex h-full flex-row justify-between gap-3 lg:flex-col">
-        <Col className="justify-center lg:hidden">
+      <Col className="h-full">
+        <div className="items-cente flex flex-row gap-1 lg:flex-col lg:items-start">
           <Avatar
             username={project.profiles.username}
             avatarUrl={project.profiles.avatar_url}
-            className="lg:hidden"
-            size="sm"
+            className="mr-2 lg:hidden"
+            size="xs"
           />
-        </Col>
-        <UserAvatarAndBadge
-          profile={project.profiles}
-          className="hidden lg:flex"
-        />
-        <div>
+          <UserAvatarAndBadge
+            profile={project.profiles}
+            className="hidden lg:flex"
+          />
           <Link
             href={`/projects/${project.slug}`}
-            className="group flex flex-col hover:cursor-pointer"
+            className="hover:cursor-pointer"
           >
-            <h1 className="text-lg font-semibold group-hover:underline">
+            <h1 className="text-lg font-semibold leading-snug group-hover:underline">
               {project.title}
             </h1>
-            <p className="text-sm font-light text-gray-500">{project.blurb}</p>
           </Link>
-          <Col>
+        </div>
+        <Col className="h-full justify-between">
+          <p className="my-2 text-sm font-light text-gray-500">
+            {project.blurb}
+          </p>
+          <div>
             {(project.stage === 'proposal' ||
               (project.stage === 'active' &&
                 amountRaised < project.funding_goal)) && (
@@ -233,15 +235,15 @@ export function MiniProjectCard(props: { project: FullProject }) {
                 </p>
               </Row>
             )}
-          </Col>
-          <ProjectCardData
-            voteCount={voteCount}
-            numComments={project.comments.length}
-            amountRaised={amountRaised}
-            projectSlug={project.slug}
-          />
-        </div>
-      </div>
+            <ProjectCardData
+              voteCount={voteCount}
+              numComments={project.comments.length}
+              amountRaised={amountRaised}
+              projectSlug={project.slug}
+            />
+          </div>
+        </Col>
+      </Col>
     </Card>
   )
 }
