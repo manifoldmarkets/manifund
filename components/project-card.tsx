@@ -252,27 +252,29 @@ export function MiniProjectCard(props: { project: FullProject }) {
 export function ProjectHighlight(props: { project: FullProject }) {
   const { project } = props
   return (
-    <Col className="max-w-xl items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">
-      <div className="flex items-center gap-x-4 text-xs">
-        <span className="text-gray-500">
-          {format(new Date(project.created_at), 'MMMM do, yyyy')}
-        </span>
-        <span className="relative z-10 rounded-full bg-gray-100 px-3 py-1.5 font-medium text-gray-600">
-          {formatMoney(project.funding_goal)}
-        </span>
-      </div>
-      <div className="group relative">
-        <h3 className="text-lg font-semibold leading-6 text-gray-900">
-          <Link href={`/projects/${project.slug}`}>
-            <span className="absolute inset-0" />
-            {project.title}
-          </Link>
+    <Col className="items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">
+      <Row className="w-full items-center justify-between gap-3 text-xs">
+        <UserAvatarAndBadge
+          profile={project.profiles}
+          className="text-sm text-gray-600"
+        />
+        <Row className="items-center gap-3">
+          <span className="text-gray-500">
+            {format(new Date(project.created_at), 'MMMM do')}
+          </span>
+          <span className="relative z-10 rounded-full bg-gray-100 px-3 py-1.5 font-medium text-gray-600">
+            {formatMoney(project.funding_goal)}
+          </span>
+        </Row>
+      </Row>
+      <Link href={`/projects/${project.slug}`}>
+        <h3 className="tracking-0 font-semibold leading-6 text-gray-900">
+          {project.title}
         </h3>
-        <p className="mt-2 text-sm leading-6 text-gray-600 line-clamp-3">
+        <p className="mt-2 text-sm leading-5 text-gray-600 lg:line-clamp-2">
           {project.blurb}
         </p>
-      </div>
-      <UserAvatarAndBadge profile={project.profiles} />
+      </Link>
     </Col>
   )
 }

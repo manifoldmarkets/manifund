@@ -12,6 +12,7 @@ import {
   ProjectCard,
   ProjectHighlight,
 } from '@/components/project-card'
+import Link from 'next/link'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
@@ -89,7 +90,41 @@ function RegrantsHighlight(props: {
   const highlightedProjects = projects.slice(0, 3)
   return (
     <Col className="gap-8">
-      <Round round={round} projects={projects} />
+      <Col className="items-center justify-between gap-8">
+        <Row className="w-full items-center gap-8">
+          <Image
+            src={round.header_image_url ?? ''}
+            height="500"
+            width="800"
+            alt=""
+            className="aspect-square w-56 rounded-2xl bg-gray-50 object-cover"
+          />
+          <Col className="flex-1 gap-4">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Regrants
+            </h2>
+            <p className="leading-7 text-gray-600">{round.subtitle}</p>
+          </Col>
+        </Row>
+        <div className="w-full lg:max-w-xl lg:flex-auto">
+          <h3 className="sr-only">Projects</h3>
+          <ul className="divide-y divide-gray-100">
+            {highlightedProjects.map((project) => (
+              <li key={project.id} className="py-3">
+                <ProjectHighlight project={project} />
+              </li>
+            ))}
+          </ul>
+          <Row className="justify-end border-t border-gray-100 pt-4">
+            <Link
+              href="/rounds/regrants?tab=projects"
+              className="text-sm font-semibold leading-6 text-orange-600"
+            >
+              View all projects <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </Row>
+        </div>
+      </Col>
       <div className="grid grid-cols-3 gap-5">
         {highlightedRegrantors.map((regrantor) => (
           <RegranterHighlight key={regrantor.id} regranter={regrantor} />
