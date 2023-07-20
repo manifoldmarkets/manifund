@@ -24,6 +24,7 @@ import { Tooltip } from './tooltip'
 import { EnvelopeIcon } from '@heroicons/react/24/solid'
 import { getSponsoredAmount } from '@/utils/constants'
 import { Avatar } from './avatar'
+import { format } from 'date-fns'
 
 export function ProjectCard(props: {
   project: FullProject
@@ -245,5 +246,33 @@ export function MiniProjectCard(props: { project: FullProject }) {
         </Col>
       </Col>
     </Card>
+  )
+}
+
+export function ProjectHighlight(props: { project: FullProject }) {
+  const { project } = props
+  return (
+    <Col className="max-w-xl items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">
+      <div className="flex items-center gap-x-4 text-xs">
+        <span className="text-gray-500">
+          {format(new Date(project.created_at), 'MMMM do, yyyy')}
+        </span>
+        <span className="relative z-10 rounded-full bg-gray-100 px-3 py-1.5 font-medium text-gray-600">
+          {formatMoney(project.funding_goal)}
+        </span>
+      </div>
+      <div className="group relative">
+        <h3 className="text-lg font-semibold leading-6 text-gray-900">
+          <Link href={`/projects/${project.slug}`}>
+            <span className="absolute inset-0" />
+            {project.title}
+          </Link>
+        </h3>
+        <p className="mt-2 text-sm leading-6 text-gray-600 line-clamp-3">
+          {project.blurb}
+        </p>
+      </div>
+      <UserAvatarAndBadge profile={project.profiles} />
+    </Col>
   )
 }

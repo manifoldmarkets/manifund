@@ -6,8 +6,12 @@ import { orderBy, sortBy } from 'lodash'
 import { Col } from '@/components/layout/col'
 import { Profile } from '@/db/profile'
 import { Row } from '@/components/layout/row'
-import { RegranterCard } from '@/components/regranter-card'
-import { MiniProjectCard, ProjectCard } from '@/components/project-card'
+import { RegranterCard, RegranterHighlight } from '@/components/regranter-card'
+import {
+  MiniProjectCard,
+  ProjectCard,
+  ProjectHighlight,
+} from '@/components/project-card'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
@@ -81,19 +85,19 @@ function RegrantsHighlight(props: {
   regrantors: Profile[]
 }) {
   const { round, projects, regrantors } = props
-  const highlightedRegrantors = regrantors.slice(0, 3)
+  const highlightedRegrantors = regrantors.slice(5, 8)
   const highlightedProjects = projects.slice(0, 3)
   return (
     <Col className="gap-8">
       <Round round={round} projects={projects} />
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-5">
         {highlightedRegrantors.map((regrantor) => (
-          <RegranterCard key={regrantor.id} regranter={regrantor} small />
+          <RegranterHighlight key={regrantor.id} regranter={regrantor} />
         ))}
       </div>
-      <div className="flex flex-col gap-3 lg:grid lg:grid-cols-3">
+      <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-8 border-t border-gray-200 pt-10 sm:mt-16 sm:pt-16 xl:mx-0 xl:max-w-none xl:grid-cols-3">
         {highlightedProjects.map((project) => (
-          <MiniProjectCard key={project.id} project={project} />
+          <ProjectHighlight key={project.id} project={project} />
         ))}
       </div>
     </Col>
