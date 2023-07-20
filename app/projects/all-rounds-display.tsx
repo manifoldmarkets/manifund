@@ -20,22 +20,11 @@ export function AllRoundsDisplay(props: {
     <div className="pb-20">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-2xl lg:max-w-4xl">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-            Active rounds
-          </h2>
-          <p className="mt-1 text-gray-600">
-            Organized funding rounds with active projects.
-          </p>
-          <div className="mt-4 space-y-10 lg:mt-12 lg:space-y-14">
-            {sortedRounds.map((round) => (
-              <Round round={round} projects={projects} key={round.title} />
-            ))}
-            <RegrantsHighlight
-              round={rounds[0]}
-              projects={projects}
-              regrantors={regrantors}
-            />
-          </div>
+          <RegrantsHighlight
+            round={sortedRounds[0]}
+            projects={projects}
+            regrantors={regrantors}
+          />
         </div>
       </div>
     </div>
@@ -95,18 +84,19 @@ function RegrantsHighlight(props: {
   const highlightedRegrantors = regrantors.slice(0, 3)
   const highlightedProjects = projects.slice(0, 3)
   return (
-    <>
+    <Col className="gap-8">
+      <Round round={round} projects={projects} />
       <div className="grid grid-cols-3 gap-3">
         {highlightedRegrantors.map((regrantor) => (
-          <RegranterCard regranter={regrantor} />
+          <RegranterCard key={regrantor.id} regranter={regrantor} small />
         ))}
       </div>
       <div className="flex flex-col gap-3 lg:grid lg:grid-cols-3">
         {highlightedProjects.map((project) => (
-          <MiniProjectCard project={project} />
+          <MiniProjectCard key={project.id} project={project} />
         ))}
       </div>
-    </>
+    </Col>
   )
 }
 
