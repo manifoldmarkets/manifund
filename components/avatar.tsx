@@ -46,7 +46,7 @@ export function Avatar(props: {
   ) : (
     <UserCircleIcon
       className={clsx(
-        `flex-shrink-0 rounded-full bg-white w-${s} h-${s} text-gray-500`,
+        `flex-shrink-0 rounded-full bg-white w-${s} h-${s} cursor-pointer text-gray-500`,
         className
       )}
       aria-hidden="true"
