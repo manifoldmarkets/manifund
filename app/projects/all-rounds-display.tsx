@@ -13,6 +13,7 @@ import {
   ProjectHighlight,
 } from '@/components/project-card'
 import Link from 'next/link'
+import { ArrowRightIcon, PlusIcon } from '@heroicons/react/20/solid'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
@@ -106,8 +107,7 @@ function RegrantsHighlight(props: {
             <p className="leading-7 text-gray-600">{round.subtitle}</p>
           </Col>
         </Row>
-        <div className="w-full lg:max-w-xl lg:flex-auto">
-          <h3 className="sr-only">Projects</h3>
+        <div className="w-full">
           <ul className="divide-y divide-gray-100">
             {highlightedProjects.map((project) => (
               <li key={project.id} className="py-3">
@@ -115,26 +115,43 @@ function RegrantsHighlight(props: {
               </li>
             ))}
           </ul>
-          <Row className="justify-end border-t border-gray-100 pt-4">
-            <Link
-              href="/rounds/regrants?tab=projects"
-              className="text-sm font-semibold leading-6 text-orange-600"
-            >
-              View all projects <span aria-hidden="true">&rarr;</span>
-            </Link>
-          </Row>
+          <div className="relative">
+            <Row className="absolute inset-0 items-center" aria-hidden="true">
+              <div className="w-full border-t border-gray-200" />
+            </Row>
+            <Row className="relative items-center justify-end">
+              <Link
+                href="/rounds/regrants?tab=projects"
+                className="flex items-center gap-2 bg-gray-50 p-4 text-sm font-semibold leading-6 text-orange-600"
+              >
+                View all projects
+                <ArrowRightIcon className="h-5 w-5 stroke-2" />
+              </Link>
+            </Row>
+          </div>
+        </div>
+        <div className="w-full">
+          <div className="grid grid-cols-3 gap-2">
+            {highlightedRegrantors.map((regrantor) => (
+              <RegranterHighlight key={regrantor.id} regranter={regrantor} />
+            ))}
+          </div>
+          <div className="relative">
+            <Row className="absolute inset-0 items-center" aria-hidden="true">
+              <div className="w-full border-t border-gray-200" />
+            </Row>
+            <Row className="relative items-center justify-end">
+              <Link
+                href="/rounds/regrants?tab=regrants"
+                className="flex items-center gap-2 bg-gray-50 p-4 text-sm font-semibold leading-6 text-orange-600"
+              >
+                View all regrantors
+                <ArrowRightIcon className="h-5 w-5 stroke-2" />
+              </Link>
+            </Row>
+          </div>
         </div>
       </Col>
-      <div className="grid grid-cols-3 gap-5">
-        {highlightedRegrantors.map((regrantor) => (
-          <RegranterHighlight key={regrantor.id} regranter={regrantor} />
-        ))}
-      </div>
-      <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-x-8 gap-y-8 border-t border-gray-200 pt-10 sm:mt-16 sm:pt-16 xl:mx-0 xl:max-w-none xl:grid-cols-3">
-        {highlightedProjects.map((project) => (
-          <ProjectHighlight key={project.id} project={project} />
-        ))}
-      </div>
     </Col>
   )
 }

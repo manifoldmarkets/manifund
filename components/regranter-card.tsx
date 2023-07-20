@@ -9,7 +9,6 @@ import { addHttpToUrl, formatMoney } from '@/utils/formatting'
 import { LinkIcon } from '@heroicons/react/20/solid'
 import { getSponsoredAmount } from '@/utils/constants'
 import { SponsoredTag } from './tags'
-import Image from 'next/image'
 
 export function RegranterCard(props: {
   regranter: Profile
@@ -65,20 +64,26 @@ export function RegranterCard(props: {
 export function RegranterHighlight(props: { regranter: Profile }) {
   const { regranter } = props
   return (
-    <Col className="cursor-pointer items-center gap-3 rounded p-3 hover:bg-gray-100">
+    <Col className="cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100">
       <Row className="justify-center">
         <Avatar
           avatarUrl={regranter.avatar_url}
           username={regranter.username}
           size={24}
-          className="shadow-md"
+          className="hidden shadow-md sm:block"
+        />
+        <Avatar
+          avatarUrl={regranter.avatar_url}
+          username={regranter.username}
+          size={16}
+          className="shadow-md sm:hidden"
         />
       </Row>
       <Link
         href={`/${regranter.username}`}
         className="flex h-full flex-col gap-2"
       >
-        <h1 className="text-center font-semibold text-gray-900 group-hover:underline lg:text-lg">
+        <h1 className="text-center font-semibold text-gray-900 group-hover:underline">
           {regranter.full_name}
         </h1>
         <span className="text-center text-sm font-light leading-tight text-gray-600 line-clamp-3">
