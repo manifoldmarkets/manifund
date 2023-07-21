@@ -23,8 +23,6 @@ import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { EnvelopeIcon } from '@heroicons/react/24/solid'
 import { getSponsoredAmount } from '@/utils/constants'
-import { Avatar } from './avatar'
-import { format } from 'date-fns'
 
 export function ProjectCard(props: {
   project: FullProject
@@ -78,7 +76,7 @@ export function ProjectCard(props: {
                 minFunding={project.min_funding}
                 amountRaised={amountRaised}
               />
-              <p className="rounded-xl bg-orange-100 py-0.5 px-1.5 text-center text-sm font-bold text-orange-600">
+              <p className="rounded-2xl bg-orange-100 py-1 px-2 text-center text-sm font-medium text-orange-600">
                 {formatMoney(project.funding_goal)}
               </p>
             </Row>
@@ -184,68 +182,6 @@ export function ProjectCardHeader(props: {
         </Tooltip>
       )}
     </Row>
-  )
-}
-
-export function MiniProjectCard(props: { project: FullProject }) {
-  const { project } = props
-  const voteCount = project.project_votes.reduce(
-    (acc, vote) => vote.magnitude + acc,
-    0
-  )
-  const amountRaised = getAmountRaised(project, project.bids, project.txns)
-  return (
-    <Card className="pb-2">
-      <Col className="h-full">
-        <div className="items-cente flex flex-row gap-1 lg:flex-col lg:items-start">
-          <Avatar
-            username={project.profiles.username}
-            avatarUrl={project.profiles.avatar_url}
-            className="mr-2 lg:hidden"
-            size="xs"
-          />
-          <UserAvatarAndBadge
-            profile={project.profiles}
-            className="hidden lg:flex"
-          />
-          <Link
-            href={`/projects/${project.slug}`}
-            className="hover:cursor-pointer"
-          >
-            <h1 className="text-lg font-semibold leading-snug group-hover:underline">
-              {project.title}
-            </h1>
-          </Link>
-        </div>
-        <Col className="h-full justify-between">
-          <p className="my-2 text-sm font-light text-gray-500">
-            {project.blurb}
-          </p>
-          <div>
-            {(project.stage === 'proposal' ||
-              (project.stage === 'active' &&
-                amountRaised < project.funding_goal)) && (
-              <Row className="flex-1 items-center gap-1">
-                <ProgressBar
-                  fundingGoal={project.funding_goal}
-                  minFunding={project.min_funding}
-                  amountRaised={amountRaised}
-                />
-                <p className="rounded-xl bg-orange-100 py-0.5 px-1.5 text-center text-sm font-bold text-orange-600">
-                  {formatMoney(project.funding_goal)}
-                </p>
-              </Row>
-            )}
-            <ProjectCardData
-              voteCount={voteCount}
-              numComments={project.comments.length}
-              amountRaised={amountRaised}
-              projectSlug={project.slug}
-            />
-          </div>
-        </Col>
-      </Col>
-    </Card>
   )
 }
 
