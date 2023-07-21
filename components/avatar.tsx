@@ -30,8 +30,8 @@ export function Avatar(props: {
   // Item with a fake grey user circle guy even if you aren't signed in
   return avatarUrl ? (
     <Image
-      width={sizeInPx}
-      height={sizeInPx}
+      width={sizeInPx * 2}
+      height={sizeInPx * 2}
       className={clsx(
         'my-0 flex-shrink-0 rounded-full bg-white object-cover',
         `w-${s} h-${s}`,
