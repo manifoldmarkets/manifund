@@ -61,6 +61,12 @@ export default async function Sidebar() {
         <SidebarItem
           item={{ name: 'Discord', href: 'https://discord.gg/ZGsDMWSA5Q' }}
         />
+        <SidebarItem
+          item={{
+            name: 'Substack',
+            href: 'https://manifund.substack.com/',
+          }}
+        />
         {user && (
           <Link
             href={isRegranter ? '/create-grant' : '/create'}
