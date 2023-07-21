@@ -253,16 +253,19 @@ export function ProjectHighlight(props: { project: FullProject }) {
   const { project } = props
   return (
     <Col className="items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">
-      <Row className="w-full items-center justify-between gap-3 text-xs">
+      <Row className="flex-2 w-full items-center justify-between gap-3 text-xs">
         <UserAvatarAndBadge
           profile={project.profiles}
           className="text-sm text-gray-600"
         />
-        <Row className="items-center gap-3">
-          <span className="text-gray-500">
-            {format(new Date(project.created_at), 'MMMM do')}
-          </span>
-          <span className="relative z-10 rounded-full bg-gray-100 px-3 py-1.5 font-medium text-gray-600">
+        <Row className="flex-1 items-center gap-3">
+          <ProgressBar
+            amountRaised={getAmountRaised(project, project.bids, project.txns)}
+            fundingGoal={project.funding_goal}
+            minFunding={project.min_funding}
+            small
+          />
+          <span className="relative z-10 rounded-full bg-orange-100 px-3 py-1.5 font-medium text-orange-600">
             {formatMoney(project.funding_goal)}
           </span>
         </Row>
