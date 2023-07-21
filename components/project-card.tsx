@@ -75,7 +75,6 @@ export function ProjectCard(props: {
                 fundingGoal={project.funding_goal}
                 minFunding={project.min_funding}
                 amountRaised={amountRaised}
-                small
               />
               <p className="rounded-2xl bg-orange-100 py-1 px-2 text-center text-sm font-medium text-orange-600">
                 {formatMoney(project.funding_goal)}
