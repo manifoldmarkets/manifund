@@ -167,6 +167,7 @@ function CashToCharityButton(props: { cashBalance: number }) {
                 }),
               })
               const json = await response.json()
+              setOpen(false)
               setIsSubmitting(false)
               router.push(json.url)
             }}

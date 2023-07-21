@@ -65,17 +65,18 @@ export function UserLink(props: {
     creatorBadge,
   } = props
   const shortName = short ? shortenName(name) : name
+  console.log(shortName)
   return (
     <SiteLink
       href={`/${username}`}
       className={clsx(
-        'inline-flex max-w-[120px] flex-row items-center gap-0.5 truncate min-[480px]:max-w-[200px]',
+        'inline-flex max-w-[120px] flex-row items-center gap-0.5 truncate min-[480px]:max-w-[220px]',
         className,
         noLink && 'pointer-events-none'
       )}
       followsLinkClass
     >
-      {shortName}
+      <p className="truncate">{shortName}</p>
       {!hideBadge && <UserBadge username={username} />}
       {creatorBadge && <CreatorBadge />}
     </SiteLink>
