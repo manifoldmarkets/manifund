@@ -10,6 +10,7 @@ import {
   HomeIcon,
   ChatBubbleOvalLeftEllipsisIcon,
   HeartIcon,
+  NewspaperIcon,
 } from '@heroicons/react/24/outline'
 import { SiteLink } from '@/components/site-link'
 
@@ -63,6 +64,8 @@ function findIcon(name: string, isCurrentPage: boolean) {
       return <HeartIcon className={styling} />
     case 'Discord':
       return <ChatBubbleOvalLeftEllipsisIcon className={styling} />
+    case 'Substack':
+      return <NewspaperIcon className={styling} />
     default:
       return <UserCircleIcon className={styling} />
   }
