@@ -60,3 +60,36 @@ export function RegranterCard(props: {
     </Card>
   )
 }
+
+export function CardlessRegranter(props: { regranter: Profile }) {
+  const { regranter } = props
+  return (
+    <Col className="h-full cursor-pointer items-center gap-3 rounded p-3 hover:bg-gray-100">
+      <Row className="justify-center">
+        <Avatar
+          avatarUrl={regranter.avatar_url}
+          username={regranter.username}
+          size={24}
+          className="hidden shadow-md sm:block"
+        />
+        <Avatar
+          avatarUrl={regranter.avatar_url}
+          username={regranter.username}
+          size={16}
+          className="shadow-md sm:hidden"
+        />
+      </Row>
+      <Link
+        href={`/${regranter.username}`}
+        className="flex h-full flex-col justify-between gap-2"
+      >
+        <h1 className="text-center font-semibold text-gray-900 group-hover:underline">
+          {regranter.full_name}
+        </h1>
+        <span className="text-center text-sm font-normal leading-6 text-gray-600 line-clamp-3">
+          {regranter.bio}
+        </span>
+      </Link>
+    </Col>
+  )
+}
