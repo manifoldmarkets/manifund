@@ -15,8 +15,8 @@ import { FeatureCard } from '@/components/feature-card'
 import { getRegranters } from '@/db/profile'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { ProjectHighlight } from '@/components/project-card'
-import { RegranterHighlight } from '@/components/regranter-card'
+import { CardlessProject } from '@/components/project-card'
+import { CardlessRegranter } from '@/components/regranter-card'
 
 export const revalidate = 60
 
@@ -170,10 +170,10 @@ function RegrantsHighlight(props: {
         </Link>
         <div className="w-full">
           <DividerHeader text="Featured regrantors" />
-          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
             {featuredRegrantors.map((regrantor, idx) => (
               <li className={clsx(idx > 2 && 'sm:hidden')} key={regrantor?.id}>
-                <RegranterHighlight regranter={regrantor as Profile} />
+                <CardlessRegranter regranter={regrantor as Profile} />
               </li>
             ))}
           </ul>
@@ -185,10 +185,10 @@ function RegrantsHighlight(props: {
         </div>
         <div className="w-full max-w-2xl">
           <DividerHeader text="Featured projects" />
-          <ul className="divide-y divide-gray-100">
+          <ul className="mt-5 divide-y divide-gray-100">
             {featuredProjects.map((project) => (
               <li key={project?.id} className="py-3">
-                <ProjectHighlight project={project as FullProject} />
+                <CardlessProject project={project as FullProject} />
               </li>
             ))}
           </ul>
