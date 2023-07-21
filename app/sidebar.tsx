@@ -34,9 +34,9 @@ export default async function Sidebar() {
             <Image
               src="/Manifox.png"
               alt="Manifund fox"
-              className="-translate-y-2 transition-all group-hover:-translate-y-3"
-              width={60}
-              height={60}
+              className="max-w-[60px] -translate-y-2 transition-all group-hover:-translate-y-3"
+              width={100}
+              height={100}
             />
             <span className="bg-gradient-to-r from-orange-500  to-rose-400 bg-clip-text font-josefin text-4xl font-[650] text-transparent">
               {SUPABASE_ENV === 'PROD' ? 'Manifund' : 'Devifund'}
