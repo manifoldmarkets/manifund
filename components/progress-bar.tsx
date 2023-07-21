@@ -14,7 +14,7 @@ export function ProgressBar(props: {
   return (
     <div
       className={clsx(
-        'relative w-full rounded-full bg-gray-200',
+        'relative w-full rounded-full bg-gray-200 ring-2 ring-gray-200',
         small ? 'h-1.5' : 'h-2'
       )}
     >

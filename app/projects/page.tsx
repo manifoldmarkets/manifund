@@ -158,7 +158,7 @@ function RegrantsHighlight(props: {
   })
   return (
     <Col className="gap-8">
-      <Col className="items-center justify-between gap-8">
+      <Col className="items-center justify-between gap-10">
         <Link
           href="/rounds/regrants"
           className="flex flex-col items-center gap-4 text-center"
@@ -170,7 +170,7 @@ function RegrantsHighlight(props: {
         </Link>
         <div className="w-full">
           <DividerHeader text="Featured regrantors" />
-          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          <ul className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-3">
             {featuredRegrantors.map((regrantor, idx) => (
               <li className={clsx(idx > 2 && 'sm:hidden')} key={regrantor?.id}>
                 <RegranterHighlight regranter={regrantor as Profile} />
@@ -185,7 +185,7 @@ function RegrantsHighlight(props: {
         </div>
         <div className="w-full max-w-2xl">
           <DividerHeader text="Featured projects" />
-          <ul className="divide-y divide-gray-100">
+          <ul className="mt-6 divide-y divide-gray-100">
             {featuredProjects.map((project) => (
               <li key={project?.id} className="py-3">
                 <ProjectHighlight project={project as FullProject} />
