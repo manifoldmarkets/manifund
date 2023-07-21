@@ -89,6 +89,9 @@ export function UserBadge(props: { username: string }) {
   if (['Austin', 'Rachel'].includes(username)) {
     return <CoreBadge />
   }
+  if (['GavrielK'].includes(username)) {
+    return <CheckBadge />
+  }
   return null
 }
 
@@ -97,6 +100,15 @@ function CoreBadge() {
   return (
     <Tooltip text="I work on Manifund!" placement="right">
       <ShieldCheckIcon className="h-4 w-4 text-orange-600" aria-hidden="true" />
+    </Tooltip>
+  )
+}
+
+// Show a normal checkmark next to our trustworthy users
+function CheckBadge() {
+  return (
+    <Tooltip text="Accredited investor" placement="right">
+      <CheckBadgeIcon className="h-4 w-4 text-orange-600" aria-hidden="true" />
     </Tooltip>
   )
 }
