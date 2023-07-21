@@ -9,7 +9,7 @@ import { Row } from '@/components/layout/row'
 import { RegranterHighlight } from '@/components/regranter-card'
 import { ProjectHighlight } from '@/components/project-card'
 import Link from 'next/link'
-import { ArrowRightIcon } from '@heroicons/react/20/solid'
+import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 
 export function AllRoundsDisplay(props: {
@@ -131,6 +131,13 @@ function RegrantsHighlight(props: {
               </li>
             ))}
           </ul>
+          <Link
+            href="/rounds/regrants?tab=regrants"
+            className="mt-5 flex items-center justify-end gap-2 text-sm font-semibold text-orange-600 hover:underline"
+          >
+            See all regrantors
+            <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
+          </Link>
         </div>
         <div className="w-full max-w-2xl">
           <div className="relative">
@@ -153,6 +160,13 @@ function RegrantsHighlight(props: {
               </li>
             ))}
           </ul>
+          <Link
+            href="/rounds/regrants?tab=projects"
+            className="flex items-center justify-end gap-2 text-sm font-semibold text-orange-600 hover:underline"
+          >
+            See all projects
+            <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
+          </Link>
         </div>
       </Col>
     </Col>
