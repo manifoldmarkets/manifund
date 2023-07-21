@@ -103,7 +103,7 @@ function RegrantsHighlight(props: {
           href="/rounds/regrants"
           className="flex w-full flex-col items-center gap-8 sm:flex-row-reverse"
         >
-          <Col className="flex-1 gap-4">
+          <Col className="flex-1 gap-4 text-center">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               Regranting
             </h2>
@@ -111,29 +111,41 @@ function RegrantsHighlight(props: {
           </Col>
         </Link>
         <div className="w-full">
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {featuredRegrantors.map((regrantor, idx) => (
-              <div className={clsx(idx > 2 && 'sm:hidden')} key={regrantor?.id}>
-                <RegranterHighlight regranter={regrantor as Profile} />
-              </div>
-            ))}
-          </div>
-          <div className="relative">
+          <div className="relative mb-5">
             <Row className="absolute inset-0 items-center" aria-hidden="true">
-              <div className="w-full border-t border-gray-200" />
+              <div className="w-full border-t border-gray-400" />
             </Row>
-            <Row className="relative items-center justify-end">
+            <Row className="relative items-center justify-center">
               <Link
                 href="/rounds/regrants?tab=regrants"
-                className="flex items-center gap-2 bg-gray-50 p-4 text-sm font-semibold leading-6 text-orange-600"
+                className="flex items-center gap-2 bg-gray-50 p-3 text-lg font-bold leading-6 text-gray-900"
               >
-                Meet the regrantors
-                <ArrowRightIcon className="h-5 w-5 stroke-2" />
+                Featured regrantors
               </Link>
             </Row>
           </div>
+          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {featuredRegrantors.map((regrantor, idx) => (
+              <li className={clsx(idx > 2 && 'sm:hidden')} key={regrantor?.id}>
+                <RegranterHighlight regranter={regrantor as Profile} />
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="w-full max-w-2xl">
+          <div className="relative">
+            <Row className="absolute inset-0 items-center" aria-hidden="true">
+              <div className="w-full border-t border-gray-400" />
+            </Row>
+            <Row className="relative items-center justify-center">
+              <Link
+                href="/rounds/regrants?tab=regrants"
+                className="flex items-center gap-2 bg-gray-50 p-3 text-lg font-bold leading-6 text-gray-900"
+              >
+                Featured projects
+              </Link>
+            </Row>
+          </div>
           <ul className="divide-y divide-gray-100">
             {featuredProjects.map((project) => (
               <li key={project?.id} className="py-3">
@@ -141,20 +153,6 @@ function RegrantsHighlight(props: {
               </li>
             ))}
           </ul>
-          <div className="relative">
-            <Row className="absolute inset-0 items-center" aria-hidden="true">
-              <div className="w-full border-t border-gray-200" />
-            </Row>
-            <Row className="relative items-center justify-end">
-              <Link
-                href="/rounds/regrants?tab=projects"
-                className="flex items-center gap-2 bg-gray-50 p-4 text-sm font-semibold leading-6 text-orange-600"
-              >
-                See what they&apos;re funding
-                <ArrowRightIcon className="h-5 w-5 stroke-2" />
-              </Link>
-            </Row>
-          </div>
         </div>
       </Col>
     </Col>
