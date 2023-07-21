@@ -9,7 +9,7 @@ import { Row } from '@/components/layout/row'
 import { RegranterHighlight } from '@/components/regranter-card'
 import { ProjectHighlight } from '@/components/project-card'
 import Link from 'next/link'
-import { ArrowRightIcon, PlusIcon } from '@heroicons/react/20/solid'
+import { ArrowRightIcon } from '@heroicons/react/20/solid'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
@@ -70,14 +70,30 @@ function Round(props: { round: Round; projects: FullProject[] }) {
   )
 }
 
+const featuredRegrantorIds = [
+  '1398ed62-4213-4923-a84e-a9931ae19492', // Adam
+  '647c9b3c-65ce-40cf-9464-ac02c741aacd', // Evan
+  'b11620f2-fdc7-414c-8a63-9ddee17ee669', // Marcus
+]
+
+const featuredProjectIds = [
+  '6fac4945-95ba-43ac-e548-b960e7f1db57', // Cavity
+  'c76614f2-7d71-ae49-c0e2-9d32d642ea3c', // Jesse
+  'ebf3d790-c893-b968-7ac9-83c90bd8e795', // (Dis)empowerment
+]
+
 function RegrantsHighlight(props: {
   round: Round
   projects: FullProject[]
   regrantors: Profile[]
 }) {
   const { round, projects, regrantors } = props
-  const highlightedRegrantors = regrantors.slice(5, 8)
-  const highlightedProjects = projects.slice(0, 3)
+  const featuredRegrantors = regrantors.filter((regranter) =>
+    featuredRegrantorIds.includes(regranter.id)
+  )
+  const featuredProjects = projects.filter((project) =>
+    featuredProjectIds.includes(project.id)
+  )
   return (
     <Col className="gap-8">
       <Col className="items-center justify-between gap-8">
@@ -91,7 +107,7 @@ function RegrantsHighlight(props: {
         </div>
         <div className="w-full">
           <div className="grid grid-cols-3 gap-2">
-            {highlightedRegrantors.map((regrantor) => (
+            {featuredRegrantors.map((regrantor) => (
               <RegranterHighlight key={regrantor.id} regranter={regrantor} />
             ))}
           </div>
@@ -110,9 +126,9 @@ function RegrantsHighlight(props: {
             </Row>
           </div>
         </div>
-        <div className="w-full">
+        <div className="w-full max-w-2xl">
           <ul className="divide-y divide-gray-100">
-            {highlightedProjects.map((project) => (
+            {featuredProjects.map((project) => (
               <li key={project.id} className="py-3">
                 <ProjectHighlight project={project} />
               </li>
