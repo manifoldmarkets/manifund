@@ -13,13 +13,13 @@ export function FeatureCard(props: {
   const content = (
     <>
       <div>
-        <Row className="mb-1 gap-1 text-orange-500">
+        <Row className="mb-1 gap-1 text-orange-600">
           {icon}
           <p className="text-lg font-medium">{title}</p>
         </Row>
         <p className="text-sm text-gray-600">{description}</p>
       </div>
-      <p className="mt-1 flex w-full justify-end text-xs text-orange-500 group-hover:underline">
+      <p className="mt-1 flex w-full justify-end text-xs text-orange-600 group-hover:underline">
         {linkText ?? 'Learn more'}
         <ArrowRightIcon className="ml-1 h-4 w-4" />
       </p>
@@ -29,14 +29,14 @@ export function FeatureCard(props: {
     return (
       <a
         href={url}
-        className="group flex flex-col justify-between rounded-lg border-2 border-orange-500 bg-white p-3 hover:cursor-pointer"
+        className="group flex flex-col justify-between rounded-lg border-2 border-orange-600 bg-white p-3 hover:cursor-pointer"
       >
         {content}
       </a>
     )
   } else {
     return (
-      <Col className="group justify-between rounded-lg border-2 border-orange-500 bg-white p-3 hover:cursor-pointer">
+      <Col className="group justify-between rounded-lg border-2 border-orange-600 bg-white p-3 hover:cursor-pointer">
         {content}
       </Col>
     )
