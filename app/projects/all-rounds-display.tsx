@@ -2,7 +2,6 @@ import { RoundData } from '@/components/round-data'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
 import Image from 'next/image'
-import { orderBy, sortBy } from 'lodash'
 import { Col } from '@/components/layout/col'
 import { Profile } from '@/db/profile'
 import { Row } from '@/components/layout/row'
@@ -18,11 +17,14 @@ export function AllRoundsDisplay(props: {
   regrantors: Profile[]
 }) {
   const { rounds, projects, regrantors } = props
-  const sortedRounds = sortRoundsForPreview(rounds)
+  const regrants = rounds.find((round) => round.title === 'Regrants') as Round
+  const otherRounds = rounds.filter(
+    (round) => round.title !== 'Regrants' && round.title !== 'Independent'
+  )
   return (
     <div className="pb-20">
       <RegrantsHighlight
-        round={sortedRounds[0]}
+        round={regrants}
         projects={projects}
         regrantors={regrantors}
       />
@@ -32,7 +34,7 @@ export function AllRoundsDisplay(props: {
         </h2>
 
         <div className="flex flex-col gap-10 sm:grid sm:grid-cols-2">
-          {sortedRounds.slice(1).map((round) => (
+          {otherRounds.map((round) => (
             <Round key={round.title} round={round} projects={projects} />
           ))}
         </div>
@@ -101,14 +103,12 @@ function RegrantsHighlight(props: {
       <Col className="items-center justify-between gap-8">
         <Link
           href="/rounds/regrants"
-          className="flex w-full flex-col items-center gap-8 sm:flex-row-reverse"
+          className="flex flex-col items-center gap-4 text-center"
         >
-          <Col className="flex-1 gap-4 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Regranting
-            </h2>
-            <p className="leading-7 text-gray-600">{round.subtitle}</p>
-          </Col>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 group-hover:underline sm:text-4xl">
+            Regranting
+          </h2>
+          <p className="max-w-xl leading-7 text-gray-600">{round.subtitle}</p>
         </Link>
         <div className="w-full">
           <div className="relative mb-5">
@@ -116,12 +116,9 @@ function RegrantsHighlight(props: {
               <div className="w-full border-t border-gray-400" />
             </Row>
             <Row className="relative items-center justify-center">
-              <Link
-                href="/rounds/regrants?tab=regrants"
-                className="flex items-center gap-2 bg-gray-50 p-3 text-lg font-bold leading-6 text-gray-900"
-              >
+              <h3 className=" bg-gray-50 p-3 text-center text-lg font-bold text-gray-900">
                 Featured regrantors
-              </Link>
+              </h3>
             </Row>
           </div>
           <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -131,13 +128,11 @@ function RegrantsHighlight(props: {
               </li>
             ))}
           </ul>
-          <Link
+          <ArrowLink
             href="/rounds/regrants?tab=regrants"
-            className="mt-5 flex items-center justify-end gap-2 text-sm font-semibold text-orange-600 hover:underline"
-          >
-            See all regrantors
-            <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
-          </Link>
+            text="See all regrantors"
+            className="mt-5"
+          />
         </div>
         <div className="w-full max-w-2xl">
           <div className="relative">
@@ -145,12 +140,9 @@ function RegrantsHighlight(props: {
               <div className="w-full border-t border-gray-400" />
             </Row>
             <Row className="relative items-center justify-center">
-              <Link
-                href="/rounds/regrants?tab=regrants"
-                className="flex items-center gap-2 bg-gray-50 p-3 text-lg font-bold leading-6 text-gray-900"
-              >
+              <h3 className=" bg-gray-50 p-3 text-center text-lg font-bold text-gray-900">
                 Featured projects
-              </Link>
+              </h3>
             </Row>
           </div>
           <ul className="divide-y divide-gray-100">
@@ -160,29 +152,28 @@ function RegrantsHighlight(props: {
               </li>
             ))}
           </ul>
-          <Link
+          <ArrowLink
             href="/rounds/regrants?tab=projects"
-            className="flex items-center justify-end gap-2 text-sm font-semibold text-orange-600 hover:underline"
-          >
-            See all projects
-            <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
-          </Link>
+            text="See all projects"
+          />
         </div>
       </Col>
     </Col>
   )
 }
 
-function sortRoundsForPreview(rounds: Round[]) {
-  const sortedByDueDate = orderBy(rounds, 'proposal_due_date', 'desc')
-  const customSorted = sortBy(sortedByDueDate, [
-    function (round: Round) {
-      if (round.title === 'Regrants') {
-        return 0
-      } else {
-        return 1
-      }
-    },
-  ])
-  return customSorted.filter((round) => round.title !== 'Independent')
+function ArrowLink(props: { href: string; text: string; className?: string }) {
+  const { href, text, className } = props
+  return (
+    <Link
+      href={href}
+      className={clsx(
+        'flex items-center justify-end gap-2 text-sm font-semibold text-orange-600 hover:underline',
+        className
+      )}
+    >
+      {text}
+      <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
+    </Link>
+  )
 }
