@@ -64,7 +64,7 @@ export function RegranterCard(props: {
 export function RegranterHighlight(props: { regranter: Profile }) {
   const { regranter } = props
   return (
-    <Col className="cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100">
+    <Col className="h-full cursor-pointer items-center gap-3 rounded p-3 hover:bg-gray-100">
       <Row className="justify-center">
         <Avatar
           avatarUrl={regranter.avatar_url}
@@ -81,12 +81,12 @@ export function RegranterHighlight(props: { regranter: Profile }) {
       </Row>
       <Link
         href={`/${regranter.username}`}
-        className="flex h-full flex-col gap-2"
+        className="flex h-full flex-col justify-between gap-2"
       >
         <h1 className="text-center font-semibold text-gray-900 group-hover:underline">
           {regranter.full_name}
         </h1>
-        <span className="text-center text-sm font-light leading-tight text-gray-600 line-clamp-3">
+        <span className="text-center text-sm font-normal leading-6 text-gray-600 line-clamp-3">
           {regranter.bio}
         </span>
       </Link>
