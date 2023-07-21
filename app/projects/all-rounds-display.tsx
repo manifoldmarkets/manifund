@@ -35,7 +35,7 @@ export function AllRoundsDisplay(props: {
 
         <div className="flex flex-col gap-10 sm:grid sm:grid-cols-2">
           {otherRounds.map((round) => (
-            <Round key={round.title} round={round} projects={projects} />
+            <Round key={round.title} round={round} />
           ))}
         </div>
       </Col>
@@ -43,8 +43,8 @@ export function AllRoundsDisplay(props: {
   )
 }
 
-function Round(props: { round: Round; projects: FullProject[] }) {
-  const { round, projects } = props
+function Round(props: { round: Round }) {
+  const { round } = props
   return (
     <Col key={round.title} className="relative isolate h-full gap-3">
       <div className="relative aspect-[16/9] sm:aspect-[2/1]">
@@ -111,16 +111,7 @@ function RegrantsHighlight(props: {
           <p className="max-w-xl leading-7 text-gray-600">{round.subtitle}</p>
         </Link>
         <div className="w-full">
-          <div className="relative mb-5">
-            <Row className="absolute inset-0 items-center" aria-hidden="true">
-              <div className="w-full border-t border-gray-400" />
-            </Row>
-            <Row className="relative items-center justify-center">
-              <h3 className=" bg-gray-50 p-3 text-center text-lg font-bold text-gray-900">
-                Featured regrantors
-              </h3>
-            </Row>
-          </div>
+          <DividerHeader text="Featured regrantors" />
           <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {featuredRegrantors.map((regrantor, idx) => (
               <li className={clsx(idx > 2 && 'sm:hidden')} key={regrantor?.id}>
@@ -135,16 +126,7 @@ function RegrantsHighlight(props: {
           />
         </div>
         <div className="w-full max-w-2xl">
-          <div className="relative">
-            <Row className="absolute inset-0 items-center" aria-hidden="true">
-              <div className="w-full border-t border-gray-400" />
-            </Row>
-            <Row className="relative items-center justify-center">
-              <h3 className=" bg-gray-50 p-3 text-center text-lg font-bold text-gray-900">
-                Featured projects
-              </h3>
-            </Row>
-          </div>
+          <DividerHeader text="Featured projects" />
           <ul className="divide-y divide-gray-100">
             {featuredProjects.map((project) => (
               <li key={project?.id} className="py-3">
@@ -175,5 +157,21 @@ function ArrowLink(props: { href: string; text: string; className?: string }) {
       {text}
       <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
     </Link>
+  )
+}
+
+function DividerHeader(props: { text: string }) {
+  const { text } = props
+  return (
+    <div className="relative">
+      <Row className="absolute inset-0 items-center" aria-hidden="true">
+        <div className="w-full border-t border-gray-400" />
+      </Row>
+      <Row className="relative items-center justify-center">
+        <h3 className=" bg-gray-50 p-3 text-center text-lg font-bold text-gray-900">
+          {text}
+        </h3>
+      </Row>
+    </div>
   )
 }
