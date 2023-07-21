@@ -10,6 +10,7 @@ import { RegranterHighlight } from '@/components/regranter-card'
 import { ProjectHighlight } from '@/components/project-card'
 import Link from 'next/link'
 import { ArrowRightIcon } from '@heroicons/react/20/solid'
+import clsx from 'clsx'
 
 export function AllRoundsDisplay(props: {
   rounds: Round[]
@@ -74,6 +75,7 @@ const featuredRegrantorIds = [
   '1398ed62-4213-4923-a84e-a9931ae19492', // Adam
   '647c9b3c-65ce-40cf-9464-ac02c741aacd', // Evan
   'b11620f2-fdc7-414c-8a63-9ddee17ee669', // Marcus
+  '8aa331b7-3602-4001-9bc6-2b71b1c8ddd1', // Renan
 ]
 
 const featuredProjectIds = [
@@ -88,27 +90,32 @@ function RegrantsHighlight(props: {
   regrantors: Profile[]
 }) {
   const { round, projects, regrantors } = props
-  const featuredRegrantors = regrantors.filter((regranter) =>
-    featuredRegrantorIds.includes(regranter.id)
-  )
-  const featuredProjects = projects.filter((project) =>
-    featuredProjectIds.includes(project.id)
-  )
+  const featuredRegrantors = featuredRegrantorIds.map((id) => {
+    return regrantors.find((regranter) => regranter.id === id)
+  })
+  const featuredProjects = featuredProjectIds.map((id) => {
+    return projects.find((project) => project.id === id)
+  })
   return (
     <Col className="gap-8">
       <Col className="items-center justify-between gap-8">
-        <div className="flex w-full flex-col items-center gap-8 sm:flex-row-reverse">
+        <Link
+          href="/rounds/regrants"
+          className="flex w-full flex-col items-center gap-8 sm:flex-row-reverse"
+        >
           <Col className="flex-1 gap-4">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
               Regranting
             </h2>
             <p className="leading-7 text-gray-600">{round.subtitle}</p>
           </Col>
-        </div>
+        </Link>
         <div className="w-full">
-          <div className="grid grid-cols-3 gap-2">
-            {featuredRegrantors.map((regrantor) => (
-              <RegranterHighlight key={regrantor.id} regranter={regrantor} />
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {featuredRegrantors.map((regrantor, idx) => (
+              <div className={clsx(idx > 2 && 'sm:hidden')} key={regrantor?.id}>
+                <RegranterHighlight regranter={regrantor as Profile} />
+              </div>
             ))}
           </div>
           <div className="relative">
@@ -129,8 +136,8 @@ function RegrantsHighlight(props: {
         <div className="w-full max-w-2xl">
           <ul className="divide-y divide-gray-100">
             {featuredProjects.map((project) => (
-              <li key={project.id} className="py-3">
-                <ProjectHighlight project={project} />
+              <li key={project?.id} className="py-3">
+                <ProjectHighlight project={project as FullProject} />
               </li>
             ))}
           </ul>
