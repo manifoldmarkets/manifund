@@ -14,7 +14,7 @@ import {
   ChevronUpDownIcon,
   CurrencyDollarIcon,
 } from '@heroicons/react/20/solid'
-import { orderBy, uniq } from 'lodash'
+import { orderBy } from 'lodash'
 import { RoundTag, Tag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { Round } from '@/db/round'
@@ -59,18 +59,14 @@ export function ProjectCard(props: {
         />
         <Link
           href={`/projects/${project.slug}`}
-          className="group flex flex-1 flex-col justify-between hover:cursor-pointer"
+          className="group flex h-full flex-col justify-start gap-1 py-2 hover:cursor-pointer"
         >
-          <Row className="flex-2 mt-2 mb-4 items-center gap-2">
-            <div>
-              <h1 className="text-xl font-semibold group-hover:underline">
-                {project.title}
-              </h1>
-              <p className="font-light text-gray-500">{project.blurb}</p>
-            </div>
-          </Row>
+          <h1 className="text-xl font-semibold group-hover:underline">
+            {project.title}
+          </h1>
+          <p className="text-sm font-light text-gray-500">{project.blurb}</p>
         </Link>
-        <Col className="gap-1">
+        <Col>
           {(project.stage === 'proposal' ||
             (project.stage === 'active' &&
               amountRaised < project.funding_goal)) && (
@@ -79,8 +75,9 @@ export function ProjectCard(props: {
                 fundingGoal={project.funding_goal}
                 minFunding={project.min_funding}
                 amountRaised={amountRaised}
+                small
               />
-              <p className="rounded-xl bg-orange-100 py-0.5 px-1.5 text-center text-sm font-bold text-orange-600">
+              <p className="rounded-2xl bg-orange-100 py-1 px-2 text-center text-sm font-medium text-orange-600">
                 {formatMoney(project.funding_goal)}
               </p>
             </Row>
@@ -186,5 +183,38 @@ export function ProjectCardHeader(props: {
         </Tooltip>
       )}
     </Row>
+  )
+}
+
+export function CardlessProject(props: { project: FullProject }) {
+  const { project } = props
+  return (
+    <Col className="items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">
+      <Row className="flex-2 w-full items-center justify-between gap-3 text-xs">
+        <UserAvatarAndBadge
+          profile={project.profiles}
+          className="text-sm text-gray-600"
+        />
+        <Row className="flex-1 items-center gap-3">
+          <ProgressBar
+            amountRaised={getAmountRaised(project, project.bids, project.txns)}
+            fundingGoal={project.funding_goal}
+            minFunding={project.min_funding}
+            small
+          />
+          <span className="relative z-10 rounded-full bg-orange-100 px-3 py-1.5 font-medium text-orange-600">
+            {formatMoney(project.funding_goal)}
+          </span>
+        </Row>
+      </Row>
+      <Link href={`/projects/${project.slug}`}>
+        <h3 className="tracking-0 font-semibold leading-6 text-gray-900">
+          {project.title}
+        </h3>
+        <p className="mt-2 text-sm leading-5 text-gray-600 lg:line-clamp-2">
+          {project.blurb}
+        </p>
+      </Link>
+    </Col>
   )
 }
