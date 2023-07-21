@@ -29,7 +29,7 @@ export default async function Projects() {
         projects={projects}
         regrantors={regrantors}
       />
-      <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+      <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
         All projects
       </h2>
       <p className="mt-1 mb-2 text-gray-600">
