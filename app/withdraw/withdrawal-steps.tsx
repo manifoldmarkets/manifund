@@ -289,13 +289,26 @@ function ConfirmWithdrawal(props: {
               </div>
               {!localComplete && (
                 <Row className="justify-center py-6 px-6">
-                  <Button
-                    className="font-semibold"
-                    onClick={completeWithdrawal}
-                    disabled={isSubmitting || complete || localComplete}
+                  <Tooltip
+                    text={
+                      isSubmitting
+                        ? 'Loading...'
+                        : complete
+                        ? 'Finished withdrawal'
+                        : localComplete
+                        ? 'Withdrawal complete'
+                        : ''
+                    }
                   >
-                    Withdraw
-                  </Button>
+                    <Button
+                      className="font-semibold"
+                      onClick={completeWithdrawal}
+                      loading={isSubmitting}
+                      disabled={complete || localComplete}
+                    >
+                      Withdraw
+                    </Button>
+                  </Tooltip>
                 </Row>
               )}
             </dl>
