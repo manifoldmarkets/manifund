@@ -186,7 +186,7 @@ export function ProjectCardHeader(props: {
   )
 }
 
-export function ProjectHighlight(props: { project: FullProject }) {
+export function CardlessProject(props: { project: FullProject }) {
   const { project } = props
   return (
     <Col className="items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">

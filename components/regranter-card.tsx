@@ -61,7 +61,7 @@ export function RegranterCard(props: {
   )
 }
 
-export function RegranterHighlight(props: { regranter: Profile }) {
+export function CardlessRegranter(props: { regranter: Profile }) {
   const { regranter } = props
   return (
     <Col className="h-full cursor-pointer items-center gap-3 rounded p-3 hover:bg-gray-100">
