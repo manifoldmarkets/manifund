@@ -172,7 +172,7 @@ export function ProjectCardHeader(props: {
       </div>
       {projectType === 'cert' && valuation && !isNaN(valuation) ? (
         <Tooltip text="valuation">
-          <p className="relative rounded-xl bg-orange-100 py-0.5 px-1.5 text-center text-sm font-bold text-orange-600">
+          <p className="rounded-2xl bg-orange-100 py-1 px-2 text-center text-sm font-medium text-orange-600">
             {formatMoney(valuation)}
           </p>
         </Tooltip>
