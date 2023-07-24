@@ -73,36 +73,36 @@ export function WithdrawalSteps(props: {
     },
   ] as Step[]
 
-  const [currentStep, setCurrentStep] = useState(steps[0])
+  const [currentStepIdx, setCurrentStepIdx] = useState(0)
   const nextStep = () => {
     setIsSubmitting(true)
-    if (currentStep.id === steps.length) {
+    if (currentStepIdx + 1 === steps.length) {
       router.push('/')
     } else {
-      setCurrentStep(steps[currentStep.id])
+      setCurrentStepIdx(currentStepIdx + 1)
       setIsSubmitting(false)
     }
   }
   const previousStep = () => {
     setIsSubmitting(true)
-    if (currentStep.id === 1) {
+    if (currentStepIdx === 0) {
       router.push('/')
     } else {
-      setCurrentStep(steps[currentStep.id - 2])
+      setCurrentStepIdx(currentStepIdx - 1)
       setIsSubmitting(false)
     }
   }
 
   let errorMessage = null
-  if (accountStatus !== 'complete' && currentStep.id === 1) {
+  if (accountStatus !== 'complete' && currentStepIdx === 0) {
     errorMessage = 'You need to set up your Stripe account before continuing.'
-  } else if (withdrawAmount < 10 && currentStep.id === 2) {
-    errorMessage = 'Minimum withdrawal is $10.'
+  } else if (withdrawAmount < 1 && currentStepIdx === 1) {
+    errorMessage = 'Minimum withdrawal is $1.'
   } else if (withdrawAmount > 10000) {
     errorMessage = 'Maximum automatic withdrawal is $10,000.'
-  } else if (withdrawAmount > withdrawBalance && currentStep.id === 2) {
+  } else if (withdrawAmount > withdrawBalance && currentStepIdx === 1) {
     errorMessage = `Your withdrawable balance is only $${withdrawBalance}.`
-  } else if (!complete && currentStep.id === 3) {
+  } else if (!complete && currentStepIdx === 2) {
     errorMessage = 'Complete your withdrawal to continue.'
   } else {
     errorMessage = null
@@ -112,12 +112,12 @@ export function WithdrawalSteps(props: {
     <>
       <StepsDisplay
         steps={steps}
-        currentStepId={currentStep.id}
+        currentStepId={currentStepIdx + 1}
         complete={complete}
       />
       <Row className="w-full justify-center p-10">
         <div className="w-full max-w-2xl">
-          {currentStep.display}
+          {steps[currentStepIdx].display}
           <Row className="mt-10 justify-between">
             <button
               className={clsx(
@@ -143,7 +143,7 @@ export function WithdrawalSteps(props: {
                   className="-ml-0.5 h-5 w-5"
                   aria-hidden="true"
                 />
-                {currentStep.id === 3
+                {currentStepIdx === 2
                   ? 'Return to Manifund'
                   : 'Confirm & continue'}
               </Button>
@@ -204,7 +204,6 @@ function ConfirmWithdrawal(props: {
   const { withdrawalMethod, isBank, withdrawAmount, complete, setComplete } =
     props
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [localComplete, setLocalComplete] = useState(complete)
 
   const completeWithdrawal = async () => {
     setIsSubmitting(true)
@@ -222,7 +221,6 @@ function ConfirmWithdrawal(props: {
       console.error(json.error)
     } else {
       setComplete(true)
-      setLocalComplete(true)
     }
     setIsSubmitting(false)
   }
@@ -231,7 +229,7 @@ function ConfirmWithdrawal(props: {
       {withdrawalMethod ? (
         <div className="overflow-hidden rounded-lg bg-white shadow">
           <div className="px-4 py-6 sm:px-6">
-            {localComplete ? (
+            {complete ? (
               <div>
                 <Row className="justify-center">
                   <CheckCircleIcon className="h-16 w-16 text-orange-500" />
@@ -287,15 +285,13 @@ function ConfirmWithdrawal(props: {
                   ${withdrawAmount}
                 </dd>
               </div>
-              {!localComplete && (
+              {!complete && (
                 <Row className="justify-center py-6 px-6">
                   <Tooltip
                     text={
                       isSubmitting
                         ? 'Loading...'
                         : complete
-                        ? 'Finished withdrawal'
-                        : localComplete
                         ? 'Withdrawal complete'
                         : ''
                     }
@@ -304,7 +300,7 @@ function ConfirmWithdrawal(props: {
                       className="font-semibold"
                       onClick={completeWithdrawal}
                       loading={isSubmitting}
-                      disabled={complete || localComplete}
+                      disabled={complete}
                     >
                       Withdraw
                     </Button>
