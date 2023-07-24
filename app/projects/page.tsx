@@ -157,7 +157,7 @@ function RegrantsHighlight(props: {
     return projects.find((project) => project.id === id)
   })
   return (
-    <Col className="gap-8">
+    <Col className="mt-10 gap-12">
       <Col className="items-center justify-between gap-8">
         <Link
           href="/rounds/regrants"
