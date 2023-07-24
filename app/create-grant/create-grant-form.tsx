@@ -17,13 +17,13 @@ import { RequiredStar } from '@/components/tags'
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
 </br>
-<h3>Project goals</h3>
+<h3>What are this project's goals and how they be achieved?</h3>
 </br>
 <h3>How will this funding be used?</h3>
 </br>
-<h3>What is the recipient's track record on similar projects?</h3>
+<h3>Who is on the team and what's their track record on similar projects?</h3>
 </br>
-<h3>How could this project be actively harmful?</h3>
+<h3>What are the most likely causes and outcomes if this project fails? (premortem)</h3>
 </br>
 <h3>What other funding is this person or project getting?</h3>
 </br>

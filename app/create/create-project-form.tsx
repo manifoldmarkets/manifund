@@ -26,17 +26,15 @@ import { RequiredStar } from '@/components/tags'
 const DEFAULT_DESCRIPTION = `
 <h3>Project summary</h3>
 </br>
-<h3>Project goals</h3>
-</br>
-<h3>Concrete steps to acheive those goals</h3>
+<h3>What are this project's goals and how will you achieve them?</h3>
 </br>
 <h3>How will this funding be used?</h3>
 </br>
-<h3>What is your (team's) track record on similar projects?</h3>
+<h3>Who is on your team and what's your track record on similar projects?</h3>
 </br>
-<h3>How could this project be actively harmful?</h3>
+<h3>What are the most likely causes and outcomes if this project fails? (premortem)</h3>
 </br>
-<h3>What other funding is this person or project getting?</h3>
+<h3>What other funding is are you or your project getting?</h3>
 </br>
 `
 
