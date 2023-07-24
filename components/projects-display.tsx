@@ -7,7 +7,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { Listbox, Switch, Transition } from '@headlessui/react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import {
   getActiveValuation,
   getAmountRaised,
@@ -38,18 +38,17 @@ export function ProjectsDisplay(props: {
   hideRound?: boolean
 }) {
   const { projects, sortOptions, defaultSort, hideRound } = props
-  const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
   const isRegrants = !projects.find((project) => project.type !== 'grant')
-  const [excludeOpenCall, setExcludeOpenCall] = useState<boolean>(false)
-  const router = useRouter()
-  const searchParams = useSearchParams() ?? new URLSearchParams()
   const prices = getPrices(projects)
-  const [search, setSearch] = useState<string>(searchParams.get('q') || '')
-
+  const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
+  const [excludeOpenCall, setExcludeOpenCall] = useState<boolean>(false)
+  const [search, setSearch] = useState<string>('')
   const selectedProjects = searchProjects(
     sortProjects(projects, prices, sortBy),
     search
   )
+  const router = useRouter()
+
   const proposals = selectedProjects.filter((project) => {
     if (excludeOpenCall) {
       return project.stage == 'proposal' && isRegrantorInitiated(project)
@@ -87,7 +86,6 @@ export function ProjectsDisplay(props: {
             value={search}
             onChange={(event) => {
               setSearch(event.target.value)
-              router.push(`?q=${event.target.value}`)
             }}
           />
         </div>
