@@ -26,21 +26,16 @@ import { getSponsoredAmount } from '@/utils/constants'
 
 export function ProjectCard(props: {
   project: FullProject
-  creator: Profile
-  numComments: number
-  bids: Bid[]
-  txns: Txn[]
   valuation?: number
   hideRound?: boolean
   creatorEmail?: string
 }) {
-  const { creator, project, numComments, bids, txns, valuation, hideRound } =
-    props
-  const amountRaised = getAmountRaised(project, bids, txns)
+  const { project, valuation, hideRound } = props
+  const amountRaised = getAmountRaised(project, project.bids, project.txns)
   const firstDonorId =
     project.stage === 'proposal'
-      ? orderBy(bids, 'created_at', 'asc')[0]?.bidder
-      : orderBy(txns, 'created_at', 'asc')[0]?.from_id
+      ? orderBy(project.bids, 'created_at', 'asc')[0]?.bidder
+      : orderBy(project.txns, 'created_at', 'asc')[0]?.from_id
   const regrantorInitiated = getSponsoredAmount(firstDonorId ?? '') > 0
   const voteCount = project.project_votes.reduce(
     (acc, vote) => vote.magnitude + acc,
@@ -52,7 +47,7 @@ export function ProjectCard(props: {
         <ProjectCardHeader
           round={project.rounds}
           projectType={project.type}
-          creator={creator}
+          creator={project.profiles}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
           regrantorInitiated={regrantorInitiated}
           hideRound={hideRound}
@@ -84,7 +79,7 @@ export function ProjectCard(props: {
           )}
           <ProjectCardData
             voteCount={voteCount}
-            numComments={numComments}
+            numComments={project.comments.length}
             amountRaised={amountRaised}
             projectSlug={project.slug}
           />
