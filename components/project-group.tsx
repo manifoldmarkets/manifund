@@ -14,10 +14,6 @@ export function ProjectGroup(props: {
         <ProjectCard
           key={project.id}
           project={project}
-          creator={project.profiles}
-          numComments={project.comments.length}
-          bids={project.bids.filter((bid) => bid.status == 'pending')}
-          txns={project.txns}
           valuation={prices ? prices[project.id] : undefined}
           hideRound={hideRound}
         />
