@@ -65,7 +65,6 @@ export function UserLink(props: {
     creatorBadge,
   } = props
   const shortName = short ? shortenName(name) : name
-  console.log(shortName)
   return (
     <SiteLink
       href={`/${username}`}

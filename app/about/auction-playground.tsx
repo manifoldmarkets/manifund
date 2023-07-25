@@ -214,7 +214,6 @@ export function AuctionPlayground() {
                 valuation: minValuation,
               },
             ])
-            console.log(playBids)
             setSeeResults(false)
           }}
           size={'xs'}
@@ -240,7 +239,6 @@ export function AuctionPlayground() {
                 minFunding,
                 founderPortion ?? 0
               )
-              console.log('valuation after click', results.valuation)
               setResolution(results)
               setResultsText(
                 <ResultsText
@@ -274,7 +272,6 @@ function resolvePlayBids(
     }
   })
   const resolution = resolveBids(sortedBids, minFunding, founderPortion)
-  console.log('resolution', resolution)
   if (resolution.valuation === -1) {
     playBids.forEach((bid) => (resolution.amountsPaid[bid.id] = 0))
     resolution
