@@ -8,6 +8,8 @@ import Sidebar from './sidebar'
 import { Readex_Pro, Josefin_Slab } from 'next/font/google'
 import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
+import Banner from './banner'
+import { getProfileById } from '@/db/profile'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 const josefin = Josefin_Slab({
@@ -36,11 +38,14 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const supabase = createServerClient()
-
   const {
     data: { session },
   } = await supabase.auth.getSession()
-
+  const user = session?.user
+  const userProfile = await getProfileById(supabase, user?.id)
+  const profileTodo =
+    userProfile &&
+    (userProfile.username === userProfile.id || !userProfile.full_name)
   return (
     <html lang="en" className={fontVars}>
       {/*
@@ -57,6 +62,7 @@ export default async function RootLayout({
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
           <main className="mx-2 flex flex-1 flex-col md:col-span-8">
+            {profileTodo && <Banner />}
             {children}
           </main>
           {/* @ts-expect-error Server Component */}
