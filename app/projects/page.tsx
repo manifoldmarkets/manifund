@@ -33,12 +33,13 @@ export default async function Projects() {
     (round) => round.title !== 'Regrants' && round.title !== 'Independent'
   )
   return (
-    <Col className="max-w-4xl gap-20 px-3 py-5 sm:px-6">
+    <Col className="max-w-4xl gap-12 px-3 py-5 sm:px-6">
       {user === null && <LandingSection />}
       <RegrantsHighlight
         round={regrants}
         projects={projects}
         regrantors={regrantors}
+        loggedIn={user !== null}
       />
       <Col className="gap-3">
         <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
@@ -148,8 +149,9 @@ function RegrantsHighlight(props: {
   round: Round
   projects: FullProject[]
   regrantors: Profile[]
+  loggedIn: boolean
 }) {
-  const { round, projects, regrantors } = props
+  const { round, projects, regrantors, loggedIn } = props
   const featuredRegrantors = featuredRegrantorIds.map((id) => {
     return regrantors.find((regranter) => regranter.id === id)
   })
@@ -157,17 +159,59 @@ function RegrantsHighlight(props: {
     return projects.find((project) => project.id === id)
   })
   return (
-    <Col className="mt-10 gap-12">
+    <Col className="gap-12">
       <Col className="items-center justify-between gap-8">
-        <Link
-          href="/rounds/regrants"
-          className="flex flex-col items-center gap-4 text-center"
-        >
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 group-hover:underline sm:text-4xl">
-            Regranting
-          </h2>
-          <p className="max-w-xl leading-7 text-gray-600">{round.subtitle}</p>
-        </Link>
+        {loggedIn && (
+          <div className="relative isolate flex w-full flex-col gap-4 overflow-hidden rounded-lg py-16">
+            <Image
+              src={round.header_image_url ?? ''}
+              height="500"
+              width="800"
+              alt="Regrants header image"
+              className="absolute inset-0 -z-10 h-full w-full rounded-lg object-cover"
+            />
+            <div
+              className="absolute -top-10 right-1/2 -z-10 mr-10 transform-gpu blur-3xl"
+              aria-hidden="true"
+            >
+              <div
+                className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#ea580c] to-[#e11d48] opacity-80"
+                style={{
+                  clipPath:
+                    'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+                }}
+              />
+              <div
+                className="absolute  left-1/2 top-[-28rem] -z-10 ml-16 translate-x-0 transform-gpu blur-3xl"
+                aria-hidden="true"
+              >
+                <div
+                  className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#ea580c] to-[#e11d48] opacity-80"
+                  style={{
+                    clipPath:
+                      'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+                  }}
+                />
+              </div>
+            </div>
+            <Link
+              href="/rounds/regrants"
+              className="max-w-7xl px-6 sm:px-8 lg:px-10"
+            >
+              <h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Regranting
+              </h2>
+              <p className="max-w-xl leading-7 text-gray-200">
+                {round.subtitle}
+              </p>
+            </Link>
+            <ArrowLink
+              href="/rounds/regrants?tab=about"
+              text="Learn more"
+              className="absolute bottom-5 right-5"
+            />
+          </div>
+        )}
         <div className="w-full">
           <DividerHeader text="Featured regrantors" />
           <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -181,6 +225,7 @@ function RegrantsHighlight(props: {
             href="/rounds/regrants?tab=regrants"
             text="See all regrantors"
             className="mt-5"
+            color="orange"
           />
         </div>
         <div className="w-full max-w-2xl">
@@ -195,6 +240,7 @@ function RegrantsHighlight(props: {
           <ArrowLink
             href="/rounds/regrants?tab=projects"
             text="See all projects"
+            color="orange"
           />
         </div>
       </Col>
@@ -202,13 +248,19 @@ function RegrantsHighlight(props: {
   )
 }
 
-function ArrowLink(props: { href: string; text: string; className?: string }) {
-  const { href, text, className } = props
+function ArrowLink(props: {
+  href: string
+  text: string
+  className?: string
+  color?: string
+}) {
+  const { href, text, className, color } = props
   return (
     <Link
       href={href}
       className={clsx(
-        'flex items-center justify-end gap-2 text-sm font-semibold text-orange-600 hover:underline',
+        'flex items-center justify-end gap-2 text-sm font-semibold hover:underline',
+        color ? `text-${color}-600` : 'text-white',
         className
       )}
     >
@@ -226,7 +278,7 @@ function DividerHeader(props: { text: string }) {
         <div className="w-full border-t border-gray-400" />
       </Row>
       <Row className="relative items-center justify-center">
-        <h3 className=" bg-gray-50 p-3 text-center text-lg font-bold text-gray-900">
+        <h3 className=" bg-gray-50 p-3 text-center text-xl font-bold text-gray-900">
           {text}
         </h3>
       </Row>
