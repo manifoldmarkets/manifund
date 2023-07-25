@@ -11,9 +11,9 @@ import { Tooltip } from './tooltip'
 
 export function StripeDepositButton(props: {
   userId: string
-  small?: boolean
+  white?: boolean
 }) {
-  const { userId, small } = props
+  const { userId } = props
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState(10)
@@ -26,11 +26,11 @@ export function StripeDepositButton(props: {
     <>
       <button
         type="button"
-        className={clsx('rounded bg-white shadow', small ? 'p-0.5' : 'p-1')}
+        className="rounded bg-orange-500 p-0.5 shadow"
         onClick={() => setOpen(true)}
       >
-        <Tooltip text="Add funds">
-          <PlusSmallIcon className="h-4 w-4 text-gray-500" />
+        <Tooltip text="Add funds" placement="left">
+          <PlusSmallIcon className="h-4 w-4 stroke-2 text-white" />
         </Tooltip>
       </button>
 
@@ -107,15 +107,15 @@ export function StripeDepositButton(props: {
   )
 }
 
-export function AirtableDepositButton(props: { small?: boolean }) {
-  const { small } = props
+export function AirtableDepositButton() {
   return (
     <a
       href="https://airtable.com/shrIB5yGc56DoQBhJ"
-      className={clsx('rounded bg-white shadow', small ? 'p-0.5' : 'p-1')}
+      className="rounded bg-orange-500 p-0.5 shadow"
+      target="_blank"
     >
-      <Tooltip text="Add funds">
-        <PlusSmallIcon className="h-4 w-4 text-gray-500" />
+      <Tooltip text="Add funds" placement="left">
+        <PlusSmallIcon className={clsx('h-4 w-4 stroke-2 text-white')} />
       </Tooltip>
     </a>
   )

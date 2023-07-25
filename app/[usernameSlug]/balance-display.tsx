@@ -42,20 +42,6 @@ export function BalanceDisplay(props: {
   return (
     <Col className="h-fit">
       <Row className="h-fit justify-between gap-1 sm:gap-4 lg:gap-8">
-        {isOwnProfile && userId && (
-          <Col className="justify-between">
-            {accredited ? (
-              <AirtableDepositButton />
-            ) : (
-              <StripeDepositButton userId={userId} />
-            )}
-            <Link href="/withdraw" className="rounded bg-white p-1 shadow">
-              <Tooltip text="Withdraw funds">
-                <MinusSmallIcon className="h-4 w-4 text-gray-500" />
-              </Tooltip>
-            </Link>
-          </Col>
-        )}
         <div className="w-full min-w-fit rounded border-none bg-orange-500 py-1 px-2">
           <DataPoint
             label="total balance"
@@ -81,7 +67,34 @@ export function BalanceDisplay(props: {
               })}
             />
             {stat.name === 'cash balance' && stat.value > 0 && isOwnProfile && (
-              <CashToCharityButton cashBalance={stat.value} />
+              <div className="absolute bottom-0 -right-1">
+                <CashToCharityButton cashBalance={stat.value} />
+              </div>
+            )}
+            {isOwnProfile && userId && (
+              <>
+                {stat.name === 'charity balance' ? (
+                  <>
+                    {!accredited && (
+                      <Row className="absolute top-2 right-2">
+                        <StripeDepositButton userId={userId} />
+                      </Row>
+                    )}
+                  </>
+                ) : (
+                  <Row className="absolute top-2 right-2 justify-between gap-1">
+                    {accredited && <AirtableDepositButton />}
+                    <Link
+                      href="/withdraw"
+                      className="rounded bg-orange-500 p-0.5 shadow"
+                    >
+                      <Tooltip text="Withdraw funds" placement="left">
+                        <MinusSmallIcon className="h-4 w-4 stroke-2 text-white" />
+                      </Tooltip>
+                    </Link>
+                  </Row>
+                )}
+              </>
             )}
           </Card>
         ))}
@@ -110,7 +123,7 @@ function CashToCharityButton(props: { cashBalance: number }) {
   return (
     <>
       <IconButton
-        className="absolute top-0 right-0 rounded bg-white p-0 shadow-none"
+        className="rounded bg-white p-0 shadow-none"
         onClick={() => setOpen(true)}
       >
         <ArrowLeftIcon className="h-4 w-4 stroke-2 text-orange-500" />

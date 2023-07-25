@@ -95,9 +95,9 @@ export async function ProfileSummary(props: { profile: Profile }) {
         <Row className="gap-2 py-0.5 text-sm">
           {formatMoney(calculateUserBalance(txns, profile.id))}
           {profile.accreditation_status ? (
-            <AirtableDepositButton small />
+            <AirtableDepositButton />
           ) : (
-            <StripeDepositButton userId={profile.id} small />
+            <StripeDepositButton userId={profile.id} />
           )}
         </Row>
       </Link>

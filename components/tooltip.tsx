@@ -103,7 +103,7 @@ export function Tooltip(props: {
         role="tooltip"
         ref={floating}
         style={{ position: strategy, top: y ?? 0, left: x ?? 0 }}
-        className="z-20 w-max max-w-xs whitespace-normal rounded bg-slate-700 px-2 py-1 text-center text-sm font-medium text-white"
+        className="z-20 w-max max-w-xs whitespace-normal rounded bg-slate-700 px-2 py-1 text-center text-xs font-medium text-white"
         suppressHydrationWarning={suppressHydrationWarning}
         {...getFloatingProps()}
       >
