@@ -79,20 +79,20 @@ export function CreateGrantForm(props: {
   }
 
   let recipientDoesExistError = false
-  useEffect(() => {
-    if (!recipientOnManifund) {
-      if (
-        profiles.find(
-          (profile) =>
-            profile.full_name === recipientFullName && recipientFullName !== ''
-        )
-      ) {
-        recipientDoesExistError = true
-      } else {
-        recipientDoesExistError = false
-      }
+  if (!recipientOnManifund) {
+    if (
+      profiles.find(
+        (profile) =>
+          profile.full_name === recipientFullName && recipientFullName !== ''
+      )
+    ) {
+      recipientDoesExistError = true
     } else {
-      console.log('recipient', recipient)
+      recipientDoesExistError = false
+    }
+  }
+  useEffect(() => {
+    if (recipientOnManifund) {
       recipientDoesExistError = false
       setRecipient(
         profiles.find((profile) => profile.full_name === recipientFullName) ??
