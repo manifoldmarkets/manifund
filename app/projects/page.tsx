@@ -97,12 +97,12 @@ function LandingSection() {
               improve incentives, efficiency, and transparency.
             </p>
             <Row className="mt-5 justify-center">
-              <a
-                className="rounded bg-white px-3 py-2 text-sm font-medium text-orange-500 shadow hover:bg-orange-500 hover:text-white"
+              <Link
+                className="rounded bg-white px-3 py-2 text-sm font-medium text-orange-600 shadow hover:bg-orange-600 hover:text-white"
                 href="/login"
               >
-                Start giving
-              </a>
+                Get started
+              </Link>
             </Row>
           </div>
           <Image
@@ -118,7 +118,7 @@ function LandingSection() {
         <FeatureCard
           icon={<ArrowPathIcon className="h-7 w-7" />}
           title="Regranting"
-          description="Allows donors to outsource their giving to qualified and trusted regrantors."
+          description="Lets donors to outsource their donation decisions to regrantors of their choice."
           url="/rounds/regrants?tab=about"
         />
         <FeatureCard
