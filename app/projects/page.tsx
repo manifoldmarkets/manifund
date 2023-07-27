@@ -140,7 +140,7 @@ const featuredRegrantorIds = [
 ]
 
 const featuredProjectIds = [
-  '6fac4945-95ba-43ac-e548-b960e7f1db57', // Cavity
+  '9261e458-fbd0-3135-0d50-9636b9fdeee2', // VaccinateCA
   'c76614f2-7d71-ae49-c0e2-9d32d642ea3c', // Jesse
   'ebf3d790-c893-b968-7ac9-83c90bd8e795', // (Dis)empowerment
 ]
