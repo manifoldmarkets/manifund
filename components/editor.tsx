@@ -13,8 +13,7 @@ import { linkClass } from './site-link'
 import { generateReact } from './tiptap-utils'
 import Placeholder from '@tiptap/extension-placeholder'
 import useLocalStorage from '@/hooks/use-local-storage'
-import { useCallback } from 'react'
-import { debounce, noop } from 'lodash'
+import { noop } from 'lodash'
 
 export function useTextEditor(
   defaultContent?: any,
@@ -23,7 +22,6 @@ export function useTextEditor(
   key?: string
 ) {
   const [content, saveContent] = useLocalStorage('', key)
-  const save = useCallback(debounce(saveContent, 500), [])
 
   const editor = useEditor({
     editorProps: {
@@ -38,7 +36,7 @@ export function useTextEditor(
     onUpdate: !key
       ? noop
       : ({ editor }) => {
-          save(editor.getJSON())
+          saveContent(editor.getJSON())
         },
     extensions: [
       StarterKit,
@@ -50,7 +48,7 @@ export function useTextEditor(
           'before:content-[attr(data-placeholder)] before:text-gray-500 before:float-left before:h-0 cursor-text',
       }),
     ],
-    content: defaultContent ?? (key && content ? content : ''),
+    content: (key && content ? content : '') ?? defaultContent,
   })
   return editor
 }

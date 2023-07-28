@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react'
 
 const useLocalStorage = (initialValue: string, key?: string) => {
@@ -27,18 +28,7 @@ const useLocalStorage = (initialValue: string, key?: string) => {
     }
   }
 
-  const clearValue = () => {
-    try {
-      if (key) {
-        window.localStorage.removeItem(key)
-      }
-      setState(undefined)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  return [state, setValue, clearValue]
+  return [state, setValue]
 }
 
 export default useLocalStorage
