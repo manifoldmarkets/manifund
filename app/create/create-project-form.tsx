@@ -22,6 +22,7 @@ import { Card } from '@/components/card'
 import { Checkbox } from '@/components/input'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 import { RequiredStar } from '@/components/tags'
+import useLocalStorage from '@/hooks/use-local-storage'
 
 const DEFAULT_DESCRIPTION = `
 <h3>Project summary</h3>
@@ -75,7 +76,16 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
       : null
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const editor = useTextEditor(DEFAULT_DESCRIPTION)
+  const [content, saveContent, clearContent] = useLocalStorage(
+    DEFAULT_DESCRIPTION,
+    'ProjectDescription'
+  )
+  const editor = useTextEditor(
+    content ?? DEFAULT_DESCRIPTION,
+    undefined,
+    undefined,
+    saveContent
+  )
 
   let errorMessage = null
   if (title === '') {
@@ -507,6 +517,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           })
           const newProject = await response.json()
           router.push(`/projects/${newProject.slug}`)
+          window.localStorage.removeItem('ProjectDescription')
           setIsSubmitting(false)
         }}
       >

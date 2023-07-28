@@ -12,12 +12,19 @@ import { DisplayMention } from './user-mention/mention-extension'
 import { linkClass } from './site-link'
 import { generateReact } from './tiptap-utils'
 import Placeholder from '@tiptap/extension-placeholder'
+import useLocalStorage from '@/hooks/use-local-storage'
+import { useCallback } from 'react'
+import { debounce, noop } from 'lodash'
 
 export function useTextEditor(
-  content?: any,
+  defaultContent?: any,
   className?: string,
-  placeholder?: string
+  placeholder?: string,
+  key?: string
 ) {
+  const [content, saveContent] = useLocalStorage('', key)
+  const save = useCallback(debounce(saveContent, 500), [])
+
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -28,6 +35,11 @@ export function useTextEditor(
         ),
       },
     },
+    onUpdate: !key
+      ? noop
+      : ({ editor }) => {
+          save(editor.getJSON())
+        },
     extensions: [
       StarterKit,
       DisplayLink,
@@ -38,14 +50,14 @@ export function useTextEditor(
           'before:content-[attr(data-placeholder)] before:text-gray-500 before:float-left before:h-0 cursor-text',
       }),
     ],
-    content: content ?? '',
+    content: defaultContent ?? (key && content ? content : ''),
   })
   return editor
 }
 
 export function TextEditor(props: {
   editor: Editor | null
-  children?: React.ReactNode // additional toolbar buttons
+  children?: React.ReactNode // Additional toolbar buttons
 }) {
   const { editor, children } = props
   return (
