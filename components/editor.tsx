@@ -21,7 +21,7 @@ export function useTextEditor(
   placeholder?: string,
   key?: string
 ) {
-  const [content, saveContent] = useLocalStorage('', key)
+  const [content, saveContent] = useLocalStorage(defaultContent, key)
 
   const editor = useEditor({
     editorProps: {
