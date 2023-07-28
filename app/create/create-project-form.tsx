@@ -34,7 +34,7 @@ const DEFAULT_DESCRIPTION = `
 </br>
 <h3>What are the most likely causes and outcomes if this project fails? (premortem)</h3>
 </br>
-<h3>What other funding is are you or your project getting?</h3>
+<h3>What other funding are you or your project getting?</h3>
 </br>
 `
 
