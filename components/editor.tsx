@@ -121,16 +121,16 @@ export const DisplayLink = Link.extend({
 })
 
 export function ResetEditor(props: {
-  name: string
+  storageKey: string
   editor: Editor | null
   defaultContent: string
 }) {
-  const { name, editor, defaultContent } = props
+  const { storageKey, editor, defaultContent } = props
   const router = useRouter()
   return (
     <Button
       onClick={() => {
-        clearLocalStorageItem(name)
+        clearLocalStorageItem(storageKey)
         editor?.commands.setContent(defaultContent)
         router.refresh()
       }}

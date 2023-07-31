@@ -211,7 +211,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
             <RequiredStar />
           </label>
           <ResetEditor
-            name="ProjectDescription"
+            storageKey="ProjectDescription"
             editor={editor}
             defaultContent={DESCRIPTION_OUTLINE}
           />
@@ -251,7 +251,6 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
                       <Row className="h-6 items-center">
                         <input
                           id={availableRound.title}
-                          name="notification-method"
                           type="radio"
                           defaultChecked={availableRound.title === round.title}
                           onChange={() => {
@@ -459,7 +458,6 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           <Checkbox
             id="terms"
             aria-describedby="terms-description"
-            name="terms"
             checked={agreedToTerms}
             onChange={() => setAgreedToTerms(!agreedToTerms)}
           />
