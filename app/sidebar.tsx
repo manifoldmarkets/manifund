@@ -73,10 +73,10 @@ export default async function Sidebar() {
             href={isRegranter ? '/create-grant' : '/create'}
             className={clsx(
               buttonClass('xl', 'gradient'),
-              'mt-4 w-full bg-gradient-to-r'
+              'mt-4 w-52 bg-gradient-to-r'
             )}
           >
-            {isRegranter ? 'Give a Grant' : 'Create a Project'}
+            {isRegranter ? 'Give a grant' : 'Create a project'}
           </Link>
         )}
       </nav>
