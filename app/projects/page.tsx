@@ -46,9 +46,11 @@ export default async function Projects() {
           Other funding rounds
         </h2>
         <p className="text-gray-600">
-          These rounds used impact certificates to fund projects. They are no
-          longer accepting submissions, but many projects are still active and
-          awaiting evaluation.
+          In the past, we experimented with funding projects through impact
+          certificates, which you can read more about{' '}
+          <Link href="/about#impact-certificates">here</Link>. These rounds are
+          no longer accepting submissions, but many projects are still active
+          and are awaiting retroactive evaluation.
         </p>
         <div className="mt-5 flex flex-col gap-10 sm:grid sm:grid-cols-2">
           {otherRounds.map((round) => (
