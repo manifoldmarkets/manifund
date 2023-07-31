@@ -7,7 +7,7 @@ import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { MySlider } from '@/components/slider'
 import { Project, TOTAL_SHARES } from '@/db/project'
-import { TextEditor, useTextEditor } from '@/components/editor'
+import { ResetEditor, TextEditor, useTextEditor } from '@/components/editor'
 import clsx from 'clsx'
 import { InfoTooltip } from '@/components/info-tooltip'
 import Link from 'next/link'
@@ -22,8 +22,9 @@ import { Card } from '@/components/card'
 import { Checkbox } from '@/components/input'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 import { RequiredStar } from '@/components/tags'
+import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 
-const DEFAULT_DESCRIPTION = `
+const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
 </br>
 <h3>What are this project's goals and how will you achieve them?</h3>
@@ -76,7 +77,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const editor = useTextEditor(
-    DEFAULT_DESCRIPTION,
+    DESCRIPTION_OUTLINE,
     undefined,
     undefined,
     'ProjectDescription'
@@ -204,10 +205,17 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
         </Col>
       </Col>
       <Col className="gap-1">
-        <label htmlFor="description">
-          Description
-          <RequiredStar />
-        </label>
+        <Row className="items-center justify-between">
+          <label>
+            Project description
+            <RequiredStar />
+          </label>
+          <ResetEditor
+            name="ProjectDescription"
+            editor={editor}
+            defaultContent={DESCRIPTION_OUTLINE}
+          />
+        </Row>
         <p className="text-sm text-gray-500">
           Note that the editor offers formatting shortcuts{' '}
           <Link
@@ -512,7 +520,7 @@ export function CreateProjectForm(props: { rounds: Round[] }) {
           })
           const newProject = await response.json()
           router.push(`/projects/${newProject.slug}`)
-          window.localStorage.removeItem('ProjectDescription')
+          clearLocalStorageItem('ProjectDescription')
           setIsSubmitting(false)
         }}
       >

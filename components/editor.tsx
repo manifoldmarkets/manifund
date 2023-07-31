@@ -12,8 +12,12 @@ import { DisplayMention } from './user-mention/mention-extension'
 import { linkClass } from './site-link'
 import { generateReact } from './tiptap-utils'
 import Placeholder from '@tiptap/extension-placeholder'
-import useLocalStorage from '@/hooks/use-local-storage'
+import useLocalStorage, {
+  clearLocalStorageItem,
+} from '@/hooks/use-local-storage'
 import { noop } from 'lodash'
+import { useRouter } from 'next/navigation'
+import { Button } from './button'
 
 export function useTextEditor(
   defaultContent?: any,
@@ -115,3 +119,25 @@ export const DisplayLink = Link.extend({
     return ['a', mergeAttributes(HTMLAttributes, { class: linkClass }), 0]
   },
 })
+
+export function ResetEditor(props: {
+  name: string
+  editor: Editor | null
+  defaultContent: string
+}) {
+  const { name, editor, defaultContent } = props
+  const router = useRouter()
+  return (
+    <Button
+      onClick={() => {
+        clearLocalStorageItem(name)
+        editor?.commands.setContent(defaultContent)
+        router.refresh()
+      }}
+      color="gray"
+      size="xs"
+    >
+      Reset editor
+    </Button>
+  )
+}

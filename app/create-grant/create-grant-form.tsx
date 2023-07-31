@@ -1,5 +1,5 @@
 'use client'
-import { TextEditor, useTextEditor } from '@/components/editor'
+import { ResetEditor, TextEditor, useTextEditor } from '@/components/editor'
 import { Checkbox, Input } from '@/components/input'
 import { Col } from '@/components/layout/col'
 import { useEffect, useState } from 'react'
@@ -13,6 +13,7 @@ import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 import { RequiredStar } from '@/components/tags'
+import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -68,8 +69,18 @@ export function CreateGrantForm(props: {
   const [minFunding, setMinFunding] = useState(0)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE)
-  const reasoningEditor = useTextEditor(REASONING_OUTLINE)
+  const descriptionEditor = useTextEditor(
+    DESCRIPTION_OUTLINE,
+    undefined,
+    undefined,
+    'GrantDescription'
+  )
+  const reasoningEditor = useTextEditor(
+    REASONING_OUTLINE,
+    undefined,
+    undefined,
+    'GrantReasoning'
+  )
   const router = useRouter()
 
   const fundingOptions = {
@@ -386,10 +397,17 @@ export function CreateGrantForm(props: {
         </Col>
       )}
       <Col className="gap-1">
-        <label>
-          Project description
-          <RequiredStar />
-        </label>
+        <Row className="items-center justify-between">
+          <label>
+            Project description
+            <RequiredStar />
+          </label>
+          <ResetEditor
+            name="GrantDescription"
+            editor={descriptionEditor}
+            defaultContent={DESCRIPTION_OUTLINE}
+          />
+        </Row>
         <span className="text-sm text-gray-600">
           This will be displayed as the public description of this project, but
           can be edited by the grant recipient. In this section, please describe
@@ -398,10 +416,17 @@ export function CreateGrantForm(props: {
         <TextEditor editor={descriptionEditor} />
       </Col>
       <Col className="gap-1">
-        <label>
-          Grantmaker notes & reasoning
-          <RequiredStar />
-        </label>
+        <Row className="items-center justify-between">
+          <label>
+            Grantmaker notes & reasoning
+            <RequiredStar />
+          </label>
+          <ResetEditor
+            name="GrantReasoning"
+            editor={reasoningEditor}
+            defaultContent={REASONING_OUTLINE}
+          />
+        </Row>
         <span className="text-sm text-gray-600">
           This will be displayed as a public comment on this project. In this
           section, please describe in subjective terms why you are excited to
@@ -463,6 +488,8 @@ export function CreateGrantForm(props: {
           })
           const newProject = await response.json()
           setIsSubmitting(false)
+          clearLocalStorageItem('GrantDescription')
+          clearLocalStorageItem('GrantReasoning')
           router.push(`/projects/${newProject.slug}`)
         }}
       >

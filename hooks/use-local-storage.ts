@@ -31,4 +31,8 @@ const useLocalStorage = (initialValue: string, key?: string) => {
   return [state, setValue]
 }
 
+export function clearLocalStorageItem(key: string) {
+  window.localStorage.removeItem(key)
+}
+
 export default useLocalStorage
