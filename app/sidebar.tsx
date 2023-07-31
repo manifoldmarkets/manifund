@@ -16,6 +16,7 @@ import {
   AirtableDepositButton,
   StripeDepositButton,
 } from '@/components/deposit-buttons'
+import { Col } from '@/components/layout/col'
 
 export const revalidate = 30
 export default async function Sidebar() {
@@ -34,11 +35,11 @@ export default async function Sidebar() {
             <Image
               src="/Manifox.png"
               alt="Manifund fox"
-              className="max-w-[60px] -translate-y-2 transition-all group-hover:-translate-y-3"
+              className="max-w-[50px] -translate-y-2 transition-all group-hover:-translate-y-3 lg:max-w-[60px]"
               width={100}
               height={100}
             />
-            <span className="bg-gradient-to-r from-orange-500  to-rose-400 bg-clip-text font-josefin text-4xl font-[650] text-transparent">
+            <span className="bg-gradient-to-r from-orange-500  to-rose-400 bg-clip-text font-josefin text-3xl font-[650] text-transparent lg:text-4xl">
               {SUPABASE_ENV === 'PROD' ? 'Manifund' : 'Devifund'}
             </span>
           </div>
@@ -88,10 +89,12 @@ export async function ProfileSummary(props: { profile: Profile }) {
   const supabase = createServerClient()
   const txns = await getTxnsByUser(supabase, profile.id)
   return (
-    <div className="group mb-3 flex flex-row items-center gap-2 truncate rounded-md py-3 px-1 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+    <Row className="group mb-3 items-center gap-2 truncate rounded-md py-3 px-1 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
       <Avatar username={profile.username} avatarUrl={profile.avatar_url} />
-      <Link href={`/${profile.username}`} className="truncate">
-        <div className="font-medium">{profile.full_name}</div>
+      <Col className="w-full">
+        <Link href={`/${profile.username}`} className="w-full">
+          <div className="font-medium">{profile.full_name}</div>
+        </Link>
         <Row className="gap-2 py-0.5 text-sm">
           {formatMoney(calculateUserBalance(txns, profile.id))}
           {profile.accreditation_status ? (
@@ -100,7 +103,7 @@ export async function ProfileSummary(props: { profile: Profile }) {
             <StripeDepositButton userId={profile.id} />
           )}
         </Row>
-      </Link>
-    </div>
+      </Col>
+    </Row>
   )
 }
