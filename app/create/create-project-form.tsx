@@ -136,15 +136,19 @@ export function CreateProjectForm() {
         </label>
         <p className="text-sm text-gray-600">
           The minimum amount of funding you need to start this project. If this
-          amount is not reached, no funds will be sent.
+          amount is not reached, no funds will be sent. Due to fixed processing
+          costs, we require this to be at least $500.
         </p>
-        <Input
-          type="number"
-          id="minFunding"
-          autoComplete="off"
-          value={minFunding !== 0 ? minFunding : ''}
-          onChange={(event) => setMinFunding(Number(event.target.value))}
-        />
+        <Col>
+          <Input
+            type="number"
+            id="minFunding"
+            autoComplete="off"
+            value={minFunding !== 0 ? minFunding : ''}
+            onChange={(event) => setMinFunding(Number(event.target.value))}
+          />
+          <span className="text-right text-xs text-gray-600">Minimum $500</span>
+        </Col>
       </Col>
       <Col className="gap-1">
         <label htmlFor="fundingGoal">
