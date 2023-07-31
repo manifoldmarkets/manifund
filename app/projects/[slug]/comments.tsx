@@ -19,6 +19,7 @@ import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { JSONContent } from '@tiptap/react'
 import clsx from 'clsx'
+import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 
 export function Comments(props: {
   project: Project
@@ -219,10 +220,14 @@ export function WriteComment(props: {
         ],
       }
     : ''
+  const storageKey = `CommentOn${project.id}${
+    replyingTo ? `ReplyingTo${replyingTo.id}` : ''
+  }`
   const editor = useTextEditor(
     startingText,
     'border-0 focus:!outline-none focus:ring-0 text-sm sm:text-md',
-    replyingTo ? 'Write your reply...' : 'Write a comment...'
+    replyingTo ? 'Write your reply...' : 'Write a comment...',
+    storageKey
   )
   useEffect(() => {
     if (editor && !editor.isDestroyed && (replyingTo || specialPrompt)) {
@@ -257,6 +262,7 @@ export function WriteComment(props: {
         onSubmit()
       }
       setIsSubmitting(false)
+      clearLocalStorageItem(storageKey)
       router.refresh()
     }
   }
