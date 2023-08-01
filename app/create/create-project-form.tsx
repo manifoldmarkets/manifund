@@ -32,8 +32,8 @@ export function CreateProjectForm() {
   const router = useRouter()
   const [title, setTitle] = useState<string>('')
   const [blurb, setBlurb] = useState<string>('')
-  const [minFunding, setMinFunding] = useState<number>(500)
-  const [fundingGoal, setFundingGoal] = useState<number>(0)
+  const [minFunding, setMinFunding] = useState<number | null>(null)
+  const [fundingGoal, setFundingGoal] = useState<number | null>(null)
   const [verdictDate, setVerdictDate] = useState(
     format(add(new Date(), { months: 1 }), 'yyyy-MM-dd')
   )
@@ -43,9 +43,12 @@ export function CreateProjectForm() {
   let errorMessage = null
   if (title === '') {
     errorMessage = 'Your project needs a title.'
-  } else if (minFunding < 500) {
+  } else if (minFunding !== null && minFunding < 500) {
     errorMessage = 'Your minimum funding must be at least $500.'
-  } else if (minFunding > fundingGoal || fundingGoal <= 0) {
+  } else if (
+    fundingGoal &&
+    ((minFunding && minFunding > fundingGoal) || fundingGoal <= 0)
+  ) {
     errorMessage =
       'Your funding goal must be greater than 0 and greater than or equal to your minimum funding goal.'
   } else if (
@@ -58,6 +61,32 @@ export function CreateProjectForm() {
     errorMessage = 'You need to set a decision deadline.'
   } else {
     errorMessage = null
+  }
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true)
+    const description = editor?.getJSON() ?? '<p>No description</p>'
+    const response = await fetch('/api/create-project', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title,
+        blurb,
+        description,
+        min_funding: minFunding,
+        funding_goal: fundingGoal,
+        founder_portion: TOTAL_SHARES,
+        round: 'Regrants',
+        auction_close: verdictDate,
+        stage: 'proposal',
+        type: 'grant',
+      }),
+    })
+    const newProject = await response.json()
+    router.push(`/projects/${newProject.slug}`)
+    setIsSubmitting(false)
   }
 
   const user = session?.user
@@ -136,18 +165,20 @@ export function CreateProjectForm() {
         </label>
         <p className="text-sm text-gray-600">
           The minimum amount of funding you need to start this project. If this
-          amount is not reached, no funds will be sent. Due to fixed processing
-          costs, we require this to be at least $500.
+          amount is not reached, no funds will be sent. Due to the cost of
+          approving grants and processing payments, we require this to be at
+          least $500.
         </p>
         <Col>
           <Input
             type="number"
             id="minFunding"
             autoComplete="off"
-            value={minFunding !== 0 ? minFunding : ''}
+            value={minFunding !== null ? Number(minFunding).toString() : ''}
             onChange={(event) => setMinFunding(Number(event.target.value))}
+            error={minFunding !== null && minFunding < 500}
+            errorMessage="Minimum funding must be at least $500."
           />
-          <span className="text-right text-xs text-gray-600">Minimum $500</span>
         </Col>
       </Col>
       <Col className="gap-1">
@@ -163,8 +194,16 @@ export function CreateProjectForm() {
           type="number"
           id="fundingGoal"
           autoComplete="off"
-          value={fundingGoal !== 0 ? fundingGoal : ''}
+          value={fundingGoal ? Number(fundingGoal).toString() : ''}
           onChange={(event) => setFundingGoal(Number(event.target.value))}
+          error={
+            !!(
+              fundingGoal &&
+              minFunding &&
+              (fundingGoal <= minFunding || fundingGoal <= 0)
+            )
+          }
+          errorMessage="Funding goal must be greater than 0 and greater than or equal to your minimum funding."
         />
       </Col>
       <Col className="gap-1">
@@ -183,39 +222,12 @@ export function CreateProjectForm() {
           onChange={(event) => setVerdictDate(event.target.value)}
         />
       </Col>
-      <div className="mt-3 text-center text-sm text-rose-500">
-        {errorMessage}
-      </div>
       <Button
         className="mt-4"
         type="submit"
         disabled={!!errorMessage}
         loading={isSubmitting}
-        onClick={async () => {
-          setIsSubmitting(true)
-          const description = editor?.getJSON() ?? '<p>No description</p>'
-          const response = await fetch('/api/create-project', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              title,
-              blurb,
-              description,
-              min_funding: minFunding,
-              funding_goal: fundingGoal,
-              founder_portion: TOTAL_SHARES,
-              round: 'Regrants',
-              auction_close: verdictDate,
-              stage: 'proposal',
-              type: 'grant',
-            }),
-          })
-          const newProject = await response.json()
-          router.push(`/projects/${newProject.slug}`)
-          setIsSubmitting(false)
-        }}
+        onClick={handleSubmit}
       >
         Publish project
       </Button>

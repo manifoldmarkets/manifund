@@ -27,7 +27,7 @@ export const Input = forwardRef(
           {...rest}
         />
         {error && errorMessage && (
-          <span className="text-sm text-rose-500">{errorMessage}</span>
+          <span className="text-xs text-rose-500">{errorMessage}</span>
         )}
       </>
     )
