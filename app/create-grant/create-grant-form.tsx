@@ -343,14 +343,10 @@ export function CreateGrantForm(props: {
           value={donorContribution !== 0 ? donorContribution : ''}
           onChange={(event) => setDonorContribution(Number(event.target.value))}
           error={maxDonation < donorContribution}
+          errorMessage={`You currently have $${maxDonation} to give away. If you would like to
+          give a larger grant, you can add money to your account or raise more
+          funds from other users on Manifund.`}
         />
-        {maxDonation < donorContribution && (
-          <span className="text-sm text-rose-500">
-            You currently have ${maxDonation} to give away. If you would like to
-            give a larger grant, you can add money to your account or raise more
-            funds from other users on Manifund.
-          </span>
-        )}
       </Col>
       {fundingOption === 'needsMore' && (
         <Col className="gap-1">
@@ -382,6 +378,8 @@ export function CreateGrantForm(props: {
             id="fundingGoal"
             value={fundingGoal !== 0 ? fundingGoal : ''}
             onChange={(event) => setFundingGoal(Number(event.target.value))}
+            error={fundingGoal <= minFunding}
+            errorMessage="The funding goal must be greater than your contribution. Otherwise, indicate that the project will be fully funded."
           />
         </Col>
       )}
