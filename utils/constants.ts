@@ -46,7 +46,6 @@ export function getSponsoredAmount(regrantorId: string) {
     'b11620f2-fdc7-414c-8a63-9ddee17ee669': 50_000, // Marcus
     '4de2634d-3802-4141-881e-9ce687f87485': 50_000, // Rachel
     '10bd8a14-4002-47ff-af4a-92b227423a74': 50_000, // Austin
-    'e8448021-c0a2-4f1f-98b1-3e08d217b93d': 50_000, // Qualy
     '74f76b05-0e51-407e-82c3-1fb19518933c': 50_000, // Gavriel
     'fb21e9f3-9b84-4556-9228-2b65bc85a9dc': 50_000, // Zvi
     '0f0dd540-40a4-4976-a145-c6e82c2e98f5': 50_000, // Ted
