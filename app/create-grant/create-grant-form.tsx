@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
+import { Tooltip } from '@/components/tooltip'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -64,9 +65,11 @@ export function CreateGrantForm(props: {
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
   const [fundingOption, setFundingOption] = useState('fullyFund')
-  const [donorContribution, setDonorContribution] = useState(0)
-  const [fundingGoal, setFundingGoal] = useState(0)
-  const [minFunding, setMinFunding] = useState(0)
+  const [donorContribution, setDonorContribution] = useState<number | null>(
+    null
+  )
+  const [fundingGoal, setFundingGoal] = useState<number | null>(null)
+  const [minFunding, setMinFunding] = useState<number | null>(null)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const descriptionEditor = useTextEditor(
@@ -130,17 +133,24 @@ export function CreateGrantForm(props: {
     errorMessage = 'Please select the recipient.'
   } else if (!title) {
     errorMessage = 'Please enter a title for your grant.'
-  } else if (donorContribution <= 0) {
+  } else if (!donorContribution || donorContribution <= 0) {
     errorMessage = 'Please enter a positive donation amount.'
-  } else if (minFunding <= 0) {
+  } else if (!minFunding || minFunding <= 0) {
     errorMessage = 'Please enter a positive minimum funding amount.'
   } else if (
+    fundingGoal &&
+    donorContribution &&
     fundingOption !== 'fullyFund' &&
     fundingGoal <= donorContribution
   ) {
     errorMessage =
       'The funding goal must be greater than your contribution. Otherwise, indicate that the project will be fully funded.'
-  } else if (fundingOption === 'needsMore' && fundingGoal <= minFunding) {
+  } else if (
+    fundingGoal &&
+    minFunding &&
+    fundingOption === 'needsMore' &&
+    fundingGoal <= minFunding
+  ) {
     errorMessage = 'The funding goal must be greater than the minimum funding.'
   } else if (fundingOption === 'needsMore' && minFunding <= donorContribution) {
     errorMessage =
@@ -152,6 +162,35 @@ export function CreateGrantForm(props: {
       'Please confirm that you understand and agree to the terms of giving this grant.'
   } else {
     errorMessage = null
+  }
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true)
+    const description = descriptionEditor?.getJSON()
+    const donorNotes = reasoningEditor?.getJSON()
+    const response = await fetch('/api/create-grant', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title,
+        subtitle,
+        description,
+        donorNotes,
+        donorContribution,
+        fundingGoal,
+        minFunding,
+        recipientEmail: recipientOnManifund ? undefined : recipientEmail,
+        recipientName: recipientOnManifund ? undefined : recipientFullName,
+        recipientUsername: recipientOnManifund
+          ? recipient?.username
+          : undefined,
+      }),
+    })
+    const newProject = await response.json()
+    setIsSubmitting(false)
+    router.push(`/projects/${newProject.slug}`)
   }
   return (
     <Col className="gap-5 p-4">
@@ -351,17 +390,13 @@ export function CreateGrantForm(props: {
         <Input
           type="number"
           id="donorContribution"
-          value={donorContribution !== 0 ? donorContribution : ''}
+          value={donorContribution ? Number(donorContribution).toString() : ''}
           onChange={(event) => setDonorContribution(Number(event.target.value))}
-          error={maxDonation < donorContribution}
+          error={!!(donorContribution && maxDonation < donorContribution)}
+          errorMessage={`You currently have $${maxDonation} to give away. If you would like to
+          give a larger grant, you can add money to your account or raise more
+          funds from other users on Manifund.`}
         />
-        {maxDonation < donorContribution && (
-          <span className="text-sm text-rose-500">
-            You currently have ${maxDonation} to give away. If you would like to
-            give a larger grant, you can add money to your account or raise more
-            funds from other users on Manifund.
-          </span>
-        )}
       </Col>
       {fundingOption === 'needsMore' && (
         <Col className="gap-1">
@@ -374,7 +409,7 @@ export function CreateGrantForm(props: {
           <Input
             type="number"
             id="minFunding"
-            value={minFunding !== 0 ? minFunding : ''}
+            value={minFunding ? Number(minFunding).toString() : ''}
             onChange={(event) => setMinFunding(Number(event.target.value))}
           />
         </Col>
@@ -391,8 +426,16 @@ export function CreateGrantForm(props: {
           <Input
             type="number"
             id="fundingGoal"
-            value={fundingGoal !== 0 ? fundingGoal : ''}
+            value={fundingGoal ? Number(fundingGoal).toString() : ''}
             onChange={(event) => setFundingGoal(Number(event.target.value))}
+            error={
+              !!(
+                fundingGoal &&
+                donorContribution &&
+                fundingGoal <= donorContribution
+              )
+            }
+            errorMessage="The funding goal must be greater than your contribution. Otherwise, indicate that the project will be fully funded."
           />
         </Col>
       )}
@@ -454,47 +497,50 @@ export function CreateGrantForm(props: {
           </span>
         </div>
       </Row>
-      <span className="text-center text-sm text-rose-500">{errorMessage}</span>
-      <Button
-        type="submit"
-        className="mt-4 w-full"
-        disabled={errorMessage !== null}
-        loading={isSubmitting}
-        onClick={async () => {
-          setIsSubmitting(true)
-          const description = descriptionEditor?.getJSON()
-          const donorNotes = reasoningEditor?.getJSON()
-          const response = await fetch('/api/create-grant', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              title,
-              subtitle,
-              description,
-              donorNotes,
-              donorContribution,
-              fundingGoal,
-              minFunding,
-              recipientEmail: recipientOnManifund ? undefined : recipientEmail,
-              recipientName: recipientOnManifund
-                ? undefined
-                : recipientFullName,
-              recipientUsername: recipientOnManifund
-                ? recipient?.username
-                : undefined,
-            }),
-          })
-          const newProject = await response.json()
-          setIsSubmitting(false)
-          clearLocalStorageItem('GrantDescription')
-          clearLocalStorageItem('GrantReasoning')
-          router.push(`/projects/${newProject.slug}`)
-        }}
-      >
-        Create grant
-      </Button>
+      <Tooltip text={errorMessage}>
+        <Button
+          type="submit"
+          className="mt-4 w-full"
+          disabled={errorMessage !== null}
+          loading={isSubmitting}
+          onClick={async () => {
+            setIsSubmitting(true)
+            const description = descriptionEditor?.getJSON()
+            const donorNotes = reasoningEditor?.getJSON()
+            const response = await fetch('/api/create-grant', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                title,
+                subtitle,
+                description,
+                donorNotes,
+                donorContribution,
+                fundingGoal,
+                minFunding,
+                recipientEmail: recipientOnManifund
+                  ? undefined
+                  : recipientEmail,
+                recipientName: recipientOnManifund
+                  ? undefined
+                  : recipientFullName,
+                recipientUsername: recipientOnManifund
+                  ? recipient?.username
+                  : undefined,
+              }),
+            })
+            const newProject = await response.json()
+            setIsSubmitting(false)
+            clearLocalStorageItem('GrantDescription')
+            clearLocalStorageItem('GrantReasoning')
+            router.push(`/projects/${newProject.slug}`)
+          }}
+        >
+          Create grant
+        </Button>
+      </Tooltip>
     </Col>
   )
 }

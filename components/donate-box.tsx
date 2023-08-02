@@ -1,7 +1,6 @@
 'use client'
-import { WriteComment } from '@/app/projects/[slug]/comments'
 import { scrollToComments } from '@/app/projects/[slug]/project-display'
-import { Button, IconButton } from '@/components/button'
+import { Button } from '@/components/button'
 import { Card } from '@/components/card'
 import { Input } from '@/components/input'
 import { Profile } from '@/db/profile'
@@ -93,7 +92,7 @@ export function DonateBox(props: {
           type="number"
           id="amount"
           autoComplete="off"
-          value={amount !== 0 ? amount : ''}
+          value={Number(amount).toString()}
           placeholder="Amount (USD)"
           onChange={(event) => setAmount(Number(event.target.value))}
           className="w-48 max-w-full"
