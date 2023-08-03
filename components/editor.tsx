@@ -10,7 +10,7 @@ import { proseClass } from '@/utils/use-text-editor'
 
 export function TextEditor(props: {
   editor: Editor | null
-  children?: React.ReactNode // additional toolbar buttons
+  children?: React.ReactNode // Additional toolbar buttons
 }) {
   const { editor, children } = props
   return (
