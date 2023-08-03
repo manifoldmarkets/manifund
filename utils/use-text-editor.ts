@@ -5,6 +5,7 @@ import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
 import { DisplayMention } from '@/components/user-mention/mention-extension'
 import Placeholder from '@tiptap/extension-placeholder'
+import BubbleMenu from '@tiptap/extension-bubble-menu'
 
 export function useTextEditor(
   content?: any,
@@ -16,7 +17,7 @@ export function useTextEditor(
       attributes: {
         class: clsx(
           proseClass('md'),
-          'p-3 h-full bg-white border border-gray-300 rounded-md focus:outline-orange-500',
+          'p-3 h-full bg-white border border-gray-300 rounded-md focus:outline-orange-500 min-h-[5em]',
           className
         ),
       },
@@ -30,9 +31,9 @@ export function useTextEditor(
         emptyEditorClass:
           'before:content-[attr(data-placeholder)] before:text-gray-500 before:float-left before:h-0 cursor-text',
       }),
-      // BubbleMenu.configure({
-      //   element: document?.querySelector('.menu') as HTMLElement,
-      // }),
+      BubbleMenu.configure({
+        element: document?.querySelector('.menu') as HTMLElement,
+      }),
     ],
     content: content ?? '',
   })
