@@ -19,34 +19,40 @@ export function TextEditor(props: {
           tippyOptions={{ duration: 100 }}
           className="flex items-center rounded bg-white py-2 shadow"
         >
-          <button
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            className={clsx(
-              'border-r border-gray-300 px-2 font-bold',
-              editor.isActive('bold') ? 'is-active' : ''
-            )}
-          >
-            B
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={clsx(
-              'border-r border-gray-300 px-2 italic',
-              editor.isActive('bold') ? 'is-active' : ''
-            )}
-          >
-            I
-          </button>
-          <button
-            onClick={() => editor.chain().focus().toggleStrike().run()}
-            className={clsx(
-              'border-r border-gray-300 px-2 line-through',
-              editor.isActive('bold') ? 'is-active' : ''
-            )}
-          >
-            S
-          </button>
-          <span className="px-2 text-sm font-thin">Ctrl + V for hyperlink</span>
+          <div className="border-r border-gray-300 px-1">
+            <button
+              onClick={() => editor.chain().focus().toggleBold().run()}
+              className={clsx(
+                'rounded px-2 py-0.5 font-bold',
+                editor.isActive('bold') && 'bg-gray-200'
+              )}
+            >
+              B
+            </button>
+          </div>
+          <div className="border-r border-gray-300 px-1">
+            <button
+              onClick={() => editor.chain().focus().toggleItalic().run()}
+              className={clsx(
+                'rounded py-0.5 pr-3 pl-2 italic',
+                editor.isActive('italic') && 'bg-gray-200'
+              )}
+            >
+              I
+            </button>
+          </div>
+          <div className="border-r border-gray-300 px-1">
+            <button
+              onClick={() => editor.chain().focus().toggleStrike().run()}
+              className={clsx(
+                'rounded px-2 py-0.5 line-through',
+                editor.isActive('strike') && 'bg-gray-200'
+              )}
+            >
+              S
+            </button>
+          </div>
+          <span className="px-2 text-xs font-thin">Ctrl + V for hyperlink</span>
         </BubbleMenu>
       )}
       <EditorContent editor={editor} className="w-full" />
