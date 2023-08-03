@@ -1,11 +1,10 @@
+'use client'
 import Link from '@tiptap/extension-link'
 import { mergeAttributes, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
 import { DisplayMention } from '@/components/user-mention/mention-extension'
-import { linkClass } from '@/components/site-link'
 import Placeholder from '@tiptap/extension-placeholder'
-import { BubbleMenu } from '@tiptap/extension-bubble-menu'
 
 export function useTextEditor(
   content?: any,
@@ -17,7 +16,7 @@ export function useTextEditor(
       attributes: {
         class: clsx(
           proseClass('md'),
-          'py-[.5em] px-4 h-full bg-white border border-gray-300 rounded-md min-h-[5em] focus:outline-orange-500',
+          'p-3 h-full bg-white border border-gray-300 rounded-md focus:outline-orange-500',
           className
         ),
       },
@@ -31,9 +30,9 @@ export function useTextEditor(
         emptyEditorClass:
           'before:content-[attr(data-placeholder)] before:text-gray-500 before:float-left before:h-0 cursor-text',
       }),
-      BubbleMenu.configure({
-        element: document.querySelector('.menu') as HTMLElement,
-      }),
+      // BubbleMenu.configure({
+      //   element: document?.querySelector('.menu') as HTMLElement,
+      // }),
     ],
     content: content ?? '',
   })
@@ -43,7 +42,7 @@ export function useTextEditor(
 // From Manifold's editor
 export const proseClass = (size: 'sm' | 'md' | 'lg') =>
   clsx(
-    'prose max-w-none leading-relaxed',
+    'prose leading-relaxed max-w-none',
     'prose-a:text-orange-600 prose-a:no-underline',
     size === 'sm' ? 'prose-sm' : 'text-md',
     size === 'sm' && 'prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0',
@@ -57,6 +56,12 @@ export const proseClass = (size: 'sm' | 'md' | 'lg') =>
 export const DisplayLink = Link.extend({
   renderHTML({ HTMLAttributes }) {
     delete HTMLAttributes.class // Only use our classes (don't duplicate on paste)
-    return ['a', mergeAttributes(HTMLAttributes, { class: linkClass }), 0]
+    return [
+      'a',
+      mergeAttributes(HTMLAttributes, {
+        class: 'text-orange-600 hover:underline font-normal',
+      }),
+      0,
+    ]
   },
 })

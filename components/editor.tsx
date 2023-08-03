@@ -14,7 +14,7 @@ export function TextEditor(props: {
 }) {
   const { editor, children } = props
   return (
-    <div className="relative w-full rounded-lg text-gray-900 shadow-sm transition-colors">
+    <div className="relative h-32 w-full rounded-lg text-gray-900 shadow-sm transition-colors">
       {editor && (
         <BubbleMenu
           editor={editor}
