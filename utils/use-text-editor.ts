@@ -42,7 +42,7 @@ export function useTextEditor(
 // From Manifold's editor
 export const proseClass = (size: 'sm' | 'md' | 'lg') =>
   clsx(
-    'prose leading-relaxed max-w-none',
+    'prose leading-relaxed max-w-full',
     'prose-a:text-orange-600 prose-a:no-underline',
     size === 'sm' ? 'prose-sm' : 'text-md',
     size === 'sm' && 'prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-li:my-0',
