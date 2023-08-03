@@ -1,5 +1,6 @@
 'use client'
-import { TextEditor, useTextEditor } from '@/components/editor'
+import { TextEditor } from '@/components/editor'
+import { useTextEditor } from '@/utils/use-text-editor'
 import { Checkbox, Input } from '@/components/input'
 import { Col } from '@/components/layout/col'
 import { useEffect, useState } from 'react'
