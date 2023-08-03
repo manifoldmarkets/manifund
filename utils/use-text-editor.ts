@@ -1,4 +1,3 @@
-'use client'
 import Link from '@tiptap/extension-link'
 import { mergeAttributes, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -42,7 +41,7 @@ export function useTextEditor(
 }
 
 // From Manifold's editor
-const proseClass = (size: 'sm' | 'md' | 'lg') =>
+export const proseClass = (size: 'sm' | 'md' | 'lg') =>
   clsx(
     'prose max-w-none leading-relaxed',
     'prose-a:text-orange-600 prose-a:no-underline',

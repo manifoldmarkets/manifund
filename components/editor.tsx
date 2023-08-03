@@ -6,6 +6,7 @@ import { DisplayMention } from './user-mention/mention-extension'
 import { generateReact } from './tiptap-utils'
 import { DisplayLink } from '@/utils/use-text-editor'
 import { LinkIcon, ListBulletIcon } from '@heroicons/react/20/solid'
+import { proseClass } from '@/utils/use-text-editor'
 
 export function TextEditor(props: {
   editor: Editor | null
@@ -101,10 +102,6 @@ export function RichContent(props: {
     DisplayLink,
     DisplayMention,
   ])
-
-  function proseClass(size: string): import('clsx').ClassValue {
-    throw new Error('Function not implemented.')
-  }
 
   return (
     <div
