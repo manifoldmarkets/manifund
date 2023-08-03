@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import { DisplayMention } from './user-mention/mention-extension'
 import { generateReact } from './tiptap-utils'
 import { DisplayLink } from '@/utils/use-text-editor'
-import { LinkIcon } from '@heroicons/react/20/solid'
+import { LinkIcon, ListBulletIcon } from '@heroicons/react/20/solid'
 
 export function TextEditor(props: {
   editor: Editor | null
@@ -13,7 +13,7 @@ export function TextEditor(props: {
 }) {
   const { editor, children } = props
   return (
-    <div className="relative w-full rounded-lg shadow-sm transition-colors">
+    <div className="relative w-full rounded-lg text-gray-900 shadow-sm transition-colors">
       {editor && (
         <BubbleMenu
           editor={editor}
@@ -53,8 +53,30 @@ export function TextEditor(props: {
               S
             </button>
           </div>
+          <div className="border-r border-gray-300 px-1">
+            <button
+              onClick={() => editor.chain().focus().toggleBulletList().run()}
+              className={clsx(
+                'flex flex-col justify-center rounded px-2 py-0.5',
+                editor.isActive('bulletList') && 'bg-gray-200'
+              )}
+            >
+              <ListBulletIcon className="h-5 w-5 stroke-2" />
+            </button>
+          </div>
+          <div className="border-r border-gray-300 px-1">
+            <button
+              onClick={() => editor.chain().focus().toggleOrderedList().run()}
+              className={clsx(
+                'flex flex-col justify-center rounded px-2 py-0.5',
+                editor.isActive('orderedList') && 'bg-gray-200'
+              )}
+            >
+              1.
+            </button>
+          </div>
           <span className="px-2 text-xs font-thin">
-            <LinkIcon className="mr-1 inline-block h-4 w-4 stroke-1 text-gray-800" />
+            <LinkIcon className="mr-1 inline-block h-4 w-4 stroke-1" />
             paste url over text
           </span>
         </BubbleMenu>
