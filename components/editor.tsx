@@ -57,7 +57,7 @@ export function TextEditor(props: {
             <button
               onClick={() => editor.chain().focus().toggleBulletList().run()}
               className={clsx(
-                'flex flex-col justify-center rounded px-2 py-0.5',
+                'flex flex-col justify-center rounded px-1.5 py-1',
                 editor.isActive('bulletList') && 'bg-gray-200'
               )}
             >
