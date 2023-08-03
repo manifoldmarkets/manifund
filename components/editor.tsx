@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { DisplayMention } from './user-mention/mention-extension'
 import { generateReact } from './tiptap-utils'
 import { DisplayLink } from '@/utils/use-text-editor'
+import { LinkIcon } from '@heroicons/react/20/solid'
 
 export function TextEditor(props: {
   editor: Editor | null
@@ -52,7 +53,10 @@ export function TextEditor(props: {
               S
             </button>
           </div>
-          <span className="px-2 text-xs font-thin">Ctrl + V for hyperlink</span>
+          <span className="px-2 text-xs font-thin">
+            <LinkIcon className="mr-1 inline-block h-4 w-4 stroke-1 text-gray-800" />
+            paste url over text
+          </span>
         </BubbleMenu>
       )}
       <EditorContent editor={editor} className="w-full" />
