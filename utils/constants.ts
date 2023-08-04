@@ -43,7 +43,6 @@ export function getRoundTheme(roundTitle: string) {
 export function getSponsoredAmount(regrantorId: string) {
   const sponsoredRegrantors = {
     'e083e3b0-a131-4eaa-8a83-6a146a196432': 50_000, // Isaak
-    'b11620f2-fdc7-414c-8a63-9ddee17ee669': 50_000, // Marcus
     '4de2634d-3802-4141-881e-9ce687f87485': 50_000, // Rachel
     '10bd8a14-4002-47ff-af4a-92b227423a74': 50_000, // Austin
     '74f76b05-0e51-407e-82c3-1fb19518933c': 50_000, // Gavriel
@@ -52,10 +51,11 @@ export function getSponsoredAmount(regrantorId: string) {
     '8aa331b7-3602-4001-9bc6-2b71b1c8ddd1': 50_000, // Renan
     'aa7c88dc-7311-4577-8cd3-c58a0d41fc31': 50_000, // Joel
     'e2a30cdd-6797-4e2c-8823-f051195fc77a': 50_000, // Ryan
+    'b11620f2-fdc7-414c-8a63-9ddee17ee669': 100_000, // Marcus
     '1398ed62-4213-4923-a84e-a9931ae19492': 400_000, // Adam
     '94a0c7b8-39fd-4856-a7e6-1f9429dbb4ad': 400_000, // Dan Hendrycks
     'c0319265-58b4-40e3-821c-5d32a76cd650': 400_000, // Tristan
-    '647c9b3c-65ce-40cf-9464-ac02c741aacd': 400_000, // Evan
+    '647c9b3c-65ce-40cf-9464-ac02c741aacd': 450_000, // Evan
     '75420de8-7e37-4971-bb29-9bfada0c453b': 400_000, // Leopold
   } as { [key: string]: number }
   return sponsoredRegrantors[regrantorId] ?? 0
