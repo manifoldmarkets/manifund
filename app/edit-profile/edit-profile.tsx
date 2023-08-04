@@ -261,6 +261,7 @@ export function EditProfileForm(props: { profile: Profile }) {
           )
           setSubmitting(false)
           router.push(`/${username}`)
+          router.refresh()
         }}
       >
         Save
