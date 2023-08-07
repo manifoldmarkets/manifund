@@ -181,8 +181,10 @@ export function CreateGrantForm(props: {
       }),
     })
     const newProject = await response.json()
-    setIsSubmitting(false)
     router.push(`/projects/${newProject.slug}`)
+    clearLocalStorageItem(DESCRIPTION_KEY)
+    clearLocalStorageItem(REASONING_KEY)
+    setIsSubmitting(false)
   }
   return (
     <Col className="gap-5 p-4">
@@ -495,40 +497,7 @@ export function CreateGrantForm(props: {
           className="mt-4 w-full"
           disabled={errorMessage !== null}
           loading={isSubmitting}
-          onClick={async () => {
-            setIsSubmitting(true)
-            const description = descriptionEditor?.getJSON()
-            const donorNotes = reasoningEditor?.getJSON()
-            const response = await fetch('/api/create-grant', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                title,
-                subtitle,
-                description,
-                donorNotes,
-                donorContribution,
-                fundingGoal,
-                minFunding,
-                recipientEmail: recipientOnManifund
-                  ? undefined
-                  : recipientEmail,
-                recipientName: recipientOnManifund
-                  ? undefined
-                  : recipientFullName,
-                recipientUsername: recipientOnManifund
-                  ? recipient?.username
-                  : undefined,
-              }),
-            })
-            const newProject = await response.json()
-            setIsSubmitting(false)
-            clearLocalStorageItem(DESCRIPTION_KEY)
-            clearLocalStorageItem(REASONING_KEY)
-            router.push(`/projects/${newProject.slug}`)
-          }}
+          onClick={handleSubmit}
         >
           Create grant
         </Button>
