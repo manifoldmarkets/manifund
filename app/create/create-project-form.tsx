@@ -43,12 +43,7 @@ export function CreateProjectForm() {
     format(add(new Date(), { months: 1 }), 'yyyy-MM-dd')
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const editor = useTextEditor(
-    DESCRIPTION_OUTLINE,
-    undefined,
-    undefined,
-    'ProjectDescription'
-  )
+  const editor = useTextEditor(DESCRIPTION_OUTLINE, 'ProjectDescription')
 
   let errorMessage = null
   if (title === '') {

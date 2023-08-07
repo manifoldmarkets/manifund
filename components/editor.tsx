@@ -21,9 +21,9 @@ import { Button } from './button'
 
 export function useTextEditor(
   defaultContent?: any,
-  className?: string,
+  key?: string,
   placeholder?: string,
-  key?: string
+  className?: string
 ) {
   const [content, saveContent] = useLocalStorage(defaultContent, key)
 

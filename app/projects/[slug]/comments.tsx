@@ -225,9 +225,9 @@ export function WriteComment(props: {
   }`
   const editor = useTextEditor(
     startingText,
-    'border-0 focus:!outline-none focus:ring-0 text-sm sm:text-md',
+    storageKey,
     replyingTo ? 'Write your reply...' : 'Write a comment...',
-    storageKey
+    'border-0 focus:!outline-none focus:ring-0 text-sm sm:text-md'
   )
   useEffect(() => {
     if (editor && !editor.isDestroyed && (replyingTo || specialPrompt)) {

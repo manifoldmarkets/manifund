@@ -74,16 +74,9 @@ export function CreateGrantForm(props: {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const descriptionEditor = useTextEditor(
     DESCRIPTION_OUTLINE,
-    undefined,
-    undefined,
     'GrantDescription'
   )
-  const reasoningEditor = useTextEditor(
-    REASONING_OUTLINE,
-    undefined,
-    undefined,
-    'GrantReasoning'
-  )
+  const reasoningEditor = useTextEditor(REASONING_OUTLINE, 'GrantReasoning')
   const router = useRouter()
 
   const fundingOptions = {
