@@ -142,9 +142,9 @@ const featuredRegrantorIds = [
 ]
 
 const featuredProjectIds = [
-  '9261e458-fbd0-3135-0d50-9636b9fdeee2', // VaccinateCA
-  'c76614f2-7d71-ae49-c0e2-9d32d642ea3c', // Jesse
-  'ebf3d790-c893-b968-7ac9-83c90bd8e795', // (Dis)empowerment
+  '51b9e659-2486-5f9b-bf49-342b095580ce', // Vector Steering
+  'd3060c60-beec-9c6a-6f69-ccf8cc10d603', // Apollo
+  '39d6e7d5-bb12-41a2-ceaf-71fa618385d5', // Joseph Bloom
 ]
 
 function RegrantsHighlight(props: {

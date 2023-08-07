@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
 import { getProfileAndBidsById } from '@/db/profile'
-import { getTxnsByUser } from '@/db/txn'
+import { getFullTxnsByUser } from '@/db/txn'
 import { calculateCashBalance } from '@/utils/math'
 import Stripe from 'stripe'
 import { BANK_ID, STRIPE_SECRET_KEY } from '@/db/env'
@@ -15,7 +15,7 @@ export const config = {
   // From https://github.com/lodash/lodash/issues/5525 required for Stripe & lodash to work
   unstable_allowDynamic: [
     '**/node_modules/function-bind/implementation.js',
-    '**/node_modules/lodash/lodash.js', // Use a glob to allow anything in the function-bind 3rd party module
+    '**/node_modules/lodash/_root.js', // Use a glob to allow anything in the function-bind 3rd party module
   ],
 }
 
@@ -43,7 +43,7 @@ export default async function handler(req: NextRequest) {
     console.log('no payouts enabled')
     return NextResponse.error()
   }
-  const txns = await getTxnsByUser(supabase, user.id)
+  const txns = await getFullTxnsByUser(supabase, user.id)
   const withdrawBalance = calculateCashBalance(
     txns,
     profile.bids,

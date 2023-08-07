@@ -11,7 +11,8 @@ import { Profile } from '@/db/profile'
 import uuid from 'react-uuid'
 import Image from 'next/image'
 import { SUPABASE_BUCKET_URL } from '@/db/env'
-import { TextEditor, useTextEditor } from '@/components/editor'
+import { TextEditor } from '@/components/editor'
+import { useTextEditor } from '@/utils/use-text-editor'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
@@ -260,6 +261,7 @@ export function EditProfileForm(props: { profile: Profile }) {
           )
           setSubmitting(false)
           router.push(`/${username}`)
+          router.refresh()
         }}
       >
         Save

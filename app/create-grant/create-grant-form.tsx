@@ -1,5 +1,6 @@
 'use client'
-import { ResetEditor, TextEditor, useTextEditor } from '@/components/editor'
+import { ResetEditor, TextEditor } from '@/components/editor'
+import { useTextEditor } from '@/utils/use-text-editor'
 import { Checkbox, Input } from '@/components/input'
 import { Col } from '@/components/layout/col'
 import { useEffect, useState } from 'react'

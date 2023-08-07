@@ -8,7 +8,6 @@ import { calculateFullTrades } from '@/utils/math'
 import { getTxnsByProject } from '@/db/txn'
 import StarterKit from '@tiptap/starter-kit'
 import { DisplayMention } from '@/components/user-mention/mention-extension'
-import { DisplayLink } from '@/components/editor'
 import { parseMentions } from '@/utils/parse'
 import { Comment } from '@/db/comment'
 import { JSONContent } from '@tiptap/core'
@@ -22,7 +21,6 @@ export default async function handler(
   const fullComment = await getFullCommentById(supabaseAdmin, comment.id)
   const htmlContent = generateHTML(comment.content as JSONContent, [
     StarterKit,
-    DisplayLink,
     DisplayMention,
   ])
   const mentionedUserIds = parseMentions(comment.content as JSONContent)
