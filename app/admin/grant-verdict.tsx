@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/button'
 import { TextEditor } from '@/components/editor'
-import { useTextEditor } from '@/utils/use-text-editor'
+import { useTextEditor } from '@/hooks/use-text-editor'
 import { Row } from '@/components/layout/row'
 import { Modal } from '@/components/modal'
 import { HorizontalRadioGroup } from '@/components/radio-group'
