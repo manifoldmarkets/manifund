@@ -8,6 +8,9 @@ import { HorizontalRadioGroup } from '@/components/radio-group'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
+const REJECT_MESSAGE_INTRO =
+  'Manifund has declined to fund this project because we believe it'
+
 const DEFAULT_REJECT_MESSAGES = [
   'is outside of our scope in terms of cause area and mission.',
   'is outside of our scope legally.',
@@ -23,7 +26,7 @@ export function GrantVerdict(props: { projectId: string }) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const editor = useTextEditor(
-    `Manifund has declined to fund this project because we believe it ${
+    `${REJECT_MESSAGE_INTRO} ${
       defaultMessage === 'custom' ? '...' : defaultMessage
     }`
   )

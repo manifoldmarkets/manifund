@@ -5,11 +5,8 @@ import { useState } from 'react'
 import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
-import { MySlider } from '@/components/slider'
 import { TOTAL_SHARES } from '@/db/project'
 import { ResetEditor, TextEditor, useTextEditor } from '@/components/editor'
-import clsx from 'clsx'
-import { InfoTooltip } from '@/components/info-tooltip'
 import Link from 'next/link'
 import { add, format, isAfter, isBefore } from 'date-fns'
 import { Col } from '@/components/layout/col'
@@ -31,6 +28,7 @@ const DESCRIPTION_OUTLINE = `
 <h3>What other funding are you or your project getting?</h3>
 </br>
 `
+const DESCRIPTION_KEY = 'ProjectDescription'
 
 export function CreateProjectForm() {
   const { session } = useSupabase()
@@ -43,7 +41,7 @@ export function CreateProjectForm() {
     format(add(new Date(), { months: 1 }), 'yyyy-MM-dd')
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const editor = useTextEditor(DESCRIPTION_OUTLINE, 'ProjectDescription')
+  const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
 
   let errorMessage = null
   if (title === '') {
@@ -91,6 +89,7 @@ export function CreateProjectForm() {
     })
     const newProject = await response.json()
     router.push(`/projects/${newProject.slug}`)
+    clearLocalStorageItem(DESCRIPTION_KEY)
     setIsSubmitting(false)
   }
 

@@ -30,6 +30,7 @@ const DESCRIPTION_OUTLINE = `
 <h3>What other funding is this person or project getting?</h3>
 </br>
 `
+const DESCRIPTION_KEY = 'GrantDescription'
 
 const REASONING_OUTLINE = `
 <h3>Main points in favor of this grant</h3>
@@ -42,6 +43,7 @@ const REASONING_OUTLINE = `
 <p>Please disclose e.g. any romantic, professional, financial, housemate, or familial relationships you have with the grant recipient(s).</p>
 </br>
 `
+const REASONING_KEY = 'GrantReasoning'
 
 export function CreateGrantForm(props: {
   profiles: MiniProfile[]
@@ -72,11 +74,8 @@ export function CreateGrantForm(props: {
   const [minFunding, setMinFunding] = useState<number | null>(null)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const descriptionEditor = useTextEditor(
-    DESCRIPTION_OUTLINE,
-    'GrantDescription'
-  )
-  const reasoningEditor = useTextEditor(REASONING_OUTLINE, 'GrantReasoning')
+  const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
+  const reasoningEditor = useTextEditor(REASONING_OUTLINE, REASONING_KEY)
   const router = useRouter()
 
   const fundingOptions = {
@@ -526,8 +525,8 @@ export function CreateGrantForm(props: {
             })
             const newProject = await response.json()
             setIsSubmitting(false)
-            clearLocalStorageItem('GrantDescription')
-            clearLocalStorageItem('GrantReasoning')
+            clearLocalStorageItem(DESCRIPTION_KEY)
+            clearLocalStorageItem(REASONING_KEY)
             router.push(`/projects/${newProject.slug}`)
           }}
         >
