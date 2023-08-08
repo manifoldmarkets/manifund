@@ -153,7 +153,7 @@ export function CreateProjectForm() {
             <RequiredStar />
           </label>
           <ResetEditor
-            storageKey="ProjectDescription"
+            storageKey={DESCRIPTION_KEY}
             editor={editor}
             defaultContent={DESCRIPTION_OUTLINE}
           />

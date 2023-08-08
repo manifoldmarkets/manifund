@@ -441,7 +441,7 @@ export function CreateGrantForm(props: {
             <RequiredStar />
           </label>
           <ResetEditor
-            storageKey="GrantDescription"
+            storageKey={DESCRIPTION_KEY}
             editor={descriptionEditor}
             defaultContent={DESCRIPTION_OUTLINE}
           />
@@ -460,7 +460,7 @@ export function CreateGrantForm(props: {
             <RequiredStar />
           </label>
           <ResetEditor
-            storageKey="GrantReasoning"
+            storageKey={REASONING_KEY}
             editor={reasoningEditor}
             defaultContent={REASONING_OUTLINE}
           />
