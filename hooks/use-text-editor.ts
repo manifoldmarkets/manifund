@@ -6,12 +6,16 @@ import clsx from 'clsx'
 import { DisplayMention } from '@/components/user-mention/mention-extension'
 import Placeholder from '@tiptap/extension-placeholder'
 import BubbleMenu from '@tiptap/extension-bubble-menu'
+import { noop } from 'lodash'
+import useLocalStorage from '@/hooks/use-local-storage'
 
 export function useTextEditor(
-  content?: any,
-  className?: string,
-  placeholder?: string
+  defaultContent?: any,
+  key?: string,
+  placeholder?: string,
+  className?: string
 ) {
+  const [content, saveContent] = useLocalStorage(defaultContent, key)
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -22,6 +26,11 @@ export function useTextEditor(
         ),
       },
     },
+    onUpdate: !key
+      ? noop
+      : ({ editor }) => {
+          saveContent(editor.getJSON())
+        },
     extensions: [
       StarterKit,
       DisplayLink,
@@ -31,11 +40,8 @@ export function useTextEditor(
         emptyEditorClass:
           'before:content-[attr(data-placeholder)] before:text-gray-500 before:float-left before:h-0 cursor-text',
       }),
-      BubbleMenu.configure({
-        element: document?.querySelector('.menu') as HTMLElement,
-      }),
     ],
-    content: content ?? '',
+    content: (key && content ? content : '') ?? defaultContent,
   })
   return editor
 }

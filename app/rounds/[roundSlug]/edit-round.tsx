@@ -3,7 +3,7 @@
 import { Button } from '@/components/button'
 import { useSupabase } from '@/db/supabase-provider'
 import { TextEditor } from '@/components/editor'
-import { useTextEditor } from '@/utils/use-text-editor'
+import { useTextEditor } from '@/hooks/use-text-editor'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Round } from '@/db/round'
