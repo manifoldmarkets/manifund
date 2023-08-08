@@ -11,6 +11,11 @@ import {
 } from '@heroicons/react/24/outline'
 import { FireIcon } from '@heroicons/react/24/solid'
 import Image from 'next/image'
+import { Row } from './layout/row'
+import { Tooltip } from './tooltip'
+import { Col } from './layout/col'
+import { LuBrainCircuit } from 'react-icons/lu'
+import { BiDonateHeart, BiHeart } from 'react-icons/bi'
 
 const COLORS = [
   'bg-indigo-200',
@@ -58,9 +63,24 @@ export function RoundTag(props: { roundTitle: string; roundSlug?: string }) {
   )
 }
 
-import { Row } from './layout/row'
-import { Tooltip } from './tooltip'
-import { Col } from './layout/col'
+export function TopicTag(props: { topicSlug: string }) {
+  const { topicSlug } = props
+  switch (topicSlug) {
+    case 'tais':
+      return (
+        <LuBrainCircuit className="rounded-full bg-emerald-100 p-0.5 text-emerald-600" />
+      )
+    case 'regrants':
+      return (
+        <BiDonateHeart className="rounded-full bg-rose-100 p-0.5 text-rose-600" />
+      )
+    default:
+      return (
+        <BiHeart className="rounded-full bg-gray-100 p-0.5 text-gray-600" />
+      )
+  }
+}
+
 export function StageTag(props: { projectStage: string }) {
   const { projectStage } = props
   switch (projectStage) {
