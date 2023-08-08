@@ -335,7 +335,7 @@ USING (auth.uid() = voter_id)
 WITH CHECK (auth.uid() = voter_id)
 
 
--- Project tags
+-- Project tags join table
 CREATE TABLE public.project_tags (
   id int8 NOT NULL,
   project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,

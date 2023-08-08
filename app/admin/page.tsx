@@ -13,6 +13,7 @@ import { Donations } from './donations'
 import { listProjects } from '@/db/project'
 import { GrantVerdict } from './grant-verdict'
 import { RaiseMinFunding } from './raise-min-funding'
+import { TopicTag } from '@/components/tags'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -61,6 +62,9 @@ export default async function Admin() {
   return (
     <div>
       <h1>Admin</h1>
+      <TopicTag topicSlug="tais" />
+      <TopicTag topicSlug="regrants" />
+      <TopicTag topicSlug="blank" />
       <Table>
         <thead>
           <tr>
