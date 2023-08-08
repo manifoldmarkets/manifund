@@ -34,6 +34,18 @@ export default async function Admin() {
     }) ?? []
   const charities = profiles?.filter((profile) => profile.type === 'org')
   const projects = await listProjects(supabaseAdmin)
+  const projectsToApprove = projects
+    .filter(
+      (project) =>
+        project.stage === 'proposal' &&
+        project.signed_agreement &&
+        project.approved === null
+    )
+    .filter(
+      (project) =>
+        project.bids.reduce((acc, bid) => acc + bid.amount, 0) >=
+        project.min_funding
+    )
   const usersById = new Map(userAndProfiles.map((user) => [user.id, user]))
   const getName = (userId: string | null) => {
     return usersById.get(userId ?? '')?.profile?.username
@@ -91,26 +103,21 @@ export default async function Admin() {
           </tr>
         </thead>
         <tbody>
-          {projects
-            .filter(
-              (project) =>
-                project.stage === 'proposal' && project.approved === null
-            )
-            .map((project) => (
-              <tr key={project.id}>
-                <td>
-                  <a href={`/${project.profiles.username}`}>
-                    {project.profiles.full_name}
-                  </a>
-                </td>
-                <td>
-                  <a href={`/projects/${project.slug}`}>{project.title}</a>
-                </td>
-                <td>
-                  <GrantVerdict projectId={project.id} />
-                </td>
-              </tr>
-            ))}
+          {projectsToApprove.map((project) => (
+            <tr key={project.id}>
+              <td>
+                <a href={`/${project.profiles.username}`}>
+                  {project.profiles.full_name}
+                </a>
+              </td>
+              <td>
+                <a href={`/projects/${project.slug}`}>{project.title}</a>
+              </td>
+              <td>
+                <GrantVerdict projectId={project.id} />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </Table>
 
