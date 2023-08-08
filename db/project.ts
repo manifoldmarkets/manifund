@@ -5,6 +5,7 @@ import { Txn } from './txn'
 import { Profile } from './profile'
 import { Comment } from '@/db/comment'
 import { Round } from './round'
+import { ProjectTopicLink } from './topic'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectTransfer =
@@ -53,13 +54,13 @@ export type FullProject = Project & { profiles: Profile } & {
   bids: Bid[]
 } & { txns: Txn[] } & { comments: Comment[] } & { rounds: Round } & {
   project_transfers: ProjectTransfer[]
-} & { project_votes: ProjectVote[] }
+} & { project_votes: ProjectVote[] } & { project_topics: ProjectTopicLink[] }
 
 export async function listProjects(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_topics(topic_title)'
     )
     .order('created_at', { ascending: false })
     .throwOnError()
@@ -74,7 +75,7 @@ export async function getFullProjectBySlug(
   const { data } = await supabase
     .from('projects')
     .select(
-      '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*)'
+      '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), project_topics(topic_title)'
     )
     .eq('slug', slug)
     .throwOnError()
@@ -107,7 +108,7 @@ export async function getFullProjectsByRound(
   const { data, error } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_topics(topic_title)'
     )
     .eq('round', roundTitle)
   if (error) {
