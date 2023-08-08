@@ -1,12 +1,10 @@
 'use client'
-import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { getAmountRaised } from '@/utils/math'
 import { FullProject, Project, ProjectTransfer } from '@/db/project'
 import Link from 'next/link'
 import { CheckBadgeIcon } from '@heroicons/react/24/solid'
-import { Txn } from '@/db/txn'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
 import {
@@ -15,7 +13,7 @@ import {
   CurrencyDollarIcon,
 } from '@heroicons/react/20/solid'
 import { orderBy } from 'lodash'
-import { RoundTag, Tag } from './tags'
+import { RoundTag, Tag, TopicTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { Round } from '@/db/round'
 import { Card } from './card'
@@ -32,7 +30,7 @@ export function ProjectCard(props: {
   hideRound?: boolean
   creatorEmail?: string
 }) {
-  const { project, valuation, hideRound } = props
+  const { project, topics, valuation, hideRound } = props
   const amountRaised = getAmountRaised(project, project.bids, project.txns)
   const firstDonorId =
     project.stage === 'proposal'
@@ -48,6 +46,7 @@ export function ProjectCard(props: {
       <Col className="h-full justify-between">
         <ProjectCardHeader
           round={project.rounds}
+          topics={topics}
           projectType={project.type}
           creator={project.profiles}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
@@ -122,6 +121,7 @@ export function ProjectCardHeader(props: {
   round: Round
   creator: Profile
   projectType: Project['type']
+  topics?: Topic[]
   projectTransfer?: ProjectTransfer
   valuation?: number
   regrantorInitiated?: boolean
@@ -132,6 +132,7 @@ export function ProjectCardHeader(props: {
     round,
     creator,
     valuation,
+    topics,
     projectTransfer,
     projectType,
     regrantorInitiated,
@@ -141,9 +142,9 @@ export function ProjectCardHeader(props: {
   return (
     <Row className="mt-1 items-start justify-between">
       <div>
-        {!hideRound && (
-          <RoundTag roundTitle={round.title} roundSlug={round.slug} />
-        )}
+        {topics?.map((topic) => (
+          <TopicTag key={topic.slug} topicSlug={topic.slug} />
+        ))}
         <div className="h-1" />
         <Row className="items-center gap-1">
           <UserAvatarAndBadge profile={creator} />

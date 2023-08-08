@@ -19,6 +19,7 @@ import { compareDesc, compareAsc } from 'date-fns'
 import { Row } from './layout/row'
 import { sortBy } from 'lodash'
 import { getSponsoredAmount } from '@/utils/constants'
+import { Topic } from '@/db/topic'
 
 type SortOption =
   | 'votes'
@@ -35,9 +36,10 @@ export function ProjectsDisplay(props: {
   projects: FullProject[]
   sortOptions: SortOption[]
   defaultSort?: SortOption
+  allTopics?: Topic[]
   hideRound?: boolean
 }) {
-  const { projects, sortOptions, defaultSort, hideRound } = props
+  const { projects, sortOptions, defaultSort, allTopics, hideRound } = props
   const isRegrants = !projects.find((project) => project.type !== 'grant')
   const prices = getPrices(projects)
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
@@ -138,6 +140,7 @@ export function ProjectsDisplay(props: {
             <ProjectGroup
               projects={proposals}
               prices={prices}
+              allTopics={allTopics}
               hideRound={hideRound}
             />
           </div>
