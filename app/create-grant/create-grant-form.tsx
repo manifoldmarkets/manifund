@@ -1,6 +1,6 @@
 'use client'
-import { TextEditor } from '@/components/editor'
-import { useTextEditor } from '@/utils/use-text-editor'
+import { ResetEditor, TextEditor } from '@/components/editor'
+import { useTextEditor } from '@/hooks/use-text-editor'
 import { Checkbox, Input } from '@/components/input'
 import { Col } from '@/components/layout/col'
 import { useEffect, useState } from 'react'
@@ -14,6 +14,7 @@ import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 import { RequiredStar } from '@/components/tags'
+import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Tooltip } from '@/components/tooltip'
 
 const DESCRIPTION_OUTLINE = `
@@ -30,6 +31,7 @@ const DESCRIPTION_OUTLINE = `
 <h3>What other funding is this person or project getting?</h3>
 </br>
 `
+const DESCRIPTION_KEY = 'GrantDescription'
 
 const REASONING_OUTLINE = `
 <h3>Main points in favor of this grant</h3>
@@ -42,6 +44,7 @@ const REASONING_OUTLINE = `
 <p>Please disclose e.g. any romantic, professional, financial, housemate, or familial relationships you have with the grant recipient(s).</p>
 </br>
 `
+const REASONING_KEY = 'GrantReasoning'
 
 export function CreateGrantForm(props: {
   profiles: MiniProfile[]
@@ -72,8 +75,8 @@ export function CreateGrantForm(props: {
   const [minFunding, setMinFunding] = useState<number | null>(null)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE)
-  const reasoningEditor = useTextEditor(REASONING_OUTLINE)
+  const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
+  const reasoningEditor = useTextEditor(REASONING_OUTLINE, REASONING_KEY)
   const router = useRouter()
 
   const fundingOptions = {
@@ -179,8 +182,10 @@ export function CreateGrantForm(props: {
       }),
     })
     const newProject = await response.json()
-    setIsSubmitting(false)
     router.push(`/projects/${newProject.slug}`)
+    clearLocalStorageItem(DESCRIPTION_KEY)
+    clearLocalStorageItem(REASONING_KEY)
+    setIsSubmitting(false)
   }
   return (
     <Col className="gap-5 p-4">
@@ -430,10 +435,17 @@ export function CreateGrantForm(props: {
         </Col>
       )}
       <Col className="gap-1">
-        <label>
-          Project description
-          <RequiredStar />
-        </label>
+        <Row className="items-center justify-between">
+          <label>
+            Project description
+            <RequiredStar />
+          </label>
+          <ResetEditor
+            storageKey={DESCRIPTION_KEY}
+            editor={descriptionEditor}
+            defaultContent={DESCRIPTION_OUTLINE}
+          />
+        </Row>
         <span className="text-sm text-gray-600">
           This will be displayed as the public description of this project, but
           can be edited by the grant recipient. In this section, please describe
@@ -442,10 +454,17 @@ export function CreateGrantForm(props: {
         <TextEditor editor={descriptionEditor} />
       </Col>
       <Col className="gap-1">
-        <label>
-          Grantmaker notes & reasoning
-          <RequiredStar />
-        </label>
+        <Row className="items-center justify-between">
+          <label>
+            Grantmaker notes & reasoning
+            <RequiredStar />
+          </label>
+          <ResetEditor
+            storageKey={REASONING_KEY}
+            editor={reasoningEditor}
+            defaultContent={REASONING_OUTLINE}
+          />
+        </Row>
         <span className="text-sm text-gray-600">
           This will be displayed as a public comment on this project. In this
           section, please describe in subjective terms why you are excited to

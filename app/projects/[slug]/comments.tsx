@@ -4,7 +4,7 @@ import { CommentAndProfile, sendComment } from '@/db/comment'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { formatDistanceToNow } from 'date-fns'
 import { RichContent, TextEditor } from '@/components/editor'
-import { useTextEditor } from '@/utils/use-text-editor'
+import { useTextEditor } from '@/hooks/use-text-editor'
 import { Project } from '@/db/project'
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
@@ -20,6 +20,7 @@ import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { JSONContent } from '@tiptap/react'
 import clsx from 'clsx'
+import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 
 export function Comments(props: {
   project: Project
@@ -220,10 +221,14 @@ export function WriteComment(props: {
         ],
       }
     : ''
+  const storageKey = `CommentOn${project.id}${
+    replyingTo ? `ReplyingTo${replyingTo.id}` : ''
+  }`
   const editor = useTextEditor(
     startingText,
-    'border-0 focus:!outline-none focus:ring-0 text-sm sm:text-md',
-    replyingTo ? 'Write your reply...' : 'Write a comment...'
+    storageKey,
+    replyingTo ? 'Write your reply...' : 'Write a comment...',
+    'border-0 focus:!outline-none focus:ring-0 text-sm sm:text-md'
   )
   useEffect(() => {
     if (editor && !editor.isDestroyed && (replyingTo || specialPrompt)) {
@@ -258,6 +263,7 @@ export function WriteComment(props: {
         onSubmit()
       }
       setIsSubmitting(false)
+      clearLocalStorageItem(storageKey)
       router.refresh()
     }
   }

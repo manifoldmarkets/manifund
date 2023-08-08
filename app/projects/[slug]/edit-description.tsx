@@ -3,7 +3,7 @@
 import { Button, IconButton } from '@/components/button'
 import { useSupabase } from '@/db/supabase-provider'
 import { TextEditor } from '@/components/editor'
-import { useTextEditor } from '@/utils/use-text-editor'
+import { useTextEditor } from '@/hooks/use-text-editor'
 import { Project } from '@/db/project'
 import { useState } from 'react'
 import { PencilIcon } from '@heroicons/react/24/outline'

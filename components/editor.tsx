@@ -4,9 +4,11 @@ import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
 import { DisplayMention } from './user-mention/mention-extension'
 import { generateReact } from './tiptap-utils'
-import { DisplayLink } from '@/utils/use-text-editor'
+import { DisplayLink, proseClass } from '@/hooks/use-text-editor'
 import { LinkIcon, ListBulletIcon } from '@heroicons/react/20/solid'
-import { proseClass } from '@/utils/use-text-editor'
+import { useRouter } from 'next/navigation'
+import { clearLocalStorageItem } from '@/hooks/use-local-storage'
+import { Button } from './button'
 
 export function TextEditor(props: {
   editor: Editor | null
@@ -114,5 +116,27 @@ export function RichContent(props: {
     >
       {jsxContent}
     </div>
+  )
+}
+
+export function ResetEditor(props: {
+  storageKey: string
+  editor: Editor | null
+  defaultContent: string
+}) {
+  const { storageKey, editor, defaultContent } = props
+  const router = useRouter()
+  return (
+    <Button
+      onClick={() => {
+        clearLocalStorageItem(storageKey)
+        editor?.commands.setContent(defaultContent)
+        router.refresh()
+      }}
+      color="gray"
+      size="xs"
+    >
+      Reset editor
+    </Button>
   )
 }

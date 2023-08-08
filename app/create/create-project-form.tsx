@@ -6,14 +6,16 @@ import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { TOTAL_SHARES } from '@/db/project'
-import { TextEditor } from '@/components/editor'
-import { useTextEditor } from '@/utils/use-text-editor'
+import { ResetEditor, TextEditor } from '@/components/editor'
+import { useTextEditor } from '@/hooks/use-text-editor'
 import Link from 'next/link'
 import { add, format, isAfter, isBefore } from 'date-fns'
 import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
+import { clearLocalStorageItem } from '@/hooks/use-local-storage'
+import { Row } from '@/components/layout/row'
 
-const DEFAULT_DESCRIPTION = `
+const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
 </br>
 <h3>What are this project's goals and how will you achieve them?</h3>
@@ -27,6 +29,7 @@ const DEFAULT_DESCRIPTION = `
 <h3>What other funding are you or your project getting?</h3>
 </br>
 `
+const DESCRIPTION_KEY = 'ProjectDescription'
 
 export function CreateProjectForm() {
   const { session } = useSupabase()
@@ -39,7 +42,7 @@ export function CreateProjectForm() {
     format(add(new Date(), { months: 1 }), 'yyyy-MM-dd')
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const editor = useTextEditor(DEFAULT_DESCRIPTION)
+  const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
 
   let errorMessage = null
   if (title === '') {
@@ -87,6 +90,7 @@ export function CreateProjectForm() {
     })
     const newProject = await response.json()
     router.push(`/projects/${newProject.slug}`)
+    clearLocalStorageItem(DESCRIPTION_KEY)
     setIsSubmitting(false)
   }
 
@@ -143,10 +147,17 @@ export function CreateProjectForm() {
         </Col>
       </Col>
       <Col className="gap-1">
-        <label htmlFor="description">
-          Description
-          <RequiredStar />
-        </label>
+        <Row className="items-center justify-between">
+          <label>
+            Project description
+            <RequiredStar />
+          </label>
+          <ResetEditor
+            storageKey={DESCRIPTION_KEY}
+            editor={editor}
+            defaultContent={DESCRIPTION_OUTLINE}
+          />
+        </Row>
         <p className="text-sm text-gray-500">
           Note that the editor offers formatting shortcuts{' '}
           <Link
