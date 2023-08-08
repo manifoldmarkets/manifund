@@ -142,8 +142,8 @@ const featuredRegrantorIds = [
 ]
 
 const featuredProjectIds = [
+  '9b699e2a-da36-1214-7489-cfd6032f4824', // Miti UVC
   '51b9e659-2486-5f9b-bf49-342b095580ce', // Vector Steering
-  'd3060c60-beec-9c6a-6f69-ccf8cc10d603', // Apollo
   '39d6e7d5-bb12-41a2-ceaf-71fa618385d5', // Joseph Bloom
 ]
 
