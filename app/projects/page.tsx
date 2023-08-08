@@ -135,9 +135,9 @@ function LandingSection() {
 }
 
 const featuredRegrantorIds = [
-  '1398ed62-4213-4923-a84e-a9931ae19492', // Adam
   '647c9b3c-65ce-40cf-9464-ac02c741aacd', // Evan
   'b11620f2-fdc7-414c-8a63-9ddee17ee669', // Marcus
+  '74f76b05-0e51-407e-82c3-1fb19518933c', // Gavriel
   '8aa331b7-3602-4001-9bc6-2b71b1c8ddd1', // Renan
 ]
 
