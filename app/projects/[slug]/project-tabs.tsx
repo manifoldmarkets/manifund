@@ -127,7 +127,7 @@ export function ProjectTabs(props: {
     })
   }
 
-  return <Tabs tabs={tabs} preTabSlug={`/projects/${project.slug}`} />
+  return <Tabs tabs={tabs} />
 }
 
 export type Shareholder = {

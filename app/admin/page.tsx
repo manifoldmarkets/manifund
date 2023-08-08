@@ -62,9 +62,6 @@ export default async function Admin() {
   return (
     <div>
       <h1>Admin</h1>
-      <TopicTag topicSlug="tais" />
-      <TopicTag topicSlug="regrants" />
-      <TopicTag topicSlug="blank" />
       <Table>
         <thead>
           <tr>
@@ -96,7 +93,6 @@ export default async function Admin() {
           ))}
         </tbody>
       </Table>
-
       <h1>Projects Pending Approval</h1>
       <Table>
         <thead>
@@ -124,7 +120,6 @@ export default async function Admin() {
           ))}
         </tbody>
       </Table>
-
       <h2>Transactions</h2>
       <Table>
         <thead>
@@ -148,7 +143,6 @@ export default async function Admin() {
           ))}
         </tbody>
       </Table>
-
       <h2>Projects</h2>
       <Table>
         <thead>
