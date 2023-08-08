@@ -68,15 +68,15 @@ export function TopicTag(props: { topicSlug: string }) {
   switch (topicSlug) {
     case 'tais':
       return (
-        <LuBrainCircuit className="rounded-full bg-emerald-100 p-0.5 text-emerald-600" />
+        <LuBrainCircuit className="rounded-full bg-emerald-100 p-0.5 text-emerald-600 shadow" />
       )
     case 'regrants':
       return (
-        <BiDonateHeart className="rounded-full bg-rose-100 p-0.5 text-rose-600" />
+        <BiDonateHeart className="rounded-full bg-rose-100 p-0.5 text-rose-600 shadow" />
       )
     default:
       return (
-        <BiHeart className="rounded-full bg-gray-100 p-0.5 text-gray-600" />
+        <BiHeart className="rounded-full bg-gray-100 p-0.5 text-gray-600 shadow" />
       )
   }
 }
