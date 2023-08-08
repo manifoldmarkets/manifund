@@ -148,7 +148,7 @@ export function ProfileTabs(props: {
     })
   }
   if (tabs.length > 0) {
-    return <Tabs tabs={tabs} preTabSlug={`/${profile.username}`} />
+    return <Tabs tabs={tabs} />
   } else {
     return null
   }

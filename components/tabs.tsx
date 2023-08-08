@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export type Tab = {
   name: string
@@ -8,9 +8,8 @@ export type Tab = {
   current: boolean
   display: JSX.Element
 }
-export function Tabs(props: { tabs: Tab[]; preTabSlug?: string }) {
-  const { tabs, preTabSlug } = props
-  const router = useRouter()
+export function Tabs(props: { tabs: Tab[] }) {
+  const { tabs } = props
   if (tabs.length === 0) return null
   return (
     <div>
@@ -18,11 +17,10 @@ export function Tabs(props: { tabs: Tab[]; preTabSlug?: string }) {
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8" aria-label="Tabs">
             {tabs.map((tab) => (
-              <button
+              <Link
                 key={tab.name}
-                onClick={() => {
-                  router.replace(`${preTabSlug}${tab.href}`)
-                }}
+                href={tab.href}
+                scroll={false}
                 className={clsx(
                   tab.current
                     ? 'border-orange-500 text-orange-600'
@@ -44,7 +42,7 @@ export function Tabs(props: { tabs: Tab[]; preTabSlug?: string }) {
                     {tab.count}
                   </span>
                 ) : null}
-              </button>
+              </Link>
             ))}
           </nav>
         </div>
