@@ -333,3 +333,28 @@ AS PERMISSIVE FOR UPDATE
 TO public
 USING (auth.uid() = voter_id)
 WITH CHECK (auth.uid() = voter_id)
+
+
+-- Project tags
+CREATE TABLE public.project_tags (
+  id int8 NOT NULL,
+  project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
+  tag_title text NOT NULL REFERENCES public.tags(title) ON DELETE CASCADE,
+  PRIMARY KEY (id)
+);
+
+CREATE POLICY "Enable read access for all users" ON "public"."project_tags"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
+
+CREATE POLICY "Enable delete for users if they created the project" ON "public"."project_tags"
+AS PERMISSIVE FOR DELETE
+TO public
+USING (EXISTS (SELECT 1 FROM public.projects WHERE id = project_id AND creator = auth.uid() ))
+
+CREATE POLICY "Enable insert for authenticated users who created the project" ON "public"."project_tags"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+
+WITH CHECK (EXISTS (SELECT 1 FROM public.projects WHERE id = project_id AND creator = auth.uid() ))
