@@ -102,5 +102,5 @@ export function RoundTabs(props: {
       </div>
     ),
   })
-  return <Tabs tabs={tabs} preTabSlug={`/rounds/${round.slug}`} />
+  return <Tabs tabs={tabs} />
 }
