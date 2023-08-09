@@ -274,6 +274,7 @@ export function WriteComment(props: {
         username={commenter.username}
         avatarUrl={commenter.avatar_url}
         size={replyingTo?.id ? 6 : 10}
+        id={commenter.id}
         className="mr-2"
       />
       <div

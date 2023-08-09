@@ -27,9 +27,7 @@ export function Avatar(props: {
     }
   }
 
-  // There can be no avatar URL or username in the feed, we show a "submit comment"
-  // Item with a fake grey user circle guy even if you aren't signed in
-  return avatarUrl ? (
+  return !avatarUrl ? (
     <Image
       width={sizeInPx * 2}
       height={sizeInPx * 2}
@@ -40,7 +38,7 @@ export function Avatar(props: {
         className
       )}
       style={{ maxWidth: `${s * 0.25}rem` }}
-      src={avatarUrl}
+      src={avatarUrl ?? ''}
       onClick={onClick}
       alt={`${username ?? 'Unknown user'} avatar`}
     />
@@ -104,7 +102,6 @@ export function GeneratedAvatar(props: { uuid: string; size?: number }) {
       : 'bg-gradient-radial',
   ]
   console.log(fromColor, toColor)
-
   console.log(direction)
   return (
     <div

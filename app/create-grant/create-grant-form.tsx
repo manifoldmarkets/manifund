@@ -292,6 +292,7 @@ export function CreateGrantForm(props: {
                             <Avatar
                               avatarUrl={profile.avatar_url}
                               username={profile.username}
+                              id={profile.id}
                               size={'xs'}
                               className="relative bottom-0.5"
                             />

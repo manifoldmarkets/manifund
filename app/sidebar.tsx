@@ -90,7 +90,11 @@ export async function ProfileSummary(props: { profile: Profile }) {
   const txns = await getTxnsByUser(supabase, profile.id)
   return (
     <Row className="group mb-3 items-center gap-2 truncate rounded-md py-3 px-1 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
-      <Avatar username={profile.username} avatarUrl={profile.avatar_url} />
+      <Avatar
+        username={profile.username}
+        avatarUrl={profile.avatar_url}
+        id={profile.id}
+      />
       <Col className="w-full">
         <Link href={`/${profile.username}`} className="w-full">
           <div className="font-medium">{profile.full_name}</div>

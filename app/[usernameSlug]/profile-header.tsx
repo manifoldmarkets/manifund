@@ -33,6 +33,7 @@ export function ProfileHeader(props: {
         <Avatar
           username={profile.username}
           avatarUrl={profile.avatar_url}
+          id={profile.id}
           noLink
           size={windowWidth > 640 ? 24 : undefined}
         />
