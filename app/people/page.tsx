@@ -13,8 +13,7 @@ export default async function PeoplePage() {
 
   return (
     <>
-      <GeneratedAvatar uuid="19cb1fd8-f3c8-56e8-e8c5-9b0c00b4473e" />
-      {/* <Table>
+      <Table>
         {profilesToShow?.map((profile) => (
           <ThickTableRow
             key={profile.id}
@@ -23,7 +22,7 @@ export default async function PeoplePage() {
             href={`/${profile.username}`}
           />
         ))}
-      </Table> */}
+      </Table>
     </>
   )
 }

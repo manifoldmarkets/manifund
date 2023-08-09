@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { MouseEvent } from 'react'
 import Image from 'next/image'
 import { UserIcon, UsersIcon } from '@heroicons/react/20/solid'
+import alea from 'alea'
 
 export function Avatar(props: {
   username: string
@@ -44,7 +45,7 @@ export function Avatar(props: {
     />
   ) : (
     <div onClick={onClick}>
-      <GeneratedAvatar uuid={id} size={s} aria-hidden="true" />
+      <GeneratedAvatar seed={id} size={s} aria-hidden="true" />
     </div>
   )
 }
@@ -61,7 +62,7 @@ export function EmptyAvatar(props: {
   return (
     <div
       className={clsx(
-        `flex flex-shrink-0 h-${size} w-${size} items-center justify-center rounded-full bg-gray-200`,
+        `flex flex-shrink-0 h-${size} w-${size} items-center justify-center rounded-full bg-gray-100`,
         className
       )}
     >
@@ -70,31 +71,33 @@ export function EmptyAvatar(props: {
   )
 }
 
-export function GeneratedAvatar(props: { uuid: string; size?: number }) {
-  const { uuid, size = 8 } = props
-  const [fromString, toString, emojiString, directionString] = [
-    uuid.substring(9, 13),
-    uuid.substring(14, 18),
-    uuid.substring(19, 23),
-    uuid.substring(0, 4),
-  ]
+export function GeneratedAvatar(props: { seed: string; size?: number }) {
+  const { seed, size = 8 } = props
+  const num = alea(seed)()
+  console.log('num', num)
+
   const [fromNum, toNum, emojiNum, directionNum] = [
-    parseInt(fromString, 16),
-    parseInt(toString, 16),
-    parseInt(emojiString, 16),
-    parseInt(directionString, 16),
+    Math.round(num * Math.pow(10, 16)),
+    Math.round(num * Math.pow(10, 12)),
+    Math.round(num * Math.pow(10, 8)),
+    Math.round(num * Math.pow(10, 4)),
   ]
+  console.log('from num', fromNum)
+  console.log('to num', toNum)
+  console.log('emoji num', emojiNum)
+  console.log('direction num', directionNum)
+
   const [fromIdx, toIdx, emojiIdx] = [
-    fromNum % 32,
-    toNum % 32,
+    fromNum % 16,
+    toNum % 16,
     emojiNum % emojis.length,
   ]
   const [fromColor, toColor, emoji, direction] = [
     fromColors[fromIdx],
-    toColors[toIdx === fromIdx ? (toIdx + 12) % 32 : toIdx],
+    toColors[Math.abs(toIdx - fromIdx) % 16 < 4 ? (toIdx + 8) % 16 : toIdx],
     emojis[emojiIdx],
     directionNum % 3
-      ? gradientDirections[directionNum % 4]
+      ? gradientDirections[directionNum % 8]
       : 'bg-gradient-radial',
   ]
   const textSize =
@@ -107,8 +110,9 @@ export function GeneratedAvatar(props: { uuid: string; size?: number }) {
       : size < 24
       ? 'text-3xl'
       : 'text-5xl'
+
   console.log(fromColor, toColor)
-  console.log(direction)
+  console.log(emojis.length)
   return (
     <div
       className={clsx(
@@ -129,76 +133,48 @@ const gradientDirections = [
   'bg-gradient-to-tr',
   'bg-gradient-to-r',
   'bg-gradient-to-br',
+  'bg-gradient-to-b',
+  'bg-gradient-to-bl',
+  'bg-gradient-to-l',
+  'bg-gradient-to-tl',
 ]
 
 const fromColors = [
-  'from-red-200',
-  'from-red-400',
-  'from-orange-200',
-  'from-orange-400',
-  'from-amber-200',
-  'from-amber-400',
-  'from-lime-200',
-  'from-lime-400',
-  'from-green-200',
-  'from-green-400',
-  'from-emerald-200',
-  'from-emerald-400',
-  'from-teal-200',
-  'from-teal-400',
-  'from-cyan-200',
-  'from-cyan-400',
-  'from-sky-200',
-  'from-sky-400',
-  'from-blue-200',
-  'from-blue-400',
-  'from-indigo-200',
-  'from-indigo-400',
-  'from-violet-200',
-  'from-violet-400',
-  'from-purple-200',
-  'from-purple-400',
-  'from-fuchsia-200',
-  'from-fuchsia-400',
-  'from-pink-200',
-  'from-pink-400',
-  'from-rose-200',
-  'from-rose-400',
+  'to-red-100',
+  'to-orange-100',
+  'to-amber-100',
+  'to-lime-100',
+  'to-green-100',
+  'to-emerald-100',
+  'to-teal-100',
+  'to-cyan-100',
+  'to-sky-100',
+  'to-blue-100',
+  'to-indigo-100',
+  'to-violet-100',
+  'to-purple-100',
+  'to-fuchsia-100',
+  'to-pink-100',
+  'to-rose-100',
 ]
 
 const toColors = [
-  'to-red-200',
-  'to-red-400',
-  'to-orange-200',
-  'to-orange-400',
-  'to-amber-200',
-  'to-amber-400',
-  'to-lime-200',
-  'to-lime-400',
-  'to-green-200',
-  'to-green-400',
-  'to-emerald-200',
-  'to-emerald-400',
-  'to-teal-200',
-  'to-teal-400',
-  'to-cyan-200',
-  'to-cyan-400',
-  'to-sky-200',
-  'to-sky-400',
-  'to-blue-200',
-  'to-blue-400',
-  'to-indigo-200',
-  'to-indigo-400',
-  'to-violet-200',
-  'to-violet-400',
-  'to-purple-200',
-  'to-purple-400',
-  'to-fuchsia-200',
-  'to-fuchsia-400',
-  'to-pink-200',
-  'to-pink-400',
-  'to-rose-200',
-  'to-rose-400',
+  'from-red-400',
+  'from-orange-400',
+  'from-amber-400',
+  'from-lime-400',
+  'from-green-400',
+  'from-emerald-400',
+  'from-teal-400',
+  'from-cyan-400',
+  'from-sky-400',
+  'from-blue-400',
+  'from-indigo-400',
+  'from-violet-400',
+  'from-purple-400',
+  'from-fuchsia-400',
+  'from-pink-400',
+  'from-rose-400',
 ]
 
 const emojis = [
@@ -210,7 +186,6 @@ const emojis = [
   '🍍',
   '🍒',
   '🍓',
-  '🫐',
   '🥥',
   '🥭',
   '🥑',
