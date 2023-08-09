@@ -2,7 +2,6 @@ import { SiteLink } from './site-link'
 import clsx from 'clsx'
 import { Tooltip } from './tooltip'
 import { Avatar } from './avatar'
-import { CheckBadgeIcon } from '@heroicons/react/24/outline'
 import { ShieldCheckIcon, StarIcon } from '@heroicons/react/20/solid'
 import { Profile } from '@/db/profile'
 

@@ -1,3 +1,4 @@
+import { GeneratedAvatar } from '@/components/avatar'
 import { Table, ThickTableRow } from '@/components/table'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { Profile } from '@/db/profile'
@@ -11,16 +12,19 @@ export default async function PeoplePage() {
     .filter((profile) => checkProfileComplete(profile))
 
   return (
-    <Table>
-      {profilesToShow?.map((profile) => (
-        <ThickTableRow
-          key={profile.id}
-          title={<UserAvatarAndBadge profile={profile} />}
-          subtitle={<p>{profile.bio}</p>}
-          href={`/${profile.username}`}
-        />
-      ))}
-    </Table>
+    <>
+      <GeneratedAvatar uuid="19cb1fd8-f3c8-56e8-e8c5-9b0c00b4473e" />
+      {/* <Table>
+        {profilesToShow?.map((profile) => (
+          <ThickTableRow
+            key={profile.id}
+            title={<UserAvatarAndBadge profile={profile} />}
+            subtitle={<p>{profile.bio}</p>}
+            href={`/${profile.username}`}
+          />
+        ))}
+      </Table> */}
+    </>
   )
 }
 
