@@ -82,16 +82,18 @@ export function GeneratedAvatar(props: { seed: string; size?: number }) {
     Math.round(num * Math.pow(10, 4)),
   ]
   const [fromIdx, toIdx, emojiIdx] = [
-    fromNum % 16,
-    toNum % 16,
+    fromNum % fromColors.length,
+    toNum % toColors.length,
     emojiNum % emojis.length,
   ]
+
   const [fromColor, toColor, emoji, direction] = [
     fromColors[fromIdx],
     toColors[toIdx],
     emojis[emojiIdx],
+    // 1/3 change radial gradient
     directionNum % 3
-      ? gradientDirections[directionNum % 8]
+      ? gradientDirections[directionNum % gradientDirections.length]
       : 'bg-gradient-radial',
   ]
 
