@@ -26,7 +26,7 @@ export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
   const [search, setSearch] = useState('')
   const selectedProfiles = searchProfiles(eligibleProfiles, search)
   return (
-    <Col className="w-96 justify-center gap-2 sm:w-[32rem]">
+    <Col className="w-80 justify-center gap-2 sm:w-[32rem]">
       <div className="relative rounded-md shadow-sm">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex w-96 items-center pl-3 sm:min-w-[36rem]">
           <MagnifyingGlassIcon
