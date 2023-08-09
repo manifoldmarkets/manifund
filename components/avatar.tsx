@@ -74,7 +74,6 @@ export function EmptyAvatar(props: {
 export function GeneratedAvatar(props: { seed: string; size?: number }) {
   const { seed, size = 8 } = props
   const num = alea(seed)()
-  console.log('num', num)
 
   const [fromNum, toNum, emojiNum, directionNum] = [
     Math.round(num * Math.pow(10, 16)),
@@ -82,11 +81,6 @@ export function GeneratedAvatar(props: { seed: string; size?: number }) {
     Math.round(num * Math.pow(10, 8)),
     Math.round(num * Math.pow(10, 4)),
   ]
-  console.log('from num', fromNum)
-  console.log('to num', toNum)
-  console.log('emoji num', emojiNum)
-  console.log('direction num', directionNum)
-
   const [fromIdx, toIdx, emojiIdx] = [
     fromNum % 16,
     toNum % 16,
@@ -94,13 +88,14 @@ export function GeneratedAvatar(props: { seed: string; size?: number }) {
   ]
   const [fromColor, toColor, emoji, direction] = [
     fromColors[fromIdx],
-    toColors[Math.abs(toIdx - fromIdx) % 16 < 4 ? (toIdx + 8) % 16 : toIdx],
+    toColors[toIdx],
     emojis[emojiIdx],
     directionNum % 3
       ? gradientDirections[directionNum % 8]
       : 'bg-gradient-radial',
   ]
-  const textSize =
+
+  const emojiSize =
     size < 8
       ? 'text-xs'
       : size < 12
@@ -111,8 +106,6 @@ export function GeneratedAvatar(props: { seed: string; size?: number }) {
       ? 'text-3xl'
       : 'text-5xl'
 
-  console.log(fromColor, toColor)
-  console.log(emojis.length)
   return (
     <div
       className={clsx(
@@ -120,7 +113,7 @@ export function GeneratedAvatar(props: { seed: string; size?: number }) {
         direction,
         fromColor,
         toColor,
-        textSize
+        emojiSize
       )}
     >
       {emoji}
