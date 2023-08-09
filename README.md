@@ -36,7 +36,7 @@ You'll want to do this if we've changed the prod database schema (eg through the
    }
    ```
 
-3. Run the following SQL code on the dev db:
+3. Run the following SQL code on the dev db (`Regrant permissions`):
 
    ```sql
    grant usage on schema public to postgres, anon, authenticated, service_role;
