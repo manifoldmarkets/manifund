@@ -9,14 +9,19 @@ import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import { CommentAndProject } from '@/db/comment'
 import { Profile } from '@/db/profile'
+import { Comment } from '@/components/comment'
 
 export function Projects(props: {
   profile: Profile
   projects: Project[]
   comments: CommentAndProject[]
 }) {
-  const { projects, comments } = props
+  const { profile, projects, comments } = props
   const sortedProjects = orderBy(projects, 'created_at', 'desc')
+  const filteredComments = comments.filter(
+    (comment) => comment.projects.stage !== 'hidden'
+  )
+  const sortedComments = orderBy(filteredComments, 'created_at', 'desc')
   return (
     <div>
       <table
@@ -49,8 +54,10 @@ export function Projects(props: {
         )}
       </table>
       <Col className="gap-3">
-        {comments.map((comment) => {
-          return <p key={comment.id}>{comment.id}</p>
+        {sortedComments.map((comment) => {
+          return (
+            <Comment key={comment.id} comment={comment} commenter={profile} />
+          )
         })}
       </Col>
     </div>
