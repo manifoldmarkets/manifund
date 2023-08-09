@@ -11,6 +11,7 @@ export type CommentAndProfile = Comment & { profiles: Profile }
 export type FullComment = Comment & { profiles: Profile } & {
   projects: Project
 }
+export type CommentAndProject = Comment & { projects: Project }
 
 export async function getCommentsByProject(
   supabase: SupabaseClient,
@@ -68,4 +69,18 @@ export async function getReplies(supabase: SupabaseClient, rootId: string) {
     throw error
   }
   return data as Comment[]
+}
+
+export async function getCommentsByUser(
+  supabase: SupabaseClient,
+  commenterId: string
+) {
+  const { data, error } = await supabase
+    .from('comments')
+    .select('*, projects(title, slug, creator)')
+    .eq('commenter', commenterId)
+  if (error) {
+    throw error
+  }
+  return data as CommentAndProject[]
 }

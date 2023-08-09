@@ -56,7 +56,9 @@ export function OutgoingDonationsHistory(props: {
   })
   return (
     <div>
-      <h1 className="text-xl sm:text-2xl">Outgoing donations</h1>
+      <h1 className="mb-2 text-xl font-medium sm:text-2xl">
+        Outgoing donations
+      </h1>
       <div className="overflow-hidden rounded-md bg-white shadow">
         <table role="list" className="w-full divide-y divide-gray-200">
           {pendingGrantDisplay}

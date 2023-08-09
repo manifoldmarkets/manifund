@@ -35,7 +35,7 @@ export function ProposalBids(props: {
   ))
   return (
     <div>
-      <h1 className="text-xl sm:text-2xl">Proposal bids</h1>
+      <h1 className="mb-2 text-xl font-medium sm:text-2xl">Proposal bids</h1>
       <table
         role="list"
         className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"

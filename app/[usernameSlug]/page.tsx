@@ -10,6 +10,7 @@ import { getFullTxnsByUser, getTxnsByUser } from '@/db/txn'
 import { getProjectsByUser } from '@/db/project'
 import { ProfileTabs } from './profile-tabs'
 import { getBidsByUser } from '@/db/bid'
+import { getCommentsByUser } from '@/db/comment'
 
 export const revalidate = 60
 
@@ -22,10 +23,11 @@ export default async function UserProfilePage(props: {
   if (!profile) {
     return <div>User not found</div>
   }
-  const [bids, projects, txns, user] = await Promise.all([
+  const [bids, projects, txns, comments, user] = await Promise.all([
     getBidsByUser(supabase, profile.id),
     getProjectsByUser(supabase, profile.id),
     getFullTxnsByUser(supabase, profile.id),
+    getCommentsByUser(supabase, profile.id),
     getUser(supabase),
   ])
   const [userTxns, userProfile] = await Promise.all([
@@ -40,6 +42,7 @@ export default async function UserProfilePage(props: {
         <ProfileTabs
           profile={profile}
           projects={projects}
+          comments={comments}
           bids={bids}
           txns={txns}
           userProfile={userProfile}

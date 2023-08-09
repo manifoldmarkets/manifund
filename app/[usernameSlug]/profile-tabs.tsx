@@ -19,16 +19,19 @@ import { Txn, FullTxn } from '@/db/txn'
 import { calculateCashBalance } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 import { OutgoingDonationsHistory } from './user-donations'
+import { CommentAndProject } from '@/db/comment'
 
 export function ProfileTabs(props: {
   profile: Profile
   projects: FullProject[]
+  comments: CommentAndProject[]
   bids: BidAndProject[]
   txns: FullTxn[]
   userProfile: ProfileAndBids | null
   userTxns: Txn[] | null
 }) {
-  const { profile, projects, bids, txns, userProfile, userTxns } = props
+  const { profile, projects, comments, bids, txns, userProfile, userTxns } =
+    props
   const isOwnProfile = userProfile?.id === profile.id
   const proposalBids = bids.filter(
     (bid) =>
@@ -124,18 +127,26 @@ export function ProfileTabs(props: {
       </div>
     ),
   })
-  const relevantProjects = projects.filter(
-    (project) =>
-      project.project_transfers.filter((transfer) => !transfer.transferred)
-        .length === 0
-  )
+  const relevantProjects = projects
+    .filter(
+      (project) =>
+        project.project_transfers.filter((transfer) => !transfer.transferred)
+          .length === 0
+    )
+    .filter((project) => project.stage !== 'hidden' || isOwnProfile)
   if (isOwnProfile || relevantProjects.length > 0) {
     tabs.push({
       name: 'Projects',
       href: '?tab=projects',
       count: relevantProjects.length,
       current: currentTabName === 'projects',
-      display: <Projects projects={relevantProjects} />,
+      display: (
+        <Projects
+          projects={relevantProjects}
+          comments={comments}
+          profile={profile}
+        />
+      ),
     })
   }
   if (profile.long_description) {
