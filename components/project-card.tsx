@@ -31,6 +31,7 @@ export function ProjectCard(props: {
   creatorEmail?: string
 }) {
   const { project, valuation, hideRound } = props
+  if (!project) return <div>No project</div>
   const amountRaised = getAmountRaised(project, project.bids, project.txns)
   const firstDonorId =
     project.stage === 'proposal'
@@ -183,6 +184,7 @@ export function ProjectCardHeader(props: {
 
 export function CardlessProject(props: { project: FullProject }) {
   const { project } = props
+  if (!project) return <div>No project</div>
   return (
     <Col className="items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">
       <Row className="flex-2 w-full items-center justify-between gap-3 text-xs">

@@ -15,6 +15,7 @@ export function RegranterCard(props: {
   className?: string
 }) {
   const { regranter, className } = props
+  if (!regranter) return <div>No regrantor</div>
   const sponsoredAmount = getSponsoredAmount(regranter.id)
   return (
     <Card
@@ -63,6 +64,7 @@ export function RegranterCard(props: {
 
 export function CardlessRegranter(props: { regranter: Profile }) {
   const { regranter } = props
+  if (!regranter) return <div>No regrantor</div>
   return (
     <Col className="h-full cursor-pointer items-center gap-3 rounded p-3 hover:bg-gray-100">
       <Row className="justify-center">
