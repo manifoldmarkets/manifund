@@ -7,8 +7,6 @@ import {
   XCircleIcon,
   CheckCircleIcon,
   CurrencyDollarIcon,
-  ArrowPathIcon,
-  WrenchIcon,
 } from '@heroicons/react/24/outline'
 import { FireIcon } from '@heroicons/react/24/solid'
 import Image from 'next/image'
@@ -62,6 +60,7 @@ export function RoundTag(props: { roundTitle: string; roundSlug?: string }) {
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { Col } from './layout/col'
+import { CheckBadgeIcon } from '@heroicons/react/20/solid'
 export function StageTag(props: { projectStage: string }) {
   const { projectStage } = props
   switch (projectStage) {
@@ -115,7 +114,7 @@ export function RegranterTag() {
   return (
     <Tooltip text="Regranters can recieve donations from other users and give grants to the projects and organizations of their choice.">
       <Row className="max-w-fit gap-0.5 rounded-full bg-orange-100 px-2  pt-1 text-center">
-        <ArrowPathIcon className="relative bottom-0.5 m-auto h-4 w-4 stroke-2 text-orange-500" />
+        <CheckBadgeIcon className="relative bottom-0.5 m-auto h-4 w-4 stroke-2 text-orange-500" />
         <div className="relative bottom-0.5 text-sm leading-tight text-orange-500">
           regrantor
         </div>
@@ -165,36 +164,4 @@ export function SponsoredTag(props: { text: string; className?: string }) {
 
 export function RequiredStar() {
   return <span className="relative bottom-1 mx-1 text-rose-500">*</span>
-}
-
-export function MiniProfileTag(props: { role: string }) {
-  const { role } = props
-  switch (role) {
-    case 'regrantor':
-      return (
-        <Tooltip text="Regrantor">
-          <div className="rounded-full bg-orange-100 p-1 shadow">
-            <ArrowPathIcon className="m-auto h-4 w-4 text-orange-500" />
-          </div>
-        </Tooltip>
-      )
-    case 'accredited':
-      return (
-        <Tooltip text="Accredited Investor">
-          <div className="rounded-full bg-emerald-100 p-1 shadow">
-            <CurrencyDollarIcon className="m-auto h-4 w-4 text-emerald-500" />
-          </div>
-        </Tooltip>
-      )
-    case 'creator':
-      return (
-        <Tooltip text="Creator">
-          <div className="rounded-full bg-blue-100 p-1 shadow">
-            <WrenchIcon className="m-auto h-4 w-4 text-blue-500" />
-          </div>
-        </Tooltip>
-      )
-    default:
-      return null
-  }
 }
