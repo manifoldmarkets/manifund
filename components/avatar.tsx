@@ -4,16 +4,17 @@ import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 import { MouseEvent } from 'react'
 import Image from 'next/image'
-import { UserCircleIcon, UserIcon, UsersIcon } from '@heroicons/react/20/solid'
+import { UserIcon, UsersIcon } from '@heroicons/react/20/solid'
 
 export function Avatar(props: {
   username: string
   avatarUrl: string | null
+  id?: string
   noLink?: boolean
   size?: number | 'xxs' | 'xs' | 'sm'
   className?: string
 }) {
-  const { username, avatarUrl, noLink, size, className } = props
+  const { username, avatarUrl, id, noLink, size, className } = props
   const router = useRouter()
   const s =
     size == 'xxs' ? 4 : size == 'xs' ? 6 : size === 'sm' ? 8 : size || 12
@@ -44,14 +45,13 @@ export function Avatar(props: {
       alt={`${username ?? 'Unknown user'} avatar`}
     />
   ) : (
-    <UserCircleIcon
-      className={clsx(
-        `flex-shrink-0 rounded-full bg-white w-${s} h-${s} cursor-pointer text-gray-500`,
-        className
-      )}
-      aria-hidden="true"
-      onClick={onClick}
-    />
+    <div onClick={onClick}>
+      <GeneratedAvatar
+        uuid={id ?? '00000000-0000-0000-0000-000000000000'}
+        size={s}
+        aria-hidden="true"
+      />
+    </div>
   )
 }
 
