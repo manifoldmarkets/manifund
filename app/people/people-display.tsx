@@ -14,6 +14,7 @@ import {
   CurrencyDollarIcon,
   WrenchIcon,
 } from '@heroicons/react/20/solid'
+import { getSponsoredAmount } from '@/utils/constants'
 
 export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
   const { profiles } = props
@@ -25,9 +26,9 @@ export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
   const [search, setSearch] = useState('')
   const selectedProfiles = searchProfiles(eligibleProfiles, search)
   return (
-    <div className="w-fit">
-      <div className="relative rounded-md shadow-sm lg:w-8/12">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+    <Col className="w-96 justify-center gap-2 sm:w-[32rem]">
+      <div className="relative rounded-md shadow-sm">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex w-96 items-center pl-3 sm:min-w-[36rem]">
           <MagnifyingGlassIcon
             className="h-5 w-5 text-gray-400"
             aria-hidden="true"
@@ -53,7 +54,12 @@ export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
           isCreator={profile.projects.length > 0}
         />
       ))}
-    </div>
+      {selectedProfiles.length === 0 && (
+        <p className="my-10 w-full text-center italic text-gray-500">
+          no profiles found
+        </p>
+      )}
+    </Col>
   )
 }
 
@@ -66,7 +72,7 @@ function ProfileRow(props: { profile: Profile; isCreator?: boolean }) {
   const { profile, isCreator } = props
   return (
     <Link
-      className="flex-2 flex w-fit items-center gap-3 rounded p-3 hover:bg-gray-100"
+      className="flex-2 flex w-full items-center gap-3 rounded p-3 hover:bg-gray-100"
       href={`/${profile.username}`}
     >
       <Avatar
@@ -121,7 +127,7 @@ function searchProfiles(profiles: ProfileAndProjectTitles[], search: string) {
 
 function sortProfiles(profiles: ProfileAndProjectTitles[]) {
   const sortedProfiles = sortBy(profiles, (profile) => {
-    if (profile.regranter_status) return 0
+    if (profile.regranter_status) return -getSponsoredAmount(profile.id)
     else if (profile.projects.length > 0) return 1
     else if (profile.bio) return 2
     else if (profile.accreditation_status) return 3
