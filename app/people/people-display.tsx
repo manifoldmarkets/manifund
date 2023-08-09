@@ -26,9 +26,9 @@ export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
   const [search, setSearch] = useState('')
   const selectedProfiles = searchProfiles(eligibleProfiles, search)
   return (
-    <Col className="w-80 justify-center gap-2 sm:w-[32rem]">
+    <Col className="w-80 justify-center gap-2 sm:w-[30rem] lg:w-[36rem]">
       <div className="relative rounded-md shadow-sm">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex w-96 items-center pl-3 sm:min-w-[36rem]">
+        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
           <MagnifyingGlassIcon
             className="h-5 w-5 text-gray-400"
             aria-hidden="true"
@@ -89,7 +89,7 @@ function ProfileRow(props: { profile: Profile; isCreator?: boolean }) {
         size={8}
         className="sm:hidden"
       />
-      <Col className="w-72 truncate overflow-ellipsis sm:w-96">
+      <Col className="w-72 truncate overflow-ellipsis sm:w-96 lg:w-[32rem]">
         <Row className="text-md w-full items-center gap-2 font-semibold text-gray-900 sm:text-lg">
           {profile.full_name}
           <Row className="gap-1">
