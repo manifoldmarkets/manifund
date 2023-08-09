@@ -9,7 +9,7 @@ import { UserIcon, UsersIcon } from '@heroicons/react/20/solid'
 export function Avatar(props: {
   username: string
   avatarUrl: string | null
-  id?: string
+  id: string
   noLink?: boolean
   size?: number | 'xxs' | 'xs' | 'sm'
   className?: string
@@ -44,11 +44,7 @@ export function Avatar(props: {
     />
   ) : (
     <div onClick={onClick}>
-      <GeneratedAvatar
-        uuid={id ?? '00000000-0000-0000-0000-000000000000'}
-        size={s}
-        aria-hidden="true"
-      />
+      <GeneratedAvatar uuid={id} size={s} aria-hidden="true" />
     </div>
   )
 }
