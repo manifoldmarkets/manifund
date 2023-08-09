@@ -98,7 +98,7 @@ export function GeneratedAvatar(props: { uuid: string; size?: number }) {
     toColors[toIdx === fromIdx ? (toIdx + 12) % 32 : toIdx],
     emojis[emojiIdx],
     directionNum % 3
-      ? gradientDirections[directionNum % 8]
+      ? gradientDirections[directionNum % 4]
       : 'bg-gradient-radial',
   ]
   const textSize =
@@ -133,10 +133,6 @@ const gradientDirections = [
   'bg-gradient-to-tr',
   'bg-gradient-to-r',
   'bg-gradient-to-br',
-  'bg-gradient-to-b',
-  'bg-gradient-to-bl',
-  'bg-gradient-to-l',
-  'bg-gradient-to-tl',
 ]
 
 const fromColors = [
