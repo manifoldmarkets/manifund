@@ -27,7 +27,7 @@ export function Avatar(props: {
     }
   }
 
-  return !avatarUrl ? (
+  return avatarUrl ? (
     <Image
       width={sizeInPx * 2}
       height={sizeInPx * 2}
@@ -38,7 +38,7 @@ export function Avatar(props: {
         className
       )}
       style={{ maxWidth: `${s * 0.25}rem` }}
-      src={avatarUrl ?? ''}
+      src={avatarUrl}
       onClick={onClick}
       alt={`${username ?? 'Unknown user'} avatar`}
     />
@@ -95,12 +95,22 @@ export function GeneratedAvatar(props: { uuid: string; size?: number }) {
   ]
   const [fromColor, toColor, emoji, direction] = [
     fromColors[fromIdx],
-    toColors[toIdx],
+    toColors[toIdx === fromIdx ? (toIdx + 12) % 32 : toIdx],
     emojis[emojiIdx],
     directionNum % 3
       ? gradientDirections[directionNum % 8]
       : 'bg-gradient-radial',
   ]
+  const textSize =
+    size < 8
+      ? 'text-xs'
+      : size < 12
+      ? 'text-lg'
+      : size < 16
+      ? 'text-xl'
+      : size < 24
+      ? 'text-3xl'
+      : 'text-5xl'
   console.log(fromColor, toColor)
   console.log(direction)
   return (
@@ -109,7 +119,8 @@ export function GeneratedAvatar(props: { uuid: string; size?: number }) {
         `flex flex-shrink-0 h-${size} w-${size} items-center justify-center rounded-full`,
         direction,
         fromColor,
-        toColor
+        toColor,
+        textSize
       )}
     >
       {emoji}
