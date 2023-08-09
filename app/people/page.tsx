@@ -1,9 +1,7 @@
 import { Avatar } from '@/components/avatar'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
-import { Table, ThickTableRow } from '@/components/table'
 import { MiniProfileTag } from '@/components/tags'
-import { UserAvatarAndBadge } from '@/components/user-link'
 import { Profile } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import Link from 'next/link'
@@ -41,7 +39,7 @@ function ProfileRow(props: { profile: Profile; isCreator?: boolean }) {
   const { profile, isCreator } = props
   return (
     <Link
-      className="flex-2 flex w-fit items-center gap-4 rounded p-3 hover:bg-gray-100"
+      className="flex-2 flex w-fit items-center gap-3 rounded p-3 hover:bg-gray-100"
       href={`/${profile.username}`}
     >
       <Avatar
@@ -49,9 +47,17 @@ function ProfileRow(props: { profile: Profile; isCreator?: boolean }) {
         avatarUrl={profile.avatar_url}
         id={profile.id}
         size={12}
+        className="hidden sm:block"
       />
-      <Col className="w-96 truncate overflow-ellipsis">
-        <Row className=" w-full justify-between text-lg font-semibold text-gray-900">
+      <Avatar
+        username={profile.username}
+        avatarUrl={profile.avatar_url}
+        id={profile.id}
+        size={8}
+        className="sm:hidden"
+      />
+      <Col className="w-72 truncate overflow-ellipsis sm:w-96">
+        <Row className="text-md w-full justify-between font-semibold text-gray-900 sm:text-lg">
           {profile.full_name}
           <Row className="gap-1">
             {profile.regranter_status && <MiniProfileTag role="regrantor" />}
@@ -61,7 +67,7 @@ function ProfileRow(props: { profile: Profile; isCreator?: boolean }) {
             )}
           </Row>
         </Row>
-        <span className="h-5 truncate overflow-ellipsis text-xs text-gray-500">
+        <span className="truncate overflow-ellipsis text-xs text-gray-500">
           {profile.bio}
         </span>
       </Col>

@@ -44,7 +44,7 @@ export function Avatar(props: {
       alt={`${username ?? 'Unknown user'} avatar`}
     />
   ) : (
-    <div onClick={onClick}>
+    <div onClick={onClick} className={className}>
       <GeneratedAvatar seed={id} size={s} aria-hidden="true" />
     </div>
   )
