@@ -5,10 +5,9 @@ import {
 } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
-import { SignOutButton } from './sign-out-button'
 import { getFullTxnsByUser, getTxnsByUser } from '@/db/txn'
 import { getProjectsByUser } from '@/db/project'
-import { ProfileHistory } from './profile-history'
+import { ProfileContent } from './profile-content'
 import { getBidsByUser } from '@/db/bid'
 import { getCommentsByUser } from '@/db/comment'
 
@@ -38,7 +37,7 @@ export default async function UserProfilePage(props: {
   return (
     <div className="flex flex-col gap-8 p-3 sm:p-5">
       <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} />
-      <ProfileHistory
+      <ProfileContent
         profile={profile}
         projects={projects}
         comments={comments}
@@ -47,11 +46,6 @@ export default async function UserProfilePage(props: {
         userProfile={userProfile}
         userTxns={userTxns}
       />
-      {isOwnProfile && (
-        <div className="mt-5 flex justify-center">
-          <SignOutButton />
-        </div>
-      )}
     </div>
   )
 }

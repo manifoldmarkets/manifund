@@ -18,13 +18,12 @@ import { DonateBox } from '@/components/donate-box'
 import { OutgoingDonationsHistory } from './profile-donations'
 import { CommentAndProject } from '@/db/comment'
 import { ProfileComments } from './profile-comments'
-import { JSONContent } from '@tiptap/react'
 import { RichContent } from '@/components/editor'
 import { Row } from '@/components/layout/row'
 import { useState } from 'react'
 import clsx from 'clsx'
 
-export function ProfileHistory(props: {
+export function ProfileContent(props: {
   profile: Profile
   projects: FullProject[]
   comments: CommentAndProject[]

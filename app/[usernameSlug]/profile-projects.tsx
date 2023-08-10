@@ -11,10 +11,6 @@ import { Col } from '@/components/layout/col'
 export function Projects(props: { projects: Project[] }) {
   const { projects } = props
   const sortedProjects = orderBy(projects, 'created_at', 'desc')
-  // const filteredComments = comments.filter(
-  //   (comment) => comment.projects.stage !== 'hidden'
-  // )
-  // const sortedComments = orderBy(filteredComments, 'created_at', 'desc')
   return (
     <div>
       <h1 className="mb-2 text-xl font-medium sm:text-2xl">Projects</h1>
@@ -47,13 +43,6 @@ export function Projects(props: { projects: Project[] }) {
           ))
         )}
       </table>
-      {/* <Col className="gap-3">
-        {sortedComments.map((comment) => {
-          return (
-            <Comment key={comment.id} comment={comment} commenter={profile} />
-          )
-        })}
-      </Col> */}
     </div>
   )
 }
