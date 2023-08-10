@@ -59,6 +59,7 @@ export const MentionList = forwardRef(
               <Avatar
                 username={profile.username}
                 avatarUrl={profile.avatar_url}
+                id={profile.id}
                 size="xs"
                 noLink
               />

@@ -2,7 +2,6 @@ import { SiteLink } from './site-link'
 import clsx from 'clsx'
 import { Tooltip } from './tooltip'
 import { Avatar } from './avatar'
-import { CheckBadgeIcon } from '@heroicons/react/24/outline'
 import { ShieldCheckIcon, StarIcon } from '@heroicons/react/20/solid'
 import { Profile } from '@/db/profile'
 
@@ -32,6 +31,7 @@ export function UserAvatarAndBadge(props: {
       <Avatar
         username={profile.username}
         avatarUrl={profile.avatar_url}
+        id={profile.id}
         size={6}
       />
       <UserLink

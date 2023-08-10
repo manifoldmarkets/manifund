@@ -11,6 +11,7 @@ import {
   ChatBubbleOvalLeftEllipsisIcon,
   HeartIcon,
   NewspaperIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline'
 import { SiteLink } from '@/components/site-link'
 
@@ -62,10 +63,8 @@ function findIcon(name: string, isCurrentPage: boolean) {
       return <InformationCircleIcon className={styling} />
     case 'Charity':
       return <HeartIcon className={styling} />
-    case 'Discord':
-      return <ChatBubbleOvalLeftEllipsisIcon className={styling} />
-    case 'Substack':
-      return <NewspaperIcon className={styling} />
+    case 'People':
+      return <UserGroupIcon className={styling} />
     default:
       return <UserCircleIcon className={styling} />
   }
