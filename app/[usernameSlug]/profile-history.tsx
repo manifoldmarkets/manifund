@@ -1,14 +1,11 @@
 'use client'
 import { Profile, ProfileAndBids } from '@/db/profile'
-import { useSearchParams } from 'next/navigation'
 import { BidAndProject } from '@/db/bid'
-import { Tabs } from '@/components/tabs'
 import { FullProject, Project } from '@/db/project'
 import { ProposalBids } from './profile-proposal-bids'
 import { ActiveBids } from './profile-active-bids'
 import { Investments } from './profile-investments'
 import { Projects } from './profile-projects'
-import { RichContent } from '@/components/editor'
 import { BalanceDisplay } from './balance-display'
 import {
   calculateCharityBalance,
@@ -20,8 +17,9 @@ import { calculateCashBalance } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 import { OutgoingDonationsHistory } from './profile-donations'
 import { CommentAndProject } from '@/db/comment'
+import { ProfileComments } from './profile-comments'
 
-export function ProfileTabs(props: {
+export function ProfileHistory(props: {
   profile: Profile
   projects: FullProject[]
   comments: CommentAndProject[]
@@ -56,9 +54,6 @@ export function ProfileTabs(props: {
   const pendingDonateBids = bids.filter(
     (bid) => bid.status === 'pending' && bid.type === 'donate'
   )
-  const searchParams = useSearchParams() ?? new URLSearchParams()
-  const currentTabName = searchParams.get('tab')
-  const tabs = []
   const balance = calculateUserBalance(txns, profile.id)
   const withdrawBalance = calculateCashBalance(
     txns,
@@ -81,52 +76,6 @@ export function ProfileTabs(props: {
           userProfile?.accreditation_status
         )
       : 0
-
-  const portfolioCount =
-    proposalBids.length +
-    activeBids.length +
-    notOwnProjectInvestments.length +
-    donations.length
-  tabs.push({
-    name: 'Portfolio',
-    href: '?tab=portfolio',
-    count: portfolioCount,
-    current: currentTabName === 'portfolio' || currentTabName === null,
-    display: (
-      <div className="flex flex-col gap-6">
-        {profile.regranter_status && !isOwnProfile && userProfile && (
-          <DonateBox
-            charity={profile}
-            profile={userProfile}
-            maxDonation={userCharityBalance}
-          />
-        )}
-        <BalanceDisplay
-          balance={balance}
-          withdrawBalance={withdrawBalance}
-          charityBalance={charityBalance}
-          accredited={profile.accreditation_status}
-          isOwnProfile={isOwnProfile ?? undefined}
-          userId={userProfile?.id ?? undefined}
-        />
-        {(donations.length > 0 || pendingDonateBids.length > 0) && (
-          <OutgoingDonationsHistory
-            donations={donations}
-            pendingDonateBids={pendingDonateBids}
-          />
-        )}
-        {notOwnProjectInvestments.length > 0 && (
-          <Investments investments={notOwnProjectInvestments} />
-        )}
-        {activeBids.length > 0 && (
-          <ActiveBids bids={activeBids} isOwnProfile={isOwnProfile} />
-        )}
-        {proposalBids.length > 0 && (
-          <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
-        )}
-      </div>
-    ),
-  })
   const relevantProjects = projects
     .filter(
       (project) =>
@@ -134,29 +83,46 @@ export function ProfileTabs(props: {
           .length === 0
     )
     .filter((project) => project.stage !== 'hidden' || isOwnProfile)
-  if (isOwnProfile || relevantProjects.length > 0) {
-    tabs.push({
-      name: 'Projects',
-      href: '?tab=projects',
-      count: relevantProjects.length,
-      current: currentTabName === 'projects',
-      display: <Projects projects={relevantProjects} />,
-    })
-  }
-  if (profile.long_description) {
-    tabs.push({
-      name: 'About me',
-      href: '?tab=about',
-      count: 0,
-      current: currentTabName === 'about',
-      display: <RichContent content={profile.long_description} />,
-    })
-  }
-  if (tabs.length > 0) {
-    return <Tabs tabs={tabs} />
-  } else {
-    return null
-  }
+  return (
+    <div className="flex flex-col gap-6">
+      {profile.regranter_status && !isOwnProfile && userProfile && (
+        <DonateBox
+          charity={profile}
+          profile={userProfile}
+          maxDonation={userCharityBalance}
+        />
+      )}
+      <BalanceDisplay
+        balance={balance}
+        withdrawBalance={withdrawBalance}
+        charityBalance={charityBalance}
+        accredited={profile.accreditation_status}
+        isOwnProfile={isOwnProfile ?? undefined}
+        userId={userProfile?.id ?? undefined}
+      />
+      {(donations.length > 0 || pendingDonateBids.length > 0) && (
+        <OutgoingDonationsHistory
+          donations={donations}
+          pendingDonateBids={pendingDonateBids}
+        />
+      )}
+      {notOwnProjectInvestments.length > 0 && (
+        <Investments investments={notOwnProjectInvestments} />
+      )}
+      {activeBids.length > 0 && (
+        <ActiveBids bids={activeBids} isOwnProfile={isOwnProfile} />
+      )}
+      {proposalBids.length > 0 && (
+        <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
+      )}
+      {(relevantProjects.length > 0 || isOwnProfile) && (
+        <Projects projects={relevantProjects} />
+      )}
+      {comments.length > 0 && (
+        <ProfileComments comments={comments} profile={profile} />
+      )}
+    </div>
+  )
 }
 
 export type Investment = {

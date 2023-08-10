@@ -7,23 +7,17 @@ import { orderBy } from 'lodash'
 import { ThickTableRow } from '@/components/table'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
-import { CommentAndProject } from '@/db/comment'
-import { Profile } from '@/db/profile'
-import { Comment } from '@/components/comment'
 
-export function Projects(props: {
-  profile: Profile
-  projects: Project[]
-  comments: CommentAndProject[]
-}) {
-  const { profile, projects, comments } = props
+export function Projects(props: { projects: Project[] }) {
+  const { projects } = props
   const sortedProjects = orderBy(projects, 'created_at', 'desc')
-  const filteredComments = comments.filter(
-    (comment) => comment.projects.stage !== 'hidden'
-  )
-  const sortedComments = orderBy(filteredComments, 'created_at', 'desc')
+  // const filteredComments = comments.filter(
+  //   (comment) => comment.projects.stage !== 'hidden'
+  // )
+  // const sortedComments = orderBy(filteredComments, 'created_at', 'desc')
   return (
     <div>
+      <h1 className="mb-2 text-xl font-medium sm:text-2xl">Projects</h1>
       <table
         role="list"
         className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
@@ -53,13 +47,13 @@ export function Projects(props: {
           ))
         )}
       </table>
-      <Col className="gap-3">
+      {/* <Col className="gap-3">
         {sortedComments.map((comment) => {
           return (
             <Comment key={comment.id} comment={comment} commenter={profile} />
           )
         })}
-      </Col>
+      </Col> */}
     </div>
   )
 }

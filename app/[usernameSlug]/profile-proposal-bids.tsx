@@ -4,7 +4,7 @@ import { ThickTableRow } from '@/components/table'
 import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { RoundTag } from '@/components/tags'
-import { BidText } from './user-active-bids'
+import { BidText } from './profile-active-bids'
 
 export function ProposalBids(props: {
   bids: BidAndProject[]

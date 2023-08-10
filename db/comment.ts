@@ -1,10 +1,9 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { HTMLContent, JSONContent } from '@tiptap/react'
+import { JSONContent } from '@tiptap/react'
 import { Project } from './project'
 import { Profile } from './profile'
 import uuid from 'react-uuid'
-import { Txn } from './txn'
 
 export type Comment = Database['public']['Tables']['comments']['Row']
 export type CommentAndProfile = Comment & { profiles: Profile }
