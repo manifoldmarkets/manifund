@@ -18,6 +18,11 @@ import { DonateBox } from '@/components/donate-box'
 import { OutgoingDonationsHistory } from './profile-donations'
 import { CommentAndProject } from '@/db/comment'
 import { ProfileComments } from './profile-comments'
+import { JSONContent } from '@tiptap/react'
+import { RichContent } from '@/components/editor'
+import { Row } from '@/components/layout/row'
+import { useState } from 'react'
+import clsx from 'clsx'
 
 export function ProfileHistory(props: {
   profile: Profile
@@ -100,6 +105,9 @@ export function ProfileHistory(props: {
         isOwnProfile={isOwnProfile ?? undefined}
         userId={userProfile?.id ?? undefined}
       />
+      {profile.long_description && (
+        <AboutMeSection content={profile.long_description} />
+      )}
       {(donations.length > 0 || pendingDonateBids.length > 0) && (
         <OutgoingDonationsHistory
           donations={donations}
@@ -162,4 +170,34 @@ function compileInvestments(txns: FullTxn[], userId: string) {
     }
   })
   return investments as Investment[]
+}
+
+function AboutMeSection(props: { content: any }) {
+  const { content } = props
+  const [expanded, setExpanded] = useState(false)
+  return (
+    <div className="flex flex-col gap-2 rounded-md bg-white p-4 ring-2 ring-orange-600">
+      <Row className="items-center gap-2 text-sm text-gray-900">
+        <button onClick={() => setExpanded(!expanded)}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            className={clsx('bi bi-caret-right-fill', expanded && 'rotate-90')}
+            viewBox="0 0 16 16"
+          >
+            <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+          </svg>
+        </button>
+        About Me
+      </Row>
+      <div className="text-sm text-gray-700">
+        <RichContent
+          content={content}
+          className={clsx('text-sm', !expanded && 'line-clamp-2')}
+        />
+      </div>
+    </div>
+  )
 }
