@@ -22,7 +22,7 @@ export function Comment(props: {
   return (
     <div id={comment.id}>
       <Row className="w-full items-center justify-between gap-2">
-        <Row className="items-center gap-1">
+        <Row className="min-w-fit items-center gap-1">
           <UserAvatarAndBadge
             profile={commenter}
             creatorBadge={writtenByCreator}
