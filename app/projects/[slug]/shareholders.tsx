@@ -52,6 +52,7 @@ function History(props: { trades: FullTrade[] }) {
             <Avatar
               username={trade.fromProfile.username}
               avatarUrl={trade.fromProfile.avatar_url}
+              id={trade.fromProfile.id}
               size={6}
             />
             <Col className="justify-center">
@@ -60,6 +61,7 @@ function History(props: { trades: FullTrade[] }) {
             <Avatar
               username={trade.toProfile.username}
               avatarUrl={trade.toProfile.avatar_url}
+              id={trade.toProfile.id}
               size={6}
             />
           </Row>
