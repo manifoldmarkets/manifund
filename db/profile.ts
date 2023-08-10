@@ -6,6 +6,9 @@ import { Bid } from './bid'
 export type Profile = Database['public']['Tables']['profiles']['Row']
 export type ProfileAndTxns = Profile & { txns: Txn[] }
 export type ProfileAndBids = Profile & { bids: Bid[] }
+export type ProfileAndProjectTitles = Profile & {
+  projects: { title: string }[]
+}
 
 export function isAdmin(user: User | null) {
   const ADMINS = ['rachel.weinberg12@gmail.com', 'akrolsmir@gmail.com']
@@ -111,4 +114,12 @@ export async function getRegranters(supabase: SupabaseClient) {
     .eq('regranter_status', true)
     .throwOnError()
   return data as Profile[]
+}
+
+export async function listProfiles(supabase: SupabaseClient) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('*, projects(title)')
+    .throwOnError()
+  return data as ProfileAndProjectTitles[]
 }

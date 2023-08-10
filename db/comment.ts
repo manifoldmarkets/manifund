@@ -1,16 +1,16 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { HTMLContent, JSONContent } from '@tiptap/react'
+import { JSONContent } from '@tiptap/react'
 import { Project } from './project'
 import { Profile } from './profile'
 import uuid from 'react-uuid'
-import { Txn } from './txn'
 
 export type Comment = Database['public']['Tables']['comments']['Row']
 export type CommentAndProfile = Comment & { profiles: Profile }
 export type FullComment = Comment & { profiles: Profile } & {
   projects: Project
 }
+export type CommentAndProject = Comment & { projects: Project }
 
 export async function getCommentsByProject(
   supabase: SupabaseClient,
@@ -68,4 +68,18 @@ export async function getReplies(supabase: SupabaseClient, rootId: string) {
     throw error
   }
   return data as Comment[]
+}
+
+export async function getCommentsByUser(
+  supabase: SupabaseClient,
+  commenterId: string
+) {
+  const { data, error } = await supabase
+    .from('comments')
+    .select('*, projects(id, title, slug, stage)')
+    .eq('commenter', commenterId)
+  if (error) {
+    throw error
+  }
+  return data as CommentAndProject[]
 }

@@ -1,9 +1,7 @@
 'use client'
 import { Profile } from '@/db/profile'
 import { CommentAndProfile, sendComment } from '@/db/comment'
-import { UserAvatarAndBadge } from '@/components/user-link'
-import { formatDistanceToNow } from 'date-fns'
-import { RichContent, TextEditor } from '@/components/editor'
+import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
 import { Project } from '@/db/project'
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
@@ -12,15 +10,14 @@ import { Row } from '@/components/layout/row'
 import { IconButton } from '@/components/button'
 import { useEffect, useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
-import { Col } from '@/components/layout/col'
 import { Tooltip } from '@/components/tooltip'
-import { Tag } from '@/components/tags'
 import { Avatar } from '@/components/avatar'
 import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { JSONContent } from '@tiptap/react'
 import clsx from 'clsx'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
+import { Comment } from '@/components/comment'
 
 export function Comments(props: {
   project: Project
@@ -60,6 +57,7 @@ export function Comments(props: {
         <div className="w-full">
           <Comment
             comment={thread.root}
+            commenter={thread.root.profiles}
             writtenByCreator={thread.root.commenter === project.creator}
             contributionText={commenterContributions[thread.root.commenter]}
           />
@@ -76,6 +74,7 @@ export function Comments(props: {
             <div className="ml-8 mt-1" key={reply.id}>
               <Comment
                 comment={reply}
+                commenter={reply.profiles}
                 writtenByCreator={reply.commenter === project.creator}
                 contributionText={commenterContributions[reply.commenter]}
               />
@@ -142,43 +141,6 @@ function genThreads(
     thread.replies = sortBy(thread.replies, 'created_at')
   })
   return orderBy(threadsArray, 'root.created_at', 'desc')
-}
-
-function Comment(props: {
-  comment: CommentAndProfile
-  writtenByCreator?: boolean
-  contributionText?: string
-}) {
-  const { comment, writtenByCreator, contributionText } = props
-  return (
-    <div>
-      <Row className="w-full items-center justify-between gap-2">
-        <Row className="items-center gap-1">
-          <UserAvatarAndBadge
-            profile={comment.profiles}
-            creatorBadge={writtenByCreator}
-            className="text-sm text-gray-800"
-          />
-          <p className="hidden text-xs text-gray-500 sm:inline">
-            {formatDistanceToNow(new Date(comment.created_at), {
-              addSuffix: true,
-            })}
-          </p>
-        </Row>
-        <Col className="items-center">
-          {contributionText && <Tag text={contributionText} color="orange" />}
-          <p className="text-xs text-gray-500 sm:hidden">
-            {formatDistanceToNow(new Date(comment.created_at), {
-              addSuffix: true,
-            })}
-          </p>
-        </Col>
-      </Row>
-      <div className="relative left-8 w-11/12">
-        <RichContent content={comment.content} className="sm:text-md text-sm" />
-      </div>
-    </div>
-  )
 }
 
 export function WriteComment(props: {
@@ -274,6 +236,7 @@ export function WriteComment(props: {
         username={commenter.username}
         avatarUrl={commenter.avatar_url}
         size={replyingTo?.id ? 6 : 10}
+        id={commenter.id}
         className="mr-2"
       />
       <div
