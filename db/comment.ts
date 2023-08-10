@@ -76,7 +76,7 @@ export async function getCommentsByUser(
 ) {
   const { data, error } = await supabase
     .from('comments')
-    .select('*, projects(title, slug, creator, stage)')
+    .select('*, projects(id, title, slug, stage)')
     .eq('commenter', commenterId)
   if (error) {
     throw error

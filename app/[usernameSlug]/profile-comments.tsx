@@ -1,7 +1,7 @@
 import { Col } from '@/components/layout/col'
 import { CommentAndProject } from '@/db/comment'
 import { Profile } from '@/db/profile'
-import { orderBy } from 'lodash'
+import { orderBy, sortBy } from 'lodash'
 import { Comment } from '@/components/comment'
 
 export function ProfileComments(props: {
@@ -16,10 +16,15 @@ export function ProfileComments(props: {
   return (
     <div>
       <h1 className="mb-2 text-xl font-medium sm:text-2xl">Comments</h1>
-      <Col className="gap-3">
+      <Col className="gap-8">
         {sortedComments.map((comment) => {
           return (
-            <Comment key={comment.id} comment={comment} commenter={profile} />
+            <Comment
+              key={comment.id}
+              comment={comment}
+              commenter={profile}
+              project={comment.projects}
+            />
           )
         })}
       </Col>
