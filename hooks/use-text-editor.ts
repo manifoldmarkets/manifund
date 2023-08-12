@@ -5,12 +5,11 @@ import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
 import { DisplayMention } from '@/components/user-mention/mention-extension'
 import Placeholder from '@tiptap/extension-placeholder'
-import BubbleMenu from '@tiptap/extension-bubble-menu'
 import { noop } from 'lodash'
 import useLocalStorage from '@/hooks/use-local-storage'
 
 export function useTextEditor(
-  defaultContent?: any,
+  defaultContent: any = '',
   key?: string,
   placeholder?: string,
   className?: string
@@ -41,7 +40,7 @@ export function useTextEditor(
           'before:content-[attr(data-placeholder)] before:text-gray-500 before:float-left before:h-0 cursor-text',
       }),
     ],
-    content: (key && content ? content : '') ?? defaultContent,
+    content: key && content ? content : defaultContent,
   })
   return editor
 }
