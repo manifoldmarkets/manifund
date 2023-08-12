@@ -22,7 +22,7 @@ export function EditDescription(props: { project: Project }) {
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
   const [saving, setSaving] = useState(false)
   const router = useRouter()
-  const editor = useTextEditor(project.description ?? '')
+  const editor = useTextEditor(project.description)
 
   if (!user || user.id !== project.creator) {
     return null
