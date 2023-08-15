@@ -152,7 +152,7 @@ export default async function Admin() {
             <th>Title</th>
             <th>Creator</th>
             <th>Min funding</th>
-            <th>Raise min funding to $500</th>
+            <th>Set close 6 weeks after creation</th>
           </tr>
         </thead>
         <tbody>

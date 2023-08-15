@@ -1,5 +1,5 @@
 import { isBefore } from 'date-fns'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from './_db'
 import { getAmountRaised } from '@/utils/math'
 import { Project } from '@/db/project'
@@ -16,23 +16,30 @@ export const config = {
   ],
 }
 
-export default async function handler(req: NextRequest) {
+export default async function handler() {
   const supabase = createAdminClient()
   const { data: proposals } = await supabase
     .from('projects')
     .select('*, bids(*), profiles(full_name)')
     .eq('stage', 'proposal')
-  const proposalsPastDeadline = proposals?.filter((proposal) => {
-    return isBefore(new Date(proposal.auction_close ?? ''), new Date())
-  })
-  proposalsPastDeadline?.forEach(async (proposal) => {
-    await closeGrant(
-      proposal,
-      proposal.bids,
-      proposal.profiles?.full_name ?? '',
-      supabase
+  const now = new Date()
+  const proposalsPastDeadline = proposals?.filter((project) => {
+    const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
+    return (
+      isBefore(closeDate, now) &&
+      project.id === 'eeee3543-d394-43d7-b1db-eb12adaed4ab'
     )
   })
+  console.log(proposalsPastDeadline)
+  // proposalsPastDeadline?.forEach(async (proposal) => {
+  //   await closeGrant(
+  //     proposal,
+  //     proposal.bids,
+  //     proposal.profiles?.full_name ?? '',
+  //     supabase
+  //   )
+  // })
+  return NextResponse.json('closed grants')
 }
 
 async function closeGrant(
@@ -69,10 +76,10 @@ async function closeGrant(
     const VERDICT_TEMPLATE_ID = 31974162
     const recipientPostmarkVars = {
       recipientFullName: creatorName,
-      verdictMessage: `We regret to inform you that your project, "${project.title}," has not recieved enough funding to proceed. Please let us know on our discord if you have any questions or feedback about the process.`,
+      verdictMessage: `We regret to inform you that your project, "${project.title}," has not been funded because it received only ${amountRaised} in funding, which is less than its' minimum funding goal of ${project.min_funding}. Please let us know on our discord if you have any questions or feedback about the process.`,
       projectUrl: `${getURL()}/projects/${project.slug}`,
       subject: `Manifund project not funded: "${project.title}"`,
-      adminName: 'Rachel',
+      adminName: 'Manifund team',
     }
     await sendTemplateEmail(
       VERDICT_TEMPLATE_ID,
@@ -85,7 +92,7 @@ async function closeGrant(
         projectTitle: project.title,
         result: 'declined',
         projectUrl: `${getURL()}/projects/${project.slug}`,
-        auctionResolutionText: `This project was not funded, because it recieved only ${amountRaised} in funding, which is less than its' minimum funding goal of ${project.min_funding}.}`,
+        auctionResolutionText: `This project was not funded, because it received only ${amountRaised} in funding, which is less than its' minimum funding goal of ${project.min_funding}.}`,
         bidResolutionText: `Your offer was declined.`,
       }
       await sendTemplateEmail(
