@@ -1,5 +1,5 @@
 import { isBefore } from 'date-fns'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createAdminClient } from './_db'
 import { getAmountRaised } from '@/utils/math'
 import { Project } from '@/db/project'
@@ -31,14 +31,14 @@ export default async function handler() {
     )
   })
   console.log(proposalsPastDeadline)
-  // proposalsPastDeadline?.forEach(async (proposal) => {
-  //   await closeGrant(
-  //     proposal,
-  //     proposal.bids,
-  //     proposal.profiles?.full_name ?? '',
-  //     supabase
-  //   )
-  // })
+  proposalsPastDeadline?.forEach(async (proposal) => {
+    await closeGrant(
+      proposal,
+      proposal.bids,
+      proposal.profiles?.full_name ?? '',
+      supabase
+    )
+  })
   return NextResponse.json('closed grants')
 }
 
@@ -52,20 +52,29 @@ async function closeGrant(
   const GENERIC_NOTIF_TEMPLATE_ID = 32825293
   if (amountRaised >= project.min_funding) {
     if (!project.signed_agreement) {
-      await sendTemplateEmail(GENERIC_NOTIF_TEMPLATE_ID, {
-        notifText: `Your project "${project.title}" has enough funding to proceed but is awaiting your signature on the grant agreement. Please sign the agreement to activate your grant.`,
-        buttonUrl: `${getURL()}/projects/${project.slug}/grant-agreement`,
-        buttonText: 'Sign agreement',
-        subject: 'Manifund: Reminder to sign your grant agreement',
-      })
+      await sendTemplateEmail(
+        GENERIC_NOTIF_TEMPLATE_ID,
+        {
+          notifText: `Your project "${project.title}" has enough funding to proceed but is awaiting your signature on the grant agreement. Please sign the agreement to activate your grant.`,
+          buttonUrl: `https://manifund.org/projects/${project.slug}/grant-agreement`,
+          buttonText: 'Sign agreement',
+          subject: 'Manifund: Reminder to sign your grant agreement',
+        },
+        project.creator
+      )
     }
     if (!project.approved) {
-      await sendTemplateEmail(GENERIC_NOTIF_TEMPLATE_ID, {
-        notifText: `The project "${project.title}" has enough funding but is awaiting admin approval.`,
-        buttonUrl: `${getURL()}/projects/${project.slug}`,
-        buttonText: 'See project',
-        subject: 'Manifund: Reminder to approve project',
-      })
+      await sendTemplateEmail(
+        GENERIC_NOTIF_TEMPLATE_ID,
+        {
+          notifText: `The project "${project.title}" has enough funding but is awaiting admin approval.`,
+          buttonUrl: `https://manifund.org/projects/${project.slug}`,
+          buttonText: 'See project',
+          subject: 'Manifund: Reminder to approve project',
+        },
+        undefined,
+        'rachel@manifund.org'
+      )
     }
   } else {
     await supabase
@@ -76,8 +85,8 @@ async function closeGrant(
     const VERDICT_TEMPLATE_ID = 31974162
     const recipientPostmarkVars = {
       recipientFullName: creatorName,
-      verdictMessage: `We regret to inform you that your project, "${project.title}," has not been funded because it received only ${amountRaised} in funding, which is less than its' minimum funding goal of ${project.min_funding}. Please let us know on our discord if you have any questions or feedback about the process.`,
-      projectUrl: `${getURL()}/projects/${project.slug}`,
+      verdictMessage: `We regret to inform you that your project, "${project.title}," has not been funded because it received only $${amountRaised} in funding, which is less than its' minimum funding goal of $${project.min_funding}. Please let us know on our discord if you have any questions or feedback about the process.`,
+      projectUrl: `https://manifund.org/projects/${project.slug}`,
       subject: `Manifund project not funded: "${project.title}"`,
       adminName: 'Manifund team',
     }
@@ -91,8 +100,8 @@ async function closeGrant(
       const bidderPostmarkVars = {
         projectTitle: project.title,
         result: 'declined',
-        projectUrl: `${getURL()}/projects/${project.slug}`,
-        auctionResolutionText: `This project was not funded, because it received only ${amountRaised} in funding, which is less than its' minimum funding goal of ${project.min_funding}.}`,
+        projectUrl: `https://manifund.org/projects/${project.slug}`,
+        auctionResolutionText: `This project was not funded, because it received only $${amountRaised} in funding, which is less than its' minimum funding goal of $${project.min_funding}.`,
         bidResolutionText: `Your offer was declined.`,
       }
       await sendTemplateEmail(
