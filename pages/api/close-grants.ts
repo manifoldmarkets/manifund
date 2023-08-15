@@ -6,7 +6,6 @@ import { Project } from '@/db/project'
 import { Bid } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sendTemplateEmail } from '@/utils/email'
-import { getURL } from 'next/dist/shared/lib/utils'
 
 export const config = {
   runtime: 'edge',
@@ -25,20 +24,16 @@ export default async function handler() {
   const now = new Date()
   const proposalsPastDeadline = proposals?.filter((project) => {
     const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
-    return (
-      isBefore(closeDate, now) &&
-      project.id === 'eeee3543-d394-43d7-b1db-eb12adaed4ab'
-    )
+    return isBefore(closeDate, now) && project.type === 'grant'
   })
-  console.log(proposalsPastDeadline)
-  proposalsPastDeadline?.forEach(async (proposal) => {
+  for (const project of proposalsPastDeadline ?? []) {
     await closeGrant(
-      proposal,
-      proposal.bids,
-      proposal.profiles?.full_name ?? '',
+      project,
+      project.bids,
+      project.profiles?.full_name ?? '',
       supabase
     )
-  })
+  }
   return NextResponse.json('closed grants')
 }
 
@@ -50,7 +45,9 @@ async function closeGrant(
 ) {
   const amountRaised = getAmountRaised(project, bids)
   const GENERIC_NOTIF_TEMPLATE_ID = 32825293
+  console.log('PROJECT', project.title)
   if (amountRaised >= project.min_funding) {
+    console.log('to be accepted')
     if (!project.signed_agreement) {
       await sendTemplateEmail(
         GENERIC_NOTIF_TEMPLATE_ID,
@@ -77,6 +74,7 @@ async function closeGrant(
       )
     }
   } else {
+    console.log('rejected')
     await supabase
       .rpc('reject_grant', {
         project_id: project.id,
@@ -85,10 +83,10 @@ async function closeGrant(
     const VERDICT_TEMPLATE_ID = 31974162
     const recipientPostmarkVars = {
       recipientFullName: creatorName,
-      verdictMessage: `We regret to inform you that your project, "${project.title}," has not been funded because it received only $${amountRaised} in funding, which is less than its' minimum funding goal of $${project.min_funding}. Please let us know on our discord if you have any questions or feedback about the process.`,
+      verdictMessage: `We regret to inform you that your project, "${project.title}," has not been funded. It received $${amountRaised} in funding offers but had a minimum funding goal of $${project.min_funding}. Thank you for posting your project, and please let us know on our discord if you have any questions or feedback about the process.`,
       projectUrl: `https://manifund.org/projects/${project.slug}`,
       subject: `Manifund project not funded: "${project.title}"`,
-      adminName: 'Manifund team',
+      adminName: 'Rachel',
     }
     await sendTemplateEmail(
       VERDICT_TEMPLATE_ID,
