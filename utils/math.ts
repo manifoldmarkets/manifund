@@ -1,10 +1,9 @@
-import { Bid, getBidsByUser } from '@/db/bid'
+import { Bid } from '@/db/bid'
 import { BANK_ID } from '@/db/env'
 import { Profile } from '@/db/profile'
-import { getProjectsPendingTransferByUser, Project } from '@/db/project'
+import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
-import { FullTxn, getFullTxnsByUser, Txn, TxnAndProfiles } from '@/db/txn'
-import { SupabaseClient } from '@supabase/supabase-js'
+import { FullTxn, Txn, TxnAndProfiles } from '@/db/txn'
 import { orderBy, sortBy } from 'lodash'
 import { isCharitableDeposit } from './constants'
 
@@ -106,10 +105,6 @@ export function calculateFullTrades(txns: TxnAndProfiles[]) {
     }
   }
   return orderBy(Object.values(trades), 'date', 'desc') as FullTrade[]
-}
-
-export function dateDiff(first: number, second: number) {
-  return Math.round(second - first) / (1000 * 60 * 60 * 24)
 }
 
 export function calculateUserLockedFunds(bids: Bid[]) {

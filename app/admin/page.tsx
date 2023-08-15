@@ -12,7 +12,7 @@ import { calculateShares } from '@/utils/math'
 import { Donations } from './donations'
 import { listProjects } from '@/db/project'
 import { GrantVerdict } from './grant-verdict'
-import { RaiseMinFunding } from './raise-min-funding'
+import { SetCloseDate } from './set-close-date'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -152,7 +152,7 @@ export default async function Admin() {
             <th>Title</th>
             <th>Creator</th>
             <th>Min funding</th>
-            <th>Raise min funding to $500</th>
+            <th>Set close 6 weeks after creation</th>
           </tr>
         </thead>
         <tbody>
@@ -162,10 +162,7 @@ export default async function Admin() {
                 <td className="max-w-sm overflow-hidden">{project.title}</td>
                 <td>{getName(project.creator)}</td>
                 <td>{project.min_funding}</td>
-                <RaiseMinFunding
-                  projectId={project.id}
-                  minFunding={project.min_funding}
-                />
+                <SetCloseDate project={project} />
               </tr>
             )
           })}
