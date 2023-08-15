@@ -143,6 +143,37 @@ export interface Database {
         }
         Relationships: []
       }
+      project_topics: {
+        Row: {
+          id: number
+          project_id: string
+          topic_title: string
+        }
+        Insert: {
+          id?: number
+          project_id: string
+          topic_title: string
+        }
+        Update: {
+          id?: number
+          project_id?: string
+          topic_title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_topics_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_topics_topic_title_fkey"
+            columns: ["topic_title"]
+            referencedRelation: "topics"
+            referencedColumns: ["title"]
+          }
+        ]
+      }
       project_transfers: {
         Row: {
           created_at: string
@@ -179,21 +210,18 @@ export interface Database {
       }
       project_votes: {
         Row: {
-          created_at: string | null
           id: number
           magnitude: number
           project_id: string
           voter_id: string
         }
         Insert: {
-          created_at?: string | null
           id?: number
           magnitude?: number
           project_id: string
           voter_id: string
         }
         Update: {
-          created_at?: string | null
           id?: number
           magnitude?: number
           project_id?: string
@@ -366,6 +394,33 @@ export interface Database {
           }
         ]
       }
+      topics: {
+        Row: {
+          data: Json | null
+          description: Json | null
+          header_image_url: string | null
+          slug: string
+          subtitle: string | null
+          title: string
+        }
+        Insert: {
+          data?: Json | null
+          description?: Json | null
+          header_image_url?: string | null
+          slug: string
+          subtitle?: string | null
+          title: string
+        }
+        Update: {
+          data?: Json | null
+          description?: Json | null
+          header_image_url?: string | null
+          slug?: string
+          subtitle?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       txns: {
         Row: {
           amount: number
@@ -475,6 +530,14 @@ export interface Database {
         }
         Returns: undefined
       }
+      add_tags: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      add_topics: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       create_transfer_grant:
         | {
             Args: {
@@ -498,7 +561,7 @@ export interface Database {
           approved: boolean
           project_id: string
           project_creator: string
-          admin_id: string
+          admin_id?: string
           admin_comment_content?: Json
         }
         Returns: undefined
@@ -516,6 +579,12 @@ export interface Database {
           project: Database["public"]["CompositeTypes"]["project_row"]
           donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
           donation: Database["public"]["CompositeTypes"]["bid_row"]
+        }
+        Returns: undefined
+      }
+      reject_grant: {
+        Args: {
+          project_id: string
         }
         Returns: undefined
       }
