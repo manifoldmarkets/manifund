@@ -35,8 +35,8 @@ type SortOption =
 export function ProjectsDisplay(props: {
   projects: FullProject[]
   sortOptions: SortOption[]
+  allTopics: Topic[]
   defaultSort?: SortOption
-  allTopics?: Topic[]
   hideRound?: boolean
 }) {
   const { projects, sortOptions, defaultSort, allTopics, hideRound } = props
@@ -141,7 +141,6 @@ export function ProjectsDisplay(props: {
               projects={proposals}
               prices={prices}
               allTopics={allTopics}
-              hideRound={hideRound}
             />
           </div>
         )}
@@ -153,7 +152,6 @@ export function ProjectsDisplay(props: {
             <ProjectGroup
               projects={activeProjects}
               prices={prices}
-              hideRound={hideRound}
               allTopics={allTopics}
             />
           </div>
@@ -166,7 +164,6 @@ export function ProjectsDisplay(props: {
             <ProjectGroup
               projects={completeProjects}
               prices={prices}
-              hideRound={hideRound}
               allTopics={allTopics}
             />
           </div>
@@ -179,7 +176,6 @@ export function ProjectsDisplay(props: {
             <ProjectGroup
               projects={unfundedProjects}
               prices={prices}
-              hideRound={hideRound}
               allTopics={allTopics}
             />
           </div>

@@ -13,7 +13,7 @@ import {
   CurrencyDollarIcon,
 } from '@heroicons/react/20/solid'
 import { orderBy } from 'lodash'
-import { RoundTag, Tag, TopicTag } from './tags'
+import { Tag, TopicTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { Round } from '@/db/round'
 import { Card } from './card'
@@ -25,12 +25,11 @@ import { Topic } from '@/db/topic'
 
 export function ProjectCard(props: {
   project: FullProject
-  topics?: Topic[]
+  topics: Topic[]
   valuation?: number
-  hideRound?: boolean
   creatorEmail?: string
 }) {
-  const { project, topics, valuation, hideRound } = props
+  const { project, topics, valuation } = props
   const amountRaised = getAmountRaised(project, project.bids, project.txns)
   const firstDonorId =
     project.stage === 'proposal'
@@ -45,13 +44,10 @@ export function ProjectCard(props: {
     <Card className="px-4 pb-2 pt-1">
       <Col className="h-full justify-between">
         <ProjectCardHeader
-          round={project.rounds}
-          topics={topics}
           projectType={project.type}
           creator={project.profiles}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
           regrantorInitiated={regrantorInitiated}
-          hideRound={hideRound}
         />
         <Link
           href={`/projects/${project.slug}`}
@@ -62,6 +58,15 @@ export function ProjectCard(props: {
           </h1>
           <p className="text-sm font-light text-gray-500">{project.blurb}</p>
         </Link>
+        <Row className="gap-1">
+          {topics?.map((topic) => (
+            <TopicTag
+              key={topic.slug}
+              topicTitle={topic.title}
+              topicSlug={topic.slug}
+            />
+          ))}
+        </Row>
         <Col>
           {(project.stage === 'proposal' ||
             (project.stage === 'active' &&
@@ -118,10 +123,8 @@ function ProjectCardData(props: {
 }
 
 export function ProjectCardHeader(props: {
-  round: Round
   creator: Profile
   projectType: Project['type']
-  topics?: Topic[]
   projectTransfer?: ProjectTransfer
   valuation?: number
   regrantorInitiated?: boolean
@@ -129,28 +132,16 @@ export function ProjectCardHeader(props: {
   creatorEmail?: string
 }) {
   const {
-    round,
     creator,
     valuation,
-    topics,
     projectTransfer,
     projectType,
     regrantorInitiated,
-    hideRound,
     creatorEmail,
   } = props
   return (
     <Row className="mt-1 items-start justify-between">
       <div>
-        <Row className="gap-1">
-          {topics?.map((topic) => (
-            <TopicTag
-              key={topic.slug}
-              topicTitle={topic.title}
-              topicSlug={topic.slug}
-            />
-          ))}
-        </Row>
         <div className="h-1" />
         <Row className="items-center gap-1">
           <UserAvatarAndBadge profile={creator} />
