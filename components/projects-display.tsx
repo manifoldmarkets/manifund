@@ -154,6 +154,7 @@ export function ProjectsDisplay(props: {
               projects={activeProjects}
               prices={prices}
               hideRound={hideRound}
+              allTopics={allTopics}
             />
           </div>
         )}
@@ -166,6 +167,7 @@ export function ProjectsDisplay(props: {
               projects={completeProjects}
               prices={prices}
               hideRound={hideRound}
+              allTopics={allTopics}
             />
           </div>
         )}
@@ -178,6 +180,7 @@ export function ProjectsDisplay(props: {
               projects={unfundedProjects}
               prices={prices}
               hideRound={hideRound}
+              allTopics={allTopics}
             />
           </div>
         )}

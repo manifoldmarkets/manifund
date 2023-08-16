@@ -17,10 +17,11 @@ export function ProjectGroup(props: {
           key={project.id}
           project={project}
           valuation={prices ? prices[project.id] : undefined}
-          topics={allTopics?.filter((topic) =>
-            project.project_topics.find(
-              (project_topic) => project_topic.topic_title === topic.title
-            )
+          topics={allTopics?.filter(
+            (topic) =>
+              !!project.project_topics.find(
+                (project_topic) => project_topic.topic_title === topic.title
+              )
           )}
           hideRound={hideRound}
         />
