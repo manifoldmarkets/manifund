@@ -5,11 +5,10 @@ import { Topic } from '@/db/topic'
 
 export function ProjectGroup(props: {
   projects: FullProject[]
+  allTopics: Topic[]
   prices?: { [k: string]: number }
-  allTopics?: Topic[]
-  hideRound?: boolean
 }) {
-  const { projects, prices, allTopics, hideRound } = props
+  const { projects, allTopics, prices } = props
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       {projects.map((project) => (
@@ -17,13 +16,12 @@ export function ProjectGroup(props: {
           key={project.id}
           project={project}
           valuation={prices ? prices[project.id] : undefined}
-          topics={allTopics?.filter(
+          topics={allTopics.filter(
             (topic) =>
               !!project.project_topics.find(
                 (project_topic) => project_topic.topic_title === topic.title
               )
           )}
-          hideRound={hideRound}
         />
       ))}
     </div>
