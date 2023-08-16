@@ -144,7 +144,11 @@ export function ProjectCardHeader(props: {
       <div>
         <Row className="gap-1">
           {topics?.map((topic) => (
-            <TopicTag key={topic.slug} topicSlug={topic.slug} />
+            <TopicTag
+              key={topic.slug}
+              topicTitle={topic.title}
+              topicSlug={topic.slug}
+            />
           ))}
         </Row>
         <div className="h-1" />
