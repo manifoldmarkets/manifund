@@ -147,17 +147,17 @@ export interface Database {
         Row: {
           id: number
           project_id: string
-          topic_title: string
+          topic_slug: string
         }
         Insert: {
           id?: number
           project_id: string
-          topic_title: string
+          topic_slug: string
         }
         Update: {
           id?: number
           project_id?: string
-          topic_title?: string
+          topic_slug?: string
         }
         Relationships: [
           {
@@ -167,10 +167,10 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "project_topics_topic_title_fkey"
-            columns: ["topic_title"]
+            foreignKeyName: "project_topics_topic_slug_fkey"
+            columns: ["topic_slug"]
             referencedRelation: "topics"
-            referencedColumns: ["title"]
+            referencedColumns: ["slug"]
           }
         ]
       }
@@ -561,7 +561,7 @@ export interface Database {
           approved: boolean
           project_id: string
           project_creator: string
-          admin_id: string
+          admin_id?: string
           admin_comment_content?: Json
         }
         Returns: undefined
@@ -579,6 +579,12 @@ export interface Database {
           project: Database["public"]["CompositeTypes"]["project_row"]
           donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
           donation: Database["public"]["CompositeTypes"]["bid_row"]
+        }
+        Returns: undefined
+      }
+      reject_grant: {
+        Args: {
+          project_id: string
         }
         Returns: undefined
       }

@@ -19,7 +19,7 @@ export function ProjectGroup(props: {
           topics={allTopics.filter(
             (topic) =>
               !!project.project_topics.find(
-                (project_topic) => project_topic.topic_title === topic.title
+                (project_topic) => project_topic.topic_slug === topic.slug
               )
           )}
         />
