@@ -142,9 +142,11 @@ export function ProjectCardHeader(props: {
   return (
     <Row className="mt-1 items-start justify-between">
       <div>
-        {topics?.map((topic) => (
-          <TopicTag key={topic.slug} topicSlug={topic.slug} />
-        ))}
+        <Row className="gap-1">
+          {topics?.map((topic) => (
+            <TopicTag key={topic.slug} topicSlug={topic.slug} />
+          ))}
+        </Row>
         <div className="h-1" />
         <Row className="items-center gap-1">
           <UserAvatarAndBadge profile={creator} />
