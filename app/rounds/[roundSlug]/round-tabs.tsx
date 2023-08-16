@@ -7,6 +7,7 @@ import { Tabs } from '@/components/tabs'
 import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
+import { Topic } from '@/db/topic'
 import { getSponsoredAmount } from '@/utils/constants'
 import { UserPlusIcon, WrenchIcon } from '@heroicons/react/20/solid'
 import { sortBy } from 'lodash'
@@ -16,9 +17,10 @@ import { EditRound } from './edit-round'
 export function RoundTabs(props: {
   round: Round
   projects: FullProject[]
+  allTopics: Topic[]
   regranters?: Profile[]
 }) {
-  const { round, projects, regranters } = props
+  const { round, projects, allTopics, regranters } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
   const visibleProjects = projects.filter(
@@ -42,6 +44,7 @@ export function RoundTabs(props: {
           ) : (
             <ProjectsDisplay
               projects={projects}
+              allTopics={allTopics}
               sortOptions={[
                 'votes',
                 'newest first',
@@ -51,7 +54,6 @@ export function RoundTabs(props: {
                 'distance from minimum funding',
                 'number of comments',
               ]}
-              hideRound
             />
           )}
         </>
