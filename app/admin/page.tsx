@@ -12,8 +12,7 @@ import { calculateShares } from '@/utils/math'
 import { Donations } from './donations'
 import { listProjects } from '@/db/project'
 import { GrantVerdict } from './grant-verdict'
-import { RaiseMinFunding } from './raise-min-funding'
-import { TopicTag } from '@/components/tags'
+import { AddTags } from './addTags'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -160,9 +159,12 @@ export default async function Admin() {
                 <td className="max-w-sm overflow-hidden">{project.title}</td>
                 <td>{getName(project.creator)}</td>
                 <td>{project.min_funding}</td>
-                <RaiseMinFunding
+                <AddTags
                   projectId={project.id}
-                  minFunding={project.min_funding}
+                  topicSlug={'ea'}
+                  currentTopicSlugs={project.project_topics.map(
+                    (projectTopic) => projectTopic.topic_slug
+                  )}
                 />
               </tr>
             )

@@ -15,7 +15,6 @@ import {
 import { orderBy } from 'lodash'
 import { Tag, TopicTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
-import { Round } from '@/db/round'
 import { Card } from './card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
