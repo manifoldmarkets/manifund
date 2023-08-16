@@ -8,6 +8,7 @@ import {
   CheckCircleIcon,
   CurrencyDollarIcon,
   ArrowPathIcon,
+  PencilIcon,
 } from '@heroicons/react/24/outline'
 import { FireIcon } from '@heroicons/react/24/solid'
 import Image from 'next/image'
@@ -64,38 +65,30 @@ export function RoundTag(props: { roundTitle: string; roundSlug?: string }) {
   )
 }
 
+const TOPIC_ICONS = {
+  tais: <LuBrainCircuit className="h-3 w-3" />,
+  regrants: <BiDonateHeart className="h-3 w-3" />,
+  'acx-mini-grants': <TbCrystalBall className="h-3 w-3 stroke-[2.2px]" />,
+  'ai-worldviews': <PencilIcon className="h-3 w-3 stroke-2" />,
+} as { [key: string]: JSX.Element }
+
 export function TopicTag(props: { topicSlug: string }) {
   const { topicSlug } = props
-  switch (topicSlug) {
-    case 'tais':
-      return (
-        <div className="max-h-fit max-w-fit rounded-full bg-emerald-100 p-1 shadow">
-          <LuBrainCircuit className="h-3 w-3 text-emerald-600" />
-        </div>
-      )
-    case 'regrants':
-      return (
-        <div className="max-h-fit max-w-fit rounded-full bg-rose-100 p-1 shadow">
-          <BiDonateHeart className="h-3 w-3 text-rose-600" />
-        </div>
-      )
-    case 'acx-mini-grants':
-      return (
-        <div className="max-h-fit max-w-fit rounded-full bg-indigo-100 p-1 shadow">
-          <TbCrystalBall className="h-3 w-3 stroke-[2.4px] text-indigo-600" />
-        </div>
-      )
-    default:
-      return (
-        <div className="max-h-fit max-w-fit rounded-full bg-gray-100 p-1 shadow">
-          <BiHeart className="h-3 w-3 stroke-[0.8px] text-gray-600" />
-        </div>
-      )
-  }
+  const topicIcon = TOPIC_ICONS[topicSlug] ?? <BiHeart className="h-3 w-3" />
+  return (
+    <Link
+      href={`/topics/${topicSlug}`}
+      className="gap-2max-h-5 flex max-w-fit items-center truncate whitespace-nowrap rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800 hover:underline hover:decoration-2"
+    >
+      {topicIcon}
+      <span className="ml-1 font-light">{topicSlug}</span>
+    </Link>
+  )
 }
 
 export function StageTag(props: { projectStage: string }) {
   const { projectStage } = props
+
   switch (projectStage) {
     case 'proposal':
       return (
