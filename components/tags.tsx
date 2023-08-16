@@ -72,8 +72,8 @@ const TOPIC_ICONS = {
   'ai-worldviews': <PencilIcon className="h-3 w-3 stroke-2" />,
 } as { [key: string]: JSX.Element }
 
-export function TopicTag(props: { topicSlug: string }) {
-  const { topicSlug } = props
+export function TopicTag(props: { topicTitle: string; topicSlug: string }) {
+  const { topicTitle, topicSlug } = props
   const topicIcon = TOPIC_ICONS[topicSlug] ?? <BiHeart className="h-3 w-3" />
   return (
     <Link
@@ -81,7 +81,7 @@ export function TopicTag(props: { topicSlug: string }) {
       className="gap-2max-h-5 flex max-w-fit items-center truncate whitespace-nowrap rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800 hover:underline hover:decoration-2"
     >
       {topicIcon}
-      <span className="ml-1 font-light">{topicSlug}</span>
+      <span className="ml-1 font-light">{topicTitle}</span>
     </Link>
   )
 }
