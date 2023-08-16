@@ -1,14 +1,17 @@
 'use client'
 import { Button } from '@/components/button'
 import { useSupabase } from '@/db/supabase-provider'
+// import { SupabaseClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function RaiseMinFunding(props: {
+export function AddTags(props: {
   projectId: string
-  minFunding: number
+  topicSlug: string
+  currentTopicSlugs: string[]
+  // supabase: SupabaseClient
 }) {
-  const { projectId, minFunding } = props
+  const { projectId, topicSlug, currentTopicSlugs } = props
   const { supabase } = useSupabase()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -16,18 +19,17 @@ export function RaiseMinFunding(props: {
     <td>
       <Button
         loading={isSubmitting}
-        disabled
+        disabled={currentTopicSlugs.includes(topicSlug)}
         onClick={async () => {
           setIsSubmitting(true)
           await supabase
-            .from('projects')
-            .update({ min_funding: 500 })
-            .eq('id', projectId)
-          setIsSubmitting(false)
+            .from('project_topics')
+            .insert({ project_id: projectId, topic_slug: topicSlug })
           router.refresh()
+          setIsSubmitting(false)
         }}
       >
-        set to $500
+        add {topicSlug}
       </Button>
     </td>
   )

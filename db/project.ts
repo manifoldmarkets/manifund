@@ -75,7 +75,7 @@ export async function getFullProjectBySlug(
   const { data } = await supabase
     .from('projects')
     .select(
-      '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), project_topics(topic_title)'
+      '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), project_topics(topic_slug)'
     )
     .eq('slug', slug)
     .throwOnError()
