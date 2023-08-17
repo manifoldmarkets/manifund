@@ -48,10 +48,9 @@ export function ProjectsDisplay(props: {
   const [includedTopics, setIncludedTopics] = useState<Topic[]>([])
   const [excludeOpenCall, setExcludeOpenCall] = useState<boolean>(false)
   const [search, setSearch] = useState<string>('')
-  const selectedProjects = searchProjects(
-    sortProjects(projects, prices, sortBy),
-    search
-  )
+  const filteredProjects = filterProjects(projects, includedTopics)
+  const sortedProjects = sortProjects(filteredProjects, prices, sortBy)
+  const selectedProjects = searchProjects(sortedProjects, search)
   const router = useRouter()
 
   const proposals = selectedProjects.filter((project) => {
@@ -257,6 +256,17 @@ function sortProjects(
     )
   }
   return projects
+}
+
+function filterProjects(projects: FullProject[], includedTopics: Topic[]) {
+  if (includedTopics.length === 0) return projects
+  return projects.filter((project) => {
+    return project.project_topics.some((project_topic) => {
+      return includedTopics.some((includedTopic) => {
+        return project_topic.topic_slug === includedTopic.slug
+      })
+    })
+  })
 }
 
 function searchProjects(projects: FullProject[], search: string) {
