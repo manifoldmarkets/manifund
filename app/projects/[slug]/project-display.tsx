@@ -11,7 +11,7 @@ import { BidAndProfile } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
 import { ProfileAndBids } from '@/db/profile'
 import { FullProject } from '@/db/project'
-import { Topic } from '@/db/topic'
+import { MiniTopic } from '@/db/topic'
 import { Txn, TxnAndProfiles } from '@/db/txn'
 import {
   calculateCashBalance,
@@ -38,7 +38,7 @@ export function ProjectDisplay(props: {
   comments: CommentAndProfile[]
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]
-  allTopics: Topic[]
+  allTopics: MiniTopic[]
   userProfile?: ProfileAndBids
   creatorEmail?: string
 }) {
