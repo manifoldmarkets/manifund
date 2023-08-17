@@ -19,7 +19,7 @@ import { compareDesc, compareAsc } from 'date-fns'
 import { Row } from './layout/row'
 import { sortBy } from 'lodash'
 import { getSponsoredAmount } from '@/utils/constants'
-import { Topic } from '@/db/topic'
+import { MiniTopic, Topic } from '@/db/topic'
 import { TopicTag } from './tags'
 import { Col } from './layout/col'
 
@@ -37,11 +37,11 @@ type SortOption =
 export function ProjectsDisplay(props: {
   projects: FullProject[]
   sortOptions: SortOption[]
-  allTopics: Topic[]
+  allTopics: MiniTopic[]
   defaultSort?: SortOption
   hideRound?: boolean
 }) {
-  const { projects, sortOptions, defaultSort, allTopics, hideRound } = props
+  const { projects, sortOptions, defaultSort, allTopics } = props
   const isRegrants = !projects.find((project) => project.type !== 'grant')
   const prices = getPrices(projects)
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
@@ -361,7 +361,7 @@ function TopicFilterSelect(props: {
   includedTopics: Topic[]
   setIncludedTopics: (topics: Topic[]) => void
   open: boolean
-  topics: Topic[]
+  topics: MiniTopic[]
 }) {
   const { includedTopics, setIncludedTopics, open, topics } = props
   return (

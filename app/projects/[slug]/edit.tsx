@@ -12,13 +12,13 @@ import { Tooltip } from '@/components/tooltip'
 import { Input } from '@/components/input'
 import { useRouter } from 'next/navigation'
 import { Col } from '@/components/layout/col'
-import { Topic } from '@/db/topic'
+import { MiniTopic } from '@/db/topic'
 import { SelectTopics } from '@/components/select-topics'
 import { uniq } from 'lodash'
 
 export function Edit(props: {
   project: ProjectWithTopics
-  allTopics: Topic[]
+  allTopics: MiniTopic[]
 }) {
   const { project, allTopics } = props
   const { session } = useSupabase()
@@ -26,16 +26,13 @@ export function Edit(props: {
   const [showEditor, setShowEditor] = useState(false)
   const [title, setTitle] = useState(project.title)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
-  console.log('topics on project', project.project_topics)
-  console.log('all topics', allTopics)
   const currentTopics = uniq(
     project.project_topics
       .map((projectTopic) =>
         allTopics.find((t) => t.slug === projectTopic.topic_slug)
       )
-      .filter((t) => t !== undefined) as Topic[]
+      .filter((t) => t !== undefined) as MiniTopic[]
   )
-  console.log('current topics', currentTopics)
   const [selectedTopics, setSelectedTopics] = useState(currentTopics)
   console.log('selectedTopics', selectedTopics)
   const [saving, setSaving] = useState(false)
