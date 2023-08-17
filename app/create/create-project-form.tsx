@@ -11,9 +11,10 @@ import { useTextEditor } from '@/hooks/use-text-editor'
 import Link from 'next/link'
 import { add, format, isAfter, isBefore } from 'date-fns'
 import { Col } from '@/components/layout/col'
-import { RequiredStar } from '@/components/tags'
+import { RequiredStar, TopicTag } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
+import { Topic } from '@/db/topic'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -31,7 +32,8 @@ const DESCRIPTION_OUTLINE = `
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
 
-export function CreateProjectForm() {
+export function CreateProjectForm(props: { topics: Topic[] }) {
+  const { topics } = props
   const { session } = useSupabase()
   const router = useRouter()
   const [title, setTitle] = useState<string>('')
@@ -42,6 +44,7 @@ export function CreateProjectForm() {
     format(add(new Date(), { months: 1 }), 'yyyy-MM-dd')
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [selectedTopics, setSelectedTopics] = useState<Topic[]>([])
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
 
   let errorMessage = null
@@ -233,6 +236,36 @@ export function CreateProjectForm() {
           value={verdictDate ?? ''}
           onChange={(event) => setVerdictDate(event.target.value)}
         />
+      </Col>
+      <Col className="gap-1">
+        <label htmlFor="auction-close">Relevant topics</label>
+        <Row className="flex-wrap gap-1">
+          {topics.map((topic) => {
+            return (
+              <button
+                onClick={() => {
+                  if (selectedTopics.includes(topic)) {
+                    setSelectedTopics(selectedTopics.filter((t) => t !== topic))
+                  } else {
+                    setSelectedTopics([...selectedTopics, topic])
+                  }
+                }}
+                key={topic.slug}
+              >
+                <TopicTag
+                  topicTitle={topic.title}
+                  topicSlug={topic.slug}
+                  noLink
+                  className={
+                    selectedTopics.includes(topic)
+                      ? 'bg-orange-500 text-white hover:bg-orange-600'
+                      : ''
+                  }
+                />
+              </button>
+            )
+          })}
+        </Row>
       </Col>
       <Button
         className="mt-4"
