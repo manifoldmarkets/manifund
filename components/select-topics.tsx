@@ -30,7 +30,7 @@ export function SelectTopics(props: {
               topicSlug={topic.slug}
               noLink
               className={clsx(
-                '!p-3 !text-sm',
+                '!sm:text-sm !p-3',
                 selectedTopics.includes(topic)
                   ? 'bg-orange-500 text-white hover:bg-orange-600'
                   : 'bg-gray-200 hover:bg-gray-300'
