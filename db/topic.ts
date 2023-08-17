@@ -12,3 +12,23 @@ export async function getTopics(supabase: SupabaseClient) {
   }
   return data as Topic[]
 }
+
+export async function updateProjectTopics(
+  supabase: SupabaseClient,
+  topicSlugs: string[],
+  projectId: string
+) {
+  await supabase
+    .from('project_topics')
+    .delete()
+    .eq('project_id', projectId)
+    .throwOnError()
+  for (const slug of topicSlugs) {
+    await supabase
+      .from('project_topics')
+      .insert(
+        topicSlugs.map((slug) => ({ project_id: projectId, topic_slug: slug }))
+      )
+      .throwOnError()
+  }
+}
