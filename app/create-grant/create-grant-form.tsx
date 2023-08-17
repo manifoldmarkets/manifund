@@ -50,10 +50,10 @@ const REASONING_KEY = 'GrantReasoning'
 
 export function CreateGrantForm(props: {
   profiles: MiniProfile[]
-  topics: MiniTopic[]
+  topicsList: MiniTopic[]
   maxDonation: number
 }) {
-  const { profiles, maxDonation, topics } = props
+  const { profiles, maxDonation, topicsList } = props
   const [query, setQuery] = useState('')
   const filteredProfiles =
     query === ''
@@ -480,7 +480,7 @@ export function CreateGrantForm(props: {
       <Col className="gap-1">
         <label>Relevant topics</label>
         <SelectTopics
-          topics={topics}
+          topicsList={topicsList}
           selectedTopics={selectedTopics}
           setSelectedTopics={setSelectedTopics}
         />

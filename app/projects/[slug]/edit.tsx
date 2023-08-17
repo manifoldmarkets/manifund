@@ -18,9 +18,9 @@ import { uniq } from 'lodash'
 
 export function Edit(props: {
   project: ProjectWithTopics
-  allTopics: MiniTopic[]
+  topicsList: MiniTopic[]
 }) {
-  const { project, allTopics } = props
+  const { project, topicsList } = props
   const { session } = useSupabase()
   const user = session?.user
   const [showEditor, setShowEditor] = useState(false)
@@ -29,12 +29,11 @@ export function Edit(props: {
   const currentTopics = uniq(
     project.project_topics
       .map((projectTopic) =>
-        allTopics.find((t) => t.slug === projectTopic.topic_slug)
+        topicsList.find((t) => t.slug === projectTopic.topic_slug)
       )
       .filter((t) => t !== undefined) as MiniTopic[]
   )
   const [selectedTopics, setSelectedTopics] = useState(currentTopics)
-  console.log('selectedTopics', selectedTopics)
   const [saving, setSaving] = useState(false)
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
@@ -99,7 +98,7 @@ export function Edit(props: {
           <Col className="gap-1">
             <label>Topics</label>
             <SelectTopics
-              topics={allTopics}
+              topicsList={topicsList}
               selectedTopics={selectedTopics}
               setSelectedTopics={setSelectedTopics}
             />

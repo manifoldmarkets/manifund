@@ -37,11 +37,11 @@ type SortOption =
 export function ProjectsDisplay(props: {
   projects: FullProject[]
   sortOptions: SortOption[]
-  allTopics: MiniTopic[]
+  topicsList: MiniTopic[]
   defaultSort?: SortOption
   hideRound?: boolean
 }) {
-  const { projects, sortOptions, defaultSort, allTopics } = props
+  const { projects, sortOptions, defaultSort, topicsList } = props
   const isRegrants = !projects.find((project) => project.type !== 'grant')
   const prices = getPrices(projects)
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
@@ -114,7 +114,7 @@ export function ProjectsDisplay(props: {
               includedTopics={includedTopics}
               setIncludedTopics={setIncludedTopics}
               open={open}
-              topics={allTopics}
+              topics={topicsList}
             />
           )}
         </Listbox>
@@ -154,7 +154,7 @@ export function ProjectsDisplay(props: {
             <ProjectGroup
               projects={proposals}
               prices={prices}
-              allTopics={allTopics}
+              topicsList={topicsList}
             />
           </div>
         )}
@@ -166,7 +166,7 @@ export function ProjectsDisplay(props: {
             <ProjectGroup
               projects={activeProjects}
               prices={prices}
-              allTopics={allTopics}
+              topicsList={topicsList}
             />
           </div>
         )}
@@ -178,7 +178,7 @@ export function ProjectsDisplay(props: {
             <ProjectGroup
               projects={completeProjects}
               prices={prices}
-              allTopics={allTopics}
+              topicsList={topicsList}
             />
           </div>
         )}
@@ -190,7 +190,7 @@ export function ProjectsDisplay(props: {
             <ProjectGroup
               projects={unfundedProjects}
               prices={prices}
-              allTopics={allTopics}
+              topicsList={topicsList}
             />
           </div>
         )}

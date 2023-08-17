@@ -6,7 +6,7 @@ export type MiniTopic = { title: string; slug: string }
 export type ProjectTopicLink =
   Database['public']['Tables']['project_topics']['Row']
 
-export async function getTopics(supabase: SupabaseClient) {
+export async function listTopics(supabase: SupabaseClient) {
   const { data, error } = await supabase.from('topics').select('*')
   if (error) {
     throw error
@@ -14,7 +14,7 @@ export async function getTopics(supabase: SupabaseClient) {
   return data as Topic[]
 }
 
-export async function getMiniTopics(supabase: SupabaseClient) {
+export async function listMiniTopics(supabase: SupabaseClient) {
   const { data, error } = await supabase.from('topics').select('title, slug')
   if (error) {
     throw error

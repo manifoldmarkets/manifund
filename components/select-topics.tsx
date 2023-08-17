@@ -3,17 +3,16 @@ import clsx from 'clsx'
 import { Row } from './layout/row'
 import { TopicTag } from './tags'
 
-// TODO: switch to simple topics
 export function SelectTopics(props: {
-  topics: MiniTopic[]
+  topicsList: MiniTopic[]
   selectedTopics: MiniTopic[]
   setSelectedTopics: (topics: MiniTopic[]) => void
 }) {
-  const { topics, selectedTopics, setSelectedTopics } = props
+  const { topicsList, selectedTopics, setSelectedTopics } = props
   console.log('selectedTopics from select component', selectedTopics)
   return (
     <Row className="flex-wrap gap-1">
-      {topics.map((topic) => {
+      {topicsList.map((topic) => {
         return (
           <button
             onClick={() => {
