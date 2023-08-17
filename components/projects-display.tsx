@@ -4,7 +4,6 @@ import {
   CheckIcon,
   ChevronUpDownIcon,
   MagnifyingGlassIcon,
-  XCircleIcon,
 } from '@heroicons/react/24/outline'
 import { Listbox, Switch, Transition } from '@headlessui/react'
 import { useRouter } from 'next/navigation'
@@ -22,6 +21,7 @@ import { sortBy } from 'lodash'
 import { getSponsoredAmount } from '@/utils/constants'
 import { Topic } from '@/db/topic'
 import { TopicTag } from './tags'
+import { Col } from './layout/col'
 
 type SortOption =
   | 'votes'
@@ -71,7 +71,7 @@ export function ProjectsDisplay(props: {
   )
 
   return (
-    <div>
+    <Col className="gap-2">
       <div className="flex flex-col justify-between gap-2 lg:flex-row">
         <div className="relative rounded-md shadow-sm lg:w-8/12">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -106,18 +106,18 @@ export function ProjectsDisplay(props: {
             )}
           </Listbox>
         </div>
-        <div className="relative lg:w-4/12">
-          <Listbox value={includedTopics} onChange={setIncludedTopics} multiple>
-            {({ open }) => (
-              <TopicFilterSelect
-                includedTopics={includedTopics}
-                setIncludedTopics={setIncludedTopics}
-                open={open}
-                topics={allTopics}
-              />
-            )}
-          </Listbox>
-        </div>
+      </div>
+      <div className="relative w-full">
+        <Listbox value={includedTopics} onChange={setIncludedTopics} multiple>
+          {({ open }) => (
+            <TopicFilterSelect
+              includedTopics={includedTopics}
+              setIncludedTopics={setIncludedTopics}
+              open={open}
+              topics={allTopics}
+            />
+          )}
+        </Listbox>
       </div>
       <div className="mt-5 flex flex-col gap-10">
         {proposals.length > 0 && (
@@ -195,7 +195,7 @@ export function ProjectsDisplay(props: {
           </div>
         )}
       </div>
-    </div>
+    </Col>
   )
 }
 
@@ -364,12 +364,11 @@ function TopicFilterSelect(props: {
   topics: Topic[]
 }) {
   const { includedTopics, setIncludedTopics, open, topics } = props
-  console.log('includedTopics', includedTopics)
   return (
     <div>
       <div>
         <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
-          <Row className="gap-1 truncate">
+          <Row className="flex-wrap gap-1">
             <span className="text-gray-500">Include</span>
             {includedTopics.length === 0 ? (
               ' all topics'
