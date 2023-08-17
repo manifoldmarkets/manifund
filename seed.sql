@@ -348,19 +348,13 @@ AS PERMISSIVE FOR SELECT
 TO public
 USING (true)
 
--- CREATE POLICY "Enable delete for users if they created the project" ON "public"."project_topics"
--- AS PERMISSIVE FOR DELETE
--- TO public
--- USING (EXISTS (SELECT 1 FROM public.projects WHERE id = project_id AND creator = auth.uid() ))
+CREATE POLICY "Enable delete for users if they created the project" ON "public"."project_topics"
+AS PERMISSIVE FOR DELETE
+TO public
+USING (EXISTS (SELECT 1 FROM public.projects WHERE id = project_id AND creator = auth.uid() ))
 
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."project_topics"
 AS PERMISSIVE FOR INSERT
 TO authenticated
 
 WITH CHECK (true)
-
-CREATE POLICY "Enable insert for authenticated users who created the project" ON "public"."project_topics"
-AS PERMISSIVE FOR INSERT
-TO authenticated
-
-WITH CHECK (EXISTS (SELECT 1 FROM public.projects WHERE id = project_id AND creator = auth.uid() ))

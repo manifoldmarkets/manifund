@@ -11,6 +11,7 @@ import { BidAndProfile } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
 import { ProfileAndBids } from '@/db/profile'
 import { FullProject } from '@/db/project'
+import { Topic } from '@/db/topic'
 import { Txn, TxnAndProfiles } from '@/db/txn'
 import {
   calculateCashBalance,
@@ -24,7 +25,7 @@ import {
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context'
 import { useState } from 'react'
 import { Description } from './description'
-import { EditDescription } from './edit-description'
+import { Edit } from './edit'
 import { PlaceBid } from './place-bid'
 import { ProjectTabs } from './project-tabs'
 import { ProposalData } from './proposal-data'
@@ -37,6 +38,7 @@ export function ProjectDisplay(props: {
   comments: CommentAndProfile[]
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]
+  allTopics: Topic[]
   userProfile?: ProfileAndBids
   creatorEmail?: string
 }) {
@@ -48,6 +50,7 @@ export function ProjectDisplay(props: {
     projectTxns,
     userProfile,
     creatorEmail,
+    allTopics,
   } = props
   const userSpendableFunds = userProfile
     ? userProfile.accreditation_status && project.type === 'cert'
@@ -137,7 +140,7 @@ export function ProjectDisplay(props: {
             </Description>
           </div>
         )}
-        {isOwnProject && <EditDescription project={project} />}
+        {isOwnProject && <Edit project={project} allTopics={allTopics} />}
         {project.stage === 'proposal' && (
           <>
             <Divider />

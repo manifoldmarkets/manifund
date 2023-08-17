@@ -8,6 +8,7 @@ import { getTxnsByProject, getTxnsByUser } from '@/db/txn'
 import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
 import { ProjectDisplay } from './project-display'
+import { getTopics } from '@/db/topic'
 
 export const revalidate = 0
 
@@ -30,13 +31,14 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   if (!project) {
     return <div>404: Project not found.</div>
   }
-  const [userProfile, userTxns, comments, projectBids, projectTxns] =
+  const [userProfile, userTxns, comments, projectBids, projectTxns, allTopics] =
     await Promise.all([
       user ? await getProfileAndBidsById(supabase, user.id) : null,
       user ? getTxnsByUser(supabase, user.id) : [],
       getCommentsByProject(supabase, project.id),
       getBidsByProject(supabase, project.id),
       getTxnsByProject(supabase, project.id),
+      getTopics(supabase),
     ])
   const creatorEmail = userProfile?.regranter_status
     ? await getUserEmail(createAdminClient(), project.creator)
@@ -51,6 +53,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         projectTxns={projectTxns}
         creatorEmail={creatorEmail}
         userProfile={userProfile ?? undefined}
+        allTopics={allTopics}
       />
       {isAdmin(user) && <CloseBidding project={project} />}
     </>

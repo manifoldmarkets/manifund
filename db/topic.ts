@@ -23,12 +23,10 @@ export async function updateProjectTopics(
     .delete()
     .eq('project_id', projectId)
     .throwOnError()
-  for (const slug of topicSlugs) {
-    await supabase
-      .from('project_topics')
-      .insert(
-        topicSlugs.map((slug) => ({ project_id: projectId, topic_slug: slug }))
-      )
-      .throwOnError()
-  }
+  await supabase
+    .from('project_topics')
+    .insert(
+      topicSlugs.map((slug) => ({ project_id: projectId, topic_slug: slug }))
+    )
+    .throwOnError()
 }
