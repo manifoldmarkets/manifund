@@ -4,14 +4,26 @@ import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { projectSlugify } from '@/utils/formatting'
-import { Database } from '@/db/database.types'
+import { Database, Json } from '@/db/database.types'
 
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
 }
 
-type ProjectInsert = Database['public']['Tables']['projects']['Insert']
+type CreateProjectProps = {
+  title: string
+  blurb: string
+  description: Json
+  min_funding: number
+  funding_goal: number
+  founder_portion: number
+  round: string
+  auction_close: string
+  stage: Database['public']['Tables']['projects']['Row']['stage']
+  type: Database['public']['Tables']['projects']['Row']['type']
+  topicSlugs: string[]
+}
 
 export default async function handler(req: NextRequest) {
   const {
@@ -25,7 +37,8 @@ export default async function handler(req: NextRequest) {
     auction_close,
     stage,
     type,
-  } = (await req.json()) as ProjectInsert
+    topicSlugs,
+  } = (await req.json()) as CreateProjectProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
@@ -50,9 +63,17 @@ export default async function handler(req: NextRequest) {
     approved: null,
     signed_agreement: false,
   }
-  const { error } = await supabase.from('projects').insert([project])
-  if (error) {
-    console.error('create-project', error)
+  await supabase.from('projects').insert([project]).throwOnError()
+  for (const topicSlug of topicSlugs) {
+    await supabase
+      .from('project_topics')
+      .insert([
+        {
+          project_id: id,
+          topic_slug: topicSlug,
+        },
+      ])
+      .throwOnError()
   }
   await giveCreatorShares(supabase, id, user.id)
   if (stage === 'active' && type === 'cert') {
