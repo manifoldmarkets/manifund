@@ -103,7 +103,7 @@ export function TopicTag(props: {
         )}
       >
         {topicIcon}
-        <span className=" font-light">{topicTitle}</span>
+        <span className="font-light">{topicTitle}</span>
       </div>
     )
   }
@@ -116,7 +116,7 @@ export function TopicTag(props: {
       )}
     >
       {topicIcon}
-      <span className=" font-light">{topicTitle}</span>
+      <span className="font-light">{topicTitle}</span>
     </Link>
   )
 }
