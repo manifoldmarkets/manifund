@@ -9,6 +9,10 @@ import {
   CurrencyDollarIcon,
   ArrowPathIcon,
   PencilIcon,
+  BuildingLibraryIcon,
+  GlobeEuropeAfricaIcon,
+  LightBulbIcon,
+  BeakerIcon,
 } from '@heroicons/react/24/outline'
 import { FireIcon } from '@heroicons/react/24/solid'
 import Image from 'next/image'
@@ -17,7 +21,9 @@ import { Tooltip } from './tooltip'
 import { Col } from './layout/col'
 import { LuBrainCircuit } from 'react-icons/lu'
 import { BiDonateHeart, BiHeart } from 'react-icons/bi'
-import { TbCrystalBall } from 'react-icons/tb'
+import { TbCrystalBall, TbWorldX } from 'react-icons/tb'
+import { PiBirdBold, PiVirusBold } from 'react-icons/pi'
+import { ArrowTrendingUpIcon } from '@heroicons/react/20/solid'
 
 const COLORS = [
   'bg-indigo-200',
@@ -70,6 +76,14 @@ const TOPIC_ICONS = {
   regrants: <BiDonateHeart className="h-3 w-3" />,
   'acx-mini-grants': <TbCrystalBall className="h-3 w-3 stroke-[2.2px]" />,
   'ai-worldviews': <PencilIcon className="h-3 w-3 stroke-2" />,
+  biosec: <PiVirusBold className="h-3 w-3" />,
+  gcr: <TbWorldX className="h-3 w-3" />,
+  'ai-gov': <BuildingLibraryIcon className="h-3 w-3 stroke-2" />,
+  'animal-welfare': <PiBirdBold className="h-3 w-3" />,
+  ghd: <GlobeEuropeAfricaIcon className="h-3 w-3 stroke-2" />,
+  ea: <LightBulbIcon className="h-3 w-3 stroke-2" />,
+  science: <BeakerIcon className="h-3 w-3 stroke-2" />,
+  forecasting: <ArrowTrendingUpIcon className="h-3 w-3 stroke-2" />,
 } as { [key: string]: JSX.Element }
 
 export function TopicTag(props: { topicTitle: string; topicSlug: string }) {
