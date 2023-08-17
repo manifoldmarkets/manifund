@@ -1,13 +1,13 @@
-import { Topic } from '@/db/topic'
+import { MiniTopic } from '@/db/topic'
 import clsx from 'clsx'
 import { Row } from './layout/row'
 import { TopicTag } from './tags'
 
 // TODO: switch to simple topics
 export function SelectTopics(props: {
-  topics: Topic[]
-  selectedTopics: Topic[]
-  setSelectedTopics: (topics: Topic[]) => void
+  topics: MiniTopic[]
+  selectedTopics: MiniTopic[]
+  setSelectedTopics: (topics: MiniTopic[]) => void
 }) {
   const { topics, selectedTopics, setSelectedTopics } = props
   console.log('selectedTopics from select component', selectedTopics)

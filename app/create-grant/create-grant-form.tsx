@@ -17,7 +17,7 @@ import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Tooltip } from '@/components/tooltip'
 import { SelectTopics } from '@/components/select-topics'
-import { Topic } from '@/db/topic'
+import { MiniTopic } from '@/db/topic'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -50,7 +50,7 @@ const REASONING_KEY = 'GrantReasoning'
 
 export function CreateGrantForm(props: {
   profiles: MiniProfile[]
-  topics: Topic[]
+  topics: MiniTopic[]
   maxDonation: number
 }) {
   const { profiles, maxDonation, topics } = props
@@ -76,7 +76,7 @@ export function CreateGrantForm(props: {
   )
   const [fundingGoal, setFundingGoal] = useState<number | null>(null)
   const [minFunding, setMinFunding] = useState<number | null>(null)
-  const [selectedTopics, setSelectedTopics] = useState<Topic[]>([])
+  const [selectedTopics, setSelectedTopics] = useState<MiniTopic[]>([])
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)

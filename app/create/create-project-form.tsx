@@ -11,11 +11,10 @@ import { useTextEditor } from '@/hooks/use-text-editor'
 import Link from 'next/link'
 import { add, format, isAfter, isBefore } from 'date-fns'
 import { Col } from '@/components/layout/col'
-import { RequiredStar, TopicTag } from '@/components/tags'
+import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
-import { Topic } from '@/db/topic'
-import clsx from 'clsx'
+import { MiniTopic } from '@/db/topic'
 import { SelectTopics } from '@/components/select-topics'
 
 const DESCRIPTION_OUTLINE = `
@@ -34,7 +33,7 @@ const DESCRIPTION_OUTLINE = `
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
 
-export function CreateProjectForm(props: { topics: Topic[] }) {
+export function CreateProjectForm(props: { topics: MiniTopic[] }) {
   const { topics } = props
   const { session } = useSupabase()
   const router = useRouter()
@@ -46,7 +45,7 @@ export function CreateProjectForm(props: { topics: Topic[] }) {
     format(add(new Date(), { months: 1 }), 'yyyy-MM-dd')
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [selectedTopics, setSelectedTopics] = useState<Topic[]>([])
+  const [selectedTopics, setSelectedTopics] = useState<MiniTopic[]>([])
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
 
   let errorMessage = null

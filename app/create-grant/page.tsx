@@ -7,7 +7,7 @@ import { getTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import Link from 'next/link'
 import { calculateCharityBalance } from '@/utils/math'
-import { getTopics } from '@/db/topic'
+import { getMiniTopics } from '@/db/topic'
 
 export const revalidate = 60
 export default async function CreateGrantPage() {
@@ -30,7 +30,7 @@ export default async function CreateGrantPage() {
     getProfileById(supabase, user.id),
     getTxnsByUser(supabase, user.id),
     getBidsByUser(supabase, user.id),
-    getTopics(supabase),
+    getMiniTopics(supabase),
   ])
   if (!profile?.regranter_status) {
     return (

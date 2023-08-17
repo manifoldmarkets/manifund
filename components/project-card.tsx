@@ -20,11 +20,11 @@ import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { EnvelopeIcon } from '@heroicons/react/24/solid'
 import { getSponsoredAmount } from '@/utils/constants'
-import { Topic } from '@/db/topic'
+import { MiniTopic } from '@/db/topic'
 
 export function ProjectCard(props: {
   project: FullProject
-  topics: Topic[]
+  topics: MiniTopic[]
   valuation?: number
   creatorEmail?: string
 }) {

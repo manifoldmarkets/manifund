@@ -1,11 +1,11 @@
 'use client'
 import { FullProject } from '@/db/project'
 import { ProjectCard } from '@/components/project-card'
-import { Topic } from '@/db/topic'
+import { MiniTopic } from '@/db/topic'
 
 export function ProjectGroup(props: {
   projects: FullProject[]
-  allTopics: Topic[]
+  allTopics: MiniTopic[]
   prices?: { [k: string]: number }
 }) {
   const { projects, allTopics, prices } = props
