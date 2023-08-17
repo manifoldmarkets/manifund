@@ -5,6 +5,7 @@ import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { projectSlugify } from '@/utils/formatting'
 import { Database, Json } from '@/db/database.types'
+import { updateProjectTopics } from '@/db/topic'
 
 export const config = {
   runtime: 'edge',
@@ -64,17 +65,7 @@ export default async function handler(req: NextRequest) {
     signed_agreement: false,
   }
   await supabase.from('projects').insert([project]).throwOnError()
-  for (const topicSlug of topicSlugs) {
-    await supabase
-      .from('project_topics')
-      .insert([
-        {
-          project_id: id,
-          topic_slug: topicSlug,
-        },
-      ])
-      .throwOnError()
-  }
+  await updateProjectTopics(supabase, topicSlugs, project.id)
   await giveCreatorShares(supabase, id, user.id)
   if (stage === 'active' && type === 'cert') {
     await addBid(

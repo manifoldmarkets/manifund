@@ -16,6 +16,7 @@ import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
 import { Topic } from '@/db/topic'
 import clsx from 'clsx'
+import { SelectTopics } from '@/components/select-topics'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -224,7 +225,7 @@ export function CreateProjectForm(props: { topics: Topic[] }) {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="auction-close">
+        <label>
           Decision deadline
           <RequiredStar />
         </label>
@@ -240,35 +241,12 @@ export function CreateProjectForm(props: { topics: Topic[] }) {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="auction-close">Relevant topics</label>
-        <Row className="flex-wrap gap-1">
-          {topics.map((topic) => {
-            return (
-              <button
-                onClick={() => {
-                  if (selectedTopics.includes(topic)) {
-                    setSelectedTopics(selectedTopics.filter((t) => t !== topic))
-                  } else {
-                    setSelectedTopics([...selectedTopics, topic])
-                  }
-                }}
-                key={topic.slug}
-              >
-                <TopicTag
-                  topicTitle={topic.title}
-                  topicSlug={topic.slug}
-                  noLink
-                  className={clsx(
-                    '!p-3 !text-sm',
-                    selectedTopics.includes(topic)
-                      ? 'bg-orange-500 text-white hover:bg-orange-600'
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  )}
-                />
-              </button>
-            )
-          })}
-        </Row>
+        <label>Relevant topics</label>
+        <SelectTopics
+          topics={topics}
+          selectedTopics={selectedTopics}
+          setSelectedTopics={setSelectedTopics}
+        />
       </Col>
       <Button
         className="mt-4"

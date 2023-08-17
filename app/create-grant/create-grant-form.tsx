@@ -16,6 +16,8 @@ import { HorizontalRadioGroup } from '@/components/radio-group'
 import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Tooltip } from '@/components/tooltip'
+import { SelectTopics } from '@/components/select-topics'
+import { Topic } from '@/db/topic'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -48,9 +50,10 @@ const REASONING_KEY = 'GrantReasoning'
 
 export function CreateGrantForm(props: {
   profiles: MiniProfile[]
+  topics: Topic[]
   maxDonation: number
 }) {
-  const { profiles, maxDonation } = props
+  const { profiles, maxDonation, topics } = props
   const [query, setQuery] = useState('')
   const filteredProfiles =
     query === ''
@@ -73,6 +76,7 @@ export function CreateGrantForm(props: {
   )
   const [fundingGoal, setFundingGoal] = useState<number | null>(null)
   const [minFunding, setMinFunding] = useState<number | null>(null)
+  const [selectedTopics, setSelectedTopics] = useState<Topic[]>([])
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
@@ -179,6 +183,7 @@ export function CreateGrantForm(props: {
         recipientUsername: recipientOnManifund
           ? recipient?.username
           : undefined,
+        topicSlugs: selectedTopics.map((topic) => topic.slug),
       }),
     })
     const newProject = await response.json()
@@ -471,6 +476,14 @@ export function CreateGrantForm(props: {
           fund this project.
         </span>
         <TextEditor editor={reasoningEditor} />
+      </Col>
+      <Col className="gap-1">
+        <label>Relevant topics</label>
+        <SelectTopics
+          topics={topics}
+          selectedTopics={selectedTopics}
+          setSelectedTopics={setSelectedTopics}
+        />
       </Col>
       <Row>
         <Checkbox

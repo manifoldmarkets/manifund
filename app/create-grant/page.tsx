@@ -7,6 +7,7 @@ import { getTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import Link from 'next/link'
 import { calculateCharityBalance } from '@/utils/math'
+import { getTopics } from '@/db/topic'
 
 export const revalidate = 60
 export default async function CreateGrantPage() {
@@ -25,10 +26,11 @@ export default async function CreateGrantPage() {
       </div>
     )
   }
-  const [profile, txns, bids] = await Promise.all([
+  const [profile, txns, bids, topics] = await Promise.all([
     getProfileById(supabase, user.id),
     getTxnsByUser(supabase, user.id),
     getBidsByUser(supabase, user.id),
+    getTopics(supabase),
   ])
   if (!profile?.regranter_status) {
     return (
@@ -50,6 +52,7 @@ export default async function CreateGrantPage() {
   return (
     <CreateGrantForm
       profiles={profiles}
+      topics={topics}
       maxDonation={regranterCharityBalance}
     />
   )
