@@ -89,6 +89,7 @@ export function CreateProjectForm(props: { topics: Topic[] }) {
         auction_close: verdictDate,
         stage: 'proposal',
         type: 'grant',
+        topicSlugs: selectedTopics.map((topic) => topic.slug),
       }),
     })
     const newProject = await response.json()
