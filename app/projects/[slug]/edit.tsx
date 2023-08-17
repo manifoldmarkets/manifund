@@ -4,7 +4,7 @@ import { Button, IconButton } from '@/components/button'
 import { useSupabase } from '@/db/supabase-provider'
 import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
-import { Project } from '@/db/project'
+import { ProjectWithTopics } from '@/db/project'
 import { useState } from 'react'
 import { PencilIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
@@ -12,36 +12,55 @@ import { Tooltip } from '@/components/tooltip'
 import { Input } from '@/components/input'
 import { useRouter } from 'next/navigation'
 import { Col } from '@/components/layout/col'
+import { Topic } from '@/db/topic'
+import { SelectTopics } from '@/components/select-topics'
+import { uniq } from 'lodash'
 
-export function EditDescription(props: { project: Project }) {
-  const { project } = props
-  const { supabase, session } = useSupabase()
+export function Edit(props: {
+  project: ProjectWithTopics
+  allTopics: Topic[]
+}) {
+  const { project, allTopics } = props
+  const { session } = useSupabase()
   const user = session?.user
   const [showEditor, setShowEditor] = useState(false)
   const [title, setTitle] = useState(project.title)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
+  console.log('topics on project', project.project_topics)
+  console.log('all topics', allTopics)
+  const currentTopics = uniq(
+    project.project_topics
+      .map((projectTopic) =>
+        allTopics.find((t) => t.slug === projectTopic.topic_slug)
+      )
+      .filter((t) => t !== undefined) as Topic[]
+  )
+  console.log('current topics', currentTopics)
+  const [selectedTopics, setSelectedTopics] = useState(currentTopics)
+  console.log('selectedTopics', selectedTopics)
   const [saving, setSaving] = useState(false)
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
-
   if (!user || user.id !== project.creator) {
     return null
   }
 
   async function saveText() {
     setSaving(true)
-    const content = editor?.getJSON()
-    const { error } = await supabase
-      .from('projects')
-      .update({
-        description: content,
-        blurb: subtitle,
-        title: title,
-      })
-      .eq('id', project.id)
-    if (error) {
-      console.error('saveText', error)
-    }
+    const description = editor?.getJSON()
+    await fetch('/api/edit-project', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        projectId: project.id,
+        title,
+        subtitle,
+        description,
+        topicSlugs: selectedTopics.map((topic) => topic.slug),
+      }),
+    })
     setShowEditor(false)
     setSaving(false)
     router.refresh()
@@ -79,26 +98,34 @@ export function EditDescription(props: { project: Project }) {
           <Col className="gap-1">
             <label>Description</label>
             <TextEditor editor={editor} />
-            <Row className="mt-3 justify-center gap-5">
+          </Col>
+          <Col className="gap-1">
+            <label>Topics</label>
+            <SelectTopics
+              topics={allTopics}
+              selectedTopics={selectedTopics}
+              setSelectedTopics={setSelectedTopics}
+            />
+          </Col>
+          <Row className="mt-3 justify-center gap-5">
+            <Button
+              color="gray"
+              onClick={() => setShowEditor(false)}
+              className="font-semibold"
+            >
+              Cancel
+            </Button>
+            <Tooltip text={title ? '' : 'Enter a project title.'}>
               <Button
-                color="gray"
-                onClick={() => setShowEditor(false)}
+                onClick={saveText}
+                disabled={saving || !title}
+                loading={saving}
                 className="font-semibold"
               >
-                Cancel
+                Save
               </Button>
-              <Tooltip text={title ? '' : 'Enter a project title.'}>
-                <Button
-                  onClick={saveText}
-                  disabled={saving || !title}
-                  loading={saving}
-                  className="font-semibold"
-                >
-                  Save
-                </Button>
-              </Tooltip>
-            </Row>
-          </Col>
+            </Tooltip>
+          </Row>
         </Col>
       ) : (
         <Row className=" justify-end">

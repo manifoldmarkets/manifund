@@ -11,6 +11,7 @@ export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectTransfer =
   Database['public']['Tables']['project_transfers']['Row']
 export type ProjectVote = Database['public']['Tables']['project_votes']['Row']
+export type ProjectWithTopics = Project & { project_topics: ProjectTopicLink[] }
 
 export const TOTAL_SHARES = 10_000_000
 

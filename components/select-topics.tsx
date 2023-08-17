@@ -10,6 +10,7 @@ export function SelectTopics(props: {
   setSelectedTopics: (topics: Topic[]) => void
 }) {
   const { topics, selectedTopics, setSelectedTopics } = props
+  console.log('selectedTopics from select component', selectedTopics)
   return (
     <Row className="flex-wrap gap-1">
       {topics.map((topic) => {
