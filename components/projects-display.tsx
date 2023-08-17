@@ -4,10 +4,11 @@ import {
   CheckIcon,
   ChevronUpDownIcon,
   MagnifyingGlassIcon,
+  XCircleIcon,
 } from '@heroicons/react/24/outline'
 import { Listbox, Switch, Transition } from '@headlessui/react'
-import { useSearchParams, useRouter } from 'next/navigation'
-import { Fragment, useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Fragment, useState } from 'react'
 import {
   getActiveValuation,
   getAmountRaised,
@@ -44,6 +45,7 @@ export function ProjectsDisplay(props: {
   const isRegrants = !projects.find((project) => project.type !== 'grant')
   const prices = getPrices(projects)
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
+  const [includedTopics, setIncludedTopics] = useState<Topic[]>([])
   const [excludeOpenCall, setExcludeOpenCall] = useState<boolean>(false)
   const [search, setSearch] = useState<string>('')
   const selectedProjects = searchProjects(
@@ -106,16 +108,11 @@ export function ProjectsDisplay(props: {
           </Listbox>
         </div>
         <div className="relative lg:w-4/12">
-          <Listbox
-            value={sortBy}
-            onChange={(event) => {
-              // setSortBy(event)
-              router.refresh()
-            }}
-          >
+          <Listbox value={includedTopics} onChange={setIncludedTopics} multiple>
             {({ open }) => (
               <TopicFilterSelect
-                includedTopics={[allTopics[0]]}
+                includedTopics={includedTopics}
+                setIncludedTopics={setIncludedTopics}
                 open={open}
                 topics={allTopics}
               />
@@ -352,33 +349,42 @@ function SortSelect(props: {
 
 function TopicFilterSelect(props: {
   includedTopics: Topic[]
+  setIncludedTopics: (topics: Topic[]) => void
   open: boolean
   topics: Topic[]
 }) {
-  const { includedTopics, open, topics } = props
+  const { includedTopics, setIncludedTopics, open, topics } = props
+  console.log('includedTopics', includedTopics)
   return (
     <div>
-      <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
-        <Row className="truncate">
-          <span className="text-gray-500">Include</span>
-          {topics.map((topic) => {
-            return (
-              <TopicTag
-                topicTitle={topic.title}
-                topicSlug={topic.slug}
-                key={topic.slug}
-              />
-            )
-          })}
-        </Row>
-        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-          <ChevronUpDownIcon
-            className="h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
-        </span>
-      </Listbox.Button>
-
+      <div>
+        <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
+          <Row className="gap-1 truncate">
+            <span className="text-gray-500">Include</span>
+            {includedTopics.length === 0 ? (
+              ' all topics'
+            ) : (
+              <>
+                {includedTopics.map((topic) => {
+                  return (
+                    <TopicTag
+                      topicTitle={topic.title}
+                      topicSlug={topic.slug}
+                      key={topic.slug}
+                    />
+                  )
+                })}
+              </>
+            )}
+          </Row>
+          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+            <ChevronUpDownIcon
+              className="h-5 w-5 text-gray-400"
+              aria-hidden="true"
+            />
+          </span>
+        </Listbox.Button>
+      </div>
       <Transition
         show={open}
         as={Fragment}
@@ -387,9 +393,22 @@ function TopicFilterSelect(props: {
         leaveTo="opacity-0"
       >
         <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <div className="relative w-full cursor-pointer select-none py-2 pl-3 pr-9 text-sm text-gray-900 hover:bg-orange-500 hover:text-white">
+            <button
+              onClick={() => setIncludedTopics([])}
+              className="w-full text-left"
+            >
+              All topics
+            </button>
+            {includedTopics.length === 0 ? (
+              <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-white">
+                <CheckIcon className="h-5 w-5" aria-hidden="true" />
+              </span>
+            ) : null}
+          </div>
           {topics.map((topic) => (
             <Listbox.Option
-              key={topic.slug}
+              key={topic.title}
               className={({ active }) =>
                 clsx(
                   active ? 'bg-orange-500 text-white' : 'text-gray-900',
@@ -400,15 +419,7 @@ function TopicFilterSelect(props: {
             >
               {({ selected, active }) => (
                 <>
-                  <span
-                    className={clsx(
-                      selected ? 'font-semibold' : 'font-normal',
-                      'block truncate'
-                    )}
-                  >
-                    {topic.title}
-                  </span>
-
+                  <TopicTag topicTitle={topic.title} topicSlug={topic.slug} />
                   {selected ? (
                     <span
                       className={clsx(
