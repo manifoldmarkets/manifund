@@ -380,6 +380,7 @@ function TopicFilterSelect(props: {
                       topicTitle={topic.title}
                       topicSlug={topic.slug}
                       key={topic.slug}
+                      noLink
                     />
                   )
                 })}
@@ -428,7 +429,11 @@ function TopicFilterSelect(props: {
             >
               {({ selected, active }) => (
                 <>
-                  <TopicTag topicTitle={topic.title} topicSlug={topic.slug} />
+                  <TopicTag
+                    topicTitle={topic.title}
+                    topicSlug={topic.slug}
+                    noLink
+                  />
                   {selected ? (
                     <span
                       className={clsx(

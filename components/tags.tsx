@@ -86,16 +86,28 @@ const TOPIC_ICONS = {
   forecasting: <ArrowTrendingUpIcon className="h-3 w-3 stroke-2" />,
 } as { [key: string]: JSX.Element }
 
-export function TopicTag(props: { topicTitle: string; topicSlug: string }) {
-  const { topicTitle, topicSlug } = props
+export function TopicTag(props: {
+  topicTitle: string
+  topicSlug: string
+  noLink?: boolean
+}) {
+  const { topicTitle, topicSlug, noLink } = props
   const topicIcon = TOPIC_ICONS[topicSlug] ?? <BiHeart className="h-3 w-3" />
+  if (noLink) {
+    return (
+      <div className="flex max-h-5 max-w-fit flex-1 items-center gap-1 whitespace-nowrap rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800 hover:bg-gray-200 hover:decoration-2">
+        {topicIcon}
+        <span className=" font-light">{topicTitle}</span>
+      </div>
+    )
+  }
   return (
     <Link
       href={`/topics/${topicSlug}`}
-      className="gap-2max-h-5 flex max-w-fit items-center truncate whitespace-nowrap rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800 hover:underline hover:decoration-2"
+      className="flex max-h-5 max-w-fit flex-1 items-center gap-1 whitespace-nowrap rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800 hover:bg-gray-200 hover:decoration-2"
     >
       {topicIcon}
-      <span className="ml-1 font-light">{topicTitle}</span>
+      <span className=" font-light">{topicTitle}</span>
     </Link>
   )
 }

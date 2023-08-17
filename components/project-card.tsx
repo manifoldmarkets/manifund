@@ -57,7 +57,7 @@ export function ProjectCard(props: {
           </h1>
           <p className="text-sm font-light text-gray-500">{project.blurb}</p>
         </Link>
-        <Row className="gap-1">
+        <Row className="mb-1 flex-wrap gap-1">
           {topics?.map((topic) => (
             <TopicTag
               key={topic.slug}
