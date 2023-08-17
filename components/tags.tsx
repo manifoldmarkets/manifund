@@ -90,12 +90,18 @@ export function TopicTag(props: {
   topicTitle: string
   topicSlug: string
   noLink?: boolean
+  className?: string
 }) {
-  const { topicTitle, topicSlug, noLink } = props
+  const { topicTitle, topicSlug, noLink, className } = props
   const topicIcon = TOPIC_ICONS[topicSlug] ?? <BiHeart className="h-3 w-3" />
   if (noLink) {
     return (
-      <div className="flex max-h-5 max-w-fit flex-1 items-center gap-1 whitespace-nowrap rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800 hover:bg-gray-200 hover:decoration-2">
+      <div
+        className={clsx(
+          'flex max-h-5 max-w-fit flex-1 items-center gap-1 whitespace-nowrap rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800 hover:bg-gray-200 hover:decoration-2',
+          className
+        )}
+      >
         {topicIcon}
         <span className=" font-light">{topicTitle}</span>
       </div>
@@ -104,7 +110,10 @@ export function TopicTag(props: {
   return (
     <Link
       href={`/topics/${topicSlug}`}
-      className="flex max-h-5 max-w-fit flex-1 items-center gap-1 whitespace-nowrap rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800 hover:bg-gray-200 hover:decoration-2"
+      className={clsx(
+        'flex max-h-5 max-w-fit flex-1 items-center gap-1 whitespace-nowrap rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800 hover:bg-gray-200 hover:decoration-2',
+        className
+      )}
     >
       {topicIcon}
       <span className=" font-light">{topicTitle}</span>
