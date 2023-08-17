@@ -15,6 +15,7 @@ import { RequiredStar, TopicTag } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
 import { Topic } from '@/db/topic'
+import clsx from 'clsx'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -257,11 +258,12 @@ export function CreateProjectForm(props: { topics: Topic[] }) {
                   topicTitle={topic.title}
                   topicSlug={topic.slug}
                   noLink
-                  className={
+                  className={clsx(
+                    '!p-3 !text-sm',
                     selectedTopics.includes(topic)
                       ? 'bg-orange-500 text-white hover:bg-orange-600'
-                      : ''
-                  }
+                      : 'bg-gray-200 hover:bg-gray-300'
+                  )}
                 />
               </button>
             )
