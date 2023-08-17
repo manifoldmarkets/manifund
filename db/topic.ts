@@ -2,6 +2,7 @@ import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 
 export type Topic = Database['public']['Tables']['topics']['Row']
+export type MiniTopic = { title: string; slug: string }
 export type ProjectTopicLink =
   Database['public']['Tables']['project_topics']['Row']
 
@@ -11,6 +12,14 @@ export async function getTopics(supabase: SupabaseClient) {
     throw error
   }
   return data as Topic[]
+}
+
+export async function getMiniTopics(supabase: SupabaseClient) {
+  const { data, error } = await supabase.from('topics').select('title, slug')
+  if (error) {
+    throw error
+  }
+  return data as MiniTopic[]
 }
 
 export async function updateProjectTopics(

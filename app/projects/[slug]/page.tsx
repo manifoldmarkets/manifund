@@ -8,7 +8,7 @@ import { getTxnsByProject, getTxnsByUser } from '@/db/txn'
 import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
 import { ProjectDisplay } from './project-display'
-import { getTopics } from '@/db/topic'
+import { getMiniTopics } from '@/db/topic'
 
 export const revalidate = 0
 
@@ -38,7 +38,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       getCommentsByProject(supabase, project.id),
       getBidsByProject(supabase, project.id),
       getTxnsByProject(supabase, project.id),
-      getTopics(supabase),
+      getMiniTopics(supabase),
     ])
   const creatorEmail = userProfile?.regranter_status
     ? await getUserEmail(createAdminClient(), project.creator)
