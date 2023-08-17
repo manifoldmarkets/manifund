@@ -17,7 +17,7 @@ import Link from 'next/link'
 import clsx from 'clsx'
 import { CardlessProject } from '@/components/project-card'
 import { CardlessRegranter } from '@/components/regranter-card'
-import { getTopics } from '@/db/topic'
+import { listMiniTopics } from '@/db/topic'
 
 export const revalidate = 60
 
@@ -33,7 +33,7 @@ export default async function Projects() {
   const otherRounds = rounds.filter(
     (round) => round.title !== 'Regrants' && round.title !== 'Independent'
   )
-  const topics = await getTopics(supabase)
+  const topicsList = await listMiniTopics(supabase)
   return (
     <Col className="max-w-4xl gap-12 px-3 py-5 sm:px-6">
       {user === null && <LandingSection />}
@@ -78,7 +78,7 @@ export default async function Projects() {
             'percent funded',
             'number of comments',
           ]}
-          allTopics={topics}
+          topicsList={topicsList}
         />
       </Col>
     </Col>

@@ -38,7 +38,7 @@ export function ProjectDisplay(props: {
   comments: CommentAndProfile[]
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]
-  allTopics: MiniTopic[]
+  topicsList: MiniTopic[]
   userProfile?: ProfileAndBids
   creatorEmail?: string
 }) {
@@ -50,7 +50,7 @@ export function ProjectDisplay(props: {
     projectTxns,
     userProfile,
     creatorEmail,
-    allTopics,
+    topicsList,
   } = props
   const userSpendableFunds = userProfile
     ? userProfile.accreditation_status && project.type === 'cert'
@@ -140,7 +140,7 @@ export function ProjectDisplay(props: {
             </Description>
           </div>
         )}
-        {isOwnProject && <Edit project={project} allTopics={allTopics} />}
+        {isOwnProject && <Edit project={project} topicsList={topicsList} />}
         {project.stage === 'proposal' && (
           <>
             <Divider />

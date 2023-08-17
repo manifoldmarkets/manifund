@@ -33,8 +33,8 @@ const DESCRIPTION_OUTLINE = `
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
 
-export function CreateProjectForm(props: { topics: MiniTopic[] }) {
-  const { topics } = props
+export function CreateProjectForm(props: { topicsList: MiniTopic[] }) {
+  const { topicsList } = props
   const { session } = useSupabase()
   const router = useRouter()
   const [title, setTitle] = useState<string>('')
@@ -242,7 +242,7 @@ export function CreateProjectForm(props: { topics: MiniTopic[] }) {
       <Col className="gap-1">
         <label>Relevant topics</label>
         <SelectTopics
-          topics={topics}
+          topicsList={topicsList}
           selectedTopics={selectedTopics}
           setSelectedTopics={setSelectedTopics}
         />

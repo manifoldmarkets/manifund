@@ -17,10 +17,10 @@ import { EditRound } from './edit-round'
 export function RoundTabs(props: {
   round: Round
   projects: FullProject[]
-  allTopics: MiniTopic[]
+  topicsList: MiniTopic[]
   regranters?: Profile[]
 }) {
-  const { round, projects, allTopics, regranters } = props
+  const { round, projects, topicsList, regranters } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabName = searchParams.get('tab')
   const visibleProjects = projects.filter(
@@ -44,7 +44,7 @@ export function RoundTabs(props: {
           ) : (
             <ProjectsDisplay
               projects={projects}
-              allTopics={allTopics}
+              topicsList={topicsList}
               sortOptions={[
                 'votes',
                 'newest first',
