@@ -1,7 +1,6 @@
 'use client'
 import { Button } from '@/components/button'
 import { useSupabase } from '@/db/supabase-provider'
-// import { SupabaseClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -9,7 +8,6 @@ export function AddTags(props: {
   projectId: string
   topicSlug: string
   currentTopicSlugs: string[]
-  // supabase: SupabaseClient
 }) {
   const { projectId, topicSlug, currentTopicSlugs } = props
   const { supabase } = useSupabase()
@@ -19,7 +17,7 @@ export function AddTags(props: {
     <td>
       <Button
         loading={isSubmitting}
-        disabled={currentTopicSlugs.includes(topicSlug)}
+        disabled
         onClick={async () => {
           setIsSubmitting(true)
           await supabase
