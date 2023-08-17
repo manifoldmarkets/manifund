@@ -102,7 +102,6 @@ export function ProjectDisplay(props: {
         )}
       <div className="flex flex-col gap-4 px-4 pt-5">
         <ProjectCardHeader
-          round={project.rounds}
           projectType={project.type}
           projectTransfer={
             pendingProjectTransfers?.length === 0
