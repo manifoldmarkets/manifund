@@ -1,13 +1,12 @@
 import { getProfileById, getUser } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
-import clsx from 'clsx'
 import { NavBarItem } from './bottom-nav-bar-item'
 import Link from 'next/link'
 import { Avatar } from '@/components/avatar'
 import { Col } from '@/components/layout/col'
 import { calculateUserBalance } from '@/utils/math'
 import { getTxnsByUser } from '@/db/txn'
-import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import { formatMoney } from '@/utils/formatting'
 
 export const BOTTOM_NAV_BAR_HEIGHT = 58
 
@@ -52,6 +51,7 @@ export async function BottomNavBar() {
                 size={6}
                 username={profile.username}
                 avatarUrl={profile.avatar_url}
+                id={profile.id}
                 noLink
               />
             </div>

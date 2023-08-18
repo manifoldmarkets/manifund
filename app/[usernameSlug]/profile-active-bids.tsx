@@ -36,7 +36,7 @@ export function ActiveBids(props: {
   ))
   return (
     <div>
-      <h1 className="text-xl sm:text-2xl">Trade offers</h1>
+      <h1 className="mb-2 text-xl font-medium sm:text-2xl">Trade offers</h1>
       <table
         role="list"
         className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"

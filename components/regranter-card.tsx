@@ -43,6 +43,7 @@ export function RegranterCard(props: {
             avatarUrl={regranter.avatar_url}
             username={regranter.username}
             size={24}
+            id={regranter.id}
             className="shadow-md"
           />
         </Row>
@@ -69,12 +70,14 @@ export function CardlessRegranter(props: { regranter: Profile }) {
         <Avatar
           avatarUrl={regranter.avatar_url}
           username={regranter.username}
+          id={regranter.id}
           size={24}
           className="hidden shadow-md sm:block"
         />
         <Avatar
           avatarUrl={regranter.avatar_url}
           username={regranter.username}
+          id={regranter.id}
           size={16}
           className="shadow-md sm:hidden"
         />

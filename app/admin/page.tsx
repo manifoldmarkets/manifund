@@ -162,9 +162,7 @@ export default async function Admin() {
                 <AddTags
                   projectId={project.id}
                   topicSlug={'gcr'}
-                  currentTopicSlugs={project.project_topics.map(
-                    (projectTopic) => projectTopic.topic_slug
-                  )}
+                  currentTopicSlugs={project.topics.map((topic) => topic.slug)}
                 />
               </tr>
             )

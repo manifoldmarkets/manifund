@@ -1,14 +1,11 @@
 'use client'
 import { Profile, ProfileAndBids } from '@/db/profile'
-import { useSearchParams } from 'next/navigation'
 import { BidAndProject } from '@/db/bid'
-import { Tabs } from '@/components/tabs'
 import { FullProject, Project } from '@/db/project'
 import { ProposalBids } from './profile-proposal-bids'
 import { ActiveBids } from './profile-active-bids'
 import { Investments } from './profile-investments'
 import { Projects } from './profile-projects'
-import { RichContent } from '@/components/editor'
 import { BalanceDisplay } from './balance-display'
 import {
   calculateCharityBalance,
@@ -20,8 +17,13 @@ import { calculateCashBalance } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 import { OutgoingDonationsHistory } from './profile-donations'
 import { CommentAndProject } from '@/db/comment'
+import { ProfileComments } from './profile-comments'
+import { RichContent } from '@/components/editor'
+import { Row } from '@/components/layout/row'
+import { useState } from 'react'
+import clsx from 'clsx'
 
-export function ProfileTabs(props: {
+export function ProfileContent(props: {
   profile: Profile
   projects: FullProject[]
   comments: CommentAndProject[]
@@ -56,9 +58,6 @@ export function ProfileTabs(props: {
   const pendingDonateBids = bids.filter(
     (bid) => bid.status === 'pending' && bid.type === 'donate'
   )
-  const searchParams = useSearchParams() ?? new URLSearchParams()
-  const currentTabName = searchParams.get('tab')
-  const tabs = []
   const balance = calculateUserBalance(txns, profile.id)
   const withdrawBalance = calculateCashBalance(
     txns,
@@ -81,52 +80,6 @@ export function ProfileTabs(props: {
           userProfile?.accreditation_status
         )
       : 0
-
-  const portfolioCount =
-    proposalBids.length +
-    activeBids.length +
-    notOwnProjectInvestments.length +
-    donations.length
-  tabs.push({
-    name: 'Portfolio',
-    href: '?tab=portfolio',
-    count: portfolioCount,
-    current: currentTabName === 'portfolio' || currentTabName === null,
-    display: (
-      <div className="flex flex-col gap-6">
-        {profile.regranter_status && !isOwnProfile && userProfile && (
-          <DonateBox
-            charity={profile}
-            profile={userProfile}
-            maxDonation={userCharityBalance}
-          />
-        )}
-        <BalanceDisplay
-          balance={balance}
-          withdrawBalance={withdrawBalance}
-          charityBalance={charityBalance}
-          accredited={profile.accreditation_status}
-          isOwnProfile={isOwnProfile ?? undefined}
-          userId={userProfile?.id ?? undefined}
-        />
-        {(donations.length > 0 || pendingDonateBids.length > 0) && (
-          <OutgoingDonationsHistory
-            donations={donations}
-            pendingDonateBids={pendingDonateBids}
-          />
-        )}
-        {notOwnProjectInvestments.length > 0 && (
-          <Investments investments={notOwnProjectInvestments} />
-        )}
-        {activeBids.length > 0 && (
-          <ActiveBids bids={activeBids} isOwnProfile={isOwnProfile} />
-        )}
-        {proposalBids.length > 0 && (
-          <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
-        )}
-      </div>
-    ),
-  })
   const relevantProjects = projects
     .filter(
       (project) =>
@@ -134,29 +87,49 @@ export function ProfileTabs(props: {
           .length === 0
     )
     .filter((project) => project.stage !== 'hidden' || isOwnProfile)
-  if (isOwnProfile || relevantProjects.length > 0) {
-    tabs.push({
-      name: 'Projects',
-      href: '?tab=projects',
-      count: relevantProjects.length,
-      current: currentTabName === 'projects',
-      display: <Projects projects={relevantProjects} />,
-    })
-  }
-  if (profile.long_description) {
-    tabs.push({
-      name: 'About me',
-      href: '?tab=about',
-      count: 0,
-      current: currentTabName === 'about',
-      display: <RichContent content={profile.long_description} />,
-    })
-  }
-  if (tabs.length > 0) {
-    return <Tabs tabs={tabs} />
-  } else {
-    return null
-  }
+  return (
+    <div className="flex flex-col gap-6">
+      {profile.regranter_status && !isOwnProfile && userProfile && (
+        <DonateBox
+          charity={profile}
+          profile={userProfile}
+          maxDonation={userCharityBalance}
+        />
+      )}
+      <BalanceDisplay
+        balance={balance}
+        withdrawBalance={withdrawBalance}
+        charityBalance={charityBalance}
+        accredited={profile.accreditation_status}
+        isOwnProfile={isOwnProfile ?? undefined}
+        userId={userProfile?.id ?? undefined}
+      />
+      {profile.long_description && (
+        <AboutMeSection content={profile.long_description} />
+      )}
+      {(donations.length > 0 || pendingDonateBids.length > 0) && (
+        <OutgoingDonationsHistory
+          donations={donations}
+          pendingDonateBids={pendingDonateBids}
+        />
+      )}
+      {notOwnProjectInvestments.length > 0 && (
+        <Investments investments={notOwnProjectInvestments} />
+      )}
+      {activeBids.length > 0 && (
+        <ActiveBids bids={activeBids} isOwnProfile={isOwnProfile} />
+      )}
+      {proposalBids.length > 0 && (
+        <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
+      )}
+      {(relevantProjects.length > 0 || isOwnProfile) && (
+        <Projects projects={relevantProjects} />
+      )}
+      {comments.length > 0 && (
+        <ProfileComments comments={comments} profile={profile} />
+      )}
+    </div>
+  )
 }
 
 export type Investment = {
@@ -196,4 +169,34 @@ function compileInvestments(txns: FullTxn[], userId: string) {
     }
   })
   return investments as Investment[]
+}
+
+function AboutMeSection(props: { content: any }) {
+  const { content } = props
+  const [expanded, setExpanded] = useState(false)
+  return (
+    <div className="flex flex-col gap-2 rounded-md bg-white p-4 ring-2 ring-orange-600">
+      <Row className="items-center gap-2 text-sm text-gray-900">
+        <button onClick={() => setExpanded(!expanded)}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            className={clsx('bi bi-caret-right-fill', expanded && 'rotate-90')}
+            viewBox="0 0 16 16"
+          >
+            <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+          </svg>
+        </button>
+        About Me
+      </Row>
+      <div className="text-sm text-gray-700">
+        <RichContent
+          content={content}
+          className={clsx('text-sm', !expanded && 'line-clamp-2')}
+        />
+      </div>
+    </div>
+  )
 }

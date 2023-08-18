@@ -12,35 +12,38 @@ export function Projects(props: { projects: Project[] }) {
   const { projects } = props
   const sortedProjects = orderBy(projects, 'created_at', 'desc')
   return (
-    <table
-      role="list"
-      className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
-    >
-      {projects.length == 0 ? (
-        <NoProjects />
-      ) : (
-        sortedProjects.map((project) => (
-          <ThickTableRow
-            key={project.id}
-            title={project.title}
-            subtitle={<NextStep project={project} />}
-            href={`/projects/${project.slug}`}
-            tag={
-              <div className="flex h-full flex-col justify-center">
-                <Row className="flex-shrink-0 justify-end gap-2">
-                  <Col className="justify-center">
-                    <RoundTag roundTitle={project.round} />
-                  </Col>
-                  <Col className="justify-center">
-                    <StageTag projectStage={project.stage} />
-                  </Col>
-                </Row>
-              </div>
-            }
-          />
-        ))
-      )}
-    </table>
+    <div>
+      <h1 className="mb-2 text-xl font-medium sm:text-2xl">Projects</h1>
+      <table
+        role="list"
+        className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
+      >
+        {projects.length == 0 ? (
+          <NoProjects />
+        ) : (
+          sortedProjects.map((project) => (
+            <ThickTableRow
+              key={project.id}
+              title={project.title}
+              subtitle={<NextStep project={project} />}
+              href={`/projects/${project.slug}`}
+              tag={
+                <div className="flex h-full flex-col justify-center">
+                  <Row className="flex-shrink-0 justify-end gap-2">
+                    <Col className="justify-center">
+                      <RoundTag roundTitle={project.round} />
+                    </Col>
+                    <Col className="justify-center">
+                      <StageTag projectStage={project.stage} />
+                    </Col>
+                  </Row>
+                </div>
+              }
+            />
+          ))
+        )}
+      </table>
+    </div>
   )
 }
 

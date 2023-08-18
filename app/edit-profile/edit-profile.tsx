@@ -221,6 +221,7 @@ export function EditProfileForm(props: { profile: Profile }) {
               username={profile.username}
               avatarUrl={profile.avatar_url}
               noLink
+              id={profile.id}
               size={24}
             />
           )}
