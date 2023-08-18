@@ -2,16 +2,19 @@ import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 
 export type Topic = Database['public']['Tables']['topics']['Row']
+export type FullTopic = Topic & { projects: { stage: string }[] }
 export type MiniTopic = { title: string; slug: string }
 export type ProjectTopicLink =
   Database['public']['Tables']['project_topics']['Row']
 
-export async function listTopics(supabase: SupabaseClient) {
-  const { data, error } = await supabase.from('topics').select('*')
+export async function listFullTopics(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from('topics')
+    .select('*, projects(stage)')
   if (error) {
     throw error
   }
-  return data as Topic[]
+  return data as FullTopic[]
 }
 
 export async function listMiniTopics(supabase: SupabaseClient) {

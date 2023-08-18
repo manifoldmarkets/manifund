@@ -145,17 +145,14 @@ export interface Database {
       }
       project_topics: {
         Row: {
-          id: number
           project_id: string
           topic_slug: string
         }
         Insert: {
-          id?: number
           project_id: string
           topic_slug: string
         }
         Update: {
-          id?: number
           project_id?: string
           topic_slug?: string
         }
