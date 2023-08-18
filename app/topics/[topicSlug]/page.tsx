@@ -7,12 +7,6 @@ import { getAmountRaised } from '@/utils/math'
 import { Row } from '@/components/layout/row'
 import { DataPoint } from '@/components/data-point'
 import { formatMoney } from '@/utils/formatting'
-import {
-  CurrencyDollarIcon,
-  EllipsisHorizontalCircleIcon,
-  FireIcon,
-} from '@heroicons/react/20/solid'
-
 export const revalidate = 60
 
 export async function generateMetadata(props: {
@@ -52,7 +46,7 @@ export default async function TopicPage(props: {
   )
 }
 
-export function TopicData(props: { projects: FullProject[] }) {
+function TopicData(props: { projects: FullProject[] }) {
   const { projects } = props
   const numActiveProjects = projects.filter(
     (project) => project.stage === 'active'
