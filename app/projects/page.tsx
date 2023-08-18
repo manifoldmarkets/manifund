@@ -45,23 +45,6 @@ export default async function Projects() {
       />
       <Col className="gap-3">
         <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          Other funding rounds
-        </h2>
-        <p className="text-gray-600">
-          In the past, we experimented with funding projects through impact
-          certificates, which you can read more about{' '}
-          <Link href="/about#impact-certificates">here</Link>. These rounds are
-          no longer accepting submissions, but many projects are still active
-          and are awaiting retroactive evaluation.
-        </p>
-        <div className="mt-5 flex flex-col gap-10 sm:grid sm:grid-cols-2">
-          {otherRounds.map((round) => (
-            <Round key={round.title} round={round} />
-          ))}
-        </div>
-      </Col>
-      <Col className="gap-3">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
           All projects
         </h2>
         <p className="text-gray-600">
