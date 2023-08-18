@@ -559,7 +559,6 @@ export interface Database {
           project_id: string
           project_creator: string
           admin_id?: string
-          admin_id?: string
           admin_comment_content?: Json
         }
         Returns: undefined
@@ -577,12 +576,6 @@ export interface Database {
           project: Database['public']['CompositeTypes']['project_row']
           donor_comment: Database['public']['CompositeTypes']['comment_row']
           donation: Database['public']['CompositeTypes']['bid_row']
-        }
-        Returns: undefined
-      }
-      reject_grant: {
-        Args: {
-          project_id: string
         }
         Returns: undefined
       }
