@@ -5,7 +5,7 @@ import {
   ChevronUpDownIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
-import { Listbox, Switch, Transition } from '@headlessui/react'
+import { Listbox, Transition } from '@headlessui/react'
 import { useRouter } from 'next/navigation'
 import { Fragment, useState } from 'react'
 import {
@@ -141,11 +141,7 @@ export function ProjectsDisplay(props: {
                 Proposals
               </h1>
             </Row>
-            <ProjectGroup
-              projects={proposals}
-              prices={prices}
-              topicsList={topicsList}
-            />
+            <ProjectGroup projects={proposals} prices={prices} />
           </div>
         )}
         {activeProjects.length > 0 && (
@@ -153,11 +149,7 @@ export function ProjectsDisplay(props: {
             <h1 className="mb-2 text-2xl font-bold text-gray-900">
               Active Projects
             </h1>
-            <ProjectGroup
-              projects={activeProjects}
-              prices={prices}
-              topicsList={topicsList}
-            />
+            <ProjectGroup projects={activeProjects} prices={prices} />
           </div>
         )}
         {completeProjects.length > 0 && (
@@ -165,11 +157,7 @@ export function ProjectsDisplay(props: {
             <h1 className="mb-2 text-2xl font-bold text-gray-900">
               Complete Projects
             </h1>
-            <ProjectGroup
-              projects={completeProjects}
-              prices={prices}
-              topicsList={topicsList}
-            />
+            <ProjectGroup projects={completeProjects} prices={prices} />
           </div>
         )}
         {unfundedProjects.length > 0 && (
@@ -177,11 +165,7 @@ export function ProjectsDisplay(props: {
             <h1 className="mb-2 text-2xl font-bold text-gray-900">
               Unfunded Projects
             </h1>
-            <ProjectGroup
-              projects={unfundedProjects}
-              prices={prices}
-              topicsList={topicsList}
-            />
+            <ProjectGroup projects={unfundedProjects} prices={prices} />
           </div>
         )}
       </div>

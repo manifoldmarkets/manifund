@@ -26,12 +26,7 @@ export function Edit(props: {
   const [showEditor, setShowEditor] = useState(false)
   const [title, setTitle] = useState(project.title)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
-  const currentTopics = uniq(
-    project.topics
-      .map((topic) => topicsList.find((t) => t.slug === topic.slug))
-      .filter((t) => t !== undefined) as MiniTopic[]
-  )
-  const [selectedTopics, setSelectedTopics] = useState(currentTopics)
+  const [selectedTopics, setSelectedTopics] = useState(project.topics)
   const [saving, setSaving] = useState(false)
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
