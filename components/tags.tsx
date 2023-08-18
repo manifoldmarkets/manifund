@@ -23,7 +23,7 @@ import { LuBrainCircuit } from 'react-icons/lu'
 import { BiDonateHeart, BiHeart } from 'react-icons/bi'
 import { TbCrystalBall, TbWorldX } from 'react-icons/tb'
 import { PiBirdBold, PiVirusBold } from 'react-icons/pi'
-import { ArrowTrendingUpIcon } from '@heroicons/react/20/solid'
+import { ArrowTrendingUpIcon, CheckBadgeIcon } from '@heroicons/react/20/solid'
 
 const COLORS = [
   'bg-indigo-200',
@@ -175,7 +175,7 @@ export function RegranterTag() {
   return (
     <Tooltip text="Regranters can recieve donations from other users and give grants to the projects and organizations of their choice.">
       <Row className="max-w-fit gap-0.5 rounded-full bg-orange-100 px-2  pt-1 text-center">
-        <ArrowPathIcon className="relative bottom-0.5 m-auto h-4 w-4 stroke-2 text-orange-500" />
+        <CheckBadgeIcon className="relative bottom-0.5 m-auto h-4 w-4 stroke-2 text-orange-500" />
         <div className="relative bottom-0.5 text-sm leading-tight text-orange-500">
           regrantor
         </div>

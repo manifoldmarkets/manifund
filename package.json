@@ -11,9 +11,10 @@
     "gen-types": "npx supabase gen types typescript --project-id fkousziwzbnkdkldjper --schema public > db/database.types.ts",
     "gen-dev-types": "npx supabase gen types typescript --project-id oucjhqqretizqonyfyqu --schema public > db/database.types.ts",
     "format": "npx prettier --write .",
-    "snap:restore": "snaplet snapshot restore",
-    "snap:restore-empty": "snaplet snapshot restore --no-data",
-    "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty"
+    "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty",
+    "snap:restore": "snaplet snapshot restore --no-reset",
+    "snap:restore-empty": "snaplet snapshot restore --no-reset --no-data",
+    "//": "Consider dropping --no-reset flag; see https://docs.snaplet.dev/getting-started/restoring#more-granular-control-over-restorations"
   },
   "dependencies": {
     "@floating-ui/react": "^0.19.2",
@@ -27,19 +28,20 @@
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@tiptap/extension-bubble-menu": "^2.0.4",
-    "@tiptap/extension-link": "^2.0.0-beta.218",
-    "@tiptap/extension-mention": "^2.0.2",
-    "@tiptap/extension-placeholder": "^2.0.3",
-    "@tiptap/html": "^2.0.2",
-    "@tiptap/pm": "^2.0.0-beta.218",
-    "@tiptap/react": "^2.0.0-beta.218",
-    "@tiptap/starter-kit": "^2.0.0-beta.218",
-    "@tiptap/suggestion": "^2.0.2",
+    "@tiptap/extension-link": "^2.0.4",
+    "@tiptap/extension-mention": "^2.0.4",
+    "@tiptap/extension-placeholder": "^2.0.4",
+    "@tiptap/html": "^2.0.4",
+    "@tiptap/pm": "^2.0.4",
+    "@tiptap/react": "^2.0.4",
+    "@tiptap/starter-kit": "^2.0.4",
+    "@tiptap/suggestion": "^2.0.4",
     "@types/lodash": "^4.14.191",
     "@types/mailgun-js": "^0.22.13",
     "@types/node": "18.13.0",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
+    "alea": "^1.0.1",
     "clsx": "^1.2.1",
     "date-fns": "^2.29.3",
     "eslint": "^8.40.0",
@@ -59,6 +61,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.9",
+    "@tiptap/core": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^5.59.5",
     "@typescript-eslint/parser": "^5.59.5",
     "autoprefixer": "^10.4.13",
@@ -68,7 +71,10 @@
     "postcss": "^8.4.21",
     "prettier": "^2.8.4",
     "prettier-plugin-tailwindcss": "^0.2.3",
-    "snaplet": "^0.36.9",
+    "snaplet": "^0.55.0",
     "tailwindcss": "^3.2.6"
+  },
+  "resolutions": {
+    "better-sqlite3": "^8.5.0"
   }
 }

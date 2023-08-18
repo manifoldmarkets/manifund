@@ -2,7 +2,8 @@ import { DataPoint } from '@/components/data-point'
 import { Row } from '@/components/layout/row'
 import { Project } from '@/db/project'
 import { formatMoney, showPrecision } from '@/utils/formatting'
-import { dateDiff, getProposalValuation } from '@/utils/math'
+import { getProposalValuation } from '@/utils/math'
+import { differenceInDays, differenceInHours } from 'date-fns'
 
 export function ProposalData(props: { project: Project; raised: number }) {
   const { project, raised } = props
@@ -13,7 +14,8 @@ export function ProposalData(props: { project: Project; raised: number }) {
   // Close it on 23:59:59 in UTC -12 aka "Anywhere on Earth" time
   const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
   const now = new Date()
-  const daysLeft = dateDiff(now.getTime(), closeDate.getTime())
+  const daysLeft = differenceInDays(closeDate, now)
+  const hoursLeft = daysLeft < 1 ? differenceInHours(closeDate, now) : 0
   return (
     <Row className="justify-between">
       <DataPoint
@@ -26,8 +28,8 @@ export function ProposalData(props: { project: Project; raised: number }) {
       />
       {project.auction_close && (
         <DataPoint
-          value={showPrecision(daysLeft, 3)}
-          label="days left to contribute"
+          value={(hoursLeft ? hoursLeft : daysLeft).toString()}
+          label={`${hoursLeft ? 'hours' : 'days'} left to contribute`}
         />
       )}
       {project.type === 'cert' && (

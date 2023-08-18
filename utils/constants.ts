@@ -51,6 +51,7 @@ export function getSponsoredAmount(regrantorId: string) {
     '8aa331b7-3602-4001-9bc6-2b71b1c8ddd1': 50_000, // Renan
     'aa7c88dc-7311-4577-8cd3-c58a0d41fc31': 50_000, // Joel
     'e2a30cdd-6797-4e2c-8823-f051195fc77a': 50_000, // Ryan
+    '232dc139-961a-4f9a-9ca5-0118b90287c0': 50_000, // Nuno
     'b11620f2-fdc7-414c-8a63-9ddee17ee669': 100_000, // Marcus
     '1398ed62-4213-4923-a84e-a9931ae19492': 400_000, // Adam
     '94a0c7b8-39fd-4856-a7e6-1f9429dbb4ad': 400_000, // Dan Hendrycks

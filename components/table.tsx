@@ -24,7 +24,7 @@ export const Table = (props: {
 }
 
 export function ThickTableRow(props: {
-  title: string
+  title: string | JSX.Element
   tag?: JSX.Element
   subtitle?: JSX.Element
   href: string
