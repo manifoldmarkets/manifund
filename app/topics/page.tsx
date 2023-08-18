@@ -1,10 +1,11 @@
+import { Col } from '@/components/layout/col'
 import { createServerClient } from '@/db/supabase-server'
-import { listTopics, Topic } from '@/db/topic'
+import { FullTopic, listFullTopics } from '@/db/topic'
 import Image from 'next/image'
 
 export default async function TopicsPage() {
   const supabase = createServerClient()
-  const topicsList = await listTopics(supabase)
+  const topicsList = await listFullTopics(supabase)
   return (
     <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
       {topicsList.map((topic) => (
@@ -14,10 +15,13 @@ export default async function TopicsPage() {
   )
 }
 
-function TopicCard(props: { topic: Topic }) {
+function TopicCard(props: { topic: FullTopic }) {
   const { topic } = props
+  const numProjects = topic.projects.filter(
+    (project) => project.stage !== 'hidden'
+  ).length
   return (
-    <div className="rounded bg-white shadow-md">
+    <div className="relative rounded bg-white shadow-md">
       <Image
         src={topic.header_image_url}
         width={1000}
@@ -25,11 +29,12 @@ function TopicCard(props: { topic: Topic }) {
         className="relative aspect-[3/1] w-full flex-shrink-0 rounded-t bg-white object-cover sm:aspect-[5/3]"
         alt="round header image"
       />
-      <div className="py-2 px-4">
-        <span className="sm:text-md text-sm font-semibold leading-tight lg:text-lg">
-          {topic.title}
-        </span>
-      </div>
+      <p className="sm:text-md py-2 px-4 text-sm font-semibold leading-tight lg:text-lg">
+        {topic.title}
+      </p>
+      <p className="absolute bottom-2 right-4 text-xs text-gray-600 sm:text-sm">
+        {numProjects} projects
+      </p>
     </div>
   )
 }
