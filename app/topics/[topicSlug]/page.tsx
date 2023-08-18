@@ -1,8 +1,9 @@
 import { createServerClient } from '@/db/supabase-server'
-import { getFullProjectsByTopic } from '@/db/project'
+import { FullProject, getFullProjectsByTopic } from '@/db/project'
 import Image from 'next/image'
-import { getTopic, listMiniTopics } from '@/db/topic'
+import { FullTopic, getTopic, listMiniTopics } from '@/db/topic'
 import { ProjectsDisplay } from '@/components/projects-display'
+import { getAmountRaised } from '@/utils/math'
 
 export const revalidate = 60
 
@@ -17,7 +18,7 @@ export async function generateMetadata(props: {
   }
 }
 
-export default async function RoundPage(props: {
+export default async function TopicPage(props: {
   params: { topicSlug: string }
 }) {
   const { topicSlug } = props.params
@@ -26,7 +27,7 @@ export default async function RoundPage(props: {
   const topicsList = await listMiniTopics(supabase)
   const projects = await getFullProjectsByTopic(supabase, topic.slug)
   return (
-    <div className="bg-dark-200 max-w-4xl">
+    <div className="bg-dark-200 max-w-4xl p-5">
       {topic.header_image_url && (
         <Image
           src={topic.header_image_url}
@@ -40,4 +41,16 @@ export default async function RoundPage(props: {
       <ProjectsDisplay projects={projects} topicsList={topicsList} noFilter />
     </div>
   )
+}
+export function TopicData(props: {
+  topic: FullTopic
+  projects: FullProject[]
+}) {
+  const { topic, projects } = props
+  const numProjects = projects.filter(
+    (project) => project.stage !== 'hidden'
+  ).length
+  const totalRaised = projects.reduce((acc, project) => {
+    return acc + getAmountRaised(project, project.bids, project.txns)
+  }, 0)
 }

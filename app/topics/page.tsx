@@ -23,7 +23,7 @@ function TopicCard(props: { topic: FullTopic }) {
   return (
     <Link
       className="relative rounded bg-white shadow-md"
-      href={`/${topic.slug}`}
+      href={`/topics/${topic.slug}`}
     >
       <Image
         src={topic.header_image_url}

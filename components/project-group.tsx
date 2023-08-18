@@ -17,10 +17,7 @@ export function ProjectGroup(props: {
           project={project}
           valuation={prices ? prices[project.id] : undefined}
           topics={topicsList.filter(
-            (topic) =>
-              !!project.project_topics.find(
-                (project_topic) => project_topic.topic_slug === topic.slug
-              )
+            (topic) => !!project.topics.find((t) => t.slug === topic.slug)
           )}
         />
       ))}
