@@ -28,7 +28,7 @@ export default async function Sidebar() {
     <>
       <nav
         aria-label="Sidebar"
-        className="sticky top-0 hidden h-[100vh] justify-between divide-gray-300 self-start pt-10 pl-2 pr-2 md:col-span-3 md:flex md:flex-col"
+        className="sticky top-0 hidden h-[100vh] justify-between divide-gray-300 self-start pt-10 pl-2 pr-2 lg:col-span-3 lg:flex lg:flex-col"
       >
         <Col>
           <Link href="/">

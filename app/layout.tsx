@@ -56,12 +56,12 @@ export default async function RootLayout({
       <body className="min-h-screen w-full bg-gray-50">
         <SupabaseProvider
           session={session}
-          className={`mx-auto mt-4 mb-20 w-full font-sans md:grid md:max-w-7xl md:grid-cols-12 md:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
+          className={`mx-auto mt-4 mb-20 w-full font-sans lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
         >
           {/* @ts-expect-error Server Component */}
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
-          <main className="mx-2 flex flex-1 flex-col md:col-span-8">
+          <main className="mx-2 flex flex-1 flex-col lg:col-span-8">
             {profileTodo && <Banner />}
             {children}
           </main>
