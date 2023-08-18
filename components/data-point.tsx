@@ -1,31 +1,15 @@
 import clsx from 'clsx'
 import { Col } from './layout/col'
 
-export function DataPoint(props: {
-  value: string
-  label: string
-  theme?: string
-}) {
-  const { value, label, theme } = props
+export function DataPoint(props: { value: string; label: string }) {
+  const { value, label } = props
   return (
     <Col>
-      <span
-        className={clsx(
-          'text-lg font-bold sm:text-xl',
-          theme
-            ? theme === 'white'
-              ? 'text-white'
-              : `text-${theme}-700`
-            : 'text-orange-500'
-        )}
-      >
+      <span className={clsx('text-lg font-semibold text-gray-900 sm:text-xl')}>
         {value}
       </span>
       <span
-        className={clsx(
-          'text-xs sm:text-sm',
-          theme === 'white' ? 'text-gray-200' : 'text-gray-500'
-        )}
+        className={clsx('relative bottom-0.5 text-xs text-gray-600 sm:text-sm')}
       >
         {label}
       </span>
