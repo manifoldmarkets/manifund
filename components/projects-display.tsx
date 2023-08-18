@@ -34,21 +34,34 @@ type SortOption =
   | 'newest first'
   | 'oldest first'
 
+const DEFAULT_SORT_OPTIONS = [
+  'votes',
+  'newest first',
+  'oldest first',
+  'funding goal',
+  'price',
+  'percent funded',
+  'distance from minimum funding',
+  'number of comments',
+] as SortOption[]
+
 export function ProjectsDisplay(props: {
   projects: FullProject[]
-  sortOptions: SortOption[]
   topicsList: MiniTopic[]
+  sortOptions?: SortOption[]
   defaultSort?: SortOption
   hideRound?: boolean
+  noFilter?: boolean
 }) {
-  const { projects, sortOptions, defaultSort, topicsList } = props
-  const isRegrants = !projects.find((project) => project.type !== 'grant')
+  const { projects, sortOptions, defaultSort, topicsList, noFilter } = props
   const prices = getPrices(projects)
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
   const [includedTopics, setIncludedTopics] = useState<Topic[]>([])
   const [excludeOpenCall, setExcludeOpenCall] = useState<boolean>(false)
   const [search, setSearch] = useState<string>('')
-  const filteredProjects = filterProjects(projects, includedTopics)
+  const filteredProjects = noFilter
+    ? filterProjects(projects, includedTopics)
+    : projects
   const sortedProjects = sortProjects(filteredProjects, prices, sortBy)
   const selectedProjects = searchProjects(sortedProjects, search)
   const router = useRouter()
@@ -102,23 +115,29 @@ export function ProjectsDisplay(props: {
             }}
           >
             {({ open }) => (
-              <SortSelect sortBy={sortBy} open={open} options={sortOptions} />
+              <SortSelect
+                sortBy={sortBy}
+                open={open}
+                options={sortOptions ?? DEFAULT_SORT_OPTIONS}
+              />
             )}
           </Listbox>
         </div>
       </div>
-      <div className="relative w-full">
-        <Listbox value={includedTopics} onChange={setIncludedTopics} multiple>
-          {({ open }) => (
-            <TopicFilterSelect
-              includedTopics={includedTopics}
-              setIncludedTopics={setIncludedTopics}
-              open={open}
-              topics={topicsList}
-            />
-          )}
-        </Listbox>
-      </div>
+      {!noFilter && (
+        <div className="relative w-full">
+          <Listbox value={includedTopics} onChange={setIncludedTopics} multiple>
+            {({ open }) => (
+              <TopicFilterSelect
+                includedTopics={includedTopics}
+                setIncludedTopics={setIncludedTopics}
+                open={open}
+                topics={topicsList}
+              />
+            )}
+          </Listbox>
+        </div>
+      )}
       <div className="mt-5 flex flex-col gap-10">
         {proposals.length > 0 && (
           <div>
@@ -126,30 +145,6 @@ export function ProjectsDisplay(props: {
               <h1 className="mb-2 text-2xl font-bold text-gray-900">
                 Proposals
               </h1>
-
-              {
-                // Toggle to include open call proposals on Regrants page only
-                isRegrants && (
-                  <Row className="items-center gap-1">
-                    <span className="text-xs font-light text-gray-500">
-                      exclude open call
-                    </span>
-                    <Switch
-                      checked={excludeOpenCall}
-                      onChange={setExcludeOpenCall}
-                      className={`${
-                        excludeOpenCall ? 'bg-orange-600' : 'bg-gray-200'
-                      } relative inline-flex h-6 w-11 items-center rounded-full`}
-                    >
-                      <span
-                        className={`${
-                          excludeOpenCall ? 'translate-x-6' : 'translate-x-1'
-                        } inline-block h-4 w-4 transform rounded-full bg-white transition`}
-                      />
-                    </Switch>
-                  </Row>
-                )
-              }
             </Row>
             <ProjectGroup
               projects={proposals}
