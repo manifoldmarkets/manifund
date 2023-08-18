@@ -53,7 +53,7 @@ async function closeGrant(
         GENERIC_NOTIF_TEMPLATE_ID,
         {
           notifText: `Your project "${project.title}" has enough funding to proceed but is awaiting your signature on the grant agreement. Please sign the agreement to activate your grant.`,
-          buttonUrl: `https://manifund.org/projects/${project.slug}/grant-agreement`,
+          buttonUrl: `https://manifund.org/projects/${project.slug}/agreement`,
           buttonText: 'Sign agreement',
           subject: 'Manifund: Reminder to sign your grant agreement',
         },
