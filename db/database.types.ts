@@ -398,7 +398,7 @@ export interface Database {
         Row: {
           data: Json | null
           description: Json | null
-          header_image_url: string | null
+          header_image_url: string
           slug: string
           subtitle: string | null
           title: string
@@ -406,7 +406,7 @@ export interface Database {
         Insert: {
           data?: Json | null
           description?: Json | null
-          header_image_url?: string | null
+          header_image_url: string
           slug: string
           subtitle?: string | null
           title: string
@@ -414,7 +414,7 @@ export interface Database {
         Update: {
           data?: Json | null
           description?: Json | null
-          header_image_url?: string | null
+          header_image_url?: string
           slug?: string
           subtitle?: string | null
           title?: string
