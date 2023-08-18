@@ -1,5 +1,6 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { sortBy } from 'lodash'
 
 export type Topic = Database['public']['Tables']['topics']['Row']
 export type FullTopic = Topic & { projects: { stage: string }[] }
@@ -14,7 +15,11 @@ export async function listFullTopics(supabase: SupabaseClient) {
   if (error) {
     throw error
   }
-  return data as FullTopic[]
+  return sortBy(data, [
+    function (topic) {
+      return topic.data.sort
+    },
+  ]) as FullTopic[]
 }
 
 export async function listMiniTopics(supabase: SupabaseClient) {
