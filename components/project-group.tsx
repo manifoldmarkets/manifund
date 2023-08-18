@@ -5,10 +5,9 @@ import { MiniTopic } from '@/db/topic'
 
 export function ProjectGroup(props: {
   projects: FullProject[]
-  topicsList: MiniTopic[]
   prices?: { [k: string]: number }
 }) {
-  const { projects, topicsList, prices } = props
+  const { projects, prices } = props
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       {projects.map((project) => (
@@ -16,9 +15,7 @@ export function ProjectGroup(props: {
           key={project.id}
           project={project}
           valuation={prices ? prices[project.id] : undefined}
-          topics={topicsList.filter(
-            (topic) => !!project.topics.find((t) => t.slug === topic.slug)
-          )}
+          topics={project.topics}
         />
       ))}
     </div>
