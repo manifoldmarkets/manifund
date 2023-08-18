@@ -58,10 +58,12 @@ export function ProjectsDisplay(props: {
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
   const [includedTopics, setIncludedTopics] = useState<Topic[]>([])
   const [search, setSearch] = useState<string>('')
-  const filteredProjects = noFilter
-    ? filterProjects(projects, includedTopics)
-    : projects
-  const sortedProjects = sortProjects(filteredProjects, prices, sortBy)
+  const filteredProjects = filterProjects(projects, includedTopics)
+  const sortedProjects = sortProjects(
+    noFilter ? projects : filteredProjects,
+    prices,
+    sortBy
+  )
   const selectedProjects = searchProjects(sortedProjects, search)
   const router = useRouter()
 
