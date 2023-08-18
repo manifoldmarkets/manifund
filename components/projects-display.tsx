@@ -86,7 +86,7 @@ export function ProjectsDisplay(props: {
         <div className="relative rounded-md shadow-sm lg:w-8/12">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <MagnifyingGlassIcon
-              className="h-5 w-5 text-gray-400"
+              className="h-3 w-3 text-gray-400 sm:h-5 sm:w-5"
               aria-hidden="true"
             />
           </div>
@@ -95,7 +95,7 @@ export function ProjectsDisplay(props: {
             name="search"
             id="search"
             autoComplete="off"
-            className="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:leading-6"
+            className="sm:text-md block w-full rounded-md border-0 py-1.5 pl-8 text-xs text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:pl-10 sm:leading-6"
             placeholder="Search..."
             value={search}
             onChange={(event) => {
@@ -135,11 +135,11 @@ export function ProjectsDisplay(props: {
           </Listbox>
         </div>
       )}
-      <div className="mt-5 flex flex-col gap-10">
+      <div className="mt-2 flex flex-col gap-5 sm:mt-5 sm:gap-10">
         {proposals.length > 0 && (
           <div>
             <Row className="items-center justify-between">
-              <h1 className="mb-2 text-2xl font-bold text-gray-900">
+              <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">
                 Proposals
               </h1>
             </Row>
@@ -148,7 +148,7 @@ export function ProjectsDisplay(props: {
         )}
         {activeProjects.length > 0 && (
           <div>
-            <h1 className="mb-2 text-2xl font-bold text-gray-900">
+            <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">
               Active Projects
             </h1>
             <ProjectGroup projects={activeProjects} prices={prices} />
@@ -156,7 +156,7 @@ export function ProjectsDisplay(props: {
         )}
         {completeProjects.length > 0 && (
           <div>
-            <h1 className="mb-2 text-2xl font-bold text-gray-900">
+            <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">
               Complete Projects
             </h1>
             <ProjectGroup projects={completeProjects} prices={prices} />
@@ -164,7 +164,7 @@ export function ProjectsDisplay(props: {
         )}
         {unfundedProjects.length > 0 && (
           <div>
-            <h1 className="mb-2 text-2xl font-bold text-gray-900">
+            <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">
               Unfunded Projects
             </h1>
             <ProjectGroup projects={unfundedProjects} prices={prices} />
@@ -270,7 +270,7 @@ function SortSelect(props: {
   const { sortBy, open, options } = props
   return (
     <div>
-      <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
+      <Listbox.Button className="sm:text-md relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-xs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
         <div className="truncate">
           <span className="text-gray-500">Sort by </span>
           {sortBy}
@@ -297,7 +297,7 @@ function SortSelect(props: {
               className={({ active }) =>
                 clsx(
                   active ? 'bg-orange-500 text-white' : 'text-gray-900',
-                  'relative cursor-pointer select-none py-2 pl-3 pr-9'
+                  'sm:text-md relative cursor-pointer select-none py-2 pl-3 pr-9 text-xs'
                 )
               }
               value={option}
@@ -307,7 +307,7 @@ function SortSelect(props: {
                   <span
                     className={clsx(
                       selected ? 'font-semibold' : 'font-normal',
-                      'block truncate'
+                      'sm:text-md block truncate text-xs'
                     )}
                   >
                     {option}
@@ -343,7 +343,7 @@ function TopicFilterSelect(props: {
   return (
     <div>
       <div>
-        <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
+        <Listbox.Button className="sm:text-md relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-xs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
           <Row className="flex-wrap gap-1">
             <span className="text-gray-500">Include</span>
             {includedTopics.length === 0 ? (
