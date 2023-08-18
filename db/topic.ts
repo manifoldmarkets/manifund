@@ -39,3 +39,14 @@ export async function updateProjectTopics(
     )
     .throwOnError()
 }
+
+export async function getTopic(supabase: SupabaseClient, slug: string) {
+  const { data, error } = await supabase
+    .from('topics')
+    .select('*')
+    .eq('slug', slug)
+  if (error) {
+    throw error
+  }
+  return data[0] as Topic
+}

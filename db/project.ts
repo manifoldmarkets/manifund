@@ -109,13 +109,29 @@ export async function getFullProjectsByRound(
   const { data, error } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_topics(topic_title)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_topics(topic_slug)'
     )
     .eq('round', roundTitle)
   if (error) {
     throw error
   }
   // Scary type conversion!
+  return data as unknown as FullProject[]
+}
+
+export async function getFullProjectsByTopic(
+  supabase: SupabaseClient,
+  topicSlug: string
+) {
+  const { data, error } = await supabase
+    .from('projects')
+    .select(
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_topics!inner(topic_slug)'
+    )
+    .eq('project_topics.topic_slug', topicSlug)
+  if (error) {
+    throw error
+  }
   return data as unknown as FullProject[]
 }
 
