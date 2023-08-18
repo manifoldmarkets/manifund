@@ -95,7 +95,7 @@ export function ProjectsDisplay(props: {
             name="search"
             id="search"
             autoComplete="off"
-            className="sm:text-md block w-full rounded-md border-0 py-1.5 pl-8 text-xs text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:pl-10 sm:leading-6"
+            className="block w-full rounded-md border-0 py-1.5 pl-8 text-xs text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:pl-10 sm:text-base sm:leading-6"
             placeholder="Search..."
             value={search}
             onChange={(event) => {
@@ -270,7 +270,7 @@ function SortSelect(props: {
   const { sortBy, open, options } = props
   return (
     <div>
-      <Listbox.Button className="sm:text-md relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-xs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
+      <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-xs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:text-base sm:leading-6">
         <div className="truncate">
           <span className="text-gray-500">Sort by </span>
           {sortBy}
@@ -297,7 +297,7 @@ function SortSelect(props: {
               className={({ active }) =>
                 clsx(
                   active ? 'bg-orange-500 text-white' : 'text-gray-900',
-                  'sm:text-md relative cursor-pointer select-none py-2 pl-3 pr-9 text-xs'
+                  'relative cursor-pointer select-none py-2 pl-3 pr-9 text-xs sm:text-base'
                 )
               }
               value={option}
@@ -307,7 +307,7 @@ function SortSelect(props: {
                   <span
                     className={clsx(
                       selected ? 'font-semibold' : 'font-normal',
-                      'sm:text-md block truncate text-xs'
+                      'block truncate text-xs sm:text-base'
                     )}
                   >
                     {option}
@@ -343,7 +343,7 @@ function TopicFilterSelect(props: {
   return (
     <div>
       <div>
-        <Listbox.Button className="sm:text-md relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-xs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:leading-6">
+        <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-xs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:text-base sm:leading-6">
           <Row className="flex-wrap gap-1">
             <span className="text-gray-500">Include</span>
             {includedTopics.length === 0 ? (

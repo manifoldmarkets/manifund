@@ -55,9 +55,7 @@ export function ProjectCard(props: {
           <h1 className="text-lg font-semibold leading-tight group-hover:underline sm:text-xl">
             {project.title}
           </h1>
-          <p className="text-xs font-light text-gray-500 sm:text-sm">
-            {project.blurb}
-          </p>
+          <p className="text-xs text-gray-500 sm:text-sm">{project.blurb}</p>
         </Link>
         <Row className="mb-1 flex-wrap gap-1">
           {topics?.map((topic) => (
