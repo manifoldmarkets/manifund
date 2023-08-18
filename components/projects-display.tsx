@@ -57,7 +57,6 @@ export function ProjectsDisplay(props: {
   const prices = getPrices(projects)
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
   const [includedTopics, setIncludedTopics] = useState<Topic[]>([])
-  const [excludeOpenCall, setExcludeOpenCall] = useState<boolean>(false)
   const [search, setSearch] = useState<string>('')
   const filteredProjects = noFilter
     ? filterProjects(projects, includedTopics)
@@ -66,13 +65,9 @@ export function ProjectsDisplay(props: {
   const selectedProjects = searchProjects(sortedProjects, search)
   const router = useRouter()
 
-  const proposals = selectedProjects.filter((project) => {
-    if (excludeOpenCall) {
-      return project.stage == 'proposal' && isRegrantorInitiated(project)
-    } else {
-      return project.stage == 'proposal'
-    }
-  })
+  const proposals = selectedProjects.filter(
+    (project) => project.stage == 'proposal'
+  )
   const activeProjects = selectedProjects.filter(
     (project) => project.stage == 'active'
   )
@@ -256,9 +251,9 @@ function sortProjects(
 function filterProjects(projects: FullProject[], includedTopics: Topic[]) {
   if (includedTopics.length === 0) return projects
   return projects.filter((project) => {
-    return project.project_topics.some((project_topic) => {
+    return project.topics.some((topic) => {
       return includedTopics.some((includedTopic) => {
-        return project_topic.topic_slug === includedTopic.slug
+        return topic.slug === includedTopic.slug
       })
     })
   })

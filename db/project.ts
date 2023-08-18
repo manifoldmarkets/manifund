@@ -5,13 +5,13 @@ import { Txn } from './txn'
 import { Profile } from './profile'
 import { Comment } from '@/db/comment'
 import { Round } from './round'
-import { ProjectTopicLink } from './topic'
+import { MiniTopic } from './topic'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectTransfer =
   Database['public']['Tables']['project_transfers']['Row']
 export type ProjectVote = Database['public']['Tables']['project_votes']['Row']
-export type ProjectWithTopics = Project & { project_topics: ProjectTopicLink[] }
+export type ProjectWithTopics = Project & { topics: MiniTopic[] }
 
 export const TOTAL_SHARES = 10_000_000
 
@@ -55,13 +55,13 @@ export type FullProject = Project & { profiles: Profile } & {
   bids: Bid[]
 } & { txns: Txn[] } & { comments: Comment[] } & { rounds: Round } & {
   project_transfers: ProjectTransfer[]
-} & { project_votes: ProjectVote[] } & { project_topics: ProjectTopicLink[] }
+} & { project_votes: ProjectVote[] } & { topics: MiniTopic[] }
 
 export async function listProjects(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_topics(topic_slug)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), topics(title, slug)'
     )
     .order('created_at', { ascending: false })
     .throwOnError()
@@ -76,7 +76,7 @@ export async function getFullProjectBySlug(
   const { data } = await supabase
     .from('projects')
     .select(
-      '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), project_topics(topic_slug)'
+      '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), topics(title, slug)'
     )
     .eq('slug', slug)
     .throwOnError()
@@ -109,7 +109,7 @@ export async function getFullProjectsByRound(
   const { data, error } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_topics(topic_slug)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), topics(title, slug)'
     )
     .eq('round', roundTitle)
   if (error) {
@@ -126,7 +126,7 @@ export async function getFullProjectsByTopic(
   const { data, error } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_topics!inner(topic_slug)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_topics!inner(topic_slug), topics(slug)'
     )
     .eq('project_topics.topic_slug', topicSlug)
   if (error) {
