@@ -35,7 +35,7 @@ export default async function TopicPage(props: {
   const topicsList = await listMiniTopics(supabase)
   const projects = await getFullProjectsByTopic(supabase, topic.slug)
   return (
-    <div className="bg-dark-200 max-w-4xl p-5">
+    <div className="bg-dark-200 max-w-4xl p-3">
       {topic.header_image_url && (
         <Image
           src={topic.header_image_url}
@@ -45,7 +45,7 @@ export default async function TopicPage(props: {
           alt="round header image"
         />
       )}
-      <h1 className="my-4 text-4xl font-bold">{topic.title}</h1>
+      <h1 className="my-3 text-2xl font-bold lg:text-3xl">{topic.title}</h1>
       <TopicData projects={projects} />
       <ProjectsDisplay projects={projects} topicsList={topicsList} noFilter />
     </div>
@@ -64,28 +64,10 @@ export function TopicData(props: { projects: FullProject[] }) {
     return acc + getAmountRaised(project, project.bids, project.txns)
   }, 0)
   return (
-    <div className="border-1 my-5 grid grid-cols-1 divide-y rounded-lg bg-white shadow sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
-      <Row className="h-min items-center gap-2 overflow-hidden px-3 py-4">
-        <Row className="h-min items-center justify-center rounded bg-orange-500 p-2 text-white">
-          <EllipsisHorizontalCircleIcon className="h-5 w-5" />
-        </Row>
-        <DataPoint label="proposals" value={numProposalProjects.toString()} />
-      </Row>
-      <Row className="h-min items-center gap-2 overflow-hidden px-3 py-4">
-        <Row className="h-min items-center justify-center rounded bg-orange-500 p-2 text-white">
-          <FireIcon className="h-5 w-5" />
-        </Row>
-        <DataPoint
-          label="active projects"
-          value={numActiveProjects.toString()}
-        />
-      </Row>
-      <Row className="h-min items-center gap-2 overflow-hidden px-3 py-4">
-        <Row className="h-min items-center justify-center rounded bg-orange-500 p-2 text-white">
-          <CurrencyDollarIcon className="h-5 w-5" />
-        </Row>
-        <DataPoint label="given" value={formatMoney(totalRaised)} />
-      </Row>
-    </div>
+    <Row className="my-3 justify-between px-5">
+      <DataPoint label="proposals" value={numProposalProjects.toString()} />
+      <DataPoint label="active projects" value={numActiveProjects.toString()} />
+      <DataPoint label="given" value={formatMoney(totalRaised)} />
+    </Row>
   )
 }

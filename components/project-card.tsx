@@ -52,10 +52,12 @@ export function ProjectCard(props: {
           href={`/projects/${project.slug}`}
           className="group flex h-full flex-col justify-start gap-1 py-2 hover:cursor-pointer"
         >
-          <h1 className="text-xl font-semibold group-hover:underline">
+          <h1 className="text-lg font-semibold leading-tight group-hover:underline sm:text-xl">
             {project.title}
           </h1>
-          <p className="text-sm font-light text-gray-500">{project.blurb}</p>
+          <p className="text-xs font-light text-gray-500 sm:text-sm">
+            {project.blurb}
+          </p>
         </Link>
         <Row className="mb-1 flex-wrap gap-1">
           {topics?.map((topic) => (
