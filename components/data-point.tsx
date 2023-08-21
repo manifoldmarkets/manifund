@@ -19,7 +19,7 @@ export function DataPoint(props: {
       </span>
       <span
         className={clsx(
-          'text-xssm:text-sm relative bottom-0.5',
+          'relative bottom-0.5 text-xs sm:text-sm',
           theme === 'white' ? 'text-gray-300' : 'text-gray-600'
         )}
       >
