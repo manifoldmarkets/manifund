@@ -63,12 +63,13 @@ export default async function Projects() {
               </li>
             ))}
           </ul>
-          <ArrowLink
+          <Link
             href="/rounds/regrants?tab=regrants"
-            text="See all regrantors"
-            className="mt-5"
-            color="orange"
-          />
+            className="flex items-center justify-end gap-2 text-sm font-semibold text-orange-600 hover:underline"
+          >
+            See all regrantors
+            <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
+          </Link>
         </div>
         <div className="w-full">
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
@@ -159,27 +160,5 @@ function LandingSection() {
         />
       </div>
     </Col>
-  )
-}
-
-function ArrowLink(props: {
-  href: string
-  text: string
-  className?: string
-  color?: string
-}) {
-  const { href, text, className, color } = props
-  return (
-    <Link
-      href={href}
-      className={clsx(
-        'flex items-center justify-end gap-2 text-sm font-semibold hover:underline',
-        color ? `text-${color}-600` : 'text-white',
-        className
-      )}
-    >
-      {text}
-      <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
-    </Link>
   )
 }
