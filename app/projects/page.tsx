@@ -107,7 +107,7 @@ function LandingSection() {
           icon={<ArrowPathIcon className="h-7 w-7" />}
           title="Regranting"
           description="Lets donors to outsource their donation decisions to regrantors of their choice."
-          url="/rounds/regrants?tab=about"
+          url="/about#regranting"
         />
         <FeatureCard
           icon={<ArrowTrendingUpIcon className="h-7 w-7" />}
