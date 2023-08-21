@@ -23,14 +23,14 @@ export async function BottomNavBar() {
   const txns = await getTxnsByUser(supabase, user?.id ?? '')
   const navigationOptions = [
     { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
+    { name: 'People', href: '/people' },
     {
       name: user ? 'Profile' : 'Login',
       href: user ? `/${profile?.username}` : '/login',
     },
     {
-      name: 'Charity',
-      href: '/charity',
+      name: 'Topics',
+      href: '/topics',
     },
     {
       name: 'Create',

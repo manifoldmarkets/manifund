@@ -1,17 +1,12 @@
 'use client'
 import { Transition, Dialog } from '@headlessui/react'
-import { PlusIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, UserGroupIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, Fragment } from 'react'
 import { Item } from './bottom-nav-bar'
-import {
-  HomeIcon,
-  HeartIcon,
-  InformationCircleIcon,
-  UserCircleIcon,
-} from '@heroicons/react/24/outline'
+import { HomeIcon, TagIcon, UserCircleIcon } from '@heroicons/react/24/outline'
 
 const itemClass =
   'sm:hover:bg-gray-200 block w-full py-1 px-3 text-center sm:hover:text-orange-600 transition-colors'
@@ -22,9 +17,9 @@ function findIcon(name: string) {
   return (
     {
       Home: HomeIcon,
-      About: InformationCircleIcon,
+      People: UserGroupIcon,
       Profile: UserCircleIcon,
-      Charity: HeartIcon,
+      Topics: TagIcon,
       Create: PlusIcon,
     }[name] ?? UserCircleIcon
   )
