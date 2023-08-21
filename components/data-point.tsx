@@ -11,8 +11,8 @@ export function DataPoint(props: {
     <Col>
       <span
         className={clsx(
-          'text-lg font-semibold text-gray-900 sm:text-xl',
-          theme === 'white' ? 'text-white' : 'text-gray-600'
+          'text-lg font-semibold sm:text-xl',
+          theme === 'white' ? 'text-white' : 'text-orange-600'
         )}
       >
         {value}
