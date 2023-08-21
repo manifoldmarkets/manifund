@@ -1,4 +1,4 @@
-import { isBefore } from 'date-fns'
+import { differenceInDays, isBefore } from 'date-fns'
 import { NextResponse } from 'next/server'
 import { createAdminClient } from './_db'
 import { getAmountRaised } from '@/utils/math'
@@ -24,7 +24,12 @@ export default async function handler() {
   const now = new Date()
   const proposalsPastDeadline = proposals?.filter((project) => {
     const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
-    return isBefore(closeDate, now) && project.type === 'grant'
+    return (
+      isBefore(closeDate, now) &&
+      project.type === 'grant' &&
+      // Only send notifs once per week
+      differenceInDays(closeDate, now) % 7 === 0
+    )
   })
   for (const project of proposalsPastDeadline ?? []) {
     await closeGrant(
@@ -45,9 +50,7 @@ async function closeGrant(
 ) {
   const amountRaised = getAmountRaised(project, bids)
   const GENERIC_NOTIF_TEMPLATE_ID = 32825293
-  console.log('PROJECT', project.title)
   if (amountRaised >= project.min_funding) {
-    console.log('to be accepted')
     if (!project.signed_agreement) {
       await sendTemplateEmail(
         GENERIC_NOTIF_TEMPLATE_ID,
@@ -74,7 +77,6 @@ async function closeGrant(
       )
     }
   } else {
-    console.log('rejected')
     await supabase
       .rpc('reject_grant', {
         project_id: project.id,
