@@ -21,48 +21,90 @@ import { listMiniTopics } from '@/db/topic'
 
 export const revalidate = 60
 
+const featuredRegrantorIds = [
+  '647c9b3c-65ce-40cf-9464-ac02c741aacd', // Evan
+  'b11620f2-fdc7-414c-8a63-9ddee17ee669', // Marcus
+  '74f76b05-0e51-407e-82c3-1fb19518933c', // Gavriel
+  '8aa331b7-3602-4001-9bc6-2b71b1c8ddd1', // Renan
+]
+
+const featuredProjectIds = [
+  '9b699e2a-da36-1214-7489-cfd6032f4824', // Miti UVC
+  '51b9e659-2486-5f9b-bf49-342b095580ce', // Vector Steering
+  '39d6e7d5-bb12-41a2-ceaf-71fa618385d5', // Joseph Bloom
+]
+
 export default async function Projects() {
   const supabase = createServerClient()
-  const [user, projects, rounds, regrantors] = await Promise.all([
+  const [user, projects, regrantors] = await Promise.all([
     getUser(supabase),
     listProjects(supabase),
-    getRounds(supabase),
     getRegranters(supabase),
   ])
-  const regrants = rounds.find((round) => round.title === 'Regrants') as Round
-  const otherRounds = rounds.filter(
-    (round) => round.title !== 'Regrants' && round.title !== 'Independent'
-  )
+  const featuredRegrantors = featuredRegrantorIds.map((id) => {
+    return regrantors.find((regranter) => regranter.id === id)
+  })
+  const featuredProjects = featuredProjectIds.map((id) => {
+    return projects.find((project) => project.id === id)
+  })
   const topicsList = await listMiniTopics(supabase)
   return (
-    <Col className="max-w-4xl gap-12 px-3 py-5 sm:px-6">
+    <Col className="max-w-4xl gap-16 px-3 py-5 sm:px-6">
       {user === null && <LandingSection />}
-      <RegrantsHighlight
-        round={regrants}
-        projects={projects}
-        regrantors={regrantors}
-        loggedIn={user !== null}
-      />
-      <Col className="gap-3">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          All projects
-        </h2>
-        <p className="text-gray-600">
-          Including projects in all stages and from all rounds.
-        </p>
-        <ProjectsDisplay
-          projects={projects}
-          defaultSort={'newest first'}
-          sortOptions={[
-            'votes',
-            'newest first',
-            'oldest first',
-            'price',
-            'percent funded',
-            'number of comments',
-          ]}
-          topicsList={topicsList}
-        />
+      <Col className="items-center justify-between gap-8">
+        <div className="w-full">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            Featured regrantors
+          </h1>
+          <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {featuredRegrantors.map((regrantor, idx) => (
+              <li className={clsx(idx > 2 && 'sm:hidden')} key={regrantor?.id}>
+                <CardlessRegranter regranter={regrantor as Profile} />
+              </li>
+            ))}
+          </ul>
+          <ArrowLink
+            href="/rounds/regrants?tab=regrants"
+            text="See all regrantors"
+            className="mt-5"
+            color="orange"
+          />
+        </div>
+        <div className="w-full">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            Featured projects
+          </h1>{' '}
+          <Col className="w-full items-center">
+            <ul className="mt-5 max-w-2xl divide-y divide-gray-100">
+              {featuredProjects.map((project) => (
+                <li key={project?.id} className="py-3">
+                  <CardlessProject project={project as FullProject} />
+                </li>
+              ))}
+            </ul>
+          </Col>
+        </div>
+        <Col className="gap-3">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+            All projects
+          </h1>
+          <p className="text-gray-600">
+            Including projects in all stages and from all rounds.
+          </p>
+          <ProjectsDisplay
+            projects={projects}
+            defaultSort={'newest first'}
+            sortOptions={[
+              'votes',
+              'newest first',
+              'oldest first',
+              'price',
+              'percent funded',
+              'number of comments',
+            ]}
+            topicsList={topicsList}
+          />
+        </Col>
       </Col>
     </Col>
   )
@@ -120,122 +162,6 @@ function LandingSection() {
   )
 }
 
-const featuredRegrantorIds = [
-  '647c9b3c-65ce-40cf-9464-ac02c741aacd', // Evan
-  'b11620f2-fdc7-414c-8a63-9ddee17ee669', // Marcus
-  '74f76b05-0e51-407e-82c3-1fb19518933c', // Gavriel
-  '8aa331b7-3602-4001-9bc6-2b71b1c8ddd1', // Renan
-]
-
-const featuredProjectIds = [
-  '9b699e2a-da36-1214-7489-cfd6032f4824', // Miti UVC
-  '51b9e659-2486-5f9b-bf49-342b095580ce', // Vector Steering
-  '39d6e7d5-bb12-41a2-ceaf-71fa618385d5', // Joseph Bloom
-]
-
-function RegrantsHighlight(props: {
-  round: Round
-  projects: FullProject[]
-  regrantors: Profile[]
-  loggedIn: boolean
-}) {
-  const { round, projects, regrantors, loggedIn } = props
-  const featuredRegrantors = featuredRegrantorIds.map((id) => {
-    return regrantors.find((regranter) => regranter.id === id)
-  })
-  const featuredProjects = featuredProjectIds.map((id) => {
-    return projects.find((project) => project.id === id)
-  })
-  return (
-    <Col className="gap-12">
-      <Col className="items-center justify-between gap-8">
-        {loggedIn && (
-          <div className="relative isolate flex w-full flex-col gap-4 overflow-hidden rounded-lg py-16">
-            <Image
-              src={round.header_image_url ?? ''}
-              height="500"
-              width="800"
-              alt="Regrants header image"
-              className="absolute inset-0 -z-10 h-full w-full rounded-lg object-cover"
-            />
-            <div
-              className="absolute -top-10 right-1/2 -z-10 mr-10 transform-gpu blur-3xl"
-              aria-hidden="true"
-            >
-              <div
-                className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#ea580c] to-[#e11d48] opacity-80"
-                style={{
-                  clipPath:
-                    'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-                }}
-              />
-              <div
-                className="absolute  left-1/2 top-[-28rem] -z-10 ml-16 translate-x-0 transform-gpu blur-3xl"
-                aria-hidden="true"
-              >
-                <div
-                  className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#ea580c] to-[#e11d48] opacity-80"
-                  style={{
-                    clipPath:
-                      'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-                  }}
-                />
-              </div>
-            </div>
-            <Link
-              href="/rounds/regrants"
-              className="max-w-7xl px-6 sm:px-8 lg:px-10"
-            >
-              <h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Regranting
-              </h2>
-              <p className="max-w-xl leading-7 text-gray-200">
-                {round.subtitle}
-              </p>
-            </Link>
-            <ArrowLink
-              href="/rounds/regrants?tab=about"
-              text="Learn more"
-              className="absolute bottom-5 right-5"
-            />
-          </div>
-        )}
-        <div className="w-full">
-          <DividerHeader text="Featured regrantors" />
-          <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {featuredRegrantors.map((regrantor, idx) => (
-              <li className={clsx(idx > 2 && 'sm:hidden')} key={regrantor?.id}>
-                <CardlessRegranter regranter={regrantor as Profile} />
-              </li>
-            ))}
-          </ul>
-          <ArrowLink
-            href="/rounds/regrants?tab=regrants"
-            text="See all regrantors"
-            className="mt-5"
-            color="orange"
-          />
-        </div>
-        <div className="w-full max-w-2xl">
-          <DividerHeader text="Featured projects" />
-          <ul className="mt-5 divide-y divide-gray-100">
-            {featuredProjects.map((project) => (
-              <li key={project?.id} className="py-3">
-                <CardlessProject project={project as FullProject} />
-              </li>
-            ))}
-          </ul>
-          <ArrowLink
-            href="/rounds/regrants?tab=projects"
-            text="See all projects"
-            color="orange"
-          />
-        </div>
-      </Col>
-    </Col>
-  )
-}
-
 function ArrowLink(props: {
   href: string
   text: string
@@ -255,51 +181,5 @@ function ArrowLink(props: {
       {text}
       <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
     </Link>
-  )
-}
-
-function DividerHeader(props: { text: string }) {
-  const { text } = props
-  return (
-    <div className="relative">
-      <Row className="absolute inset-0 items-center" aria-hidden="true">
-        <div className="w-full border-t border-gray-400" />
-      </Row>
-      <Row className="relative items-center justify-center">
-        <h3 className=" bg-gray-50 p-3 text-center text-xl font-bold text-gray-900">
-          {text}
-        </h3>
-      </Row>
-    </div>
-  )
-}
-
-function Round(props: { round: Round }) {
-  const { round } = props
-  return (
-    <Col key={round.title} className="relative isolate h-full gap-3">
-      <div className="relative aspect-[16/9] sm:aspect-[2/1]">
-        <Image
-          src={round.header_image_url ?? ''}
-          height="500"
-          width="800"
-          alt=""
-          className="aspect-[16/9] w-full rounded-2xl bg-gray-100 object-cover sm:aspect-[2/1] lg:aspect-[3/2]"
-        />
-      </div>
-      <Col className="justify-between">
-        <div className="group relative">
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:underline lg:text-xl">
-            <a href={`/rounds/${round.slug}`}>
-              <span className="absolute inset-0" />
-              {round.title}
-            </a>
-          </h3>
-          <p className="mt-3 text-sm leading-6 text-gray-600">
-            {round.subtitle}
-          </p>
-        </div>
-      </Col>
-    </Col>
   )
 }
