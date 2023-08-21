@@ -178,7 +178,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
               <Col className="gap-2 pl-5">
                 <p>
                   (a) the Recipient uses any of the Grant for purposes other
-                  than those for which they have been awarded
+                  than those for which they have been awarded.
                 </p>
                 <p>
                   (b) all activities associated with the Project are not run in
@@ -188,15 +188,18 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
                   consistent with the good name and reputation of the Charity.
                 </p>
                 <p>
-                  (c) the Charity considers that the Recipient has not made
-                  satisfactory progress with the delivery of the Project.
+                  (c) the Charity reasonably considers that the Recipient has
+                  not made satisfactory progress with the delivery of the
+                  Project, in which case any repayment shall be no greater than
+                  the unspent balance of the grant.
                 </p>
                 <p>
                   (d) the Recipient provides the Charity with any materially
                   misleading or inaccurate information.
                 </p>
                 <p>
-                  (e) the Recipient ceases to work on the Project for any reason
+                  (e) the Recipient ceases to work on the Project for any
+                  reason.
                 </p>
                 <p>
                   (f) the Recipient fails to comply with any of the terms and
@@ -241,27 +244,6 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
           </tr>
           <tr className=" font-bold">
             <td className="pr-10 pt-6 ">6</td>
-            <td className="pt-6 ">Communication</td>
-          </tr>
-          <tr>
-            <td />
-            <td className="flex flex-col gap-2">
-              <p>
-                6.1 The Recipient agrees not to make any press release, media
-                announcement, any other major public relations activity in
-                respect of the Grant or the relationship between the parties
-                without the prior written consent of the Charity, such consent
-                not to be unreasonably withheld.
-              </p>
-              <p>
-                6.2 The Recipient may make general and non-detailed references
-                to the Charity’s support of the Recipient during the course of
-                the Project.
-              </p>
-            </td>
-          </tr>
-          <tr className=" font-bold">
-            <td className="pr-10 pt-6 ">7</td>
             <td className="pt-6 ">Limitation of Liability</td>
           </tr>
           <tr>
@@ -282,7 +264,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 ">8</td>
+            <td className="pr-10 pt-6 ">7</td>
             <td className="pt-6 ">Personal taxes</td>
           </tr>
           <tr>
@@ -299,7 +281,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 ">9</td>
+            <td className="pr-10 pt-6 ">8</td>
             <td className="pt-6 ">Federal tax law compliance</td>
           </tr>
           <tr>
@@ -314,7 +296,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 text-gray-900">10</td>
+            <td className="pr-10 pt-6 text-gray-900">9</td>
             <td className="pt-6 text-gray-900">No employment</td>
           </tr>
           <tr>
@@ -325,7 +307,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 text-gray-900">11</td>
+            <td className="pr-10 pt-6 text-gray-900">10</td>
             <td className="pt-6 text-gray-900">Publications; License</td>
           </tr>
           <tr>
@@ -345,7 +327,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 text-gray-900">12</td>
+            <td className="pr-10 pt-6 text-gray-900">11</td>
             <td className="pt-6 text-gray-900">No Agency</td>
           </tr>
           <tr>
@@ -360,7 +342,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
             </td>
           </tr>
           <tr className="font-bold">
-            <td className="pr-10 pt-6 text-gray-900">13</td>
+            <td className="pr-10 pt-6 text-gray-900">12</td>
             <td className="pt-6 text-gray-900">Terrorist Activity</td>
           </tr>
           <tr>
@@ -371,7 +353,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 text-gray-900">14</td>
+            <td className="pr-10 pt-6 text-gray-900">13</td>
             <td className="pt-6 text-gray-900">Variations</td>
           </tr>
           <tr>
@@ -382,7 +364,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 text-gray-900">15</td>
+            <td className="pr-10 pt-6 text-gray-900">14</td>
             <td className="pt-6 text-gray-900">Entire agreement</td>
           </tr>
           <tr>
@@ -394,7 +376,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 ">16</td>
+            <td className="pr-10 pt-6 ">15</td>
             <td className="pt-6 ">Governing Law</td>
           </tr>
           <tr>
