@@ -9,7 +9,6 @@ export function SelectTopics(props: {
   setSelectedTopics: (topics: MiniTopic[]) => void
 }) {
   const { topicsList, selectedTopics, setSelectedTopics } = props
-  console.log('selectedTopics from select component', selectedTopics)
   return (
     <Row className="flex-wrap gap-1">
       {topicsList.map((topic) => {

@@ -23,7 +23,10 @@ export async function listFullTopics(supabase: SupabaseClient) {
 }
 
 export async function listMiniTopics(supabase: SupabaseClient) {
-  const { data, error } = await supabase.from('topics').select('title, slug')
+  const { data, error } = await supabase
+    .from('topics')
+    .select('title, slug')
+    .contains('data', JSON.stringify({ open: true }))
   if (error) {
     throw error
   }
