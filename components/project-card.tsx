@@ -4,13 +4,14 @@ import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { getAmountRaised } from '@/utils/math'
 import { FullProject, Project, ProjectTransfer } from '@/db/project'
 import Link from 'next/link'
-import { CheckBadgeIcon } from '@heroicons/react/24/solid'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
 import {
   ChatBubbleLeftEllipsisIcon,
   ChevronUpDownIcon,
   CurrencyDollarIcon,
+  EnvelopeIcon,
+  CheckBadgeIcon,
 } from '@heroicons/react/20/solid'
 import { orderBy } from 'lodash'
 import { Tag, TopicTag } from './tags'
@@ -18,7 +19,6 @@ import { UserAvatarAndBadge } from './user-link'
 import { Card } from './card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
-import { EnvelopeIcon } from '@heroicons/react/24/solid'
 import { getSponsoredAmount } from '@/utils/constants'
 import { MiniTopic } from '@/db/topic'
 
