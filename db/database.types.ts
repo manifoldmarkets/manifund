@@ -397,7 +397,6 @@ export interface Database {
           description: Json | null
           header_image_url: string
           slug: string
-          subtitle: string | null
           title: string
         }
         Insert: {
@@ -405,7 +404,6 @@ export interface Database {
           description?: Json | null
           header_image_url: string
           slug: string
-          subtitle?: string | null
           title: string
         }
         Update: {
@@ -413,7 +411,6 @@ export interface Database {
           description?: Json | null
           header_image_url?: string
           slug?: string
-          subtitle?: string | null
           title?: string
         }
         Relationships: []

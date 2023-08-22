@@ -62,7 +62,7 @@ function findIcon(name: string, isCurrentPage: boolean) {
       return <WrenchIcon className={styling} />
     case 'About':
       return <InformationCircleIcon className={styling} />
-    case 'Topics':
+    case 'Causes':
       return <TagIcon className={styling} />
     case 'People':
       return <UserGroupIcon className={styling} />

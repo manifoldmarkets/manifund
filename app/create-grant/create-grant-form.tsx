@@ -479,7 +479,7 @@ export function CreateGrantForm(props: {
         <TextEditor editor={reasoningEditor} />
       </Col>
       <Col className="gap-1">
-        <label>Relevant topics</label>
+        <label>Cause areas</label>
         <SelectTopics
           topicsList={topicsList}
           selectedTopics={selectedTopics}

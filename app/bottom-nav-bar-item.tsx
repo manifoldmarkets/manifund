@@ -19,7 +19,7 @@ function findIcon(name: string) {
       Home: HomeIcon,
       People: UserGroupIcon,
       Profile: UserCircleIcon,
-      Topics: TagIcon,
+      Causes: TagIcon,
       Create: PlusIcon,
     }[name] ?? UserCircleIcon
   )
