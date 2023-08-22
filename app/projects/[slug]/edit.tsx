@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation'
 import { Col } from '@/components/layout/col'
 import { MiniTopic } from '@/db/topic'
 import { SelectTopics } from '@/components/select-topics'
-import { uniq } from 'lodash'
+import { isAdmin } from '@/db/txn'
 
 export function Edit(props: {
   project: ProjectWithTopics
@@ -30,7 +30,7 @@ export function Edit(props: {
   const [saving, setSaving] = useState(false)
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
-  if (!user || user.id !== project.creator) {
+  if (!user || (!isAdmin(user) && user.id !== project.creator)) {
     return null
   }
 
@@ -117,7 +117,7 @@ export function Edit(props: {
           </Row>
         </Col>
       ) : (
-        <Row className=" justify-end">
+        <Row className="justify-end">
           <IconButton size="sm" onClick={() => setShowEditor(true)}>
             <Tooltip text="Edit project">
               <div className="h-10 w-10 rounded-full bg-orange-500 hover:bg-orange-600">

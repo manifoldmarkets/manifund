@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateProjectTopics } from '@/db/topic'
-import { createEdgeClient } from './_db'
+import { createAdminClient, createEdgeClient } from './_db'
+import { isAdmin } from '@/db/txn'
 
 export const config = {
   runtime: 'edge',
@@ -22,9 +23,10 @@ type EditProjectProps = {
 export default async function handler(req: NextRequest) {
   const { projectId, title, subtitle, description, topicSlugs } =
     (await req.json()) as EditProjectProps
-  const supabase = createEdgeClient(req)
-  const resp = await supabase.auth.getUser()
+  const supabaseEdge = createEdgeClient(req)
+  const resp = await supabaseEdge.auth.getUser()
   const user = resp.data.user
+  const supabase = isAdmin(user) ? createAdminClient() : supabaseEdge
   if (!user) return NextResponse.error()
   const { error } = await supabase
     .from('projects')

@@ -49,6 +49,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const creatorEmail = userProfile?.regranter_status
     ? await getUserEmail(createAdminClient(), project.creator)
     : undefined
+  const userIsAdmin = user ? isAdmin(user) : false
   return (
     <>
       <ProjectDisplay
@@ -60,8 +61,9 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         creatorEmail={creatorEmail}
         userProfile={userProfile ?? undefined}
         topicsList={topicsList}
+        userIsAdmin={userIsAdmin}
       />
-      {isAdmin(user) && <CloseBidding project={project} />}
+      {userIsAdmin && <CloseBidding project={project} />}
     </>
   )
 }
