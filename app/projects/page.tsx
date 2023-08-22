@@ -135,16 +135,16 @@ function LandingSection() {
 }
 
 const featuredRegrantorIds = [
-  '647c9b3c-65ce-40cf-9464-ac02c741aacd', // Evan
+  '75420de8-7e37-4971-bb29-9bfada0c453b', // Leopold
   'b11620f2-fdc7-414c-8a63-9ddee17ee669', // Marcus
-  '74f76b05-0e51-407e-82c3-1fb19518933c', // Gavriel
+  'aa7c88dc-7311-4577-8cd3-c58a0d41fc31', // Joel
   '8aa331b7-3602-4001-9bc6-2b71b1c8ddd1', // Renan
 ]
 
-const featuredProjectIds = [
-  '9b699e2a-da36-1214-7489-cfd6032f4824', // Miti UVC
-  '51b9e659-2486-5f9b-bf49-342b095580ce', // Vector Steering
-  '39d6e7d5-bb12-41a2-ceaf-71fa618385d5', // Joseph Bloom
+const featuredProjectSlugs = [
+  'design-and-testing-of-broad-spectrum-antivirals',
+  'compute-funding-for-seri-mats-llm-alignment-research',
+  'forecasting--treaty-on-artificial-intelligence-safety-and-cooperation-taisc-',
 ]
 
 function RegrantsHighlight(props: {
@@ -157,8 +157,8 @@ function RegrantsHighlight(props: {
   const featuredRegrantors = featuredRegrantorIds.map((id) => {
     return regrantors.find((regranter) => regranter.id === id)
   })
-  const featuredProjects = featuredProjectIds.map((id) => {
-    return projects.find((project) => project.id === id)
+  const featuredProjects = featuredProjectSlugs.map((slug) => {
+    return projects.find((project) => project.slug === slug)
   })
   return (
     <Col className="gap-12">
