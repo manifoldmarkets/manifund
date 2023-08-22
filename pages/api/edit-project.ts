@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { updateProjectTopics } from '@/db/topic'
+import { updateProjectCauses } from '@/db/cause'
 import { createAdminClient, createEdgeClient } from './_db'
 import { isAdmin } from '@/db/txn'
 
@@ -17,11 +17,11 @@ type EditProjectProps = {
   title: string
   subtitle: string
   description: string
-  topicSlugs: string[]
+  causeSlugs: string[]
 }
 
 export default async function handler(req: NextRequest) {
-  const { projectId, title, subtitle, description, topicSlugs } =
+  const { projectId, title, subtitle, description, causeSlugs } =
     (await req.json()) as EditProjectProps
   const supabaseEdge = createEdgeClient(req)
   const resp = await supabaseEdge.auth.getUser()
@@ -39,6 +39,6 @@ export default async function handler(req: NextRequest) {
   if (error) {
     console.error('saveText', error)
   }
-  await updateProjectTopics(supabase, topicSlugs, projectId)
+  await updateProjectCauses(supabase, causeSlugs, projectId)
   return NextResponse.json('success')
 }

@@ -161,8 +161,8 @@ export default async function Admin() {
                 <td>{project.min_funding}</td>
                 <AddTags
                   projectId={project.id}
-                  topicSlug={'gcr'}
-                  currentTopicSlugs={project.topics.map((topic) => topic.slug)}
+                  causeSlug={'gcr'}
+                  currentCauseSlugs={project.causes.map((cause) => cause.slug)}
                 />
               </tr>
             )

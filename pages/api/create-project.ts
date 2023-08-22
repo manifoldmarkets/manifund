@@ -5,7 +5,7 @@ import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { projectSlugify } from '@/utils/formatting'
 import { Database, Json } from '@/db/database.types'
-import { updateProjectTopics } from '@/db/topic'
+import { updateProjectCauses } from '@/db/cause'
 
 export const config = {
   runtime: 'edge',
@@ -27,7 +27,7 @@ type CreateProjectProps = {
   auction_close: string
   stage: Database['public']['Tables']['projects']['Row']['stage']
   type: Database['public']['Tables']['projects']['Row']['type']
-  topicSlugs: string[]
+  causeSlugs: string[]
 }
 
 export default async function handler(req: NextRequest) {
@@ -42,7 +42,7 @@ export default async function handler(req: NextRequest) {
     auction_close,
     stage,
     type,
-    topicSlugs,
+    causeSlugs,
   } = (await req.json()) as CreateProjectProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
@@ -69,7 +69,7 @@ export default async function handler(req: NextRequest) {
     signed_agreement: false,
   }
   await supabase.from('projects').insert([project]).throwOnError()
-  await updateProjectTopics(supabase, topicSlugs, project.id)
+  await updateProjectCauses(supabase, causeSlugs, project.id)
   await giveCreatorShares(supabase, id, user.id)
   if (stage === 'active' && type === 'cert') {
     await addBid(

@@ -11,7 +11,7 @@ import { BidAndProfile } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
 import { ProfileAndBids } from '@/db/profile'
 import { FullProject } from '@/db/project'
-import { MiniTopic } from '@/db/topic'
+import { MiniCause } from '@/db/cause'
 import { Txn, TxnAndProfiles } from '@/db/txn'
 import {
   calculateCashBalance,
@@ -38,7 +38,7 @@ export function ProjectDisplay(props: {
   comments: CommentAndProfile[]
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]
-  topicsList: MiniTopic[]
+  causesList: MiniCause[]
   userProfile?: ProfileAndBids
   creatorEmail?: string
   userIsAdmin?: boolean
@@ -51,7 +51,7 @@ export function ProjectDisplay(props: {
     projectTxns,
     userProfile,
     creatorEmail,
-    topicsList,
+    causesList,
     userIsAdmin,
   } = props
   const userSpendableFunds = userProfile
@@ -143,7 +143,7 @@ export function ProjectDisplay(props: {
           </div>
         )}
         {(isOwnProject || userIsAdmin) && (
-          <Edit project={project} topicsList={topicsList} />
+          <Edit project={project} causesList={causesList} />
         )}
         {project.stage === 'proposal' && (
           <>

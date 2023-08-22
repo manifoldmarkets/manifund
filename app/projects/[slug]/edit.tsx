@@ -4,7 +4,7 @@ import { Button, IconButton } from '@/components/button'
 import { useSupabase } from '@/db/supabase-provider'
 import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
-import { ProjectWithTopics } from '@/db/project'
+import { ProjectWithCauses } from '@/db/project'
 import { useState } from 'react'
 import { PencilIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
@@ -12,21 +12,21 @@ import { Tooltip } from '@/components/tooltip'
 import { Input } from '@/components/input'
 import { useRouter } from 'next/navigation'
 import { Col } from '@/components/layout/col'
-import { MiniTopic } from '@/db/topic'
-import { SelectTopics } from '@/components/select-topics'
+import { MiniCause } from '@/db/cause'
+import { SelectCauses } from '@/components/select-causes'
 import { isAdmin } from '@/db/txn'
 
 export function Edit(props: {
-  project: ProjectWithTopics
-  topicsList: MiniTopic[]
+  project: ProjectWithCauses
+  causesList: MiniCause[]
 }) {
-  const { project, topicsList } = props
+  const { project, causesList } = props
   const { session } = useSupabase()
   const user = session?.user
   const [showEditor, setShowEditor] = useState(false)
   const [title, setTitle] = useState(project.title)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
-  const [selectedTopics, setSelectedTopics] = useState(project.topics)
+  const [selectedCauses, setSelectedCauses] = useState(project.causes)
   const [saving, setSaving] = useState(false)
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
@@ -47,7 +47,7 @@ export function Edit(props: {
         title,
         subtitle,
         description,
-        topicSlugs: selectedTopics.map((topic) => topic.slug),
+        causeSlugs: selectedCauses.map((cause) => cause.slug),
       }),
     })
     setShowEditor(false)
@@ -89,11 +89,11 @@ export function Edit(props: {
             <TextEditor editor={editor} />
           </Col>
           <Col className="gap-1">
-            <label>Topics</label>
-            <SelectTopics
-              topicsList={topicsList}
-              selectedTopics={selectedTopics}
-              setSelectedTopics={setSelectedTopics}
+            <label>Causes</label>
+            <SelectCauses
+              causesList={causesList}
+              selectedCauses={selectedCauses}
+              setSelectedCauses={setSelectedCauses}
             />
           </Col>
           <Row className="mt-3 justify-center gap-5">

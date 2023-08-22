@@ -8,7 +8,7 @@ import { getTxnsByProject, getTxnsByUser } from '@/db/txn'
 import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
 import { ProjectDisplay } from './project-display'
-import { listMiniTopics } from '@/db/topic'
+import { listMiniCauses } from '@/db/cause'
 
 export const revalidate = 0
 
@@ -37,14 +37,14 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     comments,
     projectBids,
     projectTxns,
-    topicsList,
+    causesList,
   ] = await Promise.all([
     user ? await getProfileAndBidsById(supabase, user.id) : null,
     user ? getTxnsByUser(supabase, user.id) : [],
     getCommentsByProject(supabase, project.id),
     getBidsByProject(supabase, project.id),
     getTxnsByProject(supabase, project.id),
-    listMiniTopics(supabase),
+    listMiniCauses(supabase),
   ])
   const creatorEmail = userProfile?.regranter_status
     ? await getUserEmail(createAdminClient(), project.creator)
@@ -60,7 +60,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         projectTxns={projectTxns}
         creatorEmail={creatorEmail}
         userProfile={userProfile ?? undefined}
-        topicsList={topicsList}
+        causesList={causesList}
         userIsAdmin={userIsAdmin}
       />
       {userIsAdmin && <CloseBidding project={project} />}

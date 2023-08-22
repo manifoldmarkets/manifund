@@ -6,10 +6,10 @@ import { useState } from 'react'
 
 export function AddTags(props: {
   projectId: string
-  topicSlug: string
-  currentTopicSlugs: string[]
+  causeSlug: string
+  currentCauseSlugs: string[]
 }) {
-  const { projectId, topicSlug, currentTopicSlugs } = props
+  const { projectId, causeSlug, currentCauseSlugs } = props
   const { supabase } = useSupabase()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -21,13 +21,13 @@ export function AddTags(props: {
         onClick={async () => {
           setIsSubmitting(true)
           await supabase
-            .from('project_topics')
-            .insert({ project_id: projectId, topic_slug: topicSlug })
+            .from('project_causes')
+            .insert({ project_id: projectId, cause_slug: causeSlug })
           router.refresh()
           setIsSubmitting(false)
         }}
       >
-        add {topicSlug}
+        add {causeSlug}
       </Button>
     </td>
   )

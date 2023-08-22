@@ -1,7 +1,6 @@
 'use client'
 import { FullProject } from '@/db/project'
 import { ProjectCard } from '@/components/project-card'
-import { MiniTopic } from '@/db/topic'
 
 export function ProjectGroup(props: {
   projects: FullProject[]
@@ -15,7 +14,7 @@ export function ProjectGroup(props: {
           key={project.id}
           project={project}
           valuation={prices ? prices[project.id] : undefined}
-          topics={project.topics}
+          causes={project.causes}
         />
       ))}
     </div>
