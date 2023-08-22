@@ -41,6 +41,7 @@ export function ProjectDisplay(props: {
   topicsList: MiniTopic[]
   userProfile?: ProfileAndBids
   creatorEmail?: string
+  userIsAdmin?: boolean
 }) {
   const {
     project,
@@ -51,6 +52,7 @@ export function ProjectDisplay(props: {
     userProfile,
     creatorEmail,
     topicsList,
+    userIsAdmin,
   } = props
   const userSpendableFunds = userProfile
     ? userProfile.accreditation_status && project.type === 'cert'
@@ -140,7 +142,9 @@ export function ProjectDisplay(props: {
             </Description>
           </div>
         )}
-        {isOwnProject && <Edit project={project} topicsList={topicsList} />}
+        {(isOwnProject || userIsAdmin) && (
+          <Edit project={project} topicsList={topicsList} />
+        )}
         {project.stage === 'proposal' && (
           <>
             <Divider />
