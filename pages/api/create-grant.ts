@@ -11,7 +11,7 @@ import { JSONContent } from '@tiptap/react'
 import { calculateCharityBalance } from '@/utils/math'
 import { getTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
-import { updateProjectTopics } from '@/db/topic'
+import { updateProjectCauses } from '@/db/cause'
 
 export const config = {
   runtime: 'edge',
@@ -33,7 +33,7 @@ type GrantProps = {
   recipientEmail?: string
   recipientName?: string
   recipientUsername?: string
-  topicSlugs: string[]
+  causeSlugs: string[]
 }
 
 export default async function handler(req: NextRequest) {
@@ -48,7 +48,7 @@ export default async function handler(req: NextRequest) {
     recipientEmail,
     recipientName,
     recipientUsername,
-    topicSlugs,
+    causeSlugs,
   } = (await req.json()) as GrantProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
@@ -170,6 +170,6 @@ export default async function handler(req: NextRequest) {
     console.log('invalid inputs 2')
     return NextResponse.error()
   }
-  await updateProjectTopics(supabase, topicSlugs, project.id)
+  await updateProjectCauses(supabase, causeSlugs, project.id)
   return NextResponse.json(project)
 }

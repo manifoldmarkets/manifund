@@ -17,8 +17,8 @@ import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
 import { compareDesc, compareAsc } from 'date-fns'
 import { Row } from './layout/row'
-import { MiniTopic, Topic } from '@/db/topic'
-import { TopicTag } from './tags'
+import { MiniCause, Cause } from '@/db/cause'
+import { CauseTag } from './tags'
 import { Col } from './layout/col'
 
 type SortOption =
@@ -45,18 +45,18 @@ const DEFAULT_SORT_OPTIONS = [
 
 export function ProjectsDisplay(props: {
   projects: FullProject[]
-  topicsList: MiniTopic[]
+  causesList: MiniCause[]
   sortOptions?: SortOption[]
   defaultSort?: SortOption
   hideRound?: boolean
   noFilter?: boolean
 }) {
-  const { projects, sortOptions, defaultSort, topicsList, noFilter } = props
+  const { projects, sortOptions, defaultSort, causesList, noFilter } = props
   const prices = getPrices(projects)
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
-  const [includedTopics, setIncludedTopics] = useState<Topic[]>([])
+  const [includedCauses, setIncludedCauses] = useState<Cause[]>([])
   const [search, setSearch] = useState<string>('')
-  const filteredProjects = filterProjects(projects, includedTopics)
+  const filteredProjects = filterProjects(projects, includedCauses)
   const sortedProjects = sortProjects(
     noFilter ? projects : filteredProjects,
     prices,
@@ -121,13 +121,13 @@ export function ProjectsDisplay(props: {
       </div>
       {!noFilter && (
         <div className="relative w-full">
-          <Listbox value={includedTopics} onChange={setIncludedTopics} multiple>
+          <Listbox value={includedCauses} onChange={setIncludedCauses} multiple>
             {({ open }) => (
-              <TopicFilterSelect
-                includedTopics={includedTopics}
-                setIncludedTopics={setIncludedTopics}
+              <CauseFilterSelect
+                includedCauses={includedCauses}
+                setIncludedCauses={setIncludedCauses}
                 open={open}
-                topics={topicsList}
+                causes={causesList}
               />
             )}
           </Listbox>
@@ -232,12 +232,12 @@ function sortProjects(
   return projects
 }
 
-function filterProjects(projects: FullProject[], includedTopics: Topic[]) {
-  if (includedTopics.length === 0) return projects
+function filterProjects(projects: FullProject[], includedCauses: Cause[]) {
+  if (includedCauses.length === 0) return projects
   return projects.filter((project) => {
-    return project.topics.some((topic) => {
-      return includedTopics.some((includedTopic) => {
-        return topic.slug === includedTopic.slug
+    return project.causes.some((cause) => {
+      return includedCauses.some((includedCause) => {
+        return cause.slug === includedCause.slug
       })
     })
   })
@@ -331,29 +331,29 @@ function SortSelect(props: {
   )
 }
 
-function TopicFilterSelect(props: {
-  includedTopics: Topic[]
-  setIncludedTopics: (topics: Topic[]) => void
+function CauseFilterSelect(props: {
+  includedCauses: Cause[]
+  setIncludedCauses: (causes: Cause[]) => void
   open: boolean
-  topics: MiniTopic[]
+  causes: MiniCause[]
 }) {
-  const { includedTopics, setIncludedTopics, open, topics } = props
+  const { includedCauses, setIncludedCauses, open, causes } = props
   return (
     <div>
       <div>
         <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-xs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:text-base sm:leading-6">
           <Row className="flex-wrap gap-1">
             <span className="text-gray-500">Include</span>
-            {includedTopics.length === 0 ? (
+            {includedCauses.length === 0 ? (
               ' all causes'
             ) : (
               <>
-                {includedTopics.map((topic) => {
+                {includedCauses.map((cause) => {
                   return (
-                    <TopicTag
-                      topicTitle={topic.title}
-                      topicSlug={topic.slug}
-                      key={topic.slug}
+                    <CauseTag
+                      causeTitle={cause.title}
+                      causeSlug={cause.slug}
+                      key={cause.slug}
                       noLink
                     />
                   )
@@ -379,33 +379,33 @@ function TopicFilterSelect(props: {
         <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="relative w-full cursor-pointer select-none py-2 pl-3 pr-9 text-sm text-gray-900 hover:bg-orange-500 hover:text-white">
             <button
-              onClick={() => setIncludedTopics([])}
+              onClick={() => setIncludedCauses([])}
               className="w-full text-left"
             >
-              All topics
+              All causes
             </button>
-            {includedTopics.length === 0 ? (
+            {includedCauses.length === 0 ? (
               <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-white">
                 <CheckIcon className="h-5 w-5" aria-hidden="true" />
               </span>
             ) : null}
           </div>
-          {topics.map((topic) => (
+          {causes.map((cause) => (
             <Listbox.Option
-              key={topic.title}
+              key={cause.title}
               className={({ active }) =>
                 clsx(
                   active ? 'bg-orange-500 text-white' : 'text-gray-900',
                   'relative cursor-pointer select-none py-2 pl-3 pr-9'
                 )
               }
-              value={topic}
+              value={cause}
             >
               {({ selected, active }) => (
                 <>
-                  <TopicTag
-                    topicTitle={topic.title}
-                    topicSlug={topic.slug}
+                  <CauseTag
+                    causeTitle={cause.title}
+                    causeSlug={cause.slug}
                     noLink
                   />
                   {selected ? (

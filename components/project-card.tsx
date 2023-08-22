@@ -14,21 +14,21 @@ import {
   CheckBadgeIcon,
 } from '@heroicons/react/20/solid'
 import { orderBy } from 'lodash'
-import { Tag, TopicTag } from './tags'
+import { Tag, CauseTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { Card } from './card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { getSponsoredAmount } from '@/utils/constants'
-import { MiniTopic } from '@/db/topic'
+import { MiniCause } from '@/db/cause'
 
 export function ProjectCard(props: {
   project: FullProject
-  topics: MiniTopic[]
+  causes: MiniCause[]
   valuation?: number
   creatorEmail?: string
 }) {
-  const { project, topics, valuation } = props
+  const { project, causes, valuation } = props
   const amountRaised = getAmountRaised(project, project.bids, project.txns)
   const firstDonorId =
     project.stage === 'proposal'
@@ -58,11 +58,11 @@ export function ProjectCard(props: {
           <p className="text-xs text-gray-500 sm:text-sm">{project.blurb}</p>
         </Link>
         <Row className="mb-1 flex-wrap gap-1">
-          {topics?.map((topic) => (
-            <TopicTag
-              key={topic.slug}
-              topicTitle={topic.title}
-              topicSlug={topic.slug}
+          {causes?.map((cause) => (
+            <CauseTag
+              key={cause.slug}
+              causeTitle={cause.title}
+              causeSlug={cause.slug}
             />
           ))}
         </Row>

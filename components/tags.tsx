@@ -7,7 +7,6 @@ import {
   XCircleIcon,
   CheckCircleIcon,
   CurrencyDollarIcon,
-  ArrowPathIcon,
   PencilIcon,
   BuildingLibraryIcon,
   GlobeEuropeAfricaIcon,
@@ -71,7 +70,7 @@ export function RoundTag(props: { roundTitle: string; roundSlug?: string }) {
   )
 }
 
-const TOPIC_ICONS = {
+const CAUSE_ICONS = {
   tais: <LuBrainCircuit className="h-3 w-3" />,
   regrants: <BiDonateHeart className="h-3 w-3" />,
   'acx-mini-grants': <TbCrystalBall className="h-3 w-3 stroke-[2.2px]" />,
@@ -86,14 +85,14 @@ const TOPIC_ICONS = {
   forecasting: <ArrowTrendingUpIcon className="h-3 w-3 stroke-2" />,
 } as { [key: string]: JSX.Element }
 
-export function TopicTag(props: {
-  topicTitle: string
-  topicSlug: string
+export function CauseTag(props: {
+  causeTitle: string
+  causeSlug: string
   noLink?: boolean
   className?: string
 }) {
-  const { topicTitle, topicSlug, noLink, className } = props
-  const topicIcon = TOPIC_ICONS[topicSlug] ?? <BiHeart className="h-3 w-3" />
+  const { causeTitle, causeSlug, noLink, className } = props
+  const causeIcon = CAUSE_ICONS[causeSlug] ?? <BiHeart className="h-3 w-3" />
   if (noLink) {
     return (
       <div
@@ -102,21 +101,21 @@ export function TopicTag(props: {
           className
         )}
       >
-        {topicIcon}
-        <span className="font-light">{topicTitle}</span>
+        {causeIcon}
+        <span className="font-light">{causeTitle}</span>
       </div>
     )
   }
   return (
     <Link
-      href={`/topics/${topicSlug}`}
+      href={`/causes/${causeSlug}`}
       className={clsx(
         'flex max-h-5 max-w-fit flex-1 items-center gap-1 whitespace-nowrap rounded-full bg-gray-100 px-2 text-xs font-semibold leading-5 text-gray-800 hover:bg-gray-200 hover:decoration-2',
         className
       )}
     >
-      {topicIcon}
-      <span className="font-light">{topicTitle}</span>
+      {causeIcon}
+      <span className="font-light">{causeTitle}</span>
     </Link>
   )
 }

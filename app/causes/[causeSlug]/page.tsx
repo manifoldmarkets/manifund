@@ -1,7 +1,7 @@
 import { createServerClient } from '@/db/supabase-server'
-import { FullProject, getFullProjectsByTopic } from '@/db/project'
+import { FullProject, getFullProjectsByCause } from '@/db/project'
 import Image from 'next/image'
-import { getTopic, listMiniTopics } from '@/db/topic'
+import { getCause, listMiniCauses } from '@/db/cause'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { getAmountRaised } from '@/utils/math'
 import { Row } from '@/components/layout/row'
@@ -11,43 +11,43 @@ import { formatMoney } from '@/utils/formatting'
 export const revalidate = 60
 
 export async function generateMetadata(props: {
-  params: { topicSlug: string }
+  params: { causeSlug: string }
 }) {
-  const { topicSlug } = props.params
+  const { causeSlug } = props.params
   const supabase = createServerClient()
-  const topic = await getTopic(supabase, topicSlug)
+  const cause = await getCause(supabase, causeSlug)
   return {
-    title: topic.slug,
+    title: cause.slug,
   }
 }
 
-export default async function TopicPage(props: {
-  params: { topicSlug: string }
+export default async function CausePage(props: {
+  params: { causeSlug: string }
 }) {
-  const { topicSlug } = props.params
+  const { causeSlug } = props.params
   const supabase = createServerClient()
-  const topic = await getTopic(supabase, topicSlug)
-  const topicsList = await listMiniTopics(supabase)
-  const projects = await getFullProjectsByTopic(supabase, topic.slug)
+  const cause = await getCause(supabase, causeSlug)
+  const causesList = await listMiniCauses(supabase)
+  const projects = await getFullProjectsByCause(supabase, cause.slug)
   return (
     <div className="bg-dark-200 max-w-4xl p-3">
-      {topic.header_image_url && (
+      {cause.header_image_url && (
         <Image
-          src={topic.header_image_url}
+          src={cause.header_image_url}
           width={1000}
           height={500}
           className="relative aspect-[3/1] w-full flex-shrink-0 rounded bg-white object-cover"
           alt="round header image"
         />
       )}
-      <h1 className="my-3 text-2xl font-bold lg:text-3xl">{topic.title}</h1>
-      <TopicData projects={projects} />
-      <ProjectsDisplay projects={projects} topicsList={topicsList} noFilter />
+      <h1 className="my-3 text-2xl font-bold lg:text-3xl">{cause.title}</h1>
+      <CauseData projects={projects} />
+      <ProjectsDisplay projects={projects} causesList={causesList} noFilter />
     </div>
   )
 }
 
-function TopicData(props: { projects: FullProject[] }) {
+function CauseData(props: { projects: FullProject[] }) {
   const { projects } = props
   const numActiveProjects = projects.filter(
     (project) => project.stage === 'active'

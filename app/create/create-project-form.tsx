@@ -14,8 +14,8 @@ import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
-import { MiniTopic } from '@/db/topic'
-import { SelectTopics } from '@/components/select-topics'
+import { MiniCause } from '@/db/cause'
+import { SelectCauses } from '@/components/select-causes'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -33,8 +33,8 @@ const DESCRIPTION_OUTLINE = `
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
 
-export function CreateProjectForm(props: { topicsList: MiniTopic[] }) {
-  const { topicsList } = props
+export function CreateProjectForm(props: { causesList: MiniCause[] }) {
+  const { causesList } = props
   const { session } = useSupabase()
   const router = useRouter()
   const [title, setTitle] = useState<string>('')
@@ -45,7 +45,7 @@ export function CreateProjectForm(props: { topicsList: MiniTopic[] }) {
     format(add(new Date(), { months: 1 }), 'yyyy-MM-dd')
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [selectedTopics, setSelectedTopics] = useState<MiniTopic[]>([])
+  const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
 
   let errorMessage = null
@@ -90,7 +90,7 @@ export function CreateProjectForm(props: { topicsList: MiniTopic[] }) {
         auction_close: verdictDate,
         stage: 'proposal',
         type: 'grant',
-        topicSlugs: selectedTopics.map((topic) => topic.slug),
+        causeSlugs: selectedCauses.map((cause) => cause.slug),
       }),
     })
     const newProject = await response.json()
@@ -241,10 +241,10 @@ export function CreateProjectForm(props: { topicsList: MiniTopic[] }) {
       </Col>
       <Col className="gap-1">
         <label>Cause areas</label>
-        <SelectTopics
-          topicsList={topicsList}
-          selectedTopics={selectedTopics}
-          setSelectedTopics={setSelectedTopics}
+        <SelectCauses
+          causesList={causesList}
+          selectedCauses={selectedCauses}
+          setSelectedCauses={setSelectedCauses}
         />
       </Col>
       <Button

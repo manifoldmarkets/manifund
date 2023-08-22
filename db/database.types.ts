@@ -55,6 +55,30 @@ export interface Database {
           }
         ]
       }
+      causes: {
+        Row: {
+          data: Json | null
+          description: Json | null
+          header_image_url: string
+          slug: string
+          title: string
+        }
+        Insert: {
+          data?: Json | null
+          description?: Json | null
+          header_image_url: string
+          slug: string
+          title: string
+        }
+        Update: {
+          data?: Json | null
+          description?: Json | null
+          header_image_url?: string
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           commenter: string
@@ -143,31 +167,31 @@ export interface Database {
         }
         Relationships: []
       }
-      project_topics: {
+      project_causes: {
         Row: {
+          cause_slug: string
           project_id: string
-          topic_slug: string
         }
         Insert: {
+          cause_slug: string
           project_id: string
-          topic_slug: string
         }
         Update: {
+          cause_slug?: string
           project_id?: string
-          topic_slug?: string
         }
         Relationships: [
           {
-            foreignKeyName: "project_topics_project_id_fkey"
+            foreignKeyName: "project_causes_cause_slug_fkey"
+            columns: ["cause_slug"]
+            referencedRelation: "causes"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "project_causes_project_id_fkey"
             columns: ["project_id"]
             referencedRelation: "projects"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "project_topics_topic_slug_fkey"
-            columns: ["topic_slug"]
-            referencedRelation: "topics"
-            referencedColumns: ["slug"]
           }
         ]
       }
@@ -390,30 +414,6 @@ export interface Database {
             referencedColumns: ["id"]
           }
         ]
-      }
-      topics: {
-        Row: {
-          data: Json | null
-          description: Json | null
-          header_image_url: string
-          slug: string
-          title: string
-        }
-        Insert: {
-          data?: Json | null
-          description?: Json | null
-          header_image_url: string
-          slug: string
-          title: string
-        }
-        Update: {
-          data?: Json | null
-          description?: Json | null
-          header_image_url?: string
-          slug?: string
-          title?: string
-        }
-        Relationships: []
       }
       txns: {
         Row: {
