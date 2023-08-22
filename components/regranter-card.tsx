@@ -89,9 +89,11 @@ export function CardlessRegranter(props: { regranter: Profile }) {
         <h1 className="text-center font-semibold text-gray-900 group-hover:underline">
           {regranter.full_name}
         </h1>
-        <span className="text-center text-sm font-normal leading-6 text-gray-600 line-clamp-3">
-          {regranter.bio}
-        </span>
+        <Col className="h-full justify-center">
+          <span className="text-center text-sm font-normal leading-6 text-gray-600 line-clamp-3">
+            {regranter.bio}
+          </span>
+        </Col>
       </Link>
     </Col>
   )
