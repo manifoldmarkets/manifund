@@ -336,24 +336,24 @@ WITH CHECK (auth.uid() = voter_id)
 
 
 -- Project tags join table
-CREATE TABLE public.project_topics (
+CREATE TABLE public.project_causes (
   id int8 NOT NULL,
   project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
   tag_slug text NOT NULL REFERENCES public.tags(slug) ON DELETE CASCADE,
   PRIMARY KEY (id)
 );
 
-CREATE POLICY "Enable read access for all users" ON "public"."project_topics"
+CREATE POLICY "Enable read access for all users" ON "public"."project_causes"
 AS PERMISSIVE FOR SELECT
 TO public
 USING (true)
 
-CREATE POLICY "Enable delete for users if they created the project" ON "public"."project_topics"
+CREATE POLICY "Enable delete for users if they created the project" ON "public"."project_causes"
 AS PERMISSIVE FOR DELETE
 TO public
 USING (EXISTS (SELECT 1 FROM public.projects WHERE id = project_id AND creator = auth.uid() ))
 
-CREATE POLICY "Enable insert for authenticated users only" ON "public"."project_topics"
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."project_causes"
 AS PERMISSIVE FOR INSERT
 TO authenticated
 
