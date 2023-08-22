@@ -17,8 +17,6 @@ import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
 import { compareDesc, compareAsc } from 'date-fns'
 import { Row } from './layout/row'
-import { sortBy } from 'lodash'
-import { getSponsoredAmount } from '@/utils/constants'
 import { MiniTopic, Topic } from '@/db/topic'
 import { TopicTag } from './tags'
 import { Col } from './layout/col'
@@ -347,7 +345,7 @@ function TopicFilterSelect(props: {
           <Row className="flex-wrap gap-1">
             <span className="text-gray-500">Include</span>
             {includedTopics.length === 0 ? (
-              ' all topics'
+              ' all causes'
             ) : (
               <>
                 {includedTopics.map((topic) => {
@@ -446,12 +444,4 @@ function getPrices(projects: FullProject[]) {
           )
   })
   return prices
-}
-
-function isRegrantorInitiated(project: FullProject) {
-  const firstDonor =
-    project.stage === 'proposal'
-      ? sortBy(project.bids, 'created_at')[0]?.bidder
-      : sortBy(project.txns, 'created_at')[0]?.from_id
-  return getSponsoredAmount(firstDonor ?? '') !== 0
 }

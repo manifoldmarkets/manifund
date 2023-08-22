@@ -240,7 +240,7 @@ export function CreateProjectForm(props: { topicsList: MiniTopic[] }) {
         />
       </Col>
       <Col className="gap-1">
-        <label>Relevant topics</label>
+        <label>Cause areas</label>
         <SelectTopics
           topicsList={topicsList}
           selectedTopics={selectedTopics}

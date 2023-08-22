@@ -5,8 +5,6 @@ import { sortBy } from 'lodash'
 export type Topic = Database['public']['Tables']['topics']['Row']
 export type FullTopic = Topic & { projects: { stage: string }[] }
 export type MiniTopic = { title: string; slug: string }
-export type ProjectTopicLink =
-  Database['public']['Tables']['project_topics']['Row']
 
 export async function listFullTopics(supabase: SupabaseClient) {
   const { data, error } = await supabase

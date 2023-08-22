@@ -1,12 +1,13 @@
 import { createServerClient } from '@/db/supabase-server'
 import { FullProject, getFullProjectsByTopic } from '@/db/project'
 import Image from 'next/image'
-import { FullTopic, getTopic, listMiniTopics } from '@/db/topic'
+import { getTopic, listMiniTopics } from '@/db/topic'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { getAmountRaised } from '@/utils/math'
 import { Row } from '@/components/layout/row'
 import { DataPoint } from '@/components/data-point'
 import { formatMoney } from '@/utils/formatting'
+
 export const revalidate = 60
 
 export async function generateMetadata(props: {
