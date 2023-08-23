@@ -147,7 +147,7 @@ export function ProjectDisplay(props: {
             <Description>
               <RichContent
                 content={project.description}
-                className="sm:text-md text-sm"
+                className="lg:text-sm"
               />
             </Description>
           </div>
