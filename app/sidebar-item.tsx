@@ -8,11 +8,8 @@ import {
   WrenchIcon,
   InformationCircleIcon,
   HomeIcon,
-  ChatBubbleOvalLeftEllipsisIcon,
-  HeartIcon,
-  NewspaperIcon,
   UserGroupIcon,
-  TagIcon,
+  GlobeAltIcon,
 } from '@heroicons/react/24/outline'
 import { SiteLink } from '@/components/site-link'
 
@@ -63,7 +60,7 @@ function findIcon(name: string, isCurrentPage: boolean) {
     case 'About':
       return <InformationCircleIcon className={styling} />
     case 'Causes':
-      return <TagIcon className={styling} />
+      return <GlobeAltIcon className={styling} />
     case 'People':
       return <UserGroupIcon className={styling} />
     default:
