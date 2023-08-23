@@ -106,7 +106,7 @@ export function ProjectDisplay(props: {
             projectSlug={project.slug}
           />
         )}
-      <Col className="gap-4 px-3">
+      <div className="flex flex-col gap-4 px-4 pt-5">
         <ProjectCardHeader
           projectType={project.type}
           projectTransfer={
@@ -126,12 +126,11 @@ export function ProjectDisplay(props: {
               votes={project.project_votes}
               setCommentPrompt={setSpecialCommentPrompt}
             />
-            <Col>
-              <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
-                {project.title}
-              </h2>
-            </Col>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {project.title}
+            </h2>
           </Row>
+          <p className="text-sm italic text-gray-600">{project.blurb}</p>
           <Row className="mb-1 flex-wrap gap-1">
             {project.causes?.map((cause) => (
               <CauseTag
@@ -141,12 +140,15 @@ export function ProjectDisplay(props: {
               />
             ))}
           </Row>
-          <p className="text-sm text-gray-600">{project.blurb}</p>
         </Col>
+
         {project.description && (
           <div className="px-3">
             <Description>
-              <RichContent content={project.description} className="text-sm" />
+              <RichContent
+                content={project.description}
+                className="lg:text-sm"
+              />
             </Description>
           </div>
         )}
@@ -199,7 +201,7 @@ export function ProjectDisplay(props: {
             specialCommentPrompt={specialCommentPrompt}
           />
         </div>
-      </Col>
+      </div>
     </>
   )
 }

@@ -59,7 +59,7 @@ export function Comment(props: {
         )}
       </Row>
       <div className="relative left-8 w-11/12">
-        <RichContent content={comment.content} className="text-sm" />
+        <RichContent content={comment.content} className="lg:text-sm" />
       </div>
     </div>
   )
