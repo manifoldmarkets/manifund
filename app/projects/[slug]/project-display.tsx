@@ -141,7 +141,6 @@ export function ProjectDisplay(props: {
               />
             ))}
           </Row>
-          <p className="text-sm text-gray-600">{project.blurb}</p>
         </Col>
         {project.description && (
           <div className="px-3">
