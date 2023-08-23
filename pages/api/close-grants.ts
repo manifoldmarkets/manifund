@@ -6,6 +6,7 @@ import { Project } from '@/db/project'
 import { Bid } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sendTemplateEmail } from '@/utils/email'
+import { isProd } from '@/db/env'
 
 export const config = {
   runtime: 'edge',
@@ -16,6 +17,9 @@ export const config = {
 }
 
 export default async function handler() {
+  if (!isProd()) {
+    return NextResponse.json('not prod')
+  }
   const supabase = createAdminClient()
   const { data: proposals } = await supabase
     .from('projects')
