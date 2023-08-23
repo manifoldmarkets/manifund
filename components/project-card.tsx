@@ -205,10 +205,19 @@ export function CardlessProject(props: { project: FullProject }) {
         <h3 className="tracking-0 font-semibold leading-6 text-gray-900">
           {project.title}
         </h3>
-        <p className="mt-2 text-sm leading-5 text-gray-600 lg:line-clamp-2">
+        <p className="mt-1 text-sm leading-5 text-gray-600 lg:line-clamp-2">
           {project.blurb}
         </p>
       </Link>
+      <Row className="mb-1 flex-wrap gap-1">
+        {project.causes?.map((cause) => (
+          <CauseTag
+            key={cause.slug}
+            causeTitle={cause.title}
+            causeSlug={cause.slug}
+          />
+        ))}
+      </Row>
     </Col>
   )
 }
