@@ -6,7 +6,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, Fragment } from 'react'
 import { Item } from './bottom-nav-bar'
-import { HomeIcon, TagIcon, UserCircleIcon } from '@heroicons/react/24/outline'
+import {
+  HomeIcon,
+  GlobeAltIcon,
+  UserCircleIcon,
+} from '@heroicons/react/24/outline'
 
 const itemClass =
   'sm:hover:bg-gray-200 block w-full py-1 px-3 text-center sm:hover:text-orange-600 transition-colors'
@@ -19,7 +23,7 @@ function findIcon(name: string) {
       Home: HomeIcon,
       People: UserGroupIcon,
       Profile: UserCircleIcon,
-      Causes: TagIcon,
+      Causes: GlobeAltIcon,
       Create: PlusIcon,
     }[name] ?? UserCircleIcon
   )
