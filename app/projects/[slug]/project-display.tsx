@@ -31,6 +31,7 @@ import { ProjectTabs } from './project-tabs'
 import { ProposalData } from './proposal-data'
 import { ProposalRequirements } from './proposal-requirements'
 import { Vote } from './vote'
+import { CauseTag } from '@/components/tags'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -130,6 +131,15 @@ export function ProjectDisplay(props: {
             </h2>
           </Row>
           <p className="text-sm italic text-gray-600">{project.blurb}</p>
+          <Row className="mb-1 flex-wrap gap-1">
+            {project.causes?.map((cause) => (
+              <CauseTag
+                key={cause.slug}
+                causeTitle={cause.title}
+                causeSlug={cause.slug}
+              />
+            ))}
+          </Row>
         </Col>
 
         {project.description && (
