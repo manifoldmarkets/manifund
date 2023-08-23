@@ -31,7 +31,7 @@ export function ProposalRequirements(props: {
   return (
     <Row
       role="list"
-      className="relative w-full justify-between gap-2 rounded-xl border border-gray-300"
+      className="relative mb-5 w-full justify-between gap-2 rounded-xl border border-gray-300"
     >
       <p className="absolute -top-2 left-2 bg-gray-50 px-2 text-xs text-gray-500">
         Funding requirements
