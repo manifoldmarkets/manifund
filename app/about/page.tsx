@@ -1,9 +1,9 @@
+import { Col } from '@/components/layout/col'
 import { CheckBadgeIcon, EyeIcon } from '@heroicons/react/20/solid'
 import {
   ArrowLongRightIcon,
   BeakerIcon,
   BoltIcon,
-  MagnifyingGlassIcon,
 } from '@heroicons/react/24/solid'
 import { AuctionPlayground } from './auction-playground'
 
@@ -37,12 +37,12 @@ const APROACH_FEATURES = [
 export default function AboutPage() {
   return (
     <>
-      <div className="w-full bg-orange-100 p-10">
-        <h1 className="text-center text-xl font-bold">
-          We design software and organize programs to fund impactful projects.
+      <Col className="w-full gap-10 rounded-b bg-orange-100 p-5 sm:p-10">
+        <h1 className="text-center font-semibold">
+          We design software and organize programs that fund impactful projects.
         </h1>
-        <h2 className="mt-5 text-center">Our approach is...</h2>
-        <div className="mx-auto mt-10 max-w-7xl sm:mt-16">
+        <h2 className="text-center text-4xl font-bold">Our approach is...</h2>
+        <div className="mx-auto max-w-7xl">
           <dl className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2">
             {APROACH_FEATURES.map((feature) => {
               return (
@@ -60,7 +60,7 @@ export default function AboutPage() {
             })}
           </dl>
         </div>
-      </div>
+      </Col>
       <div className="prose mx-auto font-light">
         <h1 className="relative top-5">Our mission</h1>
         <p>
