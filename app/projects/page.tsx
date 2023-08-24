@@ -15,7 +15,7 @@ import { getRegranters } from '@/db/profile'
 import Link from 'next/link'
 import clsx from 'clsx'
 import { CardlessProject } from '@/components/project-card'
-import { CardlessRegranter } from '@/components/regranter-card'
+import { CardlessProfile } from '@/components/profile-card'
 import { listMiniCauses } from '@/db/cause'
 
 export const revalidate = 60
@@ -58,7 +58,7 @@ export default async function Projects() {
           <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
             {featuredRegrantors.map((regrantor, idx) => (
               <li className={clsx(idx > 2 && 'sm:hidden')} key={regrantor?.id}>
-                <CardlessRegranter regranter={regrantor as Profile} />
+                <CardlessProfile profile={regrantor as Profile} />
               </li>
             ))}
           </ul>

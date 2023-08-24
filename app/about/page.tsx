@@ -1,6 +1,9 @@
 import { FeatureCard } from '@/components/feature-card'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
+import { CardlessProfile } from '@/components/profile-card'
+import { getTeamProfiles } from '@/db/profile'
+import { createServerClient } from '@/db/supabase-server'
 import {
   ArrowPathIcon,
   ArrowTrendingUpIcon,
@@ -56,7 +59,9 @@ const FUNDING_MECHANISMS = [
   },
 ]
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const supabase = createServerClient()
+  const teamProfiles = await getTeamProfiles(supabase)
   return (
     <>
       <Col className="w-full gap-10 rounded-b bg-orange-100 p-5 sm:p-10">
@@ -83,7 +88,7 @@ export default function AboutPage() {
           </dl>
         </div>
       </Col>
-      <Col className="w-full gap-10 p-5 sm:p-10">
+      <Col className="w-full gap-10 px-5 py-20 sm:px-10">
         <h1 className="text-center text-3xl font-bold">
           Funding mechanisms we support
         </h1>
@@ -99,6 +104,14 @@ export default function AboutPage() {
               />
             )
           })}
+        </div>
+      </Col>
+      <Col className="w-full gap-5 rounded bg-orange-100 p-5 sm:p-10">
+        <h1 className="text-center text-3xl font-bold">The team</h1>
+        <div className="grid grid-cols-2 gap-20">
+          {teamProfiles.map((profile) => (
+            <CardlessProfile key={profile.id} profile={profile} />
+          ))}
         </div>
       </Col>
       <div className="prose mx-auto font-light">
