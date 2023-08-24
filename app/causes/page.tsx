@@ -27,8 +27,8 @@ function CauseCard(props: { cause: FullCause }) {
     >
       <Image
         src={cause.header_image_url}
-        width={1000}
-        height={500}
+        width={240}
+        height={120}
         className="relative aspect-[3/1] w-full flex-shrink-0 rounded-t bg-white object-cover sm:aspect-[5/3]"
         alt="round header image"
       />
