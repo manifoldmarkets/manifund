@@ -1,6 +1,8 @@
+import { FeatureCard } from '@/components/feature-card'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import {
+  ArrowPathIcon,
   ArrowTrendingUpIcon,
   CheckBadgeIcon,
   EyeIcon,
@@ -10,8 +12,6 @@ import {
   BeakerIcon,
   BoltIcon,
 } from '@heroicons/react/24/solid'
-import clsx from 'clsx'
-import { BiSolidDonateHeart } from 'react-icons/bi'
 import { AuctionPlayground } from './auction-playground'
 
 const APROACH_FEATURES = [
@@ -44,13 +44,15 @@ const APROACH_FEATURES = [
 const FUNDING_MECHANISMS = [
   {
     title: 'Regranting',
-    icon: BiSolidDonateHeart,
-    description: "We're building a platform for regranting.",
+    icon: ArrowPathIcon,
+    description:
+      'Our regranting program puts grantmaking decisions in the hands of domain experts, and allows donors to outsource their donation decisions to experts of their choice.',
   },
   {
     title: 'Impact certificates',
     icon: ArrowTrendingUpIcon,
-    description: 'We support impact certificates.',
+    description:
+      'In the past, we ran two funding rounds using impact certificates, which work like VC-funding, but for non-profits!',
   },
 ]
 
@@ -82,30 +84,22 @@ export default function AboutPage() {
         </div>
       </Col>
       <Col className="w-full gap-10 p-5 sm:p-10">
-        <h1 className="text-center font-semibold">
+        <h1 className="text-center text-3xl font-bold">
           Funding mechanisms we support
         </h1>
-        {FUNDING_MECHANISMS.map((mechanism, index) => {
-          return (
-            <Row
-              className={clsx(
-                'w-full justify-between',
-                index === 1 && 'flex-row-reverse'
-              )}
-            >
-              <mechanism.icon className="h-10 w-10 text-orange-600" />
-              <Col
-                className={clsx(
-                  'w-full justify-between',
-                  index === 0 && 'items-end'
-                )}
-              >
-                <h2 className="text-2xl font-bold">{mechanism.title}</h2>
-                <p className="text-gray-600">{mechanism.description}</p>
-              </Col>
-            </Row>
-          )
-        })}
+        <div className="flex flex-col justify-between gap-3 sm:flex-row">
+          {FUNDING_MECHANISMS.map((mechanism, index) => {
+            return (
+              <FeatureCard
+                key={mechanism.title}
+                icon={<mechanism.icon className="h-7 w-7" />}
+                title={mechanism.title}
+                description={mechanism.description}
+                url="/about#regranting"
+              />
+            )
+          })}
+        </div>
       </Col>
       <div className="prose mx-auto font-light">
         <h1 className="relative top-5">Our mission</h1>
