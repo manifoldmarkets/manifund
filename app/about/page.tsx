@@ -15,6 +15,7 @@ import {
   BeakerIcon,
   BoltIcon,
 } from '@heroicons/react/24/solid'
+import clsx from 'clsx'
 import { sortBy } from 'lodash'
 import Link from 'next/link'
 import { AuctionPlayground } from './auction-playground'
@@ -49,15 +50,17 @@ const APROACH_FEATURES = [
 const FUNDING_MECHANISMS = [
   {
     title: 'Regranting',
-    icon: ArrowPathIcon,
+    icon: <ArrowPathIcon className="h-6 w-6 stroke-2 text-white" />,
     description:
       'Our regranting program puts grantmaking decisions in the hands of domain experts, and allows donors to outsource their donation decisions to experts of their choice.',
+    href: '#regranting',
   },
   {
     title: 'Impact certificates',
-    icon: ArrowTrendingUpIcon,
+    icon: <ArrowTrendingUpIcon className="h-6 w-6 stroke-2 text-white" />,
     description:
       'In the past, we ran two funding rounds using impact certificates, which work like VC-funding, but for non-profits!',
+    href: '#impact-certificates',
   },
 ]
 
@@ -109,19 +112,15 @@ export default function AboutPage() {
         <h1 className="text-center text-3xl font-bold">
           Funding mechanisms we support
         </h1>
-        <div className="flex flex-col justify-between gap-3 sm:flex-row">
-          {FUNDING_MECHANISMS.map((mechanism, index) => {
-            return (
-              <FeatureCard
-                key={mechanism.title}
-                icon={<mechanism.icon className="h-7 w-7" />}
-                title={mechanism.title}
-                description={mechanism.description}
-                url="/about#regranting"
-              />
-            )
-          })}
-        </div>
+        {FUNDING_MECHANISMS.map((mechanism, index) => {
+          return (
+            <FundingMechanism
+              key={mechanism.title}
+              {...mechanism}
+              leftAligned={index === 1}
+            />
+          )
+        })}
       </Col>
       <Col className="w-full gap-5 rounded bg-orange-100 p-5 sm:p-10">
         <h1 className="text-center text-3xl font-bold">The team</h1>
@@ -517,5 +516,33 @@ export default function AboutPage() {
         </div>
       </div>
     </>
+  )
+}
+
+function FundingMechanism(props: {
+  title: string
+  description: string
+  href: string
+  icon: JSX.Element
+  leftAligned?: boolean
+}) {
+  const { title, description, href, icon, leftAligned } = props
+  return (
+    <Link className="group" href={href}>
+      <Row
+        className={clsx(
+          'mb-2 justify-between',
+          leftAligned && 'flex-row-reverse'
+        )}
+      >
+        <h1 className="text-2xl font-bold">{title}</h1>
+        <div className="rounded-lg bg-orange-600 p-2">{icon}</div>
+      </Row>
+      <p className="text-gray-600">{description}</p>
+      <div className="w-full text-right font-semibold text-orange-600 group-hover:underline">
+        Learn more
+        <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
+      </div>
+    </Link>
   )
 }
