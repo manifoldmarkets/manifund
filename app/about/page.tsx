@@ -1,7 +1,7 @@
+import { Avatar } from '@/components/avatar'
 import { FeatureCard } from '@/components/feature-card'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
-import { CardlessProfile } from '@/components/profile-card'
 import { getTeamProfiles } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import {
@@ -15,6 +15,8 @@ import {
   BeakerIcon,
   BoltIcon,
 } from '@heroicons/react/24/solid'
+import { sortBy } from 'lodash'
+import Link from 'next/link'
 import { AuctionPlayground } from './auction-playground'
 
 const APROACH_FEATURES = [
@@ -59,9 +61,24 @@ const FUNDING_MECHANISMS = [
   },
 ]
 
-export default async function AboutPage() {
-  const supabase = createServerClient()
-  const teamProfiles = await getTeamProfiles(supabase)
+const TEAM_MEMBERS = [
+  {
+    name: 'Austin Chen',
+    title: 'Co-founder & CEO',
+    avatarUrl:
+      'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/10bd8a14-4002-47ff-af4a-92b227423a74/avatar',
+    username: 'Austin',
+  },
+  {
+    name: 'Rachel Weinberg',
+    title: 'Co-founder & Engineer',
+    avatarUrl:
+      'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/4de2634d-3802-4141-881e-9ce687f87485/8271a711-1159-0a97-6620-bd082b6ebc3b',
+    username: 'rachel',
+  },
+]
+
+export default function AboutPage() {
   return (
     <>
       <Col className="w-full gap-10 rounded-b bg-orange-100 p-5 sm:p-10">
@@ -108,9 +125,33 @@ export default async function AboutPage() {
       </Col>
       <Col className="w-full gap-5 rounded bg-orange-100 p-5 sm:p-10">
         <h1 className="text-center text-3xl font-bold">The team</h1>
-        <div className="grid grid-cols-2 gap-20">
-          {teamProfiles.map((profile) => (
-            <CardlessProfile key={profile.id} profile={profile} />
+        <div className="grid gap-10 sm:grid-cols-2">
+          {TEAM_MEMBERS.map((person) => (
+            <Col
+              key={person.name}
+              className="h-full cursor-pointer items-center gap-3"
+            >
+              <Row className="justify-center">
+                <Avatar
+                  avatarUrl={person.avatarUrl}
+                  username={person.username}
+                  id=""
+                  size={36}
+                  className="shadow-md"
+                />
+              </Row>
+              <Link
+                href={`/${person.username}`}
+                className="flex h-full flex-col justify-between gap-2"
+              >
+                <h1 className="text-center text-lg font-semibold text-gray-900 group-hover:underline">
+                  {person.name}
+                </h1>
+                <h2 className="text-center text-gray-600 group-hover:underline">
+                  {person.title}
+                </h2>
+              </Link>
+            </Col>
           ))}
         </div>
       </Col>
