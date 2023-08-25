@@ -126,29 +126,19 @@ export default function AboutPage() {
         <h1 className="text-center text-3xl font-bold">The team</h1>
         <div className="grid gap-10 sm:grid-cols-2">
           {TEAM_MEMBERS.map((person) => (
-            <Col
-              key={person.name}
-              className="h-full cursor-pointer items-center gap-3"
-            >
-              <Row className="justify-center">
-                <Avatar
-                  avatarUrl={person.avatarUrl}
-                  username={person.username}
-                  id=""
-                  size={36}
-                  className="shadow-md"
-                />
-              </Row>
-              <Link
-                href={`/${person.username}`}
-                className="flex h-full flex-col justify-between gap-2"
-              >
-                <h1 className="text-center text-lg font-semibold text-gray-900 group-hover:underline">
+            <Col key={person.name} className="items-center gap-3">
+              <Avatar
+                avatarUrl={person.avatarUrl}
+                username={person.username}
+                id=""
+                size={36}
+                className="shadow-md"
+              />
+              <Link href={`/${person.username}`} className="">
+                <h1 className="mb-2 text-center text-lg font-semibold text-gray-900">
                   {person.name}
                 </h1>
-                <h2 className="text-center text-gray-600 group-hover:underline">
-                  {person.title}
-                </h2>
+                <h2 className="text-center text-gray-600">{person.title}</h2>
               </Link>
             </Col>
           ))}
