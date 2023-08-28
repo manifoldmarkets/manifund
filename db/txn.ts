@@ -75,7 +75,7 @@ export async function getAllTxns(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('txns')
     .select(
-      '*, profiles!txns_from_id_fkey(regranter_status), projects(creator, stage)'
+      '*, profiles!txns_from_id_fkey(regranter_status), projects(creator, stage, type)'
     )
   if (error) {
     throw error

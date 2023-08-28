@@ -20,6 +20,7 @@ import { getAllTxns } from '@/db/txn'
 import { uniq } from 'lodash'
 import { DataPoint } from '@/components/data-point'
 import { formatMoney } from '@/utils/formatting'
+import { GrantSizeDistribution } from './stats'
 
 const APROACH_FEATURES = [
   {
@@ -146,6 +147,7 @@ export default async function AboutPage() {
           value={formatMoney(dollarsThroughRegrantors)}
         />
       </Row>
+      <GrantSizeDistribution txns={txns} />
       <Col className="w-full gap-10 px-5 py-20 sm:px-10">
         <h1 className="text-center text-3xl font-bold">
           Funding mechanisms we support
