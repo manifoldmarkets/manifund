@@ -97,15 +97,14 @@ export default async function RegrantingPage() {
           feedback, accountability of decisions, and establishment of a
           regrantor track records. We recognize that not all grants are suited
           for publishing; for now, we recommend such grants be made through
-          other donors, such as the Long Term Future Fund, the Survival and
+          other funders, such as the Long Term Future Fund, the Survival and
           Flourishing Fund, or Open Philanthropy.
         </p>
         <strong>What kinds of projects are eligible for regranting?</strong>
         <br />
         <p>
-          We have no official cause-area restrictions on grants, though we tend
-          to choose regrantors who give to global catastrophic risk mitigation,
-          so this is where most of our grants go.
+          We have no official cause-area restrictions on grants, though most of
+          our regrantors are focused on mitigating global catastrophic risk.
         </p>
         <p>
           We support regrants to registered charities and individuals.
