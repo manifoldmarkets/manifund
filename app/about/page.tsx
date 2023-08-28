@@ -1,9 +1,8 @@
 import { Avatar } from '@/components/avatar'
-import { FeatureCard } from '@/components/feature-card'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
-import { getTeamProfiles } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
+import { categorizeTxn } from '@/utils/math'
 import {
   ArrowPathIcon,
   ArrowTrendingUpIcon,
@@ -16,9 +15,12 @@ import {
   BoltIcon,
 } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
-import { sortBy } from 'lodash'
 import Link from 'next/link'
 import { AuctionPlayground } from './auction-playground'
+import { getAllTxns } from '@/db/txn'
+import { uniq } from 'lodash'
+import { DataPoint } from '@/components/data-point'
+import { formatMoney } from '@/utils/formatting'
 
 const APROACH_FEATURES = [
   {
@@ -81,33 +83,65 @@ const TEAM_MEMBERS = [
   },
 ]
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const supabase = createServerClient()
+  const txns = await getAllTxns(supabase)
+  const usdTxnsToProjects = txns.filter(
+    (txn) => txn.token === 'USD' && txn.projects?.creator === txn.to_id
+  )
+  console.log(usdTxnsToProjects)
+  const dollarsToProjects = usdTxnsToProjects.reduce(
+    (acc, txn) => acc + txn.amount,
+    0
+  )
+  const dollarsThroughRegrantors = usdTxnsToProjects
+    .filter((txn) => txn.profiles?.regranter_status)
+    .reduce((acc, txn) => acc + txn.amount, 0)
+  const numProjectsFunded = uniq(
+    usdTxnsToProjects.map((txn) => txn.project)
+  ).length
   return (
     <>
-      <Col className="w-full gap-10 rounded-b bg-orange-100 p-5 sm:p-10">
-        <h1 className="text-center font-semibold">
+      <Col className="w-full gap-10 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5 sm:p-10">
+        <h1 className="text-center font-semibold text-white">
           We design software and organize programs that fund impactful projects.
         </h1>
-        <h2 className="text-center text-4xl font-bold">Our approach is...</h2>
+        <h2 className="text-center text-4xl font-bold text-white">
+          Our approach is...
+        </h2>
         <div className="mx-auto max-w-7xl">
-          <dl className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2">
+          <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2">
             {APROACH_FEATURES.map((feature) => {
               return (
-                <div key={feature.title} className="relative pl-9">
-                  <dt className="inline font-semibold text-gray-900">
+                <div
+                  key={feature.title}
+                  className="relative rounded-lg bg-white px-4 pt-4 pb-6 pl-10"
+                >
+                  <div className="inline font-semibold text-gray-900">
                     <feature.icon
-                      className="absolute left-1 top-1 h-5 w-5 stroke-2 text-orange-600"
+                      className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-600"
                       aria-hidden="true"
                     />
                     {feature.title}
-                  </dt>{' '}
+                  </div>{' '}
                   <p className="text-sm text-gray-500">{feature.description}</p>
                 </div>
               )
             })}
-          </dl>
+          </div>
         </div>
       </Col>
+      <Row className="justify-between gap-5 px-5 py-10">
+        <DataPoint
+          label="projects funded"
+          value={numProjectsFunded.toString()}
+        />
+        <DataPoint label="to projects" value={formatMoney(dollarsToProjects)} />
+        <DataPoint
+          label="through regrantors"
+          value={formatMoney(dollarsThroughRegrantors)}
+        />
+      </Row>
       <Col className="w-full gap-10 px-5 py-20 sm:px-10">
         <h1 className="text-center text-3xl font-bold">
           Funding mechanisms we support
@@ -122,9 +156,9 @@ export default function AboutPage() {
           )
         })}
       </Col>
-      <Col className="w-full gap-5 rounded bg-orange-100 p-5 sm:p-10">
-        <h1 className="text-center text-3xl font-bold">The team</h1>
-        <div className="grid gap-10 sm:grid-cols-2">
+      <Col className="w-full gap-5 p-5 sm:p-10">
+        <h1 className="text-center text-3xl font-bold">Our team</h1>
+        <div className="grid grid-cols-2 gap-10">
           {TEAM_MEMBERS.map((person) => (
             <Col key={person.name} className="items-center gap-3">
               <Avatar
@@ -132,13 +166,22 @@ export default function AboutPage() {
                 username={person.username}
                 id=""
                 size={36}
-                className="shadow-md"
+                className="hidden shadow-md sm:block"
+              />
+              <Avatar
+                avatarUrl={person.avatarUrl}
+                username={person.username}
+                id=""
+                size={24}
+                className="shadow-md sm:hidden"
               />
               <Link href={`/${person.username}`} className="">
-                <h1 className="mb-2 text-center text-lg font-semibold text-gray-900">
+                <h1 className="mb-2 text-center font-semibold text-gray-900 sm:text-lg">
                   {person.name}
                 </h1>
-                <h2 className="text-center text-gray-600">{person.title}</h2>
+                <h2 className="text-center text-sm text-gray-600 sm:text-base">
+                  {person.title}
+                </h2>
               </Link>
             </Col>
           ))}

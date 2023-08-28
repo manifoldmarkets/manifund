@@ -197,9 +197,9 @@ async function sendAuctionCloseEmails(
       auctionResolutionText,
       bidResolutionText,
     }
-    const BID_RESOLVED_TEMPLATE_ID = 31316141
+    const OFFER_RESOLVED_TEMPLATE_ID = 31316141
     await sendTemplateEmail(
-      BID_RESOLVED_TEMPLATE_ID,
+      OFFER_RESOLVED_TEMPLATE_ID,
       bidderPostmarkVars,
       bid.bidder
     )
