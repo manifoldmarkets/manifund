@@ -2,7 +2,6 @@ import { Avatar } from '@/components/avatar'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { createServerClient } from '@/db/supabase-server'
-import { categorizeTxn } from '@/utils/math'
 import {
   ArrowPathIcon,
   ArrowTrendingUpIcon,
@@ -89,7 +88,6 @@ export default async function AboutPage() {
   const usdTxnsToProjects = txns.filter(
     (txn) => txn.token === 'USD' && txn.projects?.creator === txn.to_id
   )
-  console.log(usdTxnsToProjects)
   const dollarsToProjects = usdTxnsToProjects.reduce(
     (acc, txn) => acc + txn.amount,
     0
@@ -134,11 +132,17 @@ export default async function AboutPage() {
       <Row className="justify-between gap-5 px-5 py-10">
         <DataPoint
           label="projects funded"
+          className="!text-2xl !font-bold sm:!text-3xl"
           value={numProjectsFunded.toString()}
         />
-        <DataPoint label="to projects" value={formatMoney(dollarsToProjects)} />
+        <DataPoint
+          label="to projects"
+          className="!text-2xl !font-bold sm:!text-3xl"
+          value={formatMoney(dollarsToProjects)}
+        />
         <DataPoint
           label="through regrantors"
+          className="!text-2xl !font-bold sm:!text-3xl"
           value={formatMoney(dollarsThroughRegrantors)}
         />
       </Row>

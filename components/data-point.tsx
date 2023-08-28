@@ -5,14 +5,16 @@ export function DataPoint(props: {
   value: string
   label: string
   theme?: string
+  className?: string
 }) {
-  const { value, label, theme } = props
+  const { value, label, theme, className } = props
   return (
     <Col>
       <span
         className={clsx(
           'text-lg font-semibold sm:text-xl',
-          theme === 'white' ? 'text-white' : 'text-orange-600'
+          theme === 'white' ? 'text-white' : 'text-orange-600',
+          className
         )}
       >
         {value}
