@@ -83,7 +83,6 @@ const TEAM_MEMBERS = [
 export default async function AboutPage() {
   const supabase = createServerClient()
   const txns = await getAllTxns(supabase)
-
   return (
     <>
       <Col className="w-full gap-10 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5 sm:p-10">
