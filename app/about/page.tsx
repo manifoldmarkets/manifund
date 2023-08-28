@@ -17,10 +17,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { AuctionPlayground } from './auction-playground'
 import { getAllTxns } from '@/db/txn'
-import { uniq } from 'lodash'
-import { DataPoint } from '@/components/data-point'
-import { formatMoney } from '@/utils/formatting'
-import { GrantSizeDistribution } from './stats'
+import { Stats } from './stats'
 
 const APROACH_FEATURES = [
   {
@@ -86,19 +83,7 @@ const TEAM_MEMBERS = [
 export default async function AboutPage() {
   const supabase = createServerClient()
   const txns = await getAllTxns(supabase)
-  const usdTxnsToProjects = txns.filter(
-    (txn) => txn.token === 'USD' && txn.projects?.creator === txn.to_id
-  )
-  const dollarsToProjects = usdTxnsToProjects.reduce(
-    (acc, txn) => acc + txn.amount,
-    0
-  )
-  const dollarsThroughRegrantors = usdTxnsToProjects
-    .filter((txn) => txn.profiles?.regranter_status)
-    .reduce((acc, txn) => acc + txn.amount, 0)
-  const numProjectsFunded = uniq(
-    usdTxnsToProjects.map((txn) => txn.project)
-  ).length
+
   return (
     <>
       <Col className="w-full gap-10 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5 sm:p-10">
@@ -130,25 +115,8 @@ export default async function AboutPage() {
           </div>
         </div>
       </Col>
-      <Row className="justify-between gap-5 px-5 py-10">
-        <DataPoint
-          label="projects funded"
-          className="!text-2xl !font-bold sm:!text-3xl"
-          value={numProjectsFunded.toString()}
-        />
-        <DataPoint
-          label="to projects"
-          className="!text-2xl !font-bold sm:!text-3xl"
-          value={formatMoney(dollarsToProjects)}
-        />
-        <DataPoint
-          label="through regrantors"
-          className="!text-2xl !font-bold sm:!text-3xl"
-          value={formatMoney(dollarsThroughRegrantors)}
-        />
-      </Row>
-      <GrantSizeDistribution txns={txns} />
-      <Col className="w-full gap-10 px-5 py-20 sm:px-10">
+      <Stats txns={txns} />
+      <Col className="w-full gap-10 px-5 py-5 sm:px-10">
         <h1 className="text-center text-3xl font-bold">
           Funding mechanisms we support
         </h1>
