@@ -3,19 +3,22 @@ import { Col } from '@/components/layout/col'
 import Image from 'next/image'
 import { AdjustmentsHorizontalIcon, PhoneIcon } from '@heroicons/react/20/solid'
 import Link from 'next/link'
-import { Row } from '@/components/layout/row'
+import { useSupabase } from '@/db/supabase-provider'
 
 export default function DonatePage() {
+  const { supabase, session } = useSupabase()
+  const user = session?.user
   return (
-    <div className="p-5">
-      <h1 className="text-center text-3xl font-bold md:text-4xl">
-        Donate to Manifund regranting
-      </h1>
-      <BookCallButton />
-      <Col className="w-full items-center gap-10">
-        <h1 className="text-2xl font-bold">Ways to donate</h1>
+    <div>
+      <div className="grid w-full grid-cols-1 gap-5 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5 sm:grid-cols-2">
+        <div className="flex justify-between sm:h-full sm:flex-col">
+          <h1 className="text-3xl font-bold text-white md:text-4xl">
+            Ways to give
+          </h1>
+          <BookCallButton />
+        </div>
         <div className="mx-auto max-w-7xl">
-          <div className="mx-auto grid max-w-2xl grid-cols-1 gap-6 text-base leading-7 text-gray-600 sm:grid-cols-2">
+          <Col className="mx-auto max-w-2xl gap-6 text-base leading-7 text-gray-600">
             <div className="h-fit rounded-xl bg-gradient-to-tr from-orange-500 to-rose-500 p-1">
               <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 pl-10">
                 <div className="inline font-semibold text-gray-900  ">
@@ -55,9 +58,9 @@ export default function DonatePage() {
                 </div>
               </div>
             </div>
-          </div>
+          </Col>
         </div>
-      </Col>
+      </div>
     </div>
   )
 }
