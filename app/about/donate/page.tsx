@@ -1,20 +1,14 @@
 'use client'
 import { Col } from '@/components/layout/col'
 import Image from 'next/image'
-import {
-  AdjustmentsHorizontalIcon,
-  HeartIcon,
-  PhoneIcon,
-} from '@heroicons/react/20/solid'
-import { useSpring, animated, config, to } from '@react-spring/web'
-import clsx from 'clsx'
-import { PolarAngleAxis } from 'recharts'
+import { AdjustmentsHorizontalIcon, PhoneIcon } from '@heroicons/react/20/solid'
 import { Row } from '@/components/layout/row'
+import Link from 'next/link'
 
 export default function DonatePage() {
   return (
     <Col className="w-full gap-10 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5 sm:p-10">
-      <h1 className="text-center text-4xl font-bold text-white">
+      <h1 className="text-center text-2xl font-bold text-white sm:text-4xl">
         Donate to Manifund regranting
       </h1>
       <BookCallButton />
@@ -62,23 +56,15 @@ export default function DonatePage() {
 }
 
 function BookCallButton() {
-  const { y } = useSpring({
-    from: { y: 0 },
-    to: { y: 1 },
-    loop: true,
-  })
   return (
-    <animated.div
-      style={{
-        transform: y
-          .to({
-            range: [0, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 1],
-            output: [18, 22, 18, 22, 18, 22, 18, 20],
-          })
-          .to((y) => `translate3d(0px, ${y}px, 0px)`),
-      }}
+    <Link
+      className="group flex w-fit items-center gap-1 rounded-lg p-3 text-white ring-2 ring-white hover:bg-white"
+      href="https://calendly.com/rachel-weinberg/manifund-1-1s"
     >
-      <PhoneIcon className="h-4 w-4 rotate-[20deg]" />
-    </animated.div>
+      <PhoneIcon className="h-5 w-5 group-hover:animate-[wiggle_0.1s_cubic-bezier(0.99,0,0.99,2.0)_infinite] group-hover:text-orange-500" />
+      <span className="from-orange-500 to-rose-600 bg-clip-text font-semibold group-hover:bg-gradient-to-r group-hover:text-transparent">
+        Book a call!
+      </span>
+    </Link>
   )
 }
