@@ -15,7 +15,7 @@ import {
 } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { AuctionPlayground } from './auction-playground'
+import Image from 'next/image'
 import { getAllTxns } from '@/db/txn'
 import { Stats } from './stats'
 
@@ -116,9 +116,7 @@ export default async function AboutPage() {
       </Col>
       <Stats txns={txns} />
       <Col className="w-full gap-10 px-5 py-5 sm:px-10">
-        <h1 className="text-center text-3xl font-bold">
-          Funding mechanisms we support
-        </h1>
+        <h1 className="text-center text-3xl font-bold">How we fund projects</h1>
         {FUNDING_MECHANISMS.map((mechanism, index) => {
           return (
             <FundingMechanism
@@ -128,6 +126,20 @@ export default async function AboutPage() {
             />
           )
         })}
+        <Image
+          src="/ManifundProcessHorizontal.png"
+          alt="Manifund funding process diagram"
+          className="mx-auto hidden sm:block"
+          height={1000}
+          width={1000}
+        />
+        <Image
+          src="/ManifundProcessVertical.png"
+          alt="Manifund funding process diagram"
+          className="mx-auto sm:hidden"
+          height={1000}
+          width={1000}
+        />
       </Col>
       <Col className="w-full gap-5 p-5 sm:p-10">
         <h1 className="text-center text-3xl font-bold">Our team</h1>
@@ -213,5 +225,38 @@ function FundingMechanism(props: {
         <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
       </div>
     </Link>
+  )
+}
+
+function FundingProcessDiagram() {
+  return (
+    <Row className="items-center gap-5">
+      <Col className="gap-5">
+        <Step title="Grant applicant posts project" />
+        <Step title="Regrantor posts project" />
+      </Col>
+      <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
+      <Stage title="Proposal" />
+    </Row>
+  )
+}
+
+function Step(props: { title: string; description?: string }) {
+  const { title, description } = props
+  return (
+    <div className="rounded-md bg-white p-3 shadow ring-2 ring-orange-600">
+      <h1 className="text-gray-900">{title}</h1>
+      <p className="text-gray-600">{description}</p>
+    </div>
+  )
+}
+
+function Stage(props: { title: string; description?: string }) {
+  const { title, description } = props
+  return (
+    <div className="rounded-md bg-orange-600 p-5 text-white shadow">
+      <h1 className="text-2xl font-bold">{title}</h1>
+      <p className="text-gray-200">{description}</p>
+    </div>
   )
 }
