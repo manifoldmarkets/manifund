@@ -1,7 +1,7 @@
 import { ArrowLongRightIcon } from '@heroicons/react/20/solid'
 import { AuctionPlayground } from '../auction-playground'
 
-export function ImpactCertsPage() {
+export default function ImpactCertsPage() {
   return (
     <div className="prose mx-auto p-5 font-light">
       <h1 className="relative top-5" id="impact-certificates">
