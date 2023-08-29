@@ -1,6 +1,15 @@
+'use client'
 import { Col } from '@/components/layout/col'
 import Image from 'next/image'
-import { AdjustmentsHorizontalIcon, HeartIcon } from '@heroicons/react/20/solid'
+import {
+  AdjustmentsHorizontalIcon,
+  HeartIcon,
+  PhoneIcon,
+} from '@heroicons/react/20/solid'
+import { useSpring, animated, config, to } from '@react-spring/web'
+import clsx from 'clsx'
+import { PolarAngleAxis } from 'recharts'
+import { Row } from '@/components/layout/row'
 
 export default function DonatePage() {
   return (
@@ -8,6 +17,7 @@ export default function DonatePage() {
       <h1 className="text-center text-4xl font-bold text-white">
         Donate to Manifund regranting
       </h1>
+      <BookCallButton />
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2">
           <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 pl-10">
@@ -23,8 +33,8 @@ export default function DonatePage() {
             </div>
             <p className="text-sm text-gray-500">
               This will be used to onboard new regrantors and to raise the
-              budgets of regrantors with the strongest track records. We may use
-              up to 5% to cover our operations.
+              budgets of regrantors with strong track records. We may use up to
+              5% to cover our operations.
             </p>
           </div>
           <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 pl-10">
@@ -48,5 +58,27 @@ export default function DonatePage() {
         </div>
       </div>
     </Col>
+  )
+}
+
+function BookCallButton() {
+  const { y } = useSpring({
+    from: { y: 0 },
+    to: { y: 1 },
+    loop: true,
+  })
+  return (
+    <animated.div
+      style={{
+        transform: y
+          .to({
+            range: [0, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 1],
+            output: [18, 22, 18, 22, 18, 22, 18, 20],
+          })
+          .to((y) => `translate3d(0px, ${y}px, 0px)`),
+      }}
+    >
+      <PhoneIcon className="h-4 w-4 rotate-[20deg]" />
+    </animated.div>
   )
 }
