@@ -18,7 +18,7 @@ export default function ClientAuth(props: { redirectTo?: string }) {
   }
   const params = useSearchParams()
   const recommendedEmail = params?.get('email')
-  if (!user) {
+  if (user) {
     return (
       <div className="flex h-[70vh] w-full items-center justify-center">
         <div className="relative flex h-20 w-20 animate-spin flex-col items-center justify-center rounded-full bg-orange-200 ">
