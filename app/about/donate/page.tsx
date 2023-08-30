@@ -1,14 +1,35 @@
-'use client'
 import { Col } from '@/components/layout/col'
 import Image from 'next/image'
 import { AdjustmentsHorizontalIcon, PhoneIcon } from '@heroicons/react/20/solid'
 import Link from 'next/link'
-import { useSupabase } from '@/db/supabase-provider'
+import { createServerClient } from '@/db/supabase-server'
+import { getUser } from '@/db/profile'
 import { Row } from '@/components/layout/row'
 
-export default function DonatePage() {
-  const { supabase, session } = useSupabase()
-  const user = session?.user
+const FEATURED_PROJECT_SLUGS = [
+  'optimizing-clinical-metagenomics-and-far-uvc-implementation',
+  'apollo-research-scale-up-interpretability--behavioral-model-evals-research',
+  'holly-elmore-organizing-people-for-a-frontier-ai-moratorium',
+  'introductory-resources-for-singular-learning-theory',
+]
+
+export default async function DonatePage() {
+  const supabase = createServerClient()
+  const user = getUser(supabase)
+  const { data: featuredProjects } = await supabase
+    .from('projects')
+    .select('*, txns(*)')
+    .in('slug', FEATURED_PROJECT_SLUGS)
+    .throwOnError()
+  const regrantorIds = (featuredProjects ?? [])
+    .flatMap((project) => project.txns?.map((txn) => txn.from_id) ?? [])
+    .filter((id) => !!id)
+  const { data: regrantorProfiles } = await supabase
+    .from('profiles')
+    .select('*')
+    .in('id', regrantorIds)
+    .eq('regranter_status', true)
+    .throwOnError()
   return (
     <div>
       <div className="grid w-full grid-cols-1 gap-8 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5 sm:grid-cols-2">
@@ -67,6 +88,7 @@ export default function DonatePage() {
           </Col>
         </div>
       </div>
+      <div className="prose mx-auto mt-10"></div>
       <div className="prose mx-auto mt-10">
         <h2>Why donate through regranting?</h2>
         <ul>
