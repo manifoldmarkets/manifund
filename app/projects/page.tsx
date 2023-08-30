@@ -78,7 +78,10 @@ export default async function Projects() {
             <ul className="mt-5 max-w-2xl divide-y divide-gray-100">
               {featuredProjects.map((project) => (
                 <li key={project?.id} className="py-3">
-                  <CardlessProject project={project as FullProject} />
+                  <CardlessProject
+                    project={project as FullProject}
+                    showFundingBar
+                  />
                 </li>
               ))}
             </ul>

@@ -5,10 +5,12 @@ import Link from 'next/link'
 import { createServerClient } from '@/db/supabase-server'
 import { getUser } from '@/db/profile'
 import { Row } from '@/components/layout/row'
+import { CardlessProject } from '@/components/project-card'
+import { FullProject } from '@/db/project'
 
 const FEATURED_PROJECT_SLUGS = [
-  'optimizing-clinical-metagenomics-and-far-uvc-implementation',
   'apollo-research-scale-up-interpretability--behavioral-model-evals-research',
+  'optimizing-clinical-metagenomics-and-far-uvc-implementation',
   'holly-elmore-organizing-people-for-a-frontier-ai-moratorium',
   'introductory-resources-for-singular-learning-theory',
 ]
@@ -18,9 +20,14 @@ export default async function DonatePage() {
   const user = getUser(supabase)
   const { data: featuredProjects } = await supabase
     .from('projects')
-    .select('*, txns(*)')
+    .select(
+      'title, creator, slug, blurb, profiles(*), txns(*), causes(title, slug)'
+    )
     .in('slug', FEATURED_PROJECT_SLUGS)
     .throwOnError()
+  const sortedFeaturedProjects = FEATURED_PROJECT_SLUGS.map((slug) =>
+    featuredProjects?.find((project) => project.slug === slug)
+  ).filter((project) => !!project) as FullProject[]
   const regrantorIds = (featuredProjects ?? [])
     .flatMap((project) => project.txns?.map((txn) => txn.from_id) ?? [])
     .filter((id) => !!id)
@@ -88,7 +95,24 @@ export default async function DonatePage() {
           </Col>
         </div>
       </div>
-      <div className="prose mx-auto mt-10"></div>
+      <div className="prose mx-auto mt-10">
+        <h2>Some of our past grants</h2>
+      </div>
+      <ul className="mx-auto mt-5 max-w-xl divide-y divide-gray-200">
+        {sortedFeaturedProjects.map((project) => (
+          <li key={project.title} className="py-3">
+            <CardlessProject
+              key={project.slug}
+              project={project}
+              regrantors={
+                regrantorProfiles?.filter((regrantor) =>
+                  project.txns.find((txn) => txn.from_id === regrantor.id)
+                ) ?? []
+              }
+            />
+          </li>
+        ))}
+      </ul>
       <div className="prose mx-auto mt-10">
         <h2>Why donate through regranting?</h2>
         <ul>
