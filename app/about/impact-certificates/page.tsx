@@ -1,5 +1,5 @@
 import { ArrowLongRightIcon } from '@heroicons/react/20/solid'
-import { AuctionPlayground } from '../auction-playground'
+import { AuctionPlayground } from './auction-playground'
 
 export default function ImpactCertsPage() {
   return (

@@ -39,7 +39,7 @@ export default async function DonatePage() {
     .throwOnError()
   return (
     <div>
-      <div className="grid w-full grid-cols-1 gap-8 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5 sm:grid-cols-2">
+      <div className="grid w-full grid-cols-1 gap-8 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-8 sm:grid-cols-2">
         <Col className="flex flex-col justify-between gap-4 sm:h-full">
           <h1 className="text-3xl font-bold text-white md:text-4xl">
             Ways to give
@@ -57,7 +57,7 @@ export default async function DonatePage() {
         </Col>
         <div className="mx-auto max-w-7xl">
           <Col className="mx-auto max-w-2xl gap-6 text-base leading-7 text-gray-600">
-            <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 pl-10">
+            <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 pl-10 shadow">
               <div className="inline font-semibold text-gray-900  ">
                 <Image
                   className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-600"
@@ -74,7 +74,7 @@ export default async function DonatePage() {
                 to 5% to cover our operations.
               </p>
             </div>
-            <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 pl-10">
+            <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 pl-10 shadow">
               <div className="inline font-semibold text-gray-900">
                 <AdjustmentsHorizontalIcon
                   className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-500"

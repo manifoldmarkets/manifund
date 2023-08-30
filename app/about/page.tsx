@@ -113,6 +113,13 @@ export default async function AboutPage() {
             })}
           </div>
         </div>
+        <Link
+          href="/about/donate"
+          className="w-full text-right text-sm font-semibold text-white"
+        >
+          Learn about donating
+          <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
+        </Link>
       </Col>
       <Stats txns={txns} />
       <Col className="w-full gap-10 px-5 py-5 sm:px-10">
