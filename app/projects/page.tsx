@@ -110,49 +110,55 @@ export default async function Projects() {
 
 function LandingSection() {
   return (
-    <Col className="gap-4">
-      <div className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 p-8">
-        <Row>
-          <div>
-            <p className="text-3xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
-              Impactful giving,
-            </p>
-            <p className="text-right text-3xl font-medium text-white shadow-orange-500 text-shadow-lg sm:text-4xl">
-              efficient funding.
-            </p>
-            <p className="mt-3 text-center text-xs text-white sm:mt-5 sm:text-sm">
-              Manifund offers charitable funding infrastructure designed to
-              improve incentives, efficiency, and transparency.
-            </p>
-            <Row className="mt-5 justify-center gap-3 text-sm">
-              <Link
-                className="group rounded-lg bg-white py-2 px-3 text-white ring-2 ring-white hover:bg-transparent"
-                href="/login"
-              >
-                <span className="bg-gradient-to-r from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold text-transparent group-hover:text-white">
-                  Get started
-                </span>
-              </Link>
-              <Link
-                className="group flex w-fit items-center gap-1 rounded-lg p-2 text-white ring-2 ring-white hover:bg-white"
-                href="/login"
-              >
-                <span className="from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold group-hover:bg-gradient-to-r group-hover:text-transparent">
-                  About regranting
-                </span>
-                <ArrowLongRightIcon className="h-4 w-4 stroke-2 text-white group-hover:text-rose-500" />
-              </Link>
-            </Row>
-          </div>
-          <Image
-            className="hidden w-48 lg:block"
-            src="/SolidWhiteManifox.png"
-            alt="Manifox"
-            width={1000}
-            height={1000}
-          />
-        </Row>
+    <div className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 px-4 py-12 sm:px-8">
+      <div className="relative mx-auto mb-5 w-fit rounded-full px-3 py-1 text-xs leading-6 ring-1 ring-white ring-opacity-20 hover:bg-white hover:bg-opacity-20">
+        <span className="text-white text-opacity-50">
+          We&apos;re fundraising.{' '}
+        </span>
+        <a href="#" className="font-semibold text-white">
+          Read more <ArrowLongRightIcon className="inline h-4 w-4 stroke-2" />
+        </a>
       </div>
-    </Col>
+      <Row>
+        <div>
+          <p className="text-3xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
+            Impactful giving,
+          </p>
+          <p className="text-right text-3xl font-medium text-white shadow-orange-500 text-shadow-lg sm:text-4xl">
+            efficient funding.
+          </p>
+          <p className="mt-4 mb-8 text-center text-xs text-white sm:mt-5 sm:text-sm">
+            Manifund offers charitable funding infrastructure designed to
+            improve incentives, efficiency, and transparency.
+          </p>
+          <Row className="justify-center gap-3 text-sm">
+            <Link
+              className="group rounded-lg bg-white py-2 px-3 text-white ring-2 ring-white hover:bg-transparent"
+              href="/login"
+            >
+              <span className="bg-gradient-to-r from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold text-transparent group-hover:text-white">
+                Get started
+              </span>
+            </Link>
+            <Link
+              className="group flex w-fit items-center gap-1 rounded-lg p-2 text-white ring-2 ring-white hover:bg-white"
+              href="/login"
+            >
+              <span className="from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold group-hover:bg-gradient-to-r group-hover:text-transparent">
+                About regranting
+              </span>
+              <ArrowLongRightIcon className="h-4 w-4 stroke-2 text-white group-hover:text-rose-500" />
+            </Link>
+          </Row>
+        </div>
+        <Image
+          className="hidden w-48 lg:block"
+          src="/SolidWhiteManifox.png"
+          alt="Manifox"
+          width={1000}
+          height={1000}
+        />
+      </Row>
+    </div>
   )
 }
