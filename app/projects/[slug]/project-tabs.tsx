@@ -39,7 +39,7 @@ export function ProjectTabs(props: {
     window.scrollTo({ top: 0 })
   }, [project.id])
   const searchParams = useSearchParams() ?? new URLSearchParams()
-  const currentTabName = searchParams.get('tab')
+  const currentTabId = searchParams.get('tab')
   const trades = calculateFullTrades(txns)
   const creator = project.profiles
   const shareholders =
@@ -56,9 +56,8 @@ export function ProjectTabs(props: {
   const tabs = [
     {
       name: 'Comments',
-      href: '?tab=comments',
+      id: 'comments',
       count: comments.length,
-      current: currentTabName === 'comments' || currentTabName === null,
       display: (
         <Comments
           project={project}
@@ -81,9 +80,8 @@ export function ProjectTabs(props: {
         project.stage === 'active' || project.type === 'grant'
           ? 'Offers'
           : 'Bids',
-      href: '?tab=bids',
+      id: 'bids',
       count: bids.length,
-      current: currentTabName === 'bids',
       display: (
         <Bids
           bids={bids}
@@ -98,9 +96,8 @@ export function ProjectTabs(props: {
   if (shareholders) {
     tabs.push({
       name: 'Shareholders',
-      href: '?tab=shareholders',
+      id: 'shareholders',
       count: shareholders.length,
-      current: currentTabName === 'shareholders',
       display: (
         <Shareholders
           shareholders={shareholders}
@@ -120,14 +117,13 @@ export function ProjectTabs(props: {
     )
     tabs.push({
       name: 'Donations',
-      href: '?tab=donations',
+      id: 'donations',
       count: donations.length,
-      current: currentTabName === 'donations',
       display: <DonationsHistory donations={donations} />,
     })
   }
 
-  return <Tabs tabs={tabs} />
+  return <Tabs tabs={tabs} currentTabId={currentTabId} />
 }
 
 export type Shareholder = {
