@@ -157,6 +157,43 @@ export default async function DonatePage() {
             </li>
           ))}
         </ul>
+        <div className="prose mx-auto mt-10">
+          <h2>FAQ</h2>
+          <strong>
+            If I donate to a regrantor or a fund, can I maintain veto power over
+            grants they give?
+          </strong>
+          <p>
+            No. We think the extra coordination involved would be costly for
+            donors, regrantors, and grantees, without meaningfully improving the
+            quality of our grants.
+          </p>
+          <strong>Are donations to Manifund tax deductible?</strong>
+          <p>
+            Yes if you&apos;re in the US! Manifold for Charity, our
+            organization, is a registered 501(c)(3) nonprofit.
+          </p>
+          <strong>Why do take a 5% cut of donations?</strong>
+          <p>
+            We need to cover our costs somehow, and we see two main ways of
+            doing that: taking a small cut of all donations, or fundraising
+            separately for our operations. We choose the former because we get a
+            better signal on the value of our work by pricing it in. If the work
+            we do building and maintaining the site, onboarding and managing
+            regrantors, and processing grants doesn&apos;t add as much value to
+            donors as it costs, then that&apos;s a useful signal that we
+            shouldn&apos;t be doing it anymore.
+          </p>
+          <strong>
+            What if I&apos;m interested in donating through regranting, but
+            I&apos;m interested in a different cause from any of your
+            regrantors?
+          </strong>
+          <p>
+            Book a time to talk to us! We might be able to set you up with
+            regrantors you trust who have expertise in your area of choice.
+          </p>
+        </div>
       </div>
     </div>
   )
