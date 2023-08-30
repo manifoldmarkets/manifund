@@ -22,8 +22,8 @@ export default function DonatePage() {
             and our regrantors and the amount of time and thought you want to
             put into your giving.
           </p>
-          <Row className="w-full justify-center gap-5">
-            <SignInButton />
+          <Row className="mt-5 w-full justify-center gap-5">
+            {!user && <SignInButton />}
             <BookCallButton />
           </Row>
         </Col>
@@ -74,12 +74,12 @@ export default function DonatePage() {
 function BookCallButton() {
   return (
     <a
-      className="group flex w-fit items-center gap-1 rounded-lg bg-white p-2 pr-3 text-white ring-2 ring-white hover:bg-transparent sm:p-3 sm:pr-4"
+      className="group flex w-fit items-center gap-1 rounded-lg bg-white p-2 pr-3 text-white ring-2 ring-white hover:bg-transparent"
       href="https://calendly.com/rachel-weinberg/manifund-1-1s"
       target="_blank"
     >
-      <PhoneIcon className="h-4 w-4 text-orange-500 group-hover:animate-[wiggle_0.12s_cubic-bezier(0.99,0,0.99,3.0)_infinite] group-hover:text-white md:h-5 md:w-5" />
-      <span className="bg-gradient-to-r from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold text-transparent group-hover:text-white md:text-base">
+      <PhoneIcon className="h-4 w-4 text-orange-500 group-hover:animate-[wiggle_0.12s_cubic-bezier(0.99,0,0.99,3.0)_infinite] group-hover:text-white" />
+      <span className="bg-gradient-to-r from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold text-transparent group-hover:text-white">
         Book a call!
       </span>
     </a>
@@ -89,10 +89,10 @@ function BookCallButton() {
 function SignInButton() {
   return (
     <Link
-      className="group flex w-fit items-center gap-1 rounded-lg p-2 text-white ring-2 ring-white hover:bg-white sm:p-3"
+      className="group flex w-fit items-center gap-1 rounded-lg p-2 text-white ring-2 ring-white hover:bg-white"
       href="/login"
     >
-      <span className="from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold group-hover:bg-gradient-to-r group-hover:text-transparent md:text-base">
+      <span className="from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold group-hover:bg-gradient-to-r group-hover:text-transparent">
         Sign in to donate
       </span>
     </Link>
