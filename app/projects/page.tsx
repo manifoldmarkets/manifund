@@ -4,13 +4,8 @@ import { ProjectsDisplay } from '@/components/projects-display'
 import { getUser, Profile } from '@/db/profile'
 import Image from 'next/image'
 import { Row } from '@/components/layout/row'
-import {
-  ArrowLongRightIcon,
-  ArrowPathIcon,
-  ArrowTrendingUpIcon,
-} from '@heroicons/react/20/solid'
+import { ArrowLongRightIcon, ArrowRightIcon } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
-import { FeatureCard } from '@/components/feature-card'
 import { getRegranters } from '@/db/profile'
 import Link from 'next/link'
 import clsx from 'clsx'
@@ -116,7 +111,7 @@ export default async function Projects() {
 function LandingSection() {
   return (
     <Col className="gap-4">
-      <div className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5">
+      <div className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 p-8">
         <Row>
           <div>
             <p className="text-3xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
@@ -129,12 +124,23 @@ function LandingSection() {
               Manifund offers charitable funding infrastructure designed to
               improve incentives, efficiency, and transparency.
             </p>
-            <Row className="mt-5 justify-center">
+            <Row className="mt-5 justify-center gap-3 text-sm">
               <Link
-                className="rounded bg-white px-3 py-2 text-sm font-medium text-orange-600 shadow hover:bg-orange-600 hover:text-white"
+                className="group rounded-lg bg-white py-2 px-3 text-white ring-2 ring-white hover:bg-transparent"
                 href="/login"
               >
-                Get started
+                <span className="bg-gradient-to-r from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold text-transparent group-hover:text-white">
+                  Get started
+                </span>
+              </Link>
+              <Link
+                className="group flex w-fit items-center gap-1 rounded-lg p-2 text-white ring-2 ring-white hover:bg-white"
+                href="/login"
+              >
+                <span className="from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold group-hover:bg-gradient-to-r group-hover:text-transparent">
+                  About regranting
+                </span>
+                <ArrowLongRightIcon className="h-4 w-4 stroke-2 text-white group-hover:text-rose-500" />
               </Link>
             </Row>
           </div>
@@ -146,20 +152,6 @@ function LandingSection() {
             height={1000}
           />
         </Row>
-      </div>
-      <div className="flex flex-col justify-between gap-3 sm:flex-row">
-        <FeatureCard
-          icon={<ArrowPathIcon className="h-7 w-7" />}
-          title="Regranting"
-          description="Lets donors to outsource their donation decisions to regrantors of their choice."
-          url="/about#regranting"
-        />
-        <FeatureCard
-          icon={<ArrowTrendingUpIcon className="h-7 w-7" />}
-          title="Impact certificates"
-          description="Align incentives with impact by bringing for-profit funding mechanisms to the non-profit world."
-          url="/about#impact-certificates"
-        />
       </div>
     </Col>
   )
