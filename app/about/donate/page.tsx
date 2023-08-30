@@ -67,6 +67,46 @@ export default function DonatePage() {
           </Col>
         </div>
       </div>
+      <div className="prose mx-auto mt-10">
+        <h2>Why donate through regranting?</h2>
+        <ul>
+          <li>
+            <strong>
+              There are specific regrantors you would trust to donate on your
+              behalf.
+            </strong>{' '}
+            That is, there are experts in the areas you support who you think,
+            relative to you, have a comparative advantage giving your money to
+            the best projects in that area. These people don&apos;t necessarily
+            need to be on our site already; if you have someone in mind
+            you&apos;d like to sponsor, book a call and we can talk through
+            facilitating that!
+          </li>
+          <li>
+            <strong>You value transparency.</strong> When you give through
+            Manifund, you&apos;ll be able to see where your money goes and why.
+          </li>
+          <li>
+            <strong>You believe in other benefits of our approach.</strong> We
+            think that the speed, transparency, and experimentation aspects of
+            our approach have big positive externalities for our grantees and
+            for philanthropy at large. When projects get funded faster, they can
+            start sooner. By being transparent, we provide information to
+            everyone about what grantmakers look for, help build grantmaker
+            trackrecords, keep ourselves accountable to public opinion, and put
+            pressure on other funders to be more transparent. By experimenting
+            with alternative mechanisms, we have the potential to find better
+            approaches to non-profit funding that could be applied elsewhere.
+          </li>
+        </ul>
+        <h2>Why not donate through regranting?</h2>
+        You might not want to donate through regranting if you have strong takes
+        on which projects within the cause area you care most about are the
+        highest impact, and want to devote your own time to evaluating projects
+        and charities yourself. In that case, you might think outsourcing your
+        donation decisions to a regrantor would result in the money going to
+        less impactful projects than if you distributed it personally.
+      </div>
     </div>
   )
 }
