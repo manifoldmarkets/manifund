@@ -134,12 +134,7 @@ export default async function RegrantingPage() {
           >
             here
           </a>
-          ! We&apos;ll offer some regrantors budgets, and others we&apos;ll just
-          list as regrantors so they can recieve donations from other users.
-        </p>
-        <p>
-          Manifund will reach out personally to individuals we want to sponsor
-          as regrantors.
+          !
         </p>
       </div>
     </div>
