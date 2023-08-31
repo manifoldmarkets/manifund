@@ -70,3 +70,17 @@ export async function getTxnsByProject(
   }
   return data as TxnAndProfiles[]
 }
+
+export async function getRecentFullTxns(
+  supabase: SupabaseClient,
+  limit: number = 10,
+  offset: number = 0
+) {
+  const { data } = await supabase
+    .from('txns')
+    .select('*, profiles!txns_from_id_fkey(*), projects(*)')
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit)
+    .throwOnError()
+  return data as FullTxn[]
+}
