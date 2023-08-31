@@ -8,6 +8,8 @@ import Link from 'next/link'
 
 import { FullComment } from '@/db/comment'
 import { useSearchParams } from 'next/navigation'
+import { Pagination } from '@/components/pagination'
+import { useState } from 'react'
 
 export function FeedTabs(props: {
   recentComments: FullComment[]
@@ -16,9 +18,18 @@ export function FeedTabs(props: {
   const { recentComments, recentDonations } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
+  const [page, setPage] = useState(1)
+  console.log('FeedTabs page', page)
 
   const CommentsTab = (
     <Col className="gap-8">
+      <Pagination
+        page={page}
+        itemsPerPage={20}
+        totalItems={140}
+        setPage={setPage}
+        savePageToQuery={true}
+      />
       {recentComments.map((comment) => {
         return (
           <Comment
@@ -33,6 +44,13 @@ export function FeedTabs(props: {
   )
   const DonationsTab = (
     <Col className="gap-8">
+      <Pagination
+        page={page}
+        itemsPerPage={20}
+        totalItems={140}
+        setPage={setPage}
+        savePageToQuery={true}
+      />
       {recentDonations.map((txn) => {
         return <FullDonation txn={txn} key={txn.id} />
       })}
@@ -46,16 +64,23 @@ export function FeedTabs(props: {
             name: 'Comments',
             id: 'comments',
             display: CommentsTab,
-            count: 20,
+            count: 0,
           },
           {
             name: 'Donations',
             id: 'donations',
             display: DonationsTab,
-            count: 20,
+            count: 0,
           },
         ]}
         currentTabId={currentTabId}
+      />
+      <Pagination
+        page={page}
+        itemsPerPage={20}
+        totalItems={140}
+        setPage={setPage}
+        savePageToQuery={true}
       />
     </div>
   )
