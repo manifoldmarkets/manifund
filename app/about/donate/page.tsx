@@ -9,6 +9,7 @@ import { CardlessProject } from '@/components/project-card'
 import { FullProject } from '@/db/project'
 import { StripeDepositButton } from '@/components/deposit-buttons'
 import { getProfileById } from '@/db/profile'
+import { Card } from '@/components/card'
 
 const FEATURED_PROJECT_SLUGS = [
   'apollo-research-scale-up-interpretability--behavioral-model-evals-research',
@@ -62,7 +63,7 @@ export default async function DonatePage() {
         </Col>
         <div className="mx-auto max-w-7xl">
           <Col className="mx-auto max-w-2xl gap-6 text-base leading-7 text-gray-600">
-            <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 shadow">
+            <Card className="relative px-4 pt-4 pb-6">
               <Image
                 className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-600"
                 src="/SolidOrangeManifox.png"
@@ -92,8 +93,8 @@ export default async function DonatePage() {
                   </StripeDepositButton>
                 </Row>
               )}
-            </div>
-            <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 shadow">
+            </Card>
+            <Card className="relative px-4 pt-4 pb-6">
               <AdjustmentsHorizontalIcon
                 className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-500"
                 aria-hidden="true"
@@ -121,7 +122,7 @@ export default async function DonatePage() {
                   </StripeDepositButton>
                 </Row>
               )}
-            </div>
+            </Card>
           </Col>
         </div>
       </div>

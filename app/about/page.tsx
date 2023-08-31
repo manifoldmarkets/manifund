@@ -18,6 +18,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getAllTxns } from '@/db/txn'
 import { Stats } from './stats'
+import { Card } from '@/components/card'
 
 const APROACH_FEATURES = [
   {
@@ -96,9 +97,9 @@ export default async function AboutPage() {
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2">
             {APROACH_FEATURES.map((feature) => {
               return (
-                <div
+                <Card
                   key={feature.title}
-                  className="relative rounded-lg bg-white px-4 pt-4 pb-6 pl-10"
+                  className="relative px-4 pt-4 pb-6 pl-10"
                 >
                   <div className="inline font-semibold text-gray-900">
                     <feature.icon
@@ -108,7 +109,7 @@ export default async function AboutPage() {
                     {feature.title}
                   </div>{' '}
                   <p className="text-sm text-gray-500">{feature.description}</p>
-                </div>
+                </Card>
               )
             })}
           </div>
