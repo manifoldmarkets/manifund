@@ -81,12 +81,12 @@ export default async function DonatePage() {
                 </p>
               </div>
               {user && (
-                <Row className="mx-auto mt-2 justify-center">
+                <Row className="mx-auto mt-3 justify-center">
                   <StripeDepositButton
                     userId={user.id}
                     passFundsTo={passFundsTo ?? undefined}
                   >
-                    <div className="rounded bg-orange-500 py-1 px-3 text-xs text-white hover:bg-orange-600">
+                    <div className="rounded bg-orange-100 py-1.5 px-3 text-xs text-orange-500 hover:bg-orange-200">
                       Give to general regranting
                     </div>
                   </StripeDepositButton>
@@ -113,9 +113,9 @@ export default async function DonatePage() {
                 </div>
               </div>
               {user && (
-                <Row className="mx-auto mt-2 justify-center">
+                <Row className="mx-auto mt-3 justify-center">
                   <StripeDepositButton userId={user.id}>
-                    <div className="rounded bg-orange-500 py-1 px-3 text-xs text-white hover:bg-orange-600">
+                    <div className="rounded bg-orange-100 py-1.5 px-3 text-xs text-orange-500 hover:bg-orange-200">
                       Add funds to account
                     </div>
                   </StripeDepositButton>
