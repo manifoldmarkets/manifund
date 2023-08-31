@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 const defaultTheme = require('tailwindcss/defaultTheme')
 const plugin = require('tailwindcss/plugin')
+const colors = require('tailwindcss/colors')
 
 module.exports = {
   content: [
@@ -27,6 +28,13 @@ module.exports = {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
+    },
+    colors: {
+      // ink, canvas, and primary are used by Manifold components
+      ink: colors.gray,
+      canvas: colors.white,
+      primary: colors.orange,
+      ...colors,
     },
   },
   plugins: [
