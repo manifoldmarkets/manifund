@@ -12,8 +12,9 @@ import { Tooltip } from './tooltip'
 export function StripeDepositButton(props: {
   userId: string
   children?: ReactNode
+  passFundsTo?: string
 }) {
-  const { userId, children } = props
+  const { userId, children, passFundsTo } = props
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState(10)
@@ -31,7 +32,6 @@ export function StripeDepositButton(props: {
       >
         {children}
       </button>
-
       <Modal open={open}>
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
           <CircleStackIcon
@@ -84,6 +84,7 @@ export function StripeDepositButton(props: {
                 body: JSON.stringify({
                   dollarQuantity: amount,
                   userId,
+                  passFundsTo,
                 }),
               })
               const json = await response.json()

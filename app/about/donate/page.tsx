@@ -16,6 +16,8 @@ const FEATURED_PROJECT_SLUGS = [
   'introductory-resources-for-singular-learning-theory',
 ]
 
+const GENERAL_REGRANTING_ID = '4e3f9301-c6b9-4c2b-a03f-0bec77ad01f2'
+
 export default async function DonatePage() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
@@ -78,7 +80,10 @@ export default async function DonatePage() {
               </div>
               {user && (
                 <Row className="mx-auto mt-2 justify-center">
-                  <StripeDepositButton userId={user.id}>
+                  <StripeDepositButton
+                    userId={user.id}
+                    passFundsTo={GENERAL_REGRANTING_ID}
+                  >
                     <div className="rounded bg-orange-500 py-1 px-3 text-xs text-white hover:bg-orange-600">
                       Give to general regranting
                     </div>
