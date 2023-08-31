@@ -77,7 +77,7 @@ export function Pagination(props: {
   const onClick = (page: number) => {
     if (savePageToQuery) {
       const newParams = new URLSearchParams(searchParams ?? '')
-      newParams.set('p', `${page + 1}`)
+      newParams.set('p', `${page}`)
       router.push('?' + newParams.toString())
     }
     setPage(page)
@@ -148,6 +148,8 @@ export function PaginationArrow(props: {
   )
 }
 
+// WARNING: These generated `pageNumbers` are 0-indexed, while `page` is 1-indexed
+type pageNumbers = number | string
 export function PageNumbers(props: {
   pageNumber: pageNumbers
   setPage: (page: number) => void
@@ -159,7 +161,7 @@ export function PageNumbers(props: {
   }
   return (
     <button
-      onClick={() => setPage(pageNumber)}
+      onClick={() => setPage(pageNumber + 1)}
       className={clsx(
         'select-none rounded-lg px-2',
         page === pageNumber + 1
@@ -172,8 +174,6 @@ export function PageNumbers(props: {
   )
 }
 
-// WARNING: These generated numbers are 0-indexed, while page is 1-indexed
-type pageNumbers = number | string
 export function getPageNumbers(
   maxPage: number,
   page: number
