@@ -21,10 +21,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { dollarQuantity, userId, passFundsTo } = (await req.body) as {
+  const { dollarQuantity, userId, passFundsToId } = (await req.body) as {
     dollarQuantity: number
     userId: string
-    passFundsTo: string
+    passFundsToId: string
   }
   const amountToCharge = dollarQuantity * CENTS_PER_DOLLAR
   if (req.method === 'POST') {
@@ -33,7 +33,7 @@ export default async function handler(
         metadata: {
           userId,
           dollarQuantity,
-          passFundsTo,
+          passFundsToId,
         },
         line_items: [
           {

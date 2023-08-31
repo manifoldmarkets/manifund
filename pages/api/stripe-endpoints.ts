@@ -25,7 +25,7 @@ export type StripeSession = Stripe.Event.Data.Object & {
   metadata: {
     userId: string
     dollarQuantity: string
-    passFundsTo?: string
+    passFundsToId?: string
   }
 }
 
@@ -73,7 +73,7 @@ export default async function handler(
 
 const issueMoneys = async (session: Stripe.Checkout.Session, txnId: string) => {
   const { id: sessionId } = session
-  const { userId, dollarQuantity, passFundsTo } = session.metadata ?? {}
+  const { userId, dollarQuantity, passFundsToId } = session.metadata ?? {}
   const dollarQuantityNum = Number.parseInt(dollarQuantity)
   const supabase = createAdminClient()
   // TODO: make this an RPC
@@ -96,11 +96,11 @@ const issueMoneys = async (session: Stripe.Checkout.Session, txnId: string) => {
       amount: dollarQuantityNum,
     })
     .throwOnError()
-  if (passFundsTo) {
+  if (passFundsToId) {
     await supabase.from('txns').insert({
       amount: dollarQuantityNum,
       from_id: userId,
-      to_id: passFundsTo,
+      to_id: passFundsToId,
       token: 'USD',
     })
   }

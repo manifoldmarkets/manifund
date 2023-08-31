@@ -8,6 +8,7 @@ import { Row } from '@/components/layout/row'
 import { CardlessProject } from '@/components/project-card'
 import { FullProject } from '@/db/project'
 import { StripeDepositButton } from '@/components/deposit-buttons'
+import { getProfileById } from '@/db/profile'
 
 const FEATURED_PROJECT_SLUGS = [
   'apollo-research-scale-up-interpretability--behavioral-model-evals-research',
@@ -40,6 +41,7 @@ export default async function DonatePage() {
     .in('id', regrantorIds)
     .eq('regranter_status', true)
     .throwOnError()
+  const passFundsTo = await getProfileById(supabase, GENERAL_REGRANTING_ID)
   return (
     <div>
       <div className="grid w-full grid-cols-1 gap-8 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-8 sm:grid-cols-2">
@@ -82,7 +84,7 @@ export default async function DonatePage() {
                 <Row className="mx-auto mt-2 justify-center">
                   <StripeDepositButton
                     userId={user.id}
-                    passFundsTo={GENERAL_REGRANTING_ID}
+                    passFundsTo={passFundsTo ?? undefined}
                   >
                     <div className="rounded bg-orange-500 py-1 px-3 text-xs text-white hover:bg-orange-600">
                       Give to general regranting

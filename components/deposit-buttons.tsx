@@ -1,4 +1,5 @@
 'use client'
+import { Profile } from '@/db/profile'
 import { Dialog } from '@headlessui/react'
 import { CircleStackIcon, PlusSmallIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
@@ -12,7 +13,7 @@ import { Tooltip } from './tooltip'
 export function StripeDepositButton(props: {
   userId: string
   children?: ReactNode
-  passFundsTo?: string
+  passFundsTo?: Profile
 }) {
   const { userId, children, passFundsTo } = props
   const router = useRouter()
@@ -42,14 +43,18 @@ export function StripeDepositButton(props: {
         <div className="mt-3 text-center sm:mt-5">
           <Dialog.Title
             as="h3"
-            className="text-base font-semibold leading-6 text-gray-900"
+            className="mb-1 text-base font-semibold leading-6 text-gray-900"
           >
-            Add money to your Manifund account
+            {passFundsTo
+              ? `Send money to ${passFundsTo.full_name}`
+              : 'Add money to your Manifund account'}
           </Dialog.Title>
-          <p className="my-2 text-sm text-gray-500">
-            This money will go into your charity balance, which can be donated
-            but not withdrawn.
-          </p>
+          {!passFundsTo && (
+            <p className="my-2 text-sm text-gray-500">
+              This money will go into your charity balance, which can be donated
+              but not withdrawn.
+            </p>
+          )}
           <label htmlFor="amount">Amount (USD): </label>
           <Input
             type="number"
@@ -84,7 +89,7 @@ export function StripeDepositButton(props: {
                 body: JSON.stringify({
                   dollarQuantity: amount,
                   userId,
-                  passFundsTo,
+                  passFundsToId: passFundsTo?.id,
                 }),
               })
               const json = await response.json()
@@ -97,9 +102,10 @@ export function StripeDepositButton(props: {
         </div>
         <p className="mt-4 text-xs text-gray-500">
           Your purchase constitutes a donation to Manifold for Charity, a
-          registered 501(c)(3) nonprofit. Money in your charity balance has zero
-          monetary value and is not redeemable for cash, but can be donated to
-          charity.
+          registered 501(c)(3) nonprofit.{' '}
+          {passFundsTo
+            ? ''
+            : 'Money in your charity balance has zero monetary value and is not redeemable for cash, but can be donated to charity.'}
         </p>
       </Modal>
     </>
