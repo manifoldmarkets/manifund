@@ -6,6 +6,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { Readable } from 'node:stream'
 import { BANK_ID } from '@/db/env'
 import uuid from 'react-uuid'
+import { SupabaseClient } from '@supabase/supabase-js'
 
 export const config = {
   api: {
@@ -54,8 +55,9 @@ export default async function handler(
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
+    const supabase = createAdminClient()
     const txnId = uuid()
-    await issueMoneys(session, txnId)
+    await issueMoneys(session, txnId, supabase)
     const PAYMENT_CONFIRMATION_TEMPLATE_ID = 31316115
     await sendTemplateEmail(
       PAYMENT_CONFIRMATION_TEMPLATE_ID,
@@ -64,6 +66,9 @@ export default async function handler(
         id: txnId,
         fullName: session.customer_details?.name,
         email: session.customer_details?.email,
+        destinationName: session.metadata?.passFundsToId
+          ? await getProfileNameById(session.metadata?.passFundsToId, supabase)
+          : 'your Manifund account',
       },
       session.metadata?.userId
     )
@@ -71,11 +76,14 @@ export default async function handler(
   return res.status(200).send('success')
 }
 
-const issueMoneys = async (session: Stripe.Checkout.Session, txnId: string) => {
+const issueMoneys = async (
+  session: Stripe.Checkout.Session,
+  txnId: string,
+  supabase: SupabaseClient
+) => {
   const { id: sessionId } = session
   const { userId, dollarQuantity, passFundsToId } = session.metadata ?? {}
   const dollarQuantityNum = Number.parseInt(dollarQuantity)
-  const supabase = createAdminClient()
   // TODO: make this an RPC
   await supabase
     .from('txns')
@@ -104,4 +112,13 @@ const issueMoneys = async (session: Stripe.Checkout.Session, txnId: string) => {
       token: 'USD',
     })
   }
+}
+
+async function getProfileNameById(id: string, supabase: SupabaseClient) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name')
+    .eq('id', id)
+    .single()
+  return profile?.full_name ?? ''
 }
