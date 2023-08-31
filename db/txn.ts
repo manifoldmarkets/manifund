@@ -79,6 +79,9 @@ export async function getRecentFullTxns(
   const { data } = await supabase
     .from('txns')
     .select('*, profiles!txns_from_id_fkey(*), projects(*)')
+    // Only return results that have profiles & projects
+    .not('project', 'is', null)
+    .not('from_id', 'is', null)
     .order('created_at', { ascending: false })
     .range(offset, offset + limit)
     .throwOnError()
