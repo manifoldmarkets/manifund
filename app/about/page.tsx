@@ -179,30 +179,6 @@ export default async function AboutPage() {
           ))}
         </div>
       </Col>
-      <div className="prose mx-auto font-light">
-        <h1 className="relative top-5">Our mission</h1>
-        <p>
-          Manifund builds funding infrastructure for nonprofits, primarily for
-          effective altruism and longtermist causes. We provide:
-        </p>
-        <ul>
-          <li>
-            a clean user experience to grantmakers, donors, and recipients so
-            money moves where it’s needed, <em>quickly</em>;
-          </li>
-          <li>
-            open grant proposals, decision rationales, and bookkeeping for
-            public accountability and tight feedback loops; and
-          </li>
-          <li>
-            innovative funding mechanisms that align incentives with impact.
-          </li>
-        </ul>
-        <p>
-          We currently support two funding mechanisms:{' '}
-          <strong>regranting</strong> and <strong>impact certificates</strong>.
-        </p>
-      </div>
     </>
   )
 }

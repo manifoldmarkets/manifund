@@ -7,6 +7,7 @@ import { getUser } from '@/db/profile'
 import { Row } from '@/components/layout/row'
 import { CardlessProject } from '@/components/project-card'
 import { FullProject } from '@/db/project'
+import { StripeDepositButton } from '@/components/deposit-buttons'
 
 const FEATURED_PROJECT_SLUGS = [
   'apollo-research-scale-up-interpretability--behavioral-model-evals-research',
@@ -57,40 +58,62 @@ export default async function DonatePage() {
         </Col>
         <div className="mx-auto max-w-7xl">
           <Col className="mx-auto max-w-2xl gap-6 text-base leading-7 text-gray-600">
-            <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 pl-10 shadow">
-              <div className="inline font-semibold text-gray-900  ">
-                <Image
-                  className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-600"
-                  src="/SolidOrangeManifox.png"
-                  alt="Manifox"
-                  width={1000}
-                  height={1000}
-                />
-                General regranting
+            <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 shadow">
+              <Image
+                className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-600"
+                src="/SolidOrangeManifox.png"
+                alt="Manifox"
+                width={1000}
+                height={1000}
+              />
+              <div className="pl-6">
+                <span className="font-semibold text-gray-900">
+                  General regranting
+                </span>
+                <p className="text-sm text-gray-500">
+                  This will be used to onboard new regrantors and to raise the
+                  budgets of regrantors with strong track records. We may use up
+                  to 5% to cover our operations.
+                </p>
               </div>
-              <p className="text-sm text-gray-500">
-                This will be used to onboard new regrantors and to raise the
-                budgets of regrantors with strong track records. We may use up
-                to 5% to cover our operations.
-              </p>
+              {user && (
+                <Row className="mx-auto mt-2 justify-center">
+                  <StripeDepositButton userId={user.id}>
+                    <div className="rounded bg-orange-500 py-1 px-3 text-xs text-white hover:bg-orange-600">
+                      Give to general regranting
+                    </div>
+                  </StripeDepositButton>
+                </Row>
+              )}
             </div>
-            <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 pl-10 shadow">
-              <div className="inline font-semibold text-gray-900">
-                <AdjustmentsHorizontalIcon
-                  className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-500"
-                  aria-hidden="true"
-                />
-                Custom allocation
+            <div className="relative rounded-lg bg-white px-4 pt-4 pb-6 shadow">
+              <AdjustmentsHorizontalIcon
+                className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-500"
+                aria-hidden="true"
+              />
+              <div className="pl-6">
+                <span className="font-semibold text-gray-900">
+                  Custom allocation
+                </span>
+                <div className="text-sm text-gray-500">
+                  After adding money to your Manifund account, you can
+                  distribute it among:
+                  <ul className="ml-5 list-disc">
+                    <li>Regrantors</li>
+                    <li>Projects</li>
+                    <li>Coming soon: cause-specific funds</li>
+                  </ul>
+                </div>
               </div>
-              <div className="text-sm text-gray-500">
-                After adding money to your Manifund account, you can distribute
-                it among:
-                <ul className="ml-5 list-disc">
-                  <li>Regrantors</li>
-                  <li>Projects</li>
-                  <li>Coming soon: cause-specific funds</li>
-                </ul>
-              </div>
+              {user && (
+                <Row className="mx-auto mt-2 justify-center">
+                  <StripeDepositButton userId={user.id}>
+                    <div className="rounded bg-orange-500 py-1 px-3 text-xs text-white hover:bg-orange-600">
+                      Add funds to account
+                    </div>
+                  </StripeDepositButton>
+                </Row>
+              )}
             </div>
           </Col>
         </div>

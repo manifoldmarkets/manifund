@@ -3,7 +3,7 @@ import { Dialog } from '@headlessui/react'
 import { CircleStackIcon, PlusSmallIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { Button } from './button'
 import { Input } from './input'
 import { Modal } from './modal'
@@ -11,9 +11,9 @@ import { Tooltip } from './tooltip'
 
 export function StripeDepositButton(props: {
   userId: string
-  white?: boolean
+  children?: ReactNode
 }) {
-  const { userId } = props
+  const { userId, children } = props
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState(10)
@@ -26,12 +26,10 @@ export function StripeDepositButton(props: {
     <>
       <button
         type="button"
-        className="rounded bg-orange-500 p-0.5 shadow"
+        className="rounded shadow"
         onClick={() => setOpen(true)}
       >
-        <Tooltip text="Add funds" placement="left">
-          <PlusSmallIcon className="h-4 w-4 stroke-2 text-white" />
-        </Tooltip>
+        {children}
       </button>
 
       <Modal open={open}>
