@@ -10,6 +10,7 @@ import { FullProject } from '@/db/project'
 import { StripeDepositButton } from '@/components/deposit-buttons'
 import { getProfileById } from '@/db/profile'
 import { Card } from '@/components/card'
+import { SupabaseClient } from '@supabase/supabase-js'
 
 const FEATURED_PROJECT_SLUGS = [
   'apollo-research-scale-up-interpretability--behavioral-model-evals-research',
@@ -23,13 +24,10 @@ const GENERAL_REGRANTING_ID = '4e3f9301-c6b9-4c2b-a03f-0bec77ad01f2'
 export default async function DonatePage() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
-  const { data: featuredProjects } = await supabase
-    .from('projects')
-    .select(
-      'title, creator, slug, blurb, profiles(*), txns(*), causes(title, slug)'
-    )
-    .in('slug', FEATURED_PROJECT_SLUGS)
-    .throwOnError()
+  const featuredProjects = await getFeaturedProjects(
+    supabase,
+    FEATURED_PROJECT_SLUGS
+  )
   const sortedFeaturedProjects = FEATURED_PROJECT_SLUGS.map((slug) =>
     featuredProjects?.find((project) => project.slug === slug)
   ).filter((project) => !!project) as FullProject[]
@@ -256,4 +254,18 @@ function SignInButton() {
       </span>
     </Link>
   )
+}
+
+async function getFeaturedProjects(
+  supabase: SupabaseClient,
+  featuredProjectSlugs: string[]
+) {
+  const { data: featuredProjects } = await supabase
+    .from('projects')
+    .select(
+      'title, creator, slug, blurb, profiles(*), txns(*), causes(title, slug)'
+    )
+    .in('slug', FEATURED_PROJECT_SLUGS)
+    .throwOnError()
+  return featuredProjects as unknown as FullProject[]
 }

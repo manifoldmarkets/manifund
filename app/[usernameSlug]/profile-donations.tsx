@@ -2,7 +2,12 @@ import { Tag } from '@/components/tags'
 import { Tooltip } from '@/components/tooltip'
 import { BidAndProject } from '@/db/bid'
 import { FullTxn } from '@/db/txn'
-import { HeartIcon, UserIcon, WrenchIcon } from '@heroicons/react/24/solid'
+import {
+  HeartIcon,
+  UserIcon,
+  WrenchIcon,
+  UserGroupIcon,
+} from '@heroicons/react/24/solid'
 import { formatDistanceToNow } from 'date-fns'
 import { orderBy } from 'lodash'
 import Link from 'next/link'
@@ -19,6 +24,8 @@ export function OutgoingDonationsHistory(props: {
       ? 'project'
       : donation.profiles?.type === 'individual'
       ? 'regranter'
+      : donation.profiles?.type === 'fund'
+      ? 'fund'
       : 'charity'
     const name =
       (type === 'project'
@@ -70,7 +77,7 @@ export function OutgoingDonationsHistory(props: {
 }
 
 function DonationRow(props: {
-  type: 'project' | 'regranter' | 'charity'
+  type: 'project' | 'regranter' | 'fund' | 'charity'
   name: string
   url: string
   amount: number
@@ -88,6 +95,11 @@ function DonationRow(props: {
         {type === 'regranter' && (
           <Tooltip text="regranter">
             <UserIcon className="relative top-1 h-5 w-5 flex-shrink-0 text-orange-500" />
+          </Tooltip>
+        )}
+        {type === 'charity' && (
+          <Tooltip text="charity">
+            <UserGroupIcon className="relative top-1 h-5 w-5 flex-shrink-0 text-emerald-500" />
           </Tooltip>
         )}
         {type === 'charity' && (
