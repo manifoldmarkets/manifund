@@ -37,7 +37,7 @@ const APROACH_FEATURES = [
     title: 'Experimental',
     icon: BeakerIcon,
     description:
-      'Oftentimes the best way to see if something will work is to try it out, so we are willing to give people and approaches a shot and then learn and iterate.',
+      'Oftentimes the best way to see if something will work is to try it out, so we are willing to give people and approaches a shot and then iterate.',
   },
   {
     title: 'Expert led',
