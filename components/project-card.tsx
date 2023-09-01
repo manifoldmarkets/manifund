@@ -180,8 +180,17 @@ export function ProjectCardHeader(props: {
   )
 }
 
-export function CardlessProject(props: { project: FullProject }) {
-  const { project } = props
+export function CardlessProject(props: {
+  project: FullProject
+  regrantors?: Profile[]
+  showFundingBar?: boolean
+}) {
+  const { project, regrantors, showFundingBar } = props
+  const amountRaised = getAmountRaised(
+    project,
+    project.bids ?? [],
+    project.txns ?? []
+  )
   return (
     <Col className="items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">
       <Row className="flex-2 w-full items-center justify-between gap-3 text-xs">
@@ -189,17 +198,17 @@ export function CardlessProject(props: { project: FullProject }) {
           profile={project.profiles}
           className="text-sm text-gray-600"
         />
-        <Row className="flex-1 items-center gap-3">
+        {showFundingBar && (
           <ProgressBar
-            amountRaised={getAmountRaised(project, project.bids, project.txns)}
+            amountRaised={amountRaised}
             fundingGoal={project.funding_goal}
             minFunding={project.min_funding}
             small
           />
-          <span className="relative z-10 rounded-full bg-orange-100 px-3 py-1.5 font-medium text-orange-600">
-            {formatMoney(project.funding_goal)}
-          </span>
-        </Row>
+        )}
+        <span className="relative z-10 rounded-full bg-orange-100 px-3 py-1.5 font-medium text-orange-600">
+          {formatMoney(regrantors ? amountRaised : project.funding_goal)}
+        </span>
       </Row>
       <Link href={`/projects/${project.slug}`}>
         <h3 className="tracking-0 font-semibold leading-6 text-gray-900">
@@ -209,7 +218,7 @@ export function CardlessProject(props: { project: FullProject }) {
           {project.blurb}
         </p>
       </Link>
-      <Row className="mb-1 flex-wrap gap-1">
+      <Row className="flex-wrap gap-1">
         {project.causes?.map((cause) => (
           <CauseTag
             key={cause.slug}
@@ -218,6 +227,18 @@ export function CardlessProject(props: { project: FullProject }) {
           />
         ))}
       </Row>
+      {regrantors && (
+        <Row className="flex-wrap items-center gap-2">
+          <span className="text-sm text-gray-600">Regranted by</span>
+          {regrantors.map((regrantor) => (
+            <UserAvatarAndBadge
+              key={regrantor.id}
+              profile={regrantor}
+              className="text-sm text-gray-600"
+            />
+          ))}
+        </Row>
+      )}
     </Col>
   )
 }

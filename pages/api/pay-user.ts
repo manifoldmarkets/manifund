@@ -2,7 +2,6 @@ import { PayUserProps } from '@/app/admin/pay-user'
 import { getUser, isAdmin } from '@/db/profile'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, createEdgeClient } from './_db'
-import { BANK_ID } from '@/db/env'
 
 export const config = {
   runtime: 'edge',
@@ -17,8 +16,10 @@ export default async function handler(req: NextRequest) {
   const { userId, amount } = (await req.json()) as PayUserProps
   // Interpret negative amounts as payments to the bank
   const positiveAmount = Math.abs(amount)
-  const from_id = amount > 0 ? (BANK_ID as string) : userId
-  const to_id = amount > 0 ? userId : (BANK_ID as string)
+  const from_id =
+    amount > 0 ? (process.env.NEXT_PUBLIC_PROD_BANK_ID as string) : userId
+  const to_id =
+    amount > 0 ? userId : (process.env.NEXT_PUBLIC_PROD_BANK_ID as string)
 
   const supabaseAdmin = createAdminClient()
   // Create a new txn paying this user

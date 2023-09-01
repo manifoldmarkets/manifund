@@ -216,6 +216,7 @@ function ConfirmWithdrawal(props: {
         dollarAmount: withdrawAmount,
       }),
     })
+
     const json = await response.json()
     if (json.error) {
       console.error(json.error)

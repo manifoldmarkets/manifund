@@ -4,15 +4,14 @@ import { createAdminClient } from './_db'
 import { sendTemplateEmail } from '@/utils/email'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Readable } from 'node:stream'
-import { BANK_ID } from '@/db/env'
 import uuid from 'react-uuid'
+import { SupabaseClient } from '@supabase/supabase-js'
 
 export const config = {
   api: {
     bodyParser: false,
   },
 }
-
 async function buffer(readable: Readable) {
   const chunks = []
   for await (const chunk of readable) {
@@ -26,6 +25,7 @@ export type StripeSession = Stripe.Event.Data.Object & {
   metadata: {
     userId: string
     dollarQuantity: string
+    passFundsToId?: string
   }
 }
 
@@ -54,8 +54,9 @@ export default async function handler(
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
+    const supabase = createAdminClient()
     const txnId = uuid()
-    await issueMoneys(session, txnId)
+    await issueMoneys(session, txnId, supabase)
     const PAYMENT_CONFIRMATION_TEMPLATE_ID = 31316115
     await sendTemplateEmail(
       PAYMENT_CONFIRMATION_TEMPLATE_ID,
@@ -64,6 +65,9 @@ export default async function handler(
         id: txnId,
         fullName: session.customer_details?.name,
         email: session.customer_details?.email,
+        destinationName: session.metadata?.passFundsToId
+          ? await getProfileNameById(session.metadata?.passFundsToId, supabase)
+          : 'your Manifund account',
       },
       session.metadata?.userId
     )
@@ -71,18 +75,21 @@ export default async function handler(
   return res.status(200).send('success')
 }
 
-const issueMoneys = async (session: Stripe.Checkout.Session, txnId: string) => {
+const issueMoneys = async (
+  session: Stripe.Checkout.Session,
+  txnId: string,
+  supabase: SupabaseClient
+) => {
   const { id: sessionId } = session
-  const { userId, dollarQuantity } = session.metadata ?? {}
-  const deposit = Number.parseInt(dollarQuantity)
-  const supabase = createAdminClient()
+  const { userId, dollarQuantity, passFundsToId } = session.metadata ?? {}
+  const dollarQuantityNum = Number.parseInt(dollarQuantity)
   // TODO: make this an RPC
   await supabase
     .from('txns')
     .insert({
       id: txnId,
-      amount: deposit,
-      from_id: BANK_ID,
+      amount: dollarQuantityNum,
+      from_id: process.env.NEXT_PUBLIC_PROD_BANK_ID,
       to_id: userId,
       token: 'USD',
     })
@@ -93,7 +100,24 @@ const issueMoneys = async (session: Stripe.Checkout.Session, txnId: string) => {
       session_id: sessionId,
       customer_id: userId,
       txn_id: txnId,
-      amount: deposit,
+      amount: dollarQuantityNum,
     })
     .throwOnError()
+  if (passFundsToId) {
+    await supabase.from('txns').insert({
+      amount: dollarQuantityNum,
+      from_id: userId,
+      to_id: passFundsToId,
+      token: 'USD',
+    })
+  }
+}
+
+async function getProfileNameById(id: string, supabase: SupabaseClient) {
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name')
+    .eq('id', id)
+    .single()
+  return profile?.full_name ?? ''
 }

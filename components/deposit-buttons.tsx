@@ -1,9 +1,10 @@
 'use client'
+import { Profile } from '@/db/profile'
 import { Dialog } from '@headlessui/react'
 import { CircleStackIcon, PlusSmallIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { Button } from './button'
 import { Input } from './input'
 import { Modal } from './modal'
@@ -11,9 +12,10 @@ import { Tooltip } from './tooltip'
 
 export function StripeDepositButton(props: {
   userId: string
-  white?: boolean
+  children?: ReactNode
+  passFundsTo?: Profile
 }) {
-  const { userId } = props
+  const { userId, children, passFundsTo } = props
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [amount, setAmount] = useState(10)
@@ -26,14 +28,11 @@ export function StripeDepositButton(props: {
     <>
       <button
         type="button"
-        className="rounded bg-orange-500 p-0.5 shadow"
+        className="rounded shadow"
         onClick={() => setOpen(true)}
       >
-        <Tooltip text="Add funds" placement="left">
-          <PlusSmallIcon className="h-4 w-4 stroke-2 text-white" />
-        </Tooltip>
+        {children}
       </button>
-
       <Modal open={open}>
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
           <CircleStackIcon
@@ -44,14 +43,18 @@ export function StripeDepositButton(props: {
         <div className="mt-3 text-center sm:mt-5">
           <Dialog.Title
             as="h3"
-            className="text-base font-semibold leading-6 text-gray-900"
+            className="mb-1 text-base font-semibold leading-6 text-gray-900"
           >
-            Add money to your Manifund account
+            {passFundsTo
+              ? `Send money to ${passFundsTo.full_name}`
+              : 'Add money to your Manifund account'}
           </Dialog.Title>
-          <p className="my-2 text-sm text-gray-500">
-            This money will go into your charity balance, which can be donated
-            but not withdrawn.
-          </p>
+          {!passFundsTo && (
+            <p className="my-2 text-sm text-gray-500">
+              This money will go into your charity balance, which can be donated
+              but not withdrawn.
+            </p>
+          )}
           <label htmlFor="amount">Amount (USD): </label>
           <Input
             type="number"
@@ -86,6 +89,7 @@ export function StripeDepositButton(props: {
                 body: JSON.stringify({
                   dollarQuantity: amount,
                   userId,
+                  passFundsToId: passFundsTo?.id,
                 }),
               })
               const json = await response.json()
@@ -98,9 +102,10 @@ export function StripeDepositButton(props: {
         </div>
         <p className="mt-4 text-xs text-gray-500">
           Your purchase constitutes a donation to Manifold for Charity, a
-          registered 501(c)(3) nonprofit. Money in your charity balance has zero
-          monetary value and is not redeemable for cash, but can be donated to
-          charity.
+          registered 501(c)(3) nonprofit.{' '}
+          {passFundsTo
+            ? ''
+            : 'Money in your charity balance has zero monetary value and is not redeemable for cash, but can be donated to charity.'}
         </p>
       </Modal>
     </>
