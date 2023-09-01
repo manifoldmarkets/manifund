@@ -110,7 +110,7 @@ export default async function Projects() {
 
 function LandingSection() {
   return (
-    <div className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 px-4 py-12 sm:px-8">
+    <div className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 px-4 py-10 sm:px-8">
       <div className="relative mx-auto mb-5 w-fit rounded-full px-3 py-1 text-xs leading-6 ring-1 ring-white ring-opacity-20 hover:bg-white hover:bg-opacity-20">
         <span className="text-white text-opacity-50">
           We&apos;re fundraising.{' '}
@@ -119,7 +119,7 @@ function LandingSection() {
           Read more <ArrowLongRightIcon className="inline h-4 w-4 stroke-2" />
         </a>
       </div>
-      <Row>
+      <Row className="flex-2">
         <div>
           <p className="text-3xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
             Impactful giving,
@@ -152,7 +152,7 @@ function LandingSection() {
           </Row>
         </div>
         <Image
-          className="hidden w-48 lg:block"
+          className="hidden max-h-fit w-48 object-contain lg:block"
           src="/SolidWhiteManifox.png"
           alt="Manifox"
           width={1000}

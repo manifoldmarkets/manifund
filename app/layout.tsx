@@ -61,7 +61,7 @@ export default async function RootLayout({
           {/* @ts-expect-error Server Component */}
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
-          <main className="flex flex-1 flex-col items-center lg:col-span-8">
+          <main className="flex flex-1 flex-col lg:col-span-8">
             {profileTodo && <Banner />}
             {children}
           </main>

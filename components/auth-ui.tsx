@@ -29,7 +29,7 @@ export default function ClientAuth(props: { redirectTo?: string }) {
     )
   } else {
     return (
-      <div className="bg-dark-200 max-w-md">
+      <div className="bg-dark-200 max-w-md p-4">
         {recommendedEmail && (
           <span className="text-gray-600">
             Make sure to create an account with the same email that your grant
