@@ -4,7 +4,6 @@ import { createAdminClient } from './_db'
 import { sendTemplateEmail } from '@/utils/email'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Readable } from 'node:stream'
-import { BANK_ID } from '@/db/env'
 import uuid from 'react-uuid'
 import { SupabaseClient } from '@supabase/supabase-js'
 
@@ -90,7 +89,7 @@ const issueMoneys = async (
     .insert({
       id: txnId,
       amount: dollarQuantityNum,
-      from_id: BANK_ID,
+      from_id: process.env.NEXT_PUBLIC_PROD_BANK_ID,
       to_id: userId,
       token: 'USD',
     })

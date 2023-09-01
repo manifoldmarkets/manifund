@@ -97,7 +97,7 @@ function DonationRow(props: {
             <UserIcon className="relative top-1 h-5 w-5 flex-shrink-0 text-orange-500" />
           </Tooltip>
         )}
-        {type === 'charity' && (
+        {type === 'fund' && (
           <Tooltip text="charity">
             <UserGroupIcon className="relative top-1 h-5 w-5 flex-shrink-0 text-emerald-500" />
           </Tooltip>

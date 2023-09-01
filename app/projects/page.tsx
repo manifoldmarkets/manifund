@@ -115,7 +115,7 @@ function LandingSection() {
         <span className="text-white text-opacity-50">
           We&apos;re fundraising.{' '}
         </span>
-        <a href="#" className="font-semibold text-white">
+        <a href="/about/donate" className="font-semibold text-white">
           Read more <ArrowLongRightIcon className="inline h-4 w-4 stroke-2" />
         </a>
       </div>
