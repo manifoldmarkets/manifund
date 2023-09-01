@@ -4,7 +4,7 @@ import { getProfileAndBidsById } from '@/db/profile'
 import { getFullTxnsByUser } from '@/db/txn'
 import { calculateCashBalance } from '@/utils/math'
 import Stripe from 'stripe'
-import { BANK_ID, STRIPE_SECRET_KEY } from '@/db/env'
+import { STRIPE_SECRET_KEY } from '@/db/env'
 import uuid from 'react-uuid'
 import { sendTemplateEmail } from '@/utils/email'
 import { CENTS_PER_DOLLAR } from '@/utils/constants'
@@ -65,7 +65,7 @@ export default async function handler(req: NextRequest) {
     .insert({
       id: txnId,
       from_id: user.id,
-      to_id: BANK_ID ?? '',
+      to_id: process.env.NEXT_PUBLIC_PROD_BANK_ID ?? '',
       amount: dollarAmount,
       token: 'USD',
       project: null,

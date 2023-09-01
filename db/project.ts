@@ -12,6 +12,11 @@ export type ProjectTransfer =
   Database['public']['Tables']['project_transfers']['Row']
 export type ProjectVote = Database['public']['Tables']['project_votes']['Row']
 export type ProjectWithCauses = Project & { causes: MiniCause[] }
+export type FullProject = Project & { profiles: Profile } & {
+  bids: Bid[]
+} & { txns: Txn[] } & { comments: Comment[] } & { rounds: Round } & {
+  project_transfers: ProjectTransfer[]
+} & { project_votes: ProjectVote[] } & { causes: MiniCause[] }
 
 export const TOTAL_SHARES = 10_000_000
 
@@ -50,12 +55,6 @@ export async function getProjectsByUser(
   }
   return data as FullProject[]
 }
-
-export type FullProject = Project & { profiles: Profile } & {
-  bids: Bid[]
-} & { txns: Txn[] } & { comments: Comment[] } & { rounds: Round } & {
-  project_transfers: ProjectTransfer[]
-} & { project_votes: ProjectVote[] } & { causes: MiniCause[] }
 
 export async function listProjects(supabase: SupabaseClient) {
   const { data } = await supabase
