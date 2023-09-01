@@ -26,6 +26,7 @@ And rename `.env` to `.env.local`.
 
 You'll want to do this if we've changed the prod database schema (eg through the Supabase web UI).
 
+0. Authenticate to snaplet with `npx snaplet auth setup`
 1. Go to https://app.snaplet.dev/ and create a new snapshot.
 2. Run `yarn snap:restore` (or `yarn snap:restore-empty`) - You might need to add a `.snaplet/config.json` file with eg
 
