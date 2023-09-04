@@ -77,7 +77,7 @@ const TEAM_MEMBERS = [
     title: 'Co-founder & Engineer',
     avatarUrl:
       'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/4de2634d-3802-4141-881e-9ce687f87485/8271a711-1159-0a97-6620-bd082b6ebc3b',
-    username: 'rachel',
+    username: 'Rachel',
   },
 ]
 
