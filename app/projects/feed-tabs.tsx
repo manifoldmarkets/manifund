@@ -5,7 +5,6 @@ import { Col } from '@/components/layout/col'
 import { Tabs } from '@/components/tabs'
 import { FullTxn } from '@/db/txn'
 import Link from 'next/link'
-
 import { FullComment } from '@/db/comment'
 import { useSearchParams } from 'next/navigation'
 import { Pagination } from '@/components/pagination'

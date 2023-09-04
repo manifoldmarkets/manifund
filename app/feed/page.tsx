@@ -3,7 +3,6 @@ import { getRecentFullComments } from '@/db/comment'
 import { listProjects } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
 import { getRecentFullTxns } from '@/db/txn'
-import { FeedTabs } from './feed-tabs'
 
 export default async function FeedPage(props: {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -21,12 +20,5 @@ export default async function FeedPage(props: {
       listProjects(supabase),
       listMiniCauses(supabase),
     ])
-  return (
-    <FeedTabs
-      recentComments={recentComments}
-      recentDonations={recentDonations}
-      projects={projects}
-      causesList={causesList}
-    />
-  )
+  return null
 }

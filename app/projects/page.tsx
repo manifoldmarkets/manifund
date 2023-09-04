@@ -4,7 +4,7 @@ import { ProjectsDisplay } from '@/components/projects-display'
 import { getUser, Profile } from '@/db/profile'
 import Image from 'next/image'
 import { Row } from '@/components/layout/row'
-import { ArrowLongRightIcon, ArrowRightIcon } from '@heroicons/react/20/solid'
+import { ArrowLongRightIcon } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
 import { getRegranters } from '@/db/profile'
 import Link from 'next/link'
@@ -12,6 +12,9 @@ import clsx from 'clsx'
 import { CardlessProject } from '@/components/project-card'
 import { CardlessProfile } from '@/components/profile-card'
 import { listMiniCauses } from '@/db/cause'
+import { getRecentFullComments } from '@/db/comment'
+import { getRecentFullTxns } from '@/db/txn'
+import { FeedTabs } from './feed-tabs'
 
 export const revalidate = 60
 
@@ -28,12 +31,29 @@ const featuredProjectSlugs = [
   'forecasting--treaty-on-artificial-intelligence-safety-and-cooperation-taisc-',
 ]
 
-export default async function Projects() {
+export default async function Projects(props: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  const PAGE_SIZE = 20
+  // Extract `page` from ?p=X param as an 1-indexed integer
+  const page = parseInt(props.searchParams?.p as string) || 1
+  console.log('ppp', props.searchParams)
+  const start = (page - 1) * PAGE_SIZE
   const supabase = createServerClient()
-  const [user, projects, regrantors] = await Promise.all([
+  const [
+    user,
+    projects,
+    regrantors,
+    recentComments,
+    recentDonations,
+    causesList,
+  ] = await Promise.all([
     getUser(supabase),
     listProjects(supabase),
     getRegranters(supabase),
+    getRecentFullComments(supabase, PAGE_SIZE, start),
+    getRecentFullTxns(supabase, PAGE_SIZE, start),
+    listMiniCauses(supabase),
   ])
   const featuredRegrantors = featuredRegrantorIds.map((id) => {
     return regrantors.find((regranter) => regranter.id === id)
@@ -41,69 +61,59 @@ export default async function Projects() {
   const featuredProjects = featuredProjectSlugs.map((slug) => {
     return projects.find((project) => project.slug === slug)
   })
-  const causesList = await listMiniCauses(supabase)
   return (
     <Col className="max-w-4xl gap-16 px-3 py-5 sm:px-6">
-      {user === null && <LandingSection />}
-      <Col className="items-center justify-between gap-8">
-        <div className="w-full">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-            Featured regrantors
-          </h1>
-          <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {featuredRegrantors.map((regrantor, idx) => (
-              <li className={clsx(idx > 2 && 'sm:hidden')} key={regrantor?.id}>
-                <CardlessProfile profile={regrantor as Profile} />
-              </li>
-            ))}
-          </ul>
-          <Link
-            href="/rounds/regrants?tab=regrants"
-            className="flex items-center justify-end gap-2 text-sm font-semibold text-orange-600 hover:underline"
-          >
-            See all regrantors
-            <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
-          </Link>
-        </div>
-        <div className="w-full">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-            Featured projects
-          </h1>{' '}
-          <Col className="w-full items-center">
-            <ul className="mt-5 max-w-2xl divide-y divide-gray-100">
-              {featuredProjects.map((project) => (
-                <li key={project?.id} className="py-3">
-                  <CardlessProject
-                    project={project as FullProject}
-                    showFundingBar
-                  />
+      {user === null && (
+        <Col className="items-center justify-between gap-8">
+          {' '}
+          <LandingSection />
+          <div className="w-full">
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+              Featured regrantors
+            </h1>
+            <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {featuredRegrantors.map((regrantor, idx) => (
+                <li
+                  className={clsx(idx > 2 && 'sm:hidden')}
+                  key={regrantor?.id}
+                >
+                  <CardlessProfile profile={regrantor as Profile} />
                 </li>
               ))}
             </ul>
-          </Col>
-        </div>
-        <Col className="gap-3">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-            All projects
-          </h1>
-          <p className="text-gray-600">
-            Including projects in all stages and from all rounds.
-          </p>
-          <ProjectsDisplay
-            projects={projects}
-            defaultSort={'newest first'}
-            sortOptions={[
-              'votes',
-              'newest first',
-              'oldest first',
-              'price',
-              'percent funded',
-              'number of comments',
-            ]}
-            causesList={causesList}
-          />
+            <Link
+              href="/rounds/regrants?tab=regrants"
+              className="flex items-center justify-end gap-2 text-sm font-semibold text-orange-600 hover:underline"
+            >
+              See all regrantors
+              <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
+            </Link>
+          </div>
+          <div className="w-full">
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+              Featured projects
+            </h1>
+            <Col className="w-full items-center">
+              <ul className="mt-5 max-w-2xl divide-y divide-gray-100">
+                {featuredProjects.map((project) => (
+                  <li key={project?.id} className="py-3">
+                    <CardlessProject
+                      project={project as FullProject}
+                      showFundingBar
+                    />
+                  </li>
+                ))}
+              </ul>
+            </Col>
+          </div>
         </Col>
-      </Col>
+      )}
+      <FeedTabs
+        recentComments={recentComments}
+        recentDonations={recentDonations}
+        projects={projects}
+        causesList={causesList}
+      />
     </Col>
   )
 }
