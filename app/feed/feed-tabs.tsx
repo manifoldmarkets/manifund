@@ -127,7 +127,6 @@ function FullDonation(props: { txn: FullTxn }) {
   if (!txn.projects || !txn.profiles) {
     return null
   }
-  console.log('txn', txn)
   return (
     <Col>
       <Link
