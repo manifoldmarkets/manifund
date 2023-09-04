@@ -60,16 +60,15 @@ export function Comments(props: {
             commenter={thread.root.profiles}
             writtenByCreator={thread.root.commenter === project.creator}
             contributionText={commenterContributions[thread.root.commenter]}
-          />
-          {userProfile && (
-            <Row className="w-full justify-end">
-              <Tooltip text="Reply">
+          >
+            {userProfile && (
+              <Tooltip text="Reply" className="absolute bottom-2 right-2">
                 <IconButton onClick={() => setReplyingTo(thread.root)}>
-                  <ArrowUturnRightIcon className="relative bottom-2 h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
+                  <ArrowUturnRightIcon className=" h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
                 </IconButton>
               </Tooltip>
-            </Row>
-          )}
+            )}
+          </Comment>
           {thread.replies.map((reply) => (
             <div className="ml-8 mt-1" key={reply.id}>
               <Comment
@@ -77,14 +76,15 @@ export function Comments(props: {
                 commenter={reply.profiles}
                 writtenByCreator={reply.commenter === project.creator}
                 contributionText={commenterContributions[reply.commenter]}
-              />
-              <Row className="w-full justify-end">
-                <Tooltip text="Reply">
-                  <IconButton onClick={() => setReplyingTo(reply)}>
-                    <ArrowUturnRightIcon className="relative bottom-2 h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
-                  </IconButton>
-                </Tooltip>
-              </Row>
+              >
+                {userProfile && (
+                  <Tooltip text="Reply" className="absolute bottom-2 right-2">
+                    <IconButton onClick={() => setReplyingTo(thread.root)}>
+                      <ArrowUturnRightIcon className=" h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Comment>
             </div>
           ))}
           {(replyingTo?.id === thread.root.id ||

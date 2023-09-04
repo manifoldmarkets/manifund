@@ -9,6 +9,7 @@ import { Profile } from '@/db/profile'
 import Link from 'next/link'
 import clsx from 'clsx'
 import { Project } from '@/db/project'
+import { Card } from './layout/card'
 
 export function Comment(props: {
   comment: Comment
@@ -16,11 +17,18 @@ export function Comment(props: {
   writtenByCreator?: boolean
   contributionText?: string
   project?: Project
+  children?: React.ReactNode
 }) {
-  const { comment, commenter, writtenByCreator, contributionText, project } =
-    props
+  const {
+    comment,
+    commenter,
+    writtenByCreator,
+    contributionText,
+    project,
+    children,
+  } = props
   return (
-    <div>
+    <Card id={comment.id} className="relative">
       <Row className="w-full items-center justify-between gap-2">
         <Row className="min-w-fit items-center gap-1">
           <UserAvatarAndBadge
@@ -61,6 +69,7 @@ export function Comment(props: {
       <div className="relative left-8 w-11/12">
         <RichContent content={comment.content} className="text-sm" />
       </div>
-    </div>
+      {children}
+    </Card>
   )
 }
