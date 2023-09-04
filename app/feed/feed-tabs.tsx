@@ -10,40 +10,44 @@ import { FullComment } from '@/db/comment'
 import { useSearchParams } from 'next/navigation'
 import { Pagination } from '@/components/pagination'
 import { useState } from 'react'
+import { ProjectsDisplay } from '@/components/projects-display'
+import { FullProject } from '@/db/project'
+import { MiniCause } from '@/db/cause'
 
 export function FeedTabs(props: {
   recentComments: FullComment[]
   recentDonations: FullTxn[]
+  projects: FullProject[]
+  causesList: MiniCause[]
 }) {
-  const { recentComments, recentDonations } = props
+  const { recentComments, recentDonations, projects, causesList } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
   const [page, setPage] = useState(1)
-  console.log('FeedTabs page', page)
 
-  const CommentsTab = (
-    <Col className="gap-8">
-      <Pagination
-        page={page}
-        itemsPerPage={20}
-        totalItems={140}
-        setPage={setPage}
-        savePageToQuery={true}
+  const ProjectsTab = (
+    <Col className="gap-3">
+      <p className="text-sm text-gray-600">
+        Including projects in all stages and from all rounds.
+      </p>
+      <ProjectsDisplay
+        projects={projects}
+        defaultSort={'newest first'}
+        sortOptions={[
+          'votes',
+          'newest first',
+          'oldest first',
+          'price',
+          'percent funded',
+          'number of comments',
+        ]}
+        causesList={causesList}
       />
-      {recentComments.map((comment) => {
-        return (
-          <Comment
-            key={comment.id}
-            comment={comment}
-            commenter={comment.profiles}
-            project={comment.projects}
-          />
-        )
-      })}
     </Col>
   )
-  const DonationsTab = (
-    <Col className="gap-8">
+
+  const CommentsTab = (
+    <>
       <Pagination
         page={page}
         itemsPerPage={20}
@@ -51,15 +55,46 @@ export function FeedTabs(props: {
         setPage={setPage}
         savePageToQuery={true}
       />
-      {recentDonations.map((txn) => {
-        return <FullDonation txn={txn} key={txn.id} />
-      })}
-    </Col>
+      <Col className="gap-8">
+        {recentComments.map((comment) => {
+          return (
+            <Comment
+              key={comment.id}
+              comment={comment}
+              commenter={comment.profiles}
+              project={comment.projects}
+            />
+          )
+        })}
+      </Col>
+    </>
+  )
+  const DonationsTab = (
+    <>
+      <Pagination
+        page={page}
+        itemsPerPage={20}
+        totalItems={140}
+        setPage={setPage}
+        savePageToQuery={true}
+      />
+      <Col className="gap-8">
+        {recentDonations.map((txn) => {
+          return <FullDonation txn={txn} key={txn.id} />
+        })}
+      </Col>
+    </>
   )
   return (
     <div>
       <Tabs
         tabs={[
+          {
+            name: 'All projects',
+            id: 'projects',
+            display: ProjectsTab,
+            count: projects.length,
+          },
           {
             name: 'Comments',
             id: 'comments',
