@@ -22,16 +22,15 @@ export function RoundTabs(props: {
 }) {
   const { round, projects, causesList, regranters } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
-  const currentTabName = searchParams.get('tab')
+  const currentTabId = searchParams.get('tab')
   const visibleProjects = projects.filter(
     (project) => project.stage !== 'hidden'
   )
   const tabs = [
     {
       name: 'Projects',
-      href: `?tab=projects`,
+      id: 'projects',
       count: visibleProjects.length,
-      current: currentTabName === 'projects' || currentTabName === null,
       display: (
         <>
           {visibleProjects.length === 0 ? (
@@ -68,9 +67,8 @@ export function RoundTabs(props: {
     ])
     tabs.push({
       name: 'Regrantors',
-      href: `?tab=regrants`,
+      id: 'regrants',
       count: sortedRegranters.length,
-      current: currentTabName === 'regrants',
       display: (
         <>
           {sortedRegranters.length === 0 ? (
@@ -92,9 +90,8 @@ export function RoundTabs(props: {
   }
   tabs.push({
     name: 'About',
-    href: `?tab=about`,
+    id: 'about',
     count: 0,
-    current: currentTabName === 'about',
     display: (
       <div>
         {round.description && <RichContent content={round.description} />}
@@ -102,5 +99,5 @@ export function RoundTabs(props: {
       </div>
     ),
   })
-  return <Tabs tabs={tabs} />
+  return <Tabs tabs={tabs} currentTabId={currentTabId} />
 }

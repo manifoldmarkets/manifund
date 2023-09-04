@@ -15,26 +15,7 @@ export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
       {donations.length > 0 ? (
         <>
           {sortedDonations.map((txn) => {
-            if (!txn.profiles) return null
-            return (
-              <Row
-                key={txn.id}
-                className="justify-between rounded p-2 hover:bg-gray-200"
-              >
-                <Row className="items-center gap-1">
-                  <UserAvatarAndBadge profile={txn.profiles as Profile} />
-                  <span className="text-gray-600"> donated </span>
-                  <span>{formatMoney(txn.amount)}</span>
-                </Row>
-                <Row className="items-center">
-                  <span className="text-sm text-gray-500">
-                    {formatDistanceToNow(new Date(txn.created_at), {
-                      addSuffix: true,
-                    })}
-                  </span>
-                </Row>
-              </Row>
-            )
+            return txn.profiles ? <Donation txn={txn} /> : null
           })}
         </>
       ) : (
@@ -43,5 +24,25 @@ export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
         </p>
       )}{' '}
     </>
+  )
+}
+
+export function Donation(props: { txn: TxnAndProfiles }) {
+  const { txn } = props
+  return (
+    <Row key={txn.id} className="justify-between rounded p-2 hover:bg-gray-200">
+      <Row className="items-center gap-1">
+        <UserAvatarAndBadge profile={txn.profiles as Profile} />
+        <span className="text-gray-600"> donated </span>
+        <span>{formatMoney(txn.amount)}</span>
+      </Row>
+      <Row className="items-center">
+        <span className="text-sm text-gray-500">
+          {formatDistanceToNow(new Date(txn.created_at), {
+            addSuffix: true,
+          })}
+        </span>
+      </Row>
+    </Row>
   )
 }
