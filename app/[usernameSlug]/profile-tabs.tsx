@@ -57,7 +57,7 @@ export function ProfileTabs(props: {
     (bid) => bid.status === 'pending' && bid.type === 'donate'
   )
   const searchParams = useSearchParams() ?? new URLSearchParams()
-  const currentTabName = searchParams.get('tab')
+  const currentTabId = searchParams.get('tab')
   const tabs = []
   const balance = calculateUserBalance(txns, profile.id)
   const withdrawBalance = calculateCashBalance(
@@ -89,9 +89,8 @@ export function ProfileTabs(props: {
     donations.length
   tabs.push({
     name: 'Portfolio',
-    href: '?tab=portfolio',
+    id: 'portfolio',
     count: portfolioCount,
-    current: currentTabName === 'portfolio' || currentTabName === null,
     display: (
       <div className="flex flex-col gap-6">
         {profile.regranter_status && !isOwnProfile && userProfile && (
@@ -137,23 +136,21 @@ export function ProfileTabs(props: {
   if (isOwnProfile || relevantProjects.length > 0) {
     tabs.push({
       name: 'Projects',
-      href: '?tab=projects',
+      id: 'projects',
       count: relevantProjects.length,
-      current: currentTabName === 'projects',
       display: <Projects projects={relevantProjects} />,
     })
   }
   if (profile.long_description) {
     tabs.push({
       name: 'About me',
-      href: '?tab=about',
+      id: 'about',
       count: 0,
-      current: currentTabName === 'about',
       display: <RichContent content={profile.long_description} />,
     })
   }
   if (tabs.length > 0) {
-    return <Tabs tabs={tabs} />
+    return <Tabs tabs={tabs} currentTabId={currentTabId} />
   } else {
     return null
   }

@@ -83,3 +83,17 @@ export async function getCommentsByUser(
   }
   return data as CommentAndProject[]
 }
+
+export async function getRecentFullComments(
+  supabase: SupabaseClient,
+  size: number = 10,
+  start: number = 0
+) {
+  const { data } = await supabase
+    .from('comments')
+    .select('*, profiles(*), projects(*)')
+    .order('created_at', { ascending: false })
+    .range(start, start + size)
+    .throwOnError()
+  return data as FullComment[]
+}

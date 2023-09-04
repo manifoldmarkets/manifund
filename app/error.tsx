@@ -1,12 +1,12 @@
 'use client'
 
 import { SiteLink } from '@/components/site-link'
-import { useSupabase } from '@/db/supabase-provider'
 
 export default function Error(props: { error: Error; reset: () => void }) {
   return (
     <div>
-      <p>Error thrown: {JSON.stringify(props.error)}</p>
+      <p>Error thrown:</p>
+      <div className="rounded-md bg-red-100 p-4">{props.error.message}</div>
       <p>Check console logs for more info.</p>
       <div className="mt-10">
         <h3 className="mb-2 text-xl">Common errors</h3>
