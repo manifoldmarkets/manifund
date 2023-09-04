@@ -13,7 +13,7 @@ import {
 } from '@heroicons/react/24/outline'
 
 const itemClass =
-  'sm:hover:bg-gray-200 block w-full py-1 px-3 text-center sm:hover:text-orange-600 transition-colors'
+  'sm:hover:bg-gray-200 block w-full py-1 px-2 text-center sm:hover:text-orange-600 transition-colors'
 const selectedItemClass = 'bg-gray-100 text-orange-600'
 const touchItemClass = 'bg-orange-100'
 

@@ -2,7 +2,11 @@
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
-import { ArrowLeftIcon, MinusSmallIcon } from '@heroicons/react/24/outline'
+import {
+  ArrowLeftIcon,
+  MinusSmallIcon,
+  PlusSmallIcon,
+} from '@heroicons/react/24/outline'
 import { HeartIcon } from '@heroicons/react/24/solid'
 import React from 'react'
 import { DataPoint } from '@/components/data-point'
@@ -77,7 +81,13 @@ export function BalanceDisplay(props: {
                   <>
                     {!accredited && (
                       <Row className="absolute top-2 right-2">
-                        <StripeDepositButton userId={userId} />
+                        <StripeDepositButton userId={userId}>
+                          <div className="rounded bg-orange-500 p-0.5 shadow">
+                            <Tooltip text="Add funds" placement="left">
+                              <PlusSmallIcon className="h-4 w-4 stroke-2 text-white" />
+                            </Tooltip>
+                          </div>
+                        </StripeDepositButton>
                       </Row>
                     )}
                   </>

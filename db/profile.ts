@@ -123,3 +123,12 @@ export async function listProfiles(supabase: SupabaseClient) {
     .throwOnError()
   return data as ProfileAndProjectTitles[]
 }
+
+export async function getTeamProfiles(supabase: SupabaseClient) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('*')
+    .or('full_name.eq.Austin Chen, full_name.eq.Rachel Weinberg')
+    .throwOnError()
+  return data as Profile[]
+}

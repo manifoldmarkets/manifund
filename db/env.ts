@@ -28,8 +28,3 @@ export const STRIPE_SECRET_KEY =
 export function isProd() {
   return SUPABASE_ENV === 'PROD'
 }
-
-export const BANK_ID =
-  SUPABASE_ENV === 'PROD'
-    ? process.env.NEXT_PUBLIC_PROD_BANK_ID
-    : process.env.NEXT_PUBLIC_DEV_BANK_ID

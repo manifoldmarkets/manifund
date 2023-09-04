@@ -21,14 +21,15 @@ export default function ClientAuth(props: { redirectTo?: string }) {
   if (user) {
     return (
       <div className="flex h-[70vh] w-full items-center justify-center">
-        <div className="flex h-36 w-36 animate-spin items-center justify-center rounded-full bg-gradient-to-tr from-gray-100 to-gray-300">
-          <div className="h-28 w-28 items-center justify-center rounded-full bg-white"></div>
+        <div className="relative flex h-20 w-20 animate-spin flex-col items-center justify-center rounded-full bg-orange-200 ">
+          <div className="absolute top-0 right-0 h-10 w-10 rounded-tr-full bg-orange-500" />
+          <div className="z-10 h-16 w-16 rounded-full bg-gray-50" />
         </div>
       </div>
     )
   } else {
     return (
-      <div className="bg-dark-200 max-w-md">
+      <div className="bg-dark-200 max-w-md p-4">
         {recommendedEmail && (
           <span className="text-gray-600">
             Make sure to create an account with the same email that your grant

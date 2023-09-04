@@ -2,7 +2,7 @@
 import { RichContent } from '@/components/editor'
 import { EmptyContent } from '@/components/empty-content'
 import { ProjectsDisplay } from '@/components/projects-display'
-import { RegranterCard } from '@/components/regranter-card'
+import { ProfileCard } from '@/components/profile-card'
 import { Tabs } from '@/components/tabs'
 import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
@@ -80,9 +80,7 @@ export function RoundTabs(props: {
           ) : (
             <div className="mt-2 grid grid-cols-2 gap-4 lg:grid-cols-3">
               {sortedRegranters.map((regranter) => {
-                return (
-                  <RegranterCard key={regranter.id} regranter={regranter} />
-                )
+                return <ProfileCard key={regranter.id} profile={regranter} />
               })}
             </div>
           )}

@@ -1,5 +1,4 @@
 import { Bid } from '@/db/bid'
-import { BANK_ID } from '@/db/env'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
@@ -238,7 +237,10 @@ export function categorizeTxn(txn: FullTxn, userId: string) {
           return 'share sale'
         }
       } else {
-        if (txn.from_id === BANK_ID && !isCharitableDeposit(txn.id)) {
+        if (
+          txn.from_id === process.env.NEXT_PUBLIC_PROD_BANK_ID &&
+          !isCharitableDeposit(txn.id)
+        ) {
           return 'deposit'
         } else {
           return 'incoming profile donation'
@@ -252,7 +254,7 @@ export function categorizeTxn(txn: FullTxn, userId: string) {
           return 'outgoing project donation'
         }
       } else {
-        if (txn.to_id === BANK_ID) {
+        if (txn.to_id === process.env.NEXT_PUBLIC_PROD_BANK_ID) {
           return 'withdraw'
         } else {
           return 'outgoing profile donation'
