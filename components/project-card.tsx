@@ -16,7 +16,7 @@ import {
 import { orderBy } from 'lodash'
 import { Tag, CauseTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
-import { Card } from './card'
+import { Card } from './layout/card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { getSponsoredAmount } from '@/utils/constants'

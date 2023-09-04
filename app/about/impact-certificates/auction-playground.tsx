@@ -14,7 +14,7 @@ import { resolveBids } from '@/pages/api/close-bidding'
 import { Bid } from '@/db/bid'
 import { Resolution } from '@/pages/api/close-bidding'
 import uuid from 'react-uuid'
-import { Card } from '@/components/card'
+import { Card } from '@/components/layout/card'
 
 export function AuctionPlayground() {
   const INITIAL_BIDS = [

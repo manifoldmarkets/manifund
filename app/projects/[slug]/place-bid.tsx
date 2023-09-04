@@ -15,7 +15,7 @@ import { Select } from '@/components/select'
 import { useRouter } from 'next/navigation'
 import { Tooltip } from '@/components/tooltip'
 import { Project, TOTAL_SHARES } from '@/db/project'
-import { Card } from '@/components/card'
+import { Card } from '@/components/layout/card'
 import { DataBox } from '@/components/data-box'
 
 type BidType = Database['public']['Enums']['bid_type']

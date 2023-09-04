@@ -10,7 +10,7 @@ import {
 import { HeartIcon } from '@heroicons/react/24/solid'
 import React from 'react'
 import { DataPoint } from '@/components/data-point'
-import { Card } from '@/components/card'
+import { Card } from '@/components/layout/card'
 import {
   AirtableDepositButton,
   StripeDepositButton,
