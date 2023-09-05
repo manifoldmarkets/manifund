@@ -64,29 +64,32 @@ export function Comments(props: {
             {userProfile && (
               <Tooltip text="Reply" className="absolute bottom-2 right-2">
                 <IconButton onClick={() => setReplyingTo(thread.root)}>
-                  <ArrowUturnRightIcon className=" h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
+                  <ArrowUturnRightIcon className="h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
                 </IconButton>
               </Tooltip>
             )}
           </Comment>
-          {thread.replies.map((reply) => (
-            <div className="ml-8 mt-1" key={reply.id}>
-              <Comment
-                comment={reply}
-                commenter={reply.profiles}
-                writtenByCreator={reply.commenter === project.creator}
-                contributionText={commenterContributions[reply.commenter]}
-              >
-                {userProfile && (
-                  <Tooltip text="Reply" className="absolute bottom-2 right-2">
-                    <IconButton onClick={() => setReplyingTo(thread.root)}>
-                      <ArrowUturnRightIcon className=" h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </Comment>
-            </div>
-          ))}
+          <div className="relative">
+            <div className="absolute left-[62px] bottom-6 -z-10 h-full w-10 rounded-xl border-l-4 border-b-4" />
+            {thread.replies.map((reply) => (
+              <div className="relative ml-12 mt-1" key={reply.id}>
+                <Comment
+                  comment={reply}
+                  commenter={reply.profiles}
+                  writtenByCreator={reply.commenter === project.creator}
+                  contributionText={commenterContributions[reply.commenter]}
+                >
+                  {userProfile && (
+                    <Tooltip text="Reply" className="absolute bottom-2 right-2">
+                      <IconButton onClick={() => setReplyingTo(thread.root)}>
+                        <ArrowUturnRightIcon className=" h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Comment>
+              </div>
+            ))}
+          </div>
           {(replyingTo?.id === thread.root.id ||
             replyingTo?.replying_to === thread.root.id) &&
             userProfile && (
