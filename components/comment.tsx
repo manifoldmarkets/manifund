@@ -35,7 +35,8 @@ export function Comment(props: {
           username={commenter.username}
           avatarUrl={commenter.avatar_url}
           id={commenter.id}
-          className="mt-1 h-8 w-8"
+          className="mt-1"
+          size="sm"
           noLink
         />
       </Link>
