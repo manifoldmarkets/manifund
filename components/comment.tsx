@@ -32,20 +32,8 @@ export function Comment(props: {
   const [expanded, setExpanded] = useState(false)
   const [showExpandButton, setShowExpandButton] = useState(false)
   const contentElement = useRef<any>(null)
-  const contentHeight = contentElement.current
-    ? contentElement.current.scrollHeight
-    : 0
-  const lineHeight = contentElement.current
-    ? parseInt(contentElement.current.style.lineHeight)
-    : 0
-  const numLines = contentHeight / lineHeight
-
-  console.log(contentHeight, lineHeight, numLines)
   useLayoutEffect(() => {
-    if (
-      contentElement.current &&
-      contentElement.current.clientHeight < contentElement.current.scrollHeight
-    ) {
+    if (contentElement.current && contentElement.current.scrollHeight > 500) {
       setShowExpandButton(true)
     }
   }, [contentElement])
@@ -64,7 +52,7 @@ export function Comment(props: {
       </Link>
       <Card
         id={comment.id}
-        className="relative w-full rounded-xl rounded-tl-sm px-6 pt-2"
+        className="relative w-full rounded-xl rounded-tl-sm px-6 pt-2 pb-8"
       >
         <Row className="mb-2 w-full items-center justify-between gap-2">
           <Row className="min-w-fit items-center gap-1">
@@ -106,10 +94,26 @@ export function Comment(props: {
             </Link>
           )}
         </Row>
-        <div id="content" ref={contentElement}>
+        <div
+          id="content"
+          ref={contentElement}
+          className={clsx(
+            expanded || !showExpandButton
+              ? 'max-h-fit'
+              : 'truncate line-clamp-[12]'
+          )}
+        >
           <RichContent content={comment.content} className="text-sm" />
         </div>
         {children}
+        {showExpandButton && (
+          <button
+            className="absolute bottom-2 left-3 text-xs text-gray-500 hover:underline"
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? 'Show less' : 'Show more'}
+          </button>
+        )}
       </Card>
     </Row>
   )
