@@ -35,9 +35,6 @@ export function ProjectTabs(props: {
     userProfile,
     specialCommentPrompt,
   } = props
-  useEffect(() => {
-    window.scrollTo({ top: 0 })
-  }, [project.id])
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
   const trades = calculateFullTrades(txns)

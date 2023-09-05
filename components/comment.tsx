@@ -37,7 +37,7 @@ export function Comment(props: {
       setShowExpandButton(true)
     }
   }, [contentElement])
-
+  console.log(comment.id)
   return (
     <Row className="w-full gap-2">
       <Link href={`/${commenter.username}`}>
@@ -50,10 +50,8 @@ export function Comment(props: {
           noLink
         />
       </Link>
-      <Card
-        id={comment.id}
-        className="relative w-full rounded-xl rounded-tl-sm px-6 pt-2 pb-8"
-      >
+      <div id={commenter.id} />
+      <Card className="relative w-full rounded-xl rounded-tl-sm px-6 pt-2 pb-8">
         <Row className="mb-2 w-full items-center justify-between gap-2">
           <Row className="min-w-fit items-center gap-1">
             <UserLink
