@@ -29,7 +29,7 @@ export function Comment(props: {
     children,
   } = props
   return (
-    <Row className="gap-2">
+    <Row className="w-full gap-2">
       <Link href={`/${commenter.username}`}>
         <Avatar
           username={commenter.username}
@@ -42,7 +42,7 @@ export function Comment(props: {
       </Link>
       <Card
         id={comment.id}
-        className="relative rounded-xl rounded-tl-sm px-6 pt-2"
+        className="relative w-full rounded-xl rounded-tl-sm px-6 pt-2"
       >
         <Row className="mb-2 w-full items-center justify-between gap-2">
           <Row className="min-w-fit items-center gap-1">
