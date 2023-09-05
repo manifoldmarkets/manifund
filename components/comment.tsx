@@ -11,6 +11,7 @@ import clsx from 'clsx'
 import { Project } from '@/db/project'
 import { Card } from './layout/card'
 import { Avatar } from './avatar'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 export function Comment(props: {
   comment: Comment
@@ -28,6 +29,27 @@ export function Comment(props: {
     project,
     children,
   } = props
+  const [expanded, setExpanded] = useState(false)
+  const [showExpandButton, setShowExpandButton] = useState(false)
+  const contentElement = useRef<any>(null)
+  const contentHeight = contentElement.current
+    ? contentElement.current.scrollHeight
+    : 0
+  const lineHeight = contentElement.current
+    ? parseInt(contentElement.current.style.lineHeight)
+    : 0
+  const numLines = contentHeight / lineHeight
+
+  console.log(contentHeight, lineHeight, numLines)
+  useLayoutEffect(() => {
+    if (
+      contentElement.current &&
+      contentElement.current.clientHeight < contentElement.current.scrollHeight
+    ) {
+      setShowExpandButton(true)
+    }
+  }, [contentElement])
+
   return (
     <Row className="w-full gap-2">
       <Link href={`/${commenter.username}`}>
@@ -84,7 +106,9 @@ export function Comment(props: {
             </Link>
           )}
         </Row>
-        <RichContent content={comment.content} className="text-sm" />
+        <div id="content" ref={contentElement}>
+          <RichContent content={comment.content} className="text-sm" />
+        </div>
         {children}
       </Card>
     </Row>
