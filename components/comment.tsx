@@ -54,7 +54,7 @@ export function Comment(props: {
     }
   }, [])
   return (
-    <Col>
+    <Col ref={commentElement} id={comment.id}>
       <div className="ml-10">
         {projectTitle && (
           <Link href={`${commentHref}`}>
@@ -63,7 +63,7 @@ export function Comment(props: {
         )}
         {contributionText && !projectTitle && <Tag text={contributionText} />}
       </div>
-      <Row className="w-full gap-2" ref={commentElement}>
+      <Row className="w-full gap-2">
         <Link href={`/${commenter.username}`}>
           <Avatar
             username={commenter.username}
