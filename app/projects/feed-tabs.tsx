@@ -136,9 +136,9 @@ function FullDonation(props: { txn: FullTxn }) {
         href={`/projects/${txn.projects.slug}?tab=donations`}
         className="w-fit"
       >
-        <Tag text={txn.projects.title} className="ml-1 hover:bg-orange-200" />
+        <Tag text={txn.projects.title} className="hover:bg-orange-200" />
       </Link>
-      <Card className="!p-1">
+      <Card className="rounded-tl-sm !p-1">
         <Donation txn={txn} key={txn.id} />
       </Card>
     </Col>
