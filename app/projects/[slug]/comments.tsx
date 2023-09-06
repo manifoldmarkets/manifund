@@ -70,7 +70,8 @@ export function Comments(props: {
             )}
           </Comment>
           <div className="relative">
-            <div className="absolute left-[62px] bottom-6 -z-10 h-full w-10 rounded-xl border-l-4 border-b-4" />
+            {/* Bar along the left side of threads */}
+            <div className="absolute left-[62px] bottom-6 -z-10 h-full w-10 rounded-xl border-l-[3px] border-b-[3px]" />
             {thread.replies.map((reply) => (
               <div className="relative ml-12 mt-1" key={reply.id}>
                 <Comment
