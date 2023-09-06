@@ -42,10 +42,14 @@ export function Comment(props: {
     }
   }, [contentElement])
   const commentElement = useRef<any>(null)
+  const [highlighted, setHighlighted] = useState(false)
   useEffect(() => {
     if (typeof window !== 'undefined') {
       if (window.location.hash === `#${comment.id}`) {
+        setHighlighted(true)
         commentElement.current.scrollIntoView({ behavior: 'smooth' })
+      } else {
+        setHighlighted(false)
       }
     }
   }, [])
@@ -70,7 +74,12 @@ export function Comment(props: {
             noLink
           />
         </Link>
-        <Card className="relative w-full rounded-xl rounded-tl-sm px-6 pt-2 pb-8">
+        <Card
+          className={clsx(
+            'relative w-full rounded-xl rounded-tl-sm px-6 pt-2 pb-8',
+            highlighted ? '!bg-orange-100 ring-2 !ring-orange-600' : ''
+          )}
+        >
           <Row className="mb-2 w-full items-center justify-between gap-2">
             <Row className="min-w-fit items-center gap-1">
               <UserLink
