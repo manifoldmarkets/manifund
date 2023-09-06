@@ -58,7 +58,7 @@ export function Comments(props: {
           <Comment
             comment={thread.root}
             commenter={thread.root.profiles}
-            commentUrl={`https://manifund.org/projects/${project.slug}?tab=comments#${thread.root.id}`}
+            commentHref={`/projects/${project.slug}?tab=comments#${thread.root.id}`}
             writtenByCreator={thread.root.commenter === project.creator}
             contributionText={commenterContributions[thread.root.commenter]}
           >
@@ -78,7 +78,7 @@ export function Comments(props: {
                 <Comment
                   comment={reply}
                   commenter={reply.profiles}
-                  commentUrl={`https://manifund.org/projects/${project.slug}?tab=comments#${reply.id}`}
+                  commentHref={`/projects/${project.slug}?tab=comments#${reply.id}`}
                   writtenByCreator={reply.commenter === project.creator}
                   contributionText={commenterContributions[reply.commenter]}
                 >

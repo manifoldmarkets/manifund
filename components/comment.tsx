@@ -8,26 +8,26 @@ import { Comment } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { Project } from '@/db/project'
 import { Card } from './layout/card'
 import { Avatar } from './avatar'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { LinkIcon } from '@heroicons/react/20/solid'
 import { Tooltip } from './tooltip'
+import { getURL } from '@/utils/constants'
 
 export function Comment(props: {
   comment: Comment
   commenter: Profile
-  commentUrl: string
+  commentHref: string
   writtenByCreator?: boolean
   contributionText?: string
-  projectTitle?: String
+  projectTitle?: string
   children?: React.ReactNode
 }) {
   const {
     comment,
     commenter,
-    commentUrl,
+    commentHref,
     writtenByCreator,
     contributionText,
     projectTitle,
@@ -52,9 +52,12 @@ export function Comment(props: {
   return (
     <Col>
       <div className="ml-10">
-        {contributionText && (
-          <Tag text={contributionText} color="orange" className="text-xs" />
+        {projectTitle && (
+          <Link href={`${commentHref}`}>
+            <Tag text={projectTitle} className="hover:bg-orange-200" />
+          </Link>
         )}
+        {contributionText && !projectTitle && <Tag text={contributionText} />}
       </div>
       <Row className="w-full gap-2" ref={commentElement}>
         <Link href={`/${commenter.username}`}>
@@ -82,14 +85,6 @@ export function Comment(props: {
                 })}
               </p>
             </Row>
-            {projectTitle && (
-              <Link
-                href={commentUrl}
-                className="truncate overflow-ellipsis text-xs font-semibold text-orange-600 hover:underline"
-              >
-                {projectTitle}
-              </Link>
-            )}
           </Row>
           <div
             id="content"
@@ -113,7 +108,7 @@ export function Comment(props: {
             <LinkIcon
               className="h-4 w-4 stroke-2 text-gray-500 hover:text-gray-700"
               onClick={async () => {
-                await navigator.clipboard.writeText(commentUrl)
+                await navigator.clipboard.writeText(`${getURL()}${commentHref}`)
               }}
             />
           </Tooltip>

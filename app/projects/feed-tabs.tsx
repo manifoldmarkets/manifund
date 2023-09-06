@@ -12,6 +12,7 @@ import { useState } from 'react'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { FullProject } from '@/db/project'
 import { MiniCause } from '@/db/cause'
+import { getURL } from '@/utils/constants'
 
 export function FeedTabs(props: {
   recentComments: FullComment[]
@@ -61,7 +62,7 @@ export function FeedTabs(props: {
               key={comment.id}
               comment={comment}
               commenter={comment.profiles}
-              commentUrl={`https://manifund.org/projects/${comment.projects.slug}?tab=comments#${comment.id}`}
+              commentHref={`/projects/${comment.projects.slug}?tab=comments#${comment.id}`}
               projectTitle={comment.projects.title}
             />
           )
