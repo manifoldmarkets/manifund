@@ -99,9 +99,7 @@ export function Comment(props: {
             id="content"
             ref={contentElement}
             className={clsx(
-              expanded || !showExpandButton
-                ? 'max-h-fit'
-                : 'truncate line-clamp-[12]'
+              expanded || !showExpandButton ? 'max-h-fit' : 'line-clamp-[12]'
             )}
           >
             <RichContent content={comment.content} className="text-sm" />
