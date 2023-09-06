@@ -106,7 +106,7 @@ export function Comment(props: {
           >
             <RichContent content={comment.content} className="text-sm" />
           </div>
-          <Row className="absolute bottom-2 right-3 gap-1">
+          <Row className="absolute bottom-2 right-2 gap-2">
             <Tooltip text="Copy link to comment" className="cursor-pointer">
               <LinkIcon
                 className="h-4 w-4 stroke-2 text-gray-500 hover:text-gray-700"

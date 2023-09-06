@@ -51,66 +51,62 @@ export function Comments(props: {
       </p>
     )
   const threads = genThreads(rootComments, replyComments)
-  const commentsDisplay = threads.map((thread) => (
-    <div key={thread.root.id} className="mt-6">
-      <Row className="w-full">
-        <div className="w-full">
-          <Comment
-            comment={thread.root}
-            commenter={thread.root.profiles}
-            commentHref={`/projects/${project.slug}?tab=comments#${thread.root.id}`}
-            writtenByCreator={thread.root.commenter === project.creator}
-            contributionText={commenterContributions[thread.root.commenter]}
-          >
-            {userProfile && (
-              <Tooltip text="Reply">
-                <ArrowUturnRightIcon
-                  className="h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700"
-                  onClick={() => setReplyingTo(thread.root)}
-                />
-              </Tooltip>
-            )}
-          </Comment>
-          <div className="relative">
-            {/* Bar along the left side of threads */}
-            <div className="absolute left-[62px] bottom-6 -z-10 h-full w-10 rounded-xl border-l-[3px] border-b-[3px]" />
-            {thread.replies.map((reply) => (
-              <div className="relative ml-12 mt-1" key={reply.id}>
-                <Comment
-                  comment={reply}
-                  commenter={reply.profiles}
-                  commentHref={`/projects/${project.slug}?tab=comments#${reply.id}`}
-                  writtenByCreator={reply.commenter === project.creator}
-                  contributionText={commenterContributions[reply.commenter]}
-                >
-                  {userProfile && (
-                    <Tooltip text="Reply">
-                      <ArrowUturnRightIcon
-                        className="h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700"
-                        onClick={() => setReplyingTo(thread.root)}
-                      />
-                    </Tooltip>
-                  )}
-                </Comment>
-              </div>
-            ))}
+  const commentsDisplay = threads.map((thread) => {
+    const replyButton = (
+      <Tooltip text="Reply">
+        <ArrowUturnRightIcon
+          className="h-4 w-4 rotate-180 cursor-pointer stroke-2 text-gray-500 hover:text-gray-700"
+          onClick={() => setReplyingTo(thread.root)}
+        />
+      </Tooltip>
+    )
+    return (
+      <div key={thread.root.id} className="mt-6">
+        <Row className="w-full">
+          <div className="w-full">
+            <Comment
+              comment={thread.root}
+              commenter={thread.root.profiles}
+              commentHref={`/projects/${project.slug}?tab=comments#${thread.root.id}`}
+              writtenByCreator={thread.root.commenter === project.creator}
+              contributionText={commenterContributions[thread.root.commenter]}
+            >
+              {userProfile && replyButton}
+            </Comment>
+            <div className="relative">
+              {/* Bar along the left side of threads */}
+              <div className="absolute left-[62px] bottom-6 -z-10 h-full w-10 rounded-xl border-l-[3px] border-b-[3px]" />
+              {thread.replies.map((reply) => (
+                <div className="relative ml-12 mt-1" key={reply.id}>
+                  <Comment
+                    comment={reply}
+                    commenter={reply.profiles}
+                    commentHref={`/projects/${project.slug}?tab=comments#${reply.id}`}
+                    writtenByCreator={reply.commenter === project.creator}
+                    contributionText={commenterContributions[reply.commenter]}
+                  >
+                    {userProfile && replyButton}
+                  </Comment>
+                </div>
+              ))}
+            </div>
+            {(replyingTo?.id === thread.root.id ||
+              replyingTo?.replying_to === thread.root.id) &&
+              userProfile && (
+                <div className="mt-1 ml-12">
+                  <WriteComment
+                    project={project}
+                    commenter={userProfile}
+                    replyingTo={replyingTo}
+                    setReplyingTo={setReplyingTo}
+                  />
+                </div>
+              )}
           </div>
-          {(replyingTo?.id === thread.root.id ||
-            replyingTo?.replying_to === thread.root.id) &&
-            userProfile && (
-              <div className="mt-1 ml-12">
-                <WriteComment
-                  project={project}
-                  commenter={userProfile}
-                  replyingTo={replyingTo}
-                  setReplyingTo={setReplyingTo}
-                />
-              </div>
-            )}
-        </div>
-      </Row>
-    </div>
-  ))
+        </Row>
+      </div>
+    )
+  })
   return (
     <div>
       {userProfile && (
