@@ -57,7 +57,6 @@ export function Comment(props: {
           noLink
         />
       </Link>
-      <div id={commenter.id} />
       <Card className="relative w-full rounded-xl rounded-tl-sm px-6 pt-2 pb-8">
         <Row className="mb-2 w-full items-center justify-between gap-2">
           <Row className="min-w-fit items-center gap-1">

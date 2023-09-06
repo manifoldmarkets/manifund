@@ -18,6 +18,7 @@ import { JSONContent } from '@tiptap/react'
 import clsx from 'clsx'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Comment } from '@/components/comment'
+import { Card } from '@/components/layout/card'
 
 export function Comments(props: {
   project: Project
@@ -96,7 +97,7 @@ export function Comments(props: {
           {(replyingTo?.id === thread.root.id ||
             replyingTo?.replying_to === thread.root.id) &&
             userProfile && (
-              <div className="mt-1 ml-8">
+              <div className="mt-1 ml-12">
                 <WriteComment
                   project={project}
                   commenter={userProfile}
@@ -205,7 +206,6 @@ export function WriteComment(props: {
   }, [replyingTo, specialPrompt, editor])
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-
   const handleSubmit = async () => {
     if (editor?.getText()?.trim()) {
       setIsSubmitting(true)
@@ -237,17 +237,16 @@ export function WriteComment(props: {
   }
 
   return (
-    <Row className="w-full">
+    <Row className="w-full gap-2">
       <Avatar
         username={commenter.username}
         avatarUrl={commenter.avatar_url}
-        size={replyingTo?.id ? 6 : 10}
+        size="sm"
         id={commenter.id}
-        className="mr-2"
       />
       <div
         className={clsx(
-          'relative w-full overflow-hidden rounded-md bg-white shadow',
+          'relative w-full overflow-hidden rounded-xl rounded-tl-sm bg-white p-0 shadow',
           specialPrompt && 'shadow-[0_0px_10px_5px_rgb(249,115,22,0.5)]'
         )}
       >
