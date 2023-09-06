@@ -50,20 +50,11 @@ export function UserLink(props: {
   className?: string
   short?: boolean
   noLink?: boolean
-  createdTime?: number
   hideBadge?: boolean
   creatorBadge?: boolean
 }) {
-  const {
-    name,
-    username,
-    className,
-    short,
-    noLink,
-    createdTime,
-    hideBadge,
-    creatorBadge,
-  } = props
+  const { name, username, className, short, noLink, hideBadge, creatorBadge } =
+    props
   const shortName = short ? shortenName(name) : name
   return (
     <SiteLink

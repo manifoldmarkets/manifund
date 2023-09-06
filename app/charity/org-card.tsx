@@ -1,4 +1,4 @@
-import { Card } from '@/components/card'
+import { Card } from '@/components/layout/card'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { ProfileAndTxns } from '@/db/profile'

@@ -7,7 +7,7 @@ import {
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Stripe from 'stripe'
-import { Card } from './card'
+import { Card } from './layout/card'
 import { FeatureCard } from './feature-card'
 import { Col } from './layout/col'
 import { Row } from './layout/row'

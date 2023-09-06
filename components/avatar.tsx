@@ -111,7 +111,7 @@ export function GeneratedAvatar(props: { seed: string; size?: number }) {
   return (
     <div
       className={clsx(
-        `flex flex-shrink-0 h-${size} w-${size} items-center justify-center rounded-full`,
+        `flex flex-shrink-0 h-${size} w-${size}  items-center justify-center rounded-full`,
         direction,
         fromColor,
         toColor,

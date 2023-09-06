@@ -12,6 +12,9 @@ import { useState } from 'react'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { FullProject } from '@/db/project'
 import { MiniCause } from '@/db/cause'
+import { getURL } from '@/utils/constants'
+import { Tag } from '@/components/tags'
+import { Card } from '@/components/layout/card'
 
 export function FeedTabs(props: {
   recentComments: FullComment[]
@@ -61,7 +64,8 @@ export function FeedTabs(props: {
               key={comment.id}
               comment={comment}
               commenter={comment.profiles}
-              project={comment.projects}
+              commentHref={`/projects/${comment.projects.slug}?tab=comments#${comment.id}`}
+              projectTitle={comment.projects.title}
             />
           )
         })}
@@ -129,12 +133,14 @@ function FullDonation(props: { txn: FullTxn }) {
   return (
     <Col>
       <Link
-        href={`/projects/${txn.projects.slug}`}
-        className="truncate overflow-ellipsis text-xs font-semibold text-orange-600 hover:underline"
+        href={`/projects/${txn.projects.slug}?tab=donations`}
+        className="w-fit"
       >
-        {txn.projects.title}
+        <Tag text={txn.projects.title} className="hover:bg-orange-200" />
       </Link>
-      <Donation txn={txn} key={txn.id} />
+      <Card className="rounded-tl-sm !p-1">
+        <Donation txn={txn} key={txn.id} />
+      </Card>
     </Col>
   )
 }

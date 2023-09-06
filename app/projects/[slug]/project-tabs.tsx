@@ -12,8 +12,8 @@ import { Tabs } from '@/components/tabs'
 import { DonationsHistory } from '@/components/donations-history'
 import { CommentAndProfile } from '@/db/comment'
 import { uniq } from 'lodash'
-import { useEffect } from 'react'
 import { compareDesc } from 'date-fns'
+import { formatMoney } from '@/utils/formatting'
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -35,9 +35,6 @@ export function ProjectTabs(props: {
     userProfile,
     specialCommentPrompt,
   } = props
-  useEffect(() => {
-    window.scrollTo({ top: 0 })
-  }, [project.id])
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
   const trades = calculateFullTrades(txns)
@@ -167,7 +164,7 @@ export function getCommenterContributions(
         (shareholder) => shareholder.profile.id === commenterId
       )
       if (holding) {
-        contributions[commenterId] = `HOLDS ${
+        contributions[commenterId] = `holds ${
           (holding.numShares / TOTAL_SHARES) * 100
         }%`
       }
@@ -182,7 +179,7 @@ export function getCommenterContributions(
         0
       )
       if (totalDonated > 0) {
-        contributions[commenterId] = `DONATED $${totalDonated}`
+        contributions[commenterId] = `donated ${formatMoney(totalDonated)}`
       }
     }
     if (!contributions[commenterId]) {
@@ -196,13 +193,13 @@ export function getCommenterContributions(
       if (latestBid) {
         contributions[commenterId] =
           latestBid.type === 'donate'
-            ? `OFFERED $${relevantBids.reduce(
+            ? `offered $${relevantBids.reduce(
                 (acc, bid) => acc + bid.amount,
                 0
               )}`
             : latestBid.type === 'buy'
-            ? `BUYING at $${latestBid.valuation}`
-            : `SELLING at $${latestBid.valuation}`
+            ? `buying at $${latestBid.valuation}`
+            : `selling at $${latestBid.valuation}`
       }
     }
   })

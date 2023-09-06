@@ -9,7 +9,7 @@ import { CardlessProject } from '@/components/project-card'
 import { FullProject } from '@/db/project'
 import { StripeDepositButton } from '@/components/deposit-buttons'
 import { getProfileById } from '@/db/profile'
-import { Card } from '@/components/card'
+import { Card } from '@/components/layout/card'
 import { SupabaseClient } from '@supabase/supabase-js'
 
 const FEATURED_PROJECT_SLUGS = [

@@ -22,7 +22,6 @@ import {
   getAmountRaised,
   getProposalValuation,
 } from '@/utils/math'
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context'
 import { useState } from 'react'
 import { Description } from './description'
 import { Edit } from './edit'
@@ -32,6 +31,7 @@ import { ProposalData } from './proposal-data'
 import { ProposalRequirements } from './proposal-requirements'
 import { Vote } from './vote'
 import { CauseTag } from '@/components/tags'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context'
 
 export function ProjectDisplay(props: {
   project: FullProject

@@ -1,6 +1,5 @@
 import { createServerClient } from '@/db/supabase-server'
 import { getUser, isAdmin, getProfileAndBidsById } from '@/db/profile'
-import { CloseBidding } from './close-bidding'
 import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
@@ -51,7 +50,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     : undefined
   const userIsAdmin = user ? isAdmin(user) : false
   return (
-    <>
+    <div className="p-4">
       <ProjectDisplay
         project={project}
         userTxns={userTxns}
@@ -63,7 +62,6 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         causesList={causesList}
         userIsAdmin={userIsAdmin}
       />
-      {userIsAdmin && <CloseBidding project={project} />}
-    </>
+    </div>
   )
 }
