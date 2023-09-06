@@ -12,7 +12,6 @@ import { Tabs } from '@/components/tabs'
 import { DonationsHistory } from '@/components/donations-history'
 import { CommentAndProfile } from '@/db/comment'
 import { uniq } from 'lodash'
-import { useEffect } from 'react'
 import { compareDesc } from 'date-fns'
 
 export function ProjectTabs(props: {

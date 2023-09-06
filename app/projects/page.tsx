@@ -1,6 +1,5 @@
 import { createServerClient } from '@/db/supabase-server'
 import { FullProject, listProjects } from '@/db/project'
-import { ProjectsDisplay } from '@/components/projects-display'
 import { getUser, Profile } from '@/db/profile'
 import Image from 'next/image'
 import { Row } from '@/components/layout/row'

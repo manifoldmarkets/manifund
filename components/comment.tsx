@@ -11,7 +11,7 @@ import clsx from 'clsx'
 import { Project } from '@/db/project'
 import { Card } from './layout/card'
 import { Avatar } from './avatar'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 export function Comment(props: {
   comment: Comment
@@ -37,9 +37,16 @@ export function Comment(props: {
       setShowExpandButton(true)
     }
   }, [contentElement])
-  console.log(comment.id)
+  const commentElement = useRef<any>(null)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (window.location.hash === `#${comment.id}`) {
+        commentElement.current.scrollIntoView({ behavior: 'smooth' })
+      }
+    }
+  }, [])
   return (
-    <Row className="w-full gap-2">
+    <Row className="w-full gap-2" ref={commentElement}>
       <Link href={`/${commenter.username}`}>
         <Avatar
           username={commenter.username}
