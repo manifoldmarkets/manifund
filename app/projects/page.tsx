@@ -61,7 +61,7 @@ export default async function Projects(props: {
     return projects.find((project) => project.slug === slug)
   })
   return (
-    <Col className="max-w-4xl gap-16 px-3 py-5 sm:px-6">
+    <Col className="gap-16 px-3 py-5 sm:px-6">
       {user === null && (
         <Col className="items-center justify-between gap-8">
           {' '}
