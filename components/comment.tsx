@@ -46,79 +46,71 @@ export function Comment(props: {
     }
   }, [])
   return (
-    <Row className="w-full gap-2" ref={commentElement}>
-      <Link href={`/${commenter.username}`}>
-        <Avatar
-          username={commenter.username}
-          avatarUrl={commenter.avatar_url}
-          id={commenter.id}
-          className="mt-1"
-          size="sm"
-          noLink
-        />
-      </Link>
-      <Card className="relative w-full rounded-xl rounded-tl-sm px-6 pt-2 pb-8">
-        <Row className="mb-2 w-full items-center justify-between gap-2">
-          <Row className="min-w-fit items-center gap-1">
-            <UserLink
-              name={commenter.full_name}
-              username={commenter.username}
-              creatorBadge={writtenByCreator}
-              className="text-sm font-semibold"
-            />
-            <p
-              className={clsx(
-                'min-w-fit text-xs text-gray-500',
-                project ? 'inline' : 'hidden sm:inline'
-              )}
-            >
-              {formatDistanceToNow(new Date(comment.created_at), {
-                addSuffix: true,
-              })}
-            </p>
-          </Row>
-          {!project && (
-            <Col className="items-center">
-              {contributionText && (
-                <Tag text={contributionText} color="orange" />
-              )}
-              <p className={clsx('text-xs text-gray-500 sm:hidden')}>
+    <Col>
+      {!project && (
+        <div className="ml-10">
+          {contributionText && (
+            <Tag text={contributionText} color="orange" className="text-xs" />
+          )}
+        </div>
+      )}
+      <Row className="w-full gap-2" ref={commentElement}>
+        <Link href={`/${commenter.username}`}>
+          <Avatar
+            username={commenter.username}
+            avatarUrl={commenter.avatar_url}
+            id={commenter.id}
+            className="mt-1"
+            size="sm"
+            noLink
+          />
+        </Link>
+        <Card className="relative w-full rounded-xl rounded-tl-sm px-6 pt-2 pb-8">
+          <Row className="mb-2 w-full items-center justify-between gap-2">
+            <Row className="min-w-fit items-center gap-1">
+              <UserLink
+                name={commenter.full_name}
+                username={commenter.username}
+                creatorBadge={writtenByCreator}
+                className="text-sm font-semibold"
+              />
+              <p className="min-w-fit text-xs text-gray-500">
                 {formatDistanceToNow(new Date(comment.created_at), {
                   addSuffix: true,
                 })}
               </p>
-            </Col>
-          )}
-          {project && (
-            <Link
-              href={`/projects/${project.slug}?tab=comments#${comment.id}`}
-              className="truncate overflow-ellipsis text-xs font-semibold text-orange-600 hover:underline"
-            >
-              {project.title}
-            </Link>
-          )}
-        </Row>
-        <div
-          id="content"
-          ref={contentElement}
-          className={clsx(
-            expanded || !showExpandButton
-              ? 'max-h-fit'
-              : 'truncate line-clamp-[12]'
-          )}
-        >
-          <RichContent content={comment.content} className="text-sm" />
-        </div>
-        {children}
-        {showExpandButton && (
-          <button
-            className="absolute bottom-2 left-3 text-xs text-gray-500 hover:underline"
-            onClick={() => setExpanded(!expanded)}
+            </Row>
+            {project && (
+              <Link
+                href={`/projects/${project.slug}?tab=comments#${comment.id}`}
+                className="truncate overflow-ellipsis text-xs font-semibold text-orange-600 hover:underline"
+              >
+                {project.title}
+              </Link>
+            )}
+          </Row>
+          <div
+            id="content"
+            ref={contentElement}
+            className={clsx(
+              expanded || !showExpandButton
+                ? 'max-h-fit'
+                : 'truncate line-clamp-[12]'
+            )}
           >
-            {expanded ? 'Show less' : 'Show more'}
-          </button>
-        )}
-      </Card>
-    </Row>
+            <RichContent content={comment.content} className="text-sm" />
+          </div>
+          {children}
+          {showExpandButton && (
+            <button
+              className="absolute bottom-2 left-3 text-xs text-gray-500 hover:underline"
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? 'Show less' : 'Show more'}
+            </button>
+          )}
+        </Card>
+      </Row>
+    </Col>
   )
 }

@@ -18,7 +18,6 @@ import { JSONContent } from '@tiptap/react'
 import clsx from 'clsx'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Comment } from '@/components/comment'
-import { Card } from '@/components/layout/card'
 
 export function Comments(props: {
   project: Project
