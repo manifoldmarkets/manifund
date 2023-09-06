@@ -61,7 +61,8 @@ export function FeedTabs(props: {
               key={comment.id}
               comment={comment}
               commenter={comment.profiles}
-              project={comment.projects}
+              commentUrl={`https://manifund.org/projects/${comment.projects.slug}?tab=comments#${comment.id}`}
+              projectTitle={comment.projects.title}
             />
           )
         })}

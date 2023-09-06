@@ -12,21 +12,25 @@ import { Project } from '@/db/project'
 import { Card } from './layout/card'
 import { Avatar } from './avatar'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { LinkIcon } from '@heroicons/react/20/solid'
+import { Tooltip } from './tooltip'
 
 export function Comment(props: {
   comment: Comment
   commenter: Profile
+  commentUrl: string
   writtenByCreator?: boolean
   contributionText?: string
-  project?: Project
+  projectTitle?: String
   children?: React.ReactNode
 }) {
   const {
     comment,
     commenter,
+    commentUrl,
     writtenByCreator,
     contributionText,
-    project,
+    projectTitle,
     children,
   } = props
   const [expanded, setExpanded] = useState(false)
@@ -47,13 +51,11 @@ export function Comment(props: {
   }, [])
   return (
     <Col>
-      {!project && (
-        <div className="ml-10">
-          {contributionText && (
-            <Tag text={contributionText} color="orange" className="text-xs" />
-          )}
-        </div>
-      )}
+      <div className="ml-10">
+        {contributionText && (
+          <Tag text={contributionText} color="orange" className="text-xs" />
+        )}
+      </div>
       <Row className="w-full gap-2" ref={commentElement}>
         <Link href={`/${commenter.username}`}>
           <Avatar
@@ -80,12 +82,12 @@ export function Comment(props: {
                 })}
               </p>
             </Row>
-            {project && (
+            {projectTitle && (
               <Link
-                href={`/projects/${project.slug}?tab=comments#${comment.id}`}
+                href={commentUrl}
                 className="truncate overflow-ellipsis text-xs font-semibold text-orange-600 hover:underline"
               >
-                {project.title}
+                {projectTitle}
               </Link>
             )}
           </Row>
@@ -101,6 +103,20 @@ export function Comment(props: {
             <RichContent content={comment.content} className="text-sm" />
           </div>
           {children}
+          <Tooltip
+            text="Copy link to comment"
+            className={clsx(
+              'absolute bottom-2 cursor-pointer',
+              children ? 'right-8' : 'right-3'
+            )}
+          >
+            <LinkIcon
+              className="h-4 w-4 stroke-2 text-gray-500 hover:text-gray-700"
+              onClick={async () => {
+                await navigator.clipboard.writeText(commentUrl)
+              }}
+            />
+          </Tooltip>
           {showExpandButton && (
             <button
               className="absolute bottom-2 left-3 text-xs text-gray-500 hover:underline"

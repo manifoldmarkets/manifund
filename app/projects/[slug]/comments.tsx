@@ -58,6 +58,7 @@ export function Comments(props: {
           <Comment
             comment={thread.root}
             commenter={thread.root.profiles}
+            commentUrl={`https://manifund.org/projects/${project.slug}?tab=comments#${thread.root.id}`}
             writtenByCreator={thread.root.commenter === project.creator}
             contributionText={commenterContributions[thread.root.commenter]}
           >
@@ -77,6 +78,7 @@ export function Comments(props: {
                 <Comment
                   comment={reply}
                   commenter={reply.profiles}
+                  commentUrl={`https://manifund.org/projects/${project.slug}?tab=comments#${reply.id}`}
                   writtenByCreator={reply.commenter === project.creator}
                   contributionText={commenterContributions[reply.commenter]}
                 >
@@ -86,7 +88,7 @@ export function Comments(props: {
                       className="absolute bottom-0 -right-2"
                     >
                       <IconButton onClick={() => setReplyingTo(thread.root)}>
-                        <ArrowUturnRightIcon className=" h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
+                        <ArrowUturnRightIcon className="h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
                       </IconButton>
                     </Tooltip>
                   )}
