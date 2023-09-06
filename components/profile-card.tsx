@@ -1,6 +1,6 @@
 import { Profile } from '@/db/profile'
 import clsx from 'clsx'
-import { Card } from './card'
+import { Card } from './layout/card'
 import Link from 'next/link'
 import { Avatar } from './avatar'
 import { Row } from './layout/row'

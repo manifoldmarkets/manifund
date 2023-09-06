@@ -23,7 +23,8 @@ export function ProfileComments(props: {
               key={comment.id}
               comment={comment}
               commenter={profile}
-              project={comment.projects}
+              commentHref={`/projects/${comment.projects.slug}?tab=comments#${comment.id}`}
+              projectTitle={comment.projects.title}
             />
           )
         })}

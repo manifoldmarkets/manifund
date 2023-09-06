@@ -18,7 +18,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getAllTxns } from '@/db/txn'
 import { Stats } from './stats'
-import { Card } from '@/components/card'
+import { Card } from '@/components/layout/card'
 
 const APROACH_FEATURES = [
   {

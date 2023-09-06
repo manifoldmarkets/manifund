@@ -185,13 +185,13 @@ export function RegranterTag() {
 
 export function Tag(props: {
   text: string
-  color: string
+  color?: string
   className?: string
 }) {
-  const { text, color, className } = props
+  const { text, color = 'orange', className } = props
   return (
     <div
-      className={`max-w-fit rounded-sm px-2 py-1 text-sm font-bold bg-${color}-100 text-${color}-500 ${className}`}
+      className={`max-w-fit overflow-ellipsis rounded-sm px-2 py-1 text-xs font-semibold line-clamp-1 bg-${color}-100 text-${color}-600 ${className}`}
     >
       {text}
     </div>

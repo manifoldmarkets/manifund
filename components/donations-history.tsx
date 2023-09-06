@@ -30,7 +30,7 @@ export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
 export function Donation(props: { txn: TxnAndProfiles }) {
   const { txn } = props
   return (
-    <Row key={txn.id} className="justify-between rounded p-2 hover:bg-gray-200">
+    <Row key={txn.id} className="justify-between rounded p-2">
       <Row className="items-center gap-1">
         <UserAvatarAndBadge profile={txn.profiles as Profile} />
         <span className="text-gray-600"> donated </span>

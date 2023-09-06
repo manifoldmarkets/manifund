@@ -10,6 +10,7 @@ import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
 import { CompleteProfileBanner, ManifestBanner } from './banner'
 import { getProfileById } from '@/db/profile'
+import { Row } from '@/components/layout/row'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 const josefin = Josefin_Slab({
@@ -61,7 +62,7 @@ export default async function RootLayout({
           {/* @ts-expect-error Server Component */}
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
-          <main className="flex flex-1 flex-col lg:col-span-8">
+          <main className="flex flex-col lg:col-span-8">
             {profileTodo ? <CompleteProfileBanner /> : <ManifestBanner />}
             {children}
           </main>

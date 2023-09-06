@@ -1,4 +1,4 @@
-import { UserAvatarAndBadge } from '@/components/user-link'
+import { UserLink } from '@/components/user-link'
 import { formatDistanceToNow } from 'date-fns'
 import { RichContent } from '@/components/editor'
 import { Row } from '@/components/layout/row'
@@ -8,59 +8,127 @@ import { Comment } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { Project } from '@/db/project'
+import { Card } from './layout/card'
+import { Avatar } from './avatar'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { LinkIcon } from '@heroicons/react/20/solid'
+import { Tooltip } from './tooltip'
+import { getURL } from '@/utils/constants'
 
 export function Comment(props: {
   comment: Comment
   commenter: Profile
+  commentHref: string
   writtenByCreator?: boolean
   contributionText?: string
-  project?: Project
+  projectTitle?: string
+  children?: React.ReactNode
 }) {
-  const { comment, commenter, writtenByCreator, contributionText, project } =
-    props
+  const {
+    comment,
+    commenter,
+    commentHref,
+    writtenByCreator,
+    contributionText,
+    projectTitle,
+    children,
+  } = props
+  const [expanded, setExpanded] = useState(false)
+  const [showExpandButton, setShowExpandButton] = useState(false)
+  const contentElement = useRef<any>(null)
+  useLayoutEffect(() => {
+    if (contentElement.current && contentElement.current.scrollHeight > 500) {
+      setShowExpandButton(true)
+    }
+  }, [contentElement])
+  const commentElement = useRef<any>(null)
+  const [highlighted, setHighlighted] = useState(false)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (window.location.hash === `#${comment.id}`) {
+        setHighlighted(true)
+        commentElement.current.scrollIntoView({ behavior: 'smooth' })
+      } else {
+        setHighlighted(false)
+      }
+    }
+  }, [])
   return (
-    <div id={comment.id}>
-      <Row className="w-full items-center justify-between gap-2">
-        <Row className="min-w-fit items-center gap-1">
-          <UserAvatarAndBadge
-            profile={commenter}
-            creatorBadge={writtenByCreator}
-            className="text-sm text-gray-800"
-          />
-          <p
-            className={clsx(
-              'min-w-fit text-xs text-gray-500',
-              project ? 'inline' : 'hidden sm:inline'
-            )}
-          >
-            {formatDistanceToNow(new Date(comment.created_at), {
-              addSuffix: true,
-            })}
-          </p>
-        </Row>
-        {!project && (
-          <Col className="items-center">
-            {contributionText && <Tag text={contributionText} color="orange" />}
-            <p className={clsx('text-xs text-gray-500 sm:hidden')}>
-              {formatDistanceToNow(new Date(comment.created_at), {
-                addSuffix: true,
-              })}
-            </p>
-          </Col>
-        )}
-        {project && (
-          <Link
-            href={`/projects/${project.slug}?tab=comments#${comment.id}`}
-            className="truncate overflow-ellipsis text-xs font-semibold text-orange-600 hover:underline"
-          >
-            {project.title}
+    <Col ref={commentElement} id={comment.id}>
+      <div className="ml-10">
+        {projectTitle && (
+          <Link href={`${commentHref}`}>
+            <Tag text={projectTitle} className="hover:bg-orange-200" />
           </Link>
         )}
-      </Row>
-      <div className="relative left-8 w-11/12">
-        <RichContent content={comment.content} className="text-sm" />
+        {contributionText && !projectTitle && <Tag text={contributionText} />}
       </div>
-    </div>
+      <Row className="w-full gap-2">
+        <Link href={`/${commenter.username}`}>
+          <Avatar
+            username={commenter.username}
+            avatarUrl={commenter.avatar_url}
+            id={commenter.id}
+            className="mt-1"
+            size="sm"
+            noLink
+          />
+        </Link>
+        <Card
+          className={clsx(
+            'relative w-full rounded-xl rounded-tl-sm px-6 pt-2 pb-8',
+            highlighted ? '!bg-orange-100 ring-2 !ring-orange-600' : ''
+          )}
+        >
+          <Row className="mb-2 w-full items-center justify-between gap-2">
+            <Row className="min-w-fit items-center gap-1">
+              <UserLink
+                name={commenter.full_name}
+                username={commenter.username}
+                creatorBadge={writtenByCreator}
+                className="text-sm font-semibold"
+              />
+              <p className="min-w-fit text-xs text-gray-500">
+                {formatDistanceToNow(new Date(comment.created_at), {
+                  addSuffix: true,
+                })}
+              </p>
+            </Row>
+          </Row>
+          <div
+            id="content"
+            ref={contentElement}
+            className={clsx(
+              expanded || !showExpandButton
+                ? 'max-h-fit'
+                : 'truncate line-clamp-[12]'
+            )}
+          >
+            <RichContent content={comment.content} className="text-sm" />
+          </div>
+          <Row className="absolute bottom-2 right-2 gap-2">
+            <Tooltip text="Copy link to comment" className="cursor-pointer">
+              <LinkIcon
+                className="h-4 w-4 stroke-2 text-gray-500 hover:text-gray-700"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(
+                    `${getURL()}${commentHref}`
+                  )
+                }}
+              />
+            </Tooltip>
+            {children}
+          </Row>
+          {showExpandButton && (
+            <button
+              className="absolute bottom-2 left-3 text-xs text-gray-500 hover:underline"
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? 'Show less' : 'Show more'}
+            </button>
+          )}
+        </Card>
+      </Row>
+    </Col>
   )
 }

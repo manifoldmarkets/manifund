@@ -1,7 +1,7 @@
 'use client'
 import { scrollToComments } from '@/app/projects/[slug]/project-display'
 import { Button } from '@/components/button'
-import { Card } from '@/components/card'
+import { Card } from '@/components/layout/card'
 import { Input } from '@/components/input'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
