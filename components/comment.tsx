@@ -106,21 +106,19 @@ export function Comment(props: {
           >
             <RichContent content={comment.content} className="text-sm" />
           </div>
-          {children}
-          <Tooltip
-            text="Copy link to comment"
-            className={clsx(
-              'absolute bottom-2 cursor-pointer',
-              children ? 'right-8' : 'right-3'
-            )}
-          >
-            <LinkIcon
-              className="h-4 w-4 stroke-2 text-gray-500 hover:text-gray-700"
-              onClick={async () => {
-                await navigator.clipboard.writeText(`${getURL()}${commentHref}`)
-              }}
-            />
-          </Tooltip>
+          <Row className="absolute bottom-2 right-3 gap-1">
+            <Tooltip text="Copy link to comment" className="cursor-pointer">
+              <LinkIcon
+                className="h-4 w-4 stroke-2 text-gray-500 hover:text-gray-700"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(
+                    `${getURL()}${commentHref}`
+                  )
+                }}
+              />
+            </Tooltip>
+            {children}
+          </Row>
           {showExpandButton && (
             <button
               className="absolute bottom-2 left-3 text-xs text-gray-500 hover:underline"

@@ -63,10 +63,11 @@ export function Comments(props: {
             contributionText={commenterContributions[thread.root.commenter]}
           >
             {userProfile && (
-              <Tooltip text="Reply" className="absolute bottom-0 -right-2">
-                <IconButton onClick={() => setReplyingTo(thread.root)}>
-                  <ArrowUturnRightIcon className="h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
-                </IconButton>
+              <Tooltip text="Reply">
+                <ArrowUturnRightIcon
+                  className="h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700"
+                  onClick={() => setReplyingTo(thread.root)}
+                />
               </Tooltip>
             )}
           </Comment>
@@ -83,13 +84,11 @@ export function Comments(props: {
                   contributionText={commenterContributions[reply.commenter]}
                 >
                   {userProfile && (
-                    <Tooltip
-                      text="Reply"
-                      className="absolute bottom-0 -right-2"
-                    >
-                      <IconButton onClick={() => setReplyingTo(thread.root)}>
-                        <ArrowUturnRightIcon className="h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700" />
-                      </IconButton>
+                    <Tooltip text="Reply">
+                      <ArrowUturnRightIcon
+                        className="h-4 w-4 rotate-180 stroke-2 text-gray-500 hover:text-gray-700"
+                        onClick={() => setReplyingTo(thread.root)}
+                      />
                     </Tooltip>
                   )}
                 </Comment>
