@@ -16,6 +16,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  console.log('REQUEST:', req.body)
   const comment = req.body.record as Comment
   const supabaseAdmin = createAdminClient()
   const fullComment = await getFullCommentById(supabaseAdmin, comment.id)
