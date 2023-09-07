@@ -36,7 +36,6 @@ export default async function Projects(props: {
   const PAGE_SIZE = 20
   // Extract `page` from ?p=X param as an 1-indexed integer
   const page = parseInt(props.searchParams?.p as string) || 1
-  console.log('ppp', props.searchParams)
   const start = (page - 1) * PAGE_SIZE
   const supabase = createServerClient()
   const [

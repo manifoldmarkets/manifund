@@ -91,7 +91,8 @@ export async function getRecentFullComments(
 ) {
   const { data } = await supabase
     .from('comments')
-    .select('*, profiles(*), projects(*)')
+    .select('*, profiles(*), projects!inner(*)')
+    .neq('projects.stage', 'hidden')
     .order('created_at', { ascending: false })
     .range(start, start + size)
     .throwOnError()
