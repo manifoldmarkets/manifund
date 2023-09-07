@@ -12,7 +12,6 @@ import { useState } from 'react'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { FullProject } from '@/db/project'
 import { MiniCause } from '@/db/cause'
-import { getURL } from '@/utils/constants'
 import { Tag } from '@/components/tags'
 import { Card } from '@/components/layout/card'
 
