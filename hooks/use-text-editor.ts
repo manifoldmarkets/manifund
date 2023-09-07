@@ -1,12 +1,11 @@
 'use client'
 import Link from '@tiptap/extension-link'
 import { mergeAttributes, useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
-import { DisplayMention } from '@/components/user-mention/mention-extension'
 import Placeholder from '@tiptap/extension-placeholder'
 import { noop } from 'lodash'
 import useLocalStorage from '@/hooks/use-local-storage'
+import { TIPTAP_EXTENSIONS } from '@/components/editor'
 
 export function useTextEditor(
   defaultContent: any = '',
@@ -31,9 +30,7 @@ export function useTextEditor(
           saveContent(editor.getJSON())
         },
     extensions: [
-      StarterKit,
-      DisplayLink,
-      DisplayMention,
+      ...TIPTAP_EXTENSIONS,
       Placeholder.configure({
         placeholder,
         emptyEditorClass:
