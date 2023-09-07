@@ -1,14 +1,17 @@
 'use client'
 import { EditorContent, Editor, BubbleMenu } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
 import clsx from 'clsx'
-import { DisplayMention } from './user-mention/mention-extension'
 import { generateReact } from './tiptap-utils'
-import { DisplayLink, proseClass } from '@/hooks/use-text-editor'
+import { proseClass } from '@/hooks/use-text-editor'
 import { LinkIcon, ListBulletIcon } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Button } from './button'
+import { DisplayMention } from '@/components/user-mention/mention-extension'
+import { DisplayLink } from '@/hooks/use-text-editor'
+import StarterKit from '@tiptap/starter-kit'
+
+export const TIPTAP_EXTENSIONS = [StarterKit, DisplayLink, DisplayMention]
 
 export function TextEditor(props: {
   editor: Editor | null
@@ -98,13 +101,7 @@ export function RichContent(props: {
 }) {
   const { className, content, size = 'md' } = props
   if (!content) return null
-
-  const jsxContent = generateReact(content, [
-    StarterKit,
-    DisplayLink,
-    DisplayMention,
-  ])
-
+  const jsxContent = generateReact(content, TIPTAP_EXTENSIONS)
   return (
     <div
       className={clsx(

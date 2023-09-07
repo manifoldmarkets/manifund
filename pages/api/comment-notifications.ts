@@ -6,26 +6,23 @@ import { sendTemplateEmail } from '@/utils/email'
 import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
 import { calculateFullTrades } from '@/utils/math'
 import { getTxnsByProject } from '@/db/txn'
-import StarterKit from '@tiptap/starter-kit'
-import { DisplayMention } from '@/components/user-mention/mention-extension'
 import { parseMentions } from '@/utils/parse'
 import { Comment } from '@/db/comment'
 import { JSONContent } from '@tiptap/core'
+import { TIPTAP_EXTENSIONS } from '@/components/editor'
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log('REQUEST:', req.body)
   const comment = req.body.record as Comment
   const supabaseAdmin = createAdminClient()
   const fullComment = await getFullCommentById(supabaseAdmin, comment.id)
-  const htmlContent = generateHTML(comment.content as JSONContent, [
-    StarterKit,
-    DisplayMention,
-  ])
+  const htmlContent = generateHTML(
+    comment.content as JSONContent,
+    TIPTAP_EXTENSIONS
+  )
   const mentionedUserIds = parseMentions(comment.content as JSONContent)
-
   const NEW_COMMENT_TEMPLATE_ID = 31316102
   const postmarkVars = {
     projectTitle: fullComment.projects.title,
