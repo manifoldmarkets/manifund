@@ -6,80 +6,121 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  DragEndEvent,
+  DragStartEvent,
   useDraggable,
   useDroppable,
+  DragOverEvent,
+  Over,
+  UniqueIdentifier,
+  DragOverlay,
 } from '@dnd-kit/core'
 import {
   arrayMove,
   SortableContext,
-  useSortable,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { ReactNode, useState } from 'react'
+import { SortableItem } from './sortable-item'
+import Tier from './tier'
 
 export function TierList() {
-  const [items, setItems] = useState([1, 2, 3])
+  const [items, setItems] = useState<{ [key: string]: string[] }>({
+    root: ['1', '2', '3'],
+    container1: ['4', '5', '6'],
+    container2: ['7', '8', '9'],
+    container3: [],
+  })
+  const [activeId, setActiveId] = useState<string>()
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
-  const draggableMarkup = (
-    <Draggable>
-      <div className="rounded bg-rose-500 p-2 text-white shadow">Drag me</div>
-    </Draggable>
-  )
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event
-
-    if (active.id !== over?.id) {
-      setItems((items) => {
-        const oldIndex = items.indexOf(active.id as number)
-        const newIndex = items.indexOf(over?.id as number)
-
-        return arrayMove(items, oldIndex, newIndex)
-      })
+  function findContainer(id: UniqueIdentifier) {
+    if (id in items) {
+      return id
     }
+    return Object.keys(items).find((key) => items[key].includes(id as string))
+  }
+
+  function handleDragStart(event: DragStartEvent) {
+    const { active } = event
+    const { id } = active
+
+    setActiveId(id as string)
+  }
+
+  function handleDragOver(event: DragOverEvent) {
+    const { active, over } = event
+    const { id } = active
+    const { id: overId } = over as Over
+
+    // Find the containers
+    const activeContainer = findContainer(id)
+    const overContainer = findContainer(overId)
+
+    if (
+      !activeContainer ||
+      !overContainer ||
+      activeContainer === overContainer
+    ) {
+      return
+    }
+
+    setItems((prev) => {
+      const activeItems = prev[activeContainer]
+      const overItems = prev[overContainer]
+
+      // Find the indexes for the items
+      const activeIndex = activeItems.indexOf(id as string)
+      const overIndex = overItems.indexOf(overId as string)
+
+      let newIndex
+      if (overId in prev) {
+        // We're at the root droppable of a container
+        newIndex = overItems.length + 1
+      } else {
+        const isBelowLastItem = over && overIndex === overItems.length - 1
+        const modifier = isBelowLastItem ? 1 : 0
+
+        newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1
+      }
+
+      return {
+        ...prev,
+        [activeContainer]: [
+          ...prev[activeContainer].filter((item) => item !== active.id),
+        ],
+        [overContainer]: [
+          ...prev[overContainer].slice(0, newIndex),
+          items[activeContainer][activeIndex],
+          ...prev[overContainer].slice(newIndex, prev[overContainer].length),
+        ],
+      }
+    })
   }
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      onDragStart={handleDragStart}
     >
       <h1>Tier List</h1>
-      <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        {items.map((id) => (
-          <SortableItem key={id} id={id}>
-            sortable item
-          </SortableItem>
-        ))}
-      </SortableContext>
+      <Tier id="root" items={items.root} />
+      <Tier id="container1" items={items.container1} />
+      <Tier id="container2" items={items.container2} />
+      <Tier id="container3" items={items.container3} />
+      <DragOverlay>
+        {activeId ? <SortableItem id={activeId} /> : null}
+      </DragOverlay>
     </DndContext>
   )
 }
-
-export function SortableItem(props: { id: number; children?: ReactNode }) {
-  const { id, children } = props
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  }
-
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {children}
-    </div>
-  )
-}
-
 function Draggable(props: { children: ReactNode }) {
   const { children } = props
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
