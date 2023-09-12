@@ -1,35 +1,82 @@
 'use client'
 import {
   DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
   DragEndEvent,
   useDraggable,
   useDroppable,
 } from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { ReactNode, useState } from 'react'
 
 export function TierList() {
-  const [isDropped, setIsDropped] = useState(false)
+  const [items, setItems] = useState([1, 2, 3])
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
   const draggableMarkup = (
     <Draggable>
       <div className="rounded bg-rose-500 p-2 text-white shadow">Drag me</div>
     </Draggable>
   )
   function handleDragEnd(event: DragEndEvent) {
-    if (event.over && event.over.id === 'droppable') {
-      setIsDropped(true)
+    const { active, over } = event
+
+    if (active.id !== over?.id) {
+      setItems((items) => {
+        const oldIndex = items.indexOf(active.id as number)
+        const newIndex = items.indexOf(over?.id as number)
+
+        return arrayMove(items, oldIndex, newIndex)
+      })
     }
   }
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
       <h1>Tier List</h1>
-      {!isDropped ? draggableMarkup : null}
-      <Droppable>
-        <div className="w-fit rounded border-2 border-dashed border-gray-500 p-6">
-          {isDropped ? draggableMarkup : 'Drop here'}
-        </div>
-      </Droppable>
+      <SortableContext items={items} strategy={verticalListSortingStrategy}>
+        {items.map((id) => (
+          <SortableItem key={id} id={id}>
+            sortable item
+          </SortableItem>
+        ))}
+      </SortableContext>
     </DndContext>
+  )
+}
+
+export function SortableItem(props: { id: number; children?: ReactNode }) {
+  const { id, children } = props
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
   )
 }
 
