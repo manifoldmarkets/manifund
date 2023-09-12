@@ -10,7 +10,11 @@ import { ReactNode, useState } from 'react'
 
 export function TierList() {
   const [isDropped, setIsDropped] = useState(false)
-  const draggableMarkup = <Draggable>Drag me</Draggable>
+  const draggableMarkup = (
+    <Draggable>
+      <div className="rounded bg-rose-500 p-2 text-white shadow">Drag me</div>
+    </Draggable>
+  )
   function handleDragEnd(event: DragEndEvent) {
     if (event.over && event.over.id === 'droppable') {
       setIsDropped(true)
@@ -20,7 +24,11 @@ export function TierList() {
     <DndContext onDragEnd={handleDragEnd}>
       <h1>Tier List</h1>
       {!isDropped ? draggableMarkup : null}
-      <Droppable>{isDropped ? draggableMarkup : 'Drop here'}</Droppable>
+      <Droppable>
+        <div className="w-fit rounded border-2 border-dashed border-gray-500 p-6">
+          {isDropped ? draggableMarkup : 'Drop here'}
+        </div>
+      </Droppable>
     </DndContext>
   )
 }
