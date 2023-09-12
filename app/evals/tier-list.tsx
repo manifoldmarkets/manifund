@@ -7,8 +7,6 @@ import {
   useSensor,
   useSensors,
   DragStartEvent,
-  useDraggable,
-  useDroppable,
   DragOverEvent,
   Over,
   UniqueIdentifier,
@@ -16,8 +14,7 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import { ReactNode, useState } from 'react'
+import { useState } from 'react'
 import { SortableItem } from './sortable-item'
 import Tier from './tier'
 
@@ -36,6 +33,25 @@ export function TierList() {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragOver={handleDragOver}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <h1>Tier List</h1>
+      <Tier id="root" items={items.root} />
+      <Tier id="container1" items={items.container1} />
+      <Tier id="container2" items={items.container2} />
+      <Tier id="container3" items={items.container3} />
+      <DragOverlay>
+        {activeId ? <SortableItem id={activeId} /> : null}
+      </DragOverlay>
+    </DndContext>
+  )
+
   function findContainer(id: UniqueIdentifier) {
     if (id in items) {
       return id
@@ -129,55 +145,6 @@ export function TierList() {
         ),
       }))
     }
-
     setActiveId(null)
   }
-  return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragOver={handleDragOver}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <h1>Tier List</h1>
-      <Tier id="root" items={items.root} />
-      <Tier id="container1" items={items.container1} />
-      <Tier id="container2" items={items.container2} />
-      <Tier id="container3" items={items.container3} />
-      <DragOverlay>
-        {activeId ? <SortableItem id={activeId} /> : null}
-      </DragOverlay>
-    </DndContext>
-  )
-}
-function Draggable(props: { children: ReactNode }) {
-  const { children } = props
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: 'draggable',
-  })
-  const style = {
-    transform: CSS.Translate.toString(transform),
-  }
-
-  return (
-    <button ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      {children}
-    </button>
-  )
-}
-
-function Droppable(props: { children: ReactNode }) {
-  const { children } = props
-  const { isOver, setNodeRef } = useDroppable({
-    id: 'droppable',
-  })
-  const style = {
-    color: isOver ? 'green' : undefined,
-  }
-  return (
-    <div ref={setNodeRef} style={style}>
-      {children}
-    </div>
-  )
 }
