@@ -13,13 +13,9 @@ import {
   Over,
   UniqueIdentifier,
   DragOverlay,
+  DragEndEvent,
 } from '@dnd-kit/core'
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
+import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { ReactNode, useState } from 'react'
 import { SortableItem } from './sortable-item'
@@ -32,7 +28,7 @@ export function TierList() {
     container2: ['7', '8', '9'],
     container3: [],
   })
-  const [activeId, setActiveId] = useState<string>()
+  const [activeId, setActiveId] = useState<string | null>()
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -103,12 +99,46 @@ export function TierList() {
       }
     })
   }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    const { id } = active
+    const { id: overId } = over as Over
+
+    const activeContainer = findContainer(id)
+    const overContainer = findContainer(overId)
+
+    if (
+      !activeContainer ||
+      !overContainer ||
+      activeContainer !== overContainer
+    ) {
+      return
+    }
+
+    const activeIndex = items[activeContainer].indexOf(active.id as string)
+    const overIndex = items[overContainer].indexOf(overId as string)
+
+    if (activeIndex !== overIndex) {
+      setItems((items) => ({
+        ...items,
+        [overContainer]: arrayMove(
+          items[overContainer],
+          activeIndex,
+          overIndex
+        ),
+      }))
+    }
+
+    setActiveId(null)
+  }
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragOver={handleDragOver}
       onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
     >
       <h1>Tier List</h1>
       <Tier id="root" items={items.root} />
