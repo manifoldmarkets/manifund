@@ -3,12 +3,14 @@ import { Row } from '@/components/layout/row'
 import { Project } from '@/db/project'
 import { formatMoney, showPrecision } from '@/utils/formatting'
 import { getProposalValuation } from '@/utils/math'
-import { differenceInDays, differenceInHours } from 'date-fns'
+import { differenceInDays, differenceInHours, format } from 'date-fns'
 
-export function ProposalData(props: { project: Project; raised: number }) {
+export function ProjectData(props: { project: Project; raised: number }) {
   const { project, raised } = props
   const raisedString =
-    raised > project.funding_goal
+    raised > project.funding_goal &&
+    project.type === 'cert' &&
+    project.stage === 'proposal'
       ? `>${formatMoney(project.funding_goal)}`
       : `${formatMoney(raised)}`
   // Close it on 23:59:59 in UTC -12 aka "Anywhere on Earth" time
@@ -22,11 +24,13 @@ export function ProposalData(props: { project: Project; raised: number }) {
         value={raisedString}
         label={`raised of $${project.funding_goal} goal`}
       />
-      <DataPoint
-        value={`${formatMoney(project.min_funding)}`}
-        label="required to proceed"
-      />
-      {project.auction_close && (
+      {project.stage === 'proposal' && (
+        <DataPoint
+          value={`${formatMoney(project.min_funding)}`}
+          label="minimum funding"
+        />
+      )}
+      {project.auction_close && project.stage === 'proposal' && (
         <DataPoint
           value={(hoursLeft ? hoursLeft : daysLeft).toString()}
           label={`${hoursLeft ? 'hours' : 'days'} left to contribute`}
@@ -36,6 +40,12 @@ export function ProposalData(props: { project: Project; raised: number }) {
         <DataPoint
           value={formatMoney(getProposalValuation(project))}
           label="minimum valuation"
+        />
+      )}
+      {project.stage !== 'proposal' && (
+        <DataPoint
+          value={format(new Date(project.created_at), 'MM/dd/yyyy')}
+          label={`date created`}
         />
       )}
     </Row>
