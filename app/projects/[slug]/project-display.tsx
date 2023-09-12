@@ -27,7 +27,7 @@ import { Description } from './description'
 import { Edit } from './edit'
 import { PlaceBid } from './place-bid'
 import { ProjectTabs } from './project-tabs'
-import { ProposalData } from './proposal-data'
+import { ProjectData } from './project-data'
 import { ProposalRequirements } from './proposal-requirements'
 import { Vote } from './vote'
 import { CauseTag } from '@/components/tags'
@@ -152,12 +152,8 @@ export function ProjectDisplay(props: {
         {(isOwnProject || userIsAdmin) && (
           <Edit project={project} causesList={causesList} />
         )}
-        {project.stage === 'proposal' && (
-          <>
-            <Divider />
-            <ProposalData project={project} raised={amountRaised} />
-          </>
-        )}
+        <Divider />
+        <ProjectData project={project} raised={amountRaised} />
         {(project.stage === 'proposal' ||
           (project.stage === 'active' && project.type === 'grant')) && (
           <ProgressBar
