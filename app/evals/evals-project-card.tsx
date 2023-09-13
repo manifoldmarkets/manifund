@@ -1,3 +1,4 @@
+import { Card } from '@/components/layout/card'
 import { Draggable } from 'react-beautiful-dnd'
 
 export function EvalsProjectCard(props: { title: string; index: number }) {
@@ -10,9 +11,9 @@ export function EvalsProjectCard(props: { title: string; index: number }) {
           {...dragProvided.draggableProps}
           ref={dragProvided.innerRef}
         >
-          <div className="m-2 rounded bg-rose-500 p-3 text-white shadow">
-            {title}
-          </div>
+          <Card className="m-2 h-28 ">
+            <p className="line-clamp-3 w-40 text-sm font-semibold">{title}</p>
+          </Card>
         </div>
       )}
     </Draggable>
