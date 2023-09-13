@@ -5,6 +5,7 @@ import { UserLink } from '@/components/user-link'
 import { MiniProject } from '@/db/project'
 import { formatMoney } from '@/utils/formatting'
 import { getAmountRaised } from '@/utils/math'
+import Link from 'next/link'
 import { Draggable } from 'react-beautiful-dnd'
 
 export function EvalsProjectCard(props: {
@@ -27,20 +28,22 @@ export function EvalsProjectCard(props: {
               {project.title}
             </p>
             <Row className="flex-2 items-center justify-between gap-2">
-              <Row className="gap-1">
+              <Link className="flex gap-1" href={`/${creator.username}`} target="_blank">
                 <Avatar
                   username={creator.username}
                   avatarUrl={creator.avatar_url}
                   id={creator.id}
+                  noLink
                   size="xxs"
                 />
                 <UserLink
                   name={creator.full_name}
                   username={creator.username}
                   short
-                  className="inline  truncate text-xs text-gray-600"
+                  noLink
+                  className="inline truncate text-xs text-gray-600"
                 />
-              </Row>
+              </Link>
               <p className="rounded-2xl bg-orange-100 px-1 py-0.5 text-center text-xs font-medium text-orange-600">
                 {formatMoney(amountRaised)}
               </p>
