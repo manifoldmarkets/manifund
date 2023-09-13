@@ -24,9 +24,9 @@ export function EvalsProjectCard(props: {
           ref={dragProvided.innerRef}
         >
           <Card className="m-2 flex h-32 flex-col justify-between !p-3">
-            <p className="line-clamp-3 w-40 text-sm font-semibold">
+            <Link className="line-clamp-3 w-40 text-sm font-semibold hover:underline" href={`/projects/${project.slug}`} target="_blank">
               {project.title}
-            </p>
+            </Link>
             <Row className="flex-2 items-center justify-between gap-2">
               <Link className="flex gap-1" href={`/${creator.username}`} target="_blank">
                 <Avatar
