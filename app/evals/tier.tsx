@@ -17,7 +17,7 @@ export function Tier(props: { tierId: string; titles: string[] }) {
         {(dropProvided) => (
           <div {...dropProvided.droppableProps}>
             <Row
-              className="col-span-3 w-full flex-wrap"
+              className="col-span-3 items-start min-w-[100rem] min-h-[10rem]"
               ref={dropProvided.innerRef}
             >
               {titles.map((title, index) => (
