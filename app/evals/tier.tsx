@@ -23,7 +23,7 @@ export function Tier(props: { tierId: string; projects: MiniProject[] }) {
               ref={dropProvided.innerRef}
             >
               {projects.map((project, index) => (
-                <EvalsProjectCard key={project.slug} title={project.title} index={index} />
+                <EvalsProjectCard key={project.slug} project={project} index={index} />
               ))}
               {dropProvided.placeholder}
             </Row>
