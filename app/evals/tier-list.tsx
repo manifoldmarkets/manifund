@@ -12,20 +12,38 @@ import {
   UniqueIdentifier,
   DragOverlay,
   DragEndEvent,
+  CollisionDetection,
+  pointerWithin,
+  rectIntersection,
+  getFirstCollision,
 } from '@dnd-kit/core'
 import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { SortableItem } from './sortable-item'
 import Tier from './tier'
 
 export function TierList() {
-  const [items, setItems] = useState<{ [key: string]: string[] }>({
-    root: ['1', '2', '3'],
-    container1: ['4', '5', '6'],
-    container2: ['7', '8', '9'],
-    container3: [],
+  const [items, setItems] = useState<{
+    [key: UniqueIdentifier]: UniqueIdentifier[]
+  }>({
+    '5': ['1', '2', '3'],
+    '4': ['4', '5', '6'],
+    '3': ['7', '8', '9'],
+    '2': [],
+    '1': [],
+    '0': [],
+    '-1': [],
+    '-2': [],
+    '-3': [],
+    '-4': [],
+    '-5': [],
+    unsorted: [],
   })
-  const [activeId, setActiveId] = useState<string | null>()
+  const containers = Object.keys(items) as UniqueIdentifier[]
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null)
+  const lastOverId = useRef<UniqueIdentifier | null>(null)
+  const recentlyMovedToNewContainer = useRef(false)
+  const isSortingContainer = activeId ? containers.includes(activeId) : false
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -33,6 +51,63 @@ export function TierList() {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   )
+
+  const collisionDetectionStrategy: CollisionDetection = useCallback(
+    (args) => {
+      if (activeId && activeId in items) {
+        return closestCenter({
+          ...args,
+          droppableContainers: args.droppableContainers.filter(
+            (container) => container.id in items
+          ),
+        })
+      }
+
+      // Start by finding any intersecting droppable
+      const pointerIntersections = pointerWithin(args)
+      const intersections =
+        pointerIntersections.length > 0
+          ? // If there are droppables intersecting with the pointer, return those
+            pointerIntersections
+          : rectIntersection(args)
+      let overId = getFirstCollision(intersections, 'id')
+
+      if (overId !== null) {
+        if (overId in items) {
+          const containerItems = items[overId]
+
+          // If a container is matched and it contains items (columns 'A', 'B', 'C')
+          if (containerItems.length > 0) {
+            // Return the closest droppable within that container
+            overId = closestCenter({
+              ...args,
+              droppableContainers: args.droppableContainers.filter(
+                (container) =>
+                  container.id !== overId &&
+                  containerItems.includes(container.id as string)
+              ),
+            })[0]?.id
+          }
+        }
+
+        lastOverId.current = overId
+
+        return [{ id: overId }]
+      }
+      // When a draggable item moves to a new container, the layout may shift
+      // and the `overId` may become `null`. We manually set the cached `lastOverId`
+      // to the id of the draggable item that was moved to the new container, otherwise
+      // the previous `overId` will be returned which can cause items to incorrectly shift positions
+      if (recentlyMovedToNewContainer.current) {
+        lastOverId.current = activeId
+      }
+
+      // If no droppable is matched, return the last match
+      return lastOverId.current ? [{ id: lastOverId.current }] : []
+    },
+    [activeId, items]
+  )
+
   return (
     <DndContext
       sensors={sensors}
@@ -42,10 +117,9 @@ export function TierList() {
       onDragEnd={handleDragEnd}
     >
       <h1>Tier List</h1>
-      <Tier id="root" items={items.root} />
-      <Tier id="container1" items={items.container1} />
-      <Tier id="container2" items={items.container2} />
-      <Tier id="container3" items={items.container3} />
+      {Object.keys(items).map((key) => {
+        return <Tier key={key} id={key} items={items[key]} />
+      })}
       <DragOverlay>
         {activeId ? <SortableItem id={activeId} /> : null}
       </DragOverlay>
@@ -57,6 +131,18 @@ export function TierList() {
       return id
     }
     return Object.keys(items).find((key) => items[key].includes(id as string))
+  }
+
+  function getIndex(id: UniqueIdentifier) {
+    const container = findContainer(id)
+
+    if (!container) {
+      return -1
+    }
+
+    const index = items[container].indexOf(id)
+
+    return index
   }
 
   function handleDragStart(event: DragStartEvent) {
