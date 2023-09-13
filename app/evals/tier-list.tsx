@@ -1,4 +1,5 @@
 'use client'
+import { MiniProject } from '@/db/project'
 import { sortBy } from 'lodash'
 import { useState } from 'react'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
@@ -6,11 +7,12 @@ import { Tier } from './tier'
 
 export type ProjectMap = { [key: string]: string[] }
 
-export function TierList() {
+export function TierList(props: { projects: MiniProject[] }) {
+  const { projects } = props
   const [projectMap, setProjectMap] = useState<ProjectMap>({
-    '5': ['1', '2', '3'],
-    '4': ['4', '5', '6'],
-    '3': ['7', '8', '9'],
+    '5': [],
+    '4': [],
+    '3': [],
     '2': [],
     '1': [],
     '0': [],
@@ -19,6 +21,7 @@ export function TierList() {
     '-3': [],
     '-4': [],
     '-5': [],
+    unsorted: projects.map((p) => p.title),
   })
 
   return (

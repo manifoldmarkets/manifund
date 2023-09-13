@@ -17,6 +17,7 @@ export type FullProject = Project & { profiles: Profile } & {
 } & { txns: Txn[] } & { comments: Comment[] } & { rounds: Round } & {
   project_transfers: ProjectTransfer[]
 } & { project_votes: ProjectVote[] } & { causes: MiniCause[] }
+export type MiniProject = Project & { profiles: Profile } & { txns: Txn[] }
 
 export const TOTAL_SHARES = 10_000_000
 
@@ -68,17 +69,15 @@ export async function listProjects(supabase: SupabaseClient) {
   return data as unknown as FullProject[]
 }
 
-export async function listActiveProjects(supabase: SupabaseClient) {
+export async function listProjectsForEvals(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('projects')
-    .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
-    )
+    .select('title, creator, slug, stage, type, profiles(*), txns(*)')
     .eq('stage', 'active')
     .order('created_at', { ascending: false })
     .throwOnError()
   // Scary type conversion!
-  return data as unknown as FullProject[]
+  return data as unknown as MiniProject[]
 }
 
 export async function getFullProjectBySlug(
