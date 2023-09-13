@@ -15,9 +15,10 @@ export function Tier(props: { tierId: string; titles: string[] }) {
         isCombineEnabled={false}
       >
         {(dropProvided) => (
-          <div {...dropProvided.droppableProps}>
+          <div {...dropProvided.droppableProps} className="flex flex-col overflow-auto">
+            <div className="grow inline-flex">
             <Row
-              className="col-span-3 items-start min-w-[100rem] min-h-[10rem]"
+              className="items-start min-w-[20rem] min-h-[10rem]"
               ref={dropProvided.innerRef}
             >
               {titles.map((title, index) => (
@@ -25,6 +26,7 @@ export function Tier(props: { tierId: string; titles: string[] }) {
               ))}
               {dropProvided.placeholder}
             </Row>
+          </div>
           </div>
         )}
       </Droppable>
