@@ -5,11 +5,11 @@ import { useState } from 'react'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
 import { Tier } from './tier'
 
-export type ProjectMap = { [key: string]: string[] }
+export type TierMap = { [key: string]: string[] }
 
 export function TierList(props: { projects: MiniProject[] }) {
   const { projects } = props
-  const [projectMap, setProjectMap] = useState<ProjectMap>({
+  const [tierMap, setTierMap] = useState<TierMap>({
     '5': [],
     '4': [],
     '3': [],
@@ -32,11 +32,11 @@ export function TierList(props: { projects: MiniProject[] }) {
           return
         }
 
-        setProjectMap(reorderProjects(projectMap, source, destination))
+        setTierMap(reorderProjects(tierMap, source, destination))
       }}
     >
       <div>
-        {sortBy(Object.entries(projectMap), (tier) => {
+        {sortBy(Object.entries(tierMap), (tier) => {
           return -parseInt(tier[0])
         }).map(([key, value]) => (
           <Tier key={key} tierId={key} titles={value} />
@@ -55,19 +55,19 @@ function reorder(list: any[], startIndex: number, endIndex: number) {
 }
 
 function reorderProjects(
-  projectMap: ProjectMap,
+  TierMap: TierMap,
   source: DraggableLocation,
   destination: DraggableLocation
 ) {
-  const current = [...projectMap[source.droppableId]]
-  const next = [...projectMap[destination.droppableId]]
+  const current = [...TierMap[source.droppableId]]
+  const next = [...TierMap[destination.droppableId]]
   const target = current[source.index]
 
   // moving to same list
   if (source.droppableId === destination.droppableId) {
     const reordered = reorder(current, source.index, destination.index)
     return {
-      ...projectMap,
+      ...TierMap,
       [source.droppableId]: reordered,
     }
   }
@@ -79,7 +79,7 @@ function reorderProjects(
   next.splice(destination.index, 0, target)
 
   return {
-    ...projectMap,
+    ...TierMap,
     [source.droppableId]: current,
     [destination.droppableId]: next,
   }
