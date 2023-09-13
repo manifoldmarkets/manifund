@@ -3,8 +3,8 @@ import React from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import { EvalsProjectCard } from './evals-project-card'
 
-export function Tier(props: { tierId: string; titles: string[] }) {
-  const { tierId, titles } = props
+export function Tier(props: { tierId: string; projectTitles: string[] }) {
+  const { tierId, projectTitles } = props
   return (
     <Droppable
       droppableId={tierId}
@@ -20,7 +20,7 @@ export function Tier(props: { tierId: string; titles: string[] }) {
               className="col-span-3 w-full flex-wrap"
               ref={dropProvided.innerRef}
             >
-              {titles.map((title, index) => (
+              {projectTitles.map((title, index) => (
                 <EvalsProjectCard key={title} title={title} index={index} />
               ))}
               {dropProvided.placeholder}
