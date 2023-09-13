@@ -1,19 +1,16 @@
 'use client'
-import { MiniProject, Project } from '@/db/project'
 import { sortBy } from 'lodash'
 import { useState } from 'react'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
 import { Tier } from './tier'
 
-export type TierMap = { [key: string]: string[] }
-export type ConfidenceMap = { [key: string]: number[] }
+export type ProjectMap = { [key: string]: string[] }
 
-export function TierList(props: { projects: MiniProject[] }) {
-  const { projects } = props
-  const [tierMap, setTierMap] = useState<TierMap>({
-    '5': [],
-    '4': [],
-    '3': [],
+export function TierList() {
+  const [projectMap, setProjectMap] = useState<ProjectMap>({
+    '5': ['1', '2', '3'],
+    '4': ['4', '5', '6'],
+    '3': ['7', '8', '9'],
     '2': [],
     '1': [],
     '0': [],
@@ -22,17 +19,7 @@ export function TierList(props: { projects: MiniProject[] }) {
     '-3': [],
     '-4': [],
     '-5': [],
-    unsorted: projects.map((project) => project.title),
   })
-
-  const [confidenceMap, setConfidenceMap] = useState<ConfidenceMap>(
-    projects.reduce((obj, project) => {
-      return {
-        ...obj,
-        [project.id]: 0.5,
-      }
-    }, {})
-  )
 
   return (
     <DragDropContext
@@ -42,14 +29,14 @@ export function TierList(props: { projects: MiniProject[] }) {
           return
         }
 
-        setTierMap(reorderProjects(tierMap, source, destination))
+        setProjectMap(reorderProjects(projectMap, source, destination))
       }}
     >
       <div>
-        {sortBy(Object.entries(tierMap), (tier) => {
+        {sortBy(Object.entries(projectMap), (tier) => {
           return -parseInt(tier[0])
         }).map(([key, value]) => (
-          <Tier key={key} tierId={key} projectTitles={value} />
+          <Tier key={key} tierId={key} titles={value} />
         ))}
       </div>
     </DragDropContext>
@@ -65,19 +52,19 @@ function reorder(list: any[], startIndex: number, endIndex: number) {
 }
 
 function reorderProjects(
-  tierMap: TierMap,
+  projectMap: ProjectMap,
   source: DraggableLocation,
   destination: DraggableLocation
 ) {
-  const current = [...tierMap[source.droppableId]]
-  const next = [...tierMap[destination.droppableId]]
+  const current = [...projectMap[source.droppableId]]
+  const next = [...projectMap[destination.droppableId]]
   const target = current[source.index]
 
   // moving to same list
   if (source.droppableId === destination.droppableId) {
     const reordered = reorder(current, source.index, destination.index)
     return {
-      ...tierMap,
+      ...projectMap,
       [source.droppableId]: reordered,
     }
   }
@@ -89,7 +76,7 @@ function reorderProjects(
   next.splice(destination.index, 0, target)
 
   return {
-    ...tierMap,
+    ...projectMap,
     [source.droppableId]: current,
     [destination.droppableId]: next,
   }
