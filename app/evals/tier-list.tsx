@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
 import { Tier } from './tier'
 
-export type TierMap = { [key: string]: string[] }
+export type TierMap = { [key: string]: MiniProject[] }
 
 export function TierList(props: { projects: MiniProject[] }) {
   const { projects } = props
@@ -21,7 +21,7 @@ export function TierList(props: { projects: MiniProject[] }) {
     '-3': [],
     '-4': [],
     '-5': [],
-    unsorted: projects.map((p) => p.title),
+    unsorted: projects,
   })
 
   return (
@@ -39,7 +39,7 @@ export function TierList(props: { projects: MiniProject[] }) {
         {sortBy(Object.entries(tierMap), (tier) => {
           return -parseInt(tier[0])
         }).map(([key, value]) => (
-          <Tier key={key} tierId={key} titles={value} />
+          <Tier key={key} tierId={key} projects={value} />
         ))}
       </div>
     </DragDropContext>

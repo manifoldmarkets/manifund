@@ -1,10 +1,11 @@
 import { Row } from '@/components/layout/row'
+import { MiniProject } from '@/db/project';
 import React from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import { EvalsProjectCard } from './evals-project-card'
 
-export function Tier(props: { tierId: string; titles: string[] }) {
-  const { tierId, titles } = props
+export function Tier(props: { tierId: string; projects: MiniProject[] }) {
+  const { tierId, projects } = props
   return (
     <Row className="flex-inline flex-2 w-full rounded border-2 border-dashed border-gray-500">
       <p>{tierId}</p>
@@ -21,8 +22,8 @@ export function Tier(props: { tierId: string; titles: string[] }) {
               className="items-start min-w-[20rem] min-h-[10rem]"
               ref={dropProvided.innerRef}
             >
-              {titles.map((title, index) => (
-                <EvalsProjectCard key={title} title={title} index={index} />
+              {projects.map((project, index) => (
+                <EvalsProjectCard key={project.slug} title={project.title} index={index} />
               ))}
               {dropProvided.placeholder}
             </Row>
