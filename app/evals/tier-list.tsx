@@ -26,7 +26,7 @@ export function TierList() {
     >
       <div>
         {Object.entries(projectMap).map(([key, value]) => (
-          <Tier key={key} listId={key} listType="CARD" titles={value} />
+          <Tier key={key} tierId={key} titles={value} />
         ))}
       </div>
     </DragDropContext>

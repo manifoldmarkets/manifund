@@ -10,7 +10,7 @@ export function EvalsProjectCard(props: { title: string; index: number }) {
           {...dragProvided.draggableProps}
           ref={dragProvided.innerRef}
         >
-          <div className="mx-2 rounded bg-rose-500 p-3 text-white shadow">
+          <div className="m-2 rounded bg-rose-500 p-3 text-white shadow">
             {title}
           </div>
         </div>

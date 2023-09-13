@@ -3,33 +3,28 @@ import React from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import { EvalsProjectCard } from './evals-project-card'
 
-export function Tier(props: {
-  listId: string
-  listType?: string
-  titles: string[]
-}) {
-  const { listId, listType, titles } = props
+export function Tier(props: { tierId: string; titles: string[] }) {
+  const { tierId, titles } = props
   return (
     <Droppable
-      droppableId={listId}
-      type={listType}
+      droppableId={tierId}
+      type={'CARD'}
       direction="horizontal"
       isCombineEnabled={false}
     >
       {(dropProvided) => (
         <div {...dropProvided.droppableProps}>
-          <div>
-            <div>
-              <Row
-                className="flex-wrap rounded border-2 border-dashed border-gray-500 p-4"
-                ref={dropProvided.innerRef}
-              >
-                {titles.map((title, index) => (
-                  <EvalsProjectCard key={title} title={title} index={index} />
-                ))}
-                {dropProvided.placeholder}
-              </Row>
-            </div>
+          <div className="grid w-full grid-cols-4 items-center gap-3 rounded border-2 border-dashed border-gray-500 p-4">
+            {tierId}
+            <Row
+              className="col-span-3 w-full flex-wrap"
+              ref={dropProvided.innerRef}
+            >
+              {titles.map((title, index) => (
+                <EvalsProjectCard key={title} title={title} index={index} />
+              ))}
+              {dropProvided.placeholder}
+            </Row>
           </div>
         </div>
       )}
