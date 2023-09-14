@@ -9,6 +9,8 @@ import Link from 'next/link'
 import {MySlider} from '@/components/slider'
 import { Draggable } from 'react-beautiful-dnd'
 import { ConfidenceMap } from './tier-list'
+import { Input } from '@/components/input'
+import clsx from 'clsx'
 
 export function EvalsProjectCard(props: {
   project: MiniProject
@@ -49,9 +51,35 @@ export function EvalsProjectCard(props: {
                 {formatMoney(amountRaised)}
               </p>
             </Row>
-            <div className="appearance-none" contentEditable>
-            <MySlider value={confidenceMap[project.slug]} onChange={(value) => setConfidenceMap({ ...props.confidenceMap, [project.slug]: value as number })}/>
-            </div>
+            <Row className="justify-center gap-1">
+            <button onClick={() => setConfidenceMap({...confidenceMap, [project.slug]: confidenceMap[project.slug] - 0.1})} disabled={confidenceMap[project.slug] < 0.1}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            className='bi bi-caret-right-fill rotate-180'
+            viewBox="0 0 16 16"
+          >
+            <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+          </svg>
+        </button>
+            <input className="w-10 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none rounded [&::-webkit-inner-spin-button]:appearance-none ring-0 focus:ring-2 focus:ring-orange-600 p-0 border-0 focus:border-0 text-center" type="number" value={confidenceMap[project.slug]} onChange={(e) => {
+              setConfidenceMap({...confidenceMap, [project.slug]: Number(e.target.value)})
+            }} />
+                        <button onClick={() => setConfidenceMap({...confidenceMap, [project.slug]: confidenceMap[project.slug] + 0.1})} disabled={confidenceMap[project.slug] > 0.9}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            className='bi bi-caret-right-fill'
+            viewBox="0 0 16 16"
+          >
+            <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+          </svg>
+        </button>
+            </Row>
           </Card>
         </div>
       )}
