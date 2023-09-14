@@ -1,7 +1,7 @@
 import { Avatar } from '@/components/avatar'
 import { Card } from '@/components/layout/card'
 import { Row } from '@/components/layout/row'
-import { UserLink } from '@/components/user-link'
+import { shortenName} from '@/components/user-link'
 import { MiniProject } from '@/db/project'
 import { formatMoney } from '@/utils/formatting'
 import { getAmountRaised } from '@/utils/math'
@@ -11,9 +11,12 @@ import { Draggable } from 'react-beautiful-dnd'
 export function EvalsProjectCard(props: {
   project: MiniProject
   index: number
+  confidence: number
+  setConfidenceMap: (confidenceMap: any) => void
 }) {
   const { project, index } = props
   const creator = project.profiles
+  const shortName = shortenName(creator.full_name)
   const amountRaised = getAmountRaised(project, [], project.txns)
   return (
     <Draggable key={project.slug} draggableId={project.slug} index={index}>
@@ -37,13 +40,7 @@ export function EvalsProjectCard(props: {
                   noLink
                   size="xxs"
                 />
-                <UserLink
-                  name={creator.full_name}
-                  username={creator.username}
-                  short
-                  noLink
-                  className="inline truncate text-xs text-gray-600"
-                />
+                <p className="inline text-xs text-gray-600">{shortName}{shortName !== creator.full_name ? '...' : ''}</p>
               </Link>
               <p className="rounded-2xl bg-orange-100 px-1 py-0.5 text-center text-xs font-medium text-orange-600">
                 {formatMoney(amountRaised)}

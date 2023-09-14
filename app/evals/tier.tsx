@@ -3,9 +3,10 @@ import { MiniProject } from '@/db/project';
 import React from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import { EvalsProjectCard } from './evals-project-card'
+import { ConfidenceMap } from './tier-list';
 
-export function Tier(props: { tierId: string; projects: MiniProject[] }) {
-  const { tierId, projects } = props
+export function Tier(props: { tierId: string; projects: MiniProject[]; confidenceMap: ConfidenceMap; setConfidenceMap: (confidenceMap: any) => void }) {
+  const { tierId, projects, confidenceMap, setConfidenceMap } = props
   return (
     <Row className="flex-inline flex-2 w-full rounded border-2 border-dashed border-gray-500">
       <p>{tierId}</p>
@@ -23,7 +24,7 @@ export function Tier(props: { tierId: string; projects: MiniProject[] }) {
               ref={dropProvided.innerRef}
             >
               {projects.map((project, index) => (
-                <EvalsProjectCard key={project.slug} project={project} index={index} />
+                <EvalsProjectCard key={project.slug} project={project} index={index} confidence={confidenceMap[project.slug]} setConfidenceMap={setConfidenceMap} />
               ))}
               {dropProvided.placeholder}
             </Row>

@@ -6,6 +6,7 @@ import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
 import { Tier } from './tier'
 
 export type TierMap = { [key: string]: MiniProject[] }
+export type ConfidenceMap = { [key: string]: number }
 
 export function TierList(props: { projects: MiniProject[] }) {
   const { projects } = props
@@ -23,6 +24,14 @@ export function TierList(props: { projects: MiniProject[] }) {
     '-4': [],
     '-5': [],
   })
+  const [confidenceMap, setConfidenceMap] = useState<ConfidenceMap>(
+    projects.reduce((object, project) => {
+      return {
+        ...object,
+        [project.slug]: 0,
+      }
+    }, {})
+  )
 
   return (
     <DragDropContext
@@ -40,7 +49,13 @@ export function TierList(props: { projects: MiniProject[] }) {
           const tierInt = parseInt(tier[0])
           return isNaN(tierInt) ? -6 : -parseInt(tier[0])
         }).map(([key, value]) => (
-          <Tier key={key} tierId={key} projects={value} />
+          <Tier
+            key={key}
+            tierId={key}
+            projects={value}
+            confidenceMap={confidenceMap}
+            setConfidenceMap={setConfidenceMap}
+          />
         ))}
       </div>
     </DragDropContext>
