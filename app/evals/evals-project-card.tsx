@@ -10,6 +10,9 @@ import { Draggable } from 'react-beautiful-dnd'
 import { ConfidenceMap } from './tier-list'
 import { RightCarrotIcon } from '@/components/icons'
 import { Col } from '@/components/layout/col'
+import clsx from 'clsx'
+import { Transition } from '@headlessui/react'
+import { Fragment, useEffect, useState } from 'react'
 
 const DragHandleIcon = (
   <svg
@@ -30,8 +33,9 @@ export function EvalsProjectCard(props: {
   index: number
   confidenceMap: ConfidenceMap
   setConfidenceMap: (confidenceMap: ConfidenceMap) => void
+  sorted?: boolean
 }) {
-  const { project, index, confidenceMap, setConfidenceMap } = props
+  const { project, index, confidenceMap, setConfidenceMap, sorted } = props
   const creator = project.profiles
   const shortName = shortenName(creator.full_name)
   const amountRaised = getAmountRaised(project, [], project.txns)
@@ -44,7 +48,12 @@ export function EvalsProjectCard(props: {
           {...dragProvided.draggableProps}
           ref={dragProvided.innerRef}
         >
-          <Card className="relative m-2 flex h-40 flex-col justify-between px-3 py-2">
+          <Card
+            className={clsx(
+              'relative m-2 flex flex-col justify-between px-3 py-2',
+              sorted ? 'h-36' : 'h-28'
+            )}
+          >
             {DragHandleIcon}
             <Link
               className="line-clamp-3 w-40 pl-3 text-sm font-semibold hover:underline"
@@ -53,6 +62,42 @@ export function EvalsProjectCard(props: {
             >
               {project.title}
             </Link>
+            {sorted && (
+              <Col className="items-center text-gray-700">
+                <Row className="justify-center gap-1">
+                  <button
+                    onClick={() =>
+                      setConfidenceMap({
+                        ...confidenceMap,
+                        [project.slug]:
+                          (confidenceMap[project.slug] * 10 - 1) / 10,
+                      })
+                    }
+                    disabled={confidenceMap[project.slug] < 0.1}
+                    className="disabled:opacity-50"
+                  >
+                    <RightCarrotIcon className="rotate-180" color="#ea580c" />
+                  </button>
+                  <p className="text-sm">
+                    {confidenceMap[project.slug] * 100}%
+                  </p>
+                  <button
+                    onClick={() =>
+                      setConfidenceMap({
+                        ...confidenceMap,
+                        [project.slug]:
+                          (confidenceMap[project.slug] * 10 + 1) / 10,
+                      })
+                    }
+                    disabled={confidenceMap[project.slug] > 0.9}
+                    className="disabled:opacity-50"
+                  >
+                    <RightCarrotIcon color="#ea580c" />
+                  </button>
+                </Row>
+                <p className="text-xs">confidence</p>
+              </Col>
+            )}
             <Row className="flex-2 items-center justify-between gap-2">
               <Link
                 className="flex gap-1"
@@ -75,38 +120,6 @@ export function EvalsProjectCard(props: {
                 {formatMoney(amountRaised)}
               </p>
             </Row>
-            <Col className="items-center text-gray-700">
-              <Row className="justify-center gap-1">
-                <button
-                  onClick={() =>
-                    setConfidenceMap({
-                      ...confidenceMap,
-                      [project.slug]:
-                        (confidenceMap[project.slug] * 10 - 1) / 10,
-                    })
-                  }
-                  disabled={confidenceMap[project.slug] < 0.1}
-                  className="disabled:opacity-50"
-                >
-                  <RightCarrotIcon className="rotate-180" color="#ea580c" />
-                </button>
-                <p className="text-sm">{confidenceMap[project.slug] * 100}%</p>
-                <button
-                  onClick={() =>
-                    setConfidenceMap({
-                      ...confidenceMap,
-                      [project.slug]:
-                        (confidenceMap[project.slug] * 10 + 1) / 10,
-                    })
-                  }
-                  disabled={confidenceMap[project.slug] > 0.9}
-                  className="disabled:opacity-50"
-                >
-                  <RightCarrotIcon color="#ea580c" />
-                </button>
-              </Row>
-              <p className="text-xs">confidence</p>
-            </Col>
           </Card>
         </div>
       )}
