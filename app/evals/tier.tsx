@@ -19,7 +19,7 @@ export function Tier(props: { tierId: string; projects: MiniProject[] }) {
           <div {...dropProvided.droppableProps} className="flex flex-col overflow-auto">
             <div className="grow inline-flex">
             <Row
-              className="items-start min-w-[20rem] min-h-[10rem]"
+              className="items-start min-w-[100vw] min-h-[10rem]"
               ref={dropProvided.innerRef}
             >
               {projects.map((project, index) => (
