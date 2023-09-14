@@ -49,7 +49,9 @@ export function EvalsProjectCard(props: {
                 {formatMoney(amountRaised)}
               </p>
             </Row>
-            <MySlider value={confidenceMap[project.slug]} onChange={(value) => setConfidenceMap({ ...props.confidenceMap, [project.slug]: value as number })} />
+            <div className="appearance-none" contentEditable>
+            <MySlider value={confidenceMap[project.slug]} onChange={(value) => setConfidenceMap({ ...props.confidenceMap, [project.slug]: value as number })}/>
+            </div>
           </Card>
         </div>
       )}

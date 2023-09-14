@@ -10,7 +10,7 @@ export function MySlider(props: SliderProps<number | number[]>) {
       max={100}
       marks={marks}
       className={clsx(
-        'mx-2 mt-3 mb-10 !h-1 [&>.rc-slider-rail]:bg-gray-200',
+        'mx-2 mt-3 mb-10 !h-1 [&>.rc-slider-rail]:bg-gray-200 appearance-none',
         '[&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-orange-500'
       )}
       railStyle={{ height: 4, top: 4 }}
@@ -23,7 +23,6 @@ export function MySlider(props: SliderProps<number | number[]>) {
         boxShadow: 'none',
         top: -0.5,
       }}
-      {...rest}
-    />
+      {...rest}    />
   )
 }
