@@ -1,3 +1,4 @@
+import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { MiniProject } from '@/db/project'
 import React from 'react'
@@ -13,8 +14,10 @@ export function Tier(props: {
 }) {
   const { tierId, projects, confidenceMap, setConfidenceMap } = props
   return (
-    <Row className="flex-inline flex-2 w-full rounded border-2 border-dashed border-gray-500">
-      <p>{tierId}</p>
+    <Row className="flex-inline flex-2 min-h-[8rem] w-full items-center rounded border-2 border-dashed border-gray-500 p-2">
+      <Col className="text-bold justify-center rounded bg-orange-600 p-4 text-xl text-white">
+        {tierId}
+      </Col>
       <Droppable
         droppableId={tierId}
         type={'CARD'}

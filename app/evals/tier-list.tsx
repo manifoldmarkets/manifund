@@ -1,4 +1,5 @@
 'use client'
+import { Col } from '@/components/layout/col'
 import { MiniProject } from '@/db/project'
 import { sortBy } from 'lodash'
 import { useState } from 'react'
@@ -44,7 +45,7 @@ export function TierList(props: { projects: MiniProject[] }) {
         setTierMap(reorderProjects(tierMap, source, destination))
       }}
     >
-      <div>
+      <Col className="gap-2">
         {sortBy(Object.entries(tierMap), (tier) => {
           const tierInt = parseInt(tier[0])
           return isNaN(tierInt) ? -6 : -parseInt(tier[0])
@@ -57,7 +58,7 @@ export function TierList(props: { projects: MiniProject[] }) {
             setConfidenceMap={setConfidenceMap}
           />
         ))}
-      </div>
+      </Col>
     </DragDropContext>
   )
 }
