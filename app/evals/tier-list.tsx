@@ -28,7 +28,7 @@ export function TierList(props: { projects: MiniProject[] }) {
     projects.reduce((object, project) => {
       return {
         ...object,
-        [project.slug]: 0,
+        [project.slug]: 0.5,
       }
     }, {})
   )

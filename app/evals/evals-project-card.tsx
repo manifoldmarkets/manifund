@@ -6,11 +6,24 @@ import { MiniProject } from '@/db/project'
 import { formatMoney } from '@/utils/formatting'
 import { getAmountRaised } from '@/utils/math'
 import Link from 'next/link'
-import { MySlider } from '@/components/slider'
 import { Draggable } from 'react-beautiful-dnd'
 import { ConfidenceMap } from './tier-list'
-import { Input } from '@/components/input'
-import clsx from 'clsx'
+import { RightCarrotIcon } from '@/components/icons'
+import { Col } from '@/components/layout/col'
+
+const DragHandleIcon = (
+  <svg
+    className="absolute left-1 top-2 opacity-50"
+    height={16}
+    width={16}
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    id="drag-indicator"
+  >
+    <path fill="none" d="M0 0h24v24H0V0z"></path>
+    <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path>
+  </svg>
+)
 
 export function EvalsProjectCard(props: {
   project: MiniProject
@@ -32,17 +45,7 @@ export function EvalsProjectCard(props: {
           ref={dragProvided.innerRef}
         >
           <Card className="relative m-2 flex h-40 flex-col justify-between px-3 py-2">
-            <svg
-              className="absolute left-1 top-2 opacity-50"
-              height={16}
-              width={16}
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              id="drag-indicator"
-            >
-              <path fill="none" d="M0 0h24v24H0V0z"></path>
-              <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path>
-            </svg>
+            {DragHandleIcon}
             <Link
               className="line-clamp-3 w-40 pl-3 text-sm font-semibold hover:underline"
               href={`/projects/${project.slug}`}
@@ -72,59 +75,38 @@ export function EvalsProjectCard(props: {
                 {formatMoney(amountRaised)}
               </p>
             </Row>
-            <Row className="justify-center gap-1">
-              <button
-                onClick={() =>
-                  setConfidenceMap({
-                    ...confidenceMap,
-                    [project.slug]: (confidenceMap[project.slug] * 10 - 1) / 10,
-                  })
-                }
-                disabled={confidenceMap[project.slug] < 0.1}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-caret-right-fill rotate-180"
-                  viewBox="0 0 16 16"
+            <Col className="items-center text-gray-700">
+              <Row className="justify-center gap-1">
+                <button
+                  onClick={() =>
+                    setConfidenceMap({
+                      ...confidenceMap,
+                      [project.slug]:
+                        (confidenceMap[project.slug] * 10 - 1) / 10,
+                    })
+                  }
+                  disabled={confidenceMap[project.slug] < 0.1}
+                  className="disabled:opacity-50"
                 >
-                  <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-                </svg>
-              </button>
-              <input
-                className="w-10 rounded border-0 p-0 text-center ring-0 [appearance:textfield] focus:border-0 focus:ring-2 focus:ring-orange-600 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                type="number"
-                value={confidenceMap[project.slug]}
-                onChange={(e) => {
-                  setConfidenceMap({
-                    ...confidenceMap,
-                    [project.slug]: Number(e.target.value),
-                  })
-                }}
-              />
-              <button
-                onClick={() =>
-                  setConfidenceMap({
-                    ...confidenceMap,
-                    [project.slug]: (confidenceMap[project.slug] * 10 + 1) / 10,
-                  })
-                }
-                disabled={confidenceMap[project.slug] > 0.9}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-caret-right-fill"
-                  viewBox="0 0 16 16"
+                  <RightCarrotIcon className="rotate-180" color="#ea580c" />
+                </button>
+                <p className="text-sm">{confidenceMap[project.slug] * 100}%</p>
+                <button
+                  onClick={() =>
+                    setConfidenceMap({
+                      ...confidenceMap,
+                      [project.slug]:
+                        (confidenceMap[project.slug] * 10 + 1) / 10,
+                    })
+                  }
+                  disabled={confidenceMap[project.slug] > 0.9}
+                  className="disabled:opacity-50"
                 >
-                  <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-                </svg>
-              </button>
-            </Row>
+                  <RightCarrotIcon color="#ea580c" />
+                </button>
+              </Row>
+              <p className="text-xs">confidence</p>
+            </Col>
           </Card>
         </div>
       )}
