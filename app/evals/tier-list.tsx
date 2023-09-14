@@ -10,6 +10,7 @@ export type TierMap = { [key: string]: MiniProject[] }
 export function TierList(props: { projects: MiniProject[] }) {
   const { projects } = props
   const [tierMap, setTierMap] = useState<TierMap>({
+    unsorted: projects,
     '5': [],
     '4': [],
     '3': [],
@@ -21,7 +22,6 @@ export function TierList(props: { projects: MiniProject[] }) {
     '-3': [],
     '-4': [],
     '-5': [],
-    unsorted: projects,
   })
 
   return (
@@ -37,7 +37,8 @@ export function TierList(props: { projects: MiniProject[] }) {
     >
       <div>
         {sortBy(Object.entries(tierMap), (tier) => {
-          return -parseInt(tier[0])
+          const tierInt = parseInt(tier[0])
+          return isNaN(tierInt) ? -6 : -parseInt(tier[0])
         }).map(([key, value]) => (
           <Tier key={key} tierId={key} projects={value} />
         ))}
