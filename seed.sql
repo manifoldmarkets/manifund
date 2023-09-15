@@ -320,19 +320,18 @@ CREATE TABLE public.project_votes (
 CREATE POLICY "Enable read access for all users" ON "public"."project_votes"
 AS PERMISSIVE FOR SELECT
 TO public
-USING (true)
+USING (true);
 
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."project_votes"
 AS PERMISSIVE FOR INSERT
 TO authenticated
-
-WITH CHECK (true)
+WITH CHECK (true);
 
 CREATE POLICY "Users can update their votes" ON "public"."project_votes"
 AS PERMISSIVE FOR UPDATE
 TO public
 USING (auth.uid() = voter_id)
-WITH CHECK (auth.uid() = voter_id)
+WITH CHECK (auth.uid() = voter_id);
 
 
 -- Project tags join table
@@ -356,5 +355,60 @@ USING (EXISTS (SELECT 1 FROM public.projects WHERE id = project_id AND creator =
 CREATE POLICY "Enable insert for authenticated users only" ON "public"."project_causes"
 AS PERMISSIVE FOR INSERT
 TO authenticated
+WITH CHECK (true);
 
-WITH CHECK (true)
+-- Project evals
+CREATE TABLE public.project_evals (
+  evaluator_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
+  score float8 NOT NULL DEFAULT 0,
+  confidence float8 NOT NULL DEFAULT 1,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  -- This would be the ideal primary key, but it messes up Postgrest's foreign key relations
+  -- PRIMARY KEY (evaluator_id, project_id),
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  PRIMARY KEY (id)
+);
+
+-- Project evals RLS
+CREATE POLICY "Enable read access for all users" ON "public"."project_evals"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true);
+
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."project_evals"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+WITH CHECK (true);
+
+CREATE POLICY "Users can update their votes" ON "public"."project_evals"
+AS PERMISSIVE FOR UPDATE
+TO public
+USING (auth.uid() = evaluator_id)
+WITH CHECK (auth.uid() = evaluator_id);
+
+-- Profile trust scores
+CREATE TABLE public.profile_trust (
+  truster_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  trusted_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  weight float8 NOT NULL DEFAULT 1,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY (truster_id, trusted_id)
+);
+
+-- Profile trust RLS
+CREATE POLICY "Enable read access for all users" ON "public"."profile_trust"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true);
+
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."profile_trust"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+WITH CHECK (true);
+
+CREATE POLICY "Users can update their trust scores" ON "public"."profile_trust"
+AS PERMISSIVE FOR UPDATE
+TO public
+USING (auth.uid() = truster_id)
+WITH CHECK (auth.uid() = truster_id);
