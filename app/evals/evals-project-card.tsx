@@ -49,12 +49,12 @@ export function EvalsProjectCard(props: {
           <Card
             className={clsx(
               'relative m-2 flex flex-col justify-between px-3 py-2',
-              sorted ? 'h-36' : 'h-28'
+              sorted ? 'h-32' : 'h-24'
             )}
           >
             {DragHandleIcon}
             <Link
-              className="line-clamp-3 w-40 pl-3 text-sm font-semibold hover:underline"
+              className="line-clamp-3 w-40 pl-3 text-xs font-semibold leading-tight hover:underline"
               href={`/projects/${project.slug}`}
               target="_blank"
             >
@@ -76,7 +76,7 @@ export function EvalsProjectCard(props: {
                   >
                     <RightCarrotIcon className="rotate-180" color="#ea580c" />
                   </button>
-                  <p className="text-sm">
+                  <p className="text-xs">
                     {confidenceMap[project.slug] * 100}%
                   </p>
                   <button
@@ -93,7 +93,7 @@ export function EvalsProjectCard(props: {
                     <RightCarrotIcon color="#ea580c" />
                   </button>
                 </Row>
-                <p className="text-xs">confidence</p>
+                <p className="text-[0.6rem]">confidence</p>
               </Col>
             )}
             <Row className="flex-2 items-center justify-between gap-2">
