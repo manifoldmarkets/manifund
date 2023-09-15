@@ -17,6 +17,8 @@ import {
   StripeDepositButton,
 } from '@/components/deposit-buttons'
 import { Col } from '@/components/layout/col'
+import { Tooltip } from '@/components/tooltip'
+import { PlusSmallIcon } from '@heroicons/react/24/outline'
 
 export const revalidate = 30
 export default async function Sidebar() {
@@ -28,7 +30,7 @@ export default async function Sidebar() {
     <>
       <nav
         aria-label="Sidebar"
-        className="sticky top-0 hidden h-[100vh] justify-between divide-gray-300 self-start pt-10 pl-2 pr-2 lg:col-span-3 lg:flex lg:flex-col"
+        className="sticky top-0 hidden h-[100vh] justify-between divide-gray-300 self-start pl-2 pr-2 pt-10 lg:col-span-3 lg:flex lg:flex-col"
       >
         <Col>
           <Link href="/">
@@ -115,7 +117,7 @@ export async function ProfileSummary(props: { profile: Profile }) {
   const supabase = createServerClient()
   const txns = await getTxnsByUser(supabase, profile.id)
   return (
-    <Row className="group mb-3 items-center gap-2 truncate rounded-md py-3 px-1 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
+    <Row className="group mb-3 items-center gap-2 truncate rounded-md px-1 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
       <Avatar
         username={profile.username}
         avatarUrl={profile.avatar_url}
@@ -130,7 +132,13 @@ export async function ProfileSummary(props: { profile: Profile }) {
           {profile.accreditation_status ? (
             <AirtableDepositButton />
           ) : (
-            <StripeDepositButton userId={profile.id} />
+            <StripeDepositButton userId={profile.id}>
+              <div className="rounded bg-orange-500 p-0.5 shadow">
+                <Tooltip text="Add funds" placement="left">
+                  <PlusSmallIcon className="h-4 w-4 stroke-2 text-white" />
+                </Tooltip>
+              </div>
+            </StripeDepositButton>
           )}
         </Row>
       </Col>
