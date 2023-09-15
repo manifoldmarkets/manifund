@@ -41,11 +41,10 @@ export function TierList(props: { projects: MiniProject[] }) {
         if (!destination) {
           return
         }
-
         setTierMap(reorderProjects(tierMap, source, destination))
       }}
     >
-      <Col className="gap-2">
+      <Col className="gap-2 divide-y-2 divide-dotted divide-gray-500">
         {sortBy(Object.entries(tierMap), (tier) => {
           const tierInt = parseInt(tier[0])
           return isNaN(tierInt) ? -6 : -parseInt(tier[0])
