@@ -15,15 +15,25 @@ export function Tier(props: {
   const { tier, confidenceMap, setConfidenceMap } = props
   return (
     <div>
-      <Col
+      <Row
         className={clsx(
-          'text-bold left-2 top-0 w-fit justify-center rounded-b px-2 py-1 text-sm text-white',
+          'h-8 w-fit items-center gap-2 rounded-b px-2 text-sm text-white',
           tier.color
         )}
       >
-        {tier.id}
-        {tier.description ? ` - ${tier.description}` : ''}
-      </Col>
+        <span
+          className={
+            tier.id === 'unsorted' ? 'text-sm' : 'text-xl font-semibold'
+          }
+        >
+          {tier.id}
+        </span>
+        {tier.description && tier.multiplier !== undefined && (
+          <span className="text-sm">
+            {tier.description} &#47;&#47; {tier.multiplier}x
+          </span>
+        )}
+      </Row>
       <div className="flex-inline flex-2 relative min-h-[8rem] w-full items-center p-1">
         <Droppable
           droppableId={tier.id}
