@@ -11,8 +11,6 @@ import { ConfidenceMap } from './tier-list'
 import { RightCarrotIcon } from '@/components/icons'
 import { Col } from '@/components/layout/col'
 import clsx from 'clsx'
-import { Transition } from '@headlessui/react'
-import { Fragment, useEffect, useState } from 'react'
 
 const DragHandleIcon = (
   <svg

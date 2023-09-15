@@ -6,25 +6,97 @@ import { useState } from 'react'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
 import { Tier } from './tier'
 
-export type TierMap = { [key: string]: MiniProject[] }
+export type Tier = {
+  id: string
+  color: string
+  description?: string
+  multiplier?: number
+  projects: MiniProject[]
+}
 export type ConfidenceMap = { [key: string]: number }
 
 export function TierList(props: { projects: MiniProject[] }) {
   const { projects } = props
-  const [tierMap, setTierMap] = useState<TierMap>({
-    unsorted: projects,
-    '5': [],
-    '4': [],
-    '3': [],
-    '2': [],
-    '1': [],
-    '0': [],
-    '-1': [],
-    '-2': [],
-    '-3': [],
-    '-4': [],
-    '-5': [],
-  })
+  const [tiers, setTiers] = useState<Tier[]>([
+    { id: 'unsorted', projects: projects, color: 'bg-gray-500' },
+    {
+      id: '5',
+      description: 'outstanding',
+      multiplier: 10,
+      color: 'bg-emerald-800',
+      projects: [],
+    },
+    {
+      id: '4',
+      description: 'great',
+      multiplier: 3,
+      color: 'bg-emerald-600',
+      projects: [],
+    },
+    {
+      id: '3',
+      description: 'good (~LTFF funding bar)',
+      multiplier: 1,
+      color: 'bg-emerald-500',
+      projects: [],
+    },
+    {
+      id: '2',
+      description: 'ok',
+      multiplier: 0.3,
+      color: 'bg-emerald-400',
+      projects: [],
+    },
+    {
+      id: '1',
+      description: 'net positive',
+      multiplier: 0.1,
+      color: 'bg-emerald-300',
+      projects: [],
+    },
+    {
+      id: '0',
+      description: 'net 0',
+      multiplier: 0,
+      color: 'bg-gray-300',
+      projects: [],
+    },
+    {
+      id: '-1',
+      description: 'net negative',
+      multiplier: -0.1,
+      color: 'bg-rose-300',
+      projects: [],
+    },
+    {
+      id: '-2',
+      description: 'bad',
+      multiplier: -0.3,
+      color: 'bg-rose-400',
+      projects: [],
+    },
+    {
+      id: '-3',
+      description: 'more bad',
+      multiplier: -1,
+      color: 'bg-rose-500',
+      projects: [],
+    },
+    {
+      id: '-4',
+      description: 'possibly really bad',
+      multiplier: -3,
+      color: 'bg-rose-600',
+      projects: [],
+    },
+    {
+      id: '-5',
+      description: 'probably really bad',
+      multiplier: -10,
+      color: 'bg-rose-800',
+      projects: [],
+    },
+  ])
   const [confidenceMap, setConfidenceMap] = useState<ConfidenceMap>(
     projects.reduce((object, project) => {
       return {
@@ -41,18 +113,14 @@ export function TierList(props: { projects: MiniProject[] }) {
         if (!destination) {
           return
         }
-        setTierMap(reorderProjects(tierMap, source, destination))
+        setTiers(reorderProjects(tiers, source, destination))
       }}
     >
       <Col className="gap-2 divide-y-2 divide-dotted divide-gray-500">
-        {sortBy(Object.entries(tierMap), (tier) => {
-          const tierInt = parseInt(tier[0])
-          return isNaN(tierInt) ? -6 : -parseInt(tier[0])
-        }).map(([key, value]) => (
+        {tiers.map((tier) => (
           <Tier
-            key={key}
-            tierId={key}
-            projects={value}
+            key={tier.id}
+            tier={tier}
             confidenceMap={confidenceMap}
             setConfidenceMap={setConfidenceMap}
           />
@@ -71,32 +139,43 @@ function reorder(list: any[], startIndex: number, endIndex: number) {
 }
 
 function reorderProjects(
-  TierMap: TierMap,
+  tiers: Tier[],
   source: DraggableLocation,
   destination: DraggableLocation
 ) {
-  const current = [...TierMap[source.droppableId]]
-  const next = [...TierMap[destination.droppableId]]
-  const target = current[source.index]
-
-  // moving to same list
+  const current = tiers.find((tier) => tier.id === source.droppableId)
+  const next = tiers.find((tier) => tier.id === destination.droppableId)
+  const target = current?.projects[source.index]
+  if (!current || !next || !target) {
+    return tiers
+  }
   if (source.droppableId === destination.droppableId) {
-    const reordered = reorder(current, source.index, destination.index)
-    return {
-      ...TierMap,
-      [source.droppableId]: reordered,
+    const reordered = reorder(current.projects, source.index, destination.index)
+    return tiers.map((tier) => {
+      if (tier.id === source.droppableId) {
+        return {
+          ...tier,
+          projects: reordered,
+        }
+      }
+      return tier
+    })
+  }
+  current.projects.splice(source.index, 1)
+  next.projects.splice(destination.index, 0, target)
+  return tiers.map((tier) => {
+    if (tier.id === source.droppableId) {
+      return {
+        ...tier,
+        projects: current.projects,
+      }
     }
-  }
-
-  // moving to different list
-  // remove from original
-  current.splice(source.index, 1)
-  // insert into next
-  next.splice(destination.index, 0, target)
-
-  return {
-    ...TierMap,
-    [source.droppableId]: current,
-    [destination.droppableId]: next,
-  }
+    if (tier.id === destination.droppableId) {
+      return {
+        ...tier,
+        projects: next.projects,
+      }
+    }
+    return tier
+  })
 }
