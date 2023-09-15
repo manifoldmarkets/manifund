@@ -34,7 +34,7 @@ export function Tier(props: {
           </span>
         )}
       </Row>
-      <div className="flex-inline flex-2 relative w-full items-center p-1">
+      <div className="flex-inline flex-2 relative w-full items-center py-1">
         <Droppable
           droppableId={tier.id}
           type={'CARD'}
@@ -48,7 +48,7 @@ export function Tier(props: {
             >
               <div className="inline-flex grow">
                 <Row
-                  className="min-h-[6rem] min-w-[90vw] items-start lg:min-w-[40rem]"
+                  className="my-1 min-h-[6rem] min-w-[90vw] items-start gap-2 lg:min-w-[40rem]"
                   ref={dropProvided.innerRef}
                 >
                   {tier.projects.map((project, index) => (

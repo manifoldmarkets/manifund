@@ -48,8 +48,8 @@ export function EvalsProjectCard(props: {
         >
           <Card
             className={clsx(
-              'relative m-2 flex flex-col justify-between px-3 py-2',
-              sorted ? 'h-32' : 'h-24'
+              'relative flex flex-col justify-between px-3 py-2',
+              sorted ? 'h-28' : 'h-24'
             )}
           >
             {DragHandleIcon}
