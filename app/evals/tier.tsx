@@ -1,4 +1,3 @@
-import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Tier } from './tier-list'
 import React from 'react'
@@ -14,11 +13,11 @@ export function Tier(props: {
 }) {
   const { tier, confidenceMap, setConfidenceMap } = props
   return (
-    <div className="rounded bg-gray-200 shadow">
+    <div className={clsx('rounded shadow', tier.bgColor)}>
       <Row
         className={clsx(
           'h-8 w-fit items-center gap-2 rounded-b px-2 text-sm text-white',
-          tier.color
+          tier.labelColor
         )}
       >
         <span
@@ -34,7 +33,7 @@ export function Tier(props: {
           </span>
         )}
       </Row>
-      <div className="flex-inline flex-2 relative w-full items-center">
+      <div className="flex-inline relative w-full items-center">
         <Droppable
           droppableId={tier.id}
           type={'CARD'}
@@ -48,7 +47,7 @@ export function Tier(props: {
             >
               <div className="inline-flex grow">
                 <Row
-                  className="my-1 min-h-[6rem] min-w-[90vw] items-start gap-2 lg:min-w-[40rem]"
+                  className="my-1 min-h-[6rem] min-w-[80vw] items-start gap-2 lg:min-w-[40rem]"
                   ref={dropProvided.innerRef}
                 >
                   {tier.projects.map((project, index) => (

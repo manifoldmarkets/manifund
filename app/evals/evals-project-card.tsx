@@ -37,7 +37,6 @@ export function EvalsProjectCard(props: {
   const creator = project.profiles
   const shortName = shortenName(creator.full_name)
   const amountRaised = getAmountRaised(project, [], project.txns)
-  console.log(confidenceMap[project.slug])
   return (
     <Draggable key={project.slug} draggableId={project.slug} index={index}>
       {(dragProvided) => (
@@ -48,7 +47,7 @@ export function EvalsProjectCard(props: {
         >
           <Card
             className={clsx(
-              'relative flex flex-col justify-between px-3 py-2',
+              'relative m-1 flex flex-col justify-between px-3 py-2',
               sorted ? 'h-28' : 'h-24'
             )}
           >
@@ -68,13 +67,15 @@ export function EvalsProjectCard(props: {
                       setConfidenceMap({
                         ...confidenceMap,
                         [project.slug]:
-                          (confidenceMap[project.slug] * 10 - 1) / 10,
+                          confidenceMap[project.slug] === 0.1
+                            ? 0.01
+                            : (confidenceMap[project.slug] * 10 - 1) / 10,
                       })
                     }
                     disabled={confidenceMap[project.slug] < 0.1}
                     className="disabled:opacity-50"
                   >
-                    <RightCarrotIcon className="rotate-180" color="#ea580c" />
+                    <RightCarrotIcon className="rotate-180" color="#6b7280" />
                   </button>
                   <p className="text-xs">
                     {confidenceMap[project.slug] * 100}%
@@ -84,13 +85,15 @@ export function EvalsProjectCard(props: {
                       setConfidenceMap({
                         ...confidenceMap,
                         [project.slug]:
-                          (confidenceMap[project.slug] * 10 + 1) / 10,
+                          confidenceMap[project.slug] === 0.01
+                            ? 0.1
+                            : (confidenceMap[project.slug] * 10 + 1) / 10,
                       })
                     }
                     disabled={confidenceMap[project.slug] > 0.9}
                     className="disabled:opacity-50"
                   >
-                    <RightCarrotIcon color="#ea580c" />
+                    <RightCarrotIcon color="#6b7280" />
                   </button>
                 </Row>
                 <p className="text-[0.6rem]">confidence</p>

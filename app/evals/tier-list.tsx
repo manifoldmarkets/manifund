@@ -8,7 +8,8 @@ import { Tier } from './tier'
 
 export type Tier = {
   id: string
-  color: string
+  labelColor: string
+  bgColor: string
   description?: string
   multiplier?: number
   projects: MiniProject[]
@@ -18,82 +19,98 @@ export type ConfidenceMap = { [key: string]: number }
 export function TierList(props: { projects: MiniProject[] }) {
   const { projects } = props
   const [tiers, setTiers] = useState<Tier[]>([
-    { id: 'unsorted', projects: projects, color: 'bg-gray-500' },
+    {
+      id: 'unsorted',
+      projects: projects,
+      labelColor: 'bg-gray-500',
+      bgColor: 'bg-gray-300',
+    },
     {
       id: '5',
       description: 'outstanding',
       multiplier: 10,
-      color: 'bg-emerald-800',
+      labelColor: 'bg-emerald-800',
+      bgColor: 'bg-emerald-500',
       projects: [],
     },
     {
       id: '4',
       description: 'great',
       multiplier: 3,
-      color: 'bg-emerald-600',
+      labelColor: 'bg-emerald-700',
+      bgColor: 'bg-emerald-400',
       projects: [],
     },
     {
       id: '3',
       description: 'good (~LTFF funding bar)',
       multiplier: 1,
-      color: 'bg-emerald-500',
+      labelColor: 'bg-emerald-600',
+      bgColor: 'bg-emerald-300',
       projects: [],
     },
     {
       id: '2',
       description: 'ok',
       multiplier: 0.3,
-      color: 'bg-emerald-400',
+      labelColor: 'bg-emerald-500',
+      bgColor: 'bg-emerald-200',
       projects: [],
     },
     {
       id: '1',
       description: 'net positive',
       multiplier: 0.1,
-      color: 'bg-emerald-300',
+      labelColor: 'bg-emerald-400',
+      bgColor: 'bg-emerald-100',
       projects: [],
     },
     {
       id: '0',
       description: 'net 0',
       multiplier: 0,
-      color: 'bg-gray-300',
+      labelColor: 'bg-gray-400',
+      bgColor: 'bg-gray-100',
       projects: [],
     },
     {
       id: '-1',
       description: 'net negative',
       multiplier: -0.1,
-      color: 'bg-rose-300',
+      labelColor: 'bg-rose-400',
+      bgColor: 'bg-rose-100',
       projects: [],
     },
     {
       id: '-2',
       description: 'bad',
       multiplier: -0.3,
-      color: 'bg-rose-400',
+      labelColor: 'bg-rose-500',
+      bgColor: 'bg-rose-200',
       projects: [],
     },
     {
       id: '-3',
       description: 'more bad',
       multiplier: -1,
-      color: 'bg-rose-500',
+      labelColor: 'bg-rose-600',
+      bgColor: 'bg-rose-300',
       projects: [],
     },
     {
       id: '-4',
       description: 'possibly really bad',
       multiplier: -3,
-      color: 'bg-rose-600',
+      labelColor: 'bg-rose-700',
+      bgColor: 'bg-rose-400',
       projects: [],
     },
     {
       id: '-5',
       description: 'probably really bad',
       multiplier: -10,
-      color: 'bg-rose-800',
+      labelColor: 'bg-rose-800',
+      bgColor: 'bg-rose-500',
       projects: [],
     },
   ])
