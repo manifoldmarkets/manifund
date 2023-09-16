@@ -13,11 +13,16 @@ export function Tier(props: {
 }) {
   const { tier, confidenceMap, setConfidenceMap } = props
   return (
-    <div className={clsx('rounded shadow', tier.bgColor)}>
+    <div
+      className={clsx(
+        'rounded border-2 bg-gray-100 shadow',
+        `border-${tier.color}`
+      )}
+    >
       <Row
         className={clsx(
-          'h-8 w-fit items-center gap-2 rounded-b px-2 text-sm text-white',
-          tier.labelColor
+          'h-8 w-fit items-center gap-2 rounded-br px-2 text-sm text-white',
+          `bg-${tier.color}`
         )}
       >
         <span
@@ -70,3 +75,29 @@ export function Tier(props: {
     </div>
   )
 }
+
+const COLORS = [
+  'border-rose-800',
+  'border-rose-600',
+  'border-rose-500',
+  'border-rose-400',
+  'border-rose-300',
+  'border-emerald-800',
+  'border-emerald-600',
+  'border-emerald-500',
+  'border-emerald-400',
+  'border-emerald-300',
+  'border-gray-500',
+  'border-gray-300',
+  'bg-rose-800',
+  'bg-rose-600',
+  'bg-rose-500',
+  'bg-rose-400',
+  'bg-rose-300',
+  'bg-emerald-800',
+  'bg-emerald-600',
+  'bg-emerald-500',
+  'bg-emerald-400',
+  'bg-gray-500',
+  'bg-gray-300',
+]
