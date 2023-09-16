@@ -116,7 +116,7 @@ export function TierList(props: { projects: MiniProject[] }) {
         setTiers(reorderProjects(tiers, source, destination))
       }}
     >
-      <Col className="gap-2 divide-y-2 divide-dotted divide-gray-500 px-6">
+      <Col className="gap-2 rounded px-6">
         {tiers.map((tier) => (
           <Tier
             key={tier.id}

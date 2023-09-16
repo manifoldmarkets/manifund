@@ -14,7 +14,7 @@ export function Tier(props: {
 }) {
   const { tier, confidenceMap, setConfidenceMap } = props
   return (
-    <div>
+    <div className="rounded bg-gray-200 shadow">
       <Row
         className={clsx(
           'h-8 w-fit items-center gap-2 rounded-b px-2 text-sm text-white',
@@ -34,7 +34,7 @@ export function Tier(props: {
           </span>
         )}
       </Row>
-      <div className="flex-inline flex-2 relative w-full items-center py-1">
+      <div className="flex-inline flex-2 relative w-full items-center">
         <Droppable
           droppableId={tier.id}
           type={'CARD'}
