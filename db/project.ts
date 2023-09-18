@@ -72,7 +72,7 @@ export async function listProjects(supabase: SupabaseClient) {
 export async function listProjectsForEvals(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('projects')
-    .select('title, creator, slug, stage, type, profiles(*), txns(*)')
+    .select('id, title, creator, slug, stage, type, profiles(*), txns(*)')
     .eq('stage', 'active')
     .neq('type', 'cert')
     .order('created_at', { ascending: false })

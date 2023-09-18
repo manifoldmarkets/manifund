@@ -1,9 +1,11 @@
 'use client'
+import { Button } from '@/components/button'
 import { Col } from '@/components/layout/col'
 import { MiniProject } from '@/db/project'
-import useLocalStorage from '@/hooks/use-local-storage'
-import { sortBy } from 'lodash'
-import { useEffect, useState } from 'react'
+import useLocalStorage, {
+  clearLocalStorageItem,
+} from '@/hooks/use-local-storage'
+import { useEffect } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
 import { Tier } from './tier'
@@ -17,123 +19,149 @@ export type Tier = {
 }
 export type ConfidenceMap = { [key: string]: number }
 
+const EMPTY_TIERS: Tier[] = [
+  {
+    id: '5',
+    description: 'outstanding',
+    multiplier: 10,
+    color: 'emerald-800',
+    projects: [],
+  },
+  {
+    id: '4',
+    description: 'great',
+    multiplier: 3,
+    color: 'emerald-600',
+    projects: [],
+  },
+  {
+    id: '3',
+    description: 'good (~LTFF funding bar)',
+    multiplier: 1,
+    color: 'emerald-500',
+    projects: [],
+  },
+  {
+    id: '2',
+    description: 'ok',
+    multiplier: 0.3,
+    color: 'emerald-400',
+    projects: [],
+  },
+  {
+    id: '1',
+    description: 'net positive',
+    multiplier: 0.1,
+    color: 'emerald-300',
+    projects: [],
+  },
+  {
+    id: '0',
+    description: 'net 0',
+    multiplier: 0,
+    color: 'gray-300',
+    projects: [],
+  },
+  {
+    id: '-1',
+    description: 'net negative',
+    multiplier: -0.1,
+    color: 'rose-300',
+    projects: [],
+  },
+  {
+    id: '-2',
+    description: 'bad',
+    multiplier: -0.3,
+    color: 'rose-400',
+    projects: [],
+  },
+  {
+    id: '-3',
+    description: 'more bad',
+    multiplier: -1,
+    color: 'rose-500',
+    projects: [],
+  },
+  {
+    id: '-4',
+    description: 'possibly really bad',
+    multiplier: -3,
+    color: 'rose-600',
+    projects: [],
+  },
+  {
+    id: '-5',
+    description: 'probably really bad',
+    multiplier: -10,
+    color: 'rose-800',
+    projects: [],
+  },
+]
+
 export function TierList(props: { projects: MiniProject[] }) {
-  const { projects } = props
+  // From https://github.com/atlassian/react-beautiful-dnd/issues/1756#issuecomment-599388505
   resetServerContext()
-  const [tiers, setTiers] = useState<Tier[]>([
-    { id: 'unsorted', projects: projects, color: 'gray-500' },
-    {
-      id: '5',
-      description: 'outstanding',
-      multiplier: 10,
-      color: 'emerald-800',
-      projects: [],
-    },
-    {
-      id: '4',
-      description: 'great',
-      multiplier: 3,
-      color: 'emerald-600',
-      projects: [],
-    },
-    {
-      id: '3',
-      description: 'good (~LTFF funding bar)',
-      multiplier: 1,
-      color: 'emerald-500',
-      projects: [],
-    },
-    {
-      id: '2',
-      description: 'ok',
-      multiplier: 0.3,
-      color: 'emerald-400',
-      projects: [],
-    },
-    {
-      id: '1',
-      description: 'net positive',
-      multiplier: 0.1,
-      color: 'emerald-300',
-      projects: [],
-    },
-    {
-      id: '0',
-      description: 'net 0',
-      multiplier: 0,
-      color: 'gray-300',
-      projects: [],
-    },
-    {
-      id: '-1',
-      description: 'net negative',
-      multiplier: -0.1,
-      color: 'rose-300',
-      projects: [],
-    },
-    {
-      id: '-2',
-      description: 'bad',
-      multiplier: -0.3,
-      color: 'rose-400',
-      projects: [],
-    },
-    {
-      id: '-3',
-      description: 'more bad',
-      multiplier: -1,
-      color: 'rose-500',
-      projects: [],
-    },
-    {
-      id: '-4',
-      description: 'possibly really bad',
-      multiplier: -3,
-      color: 'rose-600',
-      projects: [],
-    },
-    {
-      id: '-5',
-      description: 'probably really bad',
-      multiplier: -10,
-      color: 'rose-800',
-      projects: [],
-    },
-  ])
+  const { projects } = props
+  const { value: tiers, saveValue: saveTiers } = useLocalStorage<Tier[]>(
+    [{ id: 'unsorted', projects: projects, color: 'gray-500' }, ...EMPTY_TIERS],
+    'tiers'
+  )
   const blankConfidenceMap = projects.reduce((object, project) => {
     return {
       ...object,
-      [project.slug]: 0.5,
+      [project.id]: 0.5,
     }
   }, {})
-  const [confidenceMap, saveConfidenceMap] = useLocalStorage<ConfidenceMap>(
-    blankConfidenceMap,
-    'confidenceMap'
-  )
+  const { value: confidenceMap, saveValue: saveConfidenceMap } =
+    useLocalStorage<ConfidenceMap>(blankConfidenceMap, 'confidenceMap')
   useEffect(() => {
     saveConfidenceMap({ ...blankConfidenceMap, ...confidenceMap })
   }, [projects])
+  const handleSubmit = async () => {
+    // setIsSubmitting(true)
+    // const description = descriptionEditor?.getJSON()
+    // const donorNotes = reasoningEditor?.getJSON()
+    const response = await fetch('/api/save-evals', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        tiers,
+        confidenceMap,
+      }),
+    })
+    const newProject = await response.json()
+    // router.push(`/projects/${newProject.slug}`)
+    clearLocalStorageItem('confidenceMap')
+    clearLocalStorageItem('tiers')
+    // setIsSubmitting(false)
+  }
   return (
-    <DragDropContext
-      onDragEnd={({ destination, source }) => {
-        // dropped outside the list
-        if (!destination) {
-          return
-        }
-        setTiers(reorderProjects(tiers, source, destination))
-      }}
-    >
-      <Col className="gap-2 rounded px-6">
-        {tiers.map((tier) => (
-          <Tier
-            key={tier.id}
-            tier={tier}
-            confidenceMap={confidenceMap}
-            setConfidenceMap={saveConfidenceMap}
-          />
-        ))}
-      </Col>
-    </DragDropContext>
+    <>
+      <DragDropContext
+        onDragEnd={({ destination, source }) => {
+          // dropped outside the list
+          if (!destination) {
+            return
+          }
+          saveTiers(reorderProjects(tiers, source, destination))
+        }}
+      >
+        <Col className="gap-2 rounded px-6">
+          {tiers.map((tier) => (
+            <Tier
+              key={tier.id}
+              tier={tier}
+              confidenceMap={confidenceMap}
+              setConfidenceMap={saveConfidenceMap}
+            />
+          ))}
+        </Col>
+      </DragDropContext>
+      <Button onClick={handleSubmit}>Save tiers</Button>
+    </>
   )
 }
 
