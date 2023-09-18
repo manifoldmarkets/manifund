@@ -57,7 +57,7 @@ export function Tier(props: {
                 >
                   {tier.projects.map((project, index) => (
                     <EvalsProjectCard
-                      key={project.id}
+                      key={project.slug}
                       project={project}
                       index={index}
                       confidenceMap={confidenceMap}

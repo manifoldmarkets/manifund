@@ -38,7 +38,7 @@ export function EvalsProjectCard(props: {
   const shortName = shortenName(creator.full_name)
   const amountRaised = getAmountRaised(project, [], project.txns)
   return (
-    <Draggable key={project.id} draggableId={project.id} index={index}>
+    <Draggable key={project.slug} draggableId={project.slug} index={index}>
       {(dragProvided) => (
         <div
           {...dragProvided.dragHandleProps}
@@ -66,29 +66,31 @@ export function EvalsProjectCard(props: {
                     onClick={() =>
                       setConfidenceMap({
                         ...confidenceMap,
-                        [project.id]:
-                          confidenceMap[project.id] === 0.1
+                        [project.slug]:
+                          confidenceMap[project.slug] === 0.1
                             ? 0.01
-                            : (confidenceMap[project.id] * 10 - 1) / 10,
+                            : (confidenceMap[project.slug] * 10 - 1) / 10,
                       })
                     }
-                    disabled={confidenceMap[project.id] < 0.1}
+                    disabled={confidenceMap[project.slug] < 0.1}
                     className="disabled:opacity-50"
                   >
                     <RightCarrotIcon className="rotate-180" color="#6b7280" />
                   </button>
-                  <p className="text-xs">{confidenceMap[project.id] * 100}%</p>
+                  <p className="text-xs">
+                    {confidenceMap[project.slug] * 100}%
+                  </p>
                   <button
                     onClick={() =>
                       setConfidenceMap({
                         ...confidenceMap,
-                        [project.id]:
-                          confidenceMap[project.id] === 0.01
+                        [project.slug]:
+                          confidenceMap[project.slug] === 0.01
                             ? 0.1
-                            : (confidenceMap[project.id] * 10 + 1) / 10,
+                            : (confidenceMap[project.slug] * 10 + 1) / 10,
                       })
                     }
-                    disabled={confidenceMap[project.id] > 0.9}
+                    disabled={confidenceMap[project.slug] > 0.9}
                     className="disabled:opacity-50"
                   >
                     <RightCarrotIcon color="#6b7280" />
