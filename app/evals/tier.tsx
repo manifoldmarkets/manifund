@@ -21,7 +21,7 @@ export function Tier(props: {
     >
       <Row
         className={clsx(
-          'h-8 w-fit items-center rounded-br px-2 text-sm text-white',
+          'h-8 w-fit items-center gap-2 rounded-br px-2 text-sm text-white',
           `bg-${tier.color}`
         )}
       >
