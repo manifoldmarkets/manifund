@@ -21,7 +21,7 @@ export function Tier(props: {
     >
       <Row
         className={clsx(
-          'h-8 w-fit items-center gap-2 rounded-br px-2 text-sm text-white',
+          'h-8 w-fit items-center rounded-br px-2 text-sm text-white',
           `bg-${tier.color}`
         )}
       >
@@ -52,7 +52,7 @@ export function Tier(props: {
             >
               <div className="inline-flex grow">
                 <Row
-                  className="my-1 min-h-[6rem] min-w-[80vw] items-start gap-2 lg:min-w-[40rem]"
+                  className="my-1 min-h-[6rem] min-w-[80vw] items-start lg:min-w-[40rem]"
                   ref={dropProvided.innerRef}
                 >
                   {tier.projects.map((project, index) => (
