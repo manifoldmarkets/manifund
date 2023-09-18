@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
 import { Tier } from './tier'
+import { ProjectEval } from './page'
 
 export type Tier = {
   id: string
@@ -19,104 +20,30 @@ export type Tier = {
 }
 export type ConfidenceMap = { [key: string]: number }
 
-const EMPTY_TIERS: Tier[] = [
-  {
-    id: '5',
-    description: 'outstanding',
-    multiplier: 10,
-    color: 'emerald-800',
-    projects: [],
-  },
-  {
-    id: '4',
-    description: 'great',
-    multiplier: 3,
-    color: 'emerald-600',
-    projects: [],
-  },
-  {
-    id: '3',
-    description: 'good (~LTFF funding bar)',
-    multiplier: 1,
-    color: 'emerald-500',
-    projects: [],
-  },
-  {
-    id: '2',
-    description: 'ok',
-    multiplier: 0.3,
-    color: 'emerald-400',
-    projects: [],
-  },
-  {
-    id: '1',
-    description: 'net positive',
-    multiplier: 0.1,
-    color: 'emerald-300',
-    projects: [],
-  },
-  {
-    id: '0',
-    description: 'net 0',
-    multiplier: 0,
-    color: 'gray-300',
-    projects: [],
-  },
-  {
-    id: '-1',
-    description: 'net negative',
-    multiplier: -0.1,
-    color: 'rose-300',
-    projects: [],
-  },
-  {
-    id: '-2',
-    description: 'bad',
-    multiplier: -0.3,
-    color: 'rose-400',
-    projects: [],
-  },
-  {
-    id: '-3',
-    description: 'more bad',
-    multiplier: -1,
-    color: 'rose-500',
-    projects: [],
-  },
-  {
-    id: '-4',
-    description: 'possibly really bad',
-    multiplier: -3,
-    color: 'rose-600',
-    projects: [],
-  },
-  {
-    id: '-5',
-    description: 'probably really bad',
-    multiplier: -10,
-    color: 'rose-800',
-    projects: [],
-  },
-]
-
-export function TierList(props: { projects: MiniProject[] }) {
+export function TierList(props: {
+  projects: MiniProject[]
+  projectEvals: ProjectEval[]
+}) {
+  clearLocalStorageItem('tiers')
+  clearLocalStorageItem('confidenceMap')
   // From https://github.com/atlassian/react-beautiful-dnd/issues/1756#issuecomment-599388505
   resetServerContext()
-  const { projects } = props
+  const { projects, projectEvals } = props
+  const initialTiers = makeTiers(projects, projectEvals)
   const { value: tiers, saveValue: saveTiers } = useLocalStorage<Tier[]>(
-    [{ id: 'unsorted', projects: projects, color: 'gray-500' }, ...EMPTY_TIERS],
+    initialTiers,
     'tiers'
   )
-  const blankConfidenceMap = projects.reduce((object, project) => {
+  const initialConfidenceMap = projects.reduce((object, project) => {
     return {
       ...object,
       [project.id]: 0.5,
     }
   }, {})
   const { value: confidenceMap, saveValue: saveConfidenceMap } =
-    useLocalStorage<ConfidenceMap>(blankConfidenceMap, 'confidenceMap')
+    useLocalStorage<ConfidenceMap>(initialConfidenceMap, 'confidenceMap')
   useEffect(() => {
-    saveConfidenceMap({ ...blankConfidenceMap, ...confidenceMap })
+    saveConfidenceMap({ ...initialConfidenceMap, ...confidenceMap })
   }, [projects])
   const handleSubmit = async () => {
     // setIsSubmitting(true)
@@ -132,7 +59,7 @@ export function TierList(props: { projects: MiniProject[] }) {
         confidenceMap,
       }),
     })
-    const newProject = await response.json()
+    // const newProject = await response.json()
     // router.push(`/projects/${newProject.slug}`)
     clearLocalStorageItem('confidenceMap')
     clearLocalStorageItem('tiers')
@@ -213,4 +140,107 @@ function reorderProjects(
     }
     return tier
   })
+}
+
+const EMPTY_TIERS: Tier[] = [
+  { id: 'unsorted', projects: [], color: 'gray-500' },
+  {
+    id: '5',
+    description: 'outstanding',
+    multiplier: 10,
+    color: 'emerald-800',
+    projects: [],
+  },
+  {
+    id: '4',
+    description: 'great',
+    multiplier: 3,
+    color: 'emerald-600',
+    projects: [],
+  },
+  {
+    id: '3',
+    description: 'good (~LTFF funding bar)',
+    multiplier: 1,
+    color: 'emerald-500',
+    projects: [],
+  },
+  {
+    id: '2',
+    description: 'ok',
+    multiplier: 0.3,
+    color: 'emerald-400',
+    projects: [],
+  },
+  {
+    id: '1',
+    description: 'net positive',
+    multiplier: 0.1,
+    color: 'emerald-300',
+    projects: [],
+  },
+  {
+    id: '0',
+    description: 'net 0',
+    multiplier: 0,
+    color: 'gray-300',
+    projects: [],
+  },
+  {
+    id: '-1',
+    description: 'net negative',
+    multiplier: -0.1,
+    color: 'rose-300',
+    projects: [],
+  },
+  {
+    id: '-2',
+    description: 'bad',
+    multiplier: -0.3,
+    color: 'rose-400',
+    projects: [],
+  },
+  {
+    id: '-3',
+    description: 'more bad',
+    multiplier: -1,
+    color: 'rose-500',
+    projects: [],
+  },
+  {
+    id: '-4',
+    description: 'possibly really bad',
+    multiplier: -3,
+    color: 'rose-600',
+    projects: [],
+  },
+  {
+    id: '-5',
+    description: 'probably really bad',
+    multiplier: -10,
+    color: 'rose-800',
+    projects: [],
+  },
+]
+
+function makeTiers(projects: MiniProject[], projectEvals: ProjectEval[]) {
+  const tiers = EMPTY_TIERS
+  projects.forEach((project) => {
+    const projectEval = projectEvals.find(
+      (projectEval) => projectEval.project_id === project.id
+    )
+    if (projectEval) {
+      const tierId = projectEval.score.toString()
+      const tier = tiers.find((tier) => tier.id === tierId)
+      if (tier) {
+        tier.projects.push(project)
+      }
+    } else {
+      const tier = tiers.find((tier) => tier.id === 'unsorted')
+      if (tier) {
+        tier.projects.push(project)
+      }
+    }
+  })
+  return tiers
 }
