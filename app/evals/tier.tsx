@@ -98,6 +98,7 @@ const COLORS = [
   'bg-emerald-600',
   'bg-emerald-500',
   'bg-emerald-400',
+  'bg-emerald-300',
   'bg-gray-500',
   'bg-gray-300',
 ]

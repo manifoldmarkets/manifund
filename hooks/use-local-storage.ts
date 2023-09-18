@@ -3,17 +3,18 @@ import { useState } from 'react'
 
 // Like useState, but first checks for a JSON object stored under the key in the browser's localStorage
 // If key is not set, does nothing.
-const useLocalStorage = (initialValue: string, key?: string) => {
+const useLocalStorage = <type>(initialValue: type, key?: string) => {
   const [state, setState] = useState(() => {
     try {
-      const value = key ? window.localStorage.getItem(key) : initialValue
+      const initialValueString = JSON.stringify(initialValue)
+      const value = key ? window.localStorage.getItem(key) : initialValueString
       return value ? JSON.parse(value) : initialValue
     } catch (error) {
       console.log(error)
     }
   })
 
-  const setValue = (value: any) => {
+  const setValue = (value: type) => {
     try {
       if (key) {
         window.localStorage.setItem(key, JSON.stringify(value))

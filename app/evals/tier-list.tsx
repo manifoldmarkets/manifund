@@ -1,8 +1,10 @@
 'use client'
 import { Col } from '@/components/layout/col'
 import { MiniProject } from '@/db/project'
+import useLocalStorage from '@/hooks/use-local-storage'
 import { sortBy } from 'lodash'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { resetServerContext } from 'react-beautiful-dnd'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
 import { Tier } from './tier'
 
@@ -17,6 +19,7 @@ export type ConfidenceMap = { [key: string]: number }
 
 export function TierList(props: { projects: MiniProject[] }) {
   const { projects } = props
+  resetServerContext()
   const [tiers, setTiers] = useState<Tier[]>([
     { id: 'unsorted', projects: projects, color: 'gray-500' },
     {
@@ -97,15 +100,19 @@ export function TierList(props: { projects: MiniProject[] }) {
       projects: [],
     },
   ])
-  const [confidenceMap, setConfidenceMap] = useState<ConfidenceMap>(
-    projects.reduce((object, project) => {
-      return {
-        ...object,
-        [project.slug]: 0.5,
-      }
-    }, {})
+  const blankConfidenceMap = projects.reduce((object, project) => {
+    return {
+      ...object,
+      [project.slug]: 0.5,
+    }
+  }, {})
+  const [confidenceMap, saveConfidenceMap] = useLocalStorage<ConfidenceMap>(
+    blankConfidenceMap,
+    'confidenceMap'
   )
-
+  useEffect(() => {
+    saveConfidenceMap({ ...blankConfidenceMap, ...confidenceMap })
+  }, [projects])
   return (
     <DragDropContext
       onDragEnd={({ destination, source }) => {
@@ -122,7 +129,7 @@ export function TierList(props: { projects: MiniProject[] }) {
             key={tier.id}
             tier={tier}
             confidenceMap={confidenceMap}
-            setConfidenceMap={setConfidenceMap}
+            setConfidenceMap={saveConfidenceMap}
           />
         ))}
       </Col>
