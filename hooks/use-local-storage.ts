@@ -19,6 +19,7 @@ const useLocalStorage = <type>(initialValue: type, key?: string) => {
       if (key) {
         window.localStorage.setItem(key, JSON.stringify(value))
       }
+      console.log('saving', value)
       setState(value)
     } catch (error) {
       console.log(error)

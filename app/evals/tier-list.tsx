@@ -5,9 +5,12 @@ import { MiniProject } from '@/db/project'
 import useLocalStorage, {
   clearLocalStorageItem,
 } from '@/hooks/use-local-storage'
+import { cloneDeep } from 'lodash'
 import { useEffect } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
+import { TbInnerShadowLeft } from 'react-icons/tb'
+import { ProjectEval } from './page'
 import { Tier } from './tier'
 
 export type Tier = {
@@ -19,7 +22,128 @@ export type Tier = {
 }
 export type ConfidenceMap = { [key: string]: number }
 
+export function TierList(props: {
+  projects: MiniProject[]
+  evals: ProjectEval[]
+}) {
+  // From https://github.com/atlassian/react-beautiful-dnd/issues/1756#issuecomment-599388505
+  resetServerContext()
+  const { projects, evals } = props
+  const madeTiers = makeTiers(projects, evals)
+  const { value: tiers, saveValue: saveTiers } = useLocalStorage<Tier[]>(
+    madeTiers,
+    'tiers'
+  )
+  const blankConfidenceMap = projects.reduce((object, project) => {
+    return {
+      ...object,
+      [project.id]: 0.5,
+    }
+  }, {})
+  const { value: confidenceMap, saveValue: saveConfidenceMap } =
+    useLocalStorage<ConfidenceMap>(blankConfidenceMap, 'confidenceMap')
+  useEffect(() => {
+    saveConfidenceMap({ ...blankConfidenceMap, ...confidenceMap })
+  }, [projects])
+  const handleSubmit = async () => {
+    // setIsSubmitting(true)
+    // const description = descriptionEditor?.getJSON()
+    // const donorNotes = reasoningEditor?.getJSON()
+    const response = await fetch('/api/save-evals', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        tiers,
+        confidenceMap,
+      }),
+    })
+    const newProject = await response.json()
+    // router.push(`/projects/${newProject.slug}`)
+    clearLocalStorageItem('confidenceMap')
+    clearLocalStorageItem('tiers')
+    // setIsSubmitting(false)
+  }
+  return (
+    <>
+      <DragDropContext
+        onDragEnd={({ destination, source }) => {
+          // dropped outside the list
+          if (!destination) {
+            return
+          }
+          saveTiers(reorderProjects(tiers, source, destination))
+        }}
+      >
+        <Col className="gap-2 rounded px-6">
+          {tiers?.map((tier) => (
+            <Tier
+              key={tier.id}
+              tier={tier}
+              confidenceMap={confidenceMap}
+              setConfidenceMap={saveConfidenceMap}
+            />
+          ))}
+        </Col>
+      </DragDropContext>
+      <Button onClick={handleSubmit}>Save tiers</Button>
+    </>
+  )
+}
+
+function reorder(list: any[], startIndex: number, endIndex: number) {
+  const result = Array.from(list)
+  const [removed] = result.splice(startIndex, 1)
+  result.splice(endIndex, 0, removed)
+
+  return result
+}
+
+function reorderProjects(
+  tiers: Tier[],
+  source: DraggableLocation,
+  destination: DraggableLocation
+) {
+  const current = tiers.find((tier) => tier.id === source.droppableId)
+  const next = tiers.find((tier) => tier.id === destination.droppableId)
+  const target = current?.projects[source.index]
+  if (!current || !next || !target) {
+    return tiers
+  }
+  if (source.droppableId === destination.droppableId) {
+    const reordered = reorder(current.projects, source.index, destination.index)
+    return tiers.map((tier) => {
+      if (tier.id === source.droppableId) {
+        return {
+          ...tier,
+          projects: reordered,
+        }
+      }
+      return tier
+    })
+  }
+  current.projects.splice(source.index, 1)
+  next.projects.splice(destination.index, 0, target)
+  return tiers.map((tier) => {
+    if (tier.id === source.droppableId) {
+      return {
+        ...tier,
+        projects: current.projects,
+      }
+    }
+    if (tier.id === destination.droppableId) {
+      return {
+        ...tier,
+        projects: next.projects,
+      }
+    }
+    return tier
+  })
+}
+
 const EMPTY_TIERS: Tier[] = [
+  { id: 'unsorted', projects: [], color: 'gray-500' },
   {
     id: '5',
     description: 'outstanding',
@@ -98,119 +222,24 @@ const EMPTY_TIERS: Tier[] = [
     projects: [],
   },
 ]
-
-export function TierList(props: { projects: MiniProject[] }) {
-  // From https://github.com/atlassian/react-beautiful-dnd/issues/1756#issuecomment-599388505
-  resetServerContext()
-  const { projects } = props
-  const { value: tiers, saveValue: saveTiers } = useLocalStorage<Tier[]>(
-    [{ id: 'unsorted', projects: projects, color: 'gray-500' }, ...EMPTY_TIERS],
-    'tiers'
-  )
-  const blankConfidenceMap = projects.reduce((object, project) => {
-    return {
-      ...object,
-      [project.id]: 0.5,
-    }
-  }, {})
-  const { value: confidenceMap, saveValue: saveConfidenceMap } =
-    useLocalStorage<ConfidenceMap>(blankConfidenceMap, 'confidenceMap')
-  useEffect(() => {
-    saveConfidenceMap({ ...blankConfidenceMap, ...confidenceMap })
-  }, [projects])
-  const handleSubmit = async () => {
-    // setIsSubmitting(true)
-    // const description = descriptionEditor?.getJSON()
-    // const donorNotes = reasoningEditor?.getJSON()
-    const response = await fetch('/api/save-evals', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        tiers,
-        confidenceMap,
-      }),
-    })
-    const newProject = await response.json()
-    // router.push(`/projects/${newProject.slug}`)
-    clearLocalStorageItem('confidenceMap')
-    clearLocalStorageItem('tiers')
-    // setIsSubmitting(false)
-  }
-  return (
-    <>
-      <DragDropContext
-        onDragEnd={({ destination, source }) => {
-          // dropped outside the list
-          if (!destination) {
-            return
-          }
-          saveTiers(reorderProjects(tiers, source, destination))
-        }}
-      >
-        <Col className="gap-2 rounded px-6">
-          {tiers.map((tier) => (
-            <Tier
-              key={tier.id}
-              tier={tier}
-              confidenceMap={confidenceMap}
-              setConfidenceMap={saveConfidenceMap}
-            />
-          ))}
-        </Col>
-      </DragDropContext>
-      <Button onClick={handleSubmit}>Save tiers</Button>
-    </>
-  )
-}
-
-function reorder(list: any[], startIndex: number, endIndex: number) {
-  const result = Array.from(list)
-  const [removed] = result.splice(startIndex, 1)
-  result.splice(endIndex, 0, removed)
-
-  return result
-}
-
-function reorderProjects(
-  tiers: Tier[],
-  source: DraggableLocation,
-  destination: DraggableLocation
-) {
-  const current = tiers.find((tier) => tier.id === source.droppableId)
-  const next = tiers.find((tier) => tier.id === destination.droppableId)
-  const target = current?.projects[source.index]
-  if (!current || !next || !target) {
-    return tiers
-  }
-  if (source.droppableId === destination.droppableId) {
-    const reordered = reorder(current.projects, source.index, destination.index)
-    return tiers.map((tier) => {
-      if (tier.id === source.droppableId) {
-        return {
-          ...tier,
-          projects: reordered,
-        }
+function makeTiers(projects: MiniProject[], projectEvals: ProjectEval[]) {
+  const tiers = cloneDeep(EMPTY_TIERS)
+  projects.forEach((project) => {
+    const projectEval = projectEvals.find(
+      (projectEval) => projectEval.project_id === project.id
+    )
+    if (projectEval) {
+      const tierId = projectEval.score.toString()
+      const tier = tiers.find((tier) => tier.id === tierId)
+      if (tier) {
+        tier.projects.push(project)
       }
-      return tier
-    })
-  }
-  current.projects.splice(source.index, 1)
-  next.projects.splice(destination.index, 0, target)
-  return tiers.map((tier) => {
-    if (tier.id === source.droppableId) {
-      return {
-        ...tier,
-        projects: current.projects,
+    } else {
+      const tier = tiers.find((tier) => tier.id === 'unsorted')
+      if (tier) {
+        tier.projects.push(project)
       }
     }
-    if (tier.id === destination.droppableId) {
-      return {
-        ...tier,
-        projects: next.projects,
-      }
-    }
-    return tier
   })
+  return tiers
 }
