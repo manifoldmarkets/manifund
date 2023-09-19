@@ -6,7 +6,7 @@ import useLocalStorage, {
   clearLocalStorageItem,
 } from '@/hooks/use-local-storage'
 import { cloneDeep } from 'lodash'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
 import { TbInnerShadowLeft } from 'react-icons/tb'
@@ -45,11 +45,10 @@ export function TierList(props: {
   useEffect(() => {
     saveConfidenceMap({ ...blankConfidenceMap, ...confidenceMap })
   }, [projects])
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const handleSubmit = async () => {
-    // setIsSubmitting(true)
-    // const description = descriptionEditor?.getJSON()
-    // const donorNotes = reasoningEditor?.getJSON()
-    const response = await fetch('/api/save-evals', {
+    setIsSubmitting(true)
+    await fetch('/api/save-evals', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -59,17 +58,15 @@ export function TierList(props: {
         confidenceMap,
       }),
     })
-    const newProject = await response.json()
-    // router.push(`/projects/${newProject.slug}`)
     clearLocalStorageItem('confidenceMap')
     clearLocalStorageItem('tiers')
-    // setIsSubmitting(false)
+    setIsSubmitting(false)
   }
   return (
     <>
       <DragDropContext
         onDragEnd={({ destination, source }) => {
-          // dropped outside the list
+          // Dropped outside the list
           if (!destination) {
             return
           }
@@ -87,7 +84,9 @@ export function TierList(props: {
           ))}
         </Col>
       </DragDropContext>
-      <Button onClick={handleSubmit}>Save tiers</Button>
+      <Button onClick={handleSubmit} loading={isSubmitting}>
+        Save tiers
+      </Button>
     </>
   )
 }
@@ -222,6 +221,7 @@ const EMPTY_TIERS: Tier[] = [
     projects: [],
   },
 ]
+
 function makeTiers(projects: MiniProject[], projectEvals: ProjectEval[]) {
   const tiers = cloneDeep(EMPTY_TIERS)
   projects.forEach((project) => {

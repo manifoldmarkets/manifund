@@ -76,6 +76,7 @@ export function Tier(props: {
   )
 }
 
+// For tailwind colors to compile
 const COLORS = [
   'border-rose-800',
   'border-rose-600',
