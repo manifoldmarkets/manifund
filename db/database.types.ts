@@ -125,6 +125,40 @@ export interface Database {
           }
         ]
       }
+      profile_trust: {
+        Row: {
+          created_at: string
+          trusted_id: string
+          truster_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          trusted_id: string
+          truster_id: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string
+          trusted_id?: string
+          truster_id?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'profile_trust_trusted_id_fkey'
+            columns: ['trusted_id']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'profile_trust_truster_id_fkey'
+            columns: ['truster_id']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
       profiles: {
         Row: {
           accreditation_status: boolean
@@ -189,6 +223,46 @@ export interface Database {
           },
           {
             foreignKeyName: 'project_causes_project_id_fkey'
+            columns: ['project_id']
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          }
+        ]
+      }
+      project_evals: {
+        Row: {
+          confidence: number
+          created_at: string
+          evaluator_id: string
+          id: string
+          project_id: string
+          score: number
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          evaluator_id: string
+          id?: string
+          project_id: string
+          score?: number
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          evaluator_id?: string
+          id?: string
+          project_id?: string
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'project_evals_evaluator_id_fkey'
+            columns: ['evaluator_id']
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'project_evals_project_id_fkey'
             columns: ['project_id']
             referencedRelation: 'projects'
             referencedColumns: ['id']
