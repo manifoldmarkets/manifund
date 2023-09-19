@@ -126,13 +126,13 @@ export function FeedTabs(props: {
 function FullDonation(props: { txn: FullTxn }) {
   const { txn } = props
   // Ignore donations not associated with projects
-  if (!txn.projects || !txn.profiles) {
+  if (!txn.projects || !txn.profiles || txn.token !== 'USD') {
     return null
   }
   return (
     <Col>
       <Link
-        href={`/projects/${txn.projects.slug}?tab=donations`}
+        href={`/projects/${txn.projects.slug}?tab=${txn.projects.type === 'grant' ? 'donations' : 'shareholders'}`}
         className="w-fit"
       >
         <Tag text={txn.projects.title} className="hover:bg-orange-200" />
