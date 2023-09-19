@@ -65,7 +65,7 @@ export function Tier(props: {
                       sorted={tier.id !== 'unsorted'}
                     />
                   ))}
-                  {/* {dropProvided.placeholder} */}
+                  {dropProvided.placeholder as React.ReactNode}
                 </Row>
               </div>
             </div>
