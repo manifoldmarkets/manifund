@@ -23,21 +23,27 @@ export default async function handler(req: NextRequest) {
   if (!user) {
     return NextResponse.error()
   }
+  // TODO: bulk upsert and delete
   for (const tier of tiers) {
-    if (tier.id === 'unsorted') {
-      continue
-    }
     for (const project of tier.projects) {
-      const { error } = await supabase.from('project_evals').upsert([
-        {
-          project_id: project.id,
-          evaluator_id: user.id,
-          score: parseInt(tier.id),
-          confidence: confidenceMap[project.id],
-        },
-      ])
-      if (error) {
-        return NextResponse.error()
+      if (tier.id === 'unsorted') {
+        await supabase
+          .from('project_evals')
+          .delete()
+          .or(`project_id.eq.${project.id},evaluator_id.eq.${user.id}`)
+          .throwOnError()
+      } else {
+        await supabase
+          .from('project_evals')
+          .upsert([
+            {
+              project_id: project.id,
+              evaluator_id: user.id,
+              score: parseInt(tier.id),
+              confidence: confidenceMap[project.id],
+            },
+          ])
+          .throwOnError()
       }
     }
   }
