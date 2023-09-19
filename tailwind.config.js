@@ -47,7 +47,6 @@ module.exports = {
     require('@tailwindcss/forms'),
     require('@tailwindcss/typography'),
     require('tailwind-scrollbar-hide'),
-    require('@tailwindcss/line-clamp'),
     plugin(function ({ matchUtilities, theme }) {
       matchUtilities(
         {

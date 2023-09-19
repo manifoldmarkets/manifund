@@ -17,30 +17,17 @@ type EvalsProps = {
 }
 export default async function handler(req: NextRequest) {
   const { tiers, confidenceMap } = (await req.json()) as EvalsProps
-  console.log(1)
   const supabase = createEdgeClient(req)
-  console.log(2)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
-  console.log(3)
   if (!user) {
     return NextResponse.error()
   }
-  console.log(4)
   for (const tier of tiers) {
-    console.log(5)
     if (tier.id === 'unsorted') {
       continue
     }
     for (const project of tier.projects) {
-      console.log(6)
-      console.log(
-        project.id,
-        project.title,
-        user.id,
-        tier.id,
-        confidenceMap[project.id]
-      )
       const { error } = await supabase.from('project_evals').upsert([
         {
           project_id: project.id,
@@ -50,7 +37,6 @@ export default async function handler(req: NextRequest) {
         },
       ])
       if (error) {
-        console.error(error)
         return NextResponse.error()
       }
     }
