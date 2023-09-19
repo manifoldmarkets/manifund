@@ -41,7 +41,7 @@ export default async function handler(req: NextRequest) {
         tier.id,
         confidenceMap[project.id]
       )
-      const { error } = await supabase.from('project_evals').insert([
+      const { error } = await supabase.from('project_evals').upsert([
         {
           project_id: project.id,
           evaluator_id: user.id,
