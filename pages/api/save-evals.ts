@@ -23,29 +23,42 @@ export default async function handler(req: NextRequest) {
   if (!user) {
     return NextResponse.error()
   }
-  // TODO: bulk upsert and delete
-  for (const tier of tiers) {
-    for (const project of tier.projects) {
-      if (tier.id === 'unsorted') {
-        await supabase
-          .from('project_evals')
-          .delete()
-          .or(`project_id.eq.${project.id},evaluator_id.eq.${user.id}`)
-          .throwOnError()
-      } else {
-        await supabase
-          .from('project_evals')
-          .upsert([
-            {
-              project_id: project.id,
-              evaluator_id: user.id,
-              score: parseInt(tier.id),
-              confidence: confidenceMap[project.id],
-            },
-          ])
-          .throwOnError()
-      }
+  const evalsToUpsert = tiers.flatMap((tier) => {
+    if (tier.id === 'unsorted') {
+      return []
     }
+    return tier.projects.map((project) => {
+      return {
+        project_id: project.id,
+        evaluator_id: user.id,
+        score: parseInt(tier.id),
+        confidence: confidenceMap[project.id],
+      }
+    })
+  })
+  const { error: error1 } = await supabase
+    .from('project_evals')
+    .upsert(evalsToUpsert, {
+      onConflict: 'project_id, evaluator_id',
+      ignoreDuplicates: true,
+    })
+    .select()
+  if (error1) {
+    console.error(error1)
+    return NextResponse.error()
+  }
+  const projectIdsToDelete =
+    tiers
+      .find((tier) => tier.id === 'unsorted')
+      ?.projects.map((project) => project.id) ?? []
+  const { error: error2 } = await supabase
+    .from('project_evals')
+    .delete()
+    .in('project_id', projectIdsToDelete)
+    .throwOnError()
+  if (error2) {
+    console.error(error2)
+    return NextResponse.error()
   }
   return NextResponse.json('success')
 }
