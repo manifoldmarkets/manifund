@@ -60,7 +60,7 @@ export async function listProjects(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
     )
     .order('created_at', { ascending: false })
     .throwOnError()
@@ -75,7 +75,7 @@ export async function getFullProjectBySlug(
   const { data } = await supabase
     .from('projects')
     .select(
-      '*, profiles(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), causes(title, slug)'
+      '*, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), causes(title, slug)'
     )
     .eq('slug', slug)
     .throwOnError()
@@ -92,7 +92,7 @@ export async function getProjectAndProfileBySlug(
 ) {
   const { data } = await supabase
     .from('projects')
-    .select('*, profiles(*)')
+    .select('*, profiles!projects_creator_fkey(*)')
     .eq('slug', slug)
     .throwOnError()
   if (data === null) {
@@ -108,7 +108,7 @@ export async function getFullProjectsByRound(
   const { data, error } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
     )
     .eq('round', roundTitle)
   if (error) {
@@ -125,7 +125,7 @@ export async function getFullProjectsByCause(
   const { data, error } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_causes!inner(cause_slug), causes(title, slug)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_causes!inner(cause_slug), causes(title, slug)'
     )
     .eq('project_causes.cause_slug', causeSlug)
   if (error) {

@@ -12,8 +12,8 @@
     "gen-dev-types": "npx supabase gen types typescript --project-id oucjhqqretizqonyfyqu --schema public > db/database.types.ts",
     "format": "npx prettier --write .",
     "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty",
-    "snap:restore": "snaplet snapshot restore --no-reset",
-    "snap:restore-empty": "snaplet snapshot restore --no-reset --no-data",
+    "snap:restore": "npx snaplet snapshot restore --no-reset",
+    "snap:restore-empty": "npx snaplet snapshot restore --no-reset --no-data",
     "//": "Consider dropping --no-reset flag; see https://docs.snaplet.dev/getting-started/restoring#more-granular-control-over-restorations"
   },
   "dependencies": {
@@ -72,7 +72,7 @@
     "postcss": "^8.4.21",
     "prettier": "^2.8.4",
     "prettier-plugin-tailwindcss": "^0.2.3",
-    "snaplet": "^0.55.0",
+    "snaplet": "^0.59.0",
     "tailwindcss": "^3.2.6"
   },
   "resolutions": {
