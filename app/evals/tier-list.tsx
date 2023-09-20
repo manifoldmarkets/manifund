@@ -13,6 +13,7 @@ import { TbInnerShadowLeft } from 'react-icons/tb'
 import { ProjectEval } from './page'
 import { Tier } from './tier'
 import SetTrust from './set-trust'
+import { ProfileAndEvals } from '@/db/profile'
 
 export type Tier = {
   id: string
@@ -26,10 +27,11 @@ export type ConfidenceMap = { [key: string]: number }
 export function TierList(props: {
   projects: MiniProject[]
   evals: ProjectEval[]
+  profiles: ProfileAndEvals[]
 }) {
   // From https://github.com/atlassian/react-beautiful-dnd/issues/1756#issuecomment-599388505
   resetServerContext()
-  const { projects, evals } = props
+  const { projects, evals, profiles } = props
   const madeTiers = makeTiers(projects, evals)
   const { value: tiers, saveValue: saveTiers } = useLocalStorage<Tier[]>(
     madeTiers,

@@ -1,5 +1,5 @@
 import { Database } from '@/db/database.types'
-import { getUser } from '@/db/profile'
+import { listProfilesAndEvals, getUser } from '@/db/profile'
 import { listProjectsForEvals } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
 import { SupabaseClient } from '@supabase/supabase-js'
@@ -7,9 +7,10 @@ import { TierList } from './tier-list'
 
 export default async function EvalsPage() {
   const supabase = createServerClient()
-  const [user, projects] = await Promise.all([
+  const [user, projects, profiles] = await Promise.all([
     getUser(supabase),
     listProjectsForEvals(supabase),
+    listProfilesAndEvals(supabase),
   ])
   if (!user) {
     return <div>Not logged in</div>
@@ -17,7 +18,7 @@ export default async function EvalsPage() {
   const evals = await getEvals(user.id, supabase)
   return (
     <div className="p-4">
-      <TierList projects={projects} evals={evals} />
+      <TierList projects={projects} evals={evals} profiles={profiles} />
     </div>
   )
 }
