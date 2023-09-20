@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
+import { Row } from '@/components/layout/row'
 
 const people = [
   { id: 1, name: 'Wade Cooper', online: true },
@@ -32,24 +33,19 @@ export default function Example() {
       {({ open }) => (
         <div className="relative mt-2">
           <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6">
-            <span className="flex items-center">
+            <Row className="items-center">
               <span
-                aria-label={selected.online ? 'Online' : 'Offline'}
                 className={clsx(
                   selected.online ? 'bg-green-400' : 'bg-gray-200',
                   'inline-block h-2 w-2 flex-shrink-0 rounded-full'
                 )}
               />
               <span className="ml-3 block truncate">{selected.name}</span>
-            </span>
-            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-              <ChevronUpDownIcon
-                className="h-5 w-5 text-gray-400"
-                aria-hidden="true"
-              />
-            </span>
+            </Row>
+            <Row className="pointer-events-none absolute inset-y-0 right-0 items-center pr-2">
+              <ChevronUpDownIcon className="h-5 w-5 text-gray-400" />
+            </Row>
           </Listbox.Button>
-
           <Transition
             show={open}
             as={Fragment}
@@ -71,13 +67,12 @@ export default function Example() {
                 >
                   {({ selected, active }) => (
                     <>
-                      <div className="flex items-center">
-                        <span
+                      <Row className="items-center">
+                        <div
                           className={clsx(
                             person.online ? 'bg-green-400' : 'bg-gray-200',
                             'inline-block h-2 w-2 flex-shrink-0 rounded-full'
                           )}
-                          aria-hidden="true"
                         />
                         <span
                           className={clsx(
@@ -86,13 +81,8 @@ export default function Example() {
                           )}
                         >
                           {person.name}
-                          <span className="sr-only">
-                            {' '}
-                            is {person.online ? 'online' : 'offline'}
-                          </span>
                         </span>
-                      </div>
-
+                      </Row>
                       {selected ? (
                         <span
                           className={clsx(
@@ -100,7 +90,7 @@ export default function Example() {
                             'absolute inset-y-0 right-0 flex items-center pr-4'
                           )}
                         >
-                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          <CheckIcon className="h-5 w-5" />
                         </span>
                       ) : null}
                     </>
