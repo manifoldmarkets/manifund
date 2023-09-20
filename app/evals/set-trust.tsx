@@ -4,6 +4,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { ProfileAndEvals } from '@/db/profile'
+import { Input } from '@/components/input'
 
 const people = [
   { id: 1, name: 'Wade Cooper', online: true },
@@ -18,17 +19,50 @@ const people = [
   { id: 10, name: 'Emil Schaefer', online: false },
 ]
 
+type TrustMap = { [key: string]: number }
+
 export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
   const { profiles } = props
+  const [trustMap, setTrustMap] = useState(
+    Object.fromEntries((profiles ?? []).map((profile) => [profile.id, 1]))
+  )
   return (
     <div className="p-10">
       <h1>TrustSelect</h1>
-      <ProfileSelect profiles={profiles} />
+      <SetSingleTrust
+        profiles={profiles}
+        trustMap={trustMap}
+        setTrustMap={setTrustMap}
+      />
     </div>
   )
 }
 
-export default function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
+function SetSingleTrust(props: {
+  profiles: ProfileAndEvals[]
+  trustMap: TrustMap
+  setTrustMap: (trustMap: TrustMap) => void
+}) {
+  const { profiles, trustMap, setTrustMap } = props
+  const [profile, setProfile] = useState<ProfileAndEvals | null>(null)
+  return (
+    <Row>
+      <ProfileSelect profiles={profiles} />
+      <Input
+        onChange={(event) => {
+          if (!!profile) {
+            setTrustMap({
+              ...trustMap,
+              [profile.id]: Number(event.target.value),
+            })
+          }
+        }}
+      />
+    </Row>
+  )
+}
+
+function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
   const { profiles } = props
   const [selected, setSelected] = useState(people[3])
   return (

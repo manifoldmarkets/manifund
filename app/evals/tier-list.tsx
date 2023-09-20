@@ -9,10 +9,9 @@ import { cloneDeep } from 'lodash'
 import { useEffect, useState } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
-import { TbInnerShadowLeft } from 'react-icons/tb'
 import { ProjectEval } from './page'
 import { Tier } from './tier'
-import SetTrust from './set-trust'
+import { SetTrust } from './set-trust'
 import { ProfileAndEvals } from '@/db/profile'
 
 export type Tier = {
@@ -68,7 +67,6 @@ export function TierList(props: {
   return (
     <>
       <SetTrust profiles={profiles} />
-
       <DragDropContext
         onDragEnd={({ destination, source }) => {
           // Dropped outside the list
