@@ -67,7 +67,7 @@ export function TierList(props: {
   }
   return (
     <>
-      <SetTrust />
+      <SetTrust profiles={profiles} />
 
       <DragDropContext
         onDragEnd={({ destination, source }) => {

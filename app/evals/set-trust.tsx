@@ -3,6 +3,7 @@ import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
+import { ProfileAndEvals } from '@/db/profile'
 
 const people = [
   { id: 1, name: 'Wade Cooper', online: true },
@@ -17,16 +18,18 @@ const people = [
   { id: 10, name: 'Emil Schaefer', online: false },
 ]
 
-export function SetTrust() {
+export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
+  const { profiles } = props
   return (
     <div className="p-10">
       <h1>TrustSelect</h1>
-      <Example />
+      <ProfileSelect profiles={profiles} />
     </div>
   )
 }
 
-export default function Example() {
+export default function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
+  const { profiles } = props
   const [selected, setSelected] = useState(people[3])
   return (
     <Listbox value={selected} onChange={setSelected}>
