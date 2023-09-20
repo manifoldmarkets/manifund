@@ -46,8 +46,10 @@ function SetSingleTrust(props: {
   const { profiles, trustMap, setTrustMap } = props
   const [profile, setProfile] = useState<ProfileAndEvals | null>(null)
   return (
-    <Row>
-      <ProfileSelect profiles={profiles} />
+    <div className="grid grid-cols-4 gap-5">
+      <div className="col-span-3">
+        <ProfileSelect profiles={profiles} />
+      </div>
       <Input
         onChange={(event) => {
           if (!!profile) {
@@ -58,7 +60,7 @@ function SetSingleTrust(props: {
           }
         }}
       />
-    </Row>
+    </div>
   )
 }
 
