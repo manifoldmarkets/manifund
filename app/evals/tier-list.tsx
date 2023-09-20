@@ -12,6 +12,7 @@ import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
 import { TbInnerShadowLeft } from 'react-icons/tb'
 import { ProjectEval } from './page'
 import { Tier } from './tier'
+import SetTrust from './set-trust'
 
 export type Tier = {
   id: string
@@ -64,6 +65,8 @@ export function TierList(props: {
   }
   return (
     <>
+      <SetTrust />
+
       <DragDropContext
         onDragEnd={({ destination, source }) => {
           // Dropped outside the list
