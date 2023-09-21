@@ -7,9 +7,10 @@ import { ProfileAndEvals } from '@/db/profile'
 import { Input } from '@/components/input'
 import { checkProfileComplete } from '../people/people-display'
 import { cloneDeep } from 'lodash'
+import { Button } from '@/components/button'
 
 type Trust = {
-  profileId: string
+  profileId: string | null
   trust: number
 }
 
@@ -34,6 +35,19 @@ export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
           setTrustList={setTrustList}
         />
       ))}
+      <Button
+        onClick={() => {
+          setTrustList([
+            ...trustList,
+            {
+              profileId: null,
+              trust: 1,
+            },
+          ])
+        }}
+      >
+        Add evaluator
+      </Button>
     </div>
   )
 }
