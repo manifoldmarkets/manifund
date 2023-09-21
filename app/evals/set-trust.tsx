@@ -39,7 +39,7 @@ function SetSingleTrust(props: {
   const { profiles, trustMap, setTrustMap } = props
   const [profile, setProfile] = useState<ProfileAndEvals | null>(null)
   return (
-    <div className="grid grid-cols-4 gap-5">
+    <div className="grid grid-cols-4 items-center gap-5">
       <div className="col-span-3">
         <ProfileSelect profiles={profiles} />
       </div>
@@ -69,7 +69,7 @@ function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
   return (
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
-        <div className="relative mt-2">
+        <div className="relative">
           <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6">
             <Row className="items-center">
               {selected ? (
