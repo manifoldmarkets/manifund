@@ -2,7 +2,7 @@ import { Fragment, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 import {
   CheckIcon,
-  ChevronUpDownIcon,
+  PlusCircleIcon,
   XCircleIcon,
 } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
@@ -11,7 +11,7 @@ import { ProfileAndEvals } from '@/db/profile'
 import { Input } from '@/components/input'
 import { checkProfileComplete } from '../people/people-display'
 import { cloneDeep } from 'lodash'
-import { Button, IconButton } from '@/components/button'
+import { Button } from '@/components/button'
 import { Col } from '@/components/layout/col'
 import { Avatar } from '@/components/avatar'
 import { Tooltip } from '@/components/tooltip'
@@ -42,6 +42,7 @@ export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
         />
       ))}
       <Button
+        className="flex gap-1"
         onClick={() => {
           setTrustList([
             ...trustList,
@@ -52,6 +53,7 @@ export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
           ])
         }}
       >
+        <PlusCircleIcon className="h-5 w-5" />
         Add evaluator
       </Button>
     </Col>
@@ -68,12 +70,12 @@ function SetSingleTrust(props: {
   const { profiles, index, trust, trustList, setTrustList } = props
   return (
     <Row className="w-full items-center justify-center gap-3">
-      <div className="w-52">
+      <div className="w-60">
         <ProfileSelect profiles={profiles} />
       </div>
       <Input
         type="number"
-        className="h-8 w-20 text-sm"
+        className="h-8 w-20 !px-2 text-sm"
         value={trust.trust}
         onChange={(event) => {
           const newTrustList = cloneDeep(trustList)
