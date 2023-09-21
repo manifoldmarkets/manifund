@@ -1,13 +1,17 @@
 import { Fragment, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  XCircleIcon,
+} from '@heroicons/react/20/solid'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { ProfileAndEvals } from '@/db/profile'
 import { Input } from '@/components/input'
 import { checkProfileComplete } from '../people/people-display'
 import { cloneDeep } from 'lodash'
-import { Button } from '@/components/button'
+import { Button, IconButton } from '@/components/button'
 import { Col } from '@/components/layout/col'
 import { Avatar } from '@/components/avatar'
 import { Tooltip } from '@/components/tooltip'
@@ -63,12 +67,13 @@ function SetSingleTrust(props: {
 }) {
   const { profiles, index, trust, trustList, setTrustList } = props
   return (
-    <div className="grid grid-cols-4 items-center gap-5">
-      <div className="col-span-3">
+    <Row className="w-full items-center justify-center gap-3">
+      <div className="w-52">
         <ProfileSelect profiles={profiles} />
       </div>
       <Input
         type="number"
+        className="h-8 w-20 text-sm"
         value={trust.trust}
         onChange={(event) => {
           const newTrustList = cloneDeep(trustList)
@@ -76,7 +81,12 @@ function SetSingleTrust(props: {
           setTrustList(newTrustList)
         }}
       />
-    </div>
+      <button
+        onClick={() => setTrustList(trustList.filter((t) => t !== trust))}
+      >
+        <XCircleIcon className="h-5 w-5 text-gray-800" />
+      </button>
+    </Row>
   )
 }
 
