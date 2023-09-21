@@ -1,4 +1,4 @@
-import { ConfidenceMap, Tier } from '@/app/evals/tier-list'
+import { ConfidenceMap, Tier } from '@/app/evals/evals'
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
 

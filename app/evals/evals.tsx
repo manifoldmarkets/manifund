@@ -23,7 +23,12 @@ export type Tier = {
 }
 export type ConfidenceMap = { [key: string]: number }
 
-export function TierList(props: {
+export type TrustObj = {
+  profileId: string | null
+  trust: number
+}
+
+export function Evals(props: {
   projects: MiniProject[]
   evals: ProjectEval[]
   profiles: ProfileAndEvals[]
@@ -31,6 +36,7 @@ export function TierList(props: {
   // From https://github.com/atlassian/react-beautiful-dnd/issues/1756#issuecomment-599388505
   resetServerContext()
   const { projects, evals, profiles } = props
+  const [trustList, setTrustList] = useState<TrustObj[]>([])
   const madeTiers = makeTiers(projects, evals)
   const { value: tiers, saveValue: saveTiers } = useLocalStorage<Tier[]>(
     madeTiers,
@@ -66,7 +72,11 @@ export function TierList(props: {
   }
   return (
     <>
-      <SetTrust profiles={profiles} />
+      <SetTrust
+        profiles={profiles}
+        trustList={trustList}
+        setTrustList={setTrustList}
+      />
       <DragDropContext
         onDragEnd={({ destination, source }) => {
           // Dropped outside the list

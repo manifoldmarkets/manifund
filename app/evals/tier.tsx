@@ -1,9 +1,9 @@
 import { Row } from '@/components/layout/row'
-import { Tier } from './tier-list'
+import { Tier } from './evals'
 import React from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import { EvalsProjectCard } from './evals-project-card'
-import { ConfidenceMap } from './tier-list'
+import { ConfidenceMap } from './evals'
 import clsx from 'clsx'
 
 export function Tier(props: {

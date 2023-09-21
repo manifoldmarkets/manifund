@@ -3,8 +3,7 @@ import { listProfilesAndEvals, getUser } from '@/db/profile'
 import { listProjectsForEvals } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { TierList } from './tier-list'
-import { checkProfileComplete } from '../people/people-display'
+import { Evals } from './evals'
 
 export default async function EvalsPage() {
   const supabase = createServerClient()
@@ -19,7 +18,7 @@ export default async function EvalsPage() {
   const evals = await getEvals(user.id, supabase)
   return (
     <div className="p-4">
-      <TierList projects={projects} evals={evals} profiles={profiles} />
+      <Evals projects={projects} evals={evals} profiles={profiles} />
     </div>
   )
 }

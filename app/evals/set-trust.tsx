@@ -15,18 +15,17 @@ import { Button } from '@/components/button'
 import { Col } from '@/components/layout/col'
 import { Avatar } from '@/components/avatar'
 import { Tooltip } from '@/components/tooltip'
+import { TrustObj } from './evals'
 
-type TrustObj = {
-  profileId: string | null
-  trust: number
-}
-
-export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
-  const { profiles } = props
+export function SetTrust(props: {
+  profiles: ProfileAndEvals[]
+  trustList: TrustObj[]
+  setTrustList: (trustList: TrustObj[]) => void
+}) {
+  const { profiles, trustList, setTrustList } = props
   const completeProfiles = profiles
     ?.filter((profile) => profile.type === 'individual')
     .filter((profile) => checkProfileComplete(profile))
-  const [trustList, setTrustList] = useState<TrustObj[]>([])
   return (
     <Col className="w-full items-center gap-4">
       {trustList.map((trust, index) => (
