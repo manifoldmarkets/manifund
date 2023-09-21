@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react'
-import { Listbox, Transition } from '@headlessui/react'
+import { Combobox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
@@ -8,6 +8,9 @@ import { Input } from '@/components/input'
 import { checkProfileComplete } from '../people/people-display'
 import { cloneDeep } from 'lodash'
 import { Button } from '@/components/button'
+import { Col } from '@/components/layout/col'
+import { Avatar } from '@/components/avatar'
+import { Tooltip } from '@/components/tooltip'
 
 type TrustObj = {
   profileId: string | null
@@ -21,8 +24,7 @@ export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
     .filter((profile) => checkProfileComplete(profile))
   const [trustList, setTrustList] = useState<TrustObj[]>([])
   return (
-    <div className="p-10">
-      <h1>TrustSelect</h1>
+    <Col className="w-full items-center gap-4">
       {trustList.map((trust, index) => (
         <SetSingleTrust
           key={index}
@@ -48,7 +50,7 @@ export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
       >
         Add evaluator
       </Button>
-    </div>
+    </Col>
   )
 }
 
@@ -80,37 +82,27 @@ function SetSingleTrust(props: {
 
 function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
   const { profiles } = props
-  const [selected, setSelected] = useState<ProfileAndEvals | null>(null)
+  const [selectedProfile, setSelectedProfile] =
+    useState<ProfileAndEvals | null>(null)
+  const [search, setSearch] = useState('')
+  const filteredProfiles =
+    search === ''
+      ? profiles
+      : profiles.filter((profile) => {
+          return profile.full_name.toLowerCase().includes(search.toLowerCase())
+        })
   return (
-    <Listbox value={selected} onChange={setSelected}>
+    <Combobox value={selectedProfile} onChange={setSelectedProfile}>
       {({ open }) => (
         <div className="relative">
-          <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600 sm:text-sm sm:leading-6">
-            <Row className="items-center">
-              {selected ? (
-                <>
-                  <span
-                    className={clsx(
-                      selected.project_evals.length > 0
-                        ? 'bg-green-400'
-                        : 'bg-gray-200',
-                      'inline-block h-2 w-2 flex-shrink-0 rounded-full'
-                    )}
-                  />
-                  <span className="ml-3 block truncate">
-                    {selected.full_name}
-                  </span>
-                </>
-              ) : (
-                <span className="ml-3 block truncate text-gray-600">
-                  Select an evaluator
-                </span>
-              )}
-            </Row>
-            <Row className="pointer-events-none absolute inset-y-0 right-0 items-center pr-2">
-              <ChevronUpDownIcon className="h-5 w-5 text-gray-400" />
-            </Row>
-          </Listbox.Button>
+          <Combobox.Input
+            onChange={(event) => setSearch(event.target.value)}
+            className="w-full rounded-md border-0 bg-white py-1.5 pl-3 text-sm text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-orange-600"
+            displayValue={(profile: ProfileAndEvals | null) =>
+              profile?.full_name ?? search
+            }
+            placeholder="Select an evaluator"
+          />
           <Transition
             show={open}
             as={Fragment}
@@ -118,9 +110,9 @@ function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {profiles.map((profile) => (
-                <Listbox.Option
+            <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-gray-300 focus:outline-none">
+              {filteredProfiles.map((profile) => (
+                <Combobox.Option
                   key={profile.id}
                   className={({ active }) =>
                     clsx(
@@ -133,22 +125,24 @@ function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
                   {({ selected, active }) => (
                     <>
                       <Row className="items-center">
-                        <div
-                          className={clsx(
-                            profile.project_evals.length > 0
-                              ? 'bg-green-400'
-                              : 'bg-gray-200',
-                            'inline-block h-2 w-2 flex-shrink-0 rounded-full'
-                          )}
+                        <DoneEvalsIndicator
+                          doneEvals={profile.project_evals.length > 0}
                         />
-                        <span
+
+                        <Row
                           className={clsx(
                             selected ? 'font-semibold' : 'font-normal',
-                            'ml-3 block truncate'
+                            'ml-3 block items-center gap-1 truncate'
                           )}
                         >
+                          <Avatar
+                            username={profile.username}
+                            id={profile.id}
+                            avatarUrl={profile.avatar_url}
+                            size="xs"
+                          />
                           {profile.full_name}
-                        </span>
+                        </Row>
                       </Row>
                       {selected ? (
                         <span
@@ -162,12 +156,29 @@ function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
                       ) : null}
                     </>
                   )}
-                </Listbox.Option>
+                </Combobox.Option>
               ))}
-            </Listbox.Options>
+            </Combobox.Options>
           </Transition>
         </div>
       )}
-    </Listbox>
+    </Combobox>
+  )
+}
+
+function DoneEvalsIndicator(props: { doneEvals: boolean }) {
+  const { doneEvals } = props
+  return (
+    <Tooltip
+      text={doneEvals ? 'Has done evals' : "Hasn't done evals"}
+      placement="top"
+    >
+      <div
+        className={clsx(
+          doneEvals ? 'bg-green-400' : 'bg-gray-200',
+          'inline-block h-2 w-2 flex-shrink-0 rounded-full'
+        )}
+      />
+    </Tooltip>
   )
 }
