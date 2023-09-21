@@ -36,7 +36,9 @@ export function Evals(props: {
   // From https://github.com/atlassian/react-beautiful-dnd/issues/1756#issuecomment-599388505
   resetServerContext()
   const { projects, evals, profiles } = props
-  const [trustList, setTrustList] = useState<TrustObj[]>([])
+  const { value: trustList, saveValue: setTrustList } = useLocalStorage<
+    TrustObj[]
+  >([], 'trustList')
   const madeTiers = makeTiers(projects, evals)
   const { value: tiers, saveValue: saveTiers } = useLocalStorage<Tier[]>(
     madeTiers,
