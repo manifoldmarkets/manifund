@@ -102,6 +102,7 @@ function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
               profile?.full_name ?? search
             }
             placeholder="Select an evaluator"
+            autoComplete="off"
           />
           <Transition
             show={open}
