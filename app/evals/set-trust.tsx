@@ -5,11 +5,15 @@ import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { ProfileAndEvals } from '@/db/profile'
 import { Input } from '@/components/input'
+import { checkProfileComplete } from '../people/people-display'
 
 type TrustMap = { [key: string]: number | null }
 
 export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
   const { profiles } = props
+  const completeProfiles = profiles
+    ?.filter((profile) => profile.type === 'individual')
+    .filter((profile) => checkProfileComplete(profile))
   const [trustMap, setTrustMap] = useState<TrustMap>(
     Object.fromEntries((profiles ?? []).map((profile) => [profile.id, null]))
   )
@@ -17,7 +21,9 @@ export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
     <div className="p-10">
       <h1>TrustSelect</h1>
       <SetSingleTrust
-        profiles={profiles.filter((profile) => trustMap[profile.id] === null)}
+        profiles={completeProfiles.filter(
+          (profile) => trustMap[profile.id] === null
+        )}
         trustMap={trustMap}
         setTrustMap={setTrustMap}
       />

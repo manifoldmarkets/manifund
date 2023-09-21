@@ -4,6 +4,7 @@ import { listProjectsForEvals } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { TierList } from './tier-list'
+import { checkProfileComplete } from '../people/people-display'
 
 export default async function EvalsPage() {
   const supabase = createServerClient()
