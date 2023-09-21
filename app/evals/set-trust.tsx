@@ -6,19 +6,6 @@ import { Row } from '@/components/layout/row'
 import { ProfileAndEvals } from '@/db/profile'
 import { Input } from '@/components/input'
 
-const people = [
-  { id: 1, name: 'Wade Cooper', online: true },
-  { id: 2, name: 'Arlene Mccoy', online: false },
-  { id: 3, name: 'Devon Webb', online: false },
-  { id: 4, name: 'Tom Cook', online: true },
-  { id: 5, name: 'Tanya Fox', online: false },
-  { id: 6, name: 'Hellen Schmidt', online: true },
-  { id: 7, name: 'Caroline Schultz', online: true },
-  { id: 8, name: 'Mason Heaney', online: false },
-  { id: 9, name: 'Claudie Smitham', online: true },
-  { id: 10, name: 'Emil Schaefer', online: false },
-]
-
 type TrustMap = { [key: string]: number | null }
 
 export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
@@ -72,7 +59,7 @@ function SetSingleTrust(props: {
 
 function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
   const { profiles } = props
-  const [selected, setSelected] = useState(people[3])
+  const [selected, setSelected] = useState<ProfileAndEvals | null>(null)
   return (
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
@@ -81,11 +68,13 @@ function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
             <Row className="items-center">
               <span
                 className={clsx(
-                  selected.online ? 'bg-green-400' : 'bg-gray-200',
+                  selected && selected.project_evals.length > 0
+                    ? 'bg-green-400'
+                    : 'bg-gray-200',
                   'inline-block h-2 w-2 flex-shrink-0 rounded-full'
                 )}
               />
-              <span className="ml-3 block truncate">{selected.name}</span>
+              <span className="ml-3 block truncate">{selected?.full_name}</span>
             </Row>
             <Row className="pointer-events-none absolute inset-y-0 right-0 items-center pr-2">
               <ChevronUpDownIcon className="h-5 w-5 text-gray-400" />
@@ -99,23 +88,25 @@ function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
             leaveTo="opacity-0"
           >
             <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {people.map((person) => (
+              {profiles.map((profile) => (
                 <Listbox.Option
-                  key={person.id}
+                  key={profile.id}
                   className={({ active }) =>
                     clsx(
                       active ? 'bg-orange-600 text-white' : 'text-gray-900',
                       'relative cursor-default select-none py-2 pl-3 pr-9'
                     )
                   }
-                  value={person}
+                  value={profile}
                 >
                   {({ selected, active }) => (
                     <>
                       <Row className="items-center">
                         <div
                           className={clsx(
-                            person.online ? 'bg-green-400' : 'bg-gray-200',
+                            profile.project_evals.length > 0
+                              ? 'bg-green-400'
+                              : 'bg-gray-200',
                             'inline-block h-2 w-2 flex-shrink-0 rounded-full'
                           )}
                         />
@@ -125,7 +116,7 @@ function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
                             'ml-3 block truncate'
                           )}
                         >
-                          {person.name}
+                          {profile.full_name}
                         </span>
                       </Row>
                       {selected ? (
