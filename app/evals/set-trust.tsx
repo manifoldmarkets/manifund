@@ -9,7 +9,7 @@ import { checkProfileComplete } from '../people/people-display'
 import { cloneDeep } from 'lodash'
 import { Button } from '@/components/button'
 
-type Trust = {
+type TrustObj = {
   profileId: string | null
   trust: number
 }
@@ -19,7 +19,7 @@ export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
   const completeProfiles = profiles
     ?.filter((profile) => profile.type === 'individual')
     .filter((profile) => checkProfileComplete(profile))
-  const [trustList, setTrustList] = useState<Trust[]>([])
+  const [trustList, setTrustList] = useState<TrustObj[]>([])
   return (
     <div className="p-10">
       <h1>TrustSelect</h1>
@@ -55,9 +55,9 @@ export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
 function SetSingleTrust(props: {
   profiles: ProfileAndEvals[]
   index: number
-  trust: Trust
-  trustList: Trust[]
-  setTrustList: (trustMap: Trust[]) => void
+  trust: TrustObj
+  trustList: TrustObj[]
+  setTrustList: (trustList: TrustObj[]) => void
 }) {
   const { profiles, index, trust, trustList, setTrustList } = props
   return (
