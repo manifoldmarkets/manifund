@@ -6,38 +6,46 @@ import { Row } from '@/components/layout/row'
 import { ProfileAndEvals } from '@/db/profile'
 import { Input } from '@/components/input'
 import { checkProfileComplete } from '../people/people-display'
+import { cloneDeep } from 'lodash'
 
-type TrustMap = { [key: string]: number | null }
+type Trust = {
+  profileId: string
+  trust: number
+}
 
 export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
   const { profiles } = props
   const completeProfiles = profiles
     ?.filter((profile) => profile.type === 'individual')
     .filter((profile) => checkProfileComplete(profile))
-  const [trustMap, setTrustMap] = useState<TrustMap>(
-    Object.fromEntries((profiles ?? []).map((profile) => [profile.id, null]))
-  )
+  const [trustList, setTrustList] = useState<Trust[]>([])
   return (
     <div className="p-10">
       <h1>TrustSelect</h1>
-      <SetSingleTrust
-        profiles={completeProfiles.filter(
-          (profile) => trustMap[profile.id] === null
-        )}
-        trustMap={trustMap}
-        setTrustMap={setTrustMap}
-      />
+      {trustList.map((trust, index) => (
+        <SetSingleTrust
+          key={index}
+          index={index}
+          profiles={completeProfiles.filter((profile) =>
+            trustList.find((t) => t.profileId !== profile.id)
+          )}
+          trust={trust}
+          trustList={trustList}
+          setTrustList={setTrustList}
+        />
+      ))}
     </div>
   )
 }
 
 function SetSingleTrust(props: {
   profiles: ProfileAndEvals[]
-  trustMap: TrustMap
-  setTrustMap: (trustMap: TrustMap) => void
+  index: number
+  trust: Trust
+  trustList: Trust[]
+  setTrustList: (trustMap: Trust[]) => void
 }) {
-  const { profiles, trustMap, setTrustMap } = props
-  const [profile, setProfile] = useState<ProfileAndEvals | null>(null)
+  const { profiles, index, trust, trustList, setTrustList } = props
   return (
     <div className="grid grid-cols-4 items-center gap-5">
       <div className="col-span-3">
@@ -45,18 +53,11 @@ function SetSingleTrust(props: {
       </div>
       <Input
         type="number"
-        value={
-          !!profile && !!trustMap[profile.id]
-            ? (trustMap[profile.id] as number)
-            : 0
-        }
+        value={trust.trust}
         onChange={(event) => {
-          if (!!profile) {
-            setTrustMap({
-              ...trustMap,
-              [profile.id]: Number(event.target.value),
-            })
-          }
+          const newTrustList = cloneDeep(trustList)
+          newTrustList[index].trust = parseFloat(event.target.value)
+          setTrustList(newTrustList)
         }}
       />
     </div>
