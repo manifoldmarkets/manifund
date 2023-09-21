@@ -19,18 +19,18 @@ const people = [
   { id: 10, name: 'Emil Schaefer', online: false },
 ]
 
-type TrustMap = { [key: string]: number }
+type TrustMap = { [key: string]: number | null }
 
 export function SetTrust(props: { profiles: ProfileAndEvals[] }) {
   const { profiles } = props
-  const [trustMap, setTrustMap] = useState(
-    Object.fromEntries((profiles ?? []).map((profile) => [profile.id, 1]))
+  const [trustMap, setTrustMap] = useState<TrustMap>(
+    Object.fromEntries((profiles ?? []).map((profile) => [profile.id, null]))
   )
   return (
     <div className="p-10">
       <h1>TrustSelect</h1>
       <SetSingleTrust
-        profiles={profiles}
+        profiles={profiles.filter((profile) => trustMap[profile.id] === null)}
         trustMap={trustMap}
         setTrustMap={setTrustMap}
       />
@@ -51,6 +51,12 @@ function SetSingleTrust(props: {
         <ProfileSelect profiles={profiles} />
       </div>
       <Input
+        type="number"
+        value={
+          !!profile && !!trustMap[profile.id]
+            ? (trustMap[profile.id] as number)
+            : 0
+        }
         onChange={(event) => {
           if (!!profile) {
             setTrustMap({
