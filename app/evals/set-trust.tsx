@@ -26,14 +26,21 @@ export function SetTrust(props: {
   const completeProfiles = profiles
     ?.filter((profile) => profile.type === 'individual')
     .filter((profile) => checkProfileComplete(profile))
+  console.log(
+    'excluded profiles',
+    completeProfiles.filter(
+      (profile) => !!trustList.find((t) => t.profileId === profile.id)
+    )
+  )
+  console.log('trust list', trustList)
   return (
     <Col className="w-full items-center gap-4">
       {trustList.map((trust, index) => (
         <SetSingleTrust
           key={index}
           index={index}
-          profiles={completeProfiles.filter((profile) =>
-            trustList.find((t) => t.profileId !== profile.id)
+          profiles={completeProfiles.filter(
+            (profile) => !trustList.find((t) => t.profileId === profile.id)
           )}
           trust={trust}
           trustList={trustList}
@@ -50,6 +57,7 @@ export function SetTrust(props: {
               trust: 1,
             },
           ])
+          console.log('trust list after add', trustList)
         }}
       >
         <PlusCircleIcon className="h-5 w-5" />
@@ -70,7 +78,11 @@ function SetSingleTrust(props: {
   return (
     <Row className="w-full items-center justify-center gap-3">
       <div className="w-60">
-        <ProfileSelect profiles={profiles} />
+        <ProfileSelect
+          profiles={profiles}
+          setTrustList={setTrustList}
+          index={index}
+        />
       </div>
       <Input
         type="number"
@@ -80,6 +92,7 @@ function SetSingleTrust(props: {
           const newTrustList = cloneDeep(trustList)
           newTrustList[index].trust = parseFloat(event.target.value)
           setTrustList(newTrustList)
+          console.log('trust list after change', trustList)
         }}
       />
       <button
@@ -91,8 +104,12 @@ function SetSingleTrust(props: {
   )
 }
 
-function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
-  const { profiles } = props
+function ProfileSelect(props: {
+  profiles: ProfileAndEvals[]
+  setTrustList: (trustList: TrustObj[]) => void
+  index: number
+}) {
+  const { profiles, setTrustList, index } = props
   const [selectedProfile, setSelectedProfile] =
     useState<ProfileAndEvals | null>(null)
   const [search, setSearch] = useState('')
@@ -152,6 +169,7 @@ function ProfileSelect(props: { profiles: ProfileAndEvals[] }) {
                             id={profile.id}
                             avatarUrl={profile.avatar_url}
                             size="xs"
+                            noLink
                           />
                           {profile.full_name}
                         </Row>
