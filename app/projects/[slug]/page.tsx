@@ -51,6 +51,9 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const userIsAdmin = user ? isAdmin(user) : false
   return (
     <div className="p-4">
+      {project.stage === 'hidden' && (
+        <meta name="robots" content="noindex" key="robots" />
+      )}
       <ProjectDisplay
         project={project}
         userTxns={userTxns}
