@@ -24,19 +24,18 @@ export default async function handler(req: NextRequest) {
   if (!user) {
     return NextResponse.error()
   }
-  const evalsToUpsert = tiers.flatMap((tier) => {
-    if (tier.id === 'unsorted') {
-      return []
-    }
-    return tier.projects.map((project) => {
-      return {
-        project_id: project.id,
-        evaluator_id: user.id,
-        score: parseInt(tier.id),
-        confidence: confidenceMap[project.id],
-      }
+  const evalsToUpsert = tiers
+    .filter((tier) => tier.id !== 'unsorted')
+    .flatMap((tier) => {
+      return tier.projects.map((project) => {
+        return {
+          project_id: project.id,
+          evaluator_id: user.id,
+          score: parseInt(tier.id),
+          confidence: confidenceMap[project.id],
+        }
+      })
     })
-  })
   const { error: error1 } = await supabase
     .from('project_evals')
     .upsert(evalsToUpsert, {
