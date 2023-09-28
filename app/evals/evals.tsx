@@ -38,7 +38,7 @@ export function Evals(props: {
   const { projects, evals, profiles } = props
   const { value: trustList, saveValue: setTrustList } = useLocalStorage<
     TrustObj[]
-  >([{ profileId: null, trust: 1 }])
+  >([{ profileId: null, trust: 1 }], 'trustList')
   const madeTiers = makeTiers(projects, evals)
   const { value: tiers, saveValue: saveTiers } = useLocalStorage<Tier[]>(
     madeTiers,

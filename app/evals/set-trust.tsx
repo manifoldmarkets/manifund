@@ -32,9 +32,7 @@ export function SetTrust(props: {
         <SetSingleTrust
           key={index}
           index={index}
-          profiles={completeProfiles.filter(
-            (profile) => !trustList.find((t) => t.profileId === profile.id)
-          )}
+          profiles={completeProfiles}
           trust={trust}
           trustList={trustList}
           setTrustList={setTrustList}
@@ -105,25 +103,29 @@ function ProfileSelect(props: {
   index: number
 }) {
   const { profiles, trustList, setTrustList, index } = props
-  const [selectedProfile, setSelectedProfile] =
-    useState<ProfileAndEvals | null>(null)
+  const selectedProfile =
+    profiles.find((p) => p.id === trustList[index].profileId) ?? null
   const [search, setSearch] = useState('')
-  const filteredProfiles =
+  const unselectedProfiles = profiles.filter(
+    (profile) =>
+      !trustList.find(
+        (trust, idx) => trust.profileId === profile.id && idx !== index
+      )
+  )
+  const searchedProfiles =
     search === ''
-      ? profiles
-      : profiles.filter((profile) => {
+      ? unselectedProfiles
+      : unselectedProfiles.filter((profile) => {
           return profile.full_name.toLowerCase().includes(search.toLowerCase())
         })
   return (
     <Combobox
       value={selectedProfile}
       onChange={(event) => {
-        setSelectedProfile(event)
         if (event) {
           const newTrustList = cloneDeep(trustList)
           newTrustList[index].profileId = event.id
           setTrustList(newTrustList)
-          console.log(trustList)
         }
       }}
     >
@@ -146,7 +148,7 @@ function ProfileSelect(props: {
             leaveTo="opacity-0"
           >
             <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-gray-300 focus:outline-none">
-              {filteredProfiles.map((profile) => (
+              {searchedProfiles.map((profile) => (
                 <Combobox.Option
                   key={profile.id}
                   className={({ active }) =>
