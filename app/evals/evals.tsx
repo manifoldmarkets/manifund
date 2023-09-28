@@ -72,6 +72,7 @@ export function Evals(props: {
     clearLocalStorageItem('tiers')
     setIsSubmitting(false)
   }
+  console.log('trustList', trustList)
   return (
     <>
       <SetTrust

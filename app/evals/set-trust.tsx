@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 import {
   CheckIcon,
@@ -26,13 +26,6 @@ export function SetTrust(props: {
   const completeProfiles = profiles
     ?.filter((profile) => profile.type === 'individual')
     .filter((profile) => checkProfileComplete(profile))
-  console.log(
-    'excluded profiles',
-    completeProfiles.filter(
-      (profile) => !!trustList.find((t) => t.profileId === profile.id)
-    )
-  )
-  console.log('trust list', trustList)
   return (
     <Col className="w-full items-center gap-4">
       {trustList.map((trust, index) => (
@@ -80,6 +73,7 @@ function SetSingleTrust(props: {
       <div className="w-60">
         <ProfileSelect
           profiles={profiles}
+          trustList={trustList}
           setTrustList={setTrustList}
           index={index}
         />
@@ -106,10 +100,11 @@ function SetSingleTrust(props: {
 
 function ProfileSelect(props: {
   profiles: ProfileAndEvals[]
+  trustList: TrustObj[]
   setTrustList: (trustList: TrustObj[]) => void
   index: number
 }) {
-  const { profiles, setTrustList, index } = props
+  const { profiles, trustList, setTrustList, index } = props
   const [selectedProfile, setSelectedProfile] =
     useState<ProfileAndEvals | null>(null)
   const [search, setSearch] = useState('')
@@ -120,7 +115,18 @@ function ProfileSelect(props: {
           return profile.full_name.toLowerCase().includes(search.toLowerCase())
         })
   return (
-    <Combobox value={selectedProfile} onChange={setSelectedProfile}>
+    <Combobox
+      value={selectedProfile}
+      onChange={(event) => {
+        setSelectedProfile(event)
+        if (event) {
+          const newTrustList = cloneDeep(trustList)
+          newTrustList[index].profileId = event.id
+          setTrustList(newTrustList)
+          console.log(trustList)
+        }
+      }}
+    >
       {({ open }) => (
         <div className="relative">
           <Combobox.Input
