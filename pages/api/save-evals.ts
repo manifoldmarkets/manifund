@@ -1,6 +1,7 @@
 import { ConfidenceMap, Tier, TrustObj } from '@/app/evals/evals'
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
+import { findLastIndex } from 'lodash'
 
 export const config = {
   runtime: 'edge',
@@ -40,7 +41,7 @@ export default async function handler(req: NextRequest) {
     .from('project_evals')
     .upsert(evalsToUpsert, {
       onConflict: 'project_id, evaluator_id',
-      ignoreDuplicates: true,
+      ignoreDuplicates: false,
     })
     .select()
   if (error1) {
@@ -73,7 +74,7 @@ export default async function handler(req: NextRequest) {
     .from('profile_trust')
     .upsert(trustToUpsert, {
       onConflict: 'trusted_id, truster_id',
-      ignoreDuplicates: true,
+      ignoreDuplicates: false,
     })
     .select()
   if (error3) {
