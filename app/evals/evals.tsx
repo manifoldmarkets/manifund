@@ -66,9 +66,11 @@ export function Evals(props: {
       body: JSON.stringify({
         tiers,
         confidenceMap,
+        trustList,
       }),
     })
     clearLocalStorageItem('confidenceMap')
+    clearLocalStorageItem('trustList')
     clearLocalStorageItem('tiers')
     setIsSubmitting(false)
   }

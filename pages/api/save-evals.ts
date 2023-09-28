@@ -1,4 +1,4 @@
-import { ConfidenceMap, Tier } from '@/app/evals/evals'
+import { ConfidenceMap, Tier, TrustObj } from '@/app/evals/evals'
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
 
@@ -14,9 +14,10 @@ export const config = {
 type EvalsProps = {
   tiers: Tier[]
   confidenceMap: ConfidenceMap
+  trustList: TrustObj[]
 }
 export default async function handler(req: NextRequest) {
-  const { tiers, confidenceMap } = (await req.json()) as EvalsProps
+  const { tiers, confidenceMap, trustList } = (await req.json()) as EvalsProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
@@ -58,6 +59,26 @@ export default async function handler(req: NextRequest) {
     .throwOnError()
   if (error2) {
     console.error(error2)
+    return NextResponse.error()
+  }
+  const trustToUpsert = trustList
+    .filter((trust) => trust.profileId !== null)
+    .map((trust) => {
+      return {
+        truster_id: user.id,
+        trusted_id: trust.profileId as string,
+        weight: trust.trust,
+      }
+    })
+  const { error: error3 } = await supabase
+    .from('profile_trust')
+    .upsert(trustToUpsert, {
+      onConflict: 'trusted_id, truster_id',
+      ignoreDuplicates: true,
+    })
+    .select()
+  if (error3) {
+    console.error(error3)
     return NextResponse.error()
   }
   return NextResponse.json('success')
