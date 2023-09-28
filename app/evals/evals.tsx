@@ -43,19 +43,20 @@ export function Evals(props: {
   const { value: trustList, saveValue: setTrustList } = useLocalStorage<
     TrustObj[]
   >(initialTrustList, 'trustList')
-  const madeTiers = makeTiers(projects, evals)
+  const initialTiers = makeTiers(projects, evals)
   const { value: tiers, saveValue: saveTiers } = useLocalStorage<Tier[]>(
-    madeTiers,
+    initialTiers,
     'tiers'
   )
-  const blankConfidenceMap = projects.reduce((object, project) => {
+  const initialConfidenceMap = projects.reduce((object, project) => {
+    const existingEval = evals.find((e) => e.project_id === project.id)
     return {
       ...object,
-      [project.id]: 0.5,
+      [project.id]: existingEval?.confidence ?? 0.5,
     }
   }, {})
   const { value: confidenceMap, saveValue: saveConfidenceMap } =
-    useLocalStorage<ConfidenceMap>(blankConfidenceMap, 'confidenceMap')
+    useLocalStorage<ConfidenceMap>(initialConfidenceMap, 'confidenceMap')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const handleSubmit = async () => {
     setIsSubmitting(true)
@@ -75,8 +76,6 @@ export function Evals(props: {
     clearLocalStorageItem('tiers')
     setIsSubmitting(false)
   }
-  console.log('trustList', trustList)
-  console.log('confidenceMap', confidenceMap)
   return (
     <>
       <SetTrust
