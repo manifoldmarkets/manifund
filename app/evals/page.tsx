@@ -15,10 +15,18 @@ export default async function EvalsPage() {
   if (!user) {
     return <div>Not logged in</div>
   }
-  const evals = await getEvals(user.id, supabase)
+  const [evals, profileTrusts] = await Promise.all([
+    getEvals(user.id, supabase),
+    getProfileTrusts(user.id, supabase),
+  ])
   return (
     <div className="p-4">
-      <Evals projects={projects} evals={evals} profiles={profiles} />
+      <Evals
+        projects={projects}
+        evals={evals}
+        profiles={profiles}
+        profileTrusts={profileTrusts}
+      />
     </div>
   )
 }
@@ -33,4 +41,16 @@ async function getEvals(userId: string, supabase: SupabaseClient) {
     throw error
   }
   return evals as ProjectEval[]
+}
+
+export type ProfileTrust = Database['public']['Tables']['profile_trust']['Row']
+async function getProfileTrusts(userId: string, supabase: SupabaseClient) {
+  const { data: profileTrusts, error } = await supabase
+    .from('profile_trust')
+    .select('*')
+    .eq('truster_id', userId)
+  if (error) {
+    throw error
+  }
+  return profileTrusts as ProfileTrust[]
 }

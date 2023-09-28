@@ -9,7 +9,7 @@ import { cloneDeep } from 'lodash'
 import { useEffect, useState } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
-import { ProjectEval } from './page'
+import { ProfileTrust, ProjectEval } from './page'
 import { Tier } from './tier'
 import { SetTrust } from './set-trust'
 import { ProfileAndEvals } from '@/db/profile'
@@ -32,13 +32,17 @@ export function Evals(props: {
   projects: MiniProject[]
   evals: ProjectEval[]
   profiles: ProfileAndEvals[]
+  profileTrusts: ProfileTrust[]
 }) {
   // From https://github.com/atlassian/react-beautiful-dnd/issues/1756#issuecomment-599388505
   resetServerContext()
-  const { projects, evals, profiles } = props
+  const { projects, evals, profiles, profileTrusts } = props
+  const initialTrustList = profileTrusts.map((trust) => {
+    return { profileId: trust.trusted_id, trust: trust.weight }
+  })
   const { value: trustList, saveValue: setTrustList } = useLocalStorage<
     TrustObj[]
-  >([{ profileId: null, trust: 1 }], 'trustList')
+  >(initialTrustList, 'trustList')
   const madeTiers = makeTiers(projects, evals)
   const { value: tiers, saveValue: saveTiers } = useLocalStorage<Tier[]>(
     madeTiers,
