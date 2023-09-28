@@ -16,7 +16,7 @@ export default async function EvalsPage() {
     return <div>Not logged in</div>
   }
   const [evals, profileTrusts] = await Promise.all([
-    getEvals(user.id, supabase),
+    getUserEvals(user.id, supabase),
     getProfileTrusts(user.id, supabase),
   ])
   return (
@@ -32,7 +32,7 @@ export default async function EvalsPage() {
 }
 
 export type ProjectEval = Database['public']['Tables']['project_evals']['Row']
-async function getEvals(userId: string, supabase: SupabaseClient) {
+async function getUserEvals(userId: string, supabase: SupabaseClient) {
   const { data: evals, error } = await supabase
     .from('project_evals')
     .select('*')

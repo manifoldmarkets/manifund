@@ -1,4 +1,8 @@
-type Eval = {
+import { createServerClient } from '@/db/supabase-server'
+import { ProfileTrust, ProjectEval } from '../page'
+import { SupabaseClient } from '@supabase/supabase-js'
+
+type Result = {
   id: number
   insideScore: number
   confidence: number
@@ -7,7 +11,7 @@ type Eval = {
   overallScore: number
 }
 
-const EVALS = [
+const RESULTS = [
   {
     id: 1,
     insideScore: 5,
@@ -32,11 +36,11 @@ const EVALS = [
     outsideScore: 0,
     overallScore: 0,
   },
-] as Eval[]
+] as Result[]
 
 export default function ResultsPage() {
-  EVALS.forEach((item) => {
-    const otherEvals = EVALS.filter((i) => i.id !== item.id)
+  RESULTS.forEach((item) => {
+    const otherEvals = RESULTS.filter((i) => i.id !== item.id)
     item.outsideScore =
       otherEvals.reduce((acc, i) => acc + i.insideScore, 0) / otherEvals.length
     item.overallScore =
@@ -44,8 +48,8 @@ export default function ResultsPage() {
       item.outsideScore * (1 - item.confidence)
   })
   for (let i = 0; i < 100; i++) {
-    EVALS.forEach((item) => {
-      const otherEvals = EVALS.filter((i) => i.id !== item.id)
+    RESULTS.forEach((item) => {
+      const otherEvals = RESULTS.filter((i) => i.id !== item.id)
       item.outsideScore = otherEvals.reduce(
         (acc, i) => acc + i.overallScore * item.trustScores[i.id],
         0
@@ -58,9 +62,35 @@ export default function ResultsPage() {
   return (
     <div className="p-10">
       <h1>Results</h1>
-      {EVALS.map((item) => {
+      {RESULTS.map((item) => {
         return <p key={item.id}>{item.overallScore}</p>
       })}
     </div>
   )
+}
+
+async function RealResultsPage() {
+  const supabase = createServerClient()
+  const evals = await getAllEvals(supabase)
+  const profileTrusts = await getAllProfileTrusts(supabase)
+}
+
+async function getAllEvals(supabase: SupabaseClient) {
+  const { data: evals, error } = await supabase
+    .from('project_evals')
+    .select('*')
+  if (error) {
+    throw error
+  }
+  return evals as ProjectEval[]
+}
+
+async function getAllProfileTrusts(supabase: SupabaseClient) {
+  const { data: profileTrusts, error } = await supabase
+    .from('profile_trust')
+    .select('*')
+  if (error) {
+    throw error
+  }
+  return profileTrusts as ProfileTrust[]
 }
