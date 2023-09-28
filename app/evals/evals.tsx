@@ -52,9 +52,6 @@ export function Evals(props: {
   }, {})
   const { value: confidenceMap, saveValue: saveConfidenceMap } =
     useLocalStorage<ConfidenceMap>(blankConfidenceMap, 'confidenceMap')
-  useEffect(() => {
-    saveConfidenceMap({ ...blankConfidenceMap, ...confidenceMap })
-  }, [projects])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const handleSubmit = async () => {
     setIsSubmitting(true)
@@ -75,6 +72,7 @@ export function Evals(props: {
     setIsSubmitting(false)
   }
   console.log('trustList', trustList)
+  console.log('confidenceMap', confidenceMap)
   return (
     <>
       <SetTrust
