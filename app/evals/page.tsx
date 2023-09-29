@@ -4,7 +4,6 @@ import { listProjectsForEvals } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { Evals } from './evals'
-import { SiteLink } from '@/components/site-link'
 
 export default async function EvalsPage() {
   const supabase = createServerClient()

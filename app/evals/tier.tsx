@@ -1,5 +1,5 @@
 import { Row } from '@/components/layout/row'
-import { Tier } from './evals'
+import { TierObj } from './evals'
 import React from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import { EvalsProjectCard } from './evals-project-card'
@@ -7,7 +7,7 @@ import { ConfidenceMap } from './evals'
 import clsx from 'clsx'
 
 export function Tier(props: {
-  tier: Tier
+  tier: TierObj
   confidenceMap: ConfidenceMap
   setConfidenceMap: (confidenceMap: ConfidenceMap) => void
 }) {
