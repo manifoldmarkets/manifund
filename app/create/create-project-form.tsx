@@ -48,10 +48,6 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   const { causesList } = props
   const { session } = useSupabase()
   const router = useRouter()
-  // For ACX Impact Certs
-  const [applyingToACX, setApplyingToACX] = useState<boolean>(false)
-  const [sellingPortion, setSellingPortion] = useState<number>(20)
-  const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   // For all
   const [title, setTitle] = useState<string>('')
   const [blurb, setBlurb] = useState<string>('')
@@ -62,6 +58,15 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
+  // For ACX Impact Certs
+  const [applyingToACX, setApplyingToACX] = useState<boolean>(false)
+  const [sellingPortion, setSellingPortion] = useState<number>(20)
+  const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
+  const initialValuation = (100 * (minFunding ?? 0)) / sellingPortion
+  const isInitialValuationValid =
+    !isNaN(initialValuation) &&
+    initialValuation > 0 &&
+    isFinite(initialValuation)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
 
   let errorMessage = null
@@ -251,9 +256,18 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
             />
           </Row>
           <Row className="justify-center">
-            <p className="rounded bg-orange-100 py-1 px-3 text-sm font-semibold text-orange-600">
-              Initial valuation: $
-              {Math.round((100 * (minFunding ?? 0)) / sellingPortion)}
+            <p
+              className={clsx(
+                'rounded py-1 px-3 text-sm font-semibold',
+                isInitialValuationValid
+                  ? 'bg-orange-100 text-orange-600'
+                  : 'bg-rose-100 text-rose-600'
+              )}
+            >
+              Initial valuation:{' '}
+              {isInitialValuationValid
+                ? `$${Math.round(initialValuation)}`
+                : 'Invalid'}
             </p>
           </Row>
         </Col>
