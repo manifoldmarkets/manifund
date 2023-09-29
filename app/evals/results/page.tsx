@@ -148,20 +148,7 @@ function makeSingleResultsArray(
   const results = [] as Result[]
   console.log('evals', evals)
   evals.forEach((evalItem) => {
-    const currEvaluatorTrusts = trusts.filter(
-      (t) => t.truster_id === evalItem.evaluator_id
-    )
-    console.log('currEvaluatorTrusts', currEvaluatorTrusts)
-    const trustScores = Object.fromEntries(
-      currEvaluatorTrusts.map((t) => [t.trusted_id, t.weight])
-    )
-    evals.forEach((evalItem) => {
-      if (evalItem.evaluator_id === userId) {
-        trustScores[evalItem.evaluator_id] = 0
-      } else if (!trustScores[evalItem.evaluator_id]) {
-        trustScores[evalItem.evaluator_id] = 1
-      }
-    })
+    const trustScores = generateTrustScores(evals, trusts, userId, evalItem)
     console.log('trustScores', trustScores)
     results.push({
       id: evalItem.evaluator_id,
@@ -173,6 +160,35 @@ function makeSingleResultsArray(
     })
   })
   return results
+}
+
+function generateTrustScores(
+  evals: ProjectEval[],
+  trusts: ProfileTrust[],
+  userId: string,
+  currEval: ProjectEval
+) {
+  const currEvaluatorTrusts = trusts.filter(
+    (t) => t.truster_id === currEval.evaluator_id
+  )
+  console.log('currEvaluatorTrusts', currEvaluatorTrusts)
+  const trustScores = Object.fromEntries(
+    currEvaluatorTrusts.map((t) => [t.trusted_id, t.weight])
+  )
+  evals.forEach((evalItem) => {
+    if (evalItem.evaluator_id === currEval.evaluator_id) {
+      trustScores[evalItem.evaluator_id] = 0
+    } else if (!trustScores[evalItem.evaluator_id]) {
+      trustScores[evalItem.evaluator_id] = 1
+    }
+  })
+  const total = Object.values(trustScores).reduce((acc, i) => acc + i, 0)
+  return Object.fromEntries(
+    Object.entries(trustScores).map(([key, value]) => [
+      key,
+      total === 0 ? value : value / total,
+    ])
+  )
 }
 
 async function getAllEvals(supabase: SupabaseClient) {
