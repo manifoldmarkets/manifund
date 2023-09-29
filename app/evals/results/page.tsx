@@ -82,7 +82,7 @@ async function RealResultsPage() {
   const profileTrusts = await getAllProfileTrusts(supabase)
   const userEvals = evals.filter((e) => e.evaluator_id === user.id)
   const scores = [] as number[]
-  userEvals.forEach((evalItem) => {
+  userEvals.forEach((evalItem, index) => {
     const thisProjectEvals = evals.filter(
       (e) => e.project_id === evalItem.project_id
     )
@@ -114,7 +114,9 @@ function calculateScore(
   userId: string
 ) {
   const resultsArr = makeSingleResultsArray(evals, trusts, userId)
-  console.log('resultsArr', resultsArr)
+  if (evals.length === 1) {
+    return resultsArr[0].insideScore
+  }
   resultsArr.forEach((item) => {
     const otherEvals = resultsArr.filter((i) => i.id !== item.id)
     item.outsideScore =
@@ -144,6 +146,7 @@ function makeSingleResultsArray(
   userId: string
 ) {
   const results = [] as Result[]
+  console.log('evals', evals)
   evals.forEach((evalItem) => {
     const currEvaluatorTrusts = trusts.filter(
       (t) => t.truster_id === evalItem.evaluator_id
@@ -154,14 +157,14 @@ function makeSingleResultsArray(
     )
     evals.forEach((evalItem) => {
       if (evalItem.evaluator_id === userId) {
-        trustScores[evalItem.project_id] = 0
+        trustScores[evalItem.evaluator_id] = 0
       } else if (!trustScores[evalItem.evaluator_id]) {
         trustScores[evalItem.evaluator_id] = 1
       }
     })
     console.log('trustScores', trustScores)
     results.push({
-      id: evalItem.project_id,
+      id: evalItem.evaluator_id,
       insideScore: evalItem.score,
       confidence: evalItem.confidence,
       trustScores,
