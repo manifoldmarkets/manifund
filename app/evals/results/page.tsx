@@ -66,6 +66,8 @@ export default function ResultsPage() {
       {RESULTS.map((item) => {
         return <p key={item.id}>{item.overallScore}</p>
       })}
+      {/* @ts-expect-error server component */}
+      <RealResultsPage />
     </div>
   )
 }
@@ -79,6 +81,7 @@ async function RealResultsPage() {
   const evals = await getAllEvals(supabase)
   const profileTrusts = await getAllProfileTrusts(supabase)
   const userEvals = evals.filter((e) => e.evaluator_id === user.id)
+  const scores = [] as number[]
   userEvals.forEach((evalItem) => {
     const thisProjectEvals = evals.filter(
       (e) => e.project_id === evalItem.project_id
@@ -93,7 +96,16 @@ async function RealResultsPage() {
       thisProjectProfileTrusts,
       user.id
     )
+    scores.push(score ?? 0)
   })
+  return (
+    <div>
+      <h1>Real Results</h1>
+      {scores.map((score) => {
+        return <p key={score}>{score}</p>
+      })}
+    </div>
+  )
 }
 
 function calculateScore(
@@ -101,20 +113,53 @@ function calculateScore(
   trusts: ProfileTrust[],
   userId: string
 ) {
-  return 3
+  const resultsArr = makeSingleResultsArray(evals, trusts, userId)
+  console.log('resultsArr', resultsArr)
+  resultsArr.forEach((item) => {
+    const otherEvals = resultsArr.filter((i) => i.id !== item.id)
+    item.outsideScore =
+      otherEvals.reduce((acc, i) => acc + i.insideScore, 0) / otherEvals.length
+    item.overallScore =
+      item.insideScore * item.confidence +
+      item.outsideScore * (1 - item.confidence)
+  })
+  for (let i = 0; i < 100; i++) {
+    resultsArr.forEach((item) => {
+      const otherEvals = resultsArr.filter((i) => i.id !== item.id)
+      item.outsideScore = otherEvals.reduce(
+        (acc, i) => acc + i.overallScore * item.trustScores[i.id],
+        0
+      )
+      item.overallScore =
+        item.insideScore * item.confidence +
+        item.outsideScore * (1 - item.confidence)
+    })
+  }
+  return resultsArr.find((i) => i.id === userId)?.overallScore
 }
 
-function makeSingleResultsObj(evals: ProjectEval[], trusts: ProfileTrust[]) {
+function makeSingleResultsArray(
+  evals: ProjectEval[],
+  trusts: ProfileTrust[],
+  userId: string
+) {
   const results = [] as Result[]
   evals.forEach((evalItem) => {
     const currEvaluatorTrusts = trusts.filter(
       (t) => t.truster_id === evalItem.evaluator_id
     )
-    const trustsSum = currEvaluatorTrusts.reduce((acc, t) => acc + t.weight, 0)
+    console.log('currEvaluatorTrusts', currEvaluatorTrusts)
     const trustScores = Object.fromEntries(
-      currEvaluatorTrusts.map((t) => [t.trusted_id, t.weight / trustsSum])
+      currEvaluatorTrusts.map((t) => [t.trusted_id, t.weight])
     )
-    trustScores[evalItem.evaluator_id] = 0
+    evals.forEach((evalItem) => {
+      if (evalItem.evaluator_id === userId) {
+        trustScores[evalItem.project_id] = 0
+      } else if (!trustScores[evalItem.evaluator_id]) {
+        trustScores[evalItem.evaluator_id] = 1
+      }
+    })
+    console.log('trustScores', trustScores)
     results.push({
       id: evalItem.project_id,
       insideScore: evalItem.score,
@@ -124,6 +169,7 @@ function makeSingleResultsObj(evals: ProjectEval[], trusts: ProfileTrust[]) {
       overallScore: 0,
     })
   })
+  return results
 }
 
 async function getAllEvals(supabase: SupabaseClient) {
