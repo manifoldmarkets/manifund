@@ -2,7 +2,7 @@
 
 import { useSupabase } from '@/db/supabase-provider'
 import { useState } from 'react'
-import { Input } from '@/components/input'
+import { Checkbox, Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { TOTAL_SHARES } from '@/db/project'
@@ -16,6 +16,9 @@ import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
 import { MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
+import { MySlider } from '@/components/slider'
+import clsx from 'clsx'
+import { InfoTooltip } from '@/components/info-tooltip'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -33,10 +36,24 @@ const DESCRIPTION_OUTLINE = `
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
 
+const SLIDER_MARKS = {
+  0: '0%',
+  25: '25%',
+  50: '50%',
+  75: '75%',
+  100: '100%',
+}
+
 export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   const { causesList } = props
   const { session } = useSupabase()
   const router = useRouter()
+  // For ACX Impact Certs
+  const [applyingToACX, setApplyingToACX] = useState<boolean>(false)
+  const [initialValuation, setInitialValuation] = useState<number>(250)
+  const [sellingPortion, setSellingPortion] = useState<number>(20)
+  const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
+  // For all
   const [title, setTitle] = useState<string>('')
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number | null>(null)
@@ -116,6 +133,13 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
+      <Row className="gap-1">
+        <Checkbox
+          checked={applyingToACX}
+          onChange={(event) => setApplyingToACX(event.target.checked)}
+        />
+        <label className="ml-3">I am applying to ACX Grants Round 2.</label>
+      </Row>
       <Col className="gap-1">
         <label htmlFor="title">
           Title
