@@ -255,20 +255,19 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
               step={5}
             />
           </Row>
-          <Row className="justify-center">
-            <p
-              className={clsx(
-                'rounded py-1 px-3 text-sm font-semibold',
-                isInitialValuationValid
-                  ? 'bg-orange-100 text-orange-600'
-                  : 'bg-rose-100 text-rose-600'
-              )}
-            >
-              Initial valuation:{' '}
-              {isInitialValuationValid
-                ? `$${Math.round(initialValuation)}`
-                : 'Invalid'}
-            </p>
+          <Row className="m-auto w-2/3 justify-between">
+            <Col>
+              <p className="text-xs">Initial valuation:</p>
+              <p className="text-base font-bold">
+                {isInitialValuationValid
+                  ? `$${initialValuation.toLocaleString()}`
+                  : 'N/A'}
+              </p>
+            </Col>
+            <Col>
+              <p className="text-xs">Some AMM cost info:</p>
+              <p className="text-base font-bold">stat%</p>
+            </Col>
           </Row>
         </Col>
       )}
