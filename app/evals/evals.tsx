@@ -78,11 +78,6 @@ export function Evals(props: {
   }
   return (
     <>
-      <SetTrust
-        profiles={profiles}
-        trustList={trustList}
-        setTrustList={setTrustList}
-      />
       <DragDropContext
         onDragEnd={({ destination, source }) => {
           // Dropped outside the list
@@ -103,6 +98,11 @@ export function Evals(props: {
           ))}
         </Col>
       </DragDropContext>
+      <SetTrust
+        profiles={profiles}
+        trustList={trustList}
+        setTrustList={setTrustList}
+      />
       <Button onClick={handleSubmit} loading={isSubmitting}>
         Save tiers
       </Button>
