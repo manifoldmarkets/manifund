@@ -13,8 +13,9 @@ import { ProfileTrust, ProjectEval } from './page'
 import { Tier } from './tier'
 import { SetTrust } from './set-trust'
 import { ProfileAndEvals } from '@/db/profile'
+import { TierList } from './tier-list'
 
-export type Tier = {
+export type TierObj = {
   id: string
   color: string
   description?: string
@@ -44,7 +45,7 @@ export function Evals(props: {
     TrustObj[]
   >(initialTrustList, 'trustList')
   const initialTiers = makeTiers(projects, evals)
-  const { value: tiers, saveValue: saveTiers } = useLocalStorage<Tier[]>(
+  const { value: tiers, saveValue: saveTiers } = useLocalStorage<TierObj[]>(
     initialTiers,
     'tiers'
   )
@@ -78,26 +79,12 @@ export function Evals(props: {
   }
   return (
     <>
-      <DragDropContext
-        onDragEnd={({ destination, source }) => {
-          // Dropped outside the list
-          if (!destination) {
-            return
-          }
-          saveTiers(reorderProjects(tiers, source, destination))
-        }}
-      >
-        <Col className="gap-2 rounded px-6">
-          {tiers?.map((tier) => (
-            <Tier
-              key={tier.id}
-              tier={tier}
-              confidenceMap={confidenceMap}
-              setConfidenceMap={saveConfidenceMap}
-            />
-          ))}
-        </Col>
-      </DragDropContext>
+      <TierList
+        tiers={tiers}
+        saveTiers={saveTiers}
+        confidenceMap={confidenceMap}
+        saveConfidenceMap={saveConfidenceMap}
+      />
       <SetTrust
         profiles={profiles}
         trustList={trustList}
@@ -119,7 +106,7 @@ function reorder(list: any[], startIndex: number, endIndex: number) {
 }
 
 function reorderProjects(
-  tiers: Tier[],
+  tiers: TierObj[],
   source: DraggableLocation,
   destination: DraggableLocation
 ) {
@@ -160,7 +147,7 @@ function reorderProjects(
   })
 }
 
-const EMPTY_TIERS: Tier[] = [
+const EMPTY_TIERS: TierObj[] = [
   { id: 'unsorted', projects: [], color: 'gray-500' },
   {
     id: '5',
