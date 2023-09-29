@@ -113,7 +113,7 @@ function calculateScore(
   trusts: ProfileTrust[],
   userId: string
 ) {
-  const resultsArr = makeSingleResultsArray(evals, trusts, userId)
+  const resultsArr = makeSingleResultsArray(evals, trusts)
   if (evals.length === 1) {
     return resultsArr[0].insideScore
   }
@@ -140,15 +140,11 @@ function calculateScore(
   return resultsArr.find((i) => i.id === userId)?.overallScore
 }
 
-function makeSingleResultsArray(
-  evals: ProjectEval[],
-  trusts: ProfileTrust[],
-  userId: string
-) {
+function makeSingleResultsArray(evals: ProjectEval[], trusts: ProfileTrust[]) {
   const results = [] as Result[]
   console.log('evals', evals)
   evals.forEach((evalItem) => {
-    const trustScores = generateTrustScores(evals, trusts, userId, evalItem)
+    const trustScores = generateTrustScores(evals, trusts, evalItem)
     console.log('trustScores', trustScores)
     results.push({
       id: evalItem.evaluator_id,
@@ -165,7 +161,6 @@ function makeSingleResultsArray(
 function generateTrustScores(
   evals: ProjectEval[],
   trusts: ProfileTrust[],
-  userId: string,
   currEval: ProjectEval
 ) {
   const currEvaluatorTrusts = trusts.filter(
