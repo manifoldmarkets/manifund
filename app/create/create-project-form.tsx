@@ -50,7 +50,6 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   const router = useRouter()
   // For ACX Impact Certs
   const [applyingToACX, setApplyingToACX] = useState<boolean>(false)
-  const [initialValuation, setInitialValuation] = useState<number>(250)
   const [sellingPortion, setSellingPortion] = useState<number>(20)
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   // For all
@@ -222,6 +221,43 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           />
         </Col>
       </Col>
+      {applyingToACX && (
+        <Col className="gap-1">
+          <label htmlFor="initialPublicOffering">
+            Portion of stake to be sold
+            <RequiredStar />
+          </label>
+          <p className="text-sm text-gray-600">
+            Blah blah explaing what is going on and link to impact certs info.
+          </p>
+          <Row className="justify-center gap-5">
+            <Row className="gap-1">
+              <Input
+                value={sellingPortion}
+                type="number"
+                onChange={(event) =>
+                  setSellingPortion(Number(event.target.value))
+                }
+              ></Input>
+              <p className="relative top-3">%</p>
+            </Row>
+            <MySlider
+              marks={SLIDER_MARKS}
+              value={sellingPortion}
+              onChange={(value) => {
+                setSellingPortion(value as number)
+              }}
+              step={5}
+            />
+          </Row>
+          <Row className="justify-center">
+            <p className="rounded bg-orange-100 py-1 px-3 text-sm font-semibold text-orange-600">
+              Initial valuation: $
+              {Math.round((100 * (minFunding ?? 0)) / sellingPortion)}
+            </p>
+          </Row>
+        </Col>
+      )}
       <Col className="gap-1">
         <label htmlFor="fundingGoal">
           Funding goal (USD)
@@ -229,7 +265,10 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         </label>
         <p className="text-sm text-gray-600">
           Until this amount is raised, the project will be marked for donors as
-          not fully funded.
+          not fully funded. If this amount is different from your minimum
+          funding, please explain in your project description what you could
+          accomplish with the minimum funding and what you could accomplish with
+          the full funding.
         </p>
         <Input
           type="number"
