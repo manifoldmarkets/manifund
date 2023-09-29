@@ -6,14 +6,15 @@ import useLocalStorage, {
   clearLocalStorageItem,
 } from '@/hooks/use-local-storage'
 import { cloneDeep } from 'lodash'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
-import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
+import { DraggableLocation } from 'react-beautiful-dnd'
 import { ProfileTrust, ProjectEval } from './page'
-import { Tier } from './tier'
 import { SetTrust } from './set-trust'
 import { ProfileAndEvals } from '@/db/profile'
 import { TierList } from './tier-list'
+import { Row } from '@/components/layout/row'
+import { useRouter } from 'next/navigation'
 
 export type TierObj = {
   id: string
@@ -59,6 +60,7 @@ export function Evals(props: {
   const { value: confidenceMap, saveValue: saveConfidenceMap } =
     useLocalStorage<ConfidenceMap>(initialConfidenceMap, 'confidenceMap')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter()
   const handleSubmit = async () => {
     setIsSubmitting(true)
     await fetch('/api/save-evals', {
@@ -78,7 +80,7 @@ export function Evals(props: {
     setIsSubmitting(false)
   }
   return (
-    <>
+    <Col className="my-8 gap-4">
       <TierList
         tiers={tiers}
         saveTiers={saveTiers}
@@ -90,10 +92,28 @@ export function Evals(props: {
         trustList={trustList}
         setTrustList={setTrustList}
       />
-      <Button onClick={handleSubmit} loading={isSubmitting}>
-        Save tiers
-      </Button>
-    </>
+      <Row className="justify-between">
+        <Button
+          onClick={async () => await handleSubmit()}
+          loading={isSubmitting}
+        >
+          Save evaluations
+        </Button>
+        <Button
+          onClick={async () => {
+            await handleSubmit()
+            router.push('/results')
+          }}
+          disabled={
+            tiers.filter(
+              (tier) => tier.id !== 'unsorted' && tier.projects.length > 0
+            ).length === 0
+          }
+        >
+          Finish and see results
+        </Button>
+      </Row>
+    </Col>
   )
 }
 

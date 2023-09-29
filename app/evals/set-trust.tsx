@@ -16,6 +16,7 @@ import { Col } from '@/components/layout/col'
 import { Avatar } from '@/components/avatar'
 import { Tooltip } from '@/components/tooltip'
 import { TrustObj } from './evals'
+import { Card } from '@/components/layout/card'
 
 export function SetTrust(props: {
   profiles: ProfileAndEvals[]
@@ -27,34 +28,41 @@ export function SetTrust(props: {
     ?.filter((profile) => profile.type === 'individual')
     .filter((profile) => checkProfileComplete(profile))
   return (
-    <Col className="w-full items-center gap-4">
-      {trustList.map((trust, index) => (
-        <SetSingleTrust
-          key={index}
-          index={index}
-          profiles={completeProfiles}
-          trust={trust}
-          trustList={trustList}
-          setTrustList={setTrustList}
-        />
-      ))}
-      <Button
-        className="flex gap-1"
-        onClick={() => {
-          setTrustList([
-            ...trustList,
-            {
-              profileId: null,
-              trust: 1,
-            },
-          ])
-          console.log('trust list after add', trustList)
-        }}
-      >
-        <PlusCircleIcon className="h-5 w-5" />
-        Add evaluator
-      </Button>
-    </Col>
+    <Card>
+      <h2 className="text-xl font-bold">Set trust in other evaluators</h2>
+      <p className="mt-1 text-sm text-gray-600">
+        If unspecified, trust levels in other evaluators will be set to 1. Set
+        trust levels for specific individuals relative to this default.
+      </p>
+      <Col className="mt-4 w-full items-center gap-4">
+        {trustList.map((trust, index) => (
+          <SetSingleTrust
+            key={index}
+            index={index}
+            profiles={completeProfiles}
+            trust={trust}
+            trustList={trustList}
+            setTrustList={setTrustList}
+          />
+        ))}
+        <Button
+          className="flex gap-1"
+          color="gray"
+          onClick={() => {
+            setTrustList([
+              ...trustList,
+              {
+                profileId: null,
+                trust: 1,
+              },
+            ])
+          }}
+        >
+          <PlusCircleIcon className="h-5 w-5" />
+          Add evaluator
+        </Button>
+      </Col>
+    </Card>
   )
 }
 
