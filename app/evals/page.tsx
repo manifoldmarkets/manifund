@@ -30,7 +30,7 @@ export default async function EvalsPage() {
         evaluations.{' '}
         <a
           href="https://manifoldmarkets.notion.site/EigenEvals-Info-78683c6099fc40bc8c8b58f832afbbee?pvs=4"
-          className="hover-underline text-orange-600"
+          className="text-orange-600 hover:underline"
         >
           Here&apos;s
         </a>{' '}
