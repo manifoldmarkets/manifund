@@ -1,5 +1,5 @@
 import { DragDropContext, DraggableLocation } from 'react-beautiful-dnd'
-import { ConfidenceMap, TierObj } from './form'
+import { ConfidenceMap, TierObj } from '../../evals'
 import { Tier } from './tier'
 import { Col } from '@/components/layout/col'
 

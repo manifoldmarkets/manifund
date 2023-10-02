@@ -1,10 +1,10 @@
 import { createServerClient } from '@/db/supabase-server'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { getProfileByUsername, getUser } from '@/db/profile'
+import { getProfileByUsername } from '@/db/profile'
 import { Project } from '@/db/project'
 import Link from 'next/link'
 import { Col } from '@/components/layout/col'
-import { ProfileTrust, ProjectEval } from './form/page'
+import { ProfileTrust, ProjectEval } from '@/app/evals-form/page'
 
 type Result = {
   id: string
