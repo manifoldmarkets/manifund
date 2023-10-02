@@ -4,6 +4,8 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { getUser } from '@/db/profile'
 import { Project } from '@/db/project'
 import Link from 'next/link'
+import { Card } from '@/components/layout/card'
+import { Col } from '@/components/layout/col'
 
 type Result = {
   id: string
@@ -108,8 +110,17 @@ async function RealResultsPage() {
   })
   return (
     <div>
-      <h1>Real Results</h1>
-      {results}
+      <h1 className="text-xl font-bold">Results</h1>
+      <Col className="divide-y divide-gray-200">
+        <div className="grid grid-cols-7 gap-2 py-2 text-sm">
+          <p className="col-span-3">Project</p>
+          <p>Inside</p>
+          <p>Outside</p>
+          <p>Conf</p>
+          <p>Overall</p>
+        </div>
+        {results}
+      </Col>
     </div>
   )
 }
@@ -152,16 +163,23 @@ function ResultRow(props: {
     }
   }
   return (
-    <div className="grid grid-cols-5 gap-4">
-      <Link href={`/projects/${project.slug}`}>{project.title}</Link>
+    <div className="grid grid-cols-7 gap-4 py-2 text-sm">
+      <Link
+        className="line-clamp-1 col-span-3 hover:underline"
+        href={`/projects/${project.slug}`}
+      >
+        {project.title}
+      </Link>
       <p>{Math.round(thisUserResult.insideScore * 10) / 10}</p>
-      <p>{Math.round(thisUserResult.confidence * 10) / 10}</p>
       <p>
         {isNaN(thisUserResult.outsideScore)
           ? 'N/A'
           : Math.round(thisUserResult.outsideScore * 10) / 10}
       </p>
-      <p>{Math.round(thisUserResult.overallScore * 10) / 10}</p>
+      <p>{Math.round(thisUserResult.confidence * 10) / 10}</p>
+      <p className="font-bold">
+        {Math.round(thisUserResult.overallScore * 10) / 10}
+      </p>
     </div>
   )
 }
