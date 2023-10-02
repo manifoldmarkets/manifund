@@ -4,7 +4,6 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { getUser } from '@/db/profile'
 import { Project } from '@/db/project'
 import Link from 'next/link'
-import { Card } from '@/components/layout/card'
 import { Col } from '@/components/layout/col'
 
 type Result = {
@@ -16,67 +15,7 @@ type Result = {
   overallScore: number
 }
 
-const RESULTS = [
-  {
-    id: '1',
-    insideScore: 5,
-    confidence: 0.8,
-    trustScores: { '1': 0, '2': 0.5, '3': 0.5 },
-    outsideScore: 0,
-    overallScore: 0,
-  },
-  {
-    id: '2',
-    insideScore: 1,
-    confidence: 0.5,
-    trustScores: { '1': 0.9, '2': 0, '3': 0.1 },
-    outsideScore: 0,
-    overallScore: 0,
-  },
-  {
-    id: '3',
-    insideScore: 3,
-    confidence: 0.2,
-    trustScores: { '1': 0.2, '2': 0.8, '3': 0 },
-    outsideScore: 0,
-    overallScore: 0,
-  },
-] as Result[]
-
-export default function ResultsPage() {
-  RESULTS.forEach((item) => {
-    const otherEvals = RESULTS.filter((i) => i.id !== item.id)
-    item.outsideScore =
-      otherEvals.reduce((acc, i) => acc + i.insideScore, 0) / otherEvals.length
-    item.overallScore =
-      item.insideScore * item.confidence +
-      item.outsideScore * (1 - item.confidence)
-  })
-  for (let i = 0; i < 100; i++) {
-    RESULTS.forEach((item) => {
-      const otherEvals = RESULTS.filter((i) => i.id !== item.id)
-      item.outsideScore = otherEvals.reduce(
-        (acc, i) => acc + i.overallScore * item.trustScores[i.id],
-        0
-      )
-      item.overallScore =
-        item.insideScore * item.confidence +
-        item.outsideScore * (1 - item.confidence)
-    })
-  }
-  return (
-    <div className="p-10">
-      <h1>Results</h1>
-      {RESULTS.map((item) => {
-        return <p key={item.id}>{item.overallScore}</p>
-      })}
-      {/* @ts-expect-error server component */}
-      <RealResultsPage />
-    </div>
-  )
-}
-
-async function RealResultsPage() {
+export default async function ResultsPage() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
   if (!user) {
@@ -89,7 +28,7 @@ async function RealResultsPage() {
     supabase,
     userEvals.map((e) => e.project_id)
   )
-  const results = userEvals.map((evalItem) => {
+  const resultRows = userEvals.map((evalItem) => {
     const thisProjectEvals = evals.filter(
       (e) => e.project_id === evalItem.project_id
     )
@@ -109,17 +48,17 @@ async function RealResultsPage() {
     )
   })
   return (
-    <div>
+    <div className="p-4">
       <h1 className="text-xl font-bold">Results</h1>
       <Col className="divide-y divide-gray-200">
-        <div className="grid grid-cols-7 gap-2 py-2 text-sm">
+        <div className="grid grid-cols-7 gap-2 py-2 text-sm text-gray-600">
           <p className="col-span-3">Project</p>
           <p>Inside</p>
           <p>Outside</p>
           <p>Conf</p>
           <p>Overall</p>
         </div>
-        {results}
+        {resultRows}
       </Col>
     </div>
   )
