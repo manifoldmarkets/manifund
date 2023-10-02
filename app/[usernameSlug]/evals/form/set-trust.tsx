@@ -9,14 +9,14 @@ import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { ProfileAndEvals } from '@/db/profile'
 import { Input } from '@/components/input'
-import { checkProfileComplete } from '../people/people-display'
 import { cloneDeep } from 'lodash'
 import { Button } from '@/components/button'
 import { Col } from '@/components/layout/col'
 import { Avatar } from '@/components/avatar'
 import { Tooltip } from '@/components/tooltip'
-import { TrustObj } from './evals'
+import { TrustObj } from './evals-form'
 import { Card } from '@/components/layout/card'
+import { checkProfileComplete } from '@/app/people/people-display'
 
 export function SetTrust(props: {
   profiles: ProfileAndEvals[]

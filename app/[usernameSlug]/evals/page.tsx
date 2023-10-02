@@ -1,10 +1,10 @@
 import { createServerClient } from '@/db/supabase-server'
-import { ProfileTrust, ProjectEval } from '../page'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { getUser } from '@/db/profile'
+import { getProfileByUsername, getUser } from '@/db/profile'
 import { Project } from '@/db/project'
 import Link from 'next/link'
 import { Col } from '@/components/layout/col'
+import { ProfileTrust, ProjectEval } from './form/page'
 
 type Result = {
   id: string
@@ -15,15 +15,18 @@ type Result = {
   overallScore: number
 }
 
-export default async function ResultsPage() {
+export default async function ResultsPage(props: {
+  params: { usernameSlug: string }
+}) {
+  const { usernameSlug } = props.params
   const supabase = createServerClient()
-  const user = await getUser(supabase)
-  if (!user) {
-    return <div>Not logged in</div>
+  const evaluator = await getProfileByUsername(supabase, usernameSlug)
+  if (!evaluator) {
+    return <div>User not found</div>
   }
   const evals = await getAllEvals(supabase)
   const profileTrusts = await getAllProfileTrusts(supabase)
-  const userEvals = evals.filter((e) => e.evaluator_id === user.id)
+  const userEvals = evals.filter((e) => e.evaluator_id === evaluator.id)
   const projects = await getSelectProjects(
     supabase,
     userEvals.map((e) => e.project_id)
@@ -43,7 +46,7 @@ export default async function ResultsPage() {
         project={projects.find((p) => p.id === evalItem.project_id)}
         evals={thisProjectEvals}
         trusts={thisProjectProfileTrusts}
-        userId={user.id}
+        evaluatorId={evaluator.id}
       />
     )
   })
@@ -68,11 +71,11 @@ function ResultRow(props: {
   project: Project
   evals: ProjectEval[]
   trusts: ProfileTrust[]
-  userId: string
+  evaluatorId: string
 }) {
-  const { evals, trusts, userId, project } = props
+  const { evals, trusts, evaluatorId, project } = props
   const resultsArr = makeResultsArraySingleProject(evals, trusts)
-  const thisUserResult = resultsArr.find((i) => i.id === userId)
+  const thisUserResult = resultsArr.find((i) => i.id === evaluatorId)
   if (!thisUserResult) {
     return <div>Something went wrong</div>
   } else if (evals.length === 1) {

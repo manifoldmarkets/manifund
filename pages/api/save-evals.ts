@@ -1,7 +1,10 @@
-import { ConfidenceMap, TierObj, TrustObj } from '@/app/evals/evals'
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
-import { findLastIndex } from 'lodash'
+import {
+  ConfidenceMap,
+  TierObj,
+  TrustObj,
+} from '@/app/[usernameSlug]/evals/form/evals-form'
 
 export const config = {
   runtime: 'edge',

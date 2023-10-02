@@ -3,7 +3,7 @@ import { listProfilesAndEvals, getUser } from '@/db/profile'
 import { listProjectsForEvals } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { Evals } from './evals'
+import { Evals } from './evals-form'
 
 export default async function EvalsPage() {
   const supabase = createServerClient()
@@ -21,7 +21,9 @@ export default async function EvalsPage() {
   ])
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">Grant evaluations</h1>
+      <h1 className="text-2xl font-bold">
+        Grant evaluation form (experimental)
+      </h1>
       <p className="mt-1 text-sm text-gray-600">
         Anyone on Manifund can fill out this form! Score grants Manifund has
         given or passed on. When you&apos;re done, you&apos;ll be able to see
@@ -34,7 +36,8 @@ export default async function EvalsPage() {
         >
           Here&apos;s
         </a>{' '}
-        more info on how the scoring calculations work.
+        more info on how the scoring calculations work.{' '}
+        <strong>Note that your evaluations are public.</strong>
       </p>
       <Evals
         projects={projects}

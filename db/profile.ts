@@ -2,7 +2,7 @@ import { Database } from '@/db/database.types'
 import { SupabaseClient, User } from '@supabase/supabase-js'
 import { Txn } from '@/db/txn'
 import { Bid } from './bid'
-import { ProjectEval } from '@/app/evals/page'
+import { ProjectEval } from '@/app/[usernameSlug]/evals/form/page'
 
 export type Profile = Database['public']['Tables']['profiles']['Row']
 export type ProfileAndTxns = Profile & { txns: Txn[] }
