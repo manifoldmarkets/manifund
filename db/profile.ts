@@ -121,7 +121,7 @@ export async function getRegranters(supabase: SupabaseClient) {
 export async function listProfiles(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('profiles')
-    .select('*, projects(title)')
+    .select('*, projects!projects_creator_fkey(title)')
     .throwOnError()
   return data as ProfileAndProjectTitles[]
 }
