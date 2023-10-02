@@ -85,8 +85,7 @@ async function RealResultsPage() {
     supabase,
     userEvals.map((e) => e.project_id)
   )
-  const results = [] as (Result | undefined)[]
-  userEvals.forEach((evalItem) => {
+  const results = userEvals.map((evalItem) => {
     const thisProjectEvals = evals.filter(
       (e) => e.project_id === evalItem.project_id
     )
@@ -95,54 +94,59 @@ async function RealResultsPage() {
         thisProjectEvals.find((e) => e.evaluator_id === t.trusted_id) &&
         thisProjectEvals.find((e) => e.evaluator_id === t.truster_id)
     )
-    const result = calculateResults(
-      thisProjectEvals,
-      thisProjectProfileTrusts,
-      user.id
+    return (
+      <ResultRow
+        key={evalItem.project_id}
+        evals={thisProjectEvals}
+        trusts={thisProjectProfileTrusts}
+        userId={user.id}
+      />
     )
-    results.push(result)
   })
   return (
     <div>
       <h1>Real Results</h1>
-      {results.map((result, index) => {
-        return <p key={index}>{result?.overallScore}</p>
-      })}
+      {results}
     </div>
   )
 }
 
-function calculateResults(
-  evals: ProjectEval[],
-  trusts: ProfileTrust[],
+function ResultRow(props: {
+  evals: ProjectEval[]
+  trusts: ProfileTrust[]
   userId: string
-) {
+}) {
+  const { evals, trusts, userId } = props
   const resultsArr = makeSingleResultsArray(evals, trusts)
-  if (evals.length === 1) {
-    resultsArr[0].outsideScore = resultsArr[0].insideScore
-    return resultsArr[0]
-  }
-  resultsArr.forEach((item) => {
-    const otherEvals = resultsArr.filter((i) => i.id !== item.id)
-    item.outsideScore =
-      otherEvals.reduce((acc, i) => acc + i.insideScore, 0) / otherEvals.length
-    item.overallScore =
-      item.insideScore * item.confidence +
-      item.outsideScore * (1 - item.confidence)
-  })
-  for (let i = 0; i < 100; i++) {
+  const thisUserResult = resultsArr.find((i) => i.id === userId)
+  if (!thisUserResult) {
+    return <div>Something went wrong</div>
+  } else if (evals.length === 1) {
+    thisUserResult.overallScore = thisUserResult.insideScore
+  } else {
     resultsArr.forEach((item) => {
       const otherEvals = resultsArr.filter((i) => i.id !== item.id)
-      item.outsideScore = otherEvals.reduce(
-        (acc, i) => acc + i.overallScore * item.trustScores[i.id],
-        0
-      )
+      item.outsideScore =
+        otherEvals.reduce((acc, i) => acc + i.insideScore, 0) /
+        otherEvals.length
       item.overallScore =
         item.insideScore * item.confidence +
         item.outsideScore * (1 - item.confidence)
     })
+    for (let i = 0; i < 100; i++) {
+      resultsArr.forEach((item) => {
+        const otherEvals = resultsArr.filter((i) => i.id !== item.id)
+        item.outsideScore = otherEvals.reduce(
+          (acc, i) => acc + i.overallScore * item.trustScores[i.id],
+          0
+        )
+        item.overallScore =
+          item.insideScore * item.confidence +
+          item.outsideScore * (1 - item.confidence)
+      })
+    }
   }
-  return resultsArr.find((i) => i.id === userId)
+  return <div>{thisUserResult.overallScore}</div>
 }
 
 function makeSingleResultsArray(evals: ProjectEval[], trusts: ProfileTrust[]) {
