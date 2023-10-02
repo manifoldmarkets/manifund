@@ -1,4 +1,4 @@
-import { ConfidenceMap, Tier, TrustObj } from '@/app/evals/evals'
+import { ConfidenceMap, TierObj, TrustObj } from '@/app/evals/evals'
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
 import { findLastIndex } from 'lodash'
@@ -13,7 +13,7 @@ export const config = {
 }
 
 type EvalsProps = {
-  tiers: Tier[]
+  tiers: TierObj[]
   confidenceMap: ConfidenceMap
   trustList: TrustObj[]
 }
@@ -79,6 +79,19 @@ export default async function handler(req: NextRequest) {
     .select()
   if (error3) {
     console.error(error3)
+    return NextResponse.error()
+  }
+  const { error: error4 } = await supabase
+    .from('profile_trust')
+    .delete()
+    .not(
+      'trusted_id',
+      'in',
+      `(${trustList.map((trust) => trust.profileId).toString()})`
+    )
+    .eq('truster_id', user.id)
+  if (error4) {
+    console.error(error4)
     return NextResponse.error()
   }
   return NextResponse.json('success')

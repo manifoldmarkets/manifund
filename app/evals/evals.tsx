@@ -109,6 +109,7 @@ export function Evals(props: {
               (tier) => tier.id !== 'unsorted' && tier.projects.length > 0
             ).length === 0
           }
+          loading={isSubmitting}
         >
           Finish and see results
         </Button>
