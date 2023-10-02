@@ -8,7 +8,6 @@ import useLocalStorage, {
 import { cloneDeep } from 'lodash'
 import { useState } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
-import { DraggableLocation } from 'react-beautiful-dnd'
 import { ProfileTrust, ProjectEval } from './page'
 import { SetTrust } from './set-trust'
 import { ProfileAndEvals } from '@/db/profile'
@@ -116,55 +115,6 @@ export function Evals(props: {
       </Row>
     </Col>
   )
-}
-
-function reorder(list: any[], startIndex: number, endIndex: number) {
-  const result = Array.from(list)
-  const [removed] = result.splice(startIndex, 1)
-  result.splice(endIndex, 0, removed)
-  return result
-}
-
-function reorderProjects(
-  tiers: TierObj[],
-  source: DraggableLocation,
-  destination: DraggableLocation
-) {
-  const current = tiers.find((tier) => tier.id === source.droppableId)
-  const next = tiers.find((tier) => tier.id === destination.droppableId)
-  const target = current?.projects[source.index]
-  if (!current || !next || !target) {
-    return tiers
-  }
-  if (source.droppableId === destination.droppableId) {
-    const reordered = reorder(current.projects, source.index, destination.index)
-    return tiers.map((tier) => {
-      if (tier.id === source.droppableId) {
-        return {
-          ...tier,
-          projects: reordered,
-        }
-      }
-      return tier
-    })
-  }
-  current.projects.splice(source.index, 1)
-  next.projects.splice(destination.index, 0, target)
-  return tiers.map((tier) => {
-    if (tier.id === source.droppableId) {
-      return {
-        ...tier,
-        projects: current.projects,
-      }
-    }
-    if (tier.id === destination.droppableId) {
-      return {
-        ...tier,
-        projects: next.projects,
-      }
-    }
-    return tier
-  })
 }
 
 const EMPTY_TIERS: TierObj[] = [
