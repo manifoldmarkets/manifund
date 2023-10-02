@@ -2,6 +2,8 @@ import { createServerClient } from '@/db/supabase-server'
 import { ProfileTrust, ProjectEval } from '../page'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { getUser } from '@/db/profile'
+import { Project } from '@/db/project'
+import Link from 'next/link'
 
 type Result = {
   id: string
@@ -97,6 +99,7 @@ async function RealResultsPage() {
     return (
       <ResultRow
         key={evalItem.project_id}
+        project={projects.find((p) => p.id === evalItem.project_id)}
         evals={thisProjectEvals}
         trusts={thisProjectProfileTrusts}
         userId={user.id}
@@ -112,16 +115,18 @@ async function RealResultsPage() {
 }
 
 function ResultRow(props: {
+  project: Project
   evals: ProjectEval[]
   trusts: ProfileTrust[]
   userId: string
 }) {
-  const { evals, trusts, userId } = props
+  const { evals, trusts, userId, project } = props
   const resultsArr = makeSingleResultsArray(evals, trusts)
   const thisUserResult = resultsArr.find((i) => i.id === userId)
   if (!thisUserResult) {
     return <div>Something went wrong</div>
   } else if (evals.length === 1) {
+    thisUserResult.outsideScore = NaN
     thisUserResult.overallScore = thisUserResult.insideScore
   } else {
     resultsArr.forEach((item) => {
@@ -146,7 +151,19 @@ function ResultRow(props: {
       })
     }
   }
-  return <div>{thisUserResult.overallScore}</div>
+  return (
+    <div className="grid grid-cols-5 gap-4">
+      <Link href={`/projects/${project.slug}`}>{project.title}</Link>
+      <p>{Math.round(thisUserResult.insideScore * 10) / 10}</p>
+      <p>{Math.round(thisUserResult.confidence * 10) / 10}</p>
+      <p>
+        {isNaN(thisUserResult.outsideScore)
+          ? 'N/A'
+          : Math.round(thisUserResult.outsideScore * 10) / 10}
+      </p>
+      <p>{Math.round(thisUserResult.overallScore * 10) / 10}</p>
+    </div>
+  )
 }
 
 function makeSingleResultsArray(evals: ProjectEval[], trusts: ProfileTrust[]) {
