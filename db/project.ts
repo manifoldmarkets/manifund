@@ -194,3 +194,17 @@ export async function getUserProjectVote(
     .throwOnError()
   return data?.find((vote) => vote.voter_id === userId) as ProjectVote | null
 }
+
+export async function getSelectProjects(
+  supabase: SupabaseClient,
+  projectIds: string[]
+) {
+  const { data: projects, error } = await supabase
+    .from('projects')
+    .select('*')
+    .in('id', projectIds)
+  if (error) {
+    throw error
+  }
+  return projects
+}

@@ -1,9 +1,8 @@
-import { Database } from '@/db/database.types'
 import { listProfilesAndEvals, getUser } from '@/db/profile'
 import { listProjectsForEvals } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
-import { SupabaseClient } from '@supabase/supabase-js'
 import { Evals } from './evals-form'
+import { getProfileTrusts, getUserEvals } from '@/db/eval'
 
 export default async function EvalsPage() {
   const supabase = createServerClient()
@@ -47,28 +46,4 @@ export default async function EvalsPage() {
       />
     </div>
   )
-}
-
-export type ProjectEval = Database['public']['Tables']['project_evals']['Row']
-async function getUserEvals(userId: string, supabase: SupabaseClient) {
-  const { data: evals, error } = await supabase
-    .from('project_evals')
-    .select('*')
-    .eq('evaluator_id', userId)
-  if (error) {
-    throw error
-  }
-  return evals as ProjectEval[]
-}
-
-export type ProfileTrust = Database['public']['Tables']['profile_trust']['Row']
-async function getProfileTrusts(userId: string, supabase: SupabaseClient) {
-  const { data: profileTrusts, error } = await supabase
-    .from('profile_trust')
-    .select('*')
-    .eq('truster_id', userId)
-  if (error) {
-    throw error
-  }
-  return profileTrusts as ProfileTrust[]
 }

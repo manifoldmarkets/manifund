@@ -8,12 +8,12 @@ import useLocalStorage, {
 import { cloneDeep } from 'lodash'
 import { useState } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
-import { ProfileTrust, ProjectEval } from './page'
 import { SetTrust } from './set-trust'
 import { ProfileAndEvals } from '@/db/profile'
 import { TierList } from './tier-list'
 import { Row } from '@/components/layout/row'
 import { useRouter } from 'next/navigation'
+import { ProfileTrust, ProjectEval } from '@/db/eval'
 
 export type TierObj = {
   id: string
@@ -22,12 +22,11 @@ export type TierObj = {
   multiplier?: number
   projects: MiniProject[]
 }
-export type ConfidenceMap = { [key: string]: number }
-
 export type TrustObj = {
   profileId: string | null
   trust: number
 }
+export type ConfidenceMap = { [key: string]: number }
 
 export function Evals(props: {
   projects: MiniProject[]
