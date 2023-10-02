@@ -62,6 +62,7 @@ export async function listProjects(supabase: SupabaseClient) {
     .select(
       'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
     )
+    .neq('type', 'dummy')
     .order('created_at', { ascending: false })
     .throwOnError()
   // Scary type conversion!
