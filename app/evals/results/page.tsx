@@ -81,8 +81,12 @@ async function RealResultsPage() {
   const evals = await getAllEvals(supabase)
   const profileTrusts = await getAllProfileTrusts(supabase)
   const userEvals = evals.filter((e) => e.evaluator_id === user.id)
-  const scores = [] as number[]
-  userEvals.forEach((evalItem, index) => {
+  const projects = await getSelectProjects(
+    supabase,
+    userEvals.map((e) => e.project_id)
+  )
+  const results = [] as (Result | undefined)[]
+  userEvals.forEach((evalItem) => {
     const thisProjectEvals = evals.filter(
       (e) => e.project_id === evalItem.project_id
     )
@@ -91,31 +95,32 @@ async function RealResultsPage() {
         thisProjectEvals.find((e) => e.evaluator_id === t.trusted_id) &&
         thisProjectEvals.find((e) => e.evaluator_id === t.truster_id)
     )
-    const score = calculateScore(
+    const result = calculateResults(
       thisProjectEvals,
       thisProjectProfileTrusts,
       user.id
     )
-    scores.push(score ?? 0)
+    results.push(result)
   })
   return (
     <div>
       <h1>Real Results</h1>
-      {scores.map((score) => {
-        return <p key={score}>{score}</p>
+      {results.map((result, index) => {
+        return <p key={index}>{result?.overallScore}</p>
       })}
     </div>
   )
 }
 
-function calculateScore(
+function calculateResults(
   evals: ProjectEval[],
   trusts: ProfileTrust[],
   userId: string
 ) {
   const resultsArr = makeSingleResultsArray(evals, trusts)
   if (evals.length === 1) {
-    return resultsArr[0].insideScore
+    resultsArr[0].outsideScore = resultsArr[0].insideScore
+    return resultsArr[0]
   }
   resultsArr.forEach((item) => {
     const otherEvals = resultsArr.filter((i) => i.id !== item.id)
@@ -137,7 +142,7 @@ function calculateScore(
         item.outsideScore * (1 - item.confidence)
     })
   }
-  return resultsArr.find((i) => i.id === userId)?.overallScore
+  return resultsArr.find((i) => i.id === userId)
 }
 
 function makeSingleResultsArray(evals: ProjectEval[], trusts: ProfileTrust[]) {
@@ -204,4 +209,18 @@ async function getAllProfileTrusts(supabase: SupabaseClient) {
     throw error
   }
   return profileTrusts as ProfileTrust[]
+}
+
+async function getSelectProjects(
+  supabase: SupabaseClient,
+  projectIds: string[]
+) {
+  const { data: projects, error } = await supabase
+    .from('projects')
+    .select('*')
+    .in('id', projectIds)
+  if (error) {
+    throw error
+  }
+  return projects
 }
