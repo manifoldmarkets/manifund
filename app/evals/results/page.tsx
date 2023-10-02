@@ -71,7 +71,7 @@ function ResultRow(props: {
   userId: string
 }) {
   const { evals, trusts, userId, project } = props
-  const resultsArr = makeSingleResultsArray(evals, trusts)
+  const resultsArr = makeResultsArraySingleProject(evals, trusts)
   const thisUserResult = resultsArr.find((i) => i.id === userId)
   if (!thisUserResult) {
     return <div>Something went wrong</div>
@@ -123,12 +123,13 @@ function ResultRow(props: {
   )
 }
 
-function makeSingleResultsArray(evals: ProjectEval[], trusts: ProfileTrust[]) {
+function makeResultsArraySingleProject(
+  evals: ProjectEval[],
+  trusts: ProfileTrust[]
+) {
   const results = [] as Result[]
-  console.log('evals', evals)
   evals.forEach((evalItem) => {
-    const trustScores = generateTrustScores(evals, trusts, evalItem)
-    console.log('trustScores', trustScores)
+    const trustScores = genTrustScoresSingleProject(evals, trusts, evalItem)
     results.push({
       id: evalItem.evaluator_id,
       insideScore: evalItem.score,
@@ -141,7 +142,7 @@ function makeSingleResultsArray(evals: ProjectEval[], trusts: ProfileTrust[]) {
   return results
 }
 
-function generateTrustScores(
+function genTrustScoresSingleProject(
   evals: ProjectEval[],
   trusts: ProfileTrust[],
   currEval: ProjectEval
@@ -149,7 +150,6 @@ function generateTrustScores(
   const currEvaluatorTrusts = trusts.filter(
     (t) => t.truster_id === currEval.evaluator_id
   )
-  console.log('currEvaluatorTrusts', currEvaluatorTrusts)
   const trustScores = Object.fromEntries(
     currEvaluatorTrusts.map((t) => [t.trusted_id, t.weight])
   )
