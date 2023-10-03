@@ -31,7 +31,7 @@ import { ProjectData } from './project-data'
 import { ProposalRequirements } from './proposal-requirements'
 import { Vote } from './vote'
 import { CauseTag } from '@/components/tags'
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
 export function ProjectDisplay(props: {
   project: FullProject
