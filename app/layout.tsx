@@ -8,7 +8,7 @@ import Sidebar from './sidebar'
 import { Readex_Pro, Josefin_Slab } from 'next/font/google'
 import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
-import { CompleteProfileBanner, ManifestBanner } from './banner'
+import { CompleteProfileBanner } from './banner'
 import { getProfileById } from '@/db/profile'
 import { Row } from '@/components/layout/row'
 
@@ -63,7 +63,7 @@ export default async function RootLayout({
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
           <main className="flex flex-col lg:col-span-8">
-            {profileTodo ? <CompleteProfileBanner /> : <ManifestBanner />}
+            {profileTodo && <CompleteProfileBanner />}
             {children}
           </main>
           {/* @ts-expect-error Server Component */}
