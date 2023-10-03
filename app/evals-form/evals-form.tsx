@@ -32,7 +32,7 @@ const TIER_LIST_KEY = 'tierList'
 const CONFIDENCE_MAP_KEY = 'confidenceMap'
 const TRUST_LIST_KEY = 'trustList'
 
-export function Evals(props: {
+export function EvalsForm(props: {
   projects: MiniProject[]
   evals: ProjectEval[]
   profiles: ProfileAndEvals[]

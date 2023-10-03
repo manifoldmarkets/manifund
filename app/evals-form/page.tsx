@@ -1,7 +1,7 @@
 import { listProfilesAndEvals, getUser } from '@/db/profile'
 import { listProjectsForEvals } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
-import { Evals } from './evals-form'
+import { EvalsForm } from './evals-form'
 import { getProfileTrusts, getUserEvals } from '@/db/eval'
 import { sortBy } from 'lodash'
 
@@ -46,7 +46,7 @@ export default async function EvalsPage() {
         more info on how the scoring calculations work.{' '}
         <strong>Note that your evaluations are public.</strong>
       </p>
-      <Evals
+      <EvalsForm
         projects={sortedProjects}
         evals={evals}
         profiles={profiles}
