@@ -57,7 +57,7 @@ export function Tier(props: {
           <div className="relative mt-1 mr-1 rounded-md shadow-sm lg:w-8/12">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <MagnifyingGlassIcon
-                className="h-3 w-3 text-gray-400 sm:h-5 sm:w-5"
+                className="h-3 w-3 text-gray-400"
                 aria-hidden="true"
               />
             </div>
@@ -66,7 +66,7 @@ export function Tier(props: {
               name="search"
               id="search"
               autoComplete="off"
-              className="block w-full rounded-md border-0 py-1.5 pl-8 text-xs text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:pl-10 sm:text-base sm:leading-6"
+              className="block w-full rounded-md border-0 py-1.5 pl-8 text-xs text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500"
               placeholder="Search..."
               value={search}
               onChange={(event) => {
