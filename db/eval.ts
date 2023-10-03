@@ -39,7 +39,7 @@ export async function getAllEvals(supabase: SupabaseClient) {
   return evals as ProjectEval[]
 }
 
-export async function getAllProfileTrusts(supabase: SupabaseClient) {
+export async function getAllTrusts(supabase: SupabaseClient) {
   const { data: profileTrusts, error } = await supabase
     .from('profile_trust')
     .select('*')
