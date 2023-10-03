@@ -31,7 +31,6 @@ import { ProjectData } from './project-data'
 import { ProposalRequirements } from './proposal-requirements'
 import { Vote } from './vote'
 import { CauseTag } from '@/components/tags'
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -199,7 +198,7 @@ export function ProjectDisplay(props: {
   )
 }
 
-export function scrollToComments(router: AppRouterInstance) {
+export function scrollToComments(router: any) {
   router.push('?tab=comments')
   const tabsElement = document.getElementById('tabs')
   tabsElement?.scrollIntoView({
