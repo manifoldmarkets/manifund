@@ -92,7 +92,6 @@ function SetSingleTrust(props: {
           const newTrustList = cloneDeep(trustList)
           newTrustList[index].trust = parseFloat(event.target.value)
           setTrustList(newTrustList)
-          console.log('trust list after change', trustList)
         }}
       />
       <button

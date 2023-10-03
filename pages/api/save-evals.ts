@@ -36,28 +36,28 @@ export default async function handler(req: NextRequest) {
         }
       })
     })
-  const { error: error1 } = await supabase
+  const { error: evalsUpsertError } = await supabase
     .from('project_evals')
     .upsert(evalsToUpsert, {
       onConflict: 'project_id, evaluator_id',
       ignoreDuplicates: false,
     })
     .select()
-  if (error1) {
-    console.error(error1)
+  if (evalsUpsertError) {
+    console.error(evalsUpsertError)
     return NextResponse.error()
   }
   const projectIdsToDelete =
     tiers
       .find((tier) => tier.id === 'unsorted')
       ?.projects.map((project) => project.id) ?? []
-  const { error: error2 } = await supabase
+  const { error: evalsDeleteError } = await supabase
     .from('project_evals')
     .delete()
     .in('project_id', projectIdsToDelete)
     .throwOnError()
-  if (error2) {
-    console.error(error2)
+  if (evalsDeleteError) {
+    console.error(evalsDeleteError)
     return NextResponse.error()
   }
   const trustToUpsert = trustList
@@ -69,18 +69,18 @@ export default async function handler(req: NextRequest) {
         weight: trust.trust,
       }
     })
-  const { error: error3 } = await supabase
+  const { error: trustUpsertError } = await supabase
     .from('profile_trust')
     .upsert(trustToUpsert, {
       onConflict: 'trusted_id, truster_id',
       ignoreDuplicates: false,
     })
     .select()
-  if (error3) {
-    console.error(error3)
+  if (trustUpsertError) {
+    console.error(trustUpsertError)
     return NextResponse.error()
   }
-  const { error: error4 } = await supabase
+  const { error: trustDeleteError } = await supabase
     .from('profile_trust')
     .delete()
     .not(
@@ -89,8 +89,8 @@ export default async function handler(req: NextRequest) {
       `(${trustList.map((trust) => trust.profileId).toString()})`
     )
     .eq('truster_id', user.id)
-  if (error4) {
-    console.error(error4)
+  if (trustDeleteError) {
+    console.error(trustDeleteError)
     return NextResponse.error()
   }
   return NextResponse.json('success')
