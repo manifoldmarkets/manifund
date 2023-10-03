@@ -56,6 +56,7 @@ export function UserLink(props: {
   const { name, username, className, short, noLink, hideBadge, creatorBadge } =
     props
   const shortName = short ? shortenName(name) : name
+  const shortened = shortName !== name
   return (
     <SiteLink
       href={`/${username}`}
@@ -66,7 +67,7 @@ export function UserLink(props: {
       )}
       followsLinkClass
     >
-      <p className="truncate">{shortName}</p>
+      <p className="truncate">{shortName}{shortened ? '...' : ''}</p>
       {!hideBadge && <UserBadge username={username} />}
       {creatorBadge && <CreatorBadge />}
     </SiteLink>

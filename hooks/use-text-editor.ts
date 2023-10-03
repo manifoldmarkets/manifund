@@ -13,7 +13,10 @@ export function useTextEditor(
   placeholder?: string,
   className?: string
 ) {
-  const [content, saveContent] = useLocalStorage(defaultContent, key)
+  const { value: content, setValue: saveContent } = useLocalStorage(
+    defaultContent,
+    key
+  )
   const editor = useEditor({
     editorProps: {
       attributes: {

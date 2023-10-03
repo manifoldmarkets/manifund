@@ -109,7 +109,7 @@ export default async function handler(req: NextRequest) {
       content: donorNotes,
     }
     const projectTransfer = {
-      recipient_email: recipientEmail.trim(),
+      recipient_email: recipientEmail,
       recipient_name: recipientName,
       project_id: project.id,
     }

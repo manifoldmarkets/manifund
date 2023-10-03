@@ -12,8 +12,8 @@
     "gen-dev-types": "npx supabase gen types typescript --project-id oucjhqqretizqonyfyqu --schema public > db/database.types.ts",
     "format": "npx prettier --write .",
     "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty",
-    "snap:restore": "npx snaplet snapshot restore --no-reset",
-    "snap:restore-empty": "npx snaplet snapshot restore --no-reset --no-data",
+    "snap:restore": "snaplet snapshot restore --no-reset",
+    "snap:restore-empty": "snaplet snapshot restore --no-reset --no-data",
     "//": "Consider dropping --no-reset flag; see https://docs.snaplet.dev/getting-started/restoring#more-granular-control-over-restorations"
   },
   "dependencies": {
@@ -40,6 +40,7 @@
     "@types/mailgun-js": "^0.22.13",
     "@types/node": "18.13.0",
     "@types/react": "18.0.27",
+    "@types/react-beautiful-dnd": "^13.1.4",
     "@types/react-dom": "18.0.10",
     "alea": "^1.0.1",
     "clsx": "^1.2.1",
@@ -50,6 +51,7 @@
     "next": "^13.4.12",
     "rc-slider": "^10.1.1",
     "react": "^18.2.0",
+    "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
     "react-icons": "^4.10.1",
     "react-uuid": "^2.0.0",
@@ -72,7 +74,7 @@
     "postcss": "^8.4.21",
     "prettier": "^2.8.4",
     "prettier-plugin-tailwindcss": "^0.2.3",
-    "snaplet": "^0.59.0",
+    "snaplet": "^0.55.0",
     "tailwindcss": "^3.2.6"
   },
   "resolutions": {

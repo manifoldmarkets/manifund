@@ -22,6 +22,7 @@ import { RichContent } from '@/components/editor'
 import { Row } from '@/components/layout/row'
 import { useState } from 'react'
 import clsx from 'clsx'
+import { RightCarrotIcon } from '@/components/icons'
 
 export function ProfileContent(props: {
   profile: Profile
@@ -80,16 +81,13 @@ export function ProfileContent(props: {
           userProfile?.accreditation_status
         )
       : 0
-  const visibleProjects = projects
+  const relevantProjects = projects
     .filter(
       (project) =>
         project.project_transfers.filter((transfer) => !transfer.transferred)
           .length === 0
     )
     .filter((project) => project.stage !== 'hidden' || isOwnProfile)
-  const visibleComments = comments.filter((comment) => {
-    return comment.projects.stage !== 'hidden'
-  })
   return (
     <div className="flex flex-col gap-6">
       {profile.regranter_status && !isOwnProfile && userProfile && (
@@ -125,11 +123,11 @@ export function ProfileContent(props: {
       {proposalBids.length > 0 && (
         <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
       )}
-      {(visibleProjects.length > 0 || isOwnProfile) && (
-        <Projects projects={visibleProjects} />
+      {(relevantProjects.length > 0 || isOwnProfile) && (
+        <Projects projects={relevantProjects} />
       )}
-      {visibleComments.length > 0 && (
-        <ProfileComments comments={visibleComments} profile={profile} />
+      {comments.length > 0 && (
+        <ProfileComments comments={comments} profile={profile} />
       )}
     </div>
   )
@@ -181,16 +179,10 @@ function AboutMeSection(props: { content: any }) {
     <div className="flex flex-col gap-2 rounded-md bg-white p-4 ring-2 ring-orange-600">
       <Row className="items-center gap-2 text-sm text-gray-900">
         <button onClick={() => setExpanded(!expanded)}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            fill="currentColor"
-            className={clsx('bi bi-caret-right-fill', expanded && 'rotate-90')}
-            viewBox="0 0 16 16"
-          >
-            <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-          </svg>
+          <RightCarrotIcon
+            className={clsx(expanded && 'rotate-90')}
+            color="black"
+          />
         </button>
         About Me
       </Row>

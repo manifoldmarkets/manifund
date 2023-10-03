@@ -23,7 +23,6 @@ export function MySlider(props: SliderProps<number | number[]>) {
         boxShadow: 'none',
         top: -0.5,
       }}
-      {...rest}
-    />
+      {...rest}    />
   )
 }
