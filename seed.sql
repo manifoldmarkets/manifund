@@ -387,6 +387,11 @@ TO public
 USING (auth.uid() = evaluator_id)
 WITH CHECK (auth.uid() = evaluator_id);
 
+CREATE POLICY "Enable delete for users based on id" ON "public"."project_evals"
+AS PERMISSIVE FOR DELETE
+TO public
+USING (auth.uid() = evaluator_id)
+
 -- Profile trust scores
 CREATE TABLE public.profile_trust (
   truster_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -412,3 +417,9 @@ AS PERMISSIVE FOR UPDATE
 TO public
 USING (auth.uid() = truster_id)
 WITH CHECK (auth.uid() = truster_id);
+
+CREATE POLICY "Enable delete for users based on id" ON "public"."profile_trust"
+AS PERMISSIVE FOR DELETE
+TO public
+USING (auth.uid() = truster_id)
+
