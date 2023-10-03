@@ -8,7 +8,7 @@ import { ProfileTrust, ProjectEval } from '@/db/eval'
 import { ArrowLongRightIcon } from '@heroicons/react/20/solid'
 
 type Result = {
-  id: string
+  evaluatorId: string
   insideScore: number
   confidence: number
   trustScores: Record<string, number>
@@ -84,7 +84,7 @@ function ResultRow(props: {
 }) {
   const { evals, trusts, evaluatorId, project } = props
   const resultsArr = makeResultsArraySingleProject(evals, trusts)
-  const thisUserResult = resultsArr.find((i) => i.id === evaluatorId)
+  const thisUserResult = resultsArr.find((i) => i.evaluatorId === evaluatorId)
   if (!thisUserResult) {
     return <div>Something went wrong</div>
   } else if (evals.length === 1) {
@@ -92,7 +92,9 @@ function ResultRow(props: {
     thisUserResult.overallScore = thisUserResult.insideScore
   } else {
     resultsArr.forEach((item) => {
-      const otherEvals = resultsArr.filter((i) => i.id !== item.id)
+      const otherEvals = resultsArr.filter(
+        (i) => i.evaluatorId !== item.evaluatorId
+      )
       item.outsideScore =
         otherEvals.reduce((acc, i) => acc + i.insideScore, 0) /
         otherEvals.length
@@ -102,9 +104,11 @@ function ResultRow(props: {
     })
     for (let i = 0; i < 100; i++) {
       resultsArr.forEach((item) => {
-        const otherEvals = resultsArr.filter((i) => i.id !== item.id)
+        const otherEvals = resultsArr.filter(
+          (i) => i.evaluatorId !== item.evaluatorId
+        )
         item.outsideScore = otherEvals.reduce(
-          (acc, i) => acc + i.overallScore * item.trustScores[i.id],
+          (acc, i) => acc + i.overallScore * item.trustScores[i.evaluatorId],
           0
         )
         item.overallScore =
@@ -143,7 +147,7 @@ function makeResultsArraySingleProject(
   evals.forEach((evalItem) => {
     const trustScores = genTrustScoresSingleProject(evals, trusts, evalItem)
     results.push({
-      id: evalItem.evaluator_id,
+      evaluatorId: evalItem.evaluator_id,
       insideScore: evalItem.score,
       confidence: evalItem.confidence,
       trustScores,
