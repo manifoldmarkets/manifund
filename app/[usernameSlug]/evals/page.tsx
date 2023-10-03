@@ -1,10 +1,14 @@
 import { createServerClient } from '@/db/supabase-server'
-import { SupabaseClient } from '@supabase/supabase-js'
 import { getProfileByUsername, getUser } from '@/db/profile'
-import { Project } from '@/db/project'
+import { Project, getSelectProjects } from '@/db/project'
 import Link from 'next/link'
 import { Col } from '@/components/layout/col'
-import { ProfileTrust, ProjectEval } from '@/db/eval'
+import {
+  ProfileTrust,
+  ProjectEval,
+  getAllEvals,
+  getAllProfileTrusts,
+} from '@/db/eval'
 import { ArrowLongRightIcon } from '@heroicons/react/20/solid'
 
 type Result = {
@@ -183,38 +187,4 @@ function genTrustScoresSingleProject(
       total === 0 ? value : value / total,
     ])
   )
-}
-
-async function getAllEvals(supabase: SupabaseClient) {
-  const { data: evals, error } = await supabase
-    .from('project_evals')
-    .select('*')
-  if (error) {
-    throw error
-  }
-  return evals as ProjectEval[]
-}
-
-async function getAllProfileTrusts(supabase: SupabaseClient) {
-  const { data: profileTrusts, error } = await supabase
-    .from('profile_trust')
-    .select('*')
-  if (error) {
-    throw error
-  }
-  return profileTrusts as ProfileTrust[]
-}
-
-async function getSelectProjects(
-  supabase: SupabaseClient,
-  projectIds: string[]
-) {
-  const { data: projects, error } = await supabase
-    .from('projects')
-    .select('*')
-    .in('id', projectIds)
-  if (error) {
-    throw error
-  }
-  return projects
 }
