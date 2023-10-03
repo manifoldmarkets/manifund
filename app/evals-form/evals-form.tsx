@@ -9,7 +9,7 @@ import { cloneDeep } from 'lodash'
 import { useState } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { SetTrust } from './set-trust'
-import { ProfileAndEvals } from '@/db/profile'
+import { Profile, ProfileAndEvals } from '@/db/profile'
 import { TierList } from './tier-list'
 import { Row } from '@/components/layout/row'
 import { useRouter } from 'next/navigation'
@@ -37,10 +37,11 @@ export function EvalsForm(props: {
   evals: ProjectEval[]
   profiles: ProfileAndEvals[]
   profileTrusts: ProfileTrust[]
+  username: string
 }) {
   // From https://github.com/atlassian/react-beautiful-dnd/issues/1756#issuecomment-599388505
   resetServerContext()
-  const { projects, evals, profiles, profileTrusts } = props
+  const { projects, evals, profiles, profileTrusts, username } = props
   const initialTrustList = profileTrusts.map((trust) => {
     return { profileId: trust.trusted_id, trust: trust.weight }
   })
@@ -104,7 +105,7 @@ export function EvalsForm(props: {
         <Button
           onClick={async () => {
             await handleSubmit()
-            router.push('evals/results')
+            router.push(`/${username}/evals`)
           }}
           disabled={
             tiers.filter(

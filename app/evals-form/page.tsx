@@ -19,6 +19,7 @@ export default async function EvalsPage() {
     getUserEvals(user.id, supabase),
     getProfileTrusts(user.id, supabase),
   ])
+  const username = profiles.find((p) => p.id === user.id)?.username
   const sortedProjects = sortBy(projects, (p) => {
     if (p.stage === 'active') {
       return 0
@@ -46,12 +47,13 @@ export default async function EvalsPage() {
         more info on how the scoring calculations work.{' '}
         <strong>Note that your evaluations are public.</strong>
       </p>
-      <EvalsForm
+      {username && <EvalsForm
         projects={sortedProjects}
         evals={evals}
         profiles={profiles}
         profileTrusts={profileTrusts}
-      />
+        username={username}
+      />}
     </div>
   )
 }
