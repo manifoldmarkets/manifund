@@ -36,7 +36,12 @@ export function EvalsProjectCard(props: {
   const { project, index, confidenceMap, setConfidenceMap, sorted } = props
   const creator = project.profiles
   const shortName = shortenName(creator.full_name)
-  const amountRaised = getAmountRaised(project, [], project.txns)
+  const amountRaised =
+    project.type === 'dummy' ||
+    project.stage === 'proposal' ||
+    project.stage === 'not funded'
+      ? project.funding_goal
+      : getAmountRaised(project, [], project.txns)
   return (
     <Draggable key={project.id} draggableId={project.id} index={index}>
       {(dragProvided) => (
@@ -54,7 +59,11 @@ export function EvalsProjectCard(props: {
             {DragHandleIcon}
             <Link
               className="line-clamp-3 w-40 pl-3 text-xs font-semibold leading-tight hover:underline"
-              href={`/projects/${project.slug}`}
+              href={
+                project.type === 'dummy' && !!project.external_link
+                  ? project.external_link
+                  : `/projects/${project.slug}`
+              }
               target="_blank"
             >
               {project.title}
@@ -115,7 +124,14 @@ export function EvalsProjectCard(props: {
                   {shortName !== creator.full_name ? '...' : ''}
                 </p>
               </Link>
-              <p className="rounded-2xl bg-orange-100 px-1 py-0.5 text-center text-xs font-medium text-orange-600">
+              <p
+                className={clsx(
+                  'rounded-2xl px-1 py-0.5 text-center text-xs font-medium',
+                  project.profiles.username === 'LongTermFutureFund'
+                    ? 'bg-teal-100 text-teal-600'
+                    : 'bg-orange-100 text-orange-600'
+                )}
+              >
                 {formatMoney(amountRaised)}
               </p>
             </Row>

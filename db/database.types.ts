@@ -345,6 +345,7 @@ export interface Database {
           created_at: string
           creator: string
           description: Json | null
+          external_link: string | null
           founder_portion: number
           funding_goal: number
           id: string
@@ -363,6 +364,7 @@ export interface Database {
           created_at?: string
           creator: string
           description?: Json | null
+          external_link?: string | null
           founder_portion: number
           funding_goal?: number
           id?: string
@@ -381,6 +383,7 @@ export interface Database {
           created_at?: string
           creator?: string
           description?: Json | null
+          external_link?: string | null
           founder_portion?: number
           funding_goal?: number
           id?: string
@@ -701,7 +704,7 @@ export interface Database {
         | "not funded"
         | "complete"
         | "hidden"
-      project_type: "grant" | "cert"
+      project_type: "grant" | "cert" | "dummy"
     }
     CompositeTypes: {
       bid_row: {

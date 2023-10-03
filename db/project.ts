@@ -74,9 +74,9 @@ export async function listProjectsForEvals(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('projects')
     .select(
-      'id, title, creator, slug, stage, type, profiles!projects_creator_fkey(*), txns(*)'
+      'id, title, creator, slug, stage, type, funding_goal, external_link, profiles!projects_creator_fkey(*), txns(*)'
     )
-    .eq('stage', 'active')
+    .neq('type', 'cert')
     .order('created_at', { ascending: false })
     .throwOnError()
   // Scary type conversion!
