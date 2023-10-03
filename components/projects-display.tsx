@@ -136,11 +136,9 @@ export function ProjectsDisplay(props: {
       <div className="mt-2 flex flex-col gap-5 sm:mt-5 sm:gap-10">
         {proposals.length > 0 && (
           <div>
-            <Row className="items-center justify-between">
-              <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">
-                Proposals
-              </h1>
-            </Row>
+            <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">
+              Proposals
+            </h1>
             <ProjectGroup projects={proposals} prices={prices} />
           </div>
         )}

@@ -263,7 +263,7 @@ async function getFeaturedProjects(
   const { data: featuredProjects } = await supabase
     .from('projects')
     .select(
-      'title, creator, slug, blurb, profiles!projects_creator_fkey(*), txns(*), causes(title, slug)'
+      'title, creator, slug, blurb, profiles(*), txns(*), causes(title, slug)'
     )
     .in('slug', FEATURED_PROJECT_SLUGS)
     .throwOnError()
