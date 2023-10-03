@@ -81,16 +81,13 @@ export function ProfileContent(props: {
           userProfile?.accreditation_status
         )
       : 0
-  const visibleProjects = projects
+  const relevantProjects = projects
     .filter(
       (project) =>
         project.project_transfers.filter((transfer) => !transfer.transferred)
           .length === 0
     )
     .filter((project) => project.stage !== 'hidden' || isOwnProfile)
-  const visibleComments = comments.filter((comment) => {
-    return comment.projects.stage !== 'hidden'
-  })
   return (
     <div className="flex flex-col gap-6">
       {profile.regranter_status && !isOwnProfile && userProfile && (
@@ -126,11 +123,11 @@ export function ProfileContent(props: {
       {proposalBids.length > 0 && (
         <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
       )}
-      {(visibleProjects.length > 0 || isOwnProfile) && (
-        <Projects projects={visibleProjects} />
+      {(relevantProjects.length > 0 || isOwnProfile) && (
+        <Projects projects={relevantProjects} />
       )}
-      {visibleComments.length > 0 && (
-        <ProfileComments comments={visibleComments} profile={profile} />
+      {comments.length > 0 && (
+        <ProfileComments comments={comments} profile={profile} />
       )}
     </div>
   )

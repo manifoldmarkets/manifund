@@ -9,7 +9,10 @@ export function ProfileComments(props: {
   profile: Profile
 }) {
   const { comments, profile } = props
-  const sortedComments = orderBy(comments, 'created_at', 'desc')
+  const filteredComments = comments.filter(
+    (comment) => comment.projects.stage !== 'hidden'
+  )
+  const sortedComments = orderBy(filteredComments, 'created_at', 'desc')
   return (
     <div>
       <h1 className="mb-2 text-xl font-medium sm:text-2xl">Comments</h1>
