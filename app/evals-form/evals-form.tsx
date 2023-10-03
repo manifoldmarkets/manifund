@@ -83,7 +83,7 @@ export function EvalsForm(props: {
     setIsSubmitting(false)
   }
   return (
-    <Col className="my-8 gap-4">
+    <Col className="my-8 gap-16">
       <TierList
         tiers={tiers}
         setTiers={setTiers}

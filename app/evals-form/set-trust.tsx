@@ -28,7 +28,7 @@ export function SetTrust(props: {
     ?.filter((profile) => profile.type === 'individual')
     .filter((profile) => checkProfileComplete(profile))
   return (
-    <Card>
+    <Card className="overflow-visible">
       <h2 className="text-xl font-bold">Set trust in other evaluators</h2>
       <p className="mt-1 text-sm text-gray-600">
         If unspecified, trust levels in other evaluators will be set to 1. Set
@@ -154,7 +154,7 @@ function ProfileSelect(props: {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-gray-300 focus:outline-none">
+            <Combobox.Options className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-gray-300 focus:outline-none">
               {searchedProfiles.map((profile) => (
                 <Combobox.Option
                   key={profile.id}
