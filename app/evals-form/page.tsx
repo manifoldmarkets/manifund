@@ -3,6 +3,7 @@ import { listProjectsForEvals } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
 import { Evals } from './evals-form'
 import { getProfileTrusts, getUserEvals } from '@/db/eval'
+import { sortBy } from 'lodash'
 
 export default async function EvalsPage() {
   const supabase = createServerClient()
@@ -18,6 +19,13 @@ export default async function EvalsPage() {
     getUserEvals(user.id, supabase),
     getProfileTrusts(user.id, supabase),
   ])
+  const sortedProjects = sortBy(projects, (p) => {
+    if (p.stage === 'active') {
+      return 0
+    } else {
+      return 1
+    }
+  })
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold">
@@ -39,7 +47,7 @@ export default async function EvalsPage() {
         <strong>Note that your evaluations are public.</strong>
       </p>
       <Evals
-        projects={projects}
+        projects={sortedProjects}
         evals={evals}
         profiles={profiles}
         profileTrusts={profileTrusts}
