@@ -59,16 +59,22 @@ export default async function ResultsPage(props: {
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold">{evaluator.full_name}&apos;s evals</h1>
-      <Col className="mt-5 divide-y divide-gray-200">
-        <div className="grid grid-cols-7 gap-2 py-2 text-sm text-gray-600">
-          <p className="col-span-3">Project</p>
-          <p>Inside</p>
-          <p>Outside</p>
-          <p>Conf</p>
-          <p>Overall</p>
+      {resultRows.length === 0 ? (
+        <div className="mt-5 text-center text-sm italic text-gray-600">
+          {evaluator.full_name} hasn&apos;t evaluated any projects yet.
         </div>
-        {resultRows}
-      </Col>
+      ) : (
+        <Col className="mt-5 divide-y divide-gray-200">
+          <div className="grid grid-cols-7 gap-2 py-2 text-sm text-gray-600">
+            <p className="col-span-3">Project</p>
+            <p>Inside</p>
+            <p>Outside</p>
+            <p>Conf</p>
+            <p>Overall</p>
+          </div>
+          {resultRows}
+        </Col>
+      )}
       <Link
         href={user ? '/evals-form' : '/login'}
         className="mt-10 flex items-center justify-end gap-1 text-sm font-semibold text-orange-600"
