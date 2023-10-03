@@ -1,10 +1,12 @@
 import { Row } from '@/components/layout/row'
 import { TierObj } from './evals-form'
-import React from 'react'
+import React, { useState } from 'react'
 import { Droppable } from 'react-beautiful-dnd'
 import { EvalsProjectCard } from './evals-project-card'
 import { ConfidenceMap } from './evals-form'
 import clsx from 'clsx'
+import { Input } from '@/components/input'
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 
 export function Tier(props: {
   tier: TierObj
@@ -12,6 +14,18 @@ export function Tier(props: {
   setConfidenceMap: (confidenceMap: ConfidenceMap) => void
 }) {
   const { tier, confidenceMap, setConfidenceMap } = props
+  const [search, setSearch] = useState('')
+  const filteredProjects =
+    tier.id === 'unsorted'
+      ? tier.projects.filter((project) => {
+          return (
+            project.title.toLowerCase().includes(search.toLowerCase()) ||
+            project.profiles.full_name
+              .toLowerCase()
+              .includes(search.toLowerCase())
+          )
+        })
+      : tier.projects
   return (
     <div
       className={clsx(
@@ -19,23 +33,47 @@ export function Tier(props: {
         `border-${tier.color}`
       )}
     >
-      <Row
-        className={clsx(
-          'h-8 w-fit items-center gap-2 rounded-br px-2 text-sm text-white',
-          `bg-${tier.color}`
-        )}
-      >
-        <span
-          className={
-            tier.id === 'unsorted' ? 'text-sm' : 'text-xl font-semibold'
-          }
+      <Row className="justify-between">
+        <Row
+          className={clsx(
+            'h-8 w-fit items-center gap-2 rounded-br px-2 text-sm text-white',
+            `bg-${tier.color}`
+          )}
         >
-          {tier.id}
-        </span>
-        {tier.description && tier.multiplier !== undefined && (
-          <span className="text-sm">
-            {tier.description} &#47;&#47; {tier.multiplier}x
+          <span
+            className={
+              tier.id === 'unsorted' ? 'text-sm' : 'text-xl font-semibold'
+            }
+          >
+            {tier.id}
           </span>
+          {tier.description && tier.multiplier !== undefined && (
+            <span className="text-sm">
+              {tier.description} &#47;&#47; {tier.multiplier}x
+            </span>
+          )}
+        </Row>
+        {tier.id === 'unsorted' && (
+          <div className="relative mt-1 mr-1 rounded-md shadow-sm lg:w-8/12">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <MagnifyingGlassIcon
+                className="h-3 w-3 text-gray-400 sm:h-5 sm:w-5"
+                aria-hidden="true"
+              />
+            </div>
+            <input
+              type="text"
+              name="search"
+              id="search"
+              autoComplete="off"
+              className="block w-full rounded-md border-0 py-1.5 pl-8 text-xs text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:pl-10 sm:text-base sm:leading-6"
+              placeholder="Search..."
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value)
+              }}
+            />
+          </div>
         )}
       </Row>
       <div className="flex-inline relative w-full items-center">
@@ -55,7 +93,7 @@ export function Tier(props: {
                   className="my-1 min-h-[6rem] min-w-[80vw] items-start lg:min-w-[40rem]"
                   ref={dropProvided.innerRef}
                 >
-                  {tier.projects.map((project, index) => (
+                  {filteredProjects.map((project, index) => (
                     <EvalsProjectCard
                       key={project.id}
                       project={project}
