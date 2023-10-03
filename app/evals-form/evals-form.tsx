@@ -28,6 +28,10 @@ export type TrustObj = {
 }
 export type ConfidenceMap = { [key: string]: number }
 
+const TIER_LIST_KEY = 'tierList'
+const CONFIDENCE_MAP_KEY = 'confidenceMap'
+const TRUST_LIST_KEY = 'trustList'
+
 export function Evals(props: {
   projects: MiniProject[]
   evals: ProjectEval[]
@@ -42,11 +46,11 @@ export function Evals(props: {
   })
   const { value: trustList, saveValue: setTrustList } = useLocalStorage<
     TrustObj[]
-  >(initialTrustList, 'trustList')
+  >(initialTrustList, TRUST_LIST_KEY)
   const initialTiers = makeTiers(projects, evals)
   const { value: tiers, saveValue: saveTiers } = useLocalStorage<TierObj[]>(
     initialTiers,
-    'tiers'
+    TIER_LIST_KEY
   )
   const initialConfidenceMap = projects.reduce((object, project) => {
     const existingEval = evals.find((e) => e.project_id === project.id)
@@ -56,7 +60,7 @@ export function Evals(props: {
     }
   }, {})
   const { value: confidenceMap, saveValue: saveConfidenceMap } =
-    useLocalStorage<ConfidenceMap>(initialConfidenceMap, 'confidenceMap')
+    useLocalStorage<ConfidenceMap>(initialConfidenceMap, CONFIDENCE_MAP_KEY)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const handleSubmit = async () => {
@@ -72,9 +76,9 @@ export function Evals(props: {
         trustList,
       }),
     })
-    clearLocalStorageItem('confidenceMap')
-    clearLocalStorageItem('trustList')
-    clearLocalStorageItem('tiers')
+    clearLocalStorageItem(CONFIDENCE_MAP_KEY)
+    clearLocalStorageItem(TRUST_LIST_KEY)
+    clearLocalStorageItem(TIER_LIST_KEY)
     setIsSubmitting(false)
   }
   return (
