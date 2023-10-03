@@ -92,13 +92,14 @@ function ResultRow(props: {
 }) {
   const { evals, trusts, evaluatorId, project } = props
   const resultsArr = makeResultsArraySingleProject(evals, trusts)
-  const thisUserResult = resultsArr.find((i) => i.evaluatorId === evaluatorId)
-  if (!thisUserResult) {
+  const thisProfileResult = resultsArr.find((i) => i.evaluatorId === evaluatorId)
+  if (!thisProfileResult) {
     return <div>Something went wrong</div>
   } else if (evals.length === 1) {
-    thisUserResult.outsideScore = NaN
-    thisUserResult.overallScore = thisUserResult.insideScore
+    thisProfileResult.outsideScore = NaN
+    thisProfileResult.overallScore = thisProfileResult.insideScore
   } else {
+    // Set initial overallScore and outsideScore non-self-referentially
     resultsArr.forEach((resultObj) => {
       const otherResults = resultsArr.filter(
         (i) => i.evaluatorId !== resultObj.evaluatorId
@@ -110,8 +111,11 @@ function ResultRow(props: {
         resultObj.insideScore * resultObj.confidence +
         resultObj.outsideScore * (1 - resultObj.confidence)
     })
-    for (let i = 0; i < 100; i++) {
+    // Iterate to convergence
+    let epsilon = 0
+    while (epsilon !== 0 && epsilon > 0.01) {
       resultsArr.forEach((resultObj) => {
+        const currOverallScore = resultObj.overallScore
         const otherResults = resultsArr.filter(
           (i) => i.evaluatorId !== resultObj.evaluatorId
         )
@@ -122,6 +126,7 @@ function ResultRow(props: {
         resultObj.overallScore =
           resultObj.insideScore * resultObj.confidence +
           resultObj.outsideScore * (1 - resultObj.confidence)
+        epsilon = Math.abs(currOverallScore - resultObj.overallScore)
       })
     }
   }
@@ -133,15 +138,15 @@ function ResultRow(props: {
       >
         {project.title}
       </Link>
-      <p>{Math.round(thisUserResult.insideScore * 10) / 10}</p>
+      <p>{Math.round(thisProfileResult.insideScore * 10) / 10}</p>
       <p>
-        {isNaN(thisUserResult.outsideScore)
+        {isNaN(thisProfileResult.outsideScore)
           ? 'N/A'
-          : Math.round(thisUserResult.outsideScore * 10) / 10}
+          : Math.round(thisProfileResult.outsideScore * 10) / 10}
       </p>
-      <p>{thisUserResult.confidence}</p>
+      <p>{thisProfileResult.confidence}</p>
       <p className="font-bold">
-        {Math.round(thisUserResult.overallScore * 10) / 10}
+        {Math.round(thisProfileResult.overallScore * 10) / 10}
       </p>
     </div>
   )
