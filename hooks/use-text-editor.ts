@@ -13,7 +13,7 @@ export function useTextEditor(
   placeholder?: string,
   className?: string
 ) {
-  const { value: content, saveValue: saveContent } = useLocalStorage(
+  const { value: content, setValue: saveContent } = useLocalStorage(
     defaultContent,
     key
   )

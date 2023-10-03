@@ -44,11 +44,11 @@ export function Evals(props: {
   const initialTrustList = profileTrusts.map((trust) => {
     return { profileId: trust.trusted_id, trust: trust.weight }
   })
-  const { value: trustList, saveValue: setTrustList } = useLocalStorage<
+  const { value: trustList, setValue: setTrustList } = useLocalStorage<
     TrustObj[]
   >(initialTrustList, TRUST_LIST_KEY)
   const initialTiers = makeTiers(projects, evals)
-  const { value: tiers, saveValue: saveTiers } = useLocalStorage<TierObj[]>(
+  const { value: tiers, setValue: setTiers } = useLocalStorage<TierObj[]>(
     initialTiers,
     TIER_LIST_KEY
   )
@@ -59,7 +59,7 @@ export function Evals(props: {
       [project.id]: existingEval?.confidence ?? 0.5,
     }
   }, {})
-  const { value: confidenceMap, saveValue: saveConfidenceMap } =
+  const { value: confidenceMap, setValue: setConfidenceMap } =
     useLocalStorage<ConfidenceMap>(initialConfidenceMap, CONFIDENCE_MAP_KEY)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -85,9 +85,9 @@ export function Evals(props: {
     <Col className="my-8 gap-4">
       <TierList
         tiers={tiers}
-        saveTiers={saveTiers}
+        setTiers={setTiers}
         confidenceMap={confidenceMap}
-        saveConfidenceMap={saveConfidenceMap}
+        setConfidenceMap={setConfidenceMap}
       />
       <SetTrust
         profiles={profiles}

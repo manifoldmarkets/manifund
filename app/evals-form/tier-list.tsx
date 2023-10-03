@@ -5,11 +5,11 @@ import { Col } from '@/components/layout/col'
 
 export function TierList(props: {
   tiers: TierObj[]
-  saveTiers: (tiers: TierObj[]) => void
+  setTiers: (tiers: TierObj[]) => void
   confidenceMap: ConfidenceMap
-  saveConfidenceMap: (confidenceMap: ConfidenceMap) => void
+  setConfidenceMap: (confidenceMap: ConfidenceMap) => void
 }) {
-  const { tiers, saveTiers, confidenceMap, saveConfidenceMap } = props
+  const { tiers, setTiers, confidenceMap, setConfidenceMap } = props
   return (
     <DragDropContext
       onDragEnd={({ destination, source }) => {
@@ -17,7 +17,7 @@ export function TierList(props: {
         if (!destination) {
           return
         }
-        saveTiers(reorderProjects(tiers, source, destination))
+        setTiers(reorderProjects(tiers, source, destination))
       }}
     >
       <Col className="gap-2 rounded">
@@ -26,7 +26,7 @@ export function TierList(props: {
             key={tier.id}
             tier={tier}
             confidenceMap={confidenceMap}
-            setConfidenceMap={saveConfidenceMap}
+            setConfidenceMap={setConfidenceMap}
           />
         ))}
       </Col>

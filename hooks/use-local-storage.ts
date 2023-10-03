@@ -6,7 +6,7 @@ const isServer = typeof window === 'undefined'
 // Like useState, but first checks for a JSON object stored under the key in the browser's localStorage
 // If key is not set, does nothing.
 const useLocalStorage = <type>(initialValue: type, key?: string) => {
-  const [value, setValue] = useState<type>(initialValue)
+  const [value, saveValue] = useState<type>(initialValue)
 
   const initialize = () => {
     if (isServer) {
@@ -28,9 +28,9 @@ const useLocalStorage = <type>(initialValue: type, key?: string) => {
     }
   }, [])
 
-  const saveValue = (value: type) => {
+  const setValue = (value: type) => {
     try {
-      setValue(value)
+      saveValue(value)
       if (typeof window !== 'undefined' && key) {
         window.localStorage.setItem(key, JSON.stringify(value))
       }
@@ -38,7 +38,7 @@ const useLocalStorage = <type>(initialValue: type, key?: string) => {
       console.log(error)
     }
   }
-  return { value: value, saveValue }
+  return { value, setValue }
 }
 
 export function clearLocalStorageItem(key: string) {
