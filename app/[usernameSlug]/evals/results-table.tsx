@@ -4,29 +4,31 @@ import { Row } from "@/components/layout/row";
 import { Project } from "@/db/project";
 import { ChevronUpIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
+import { useState } from "react";
 import { Result } from "./page";
+
+const columnNames = [
+  'Inside',
+  'Outside',
+  'Conf',
+  'Overall',
+]
 
 export function ResultsTable(props: {resultsMap: {[k: string]: Result | null} , projects: Project[]}){
     const {resultsMap, projects} = props
-    return         (<Col className="mt-5 divide-y divide-gray-200">
+    const [sort, setSort] = useState('overall')
+    return(<Col className="mt-5 divide-y divide-gray-200">
     <div className="grid grid-cols-7 gap-2 py-2 text-sm text-gray-600">
       <p className="col-span-3">Project</p>
-      <Row>Inside
-        <button>
+      {columnNames.map((name) => 
+      <Row key={name}>
+      {name}
+      <button onClick={() => setSort(name)}>
           <ChevronUpIcon className="h-3 w-3" />
         </button>
       </Row>
-      <Row>Outside
-        <button>
-          <ChevronUpIcon className="h-3 w-3" />
-        </button>
-      </Row>
-      <p>Conf</p>
-      <Row>Overall
-        <button>
-          <ChevronUpIcon className="h-3 w-3" />
-        </button>
-      </Row>
+      )
+      }
     </div>
     {projects.map((project) => {
       if (!!resultsMap[project.id]) {
