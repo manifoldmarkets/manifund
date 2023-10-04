@@ -35,7 +35,7 @@ export default async function ResultsPage(props: {
     supabase,
     thisProfilesEvals.map((e) => e.project_id)
   )
-  const resultRows = thisProfilesEvals.map((profilesEval) => {
+  const resultsMap = Object.fromEntries(thisProfilesEvals.map((profilesEval) => {
     const thisProjectEvals = evals.filter(
       (e) => e.project_id === profilesEval.project_id
     )
@@ -44,20 +44,12 @@ export default async function ResultsPage(props: {
         thisProjectEvals.find((e) => e.evaluator_id === t.trusted_id) &&
         thisProjectEvals.find((e) => e.evaluator_id === t.truster_id)
     )
-    return (
-      <ResultRow
-        key={profilesEval.project_id}
-        project={projects.find((p) => p.id === profilesEval.project_id)}
-        evals={thisProjectEvals}
-        trusts={thisProjectTrusts}
-        evaluatorId={evaluator.id}
-      />
-    )
-  })
+    return [profilesEval.project_id, calculateResult(thisProjectEvals, thisProjectTrusts, profilesEval.evaluator_id)]
+  }))
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold">{evaluator.full_name}&apos;s evals</h1>
-      {resultRows.length === 0 ? (
+      {projects.length === 0 ? (
         <div className="mt-5 text-center text-sm italic text-gray-600">
           {evaluator.full_name} hasn&apos;t evaluated any projects yet.
         </div>
@@ -70,7 +62,11 @@ export default async function ResultsPage(props: {
             <p>Conf</p>
             <p>Overall</p>
           </div>
-          {resultRows}
+          {projects.map((project) => {
+            if (!!resultsMap[project.id]) {
+              return (<ResultRow key={project.id} project={project} result={resultsMap[project.id] as Result} />)
+            }
+          })}
         </Col>
       )}
       <Link
@@ -86,50 +82,10 @@ export default async function ResultsPage(props: {
 
 function ResultRow(props: {
   project: Project
-  evals: ProjectEval[]
-  trusts: ProfileTrust[]
-  evaluatorId: string
+  result: Result
 }) {
-  const { evals, trusts, evaluatorId, project } = props
-  const resultsArr = makeResultsArraySingleProject(evals, trusts)
-  const thisProfileResult = resultsArr.find((i) => i.evaluatorId === evaluatorId)
-  if (!thisProfileResult) {
-    return <div>Something went wrong</div>
-  } else if (evals.length === 1) {
-    thisProfileResult.outsideScore = NaN
-    thisProfileResult.overallScore = thisProfileResult.insideScore
-  } else {
-    // Set initial overallScore and outsideScore non-self-referentially
-    resultsArr.forEach((resultObj) => {
-      const otherResults = resultsArr.filter(
-        (i) => i.evaluatorId !== resultObj.evaluatorId
-      )
-      resultObj.outsideScore =
-        otherResults.reduce((acc, i) => acc + i.insideScore, 0) /
-        otherResults.length
-      resultObj.overallScore =
-        resultObj.insideScore * resultObj.confidence +
-        resultObj.outsideScore * (1 - resultObj.confidence)
-    })
-    // Iterate to convergence
-    let epsilon = 0
-    while (epsilon !== 0 && epsilon > 0.01) {
-      resultsArr.forEach((resultObj) => {
-        const currOverallScore = resultObj.overallScore
-        const otherResults = resultsArr.filter(
-          (i) => i.evaluatorId !== resultObj.evaluatorId
-        )
-        resultObj.outsideScore = otherResults.reduce(
-          (acc, r) => acc + r.overallScore * resultObj.trustScores[r.evaluatorId],
-          0
-        )
-        resultObj.overallScore =
-          resultObj.insideScore * resultObj.confidence +
-          resultObj.outsideScore * (1 - resultObj.confidence)
-        epsilon = Math.abs(currOverallScore - resultObj.overallScore)
-      })
-    }
-  }
+  const { result, project } = props
+  
   return (
     <div className="grid grid-cols-7 gap-4 py-2 text-sm">
       <Link
@@ -138,19 +94,65 @@ function ResultRow(props: {
       >
         {project.title}
       </Link>
-      <p>{Math.round(thisProfileResult.insideScore * 10) / 10}</p>
+      <p>{Math.round(result.insideScore * 10) / 10}</p>
       <p>
-        {isNaN(thisProfileResult.outsideScore)
+        {isNaN(result.outsideScore)
           ? 'N/A'
-          : Math.round(thisProfileResult.outsideScore * 10) / 10}
+          : Math.round(result.outsideScore * 10) / 10}
       </p>
-      <p>{thisProfileResult.confidence}</p>
+      <p>{result.confidence}</p>
       <p className="font-bold">
-        {Math.round(thisProfileResult.overallScore * 10) / 10}
+        {Math.round(result.overallScore * 10) / 10}
       </p>
     </div>
   )
 }
+
+function calculateResult(
+  evals: ProjectEval[],
+  trusts: ProfileTrust[],
+  evaluatorId: string){
+    const resultsArr = makeResultsArraySingleProject(evals, trusts)
+    const thisProfileResult = resultsArr.find((i) => i.evaluatorId === evaluatorId)
+    if (!thisProfileResult) {
+      return null
+    } else if (evals.length === 1) {
+      thisProfileResult.outsideScore = NaN
+      thisProfileResult.overallScore = thisProfileResult.insideScore
+    } else {
+      // Set initial overallScore and outsideScore non-self-referentially
+      resultsArr.forEach((resultObj) => {
+        const otherResults = resultsArr.filter(
+          (i) => i.evaluatorId !== resultObj.evaluatorId
+        )
+        resultObj.outsideScore =
+          otherResults.reduce((acc, i) => acc + i.insideScore, 0) /
+          otherResults.length
+        resultObj.overallScore =
+          resultObj.insideScore * resultObj.confidence +
+          resultObj.outsideScore * (1 - resultObj.confidence)
+      })
+      // Iterate to convergence
+      let epsilon = 0
+      while (epsilon !== 0 && epsilon > 0.01) {
+        resultsArr.forEach((resultObj) => {
+          const currOverallScore = resultObj.overallScore
+          const otherResults = resultsArr.filter(
+            (i) => i.evaluatorId !== resultObj.evaluatorId
+          )
+          resultObj.outsideScore = otherResults.reduce(
+            (acc, r) => acc + r.overallScore * resultObj.trustScores[r.evaluatorId],
+            0
+          )
+          resultObj.overallScore =
+            resultObj.insideScore * resultObj.confidence +
+            resultObj.outsideScore * (1 - resultObj.confidence)
+          epsilon = Math.abs(currOverallScore - resultObj.overallScore)
+        })
+      }
+    }
+    return thisProfileResult
+  }
 
 function makeResultsArraySingleProject(
   evals: ProjectEval[],
