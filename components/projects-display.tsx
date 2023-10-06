@@ -61,7 +61,7 @@ export function ProjectsDisplay(props: {
     sortBy
   )
   const selectedProjects = sortedProjects.filter((project) => {
-    searchInAny(
+    return searchInAny(
       search,
       project.title,
       project.blurb ?? '',
