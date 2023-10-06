@@ -20,6 +20,7 @@ import { Row } from './layout/row'
 import { MiniCause, Cause } from '@/db/cause'
 import { CauseTag } from './tags'
 import { Col } from './layout/col'
+import { SearchBar } from './input'
 
 type SortOption =
   | 'votes'
@@ -81,26 +82,7 @@ export function ProjectsDisplay(props: {
   return (
     <Col className="gap-2">
       <div className="flex flex-col justify-between gap-2 lg:flex-row">
-        <div className="relative rounded-md shadow-sm lg:w-8/12">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <MagnifyingGlassIcon
-              className="h-3 w-3 text-gray-400 sm:h-5 sm:w-5"
-              aria-hidden="true"
-            />
-          </div>
-          <input
-            type="text"
-            name="search"
-            id="search"
-            autoComplete="off"
-            className="block w-full rounded-md border-0 py-1.5 pl-8 text-xs text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:pl-10 sm:text-base sm:leading-6"
-            placeholder="Search..."
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value)
-            }}
-          />
-        </div>
+        <SearchBar search={search} setSearch={setSearch} className="mt-2" />
         <div className="relative lg:w-4/12">
           <Listbox
             value={sortBy}
