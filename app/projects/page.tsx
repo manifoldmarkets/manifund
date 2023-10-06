@@ -18,16 +18,16 @@ import { FeedTabs } from './feed-tabs'
 export const revalidate = 60
 
 const featuredRegrantorIds = [
-  '75420de8-7e37-4971-bb29-9bfada0c453b', // Leopold
+  'e2a30cdd-6797-4e2c-8823-f051195fc77a', // Ryan
+  '232dc139-961a-4f9a-9ca5-0118b90287c0', // Nuno
+  '647c9b3c-65ce-40cf-9464-ac02c741aacd', // Evan
   'b11620f2-fdc7-414c-8a63-9ddee17ee669', // Marcus
-  'aa7c88dc-7311-4577-8cd3-c58a0d41fc31', // Joel
-  '8aa331b7-3602-4001-9bc6-2b71b1c8ddd1', // Renan
 ]
 
 const featuredProjectSlugs = [
-  'design-and-testing-of-broad-spectrum-antivirals',
-  'compute-funding-for-seri-mats-llm-alignment-research',
-  'forecasting--treaty-on-artificial-intelligence-safety-and-cooperation-taisc-',
+  'empirical-research-into-ai-consciousness-and-moral-patienthood',
+  'avoiding-incentives-for-performative-prediction-in-ai',
+  'support-riesgos-catastroficos-globales',
 ]
 
 export default async function Projects(props: {
@@ -135,13 +135,13 @@ function LandingSection() {
           <p className="text-right text-3xl font-medium text-white shadow-orange-500 text-shadow-lg sm:text-4xl">
             efficient funding.
           </p>
-          <p className="mt-4 mb-8 text-center text-xs text-white sm:mt-5 sm:text-sm">
+          <p className="mb-8 mt-4 text-center text-xs text-white sm:mt-5 sm:text-sm">
             Manifund offers charitable funding infrastructure designed to
             improve incentives, efficiency, and transparency.
           </p>
           <Row className="justify-center gap-3 text-sm">
             <Link
-              className="group rounded-lg bg-white py-2 px-3 text-white ring-2 ring-white hover:bg-transparent"
+              className="group rounded-lg bg-white px-3 py-2 text-white ring-2 ring-white hover:bg-transparent"
               href="/login"
             >
               <span className="bg-gradient-to-r from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold text-transparent group-hover:text-white">
