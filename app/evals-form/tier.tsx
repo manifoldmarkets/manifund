@@ -5,8 +5,8 @@ import { Droppable } from 'react-beautiful-dnd'
 import { EvalsProjectCard } from './evals-project-card'
 import { ConfidenceMap } from './evals-form'
 import clsx from 'clsx'
-import { Input, SearchBar } from '@/components/input'
-import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { SearchBar } from '@/components/input'
+import { searchInAny } from '@/utils/parse'
 
 export function Tier(props: {
   tier: TierObj
@@ -15,15 +15,10 @@ export function Tier(props: {
 }) {
   const { tier, confidenceMap, setConfidenceMap } = props
   const [search, setSearch] = useState('')
-  const filteredProjects =
+  const selectedProjects =
     tier.id === 'unsorted'
       ? tier.projects.filter((project) => {
-          return (
-            project.title.toLowerCase().includes(search.toLowerCase()) ||
-            project.profiles.full_name
-              .toLowerCase()
-              .includes(search.toLowerCase())
-          )
+          return searchInAny(search, project.title, project.profiles.full_name)
         })
       : tier.projects
   return (
@@ -78,7 +73,7 @@ export function Tier(props: {
                   className="my-1 min-h-[6rem] min-w-[80vw] items-start lg:min-w-[40rem]"
                   ref={dropProvided.innerRef}
                 >
-                  {filteredProjects.map((project, index) => (
+                  {selectedProjects.map((project, index) => (
                     <EvalsProjectCard
                       key={project.id}
                       project={project}

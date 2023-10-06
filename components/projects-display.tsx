@@ -1,10 +1,6 @@
 'use client'
 import { FullProject } from '@/db/project'
-import {
-  CheckIcon,
-  ChevronUpDownIcon,
-  MagnifyingGlassIcon,
-} from '@heroicons/react/24/outline'
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { useRouter } from 'next/navigation'
 import { Fragment, useState } from 'react'
@@ -21,6 +17,7 @@ import { MiniCause, Cause } from '@/db/cause'
 import { CauseTag } from './tags'
 import { Col } from './layout/col'
 import { SearchBar } from './input'
+import { searchInAny } from '@/utils/parse'
 
 type SortOption =
   | 'votes'
@@ -63,7 +60,15 @@ export function ProjectsDisplay(props: {
     prices,
     sortBy
   )
-  const selectedProjects = searchProjects(sortedProjects, search)
+  const selectedProjects = sortedProjects.filter((project) => {
+    searchInAny(
+      search,
+      project.title,
+      project.blurb ?? '',
+      project.profiles.full_name,
+      project.profiles.username
+    )
+  })
   const router = useRouter()
 
   const proposals = selectedProjects.filter(

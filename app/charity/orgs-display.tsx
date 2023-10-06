@@ -1,13 +1,16 @@
 'use client'
 import { SearchBar } from '@/components/input'
 import { ProfileAndTxns } from '@/db/profile'
+import { searchInAny } from '@/utils/parse'
 import { useState } from 'react'
 import { OrgCard } from './org-card'
 
 export function OrgsDisplay(props: { orgs: ProfileAndTxns[] }) {
   const { orgs } = props
   const [search, setSearch] = useState<string>('')
-  const selectedOrgs = searchCharities(orgs, search)
+  const selectedOrgs = orgs.filter((org) =>
+    searchInAny(search, org.full_name, org.bio)
+  )
   return (
     <>
       <SearchBar search={search} setSearch={setSearch} className="mt-2" />
@@ -18,15 +21,4 @@ export function OrgsDisplay(props: { orgs: ProfileAndTxns[] }) {
       </div>
     </>
   )
-}
-
-function searchCharities(charities: ProfileAndTxns[], search: string) {
-  if (search === '') return charities
-  const selectedOrgs = charities.filter((charity) => {
-    return (
-      charity.full_name.toLowerCase().includes(search.toLowerCase()) ||
-      charity.bio.toLowerCase().includes(search.toLowerCase())
-    )
-  })
-  return selectedOrgs
 }
