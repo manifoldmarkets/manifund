@@ -24,10 +24,7 @@ const GENERAL_REGRANTING_ID = '4e3f9301-c6b9-4c2b-a03f-0bec77ad01f2'
 export default async function DonatePage() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
-  const featuredProjects = await getFeaturedProjects(
-    supabase,
-    FEATURED_PROJECT_SLUGS
-  )
+  const featuredProjects = await getFeaturedProjects(supabase)
   const sortedFeaturedProjects = FEATURED_PROJECT_SLUGS.map((slug) =>
     featuredProjects?.find((project) => project.slug === slug)
   ).filter((project) => !!project) as FullProject[]
@@ -61,7 +58,7 @@ export default async function DonatePage() {
         </Col>
         <div className="mx-auto max-w-7xl">
           <Col className="mx-auto max-w-2xl gap-6 text-base leading-7 text-gray-600">
-            <Card className="relative px-4 pt-4 pb-6">
+            <Card className="relative px-4 pb-6 pt-4">
               <Image
                 className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-600"
                 src="/SolidOrangeManifox.png"
@@ -85,14 +82,14 @@ export default async function DonatePage() {
                     userId={user.id}
                     passFundsTo={passFundsTo ?? undefined}
                   >
-                    <div className="rounded bg-orange-100 py-1.5 px-3 text-xs text-orange-500 hover:bg-orange-200">
+                    <div className="rounded bg-orange-100 px-3 py-1.5 text-xs text-orange-500 hover:bg-orange-200">
                       Give to general regranting
                     </div>
                   </StripeDepositButton>
                 </Row>
               )}
             </Card>
-            <Card className="relative px-4 pt-4 pb-6">
+            <Card className="relative px-4 pb-6 pt-4">
               <AdjustmentsHorizontalIcon
                 className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-500"
                 aria-hidden="true"
@@ -114,7 +111,7 @@ export default async function DonatePage() {
               {user && (
                 <Row className="mx-auto mt-3 justify-center">
                   <StripeDepositButton userId={user.id}>
-                    <div className="rounded bg-orange-100 py-1.5 px-3 text-xs text-orange-500 hover:bg-orange-200">
+                    <div className="rounded bg-orange-100 px-3 py-1.5 text-xs text-orange-500 hover:bg-orange-200">
                       Add funds to account
                     </div>
                   </StripeDepositButton>
@@ -202,7 +199,7 @@ export default async function DonatePage() {
             Yes if you&apos;re in the US! Manifold for Charity, our
             organization, is a registered 501(c)(3) nonprofit.
           </p>
-          <strong>Why do take a 5% cut of donations?</strong>
+          <strong>Why do you take a 5% cut of donations?</strong>
           <p>
             We need to cover our costs somehow, and we see two main ways of
             doing that: taking a small cut of all donations, or fundraising
@@ -256,14 +253,11 @@ function SignInButton() {
   )
 }
 
-async function getFeaturedProjects(
-  supabase: SupabaseClient,
-  featuredProjectSlugs: string[]
-) {
+async function getFeaturedProjects(supabase: SupabaseClient) {
   const { data: featuredProjects } = await supabase
     .from('projects')
     .select(
-      'title, creator, slug, blurb, profiles(*), txns(*), causes(title, slug)'
+      'title, creator, slug, blurb, profiles!projects_creator_fkey(*), txns(*), causes(title, slug)'
     )
     .in('slug', FEATURED_PROJECT_SLUGS)
     .throwOnError()
