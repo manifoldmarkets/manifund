@@ -14,7 +14,7 @@
     "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty",
     "snap:restore": "snaplet snapshot restore --no-reset",
     "snap:restore-empty": "snaplet snapshot restore --no-reset --no-data",
-    "//": "Consider dropping --no-reset flag; see https://docs.snaplet.dev/getting-started/restoring#more-granular-control-over-restorations"
+    "//": "Consider removing --no-reset flag to drop the database, if projects table is missing; see https://docs.snaplet.dev/core-concepts/restore"
   },
   "dependencies": {
     "@floating-ui/react": "^0.19.2",
