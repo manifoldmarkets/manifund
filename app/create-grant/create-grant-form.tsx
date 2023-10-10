@@ -77,6 +77,7 @@ export function CreateGrantForm(props: {
   const [fundingGoal, setFundingGoal] = useState<number | null>(null)
   const [minFunding, setMinFunding] = useState<number | null>(null)
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
+  const [locationDescription, setLocationDescription] = useState('')
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
@@ -184,6 +185,7 @@ export function CreateGrantForm(props: {
           ? recipient?.username
           : undefined,
         causeSlugs: selectedCauses.map((cause) => cause.slug),
+        locationDescription,
       }),
     })
     const newProject = await response.json()
@@ -484,6 +486,19 @@ export function CreateGrantForm(props: {
           causesList={causesList}
           selectedCauses={selectedCauses}
           setSelectedCauses={setSelectedCauses}
+        />
+      </Col>
+      <Col className="gap-1">
+        <label>International activities</label>
+        <p className="text-sm text-gray-600">
+          If any part of this project will happen outside of the US, or people
+          working on the project are not US residents, please describe what will
+          happen internationally and where. Only a sentence or two needed.
+        </p>
+        <Input
+          type="text"
+          value={locationDescription}
+          onChange={(event) => setLocationDescription(event.target.value)}
         />
       </Col>
       <Row>
