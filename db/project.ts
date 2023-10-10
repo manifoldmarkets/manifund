@@ -116,6 +116,24 @@ export async function getProjectAndProfileBySlug(
   }
   return data[0] as ProjectAndProfile
 }
+
+export type ProjectAndProfileAndTxns = Project & { profiles: Profile } & {
+  txns: Txn[]
+}
+export async function getProjectAndProfileAndTxnsById(
+  supabase: SupabaseClient,
+  id: string
+) {
+  const { data } = await supabase
+    .from('projects')
+    .select('*, profiles!projects_creator_fkey(*), txns(*)')
+    .eq('id', id)
+    .throwOnError()
+  if (data === null) {
+    return null
+  }
+  return data[0] as ProjectAndProfileAndTxns
+}
 // This does not include project or round descriptions, for a smaller payload
 export async function getFullProjectsByRound(
   supabase: SupabaseClient,
