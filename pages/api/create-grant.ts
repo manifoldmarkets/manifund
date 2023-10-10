@@ -34,6 +34,7 @@ type GrantProps = {
   recipientName?: string
   recipientUsername?: string
   causeSlugs: string[]
+  locationDescription: string
 }
 
 export default async function handler(req: NextRequest) {
@@ -49,6 +50,7 @@ export default async function handler(req: NextRequest) {
     recipientName,
     recipientUsername,
     causeSlugs,
+    locationDescription,
   } = (await req.json()) as GrantProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
@@ -100,6 +102,7 @@ export default async function handler(req: NextRequest) {
     slug,
     approved: null,
     signed_agreement: false,
+    location_description: locationDescription,
   }
   if (recipientEmail && recipientName) {
     const donorComment = {
