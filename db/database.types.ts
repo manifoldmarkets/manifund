@@ -349,7 +349,9 @@ export interface Database {
           founder_portion: number
           funding_goal: number
           id: string
+          location_description: string | null
           min_funding: number
+          public_benefit: string | null
           round: string
           signed_agreement: boolean
           slug: string
@@ -368,7 +370,9 @@ export interface Database {
           founder_portion: number
           funding_goal?: number
           id?: string
+          location_description?: string | null
           min_funding: number
+          public_benefit?: string | null
           round: string
           signed_agreement?: boolean
           slug?: string
@@ -387,7 +391,9 @@ export interface Database {
           founder_portion?: number
           funding_goal?: number
           id?: string
+          location_description?: string | null
           min_funding?: number
+          public_benefit?: string | null
           round?: string
           signed_agreement?: boolean
           slug?: string

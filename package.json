@@ -11,8 +11,9 @@
     "gen-types": "npx supabase gen types typescript --project-id fkousziwzbnkdkldjper --schema public > db/database.types.ts",
     "gen-dev-types": "npx supabase gen types typescript --project-id oucjhqqretizqonyfyqu --schema public > db/database.types.ts",
     "format": "npx prettier --write .",
+    "snap:version": "snaplet --version",
     "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty",
-    "snap:restore": "snaplet snapshot restore --no-reset",
+    "snap:restore": "snaplet snapshot restore",
     "snap:restore-empty": "snaplet snapshot restore --no-reset --no-data",
     "//": "Consider removing --no-reset flag to drop the database, if projects table is missing; see https://docs.snaplet.dev/core-concepts/restore"
   },
@@ -74,7 +75,7 @@
     "postcss": "^8.4.21",
     "prettier": "^2.8.4",
     "prettier-plugin-tailwindcss": "^0.2.3",
-    "snaplet": "^0.55.0",
+    "snaplet": "0.55.5",
     "tailwindcss": "^3.2.6"
   },
   "resolutions": {

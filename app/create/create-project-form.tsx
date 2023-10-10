@@ -44,6 +44,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   const [verdictDate, setVerdictDate] = useState(
     format(add(new Date(), { months: 1 }), 'yyyy-MM-dd')
   )
+  const [locationDescription, setLocationDescription] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
@@ -91,6 +92,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         stage: 'proposal',
         type: 'grant',
         causeSlugs: selectedCauses.map((cause) => cause.slug),
+        location_description: locationDescription,
       }),
     })
     const newProject = await response.json()
@@ -245,6 +247,20 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           causesList={causesList}
           selectedCauses={selectedCauses}
           setSelectedCauses={setSelectedCauses}
+        />
+      </Col>
+      <Col className="gap-1">
+        <label>International activities</label>
+        <p className="text-sm text-gray-600">
+          If any part of this project will happen outside of the US, or people
+          working on the project are not US residents, please describe what will
+          happen internationally and where. Only a sentence or two needed. (This
+          is for Manifund operations, and will not be published.)
+        </p>
+        <Input
+          type="text"
+          value={locationDescription}
+          onChange={(event) => setLocationDescription(event.target.value)}
         />
       </Col>
       <Button

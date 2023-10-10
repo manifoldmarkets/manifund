@@ -28,6 +28,7 @@ type CreateProjectProps = {
   stage: Database['public']['Tables']['projects']['Row']['stage']
   type: Database['public']['Tables']['projects']['Row']['type']
   causeSlugs: string[]
+  location_description: string
 }
 
 export default async function handler(req: NextRequest) {
@@ -43,6 +44,7 @@ export default async function handler(req: NextRequest) {
     stage,
     type,
     causeSlugs,
+    location_description,
   } = (await req.json()) as CreateProjectProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
@@ -65,10 +67,11 @@ export default async function handler(req: NextRequest) {
     auction_close,
     stage,
     type,
+    location_description,
     approved: null,
     signed_agreement: false,
   }
-  await supabase.from('projects').insert([project]).throwOnError()
+  await supabase.from('projects').insert(project).throwOnError()
   await updateProjectCauses(supabase, causeSlugs, project.id)
   await giveCreatorShares(supabase, id, user.id)
   if (stage === 'active' && type === 'cert') {
