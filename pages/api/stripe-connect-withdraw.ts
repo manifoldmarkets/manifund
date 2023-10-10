@@ -6,7 +6,7 @@ import { calculateCashBalance } from '@/utils/math'
 import Stripe from 'stripe'
 import { STRIPE_SECRET_KEY } from '@/db/env'
 import uuid from 'react-uuid'
-import { sendTemplateEmail } from '@/utils/email'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { CENTS_PER_DOLLAR } from '@/utils/constants'
 
 export const config = {
@@ -80,7 +80,6 @@ export default async function handler(req: NextRequest) {
       txn_id: txnId,
     })
     .throwOnError()
-  const CONFIRM_WITHDRAWAL_TEMPLATE_ID = 32048469
   const usedBank = account.external_accounts?.data[0].object === 'bank_account'
   const last4 = account.external_accounts?.data[0].last4
   const postmarkVars = {
@@ -92,7 +91,7 @@ export default async function handler(req: NextRequest) {
     email: user.email,
   }
   await sendTemplateEmail(
-    CONFIRM_WITHDRAWAL_TEMPLATE_ID,
+    TEMPLATE_IDS.CONFIRM_WITHDRAWAL,
     postmarkVars,
     undefined,
     user.email

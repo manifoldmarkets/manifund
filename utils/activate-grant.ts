@@ -5,7 +5,7 @@ import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { uniq } from 'lodash'
 import { getURL } from './constants'
-import { sendTemplateEmail } from './email'
+import { sendTemplateEmail, TEMPLATE_IDS } from './email'
 
 export async function maybeActivateGrant(
   supabase: SupabaseClient,
@@ -50,7 +50,6 @@ async function activateGrant(project: Project) {
       project_creator: project.creator,
     })
     .throwOnError()
-  const VERDICT_TEMPLATE_ID = 31974162
   const txns = await getTxnsByProject(supabase, project.id)
   const donors = uniq(txns.map((txn) => txn.profiles))
   const donorSubject = `"${project.title}" is active!`
@@ -59,7 +58,7 @@ async function activateGrant(project: Project) {
   await Promise.all(
     donors.map(async (donor) => {
       await sendTemplateEmail(
-        VERDICT_TEMPLATE_ID,
+        TEMPLATE_IDS.VERDICT,
         {
           recipientFullName: donor?.full_name ?? 'donor',
           verdictMessage: donorMessage,
@@ -74,7 +73,7 @@ async function activateGrant(project: Project) {
   const recipientSubject = `Your project, "${project.title}" is active!`
   const recipientMessage = `Your project, "${project.title}", has completed the funding process and become active! You can now withdraw any funds you've recieved for this project from your profile page.`
   await sendTemplateEmail(
-    VERDICT_TEMPLATE_ID,
+    TEMPLATE_IDS.VERDICT,
     {
       recipientFullName: creatorProfile.full_name ?? 'project creator',
       verdictMessage: recipientMessage,
