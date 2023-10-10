@@ -8,6 +8,7 @@ import { Modal } from '@/components/modal'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Input } from '@/components/input'
 
 const REJECT_MESSAGE_INTRO =
   'Manifund has declined to fund this project because we believe it'
@@ -23,6 +24,7 @@ export function GrantVerdict(props: { projectId: string }) {
   const { projectId } = props
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [approveGrant, setApproveGrant] = useState(false)
+  const [publicBenefit, setPublicBenefit] = useState<string>('')
   const [defaultMessage, setDefaultMessage] = useState<string | null>('custom')
   const [open, setOpen] = useState(false)
   const router = useRouter()
@@ -89,6 +91,14 @@ export function GrantVerdict(props: { projectId: string }) {
                 </div>
               )}
               <TextEditor editor={editor} />
+              {approveGrant && (
+                <>
+                  <p>How does this grant benefit the public?</p>
+                  <Input
+                    onChange={(event) => setPublicBenefit(event.target.value)}
+                  />
+                </>
+              )}
             </div>
           </div>
           <Row className="justify-between">
@@ -114,11 +124,11 @@ export function GrantVerdict(props: { projectId: string }) {
                   body: JSON.stringify({
                     approved: approveGrant,
                     projectId: projectId,
-                    // TODO: account for default message case
                     adminComment:
                       editor?.getHTML() === '<p></p>'
                         ? null
                         : editor?.getJSON(),
+                    publicBenefit: approveGrant ? publicBenefit : null,
                   }),
                 })
                 setIsSubmitting(false)
