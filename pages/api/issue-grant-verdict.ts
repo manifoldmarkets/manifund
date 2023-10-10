@@ -21,10 +21,11 @@ type VerdictProps = {
   approved: boolean
   projectId: string
   adminComment: JSONContent | null
+  publicBenefit: string
 }
 
 export default async function handler(req: NextRequest) {
-  const { approved, projectId, adminComment } =
+  const { approved, projectId, adminComment, publicBenefit } =
     (await req.json()) as VerdictProps
   const supabase = createEdgeClient(req)
   const user = await getUser(supabase)
@@ -46,6 +47,7 @@ export default async function handler(req: NextRequest) {
       project_creator: project.creator,
       admin_id: user.id,
       admin_comment_content: adminComment,
+      public_benefit: publicBenefit,
     })
     .throwOnError()
 

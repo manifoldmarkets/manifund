@@ -615,34 +615,37 @@ export interface Database {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      create_transfer_grant:
-        | {
-            Args: {
-              project: Database["public"]["CompositeTypes"]["project_row"]
-              donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
-              project_transfer: Database["public"]["CompositeTypes"]["transfer_row"]
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              project: Database["public"]["CompositeTypes"]["project_row"]
-              donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
-              project_transfer: Database["public"]["CompositeTypes"]["transfer_row"]
-              grant_amount: number
-            }
-            Returns: undefined
-          }
-      execute_grant_verdict: {
+      create_transfer_grant: {
         Args: {
-          approved: boolean
-          project_id: string
-          project_creator: string
-          admin_id?: string
-          admin_comment_content?: Json
+          project: Database["public"]["CompositeTypes"]["project_row"]
+          donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
+          project_transfer: Database["public"]["CompositeTypes"]["transfer_row"]
+          grant_amount: number
         }
         Returns: undefined
       }
+      execute_grant_verdict:
+        | {
+            Args: {
+              approved: boolean
+              project_id: string
+              project_creator: string
+              admin_id?: string
+              admin_comment_content?: Json
+              public_benefit?: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              approved: boolean
+              project_id: string
+              project_creator: string
+              admin_id?: string
+              admin_comment_content?: Json
+            }
+            Returns: undefined
+          }
       get_user_balances: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -743,6 +746,7 @@ export interface Database {
         stage: Database["public"]["Enums"]["project_stage"]
         round: string
         slug: string
+        location_description: string
       }
       transfer_row: {
         recipient_email: string
