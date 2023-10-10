@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
-import { sendTemplateEmail } from '@/utils/email'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { JSONContent } from '@tiptap/react'
 import { calculateCharityBalance } from '@/utils/math'
 import { getTxnsByUser } from '@/db/txn'
@@ -130,9 +130,8 @@ export default async function handler(req: NextRequest) {
       projectTitle: title,
       loginUrl: `${getURL()}login?email=${recipientEmail}`,
     }
-    const NEW_USER_GRANT_TEMPLATE_ID = 31479155
     await sendTemplateEmail(
-      NEW_USER_GRANT_TEMPLATE_ID,
+      TEMPLATE_IDS.NEW_USER_GRANT,
       postmarkVars,
       undefined,
       recipientEmail
@@ -163,9 +162,8 @@ export default async function handler(req: NextRequest) {
       projectTitle: title,
       projectUrl: `${getURL()}projects/${slug}`,
     }
-    const EXISTING_USER_GRANT_TEMPLATE_ID = 31480376
     await sendTemplateEmail(
-      EXISTING_USER_GRANT_TEMPLATE_ID,
+      TEMPLATE_IDS.EXISTING_USER_GRANT,
       postmarkVars,
       recipientProfile.id
     )

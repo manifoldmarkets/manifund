@@ -5,8 +5,7 @@ import { getUser, isAdmin } from '@/db/profile'
 import { getProjectById } from '@/db/project'
 import { getAdminName, getURL } from '@/utils/constants'
 import { getProfileById } from '@/db/profile'
-import { sendTemplateEmail } from '@/utils/email'
-import { getBidsByProject } from '@/db/bid'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { maybeActivateGrant } from '@/utils/activate-grant'
 
 export const config = {
@@ -50,7 +49,6 @@ export default async function handler(req: NextRequest) {
     })
     .throwOnError()
 
-  const VERDICT_TEMPLATE_ID = 31974162
   const recipientSubject = approved
     ? 'Manifund has approved your project for funding!'
     : 'Manifund has declined to fund your project.'
@@ -65,7 +63,7 @@ export default async function handler(req: NextRequest) {
     adminName: adminName,
   }
   await sendTemplateEmail(
-    VERDICT_TEMPLATE_ID,
+    TEMPLATE_IDS.VERDICT,
     recipientPostmarkVars,
     creator.id
   )

@@ -5,7 +5,7 @@ import { getAmountRaised } from '@/utils/math'
 import { Project } from '@/db/project'
 import { Bid } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { sendTemplateEmail } from '@/utils/email'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { isProd } from '@/db/env'
 
 export const config = {
@@ -53,11 +53,10 @@ async function closeGrant(
   supabase: SupabaseClient
 ) {
   const amountRaised = getAmountRaised(project, bids)
-  const GENERIC_NOTIF_TEMPLATE_ID = 32825293
   if (amountRaised >= project.min_funding) {
     if (!project.signed_agreement) {
       await sendTemplateEmail(
-        GENERIC_NOTIF_TEMPLATE_ID,
+        TEMPLATE_IDS.GENERIC_NOTIF,
         {
           notifText: `Your project "${project.title}" has enough funding to proceed but is awaiting your signature on the grant agreement. Please sign the agreement to activate your grant.`,
           buttonUrl: `https://manifund.org/projects/${project.slug}/agreement`,
@@ -69,7 +68,7 @@ async function closeGrant(
     }
     if (!project.approved) {
       await sendTemplateEmail(
-        GENERIC_NOTIF_TEMPLATE_ID,
+        TEMPLATE_IDS.GENERIC_NOTIF,
         {
           notifText: `The project "${project.title}" has enough funding but is awaiting admin approval.`,
           buttonUrl: `https://manifund.org/projects/${project.slug}`,
@@ -86,7 +85,6 @@ async function closeGrant(
         project_id: project.id,
       })
       .throwOnError()
-    const VERDICT_TEMPLATE_ID = 31974162
     const recipientPostmarkVars = {
       recipientFullName: creatorName,
       verdictMessage: `We regret to inform you that your project, "${project.title}," has not been funded. It received $${amountRaised} in funding offers but had a minimum funding goal of $${project.min_funding}. Thank you for posting your project, and please let us know on our discord if you have any questions or feedback about the process.`,
@@ -95,11 +93,10 @@ async function closeGrant(
       adminName: 'Rachel',
     }
     await sendTemplateEmail(
-      VERDICT_TEMPLATE_ID,
+      TEMPLATE_IDS.VERDICT,
       recipientPostmarkVars,
       project.creator
     )
-    const OFFER_RESOLVED_TEMPLATE_ID = 31316141
     bids.forEach(async (bid) => {
       const bidderPostmarkVars = {
         projectTitle: project.title,
@@ -109,7 +106,7 @@ async function closeGrant(
         bidResolutionText: `Your offer was declined.`,
       }
       await sendTemplateEmail(
-        OFFER_RESOLVED_TEMPLATE_ID,
+        TEMPLATE_IDS.OFFER_RESOLVED,
         bidderPostmarkVars,
         bid.bidder
       )

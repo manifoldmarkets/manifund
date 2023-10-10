@@ -6,7 +6,7 @@ import { Project, TOTAL_SHARES } from '@/db/project'
 import { getProjectById } from '@/db/project'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
-import { sendTemplateEmail } from '@/utils/email'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import uuid from 'react-uuid'
 
 export const config = {
@@ -197,9 +197,8 @@ async function sendAuctionCloseEmails(
       auctionResolutionText,
       bidResolutionText,
     }
-    const OFFER_RESOLVED_TEMPLATE_ID = 31316141
     await sendTemplateEmail(
-      OFFER_RESOLVED_TEMPLATE_ID,
+      TEMPLATE_IDS.OFFER_RESOLVED,
       bidderPostmarkVars,
       bid.bidder
     )
@@ -211,9 +210,8 @@ async function sendAuctionCloseEmails(
     claimFundsHTML,
     auctionResolutionText,
   }
-  const AUCTION_RESOLVED_TEMPLATE_ID = 31316142
   await sendTemplateEmail(
-    AUCTION_RESOLVED_TEMPLATE_ID,
+    TEMPLATE_IDS.AUCTION_RESOLVED,
     creatorPostmarkVars,
     project.creator
   )
