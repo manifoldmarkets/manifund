@@ -5,11 +5,17 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
-import { getProjectById } from '@/db/project'
+import { getProjectById, Project } from '@/db/project'
 import { getProfileAndBidsById, getUser } from '@/db/profile'
 import { maybeActivateGrant } from '@/utils/activate-grant'
-import { getTxnsByUser } from '@/db/txn'
-import { calculateCashBalance, calculateCharityBalance } from '@/utils/math'
+import { getTxnsByProject, getTxnsByUser } from '@/db/txn'
+import {
+  calculateCashBalance,
+  calculateCharityBalance,
+  calculateFullTrades,
+} from '@/utils/math'
+import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 
 export const config = {
   runtime: 'edge',
@@ -74,6 +80,15 @@ export default async function handler(req: NextRequest) {
     await maybeActivateGrant(supabase, projectId)
   }
   if (project.stage === 'active') {
+    if (type === 'buy') {
+      await emailShareholders(
+        newBid,
+        bidder.full_name,
+        project,
+        project.creator,
+        supabase
+      )
+    }
     await findAndMakeTrades(newBid, supabase)
   }
 }
@@ -107,5 +122,39 @@ async function findAndMakeTrades(bid: BidInsert, supabase: SupabaseClient) {
     const tradeAmount = Math.min(budget, oldBid.amount)
     budget -= tradeAmount
     await trade(oldBid, tradeAmount, bid.bidder)
+  }
+}
+
+async function emailShareholders(
+  bid: BidInsert,
+  bidderName: string,
+  project: Project,
+  projectCreatorId: string,
+  supabase: SupabaseClient
+) {
+  const projectTxns = await getTxnsByProject(supabase, bid.project)
+  const trades = calculateFullTrades(projectTxns)
+  const creatorProfile = trades.find(
+    (trade) => trade.fromProfile.id === projectCreatorId
+  )?.fromProfile
+  if (!creatorProfile) {
+    return
+  }
+  const shareholders = calculateShareholders(trades, creatorProfile)
+  for (const shareholder of shareholders) {
+    await sendTemplateEmail(
+      TEMPLATE_IDS.GENERIC_NOTIF,
+      {
+        notifText: `${bidderName} has made a ${bid.type} offer for ${Math.round(
+          (bid.amount / bid.valuation) * 100
+        )}% equity at a valuation of $${bid.valuation} for the project "${
+          project.title
+        }" on Manifund.`,
+        buttonUrl: `manifund.org/projects/${project.slug}?tab=bids`,
+        buttonText: 'See offer',
+        subject: `New offer from ${bidderName} on "${project.title}"`,
+      },
+      shareholder.profile.id
+    )
   }
 }
