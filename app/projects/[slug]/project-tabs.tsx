@@ -131,7 +131,6 @@ export function calculateShareholders(trades: FullTrade[], creator: Profile) {
   const shareholders = Object.fromEntries(
     trades.map((trade) => [trade.toProfile.id, { numShares: 0 } as Shareholder])
   )
-  console.log(shareholders)
   shareholders[creator.id] = { profile: creator, numShares: 10000000 }
   for (const trade of trades) {
     shareholders[trade.toProfile.id].profile = trade.toProfile
