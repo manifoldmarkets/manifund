@@ -9,9 +9,6 @@ const useLocalStorage = <type>(initialValue: type, key?: string) => {
   const [state, setState] = useState<type>(initialValue)
 
   const initialize = () => {
-    if (isServer) {
-      return initialValue
-    }
     try {
       const initialValueString = JSON.stringify(initialValue)
       const value = key ? window.localStorage.getItem(key) : initialValueString
