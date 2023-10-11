@@ -16,8 +16,8 @@ export interface Database {
           created_at: string
           id: string
           project: string
-          status: Database['public']['Enums']['bid_status']
-          type: Database['public']['Enums']['bid_type']
+          status: Database["public"]["Enums"]["bid_status"]
+          type: Database["public"]["Enums"]["bid_type"]
           valuation: number
         }
         Insert: {
@@ -26,8 +26,8 @@ export interface Database {
           created_at?: string
           id?: string
           project: string
-          status?: Database['public']['Enums']['bid_status']
-          type?: Database['public']['Enums']['bid_type']
+          status?: Database["public"]["Enums"]["bid_status"]
+          type?: Database["public"]["Enums"]["bid_type"]
           valuation: number
         }
         Update: {
@@ -36,22 +36,22 @@ export interface Database {
           created_at?: string
           id?: string
           project?: string
-          status?: Database['public']['Enums']['bid_status']
-          type?: Database['public']['Enums']['bid_type']
+          status?: Database["public"]["Enums"]["bid_status"]
+          type?: Database["public"]["Enums"]["bid_type"]
           valuation?: number
         }
         Relationships: [
           {
-            foreignKeyName: 'bids_bidder_fkey'
-            columns: ['bidder']
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            foreignKeyName: "bids_bidder_fkey"
+            columns: ["bidder"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'bids_project_fkey'
-            columns: ['project']
-            referencedRelation: 'projects'
-            referencedColumns: ['id']
+            foreignKeyName: "bids_project_fkey"
+            columns: ["project"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
           }
         ]
       }
@@ -106,22 +106,22 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: 'comments_commenter_fkey'
-            columns: ['commenter']
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            foreignKeyName: "comments_commenter_fkey"
+            columns: ["commenter"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_project_fkey'
-            columns: ['project']
-            referencedRelation: 'projects'
-            referencedColumns: ['id']
+            foreignKeyName: "comments_project_fkey"
+            columns: ["project"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'comments_replying_to_fkey'
-            columns: ['replying_to']
-            referencedRelation: 'comments'
-            referencedColumns: ['id']
+            foreignKeyName: "comments_replying_to_fkey"
+            columns: ["replying_to"]
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
           }
         ]
       }
@@ -146,16 +146,16 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: 'profile_trust_trusted_id_fkey'
-            columns: ['trusted_id']
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            foreignKeyName: "profile_trust_trusted_id_fkey"
+            columns: ["trusted_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'profile_trust_truster_id_fkey'
-            columns: ['truster_id']
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            foreignKeyName: "profile_trust_truster_id_fkey"
+            columns: ["truster_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           }
         ]
       }
@@ -169,7 +169,7 @@ export interface Database {
           long_description: Json | null
           regranter_status: boolean
           stripe_connect_id: string | null
-          type: Database['public']['Enums']['profile_type']
+          type: Database["public"]["Enums"]["profile_type"]
           username: string
           website: string | null
         }
@@ -182,7 +182,7 @@ export interface Database {
           long_description?: Json | null
           regranter_status?: boolean
           stripe_connect_id?: string | null
-          type?: Database['public']['Enums']['profile_type']
+          type?: Database["public"]["Enums"]["profile_type"]
           username: string
           website?: string | null
         }
@@ -195,7 +195,7 @@ export interface Database {
           long_description?: Json | null
           regranter_status?: boolean
           stripe_connect_id?: string | null
-          type?: Database['public']['Enums']['profile_type']
+          type?: Database["public"]["Enums"]["profile_type"]
           username?: string
           website?: string | null
         }
@@ -216,16 +216,16 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: 'project_causes_cause_slug_fkey'
-            columns: ['cause_slug']
-            referencedRelation: 'causes'
-            referencedColumns: ['slug']
+            foreignKeyName: "project_causes_cause_slug_fkey"
+            columns: ["cause_slug"]
+            referencedRelation: "causes"
+            referencedColumns: ["slug"]
           },
           {
-            foreignKeyName: 'project_causes_project_id_fkey'
-            columns: ['project_id']
-            referencedRelation: 'projects'
-            referencedColumns: ['id']
+            foreignKeyName: "project_causes_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
           }
         ]
       }
@@ -256,16 +256,16 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: 'project_evals_evaluator_id_fkey'
-            columns: ['evaluator_id']
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            foreignKeyName: "project_evals_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'project_evals_project_id_fkey'
-            columns: ['project_id']
-            referencedRelation: 'projects'
-            referencedColumns: ['id']
+            foreignKeyName: "project_evals_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
           }
         ]
       }
@@ -296,10 +296,10 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: 'project_transfers_project_id_fkey'
-            columns: ['project_id']
-            referencedRelation: 'projects'
-            referencedColumns: ['id']
+            foreignKeyName: "project_transfers_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
           }
         ]
       }
@@ -324,16 +324,16 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: 'project_votes_project_id_fkey'
-            columns: ['project_id']
-            referencedRelation: 'projects'
-            referencedColumns: ['id']
+            foreignKeyName: "project_votes_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'project_votes_voter_id_fkey'
-            columns: ['voter_id']
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            foreignKeyName: "project_votes_voter_id_fkey"
+            columns: ["voter_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           }
         ]
       }
@@ -345,16 +345,19 @@ export interface Database {
           created_at: string
           creator: string
           description: Json | null
+          external_link: string | null
           founder_portion: number
           funding_goal: number
           id: string
+          location_description: string | null
           min_funding: number
+          public_benefit: string | null
           round: string
           signed_agreement: boolean
           slug: string
-          stage: Database['public']['Enums']['project_stage']
+          stage: Database["public"]["Enums"]["project_stage"]
           title: string
-          type: Database['public']['Enums']['project_type']
+          type: Database["public"]["Enums"]["project_type"]
         }
         Insert: {
           approved?: boolean | null
@@ -363,16 +366,19 @@ export interface Database {
           created_at?: string
           creator: string
           description?: Json | null
+          external_link?: string | null
           founder_portion: number
           funding_goal?: number
           id?: string
+          location_description?: string | null
           min_funding: number
+          public_benefit?: string | null
           round: string
           signed_agreement?: boolean
           slug?: string
-          stage?: Database['public']['Enums']['project_stage']
+          stage?: Database["public"]["Enums"]["project_stage"]
           title?: string
-          type?: Database['public']['Enums']['project_type']
+          type?: Database["public"]["Enums"]["project_type"]
         }
         Update: {
           approved?: boolean | null
@@ -381,29 +387,32 @@ export interface Database {
           created_at?: string
           creator?: string
           description?: Json | null
+          external_link?: string | null
           founder_portion?: number
           funding_goal?: number
           id?: string
+          location_description?: string | null
           min_funding?: number
+          public_benefit?: string | null
           round?: string
           signed_agreement?: boolean
           slug?: string
-          stage?: Database['public']['Enums']['project_stage']
+          stage?: Database["public"]["Enums"]["project_stage"]
           title?: string
-          type?: Database['public']['Enums']['project_type']
+          type?: Database["public"]["Enums"]["project_type"]
         }
         Relationships: [
           {
-            foreignKeyName: 'projects_creator_fkey'
-            columns: ['creator']
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            foreignKeyName: "projects_creator_fkey"
+            columns: ["creator"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'projects_round_fkey'
-            columns: ['round']
-            referencedRelation: 'rounds'
-            referencedColumns: ['title']
+            foreignKeyName: "projects_round_fkey"
+            columns: ["round"]
+            referencedRelation: "rounds"
+            referencedColumns: ["title"]
           }
         ]
       }
@@ -470,22 +479,22 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: 'stripe_txns_customer_id_fkey'
-            columns: ['customer_id']
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            foreignKeyName: "stripe_txns_customer_id_fkey"
+            columns: ["customer_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'stripe_txns_customer_id_fkey'
-            columns: ['customer_id']
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            foreignKeyName: "stripe_txns_customer_id_fkey"
+            columns: ["customer_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'stripe_txns_txn_id_fkey'
-            columns: ['txn_id']
-            referencedRelation: 'txns'
-            referencedColumns: ['id']
+            foreignKeyName: "stripe_txns_txn_id_fkey"
+            columns: ["txn_id"]
+            referencedRelation: "txns"
+            referencedColumns: ["id"]
           }
         ]
       }
@@ -522,22 +531,22 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: 'txns_from_id_fkey'
-            columns: ['from_id']
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            foreignKeyName: "txns_from_id_fkey"
+            columns: ["from_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'txns_project_fkey'
-            columns: ['project']
-            referencedRelation: 'projects'
-            referencedColumns: ['id']
+            foreignKeyName: "txns_project_fkey"
+            columns: ["project"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'txns_to_id_fkey'
-            columns: ['to_id']
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            foreignKeyName: "txns_to_id_fkey"
+            columns: ["to_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           }
         ]
       }
@@ -565,9 +574,7 @@ export interface Database {
             Args: {
               project_id: string
               to_id: string
-              from_id: string
               transfer_id: string
-              amount: number
             }
             Returns: undefined
           }
@@ -575,7 +582,9 @@ export interface Database {
             Args: {
               project_id: string
               to_id: string
+              from_id: string
               transfer_id: string
+              amount: number
             }
             Returns: undefined
           }
@@ -606,24 +615,15 @@ export interface Database {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      create_transfer_grant:
-        | {
-            Args: {
-              project: Database['public']['CompositeTypes']['project_row']
-              donor_comment: Database['public']['CompositeTypes']['comment_row']
-              project_transfer: Database['public']['CompositeTypes']['transfer_row']
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              project: Database['public']['CompositeTypes']['project_row']
-              donor_comment: Database['public']['CompositeTypes']['comment_row']
-              project_transfer: Database['public']['CompositeTypes']['transfer_row']
-              grant_amount: number
-            }
-            Returns: undefined
-          }
+      create_transfer_grant: {
+        Args: {
+          project: Database["public"]["CompositeTypes"]["project_row"]
+          donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
+          project_transfer: Database["public"]["CompositeTypes"]["transfer_row"]
+          grant_amount: number
+        }
+        Returns: undefined
+      }
       execute_grant_verdict: {
         Args: {
           approved: boolean
@@ -644,9 +644,9 @@ export interface Database {
       }
       give_grant: {
         Args: {
-          project: Database['public']['CompositeTypes']['project_row']
-          donor_comment: Database['public']['CompositeTypes']['comment_row']
-          donation: Database['public']['CompositeTypes']['bid_row']
+          project: Database["public"]["CompositeTypes"]["project_row"]
+          donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
+          donation: Database["public"]["CompositeTypes"]["bid_row"]
         }
         Returns: undefined
       }
@@ -692,16 +692,16 @@ export interface Database {
           }
     }
     Enums: {
-      bid_status: 'deleted' | 'pending' | 'accepted' | 'declined'
-      bid_type: 'buy' | 'sell' | 'donate'
-      profile_type: 'individual' | 'org' | 'fund'
+      bid_status: "deleted" | "pending" | "accepted" | "declined"
+      bid_type: "buy" | "sell" | "donate"
+      profile_type: "individual" | "org" | "amm" | "fund"
       project_stage:
-        | 'active'
-        | 'proposal'
-        | 'not funded'
-        | 'complete'
-        | 'hidden'
-      project_type: 'grant' | 'cert'
+        | "active"
+        | "proposal"
+        | "not funded"
+        | "complete"
+        | "hidden"
+      project_type: "grant" | "cert" | "dummy"
     }
     CompositeTypes: {
       bid_row: {
@@ -730,10 +730,11 @@ export interface Database {
         min_funding: number
         funding_goal: number
         founder_portion: number
-        type: Database['public']['Enums']['project_type']
-        stage: Database['public']['Enums']['project_stage']
+        type: Database["public"]["Enums"]["project_type"]
+        stage: Database["public"]["Enums"]["project_stage"]
         round: string
         slug: string
+        location_description: string
       }
       transfer_row: {
         recipient_email: string
