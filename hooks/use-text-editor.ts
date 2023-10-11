@@ -6,6 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { noop } from 'lodash'
 import useLocalStorage from '@/hooks/use-local-storage'
 import { TIPTAP_EXTENSIONS } from '@/components/editor'
+import { useEffect } from 'react'
 
 export function useTextEditor(
   defaultContent: any = '',
@@ -42,6 +43,12 @@ export function useTextEditor(
     ],
     content: key && content ? content : defaultContent,
   })
+  // Update editor's content when content from useLocalStorage changes
+  useEffect(() => {
+    if (key && content) {
+      editor?.chain().setContent(content).run()
+    }
+  }, [content])
   return editor
 }
 
