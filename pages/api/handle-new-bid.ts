@@ -13,6 +13,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { trade } from '@/utils/trade'
 import { createAdminClient } from './_db'
 import { getTxnsByProject } from '@/db/txn'
+import { getProfileById } from '@/db/profile'
 
 export default async function handler(
   req: NextApiRequest,
@@ -72,13 +73,17 @@ async function sendShareholderEmails(
   supabase: SupabaseClient
 ) {
   const txns = await getTxnsByProject(supabase, bid.project)
+  const bidder = await getProfileById(supabase, bid.bidder)
+  if (!bidder) {
+    return
+  }
   const trades = calculateFullTrades(txns)
   const shareholders = calculateShareholders(trades, project.profiles)
   for (const shareholder of shareholders) {
     await sendTemplateEmail(
       TEMPLATE_IDS.GENERIC_NOTIF,
       {
-        notifText: `${shareholder.profile.full_name} has made a ${
+        notifText: `${bidder.full_name} has made a ${
           bid.type
         } offer for ${Math.round(
           (bid.amount / bid.valuation) * 100
@@ -87,7 +92,7 @@ async function sendShareholderEmails(
         }" on Manifund.`,
         buttonUrl: `manifund.org/projects/${project.slug}?tab=bids`,
         buttonText: 'See offer',
-        subject: `New offer from ${shareholder.profile.full_name} on "${project.title}"`,
+        subject: `New offer from ${bidder.full_name} on "${project.title}"`,
       },
       shareholder.profile.id
     )
