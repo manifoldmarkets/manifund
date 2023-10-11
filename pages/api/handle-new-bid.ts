@@ -1,28 +1,36 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { getProjectAndProfileAndTxnsById, getProjectById } from '@/db/project'
+import {
+  getProjectAndProfileById,
+  Project,
+  ProjectAndProfile,
+} from '@/db/project'
 import { maybeActivateGrant } from '@/utils/activate-grant'
 import { Bid } from '@/db/bid'
-import { createServerClient } from '@/db/supabase-server'
 import { calculateFullTrades } from '@/utils/math'
 import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { trade } from '@/utils/trade'
+import { createAdminClient } from './_db'
+import { getTxnsByProject } from '@/db/txn'
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const bid = req.body.record as Bid
-  const supabase = createServerClient()
-  const project = await getProjectById(supabase, bid.project)
+  const supabase = createAdminClient()
+  const project = await getProjectAndProfileById(supabase, bid.project)
+  if (!project) {
+    return res.status(404).json({ error: 'Project not found' })
+  }
   if (bid.type === 'donate') {
     await maybeActivateGrant(supabase, bid.project)
   } else if (project.stage === 'active') {
     await findAndMakeTrades(bid, supabase)
   }
   if (bid.type === 'buy') {
-    await sendShareholderEmails(bid, supabase)
+    await sendShareholderEmails(bid, project, supabase)
   }
 
   return res.status(200).json({ bid })
@@ -58,13 +66,13 @@ async function findAndMakeTrades(bid: Bid, supabase: SupabaseClient) {
   }
 }
 
-async function sendShareholderEmails(bid: Bid, supabase: SupabaseClient) {
-  const project = await getProjectAndProfileAndTxnsById(supabase, bid.project)
-  if (!project) {
-    console.error('Project not found')
-    return
-  }
-  const trades = calculateFullTrades(project.txns)
+async function sendShareholderEmails(
+  bid: Bid,
+  project: ProjectAndProfile,
+  supabase: SupabaseClient
+) {
+  const txns = await getTxnsByProject(supabase, bid.project)
+  const trades = calculateFullTrades(txns)
   const shareholders = calculateShareholders(trades, project.profiles)
   for (const shareholder of shareholders) {
     await sendTemplateEmail(
