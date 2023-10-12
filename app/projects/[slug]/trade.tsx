@@ -6,6 +6,7 @@ import { Row } from '@/components/layout/row'
 import { MySlider } from '@/components/slider'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn } from '@/db/txn'
+import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import clsx from 'clsx'
 import { useState } from 'react'
 
@@ -93,16 +94,18 @@ function TradeDetails(props: {
   const { modeId, ammTxns, ammId, userSpendableFunds, userSellableShares } =
     props
   const mode = MODES.find((mode) => mode.id === modeId)
-  const [portion, setPortion] = useState(0)
+  const [percent, setPercent] = useState(0)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
   const [submitting, setSubmitting] = useState(false)
-  const portionForSale =
-    (modeId === 'buy' ? ammShares : userSellableShares) / TOTAL_SHARES
-  const percentForSale = portionForSale * 100
+  const sliderMax =
+    modeId === 'limit order'
+      ? userSpendableFunds
+      : ((modeId === 'buy' ? ammShares : userSellableShares) / TOTAL_SHARES) *
+        100
   const price =
     modeId === 'buy'
-      ? calculateBuyPrice(portion, ammShares, ammUSD)
-      : calculateSellPrice(portion, ammShares, ammUSD)
+      ? calculateBuyPrice(percent, ammShares, ammUSD)
+      : calculateSellPrice(percent, ammShares, ammUSD)
   return (
     <div
       className={clsx('flex flex-col gap-4 rounded-md p-4', mode?.cardClass)}
@@ -110,36 +113,50 @@ function TradeDetails(props: {
       <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
       <Row className="w-full items-center gap-4">
         <Input
-          value={portion}
+          value={percent}
           type="number"
           className="w-1/3"
-          onChange={(event) => setPortion(Number(event.target.value))}
+          onChange={(event) => setPercent(Number(event.target.value))}
         />
         <MySlider
-          value={(portion / portionForSale) * 100}
+          value={(percent / sliderMax) * 100}
           className={clsx(mode?.sliderClass)}
           marks={{
-            0: { label: `0%`, style: { color: '#000' } },
+            0: {
+              label: modeId === 'limit order' ? '$0' : '0%',
+              style: { color: '#000' },
+            },
             25: {
-              label: `${Math.round((percentForSale / 4) * 100) / 100}%`,
+              label:
+                modeId === 'limit order'
+                  ? formatMoney(sliderMax / 4)
+                  : `${Math.round((sliderMax / 4) * 100) / 100}%`,
               style: { color: '#000' },
             },
             50: {
-              label: `${Math.round((percentForSale / 3) * 100) / 100}%`,
+              label:
+                modeId === 'limit order'
+                  ? formatMoney(sliderMax / 2)
+                  : `${Math.round((sliderMax / 2) * 100) / 100}%`,
               style: { color: '#000' },
             },
             75: {
-              label: `${Math.round((percentForSale / 4) * 3 * 100) / 100}%`,
+              label:
+                modeId === 'limit order'
+                  ? formatMoney((sliderMax / 4) * 3)
+                  : `${Math.round((sliderMax / 4) * 3 * 100) / 100}%`,
               style: { color: '#000' },
             },
             100: {
-              label: `${Math.round(percentForSale * 100) / 100}%`,
+              label:
+                modeId === 'limit order'
+                  ? formatMoney(sliderMax)
+                  : `${Math.round(sliderMax * 100) / 100}%`,
               style: { color: '#000' },
             },
           }}
           onChange={(value) => {
-            console.log(value)
-            setPortion(((value as number) * portionForSale) / 100)
+            setPercent(((value as number) * sliderMax) / 100)
           }}
         />
       </Row>
@@ -156,15 +173,15 @@ function TradeDetails(props: {
             },
             body: JSON.stringify({
               projectId: ammId,
-              numShares: portion * TOTAL_SHARES,
+              numShares: (percent / 100) * TOTAL_SHARES,
               buying: modeId === 'buy',
             }),
           })
-          setPortion(0)
+          setPercent(0)
           setSubmitting(false)
         }}
       >
-        {modeId} {portion}
+        {modeId} {percent}
       </Button>
     </div>
   )
