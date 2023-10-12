@@ -8,6 +8,7 @@ import { HorizontalRadioGroup } from '@/components/radio-group'
 import { MySlider } from '@/components/slider'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn } from '@/db/txn'
+import clsx from 'clsx'
 import { useState } from 'react'
 
 export function Trade(props: {
@@ -31,7 +32,7 @@ export function Trade(props: {
   console.log('buy portion', portion)
   return (
     <div>
-      <Row className="w-full justify-between gap-3">
+      <Row className="mb-3 w-full justify-between gap-3">
         <Button
           className="w-full !bg-emerald-500 hover:!bg-emerald-600"
           onClick={() => setMode('buy')}
@@ -51,12 +52,18 @@ export function Trade(props: {
           #
         </Button>
       </Row>
-      <Card className="flex flex-col gap-4">
-        <Row className="justify-between">
-          <h1 className="text-xl font-bold">Trade</h1>
-          <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
-        </Row>
-        <div className="flex w-full flex-col gap-4 md:flex-row">
+      <div
+        className={clsx(
+          'flex flex-col gap-4 rounded p-4',
+          mode === 'buy'
+            ? 'bg-emerald-100'
+            : mode === 'sell'
+            ? 'bg-rose-100'
+            : 'bg-orange-100'
+        )}
+      >
+        <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
+        <Row className="w-full items-center gap-4">
           <Input
             value={portion}
             type="number"
@@ -65,6 +72,13 @@ export function Trade(props: {
           />
           <MySlider
             value={(portion / portionForSale) * 100}
+            className={clsx(
+              mode === 'buy'
+                ? '[&>.rc-slider-handle]:bg-emerald-500 [&>.rc-slider-track]:bg-emerald-500'
+                : mode === 'sell'
+                ? '[&>.rc-slider-handle]:bg-rose-500 [&>.rc-slider-track]:bg-rose-500'
+                : '[&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-orange-500'
+            )}
             marks={{
               0: { label: `0%`, style: { color: '#000' } },
               25: {
@@ -89,9 +103,16 @@ export function Trade(props: {
               setPortion(((value as number) * portionForSale) / 100)
             }}
           />
-        </div>
+        </Row>
         <p>price: {price}</p>
         <Button
+          className={clsx(
+            mode === 'buy'
+              ? '!bg-emerald-500 hover:!bg-emerald-600'
+              : mode === 'sell'
+              ? 'bg-rose-500 hover:bg-rose-600'
+              : 'bg-orange-500 hover:bg-orange-600'
+          )}
           loading={submitting}
           onClick={async () => {
             setSubmitting(true)
@@ -112,7 +133,7 @@ export function Trade(props: {
         >
           {mode} {portion}
         </Button>
-      </Card>
+      </div>
     </div>
   )
 }
