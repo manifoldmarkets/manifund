@@ -98,6 +98,7 @@ export default async function handler(req: NextRequest) {
     stage: 'proposal' as Project['stage'],
     round: 'Regrants',
     slug,
+    location_description: '',
     approved: null,
     signed_agreement: false,
   }
