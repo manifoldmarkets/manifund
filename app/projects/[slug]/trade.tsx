@@ -56,7 +56,10 @@ export function Trade(props: {
                   ? mode.buttonClass
                   : mode.buttonUnselectedClass
               )}
-              onClick={() => setModeId(mode.id)}
+              onClick={() => {
+                setModeId(modeId === mode.id ? null : mode.id)
+                setIsLimit(false)
+              }}
             >
               {mode.label}
             </Button>
@@ -69,13 +72,25 @@ export function Trade(props: {
               : 'w-full bg-white !text-orange-500 ring-2 ring-orange-500 hover:bg-orange-500 hover:!text-white hover:!ring-orange-600',
             '!w-32'
           )}
-          onClick={() => setIsLimit(!isLimit)}
+          onClick={() => {
+            setIsLimit(!isLimit)
+            setModeId(null)
+          }}
         >
           #
         </Button>
       </Row>
-      {modeId !== null && (
-        <TradeDetails
+      {modeId !== null && !isLimit && (
+        <BinaryTradePanel
+          modeId={modeId}
+          ammTxns={ammTxns}
+          ammId={ammId}
+          userSpendableFunds={userSpendableFunds}
+          userSellableShares={userSellableShares}
+        />
+      )}
+      {isLimit && (
+        <LimitOrderPanel
           modeId={modeId}
           ammTxns={ammTxns}
           ammId={ammId}
@@ -87,7 +102,7 @@ export function Trade(props: {
   )
 }
 
-function TradeDetails(props: {
+function BinaryTradePanel(props: {
   modeId: BinaryModeId
   ammTxns: Txn[]
   ammId: string
@@ -185,6 +200,16 @@ function TradeDetails(props: {
       </Button>
     </div>
   )
+}
+
+function LimitOrderPanel(props: {
+  modeId: BinaryModeId
+  ammTxns: Txn[]
+  ammId: string
+  userSpendableFunds: number
+  userSellableShares: number
+}) {
+  return <div>Limit order panel</div>
 }
 
 export function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
