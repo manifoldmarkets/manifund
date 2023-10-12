@@ -11,6 +11,33 @@ import { Txn } from '@/db/txn'
 import clsx from 'clsx'
 import { useState } from 'react'
 
+const MODES = [
+  {
+    label: 'Buy',
+    id: 'buy',
+    buttonClass: '!bg-emerald-500 hover:!bg-emerald-600',
+    sliderClass:
+      '[&>.rc-slider-handle]:bg-emerald-500 [&>.rc-slider-track]:bg-emerald-500',
+    cardClass: 'bg-emerald-50',
+  },
+  {
+    label: 'Sell',
+    id: 'sell',
+    buttonClass: 'bg-rose-500 hover:bg-rose-600',
+    sliderClass:
+      '[&>.rc-slider-handle]:bg-rose-500 [&>.rc-slider-track]:bg-rose-500',
+    cardClass: 'bg-rose-50',
+  },
+  {
+    label: '#',
+    id: 'limit order',
+    buttonClass: 'bg-orange-500 hover:bg-orange-600',
+    sliderClass:
+      '[&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-orange-500',
+    cardClass: 'bg-orange-50',
+  },
+]
+
 export function Trade(props: {
   ammTxns: Txn[]
   ammId: string
@@ -18,15 +45,16 @@ export function Trade(props: {
   userSellableShares: number
 }) {
   const { ammTxns, ammId, userSpendableFunds, userSellableShares } = props
-  const [mode, setMode] = useState<string>('buy')
+  const [modeId, setModeId] = useState<string>('buy')
+  const mode = MODES.find((mode) => mode.id === modeId)
   const [portion, setPortion] = useState(0)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
   const [submitting, setSubmitting] = useState(false)
   const portionForSale =
-    (mode === 'buy' ? ammShares : userSellableShares) / TOTAL_SHARES
+    (modeId === 'buy' ? ammShares : userSellableShares) / TOTAL_SHARES
   const percentForSale = portionForSale * 100
   const price =
-    mode === 'buy'
+    modeId === 'buy'
       ? calculateBuyPrice(portion, ammShares, ammUSD)
       : calculateSellPrice(portion, ammShares, ammUSD)
   console.log('buy portion', portion)
@@ -34,33 +62,35 @@ export function Trade(props: {
     <div>
       <Row className="mb-3 w-full justify-between gap-3">
         <Button
-          className="w-full !bg-emerald-500 hover:!bg-emerald-600"
-          onClick={() => setMode('buy')}
+          className={clsx(
+            'w-full',
+            MODES.find((mode) => mode.id === 'buy')?.buttonClass
+          )}
+          onClick={() => setModeId('buy')}
         >
           Buy
         </Button>
         <Button
-          className="w-full bg-rose-500 hover:bg-rose-600"
-          onClick={() => setMode('sell')}
+          className={clsx(
+            'w-full',
+            MODES.find((mode) => mode.id === 'sell')?.buttonClass
+          )}
+          onClick={() => setModeId('sell')}
         >
           Sell
         </Button>
         <Button
-          className="w-32 bg-orange-500 hover:bg-orange-600"
-          onClick={() => setMode('limit order')}
+          className={clsx(
+            'w-32',
+            MODES.find((mode) => mode.id === 'limit order')?.buttonClass
+          )}
+          onClick={() => setModeId('limit order')}
         >
           #
         </Button>
       </Row>
       <div
-        className={clsx(
-          'flex flex-col gap-4 rounded p-4',
-          mode === 'buy'
-            ? 'bg-emerald-100'
-            : mode === 'sell'
-            ? 'bg-rose-100'
-            : 'bg-orange-100'
-        )}
+        className={clsx('flex flex-col gap-4 rounded-md p-4', mode?.cardClass)}
       >
         <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
         <Row className="w-full items-center gap-4">
@@ -72,13 +102,7 @@ export function Trade(props: {
           />
           <MySlider
             value={(portion / portionForSale) * 100}
-            className={clsx(
-              mode === 'buy'
-                ? '[&>.rc-slider-handle]:bg-emerald-500 [&>.rc-slider-track]:bg-emerald-500'
-                : mode === 'sell'
-                ? '[&>.rc-slider-handle]:bg-rose-500 [&>.rc-slider-track]:bg-rose-500'
-                : '[&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-orange-500'
-            )}
+            className={clsx(mode?.sliderClass)}
             marks={{
               0: { label: `0%`, style: { color: '#000' } },
               25: {
@@ -106,13 +130,7 @@ export function Trade(props: {
         </Row>
         <p>price: {price}</p>
         <Button
-          className={clsx(
-            mode === 'buy'
-              ? '!bg-emerald-500 hover:!bg-emerald-600'
-              : mode === 'sell'
-              ? 'bg-rose-500 hover:bg-rose-600'
-              : 'bg-orange-500 hover:bg-orange-600'
-          )}
+          className={mode?.buttonClass}
           loading={submitting}
           onClick={async () => {
             setSubmitting(true)
@@ -124,14 +142,14 @@ export function Trade(props: {
               body: JSON.stringify({
                 projectId: ammId,
                 numShares: portion * TOTAL_SHARES,
-                buying: mode === 'buy',
+                buying: modeId === 'buy',
               }),
             })
             setPortion(0)
             setSubmitting(false)
           }}
         >
-          {mode} {portion}
+          {modeId} {portion}
         </Button>
       </div>
     </div>
