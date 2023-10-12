@@ -2,9 +2,7 @@
 
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
-import { Card } from '@/components/layout/card'
 import { Row } from '@/components/layout/row'
-import { HorizontalRadioGroup } from '@/components/radio-group'
 import { MySlider } from '@/components/slider'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn } from '@/db/txn'
@@ -45,19 +43,7 @@ export function Trade(props: {
   userSellableShares: number
 }) {
   const { ammTxns, ammId, userSpendableFunds, userSellableShares } = props
-  const [modeId, setModeId] = useState<string>('buy')
-  const mode = MODES.find((mode) => mode.id === modeId)
-  const [portion, setPortion] = useState(0)
-  const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
-  const [submitting, setSubmitting] = useState(false)
-  const portionForSale =
-    (modeId === 'buy' ? ammShares : userSellableShares) / TOTAL_SHARES
-  const percentForSale = portionForSale * 100
-  const price =
-    modeId === 'buy'
-      ? calculateBuyPrice(portion, ammShares, ammUSD)
-      : calculateSellPrice(portion, ammShares, ammUSD)
-  console.log('buy portion', portion)
+  const [modeId, setModeId] = useState<'buy' | 'sell' | 'limit order'>('buy')
   return (
     <div>
       <Row className="mb-3 w-full justify-between gap-3">
@@ -89,69 +75,100 @@ export function Trade(props: {
           #
         </Button>
       </Row>
-      <div
-        className={clsx('flex flex-col gap-4 rounded-md p-4', mode?.cardClass)}
-      >
-        <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
-        <Row className="w-full items-center gap-4">
-          <Input
-            value={portion}
-            type="number"
-            className="w-1/3"
-            onChange={(event) => setPortion(Number(event.target.value))}
-          />
-          <MySlider
-            value={(portion / portionForSale) * 100}
-            className={clsx(mode?.sliderClass)}
-            marks={{
-              0: { label: `0%`, style: { color: '#000' } },
-              25: {
-                label: `${Math.round((percentForSale / 4) * 100) / 100}%`,
-                style: { color: '#000' },
-              },
-              50: {
-                label: `${Math.round((percentForSale / 3) * 100) / 100}%`,
-                style: { color: '#000' },
-              },
-              75: {
-                label: `${Math.round((percentForSale / 4) * 3 * 100) / 100}%`,
-                style: { color: '#000' },
-              },
-              100: {
-                label: `${Math.round(percentForSale * 100) / 100}%`,
-                style: { color: '#000' },
-              },
-            }}
-            onChange={(value) => {
-              console.log(value)
-              setPortion(((value as number) * portionForSale) / 100)
-            }}
-          />
-        </Row>
-        <p>price: {price}</p>
-        <Button
-          className={mode?.buttonClass}
-          loading={submitting}
-          onClick={async () => {
-            setSubmitting(true)
-            const response = await fetch('/api/trade-with-amm', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                projectId: ammId,
-                numShares: portion * TOTAL_SHARES,
-                buying: modeId === 'buy',
-              }),
-            })
-            setPortion(0)
-            setSubmitting(false)
+      <TradeDetails
+        modeId={modeId}
+        ammTxns={ammTxns}
+        ammId={ammId}
+        userSpendableFunds={userSpendableFunds}
+        userSellableShares={userSellableShares}
+      />
+    </div>
+  )
+}
+
+function TradeDetails(props: {
+  modeId: 'buy' | 'sell' | 'limit order'
+  ammTxns: Txn[]
+  ammId: string
+  userSpendableFunds: number
+  userSellableShares: number
+}) {
+  const { modeId, ammTxns, ammId, userSpendableFunds, userSellableShares } =
+    props
+  const mode = MODES.find((mode) => mode.id === modeId)
+  const [portion, setPortion] = useState(0)
+  const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
+  const [submitting, setSubmitting] = useState(false)
+  const portionForSale =
+    (modeId === 'buy' ? ammShares : userSellableShares) / TOTAL_SHARES
+  const percentForSale = portionForSale * 100
+  const price =
+    modeId === 'buy'
+      ? calculateBuyPrice(portion, ammShares, ammUSD)
+      : calculateSellPrice(portion, ammShares, ammUSD)
+  return (
+    <div
+      className={clsx('flex flex-col gap-4 rounded-md p-4', mode?.cardClass)}
+    >
+      <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
+      <Row className="w-full items-center gap-4">
+        <Input
+          value={portion}
+          type="number"
+          className="w-1/3"
+          onChange={(event) => setPortion(Number(event.target.value))}
+        />
+        <MySlider
+          value={(portion / portionForSale) * 100}
+          className={clsx(mode?.sliderClass)}
+          marks={{
+            0: { label: `0%`, style: { color: '#000' } },
+            25: {
+              label: `${Math.round((percentForSale / 4) * 100) / 100}%`,
+              style: { color: '#000' },
+            },
+            50: {
+              label: `${Math.round((percentForSale / 3) * 100) / 100}%`,
+              style: { color: '#000' },
+            },
+            75: {
+              label: `${Math.round((percentForSale / 4) * 3 * 100) / 100}%`,
+              style: { color: '#000' },
+            },
+            100: {
+              label: `${Math.round(percentForSale * 100) / 100}%`,
+              style: { color: '#000' },
+            },
           }}
-        >
-          {modeId} {portion}
-        </Button>
-      </div>
+          onChange={(value) => {
+            console.log(value)
+            setPortion(((value as number) * portionForSale) / 100)
+          }}
+        />
+      </Row>
+      <p>price: {price}</p>
+      <Button
+        className={mode?.buttonClass}
+        loading={submitting}
+        onClick={async () => {
+          setSubmitting(true)
+          const response = await fetch('/api/trade-with-amm', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              projectId: ammId,
+              numShares: portion * TOTAL_SHARES,
+              buying: modeId === 'buy',
+            }),
+          })
+          setPortion(0)
+          setSubmitting(false)
+        }}
+      >
+        {modeId} {portion}
+      </Button>
     </div>
   )
 }
