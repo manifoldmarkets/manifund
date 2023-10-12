@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
+import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { MySlider } from '@/components/slider'
 import { TOTAL_SHARES } from '@/db/project'
@@ -52,7 +53,7 @@ export function Trade(props: {
               key={mode.id}
               className={clsx(
                 'w-full',
-                modeId === mode.id
+                modeId === mode.id && !isLimit
                   ? mode.buttonClass
                   : mode.buttonUnselectedClass
               )}
@@ -83,7 +84,7 @@ export function Trade(props: {
       {(modeId !== null || isLimit) && (
         <TradeInputsPanel
           modeId={modeId}
-          isLimit={isLimit}
+          setModeId={isLimit ? setModeId : undefined}
           ammTxns={ammTxns}
           ammId={ammId}
           userSpendableFunds={userSpendableFunds}
@@ -96,7 +97,7 @@ export function Trade(props: {
 
 function TradeInputsPanel(props: {
   modeId: BinaryModeId
-  isLimit: boolean
+  setModeId?: (modeId: BinaryModeId) => void
   ammTxns: Txn[]
   ammId: string
   userSpendableFunds: number
@@ -104,56 +105,71 @@ function TradeInputsPanel(props: {
 }) {
   const {
     modeId,
-    isLimit,
+    setModeId,
     ammTxns,
     ammId,
     userSpendableFunds,
     userSellableShares,
   } = props
   const mode = MODES.find((mode) => mode.id === modeId)
-  const [percent, setPercent] = useState(0)
+  const [amount, setAmount] = useState(0)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
   const [submitting, setSubmitting] = useState(false)
-  const sliderMax =
-    ((modeId === 'buy' ? ammShares : userSellableShares) / TOTAL_SHARES) * 100
-  const price =
-    modeId === 'buy'
-      ? calculateBuyShares(percent / 100, ammShares, ammUSD)
-      : calculateSellPayout(percent / 100, ammShares, ammUSD)
   return (
     <div
-      className={clsx('flex flex-col gap-4 rounded-md p-4', mode?.cardClass)}
+      className={clsx(
+        'flex flex-col gap-4 rounded-md p-4',
+        setModeId ? 'bg-orange-50' : mode?.cardClass
+      )}
     >
       <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
-      {isLimit && (
-        <div>
+      {setModeId && (
+        <Col className="gap-3 font-semibold">
+          <Row className="gap-2">
+            {MODES.map((mode) => {
+              return (
+                <Button
+                  key={mode.id}
+                  className={clsx(
+                    'w-32',
+                    modeId === mode.id
+                      ? mode.buttonClass
+                      : mode.buttonUnselectedClass
+                  )}
+                  onClick={() => {
+                    setModeId(modeId === mode.id ? null : mode.id)
+                  }}
+                >
+                  {mode.label}
+                </Button>
+              )
+            })}
+          </Row>
           <p>Valuation</p>
           <Input type="number" />
-        </div>
+        </Col>
       )}
       {modeId === 'buy' ? (
         <BuyPanelContent
           ammShares={ammShares}
           ammUSD={ammUSD}
+          isLimit={!!setModeId}
           userSpendableFunds={userSpendableFunds}
-          amount={price}
-          setAmount={(amount) => {
-            setPercent((amount / userSpendableFunds) * 100)
-          }}
+          amount={amount}
+          setAmount={setAmount}
         />
       ) : (
         <SellPanelContent
           ammShares={ammShares}
           ammUSD={ammUSD}
+          isLimit={!!setModeId}
           userSellableShares={userSellableShares}
-          amount={price}
-          setAmount={(amount) => {
-            setPercent((amount / sliderMax) * 100)
-          }}
+          amount={amount}
+          setAmount={setAmount}
         />
       )}
       <Button
-        className={clsx(mode?.buttonClass, 'w-full')}
+        className={clsx(setModeId ? '' : mode?.buttonClass, 'w-full')}
         loading={submitting}
         onClick={async () => {
           setSubmitting(true)
@@ -164,15 +180,15 @@ function TradeInputsPanel(props: {
             },
             body: JSON.stringify({
               projectId: ammId,
-              numShares: (percent / 100) * TOTAL_SHARES,
+              numShares: (amount / 100) * TOTAL_SHARES,
               buying: modeId === 'buy',
             }),
           })
-          setPercent(0)
+          setAmount(0)
           setSubmitting(false)
         }}
       >
-        {modeId} {percent}
+        {modeId} {amount}
       </Button>
     </div>
   )
@@ -205,11 +221,13 @@ export function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
 function BuyPanelContent(props: {
   ammShares: number
   ammUSD: number
+  isLimit: boolean
   userSpendableFunds: number
   amount: number
   setAmount: (amount: number) => void
 }) {
-  const { ammShares, ammUSD, userSpendableFunds, amount, setAmount } = props
+  const { ammShares, ammUSD, isLimit, userSpendableFunds, amount, setAmount } =
+    props
   const sliderMax = Math.min(userSpendableFunds, 100)
   const shares = calculateBuyShares(amount, ammShares, ammUSD)
   return (
@@ -223,27 +241,26 @@ function BuyPanelContent(props: {
         />
         <MySlider
           value={(amount / sliderMax) * 100}
-          className="[&>.rc-slider-handle]:bg-emerald-500 [&>.rc-slider-track]:bg-emerald-500"
+          className={
+            isLimit
+              ? ''
+              : '[&>.rc-slider-handle]:!bg-emerald-500 [&>.rc-slider-track]:!bg-emerald-500'
+          }
           marks={{
             0: {
               label: '$0',
-              style: { color: '#000' },
             },
             25: {
               label: formatMoney(sliderMax / 4),
-              style: { color: '#000' },
             },
             50: {
               label: formatMoney(sliderMax / 2),
-              style: { color: '#000' },
             },
             75: {
               label: formatMoney((sliderMax / 4) * 3),
-              style: { color: '#000' },
             },
             100: {
               label: formatMoney(sliderMax),
-              style: { color: '#000' },
             },
           }}
           onChange={(value) => {
@@ -259,11 +276,13 @@ function BuyPanelContent(props: {
 function SellPanelContent(props: {
   ammShares: number
   ammUSD: number
+  isLimit: boolean
   userSellableShares: number
   amount: number
   setAmount: (amount: number) => void
 }) {
-  const { ammShares, ammUSD, userSellableShares, amount, setAmount } = props
+  const { ammShares, ammUSD, isLimit, userSellableShares, amount, setAmount } =
+    props
   const sliderMax = (userSellableShares / TOTAL_SHARES) * 100
   const payout = calculateSellPayout(amount, ammShares, ammUSD)
   return (
@@ -277,27 +296,26 @@ function SellPanelContent(props: {
         />
         <MySlider
           value={(amount / sliderMax) * 100}
-          className="[&>.rc-slider-handle]:bg-emerald-500 [&>.rc-slider-track]:bg-emerald-500"
+          className={
+            isLimit
+              ? ''
+              : '[&>.rc-slider-handle]:bg-rose-500 [&>.rc-slider-track]:bg-rose-500'
+          }
           marks={{
             0: {
               label: '0%',
-              style: { color: '#000' },
             },
             25: {
               label: `${Math.round((sliderMax / 4) * 100) / 100}%`,
-              style: { color: '#000' },
             },
             50: {
               label: `${Math.round((sliderMax / 2) * 100) / 100}%`,
-              style: { color: '#000' },
             },
             75: {
               label: `${Math.round((sliderMax / 4) * 3 * 100) / 100}%`,
-              style: { color: '#000' },
             },
             100: {
               label: `${Math.round(sliderMax * 100) / 100}%`,
-              style: { color: '#000' },
             },
           }}
           onChange={(value) => {
