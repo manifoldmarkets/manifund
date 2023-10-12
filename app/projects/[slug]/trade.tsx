@@ -6,15 +6,15 @@ import { Row } from '@/components/layout/row'
 import { MySlider } from '@/components/slider'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn } from '@/db/txn'
-import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import { formatMoney } from '@/utils/formatting'
 import clsx from 'clsx'
 import { useState } from 'react'
 
-type ModeId = 'buy' | 'sell' | 'limit order'
+type BinaryModeId = 'buy' | 'sell' | null
 const MODES = [
   {
     label: 'Buy',
-    id: 'buy' as ModeId,
+    id: 'buy' as BinaryModeId,
     buttonClass: '!bg-emerald-500 hover:!bg-emerald-600 w-full',
     buttonUnselectedClass:
       'ring-emerald-500 bg-white !text-emerald-500 ring-2 hover:bg-emerald-500 hover:ring-emerald-600 hover:!text-white w-full',
@@ -24,23 +24,13 @@ const MODES = [
   },
   {
     label: 'Sell',
-    id: 'sell' as ModeId,
+    id: 'sell' as BinaryModeId,
     buttonClass: 'bg-rose-500 hover:bg-rose-600 w-full',
     buttonUnselectedClass:
       'ring-rose-500 bg-white !text-rose-500 ring-2 hover:bg-rose-500 hover:ring-rose-600 hover:!text-white w-full',
     sliderClass:
       '[&>.rc-slider-handle]:bg-rose-500 [&>.rc-slider-track]:bg-rose-500',
     cardClass: 'bg-rose-50',
-  },
-  {
-    label: '#',
-    id: 'limit order' as ModeId,
-    buttonClass: 'bg-orange-500 hover:bg-orange-600 w-32',
-    buttonUnselectedClass:
-      'ring-orange-500 bg-white !text-orange-500 ring-2 hover:bg-orange-500 hover:ring-orange-600 hover:!text-white w-32',
-    sliderClass:
-      '[&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-orange-500',
-    cardClass: 'bg-orange-50',
   },
 ]
 
@@ -51,7 +41,7 @@ export function Trade(props: {
   userSellableShares: number
 }) {
   const { ammTxns, ammId, userSpendableFunds, userSellableShares } = props
-  const [modeId, setModeId] = useState<ModeId | null>(null)
+  const [modeId, setModeId] = useState<BinaryModeId>(null)
   return (
     <div>
       <Row className="mb-3 w-full justify-between gap-3">
@@ -85,7 +75,7 @@ export function Trade(props: {
 }
 
 function TradeDetails(props: {
-  modeId: ModeId
+  modeId: BinaryModeId
   ammTxns: Txn[]
   ammId: string
   userSpendableFunds: number
@@ -98,10 +88,7 @@ function TradeDetails(props: {
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
   const [submitting, setSubmitting] = useState(false)
   const sliderMax =
-    modeId === 'limit order'
-      ? userSpendableFunds
-      : ((modeId === 'buy' ? ammShares : userSellableShares) / TOTAL_SHARES) *
-        100
+    ((modeId === 'buy' ? ammShares : userSellableShares) / TOTAL_SHARES) * 100
   const price =
     modeId === 'buy'
       ? calculateBuyPrice(percent / 100, ammShares, ammUSD)
@@ -123,33 +110,33 @@ function TradeDetails(props: {
           className={clsx(mode?.sliderClass)}
           marks={{
             0: {
-              label: modeId === 'limit order' ? '$0' : '0%',
+              label: modeId === 'buy' ? '$0' : '0%',
               style: { color: '#000' },
             },
             25: {
               label:
-                modeId === 'limit order'
+                modeId === 'buy'
                   ? formatMoney(sliderMax / 4)
                   : `${Math.round((sliderMax / 4) * 100) / 100}%`,
               style: { color: '#000' },
             },
             50: {
               label:
-                modeId === 'limit order'
+                modeId === 'buy'
                   ? formatMoney(sliderMax / 2)
                   : `${Math.round((sliderMax / 2) * 100) / 100}%`,
               style: { color: '#000' },
             },
             75: {
               label:
-                modeId === 'limit order'
+                modeId === 'buy'
                   ? formatMoney((sliderMax / 4) * 3)
                   : `${Math.round((sliderMax / 4) * 3 * 100) / 100}%`,
               style: { color: '#000' },
             },
             100: {
               label:
-                modeId === 'limit order'
+                modeId === 'buy'
                   ? formatMoney(sliderMax)
                   : `${Math.round(sliderMax * 100) / 100}%`,
               style: { color: '#000' },
