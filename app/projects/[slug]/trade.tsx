@@ -15,9 +15,9 @@ const MODES = [
   {
     label: 'Buy',
     id: 'buy' as BinaryModeId,
-    buttonClass: '!bg-emerald-500 hover:!bg-emerald-600 w-full',
+    buttonClass: '!bg-emerald-500 hover:!bg-emerald-600',
     buttonUnselectedClass:
-      'ring-emerald-500 bg-white !text-emerald-500 ring-2 hover:bg-emerald-500 hover:ring-emerald-600 hover:!text-white w-full',
+      'ring-emerald-500 bg-white !text-emerald-500 ring-2 hover:!bg-emerald-500 hover:ring-emerald-600 hover:!text-white',
     sliderClass:
       '[&>.rc-slider-handle]:bg-emerald-500 [&>.rc-slider-track]:bg-emerald-500',
     cardClass: 'bg-emerald-50',
@@ -25,9 +25,9 @@ const MODES = [
   {
     label: 'Sell',
     id: 'sell' as BinaryModeId,
-    buttonClass: 'bg-rose-500 hover:bg-rose-600 w-full',
+    buttonClass: 'bg-rose-500 hover:bg-rose-600',
     buttonUnselectedClass:
-      'ring-rose-500 bg-white !text-rose-500 ring-2 hover:bg-rose-500 hover:ring-rose-600 hover:!text-white w-full',
+      'ring-rose-500 bg-white !text-rose-500 ring-2 hover:bg-rose-500 hover:ring-rose-600 hover:!text-white',
     sliderClass:
       '[&>.rc-slider-handle]:bg-rose-500 [&>.rc-slider-track]:bg-rose-500',
     cardClass: 'bg-rose-50',
@@ -42,14 +42,16 @@ export function Trade(props: {
 }) {
   const { ammTxns, ammId, userSpendableFunds, userSellableShares } = props
   const [modeId, setModeId] = useState<BinaryModeId>(null)
+  const [isLimit, setIsLimit] = useState(false)
   return (
     <div>
-      <Row className="mb-3 w-full justify-between gap-3">
+      <Row className="mb-3 w-full justify-between gap-3 font-semibold">
         {MODES.map((mode) => {
           return (
             <Button
               key={mode.id}
               className={clsx(
+                'w-full',
                 modeId === mode.id
                   ? mode.buttonClass
                   : mode.buttonUnselectedClass
@@ -60,6 +62,17 @@ export function Trade(props: {
             </Button>
           )
         })}
+        <Button
+          className={clsx(
+            isLimit
+              ? 'bg-orange-500 !text-white hover:!bg-orange-600'
+              : 'w-full bg-white !text-orange-500 ring-2 ring-orange-500 hover:bg-orange-500 hover:!text-white hover:!ring-orange-600',
+            '!w-32'
+          )}
+          onClick={() => setIsLimit(!isLimit)}
+        >
+          #
+        </Button>
       </Row>
       {modeId !== null && (
         <TradeDetails
