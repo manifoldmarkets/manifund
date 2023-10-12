@@ -80,18 +80,10 @@ export function Trade(props: {
           #
         </Button>
       </Row>
-      {modeId !== null && !isLimit && (
-        <BinaryTradePanel
+      {(modeId !== null || isLimit) && (
+        <TradeInputsPanel
           modeId={modeId}
-          ammTxns={ammTxns}
-          ammId={ammId}
-          userSpendableFunds={userSpendableFunds}
-          userSellableShares={userSellableShares}
-        />
-      )}
-      {isLimit && (
-        <LimitOrderPanel
-          modeId={modeId}
+          isLimit={isLimit}
           ammTxns={ammTxns}
           ammId={ammId}
           userSpendableFunds={userSpendableFunds}
@@ -102,15 +94,22 @@ export function Trade(props: {
   )
 }
 
-function BinaryTradePanel(props: {
+function TradeInputsPanel(props: {
   modeId: BinaryModeId
+  isLimit: boolean
   ammTxns: Txn[]
   ammId: string
   userSpendableFunds: number
   userSellableShares: number
 }) {
-  const { modeId, ammTxns, ammId, userSpendableFunds, userSellableShares } =
-    props
+  const {
+    modeId,
+    isLimit,
+    ammTxns,
+    ammId,
+    userSpendableFunds,
+    userSellableShares,
+  } = props
   const mode = MODES.find((mode) => mode.id === modeId)
   const [percent, setPercent] = useState(0)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
@@ -126,6 +125,12 @@ function BinaryTradePanel(props: {
       className={clsx('flex flex-col gap-4 rounded-md p-4', mode?.cardClass)}
     >
       <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
+      {isLimit && (
+        <div>
+          <p>Valuation</p>
+          <Input type="number" />
+        </div>
+      )}
       {modeId === 'buy' ? (
         <BuyPanelContent
           ammShares={ammShares}
@@ -171,16 +176,6 @@ function BinaryTradePanel(props: {
       </Button>
     </div>
   )
-}
-
-function LimitOrderPanel(props: {
-  modeId: BinaryModeId
-  ammTxns: Txn[]
-  ammId: string
-  userSpendableFunds: number
-  userSellableShares: number
-}) {
-  return <div>Limit order panel</div>
 }
 
 export function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
