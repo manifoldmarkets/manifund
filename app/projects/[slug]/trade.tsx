@@ -119,63 +119,34 @@ function BinaryTradePanel(props: {
     ((modeId === 'buy' ? ammShares : userSellableShares) / TOTAL_SHARES) * 100
   const price =
     modeId === 'buy'
-      ? calculateBuyPrice(percent / 100, ammShares, ammUSD)
-      : calculateSellPrice(percent / 100, ammShares, ammUSD)
+      ? calculateBuyShares(percent / 100, ammShares, ammUSD)
+      : calculateSellPayout(percent / 100, ammShares, ammUSD)
   return (
     <div
       className={clsx('flex flex-col gap-4 rounded-md p-4', mode?.cardClass)}
     >
       <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
-      <Row className="w-full items-center gap-4">
-        <Input
-          value={percent}
-          type="number"
-          className="w-1/3"
-          onChange={(event) => setPercent(Number(event.target.value))}
-        />
-        <MySlider
-          value={(percent / sliderMax) * 100}
-          className={clsx(mode?.sliderClass)}
-          marks={{
-            0: {
-              label: modeId === 'buy' ? '$0' : '0%',
-              style: { color: '#000' },
-            },
-            25: {
-              label:
-                modeId === 'buy'
-                  ? formatMoney(sliderMax / 4)
-                  : `${Math.round((sliderMax / 4) * 100) / 100}%`,
-              style: { color: '#000' },
-            },
-            50: {
-              label:
-                modeId === 'buy'
-                  ? formatMoney(sliderMax / 2)
-                  : `${Math.round((sliderMax / 2) * 100) / 100}%`,
-              style: { color: '#000' },
-            },
-            75: {
-              label:
-                modeId === 'buy'
-                  ? formatMoney((sliderMax / 4) * 3)
-                  : `${Math.round((sliderMax / 4) * 3 * 100) / 100}%`,
-              style: { color: '#000' },
-            },
-            100: {
-              label:
-                modeId === 'buy'
-                  ? formatMoney(sliderMax)
-                  : `${Math.round(sliderMax * 100) / 100}%`,
-              style: { color: '#000' },
-            },
-          }}
-          onChange={(value) => {
-            setPercent(((value as number) * sliderMax) / 100)
+      {modeId === 'buy' ? (
+        <BuyPanelContent
+          ammShares={ammShares}
+          ammUSD={ammUSD}
+          userSpendableFunds={userSpendableFunds}
+          amount={price}
+          setAmount={(amount) => {
+            setPercent((amount / userSpendableFunds) * 100)
           }}
         />
-      </Row>
-      <p>price: {price}</p>
+      ) : (
+        <SellPanelContent
+          ammShares={ammShares}
+          ammUSD={ammUSD}
+          userSellableShares={userSellableShares}
+          amount={price}
+          setAmount={(amount) => {
+            setPercent((amount / sliderMax) * 100)
+          }}
+        />
+      )}
       <Button
         className={clsx(mode?.buttonClass, 'w-full')}
         loading={submitting}
@@ -236,15 +207,123 @@ export function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
   return [ammShares, ammUSD]
 }
 
-export function calculateBuyPrice(
-  portion: number,
+function BuyPanelContent(props: {
+  ammShares: number
+  ammUSD: number
+  userSpendableFunds: number
+  amount: number
+  setAmount: (amount: number) => void
+}) {
+  const { ammShares, ammUSD, userSpendableFunds, amount, setAmount } = props
+  const sliderMax = Math.min(userSpendableFunds, 100)
+  const shares = calculateBuyShares(amount, ammShares, ammUSD)
+  return (
+    <div>
+      <Row className="w-full items-center gap-4">
+        <Input
+          value={amount}
+          type="number"
+          className="w-1/3"
+          onChange={(event) => setAmount(Number(event.target.value))}
+        />
+        <MySlider
+          value={(amount / sliderMax) * 100}
+          className="[&>.rc-slider-handle]:bg-emerald-500 [&>.rc-slider-track]:bg-emerald-500"
+          marks={{
+            0: {
+              label: '$0',
+              style: { color: '#000' },
+            },
+            25: {
+              label: formatMoney(sliderMax / 4),
+              style: { color: '#000' },
+            },
+            50: {
+              label: formatMoney(sliderMax / 2),
+              style: { color: '#000' },
+            },
+            75: {
+              label: formatMoney((sliderMax / 4) * 3),
+              style: { color: '#000' },
+            },
+            100: {
+              label: formatMoney(sliderMax),
+              style: { color: '#000' },
+            },
+          }}
+          onChange={(value) => {
+            setAmount(((value as number) * sliderMax) / 100)
+          }}
+        />
+      </Row>
+      <p>equity: {(shares / TOTAL_SHARES) * 100}</p>
+    </div>
+  )
+}
+
+function SellPanelContent(props: {
+  ammShares: number
+  ammUSD: number
+  userSellableShares: number
+  amount: number
+  setAmount: (amount: number) => void
+}) {
+  const { ammShares, ammUSD, userSellableShares, amount, setAmount } = props
+  const sliderMax = (userSellableShares / TOTAL_SHARES) * 100
+  const payout = calculateSellPayout(amount, ammShares, ammUSD)
+  return (
+    <div>
+      <Row className="w-full items-center gap-4">
+        <Input
+          value={amount}
+          type="number"
+          className="w-1/3"
+          onChange={(event) => setAmount(Number(event.target.value))}
+        />
+        <MySlider
+          value={(amount / sliderMax) * 100}
+          className="[&>.rc-slider-handle]:bg-emerald-500 [&>.rc-slider-track]:bg-emerald-500"
+          marks={{
+            0: {
+              label: '0%',
+              style: { color: '#000' },
+            },
+            25: {
+              label: `${Math.round((sliderMax / 4) * 100) / 100}%`,
+              style: { color: '#000' },
+            },
+            50: {
+              label: `${Math.round((sliderMax / 2) * 100) / 100}%`,
+              style: { color: '#000' },
+            },
+            75: {
+              label: `${Math.round((sliderMax / 4) * 3 * 100) / 100}%`,
+              style: { color: '#000' },
+            },
+            100: {
+              label: `${Math.round(sliderMax * 100) / 100}%`,
+              style: { color: '#000' },
+            },
+          }}
+          onChange={(value) => {
+            setAmount(((value as number) * sliderMax) / 100)
+          }}
+        />
+      </Row>
+      <p>payout: ${payout}</p>
+    </div>
+  )
+}
+
+export function calculateBuyShares(
+  dollarAmount: number,
   ammShares: number,
   ammUSD: number
 ) {
-  return (ammUSD * ammShares) / (ammShares - portion * TOTAL_SHARES) - ammUSD
+  return ammShares - (ammUSD * ammShares) / (ammUSD + dollarAmount)
 }
 
-export function calculateSellPrice(
+export function calculateSellPayout(
   portion: number,
   ammShares: number,
   ammUSD: number

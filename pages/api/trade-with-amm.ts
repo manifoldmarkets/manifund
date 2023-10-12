@@ -5,8 +5,8 @@ import { getTxnsByUser } from '@/db/txn'
 import { createEdgeClient } from './_db'
 import {
   calculateAMMPorfolio,
-  calculateBuyPrice,
-  calculateSellPrice,
+  calculateBuyShares,
+  calculateSellPayout,
 } from '@/app/projects/[slug]/trade'
 import { calculateCharityBalance, calculateSellableShares } from '@/utils/math'
 import { getBidsByUser } from '@/db/bid'
@@ -41,8 +41,8 @@ export default async function handler(req: NextRequest) {
     return new Response('Not enough shares to sell', { status: 400 })
   }
   const price = buying
-    ? calculateBuyPrice(numShares / TOTAL_SHARES, ammShares, ammUSD)
-    : calculateSellPrice(numShares / TOTAL_SHARES, ammShares, ammUSD)
+    ? calculateBuyShares(numShares / TOTAL_SHARES, ammShares, ammUSD)
+    : calculateSellPayout(numShares / TOTAL_SHARES, ammShares, ammUSD)
   const userTxns = await getTxnsByUser(supabase, user.id)
   const userBids = await getBidsByUser(supabase, user.id)
   const userBalance = buying
