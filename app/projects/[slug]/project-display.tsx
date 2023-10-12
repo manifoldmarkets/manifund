@@ -32,6 +32,7 @@ import { ProposalRequirements } from './proposal-requirements'
 import { Vote } from './vote'
 import { CauseTag } from '@/components/tags'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context'
+import { Trade } from '../trade'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -168,6 +169,14 @@ export function ProjectDisplay(props: {
             userSpendableFunds={userSpendableFunds}
             userSellableShares={userSellableShares}
             userShares={userShares}
+          />
+        )}
+        {userProfile && project.type === 'cert' && (
+          <Trade
+            ammTxns={projectTxns.filter(
+              (txn) => txn.to_id === project.id || txn.from_id === project.id
+            )}
+            ammId={project.id}
           />
         )}
         {userProfile &&
