@@ -104,8 +104,8 @@ function TradeDetails(props: {
         100
   const price =
     modeId === 'buy'
-      ? calculateBuyPrice(percent, ammShares, ammUSD)
-      : calculateSellPrice(percent, ammShares, ammUSD)
+      ? calculateBuyPrice(percent / 100, ammShares, ammUSD)
+      : calculateSellPrice(percent / 100, ammShares, ammUSD)
   return (
     <div
       className={clsx('flex flex-col gap-4 rounded-md p-4', mode?.cardClass)}
