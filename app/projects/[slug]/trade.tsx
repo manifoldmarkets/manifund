@@ -1,10 +1,11 @@
 'use client'
 
+import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { Card } from '@/components/layout/card'
 import { Row } from '@/components/layout/row'
+import { HorizontalRadioGroup } from '@/components/radio-group'
 import { MySlider } from '@/components/slider'
-import { Tag } from '@/components/tags'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn } from '@/db/txn'
 import { useState } from 'react'
@@ -15,30 +16,35 @@ export function Trade(props: {
   userSpendableFunds: number
 }) {
   const { ammTxns, ammId } = props
-  const [buyPortion, setBuyPortion] = useState(0)
+  const [mode, setMode] = useState<string>('buy')
+  const [portion, setPortion] = useState(0)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
+  const [submitting, setSubmitting] = useState(false)
   const portionForSale = ammShares / TOTAL_SHARES
   const percentForSale = portionForSale * 100
-  const price = (ammUSD * ammShares) / (ammShares - buyPortion * TOTAL_SHARES)
-  console.log('buy portion', buyPortion)
+  const price =
+    (ammUSD * ammShares) / (ammShares - portion * TOTAL_SHARES) - ammUSD
+  console.log('buy portion', portion)
   return (
-    <Card>
+    <Card className="flex flex-col gap-4">
       <Row className="justify-between">
         <h1 className="text-xl font-bold">Trade</h1>
-        <Tag
-          text={`valuation: $${(ammUSD / ammShares) * TOTAL_SHARES}`}
-          className="!text-lg"
-        />
+        <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
       </Row>
+      <HorizontalRadioGroup
+        value={mode}
+        onChange={(event) => setMode(event)}
+        options={{ buy: 'buy', sell: 'sell' }}
+      />
       <div className="flex w-full flex-col gap-4 md:flex-row">
         <Input
-          value={buyPortion}
+          value={portion}
           type="number"
           className="w-1/3"
-          onChange={(event) => setBuyPortion(Number(event.target.value))}
+          onChange={(event) => setPortion(Number(event.target.value))}
         />
         <MySlider
-          value={(buyPortion / portionForSale) * 100}
+          value={(portion / portionForSale) * 100}
           marks={{
             0: { label: `0%`, style: { color: '#000' } },
             25: {
@@ -60,16 +66,36 @@ export function Trade(props: {
           }}
           onChange={(value) => {
             console.log(value)
-            setBuyPortion(((value as number) * portionForSale) / 100)
+            setPortion(((value as number) * portionForSale) / 100)
           }}
         />
       </div>
       <p>price: {price}</p>
+      <Button
+        loading={submitting}
+        onClick={async () => {
+          setSubmitting(true)
+          const response = await fetch('/api/trade-with-amm', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              projectId: ammId,
+              numShares: portion * TOTAL_SHARES,
+            }),
+          })
+          setPortion(0)
+          setSubmitting(false)
+        }}
+      >
+        Buy {portion}
+      </Button>
     </Card>
   )
 }
 
-function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
+export function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
   const ammShares = ammTxns.reduce((total, txn) => {
     if (txn.token !== 'USD') {
       if (txn.to_id == ammId) {
