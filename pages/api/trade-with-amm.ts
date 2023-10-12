@@ -1,12 +1,16 @@
-import { SupabaseClient } from '@supabase/supabase-js'
 import { getUser } from '@/db/profile'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { getTxnsByUser } from '@/db/txn'
 import { createEdgeClient } from './_db'
-import { calculateAMMPorfolio } from '@/app/projects/[slug]/trade'
-import { calculateCharityBalance, calculateUserBalance } from '@/utils/math'
+import {
+  calculateAMMPorfolio,
+  calculateBuyPrice,
+  calculateSellPrice,
+} from '@/app/projects/[slug]/trade'
+import { calculateCharityBalance, calculateSellableShares } from '@/utils/math'
 import { getBidsByUser } from '@/db/bid'
+import { TOTAL_SHARES } from '@/db/project'
 
 export const config = {
   runtime: 'edge',
@@ -20,10 +24,12 @@ export const config = {
 type TradeWithAmmProps = {
   projectId: string
   numShares: number
+  buying: boolean
 }
 
 export default async function handler(req: NextRequest) {
-  const { projectId, numShares } = (await req.json()) as TradeWithAmmProps
+  const { projectId, numShares, buying } =
+    (await req.json()) as TradeWithAmmProps
   const supabase = createEdgeClient(req)
   const user = await getUser(supabase)
   if (!user) {
@@ -34,31 +40,38 @@ export default async function handler(req: NextRequest) {
   if (numShares >= ammShares) {
     return new Response('Not enough shares to sell', { status: 400 })
   }
-  const price = (ammUSD * ammShares) / (ammShares - numShares) - ammUSD
+  const price = buying
+    ? calculateBuyPrice(numShares / TOTAL_SHARES, ammShares, ammUSD)
+    : calculateSellPrice(numShares / TOTAL_SHARES, ammShares, ammUSD)
   const userTxns = await getTxnsByUser(supabase, user.id)
   const userBids = await getBidsByUser(supabase, user.id)
-  const userBalance = calculateCharityBalance(
+  const userBalance = buying
+    ? calculateCharityBalance(userTxns, userBids, user.id, false)
+    : 0
+  const userSellableShares = calculateSellableShares(
     userTxns,
     userBids,
-    user.id,
-    false
+    projectId,
+    user.id
   )
-  if (price > userBalance) {
-    return new Response('Not enough funds to buy', { status: 400 })
+  if (buying ? price > userBalance : numShares > userSellableShares) {
+    return new Response('Not enough in portfolio to make this trade', {
+      status: 400,
+    })
   }
   const bundleId = uuid()
   const sharesTxn = {
     amount: numShares,
-    from_id: projectId,
-    to_id: user.id,
+    from_id: buying ? projectId : user.id,
+    to_id: buying ? user.id : projectId,
     token: projectId,
     project: projectId,
     bundle: bundleId,
   }
   const usdTxn = {
     amount: price,
-    from_id: user.id,
-    to_id: projectId,
+    from_id: buying ? user.id : projectId,
+    to_id: buying ? projectId : user.id,
     token: 'USD',
     project: projectId,
     bundle: bundleId,

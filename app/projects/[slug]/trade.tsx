@@ -14,16 +14,20 @@ export function Trade(props: {
   ammTxns: Txn[]
   ammId: string
   userSpendableFunds: number
+  userSellableShares: number
 }) {
-  const { ammTxns, ammId } = props
+  const { ammTxns, ammId, userSpendableFunds, userSellableShares } = props
   const [mode, setMode] = useState<string>('buy')
   const [portion, setPortion] = useState(0)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
   const [submitting, setSubmitting] = useState(false)
-  const portionForSale = ammShares / TOTAL_SHARES
+  const portionForSale =
+    (mode === 'buy' ? ammShares : userSellableShares) / TOTAL_SHARES
   const percentForSale = portionForSale * 100
   const price =
-    (ammUSD * ammShares) / (ammShares - portion * TOTAL_SHARES) - ammUSD
+    mode === 'buy'
+      ? calculateBuyPrice(portion, ammShares, ammUSD)
+      : calculateSellPrice(portion, ammShares, ammUSD)
   console.log('buy portion', portion)
   return (
     <Card className="flex flex-col gap-4">
@@ -83,13 +87,14 @@ export function Trade(props: {
             body: JSON.stringify({
               projectId: ammId,
               numShares: portion * TOTAL_SHARES,
+              buying: mode === 'buy',
             }),
           })
           setPortion(0)
           setSubmitting(false)
         }}
       >
-        Buy {portion}
+        {mode} {portion}
       </Button>
     </Card>
   )
@@ -117,4 +122,20 @@ export function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
     return total
   }, 0)
   return [ammShares, ammUSD]
+}
+
+export function calculateBuyPrice(
+  portion: number,
+  ammShares: number,
+  ammUSD: number
+) {
+  return (ammUSD * ammShares) / (ammShares - portion * TOTAL_SHARES) - ammUSD
+}
+
+export function calculateSellPrice(
+  portion: number,
+  ammShares: number,
+  ammUSD: number
+) {
+  return ammUSD - (ammUSD * ammShares) / (ammShares + portion * TOTAL_SHARES)
 }

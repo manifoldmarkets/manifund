@@ -178,6 +178,7 @@ export function ProjectDisplay(props: {
             )}
             ammId={project.id}
             userSpendableFunds={userSpendableFunds}
+            userSellableShares={userSellableShares}
           />
         )}
         {userProfile &&
