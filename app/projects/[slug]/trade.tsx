@@ -15,62 +15,61 @@ export function Trade(props: {
   userSpendableFunds: number
 }) {
   const { ammTxns, ammId } = props
-  const [buyAmount, setBuyAmount] = useState(0)
-  const ammShares = ammTxns.reduce((total, txn) => {
-    if (txn.token !== 'USD') {
-      if (txn.to_id == ammId) {
-        total += txn.amount
-      } else {
-        total -= txn.amount
-      }
-    }
-    return total
-  }, 0)
-  const ammUSD = ammTxns.reduce((total, txn) => {
-    if (txn.token === 'USD') {
-      if (txn.to_id == ammId) {
-        total += txn.amount
-      } else {
-        total -= txn.amount
-      }
-    }
-    return total
-  }, 0)
+  const [buyPortion, setBuyPortion] = useState(0)
+  const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
+  const portionForSale = ammShares / TOTAL_SHARES
+  const percentForSale = portionForSale * 100
+  const price = (ammUSD * ammShares) / (ammShares - buyPortion * TOTAL_SHARES)
+  console.log('buy portion', buyPortion)
   return (
     <Card>
       <Row className="justify-between">
         <h1 className="text-xl font-bold">Trade</h1>
         <Tag
-          text={`price: ${calculatePrice(ammTxns, ammId)}`}
+          text={`valuation: $${(ammUSD / ammShares) * TOTAL_SHARES}`}
           className="!text-lg"
         />
       </Row>
       <div className="flex w-full flex-col gap-4 md:flex-row">
         <Input
-          value={buyAmount}
+          value={buyPortion}
           type="number"
           className="w-1/3"
-          onChange={(event) => setBuyAmount(Number(event.target.value))}
+          onChange={(event) => setBuyPortion(Number(event.target.value))}
         />
         <MySlider
-          value={buyAmount}
+          value={(buyPortion / portionForSale) * 100}
           marks={{
-            0: { label: '0%', style: { color: '#000' } },
-            25: { label: '25%', style: { color: '#000' } },
-            50: { label: '50%', style: { color: '#000' } },
-            75: { label: '75%', style: { color: '#000' } },
-            100: { label: '100%', style: { color: '#000' } },
+            0: { label: `0%`, style: { color: '#000' } },
+            25: {
+              label: `${Math.round((percentForSale / 4) * 100) / 100}%`,
+              style: { color: '#000' },
+            },
+            50: {
+              label: `${Math.round((percentForSale / 3) * 100) / 100}%`,
+              style: { color: '#000' },
+            },
+            75: {
+              label: `${Math.round((percentForSale / 4) * 3 * 100) / 100}%`,
+              style: { color: '#000' },
+            },
+            100: {
+              label: `${Math.round(percentForSale * 100) / 100}%`,
+              style: { color: '#000' },
+            },
           }}
           onChange={(value) => {
-            setBuyAmount(value as number)
+            console.log(value)
+            setBuyPortion(((value as number) * portionForSale) / 100)
           }}
         />
       </div>
+      <p>price: {price}</p>
     </Card>
   )
 }
 
-function calculatePrice(ammTxns: Txn[], ammId: string) {
+function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
   const ammShares = ammTxns.reduce((total, txn) => {
     if (txn.token !== 'USD') {
       if (txn.to_id == ammId) {
@@ -91,5 +90,5 @@ function calculatePrice(ammTxns: Txn[], ammId: string) {
     }
     return total
   }, 0)
-  return (ammUSD / ammShares) * TOTAL_SHARES
+  return [ammShares, ammUSD]
 }
