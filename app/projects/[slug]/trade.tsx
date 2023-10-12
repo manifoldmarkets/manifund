@@ -9,27 +9,34 @@ import { Txn } from '@/db/txn'
 import clsx from 'clsx'
 import { useState } from 'react'
 
+type ModeId = 'buy' | 'sell' | 'limit order'
 const MODES = [
   {
     label: 'Buy',
-    id: 'buy',
-    buttonClass: '!bg-emerald-500 hover:!bg-emerald-600',
+    id: 'buy' as ModeId,
+    buttonClass: '!bg-emerald-500 hover:!bg-emerald-600 w-full',
+    buttonUnselectedClass:
+      'ring-emerald-500 bg-white !text-emerald-500 ring-2 hover:bg-emerald-500 hover:ring-emerald-600 hover:!text-white w-full',
     sliderClass:
       '[&>.rc-slider-handle]:bg-emerald-500 [&>.rc-slider-track]:bg-emerald-500',
     cardClass: 'bg-emerald-50',
   },
   {
     label: 'Sell',
-    id: 'sell',
-    buttonClass: 'bg-rose-500 hover:bg-rose-600',
+    id: 'sell' as ModeId,
+    buttonClass: 'bg-rose-500 hover:bg-rose-600 w-full',
+    buttonUnselectedClass:
+      'ring-rose-500 bg-white !text-rose-500 ring-2 hover:bg-rose-500 hover:ring-rose-600 hover:!text-white w-full',
     sliderClass:
       '[&>.rc-slider-handle]:bg-rose-500 [&>.rc-slider-track]:bg-rose-500',
     cardClass: 'bg-rose-50',
   },
   {
     label: '#',
-    id: 'limit order',
-    buttonClass: 'bg-orange-500 hover:bg-orange-600',
+    id: 'limit order' as ModeId,
+    buttonClass: 'bg-orange-500 hover:bg-orange-600 w-32',
+    buttonUnselectedClass:
+      'ring-orange-500 bg-white !text-orange-500 ring-2 hover:bg-orange-500 hover:ring-orange-600 hover:!text-white w-32',
     sliderClass:
       '[&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-orange-500',
     cardClass: 'bg-orange-50',
@@ -43,51 +50,41 @@ export function Trade(props: {
   userSellableShares: number
 }) {
   const { ammTxns, ammId, userSpendableFunds, userSellableShares } = props
-  const [modeId, setModeId] = useState<'buy' | 'sell' | 'limit order'>('buy')
+  const [modeId, setModeId] = useState<ModeId | null>(null)
   return (
     <div>
       <Row className="mb-3 w-full justify-between gap-3">
-        <Button
-          className={clsx(
-            'w-full',
-            MODES.find((mode) => mode.id === 'buy')?.buttonClass
-          )}
-          onClick={() => setModeId('buy')}
-        >
-          Buy
-        </Button>
-        <Button
-          className={clsx(
-            'w-full',
-            MODES.find((mode) => mode.id === 'sell')?.buttonClass
-          )}
-          onClick={() => setModeId('sell')}
-        >
-          Sell
-        </Button>
-        <Button
-          className={clsx(
-            'w-32',
-            MODES.find((mode) => mode.id === 'limit order')?.buttonClass
-          )}
-          onClick={() => setModeId('limit order')}
-        >
-          #
-        </Button>
+        {MODES.map((mode) => {
+          return (
+            <Button
+              key={mode.id}
+              className={clsx(
+                modeId === mode.id
+                  ? mode.buttonClass
+                  : mode.buttonUnselectedClass
+              )}
+              onClick={() => setModeId(mode.id)}
+            >
+              {mode.label}
+            </Button>
+          )
+        })}
       </Row>
-      <TradeDetails
-        modeId={modeId}
-        ammTxns={ammTxns}
-        ammId={ammId}
-        userSpendableFunds={userSpendableFunds}
-        userSellableShares={userSellableShares}
-      />
+      {modeId !== null && (
+        <TradeDetails
+          modeId={modeId}
+          ammTxns={ammTxns}
+          ammId={ammId}
+          userSpendableFunds={userSpendableFunds}
+          userSellableShares={userSellableShares}
+        />
+      )}
     </div>
   )
 }
 
 function TradeDetails(props: {
-  modeId: 'buy' | 'sell' | 'limit order'
+  modeId: ModeId
   ammTxns: Txn[]
   ammId: string
   userSpendableFunds: number
