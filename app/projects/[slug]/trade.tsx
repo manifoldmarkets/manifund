@@ -58,7 +58,7 @@ export function Trade(props: {
                   : mode.buttonUnselectedClass
               )}
               onClick={() => {
-                setModeId(modeId === mode.id ? null : mode.id)
+                setModeId(modeId === mode.id && !isLimit ? null : mode.id)
                 setIsLimit(false)
               }}
             >
@@ -124,14 +124,15 @@ function TradeInputsPanel(props: {
     >
       <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
       {setModeId && (
-        <Col className="gap-3 font-semibold">
-          <Row className="gap-2">
+        <Col className="gap-3">
+          <Row className="items-center gap-2">
+            <label>Mode:</label>
             {MODES.map((mode) => {
               return (
                 <Button
                   key={mode.id}
                   className={clsx(
-                    'w-32',
+                    'w-32 font-semibold',
                     modeId === mode.id
                       ? mode.buttonClass
                       : mode.buttonUnselectedClass
@@ -145,11 +146,13 @@ function TradeInputsPanel(props: {
               )
             })}
           </Row>
-          <p>Valuation</p>
-          <Input type="number" />
+          <Row className="items-center gap-2">
+            <label>Valuation:</label>
+            <Input type="number" />
+          </Row>
         </Col>
       )}
-      {modeId === 'buy' ? (
+      {modeId === 'buy' && (
         <BuyPanelContent
           ammShares={ammShares}
           ammUSD={ammUSD}
@@ -158,7 +161,8 @@ function TradeInputsPanel(props: {
           amount={amount}
           setAmount={setAmount}
         />
-      ) : (
+      )}
+      {modeId === 'sell' && (
         <SellPanelContent
           ammShares={ammShares}
           ammUSD={ammUSD}
@@ -232,6 +236,7 @@ function BuyPanelContent(props: {
   const shares = calculateBuyShares(amount, ammShares, ammUSD)
   return (
     <div>
+      <label>Amount (USD)</label>
       <Row className="w-full items-center gap-4">
         <Input
           value={amount}
@@ -287,6 +292,7 @@ function SellPanelContent(props: {
   const payout = calculateSellPayout(amount, ammShares, ammUSD)
   return (
     <div>
+      <label>Amount (% equity)</label>
       <Row className="w-full items-center gap-4">
         <Input
           value={amount}
