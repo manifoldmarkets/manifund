@@ -145,7 +145,7 @@ function TradeDetails(props: {
       </Row>
       <p>price: {price}</p>
       <Button
-        className={mode?.buttonClass}
+        className={clsx(mode?.buttonClass, 'w-full')}
         loading={submitting}
         onClick={async () => {
           setSubmitting(true)
