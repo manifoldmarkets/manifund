@@ -113,6 +113,7 @@ function TradeInputsPanel(props: {
   } = props
   const mode = MODES.find((mode) => mode.id === modeId)
   const [amount, setAmount] = useState(0)
+  const [valuation, setValuation] = useState(0)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
   const [submitting, setSubmitting] = useState(false)
   return (
@@ -148,7 +149,10 @@ function TradeInputsPanel(props: {
           </Row>
           <Row className="items-center gap-2">
             <label>Valuation:</label>
-            <Input type="number" />
+            <Input
+              type="number"
+              onChange={(event) => setValuation(Number(event.target.value))}
+            />
           </Row>
         </Col>
       )}
@@ -172,6 +176,45 @@ function TradeInputsPanel(props: {
           setAmount={setAmount}
         />
       )}
+      <Row className="m-auto justify-between gap-32">
+        {modeId === 'buy' && (
+          <Col>
+            <label className="text-xs text-gray-600">Equity</label>
+            <span className="font-semibold">
+              {(
+                (calculateBuyShares(amount, ammShares, ammUSD) / TOTAL_SHARES) *
+                100
+              ).toFixed(2)}
+              %
+            </span>
+          </Col>
+        )}
+        {modeId === 'sell' && (
+          <Col>
+            <label className="text-xs text-gray-600">Payout</label>
+            <span className="font-semibold">
+              ${calculateSellPayout(amount, ammShares, ammUSD).toFixed(2)}
+            </span>
+          </Col>
+        )}
+        {modeId && (
+          <Col>
+            <label className="text-xs text-gray-600">
+              Valuation after trade
+            </label>
+            <span className="font-semibold">
+              $
+              {calculateValuationAfterTrade(
+                amount,
+                ammShares,
+                ammUSD,
+                modeId === 'buy',
+                setModeId ? valuation : undefined
+              ).toFixed(2)}
+            </span>
+          </Col>
+        )}
+      </Row>
       <Button
         className={clsx(setModeId ? '' : mode?.buttonClass, 'w-full')}
         loading={submitting}
@@ -196,30 +239,6 @@ function TradeInputsPanel(props: {
       </Button>
     </div>
   )
-}
-
-export function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
-  const ammShares = ammTxns.reduce((total, txn) => {
-    if (txn.token !== 'USD') {
-      if (txn.to_id == ammId) {
-        total += txn.amount
-      } else {
-        total -= txn.amount
-      }
-    }
-    return total
-  }, 0)
-  const ammUSD = ammTxns.reduce((total, txn) => {
-    if (txn.token === 'USD') {
-      if (txn.to_id == ammId) {
-        total += txn.amount
-      } else {
-        total -= txn.amount
-      }
-    }
-    return total
-  }, 0)
-  return [ammShares, ammUSD]
 }
 
 function BuyPanelContent(props: {
@@ -273,7 +292,6 @@ function BuyPanelContent(props: {
           }}
         />
       </Row>
-      <p>equity: {(shares / TOTAL_SHARES) * 100}</p>
     </div>
   )
 }
@@ -329,9 +347,32 @@ function SellPanelContent(props: {
           }}
         />
       </Row>
-      <p>payout: ${payout}</p>
     </div>
   )
+}
+
+export function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
+  const ammShares = ammTxns.reduce((total, txn) => {
+    if (txn.token !== 'USD') {
+      if (txn.to_id == ammId) {
+        total += txn.amount
+      } else {
+        total -= txn.amount
+      }
+    }
+    return total
+  }, 0)
+  const ammUSD = ammTxns.reduce((total, txn) => {
+    if (txn.token === 'USD') {
+      if (txn.to_id == ammId) {
+        total += txn.amount
+      } else {
+        total -= txn.amount
+      }
+    }
+    return total
+  }, 0)
+  return [ammShares, ammUSD]
 }
 
 export function calculateBuyShares(
@@ -348,4 +389,47 @@ export function calculateSellPayout(
   ammUSD: number
 ) {
   return ammUSD - (ammUSD * ammShares) / (ammShares + portion * TOTAL_SHARES)
+}
+
+function calculateValuationAfterTrade(
+  amount: number, // USD if buying, shares if selling
+  ammShares: number,
+  ammUSD: number,
+  isBuying: boolean,
+  valuationAtTrade?: number // If limit order
+) {
+  const uniswapProduct = ammUSD * ammShares
+  if (isBuying) {
+    if (valuationAtTrade) {
+      const ammSharesAtTrade = Math.sqrt(
+        (uniswapProduct / valuationAtTrade) * TOTAL_SHARES
+      )
+      const ammUSDAtTrade = uniswapProduct / ammSharesAtTrade
+      const shares = calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade)
+      return (
+        ((ammUSDAtTrade + amount) / (ammSharesAtTrade - shares)) * TOTAL_SHARES
+      )
+    } else {
+      const shares = calculateBuyShares(amount, ammShares, ammUSD)
+      return ((ammUSD + amount) / (ammShares - shares)) * TOTAL_SHARES
+    }
+  } else {
+    if (valuationAtTrade) {
+      const ammSharesAtTrade = Math.sqrt(
+        (uniswapProduct / valuationAtTrade) * TOTAL_SHARES
+      )
+      const ammUSDAtTrade = uniswapProduct / ammSharesAtTrade
+      const payout = calculateSellPayout(
+        amount,
+        ammSharesAtTrade,
+        ammUSDAtTrade
+      )
+      return (
+        ((ammUSDAtTrade + payout) / (ammSharesAtTrade - amount)) * TOTAL_SHARES
+      )
+    } else {
+      const payout = calculateSellPayout(amount, ammShares, ammUSD)
+      return ((ammUSD + payout) / (ammShares - amount)) * TOTAL_SHARES
+    }
+  }
 }
