@@ -18,9 +18,7 @@ const MODES = [
     id: 'buy' as BinaryModeId,
     buttonClass: '!bg-emerald-500 hover:!bg-emerald-600',
     buttonUnselectedClass:
-      'ring-emerald-500 bg-white !text-emerald-500 ring-2 hover:!bg-emerald-500 hover:ring-emerald-600 hover:!text-white',
-    sliderClass:
-      '[&>.rc-slider-handle]:bg-emerald-500 [&>.rc-slider-track]:bg-emerald-500',
+      'ring-emerald-500 bg-white !text-emerald-500 ring-2 hover:!bg-emerald-500 hover:!text-white',
     cardClass: 'bg-emerald-50',
   },
   {
@@ -28,9 +26,7 @@ const MODES = [
     id: 'sell' as BinaryModeId,
     buttonClass: 'bg-rose-500 hover:bg-rose-600',
     buttonUnselectedClass:
-      'ring-rose-500 bg-white !text-rose-500 ring-2 hover:bg-rose-500 hover:ring-rose-600 hover:!text-white',
-    sliderClass:
-      '[&>.rc-slider-handle]:bg-rose-500 [&>.rc-slider-track]:bg-rose-500',
+      'ring-rose-500 bg-white !text-rose-500 ring-2 hover:bg-rose-500 hover:!text-white',
     cardClass: 'bg-rose-50',
   },
 ]
@@ -70,7 +66,7 @@ export function Trade(props: {
           className={clsx(
             isLimitOrder
               ? 'bg-orange-500 !text-white hover:!bg-orange-600'
-              : 'w-full bg-white !text-orange-500 ring-2 ring-orange-500 hover:bg-orange-500 hover:!text-white hover:!ring-orange-600',
+              : 'w-full bg-white !text-orange-500 ring-2 ring-orange-500 hover:bg-orange-500 hover:!text-white',
             '!w-32'
           )}
           onClick={() => {
