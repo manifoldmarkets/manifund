@@ -7,7 +7,12 @@ import { Row } from '@/components/layout/row'
 import { MySlider } from '@/components/slider'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn } from '@/db/txn'
-import { formatMoney } from '@/utils/formatting'
+import {
+  formatMoney,
+  formatMoneyPrecise,
+  formatPercent,
+  showPrecision,
+} from '@/utils/formatting'
 import clsx from 'clsx'
 import { useState } from 'react'
 
@@ -135,15 +140,23 @@ function TradeInputsPanel(props: {
     >
       <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
       {isLimitOrder && (
-        <Col className="gap-3">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row">
           <Row className="items-center gap-2">
-            <label>Mode:</label>
+            <label className="text-sm text-gray-600">Valuation (USD):</label>
+            <Input
+              type="number"
+              className="w-24"
+              onChange={(event) => setValuation(Number(event.target.value))}
+            />
+          </Row>
+          <Row className="items-center gap-2">
+            <label className="text-sm text-gray-600">Mode:</label>
             {MODES.map((mode) => {
               return (
                 <Button
                   key={mode.id}
                   className={clsx(
-                    'w-32 font-semibold',
+                    'w-24 font-semibold',
                     modeId === mode.id
                       ? mode.buttonClass
                       : mode.buttonUnselectedClass
@@ -157,14 +170,7 @@ function TradeInputsPanel(props: {
               )
             })}
           </Row>
-          <Row className="items-center gap-2">
-            <label>Valuation:</label>
-            <Input
-              type="number"
-              onChange={(event) => setValuation(Number(event.target.value))}
-            />
-          </Row>
-        </Col>
+        </div>
       )}
       {modeId === 'buy' && (
         <BuyPanelContent
@@ -183,7 +189,7 @@ function TradeInputsPanel(props: {
         />
       )}
       <Row className="m-auto justify-between gap-32">
-        {modeId === 'buy' && (
+        {modeId === 'buy' && (!isLimitOrder || !!valuation) && (
           <Col>
             <label className="text-xs text-gray-600">Equity</label>
             <span className="font-semibold">
@@ -196,26 +202,23 @@ function TradeInputsPanel(props: {
             </span>
           </Col>
         )}
-        {modeId === 'sell' && (
+        {modeId === 'sell' && (!isLimitOrder || !!valuation) && (
           <Col>
             <label className="text-xs text-gray-600">Payout</label>
             <span className="font-semibold">
-              $
-              {calculateSellPayout(
-                amount,
-                ammSharesAtTrade,
-                ammUSDAtTrade
-              ).toFixed(2)}
+              {formatMoneyPrecise(
+                calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
+              )}
             </span>
           </Col>
         )}
-        {modeId && (
+        {modeId && (!isLimitOrder || !!valuation) && (
           <Col>
             <label className="text-xs text-gray-600">
               Valuation after trade
             </label>
             <span className="font-semibold">
-              ${valuationAfterTrade.toFixed(2)}
+              {formatMoneyPrecise(valuationAfterTrade)}
             </span>
           </Col>
         )}
@@ -257,7 +260,7 @@ function BuyPanelContent(props: {
   const sliderMax = Math.min(userSpendableFunds, 100)
   return (
     <div>
-      <label>Amount (USD)</label>
+      <label className="text-sm text-gray-600">Amount (USD)</label>
       <Row className="w-full items-center gap-4">
         <Input
           value={amount}
@@ -308,7 +311,7 @@ function SellPanelContent(props: {
   const sliderMax = userSellableShares
   return (
     <div>
-      <label>Amount (% equity)</label>
+      <label className="text-sm text-gray-600">Amount (% equity)</label>
       <Row className="w-full items-center gap-4">
         <Input
           value={(amount / TOTAL_SHARES) * 100}
@@ -330,18 +333,16 @@ function SellPanelContent(props: {
               label: '0%',
             },
             25: {
-              label: `${((sliderMax * 100) / 4 / TOTAL_SHARES).toFixed(2)}%`,
+              label: `${formatPercent(sliderMax / 4 / TOTAL_SHARES)}`,
             },
             50: {
-              label: `${((sliderMax * 100) / 2 / TOTAL_SHARES).toFixed(2)}%`,
+              label: `${formatPercent(sliderMax / 2 / TOTAL_SHARES)}`,
             },
             75: {
-              label: `${((((sliderMax * 100) / 4) * 3) / TOTAL_SHARES).toFixed(
-                2
-              )}%`,
+              label: `${formatPercent(((sliderMax / 4) * 3) / TOTAL_SHARES)}`,
             },
             100: {
-              label: `${((sliderMax * 100) / TOTAL_SHARES).toFixed(2)}%`,
+              label: `${formatPercent(sliderMax / TOTAL_SHARES)}`,
             },
           }}
           onChange={(value) => {
