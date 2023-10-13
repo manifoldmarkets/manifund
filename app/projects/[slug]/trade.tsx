@@ -158,8 +158,6 @@ function TradeInputsPanel(props: {
       )}
       {modeId === 'buy' && (
         <BuyPanelContent
-          ammShares={ammShares}
-          ammUSD={ammUSD}
           isLimit={!!setModeId}
           userSpendableFunds={userSpendableFunds}
           amount={amount}
@@ -168,8 +166,6 @@ function TradeInputsPanel(props: {
       )}
       {modeId === 'sell' && (
         <SellPanelContent
-          ammShares={ammShares}
-          ammUSD={ammUSD}
           isLimit={!!setModeId}
           userSellableShares={userSellableShares}
           amount={amount}
@@ -242,17 +238,13 @@ function TradeInputsPanel(props: {
 }
 
 function BuyPanelContent(props: {
-  ammShares: number
-  ammUSD: number
   isLimit: boolean
   userSpendableFunds: number
   amount: number
   setAmount: (amount: number) => void
 }) {
-  const { ammShares, ammUSD, isLimit, userSpendableFunds, amount, setAmount } =
-    props
+  const { isLimit, userSpendableFunds, amount, setAmount } = props
   const sliderMax = Math.min(userSpendableFunds, 100)
-  const shares = calculateBuyShares(amount, ammShares, ammUSD)
   return (
     <div>
       <label>Amount (USD)</label>
@@ -297,17 +289,13 @@ function BuyPanelContent(props: {
 }
 
 function SellPanelContent(props: {
-  ammShares: number
-  ammUSD: number
   isLimit: boolean
   userSellableShares: number
   amount: number
   setAmount: (amount: number) => void
 }) {
-  const { ammShares, ammUSD, isLimit, userSellableShares, amount, setAmount } =
-    props
+  const { isLimit, userSellableShares, amount, setAmount } = props
   const sliderMax = (userSellableShares / TOTAL_SHARES) * 100
-  const payout = calculateSellPayout(amount, ammShares, ammUSD)
   return (
     <div>
       <label>Amount (% equity)</label>
@@ -378,17 +366,33 @@ export function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
 export function calculateBuyShares(
   dollarAmount: number,
   ammShares: number,
-  ammUSD: number
+  ammUSD: number,
+  valuationAtTrade?: number // If limit order
 ) {
-  return ammShares - (ammUSD * ammShares) / (ammUSD + dollarAmount)
+  const uniswapProduct = ammUSD * ammShares
+  const ammUSDAtTrade = valuationAtTrade
+    ? Math.sqrt((uniswapProduct / valuationAtTrade) * TOTAL_SHARES)
+    : ammUSD
+  const ammSharesAtTrade = valuationAtTrade
+    ? uniswapProduct / ammUSDAtTrade
+    : ammShares
+  return ammSharesAtTrade - uniswapProduct / (ammUSDAtTrade + dollarAmount)
 }
 
 export function calculateSellPayout(
-  portion: number,
+  shares: number,
   ammShares: number,
-  ammUSD: number
+  ammUSD: number,
+  valuationAtTrade?: number // If limit order
 ) {
-  return ammUSD - (ammUSD * ammShares) / (ammShares + portion * TOTAL_SHARES)
+  const uniswapProduct = ammUSD * ammShares
+  const ammSharesAtTrade = valuationAtTrade
+    ? Math.sqrt((uniswapProduct / valuationAtTrade) * TOTAL_SHARES)
+    : ammShares
+  const ammUSDAtTrade = valuationAtTrade
+    ? uniswapProduct / ammSharesAtTrade
+    : ammUSD
+  return ammUSDAtTrade - uniswapProduct / (ammSharesAtTrade + shares)
 }
 
 function calculateValuationAfterTrade(
@@ -398,38 +402,21 @@ function calculateValuationAfterTrade(
   isBuying: boolean,
   valuationAtTrade?: number // If limit order
 ) {
-  const uniswapProduct = ammUSD * ammShares
   if (isBuying) {
-    if (valuationAtTrade) {
-      const ammSharesAtTrade = Math.sqrt(
-        (uniswapProduct / valuationAtTrade) * TOTAL_SHARES
-      )
-      const ammUSDAtTrade = uniswapProduct / ammSharesAtTrade
-      const shares = calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade)
-      return (
-        ((ammUSDAtTrade + amount) / (ammSharesAtTrade - shares)) * TOTAL_SHARES
-      )
-    } else {
-      const shares = calculateBuyShares(amount, ammShares, ammUSD)
-      return ((ammUSD + amount) / (ammShares - shares)) * TOTAL_SHARES
-    }
+    const shares = calculateBuyShares(
+      amount,
+      ammShares,
+      ammUSD,
+      valuationAtTrade
+    )
+    return ((ammUSD + amount) / (ammShares - shares)) * TOTAL_SHARES
   } else {
-    if (valuationAtTrade) {
-      const ammSharesAtTrade = Math.sqrt(
-        (uniswapProduct / valuationAtTrade) * TOTAL_SHARES
-      )
-      const ammUSDAtTrade = uniswapProduct / ammSharesAtTrade
-      const payout = calculateSellPayout(
-        amount,
-        ammSharesAtTrade,
-        ammUSDAtTrade
-      )
-      return (
-        ((ammUSDAtTrade + payout) / (ammSharesAtTrade - amount)) * TOTAL_SHARES
-      )
-    } else {
-      const payout = calculateSellPayout(amount, ammShares, ammUSD)
-      return ((ammUSD + payout) / (ammShares - amount)) * TOTAL_SHARES
-    }
+    const payout = calculateSellPayout(
+      amount,
+      ammShares,
+      ammUSD,
+      valuationAtTrade
+    )
+    return ((ammUSD + payout) / (ammShares - amount)) * TOTAL_SHARES
   }
 }
