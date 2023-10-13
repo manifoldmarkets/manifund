@@ -8,10 +8,12 @@ import {
   calculateAMMPorfolio,
   calculateBuyShares,
   calculateSellPayout,
-} from '@/app/projects/[slug]/trade'
+  checkTradeValidity,
+} from '@/utils/amm'
 import { calculateCharityBalance, calculateSellableShares } from '@/utils/math'
 import { getBidsByUser } from '@/db/bid'
 import { Database } from '@/db/database.types'
+import { TOTAL_SHARES } from '@/db/project'
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
@@ -38,9 +40,6 @@ export default async function handler(req: NextRequest) {
   }
   const ammTxns = await getTxnsByUser(supabase, projectId)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
-  if (buying && amount >= ammShares) {
-    return new Response('Not enough shares to sell', { status: 400 })
-  }
   const ammSharesAtTrade = valuation
     ? ammSharesAtValuation(ammShares * ammUSD, valuation)
     : ammShares
@@ -55,7 +54,7 @@ export default async function handler(req: NextRequest) {
     : amount
   const userTxns = await getTxnsByUser(supabase, user.id)
   const userBids = await getBidsByUser(supabase, user.id)
-  const userBalance = buying
+  const userSpendableFunds = buying
     ? calculateCharityBalance(userTxns, userBids, user.id, false)
     : 0
   const userSellableShares = calculateSellableShares(
@@ -64,10 +63,19 @@ export default async function handler(req: NextRequest) {
     projectId,
     user.id
   )
-  if (buying ? numDollars > userBalance : numShares > userSellableShares) {
-    return new Response('Not enough in portfolio to make this trade', {
-      status: 400,
-    })
+  const errorMessage = checkTradeValidity(
+    numDollars,
+    numShares / TOTAL_SHARES,
+    buying ? 'buy' : 'sell',
+    ammSharesAtTrade,
+    ammUSDAtTrade,
+    userSpendableFunds,
+    userSellableShares,
+    !!valuation,
+    valuation
+  )
+  if (errorMessage) {
+    return new Response(errorMessage, { status: 400 })
   }
   if (!valuation) {
     const bundleId = uuid()
