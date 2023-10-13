@@ -257,9 +257,10 @@ function TradeInputsPanel(props: {
           setSubmitting(false)
         }}
       >
-        {mode?.label}: {formatPercent(percentEquity)} for{' '}
+        {mode?.label} {isLimitOrder ? 'limit order' : ''}:{' '}
+        {isNaN(percentEquity) ? '0%' : formatPercent(percentEquity)} for{' '}
         {formatMoneyPrecise(amountUSD)}{' '}
-        {isLimitOrder ? `at ${formatMoneyPrecise(valuation)}` : ''}
+        {isLimitOrder ? `at ${formatMoneyPrecise(valuation)} valuation` : ''}
       </Button>
     </div>
   )
