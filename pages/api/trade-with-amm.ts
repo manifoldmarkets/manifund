@@ -4,14 +4,14 @@ import uuid from 'react-uuid'
 import { getTxnsByUser } from '@/db/txn'
 import { createEdgeClient } from './_db'
 import {
+  ammSharesAtValuation,
   calculateAMMPorfolio,
   calculateBuyShares,
   calculateSellPayout,
 } from '@/app/projects/[slug]/trade'
 import { calculateCharityBalance, calculateSellableShares } from '@/utils/math'
 import { getBidsByUser } from '@/db/bid'
-import { TOTAL_SHARES } from '@/db/project'
-
+import { Database } from '@/db/database.types'
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
@@ -23,12 +23,13 @@ export const config = {
 
 type TradeWithAmmProps = {
   projectId: string
-  numShares: number
+  amount: number // USD for buying, shares for selling
   buying: boolean
+  valuation?: number
 }
 
 export default async function handler(req: NextRequest) {
-  const { projectId, numShares, buying } =
+  const { projectId, amount, buying, valuation } =
     (await req.json()) as TradeWithAmmProps
   const supabase = createEdgeClient(req)
   const user = await getUser(supabase)
@@ -37,12 +38,21 @@ export default async function handler(req: NextRequest) {
   }
   const ammTxns = await getTxnsByUser(supabase, projectId)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
-  if (numShares >= ammShares) {
+  if (buying && amount >= ammShares) {
     return new Response('Not enough shares to sell', { status: 400 })
   }
-  const price = buying
-    ? calculateBuyShares(numShares / TOTAL_SHARES, ammShares, ammUSD)
-    : calculateSellPayout(numShares / TOTAL_SHARES, ammShares, ammUSD)
+  const ammSharesAtTrade = valuation
+    ? ammSharesAtValuation(ammShares * ammUSD, valuation)
+    : ammShares
+  const ammUSDAtTrade = valuation
+    ? (ammShares * ammUSD) / ammSharesAtTrade
+    : ammUSD
+  const numDollars = buying
+    ? amount
+    : calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
+  const numShares = buying
+    ? calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade)
+    : amount
   const userTxns = await getTxnsByUser(supabase, user.id)
   const userBids = await getBidsByUser(supabase, user.id)
   const userBalance = buying
@@ -54,32 +64,49 @@ export default async function handler(req: NextRequest) {
     projectId,
     user.id
   )
-  if (buying ? price > userBalance : numShares > userSellableShares) {
+  if (buying ? numDollars > userBalance : numShares > userSellableShares) {
     return new Response('Not enough in portfolio to make this trade', {
       status: 400,
     })
   }
-  const bundleId = uuid()
-  const sharesTxn = {
-    amount: numShares,
-    from_id: buying ? projectId : user.id,
-    to_id: buying ? user.id : projectId,
-    token: projectId,
-    project: projectId,
-    bundle: bundleId,
+  if (!valuation) {
+    const bundleId = uuid()
+    const sharesTxn = {
+      amount: numShares,
+      from_id: buying ? projectId : user.id,
+      to_id: buying ? user.id : projectId,
+      token: projectId,
+      project: projectId,
+      bundle: bundleId,
+    }
+    const usdTxn = {
+      amount: numDollars,
+      from_id: buying ? user.id : projectId,
+      to_id: buying ? projectId : user.id,
+      token: 'USD',
+      project: projectId,
+      bundle: bundleId,
+    }
+    const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
+    if (error) {
+      console.error(error)
+      return new Response('Error', { status: 500 })
+    }
+  } else {
+    const bid = {
+      amount: numDollars,
+      bidder: user.id,
+      project: projectId,
+      valuation,
+      type: buying ? 'buy' : 'sell',
+      status: 'pending',
+    } as Database['public']['Tables']['bids']['Row']
+    const { error } = await supabase.from('bids').insert([bid])
+    if (error) {
+      console.error(error)
+      return new Response('Error', { status: 500 })
+    }
   }
-  const usdTxn = {
-    amount: price,
-    from_id: buying ? user.id : projectId,
-    to_id: buying ? projectId : user.id,
-    token: 'USD',
-    project: projectId,
-    bundle: bundleId,
-  }
-  const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
-  if (error) {
-    console.error(error)
-    return new Response('Error', { status: 500 })
-  }
+
   return new Response('Success', { status: 200 })
 }

@@ -399,7 +399,7 @@ export function calculateSellPayout(
   return ammUSD - uniswapProduct / (ammShares + shares)
 }
 
-function ammSharesAtValuation(
+export function ammSharesAtValuation(
   uniswapProduct: number,
   valuationAtTrade: number
 ) {
