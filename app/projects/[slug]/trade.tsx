@@ -113,6 +113,7 @@ function TradeInputsPanel(props: {
   const mode = MODES.find((mode) => mode.id === modeId)
   const isLimitOrder = !!setModeId
   const currentValuation = calculateValuation(ammShares, ammUSD)
+  const minValuation = calculateMinimumValuation(ammShares, ammUSD)
   const valuationAfterTrade = calculateValuationAfterTrade(
     amount,
     ammShares,
@@ -153,6 +154,10 @@ function TradeInputsPanel(props: {
   ) {
     errorMessage =
       'For sell limit orders, valuation must be greater than current valuation'
+  } else if (isLimitOrder && limitValuation < minValuation) {
+    errorMessage = `Valuation must be greater than ${formatMoneyPrecise(
+      minValuation
+    )}`
   } else if (amount === 0) {
     errorMessage = 'Please enter an amount'
   } else if (modeId === 'buy' && amount > userSpendableFunds) {
@@ -277,6 +282,7 @@ function TradeInputsPanel(props: {
           {submitTradeButtonText(
             amountUSD,
             percentEquity,
+            isLimitOrder,
             mode?.label,
             isLimitOrder ? limitValuation : undefined
           )}
@@ -289,12 +295,13 @@ function TradeInputsPanel(props: {
 const submitTradeButtonText = (
   amountUSD: number,
   percentEquity: number,
+  isLimitOrder: boolean,
   modeLabel?: string,
   limitValuation?: number
 ) => {
-  return `${modeLabel} ${limitValuation ? 'limit order' : ''}: ${formatPercent(
-    percentEquity
-  )} for ${formatMoneyPrecise(amountUSD)} ${
+  return `${modeLabel ?? ''} ${isLimitOrder ? 'limit order' : ''}: ${
+    isNaN(percentEquity) ? '0%' : formatPercent(percentEquity)
+  } for ${isNaN(amountUSD) ? '$0' : formatMoneyPrecise(amountUSD)} ${
     limitValuation ? `at ${formatMoneyPrecise(limitValuation)} valuation` : ''
   }`
 }
@@ -489,4 +496,8 @@ function calculateValuationAfterTrade(
 
 export function calculateValuation(ammShares: number, ammUSD: number) {
   return (ammUSD / ammShares) * TOTAL_SHARES
+}
+
+export function calculateMinimumValuation(ammShares: number, ammUSD: number) {
+  return (ammUSD * ammShares) / TOTAL_SHARES
 }
