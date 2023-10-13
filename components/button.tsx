@@ -31,11 +31,11 @@ export function buttonClass(size: SizeType, color: ColorType | 'override') {
     'font-md inline-flex items-center justify-center rounded-md ring-inset shadow-sm transition-colors disabled:cursor-not-allowed text-center',
     sizeClasses[size],
     color === 'emerald' &&
-      'disabled:bg-gray-200 bg-emerald-500 text-white hover:bg-emerald-500',
+      'disabled:bg-gray-200 bg-emerald-500 text-white hover:bg-emerald-600',
     color === 'emerald-outline' &&
       'disabled:bg-gray-200 bg-white ring-emerald-500 ring-2 text-emerald-500 hover:bg-emerald-500 hover:text-white',
     color === 'rose' &&
-      'disabled:bg-gray-200 bg-rose-300 text-white hover:bg-rose-400',
+      'disabled:bg-gray-200 bg-rose-500 text-white hover:bg-rose-600',
     color === 'rose-outline' &&
       'disabled:bg-gray-200 bg-white ring-rose-500  ring-2 text-rose-500 hover:bg-rose-500 hover:text-white',
     color === 'orange' &&
