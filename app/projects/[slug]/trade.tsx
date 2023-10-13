@@ -113,7 +113,6 @@ function TradeInputsPanel(props: {
   const mode = MODES.find((mode) => mode.id === modeId)
   const isLimitOrder = !!setModeId
   const currentValuation = calculateValuation(ammShares, ammUSD)
-  const minValuation = calculateMinimumValuation(ammShares, ammUSD)
   const valuationAfterTrade = calculateValuationAfterTrade(
     amount,
     ammShares,
@@ -137,37 +136,6 @@ function TradeInputsPanel(props: {
       ? amount
       : calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
 
-  let errorMessage
-  if (isLimitOrder && !limitValuation) {
-    errorMessage = 'Please enter a valuation'
-  } else if (
-    isLimitOrder &&
-    modeId === 'buy' &&
-    limitValuation > currentValuation
-  ) {
-    errorMessage =
-      'For buy limit orders, valuation must be less than current valuation'
-  } else if (
-    isLimitOrder &&
-    modeId === 'sell' &&
-    limitValuation < currentValuation
-  ) {
-    errorMessage =
-      'For sell limit orders, valuation must be greater than current valuation'
-  } else if (isLimitOrder && limitValuation < minValuation) {
-    errorMessage = `Valuation must be greater than ${formatMoneyPrecise(
-      minValuation
-    )}`
-  } else if (amount === 0) {
-    errorMessage = 'Please enter an amount'
-  } else if (modeId === 'buy' && amount > userSpendableFunds) {
-    errorMessage = 'Insufficient funds'
-  } else if (modeId === 'sell' && amount > userSellableShares) {
-    errorMessage = 'Insufficient shares'
-  } else {
-    errorMessage = undefined
-  }
-
   const handleSubmit = async () => {
     setSubmitting(true)
     const response = await fetch('/api/trade-with-amm', {
@@ -185,6 +153,18 @@ function TradeInputsPanel(props: {
     setAmount(0)
     setSubmitting(false)
   }
+
+  const errorMessage = checkTradeValidity(
+    amountUSD,
+    percentEquity,
+    modeId,
+    ammShares,
+    ammUSD,
+    userSpendableFunds,
+    userSellableShares,
+    isLimitOrder,
+    limitValuation
+  )
   return (
     <div
       className={clsx(
@@ -290,6 +270,47 @@ function TradeInputsPanel(props: {
       </Tooltip>
     </div>
   )
+}
+
+export const checkTradeValidity = (
+  amountUSD: number,
+  percentEquity: number,
+  modeId: BinaryModeId,
+  ammShares: number,
+  ammUSD: number,
+  userSpendableFunds: number,
+  userSellableShares: number,
+  isLimitOrder: boolean,
+  limitValuation?: number
+) => {
+  const minValuation = calculateMinimumValuation(ammShares, ammUSD)
+  const currentValuation = calculateValuation(ammShares, ammUSD)
+  if (isLimitOrder) {
+    if (!limitValuation) {
+      return 'Please enter a valuation'
+    } else if (modeId === 'buy' && limitValuation > minValuation) {
+      return `Valuation must be greater than ${formatMoneyPrecise(
+        minValuation
+      )}`
+    } else if (modeId === 'sell' && limitValuation < currentValuation) {
+      return 'For sell limit orders, valuation must be greater than current valuation'
+    } else if (limitValuation < minValuation) {
+      return `Valuation must be greater than ${formatMoneyPrecise(
+        minValuation
+      )}`
+    }
+  } else if (amountUSD === 0 || percentEquity === 0) {
+    return 'Please enter an amount'
+  } else if (modeId === 'buy' && amountUSD > userSpendableFunds) {
+    return 'Insufficient funds'
+  } else if (
+    modeId === 'sell' &&
+    percentEquity * TOTAL_SHARES > userSellableShares
+  ) {
+    return 'Insufficient shares'
+  } else {
+    return undefined
+  }
 }
 
 const submitTradeButtonText = (
