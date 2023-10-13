@@ -131,6 +131,16 @@ function TradeInputsPanel(props: {
   const ammUSDAtTrade = isLimitOrder
     ? (ammUSD * ammShares) / ammSharesAtTrade
     : ammUSD
+  const percentEquity =
+    modeId === 'buy'
+      ? (calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade) /
+          TOTAL_SHARES) *
+        100
+      : (amount / TOTAL_SHARES) * 100
+  const amountUSD =
+    modeId === 'buy'
+      ? amount
+      : calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
   return (
     <div
       className={clsx(
@@ -224,7 +234,10 @@ function TradeInputsPanel(props: {
         )}
       </Row>
       <Button
-        className={clsx(isLimitOrder ? '' : mode?.buttonClass, 'w-full')}
+        className={clsx(
+          isLimitOrder ? '' : mode?.buttonClass,
+          'w-full font-semibold'
+        )}
         loading={submitting}
         onClick={async () => {
           setSubmitting(true)
@@ -244,7 +257,9 @@ function TradeInputsPanel(props: {
           setSubmitting(false)
         }}
       >
-        {modeId} {amount}
+        {mode?.label}: {formatPercent(percentEquity)} for{' '}
+        {formatMoneyPrecise(amountUSD)}{' '}
+        {isLimitOrder ? `at ${formatMoneyPrecise(valuation)}` : ''}
       </Button>
     </div>
   )
