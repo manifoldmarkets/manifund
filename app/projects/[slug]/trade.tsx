@@ -112,7 +112,6 @@ function TradeInputsPanel(props: {
 
   const mode = MODES.find((mode) => mode.id === modeId)
   const isLimitOrder = !!setModeId
-  const currentValuation = calculateValuation(ammShares, ammUSD)
   const valuationAfterTrade = calculateValuationAfterTrade(
     amount,
     ammShares,
