@@ -116,6 +116,19 @@ function TradeInputsPanel(props: {
   const [valuation, setValuation] = useState(0)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
   const [submitting, setSubmitting] = useState(false)
+  const valuationAfterTrade = calculateValuationAfterTrade(
+    amount,
+    ammShares,
+    ammUSD,
+    modeId === 'buy',
+    setModeId ? valuation : undefined
+  )
+  const ammSharesAtTrade = setModeId
+    ? ammSharesAtValuation(ammUSD * ammShares, valuation)
+    : ammShares
+  const ammUSDAtTrade = setModeId
+    ? (ammUSD * ammShares) / ammSharesAtTrade
+    : ammUSD
   return (
     <div
       className={clsx(
@@ -178,7 +191,8 @@ function TradeInputsPanel(props: {
             <label className="text-xs text-gray-600">Equity</label>
             <span className="font-semibold">
               {(
-                (calculateBuyShares(amount, ammShares, ammUSD) / TOTAL_SHARES) *
+                (calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade) /
+                  TOTAL_SHARES) *
                 100
               ).toFixed(2)}
               %
@@ -189,7 +203,12 @@ function TradeInputsPanel(props: {
           <Col>
             <label className="text-xs text-gray-600">Payout</label>
             <span className="font-semibold">
-              ${calculateSellPayout(amount, ammShares, ammUSD).toFixed(2)}
+              $
+              {calculateSellPayout(
+                amount,
+                ammSharesAtTrade,
+                ammUSDAtTrade
+              ).toFixed(2)}
             </span>
           </Col>
         )}
@@ -199,14 +218,7 @@ function TradeInputsPanel(props: {
               Valuation after trade
             </label>
             <span className="font-semibold">
-              $
-              {calculateValuationAfterTrade(
-                amount,
-                ammShares,
-                ammUSD,
-                modeId === 'buy',
-                setModeId ? valuation : undefined
-              ).toFixed(2)}
+              ${valuationAfterTrade.toFixed(2)}
             </span>
           </Col>
         )}
