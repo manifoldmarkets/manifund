@@ -43,7 +43,7 @@ export function Trade(props: {
 }) {
   const { ammTxns, ammId, userSpendableFunds, userSellableShares } = props
   const [modeId, setModeId] = useState<BinaryModeId>(null)
-  const [isLimit, setIsLimit] = useState(false)
+  const [isLimitOrder, setIsLimitOrder] = useState(false)
   return (
     <div>
       <Row className="mb-3 w-full justify-between gap-3 font-semibold">
@@ -53,13 +53,13 @@ export function Trade(props: {
               key={mode.id}
               className={clsx(
                 'w-full',
-                modeId === mode.id && !isLimit
+                modeId === mode.id && !isLimitOrder
                   ? mode.buttonClass
                   : mode.buttonUnselectedClass
               )}
               onClick={() => {
-                setModeId(modeId === mode.id && !isLimit ? null : mode.id)
-                setIsLimit(false)
+                setModeId(modeId === mode.id && !isLimitOrder ? null : mode.id)
+                setIsLimitOrder(false)
               }}
             >
               {mode.label}
@@ -68,23 +68,23 @@ export function Trade(props: {
         })}
         <Button
           className={clsx(
-            isLimit
+            isLimitOrder
               ? 'bg-orange-500 !text-white hover:!bg-orange-600'
               : 'w-full bg-white !text-orange-500 ring-2 ring-orange-500 hover:bg-orange-500 hover:!text-white hover:!ring-orange-600',
             '!w-32'
           )}
           onClick={() => {
-            setIsLimit(!isLimit)
+            setIsLimitOrder(!isLimitOrder)
             setModeId(null)
           }}
         >
           #
         </Button>
       </Row>
-      {(modeId !== null || isLimit) && (
+      {(modeId !== null || isLimitOrder) && (
         <TradeInputsPanel
           modeId={modeId}
-          setModeId={isLimit ? setModeId : undefined}
+          setModeId={isLimitOrder ? setModeId : undefined}
           ammTxns={ammTxns}
           ammId={ammId}
           userSpendableFunds={userSpendableFunds}
@@ -111,33 +111,34 @@ function TradeInputsPanel(props: {
     userSpendableFunds,
     userSellableShares,
   } = props
-  const mode = MODES.find((mode) => mode.id === modeId)
   const [amount, setAmount] = useState(0)
   const [valuation, setValuation] = useState(0)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
   const [submitting, setSubmitting] = useState(false)
+  const mode = MODES.find((mode) => mode.id === modeId)
+  const isLimitOrder = !!setModeId
   const valuationAfterTrade = calculateValuationAfterTrade(
     amount,
     ammShares,
     ammUSD,
     modeId === 'buy',
-    setModeId ? valuation : undefined
+    isLimitOrder ? valuation : undefined
   )
-  const ammSharesAtTrade = setModeId
+  const ammSharesAtTrade = isLimitOrder
     ? ammSharesAtValuation(ammUSD * ammShares, valuation)
     : ammShares
-  const ammUSDAtTrade = setModeId
+  const ammUSDAtTrade = isLimitOrder
     ? (ammUSD * ammShares) / ammSharesAtTrade
     : ammUSD
   return (
     <div
       className={clsx(
         'flex flex-col gap-4 rounded-md p-4',
-        setModeId ? 'bg-orange-50' : mode?.cardClass
+        isLimitOrder ? 'bg-orange-50' : mode?.cardClass
       )}
     >
       <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
-      {setModeId && (
+      {isLimitOrder && (
         <Col className="gap-3">
           <Row className="items-center gap-2">
             <label>Mode:</label>
@@ -171,7 +172,7 @@ function TradeInputsPanel(props: {
       )}
       {modeId === 'buy' && (
         <BuyPanelContent
-          isLimit={!!setModeId}
+          isLimitOrder={isLimitOrder}
           userSpendableFunds={userSpendableFunds}
           amount={amount}
           setAmount={setAmount}
@@ -179,7 +180,7 @@ function TradeInputsPanel(props: {
       )}
       {modeId === 'sell' && (
         <SellPanelContent
-          isLimit={!!setModeId}
+          isLimitOrder={isLimitOrder}
           userSellableShares={userSellableShares}
           amount={amount}
           setAmount={setAmount}
@@ -224,7 +225,7 @@ function TradeInputsPanel(props: {
         )}
       </Row>
       <Button
-        className={clsx(setModeId ? '' : mode?.buttonClass, 'w-full')}
+        className={clsx(isLimitOrder ? '' : mode?.buttonClass, 'w-full')}
         loading={submitting}
         onClick={async () => {
           setSubmitting(true)
@@ -234,9 +235,10 @@ function TradeInputsPanel(props: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              projectId: ammId,
-              numShares: (amount / 100) * TOTAL_SHARES,
+              amount,
+              ammId,
               buying: modeId === 'buy',
+              valuation: isLimitOrder ? valuation : undefined,
             }),
           })
           setAmount(0)
@@ -250,12 +252,12 @@ function TradeInputsPanel(props: {
 }
 
 function BuyPanelContent(props: {
-  isLimit: boolean
+  isLimitOrder: boolean
   userSpendableFunds: number
   amount: number
   setAmount: (amount: number) => void
 }) {
-  const { isLimit, userSpendableFunds, amount, setAmount } = props
+  const { isLimitOrder, userSpendableFunds, amount, setAmount } = props
   const sliderMax = Math.min(userSpendableFunds, 100)
   return (
     <div>
@@ -270,7 +272,7 @@ function BuyPanelContent(props: {
         <MySlider
           value={(amount / sliderMax) * 100}
           className={
-            isLimit
+            isLimitOrder
               ? ''
               : '[&>.rc-slider-handle]:!bg-emerald-500 [&>.rc-slider-track]:!bg-emerald-500'
           }
@@ -301,12 +303,12 @@ function BuyPanelContent(props: {
 }
 
 function SellPanelContent(props: {
-  isLimit: boolean
+  isLimitOrder: boolean
   userSellableShares: number
   amount: number
   setAmount: (amount: number) => void
 }) {
-  const { isLimit, userSellableShares, amount, setAmount } = props
+  const { isLimitOrder, userSellableShares, amount, setAmount } = props
   const sliderMax = userSellableShares
   return (
     <div>
@@ -323,7 +325,7 @@ function SellPanelContent(props: {
         <MySlider
           value={(amount / sliderMax) * 100}
           className={
-            isLimit
+            isLimitOrder
               ? ''
               : '[&>.rc-slider-handle]:bg-rose-500 [&>.rc-slider-track]:bg-rose-500'
           }
