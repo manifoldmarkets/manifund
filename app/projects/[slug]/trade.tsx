@@ -403,17 +403,26 @@ function calculateValuationAfterTrade(
   const ammSharesAtTrade = valuationAtTrade
     ? ammSharesAtValuation(uniswapProduct, valuationAtTrade)
     : ammShares
+  console.log('AMM shares at trade', ammSharesAtTrade)
   const ammUSDAtTrade = valuationAtTrade
     ? uniswapProduct / ammSharesAtTrade
     : ammUSD
+  console.log('AMM usd at trade', ammUSDAtTrade)
   const sharesInTrade = isBuying
-    ? -calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade)
+    ? calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade)
     : amount
   const dollarsInTrade = isBuying
-    ? amount / (ammSharesAtTrade - sharesInTrade)
-    : -ammUSDAtTrade / (ammSharesAtTrade + sharesInTrade)
-  return (
-    ((ammUSDAtTrade + dollarsInTrade) / (ammSharesAtTrade - sharesInTrade)) *
-    TOTAL_SHARES
-  )
+    ? amount
+    : calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
+  console.log('Shares in trade', sharesInTrade)
+  console.log('Dollars in trade', dollarsInTrade)
+  const ammUSDAfterTrade = isBuying
+    ? ammUSDAtTrade + dollarsInTrade
+    : ammUSDAtTrade - dollarsInTrade
+  console.log('AMM usd after trade', ammUSDAfterTrade)
+  const ammSharesAfterTrade = isBuying
+    ? ammUSDAtTrade - sharesInTrade
+    : ammSharesAtTrade + sharesInTrade
+  console.log('AMM shares after trade', ammSharesAfterTrade)
+  return (ammUSDAfterTrade / ammSharesAfterTrade) * TOTAL_SHARES
 }
