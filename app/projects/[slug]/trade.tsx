@@ -15,6 +15,7 @@ import {
 import clsx from 'clsx'
 import { useState } from 'react'
 import { Tooltip } from '@/components/tooltip'
+import { AdjustmentsHorizontalIcon } from '@heroicons/react/20/solid'
 
 type BinaryModeId = 'buy' | 'sell' | null
 const MODES = [
@@ -71,7 +72,7 @@ export function Trade(props: {
             setModeId(null)
           }}
         >
-          #
+          <AdjustmentsHorizontalIcon className="h-5 w-5" />
         </Button>
       </Row>
       {(modeId !== null || isLimitOrder) && (
