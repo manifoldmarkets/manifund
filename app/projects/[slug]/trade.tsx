@@ -235,8 +235,8 @@ function TradeInputsPanel(props: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+              projectId: ammId,
               amount,
-              ammId,
               buying: modeId === 'buy',
               valuation: isLimitOrder ? valuation : undefined,
             }),
