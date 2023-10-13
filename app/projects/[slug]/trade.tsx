@@ -109,6 +109,7 @@ function TradeInputsPanel(props: {
   const [limitValuation, setLimitValuation] = useState(0)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
   const [submitting, setSubmitting] = useState(false)
+
   const mode = MODES.find((mode) => mode.id === modeId)
   const isLimitOrder = !!setModeId
   const currentValuation = calculateValuation(ammShares, ammUSD)
@@ -127,14 +128,14 @@ function TradeInputsPanel(props: {
     : ammUSD
   const percentEquity =
     modeId === 'buy'
-      ? (calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade) /
-          TOTAL_SHARES) *
-        100
-      : (amount / TOTAL_SHARES) * 100
+      ? calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade) /
+        TOTAL_SHARES
+      : amount / TOTAL_SHARES
   const amountUSD =
     modeId === 'buy'
       ? amount
       : calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
+
   let errorMessage
   if (isLimitOrder && !limitValuation) {
     errorMessage = 'Please enter a valuation'
@@ -161,6 +162,24 @@ function TradeInputsPanel(props: {
   } else {
     errorMessage = undefined
   }
+
+  const handleSubmit = async () => {
+    setSubmitting(true)
+    const response = await fetch('/api/trade-with-amm', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        projectId: ammId,
+        amount,
+        buying: modeId === 'buy',
+        valuation: isLimitOrder ? limitValuation : undefined,
+      }),
+    })
+    setAmount(0)
+    setSubmitting(false)
+  }
   return (
     <div
       className={clsx(
@@ -168,7 +187,6 @@ function TradeInputsPanel(props: {
         isLimitOrder ? 'bg-orange-50' : mode?.cardClass
       )}
     >
-      <p>valuation: ${(ammUSD / ammShares) * TOTAL_SHARES}</p>
       {isLimitOrder && (
         <div className="flex flex-col justify-between gap-3 sm:flex-row">
           <Row className="items-center gap-2">
@@ -225,12 +243,7 @@ function TradeInputsPanel(props: {
           <Col>
             <label className="text-xs text-gray-600">Equity</label>
             <span className="font-semibold">
-              {(
-                (calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade) /
-                  TOTAL_SHARES) *
-                100
-              ).toFixed(2)}
-              %
+              {formatPercent(percentEquity)}
             </span>
           </Col>
         )}
@@ -238,9 +251,7 @@ function TradeInputsPanel(props: {
           <Col>
             <label className="text-xs text-gray-600">Payout</label>
             <span className="font-semibold">
-              {formatMoneyPrecise(
-                calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
-              )}
+              {formatMoneyPrecise(amountUSD)}
             </span>
           </Col>
         )}
@@ -261,34 +272,31 @@ function TradeInputsPanel(props: {
           className="w-full font-semibold"
           disabled={!!errorMessage}
           loading={submitting}
-          onClick={async () => {
-            setSubmitting(true)
-            const response = await fetch('/api/trade-with-amm', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                projectId: ammId,
-                amount,
-                buying: modeId === 'buy',
-                valuation: isLimitOrder ? limitValuation : undefined,
-              }),
-            })
-            setAmount(0)
-            setSubmitting(false)
-          }}
+          onClick={handleSubmit}
         >
-          {mode?.label} {isLimitOrder ? 'limit order' : ''}:{' '}
-          {isNaN(percentEquity) ? '0%' : formatPercent(percentEquity)} for{' '}
-          {isNaN(amountUSD) ? '$0' : formatMoneyPrecise(amountUSD)}{' '}
-          {isLimitOrder
-            ? `at ${formatMoneyPrecise(limitValuation)} valuation`
-            : ''}
+          {submitTradeButtonText(
+            amountUSD,
+            percentEquity,
+            mode?.label,
+            isLimitOrder ? limitValuation : undefined
+          )}
         </Button>
       </Tooltip>
     </div>
   )
+}
+
+const submitTradeButtonText = (
+  amountUSD: number,
+  percentEquity: number,
+  modeLabel?: string,
+  limitValuation?: number
+) => {
+  return `${modeLabel} ${limitValuation ? 'limit order' : ''}: ${formatPercent(
+    percentEquity
+  )} for ${formatMoneyPrecise(amountUSD)} ${
+    limitValuation ? `at ${formatMoneyPrecise(limitValuation)} valuation` : ''
+  }`
 }
 
 function BuyPanelContent(props: {
