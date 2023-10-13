@@ -411,17 +411,17 @@ function calculateValuationAfterTrade(
   const sharesInTrade = isBuying
     ? calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade)
     : amount
-  const dollarsInTrade = isBuying
+  const usdInTrade = isBuying
     ? amount
     : calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
   console.log('Shares in trade', sharesInTrade)
-  console.log('Dollars in trade', dollarsInTrade)
+  console.log('usd in trade', usdInTrade)
   const ammUSDAfterTrade = isBuying
-    ? ammUSDAtTrade + dollarsInTrade
-    : ammUSDAtTrade - dollarsInTrade
+    ? ammUSDAtTrade + usdInTrade
+    : ammUSDAtTrade - usdInTrade
   console.log('AMM usd after trade', ammUSDAfterTrade)
   const ammSharesAfterTrade = isBuying
-    ? ammUSDAtTrade - sharesInTrade
+    ? ammSharesAtTrade - sharesInTrade
     : ammSharesAtTrade + sharesInTrade
   console.log('AMM shares after trade', ammSharesAfterTrade)
   return (ammUSDAfterTrade / ammSharesAfterTrade) * TOTAL_SHARES
