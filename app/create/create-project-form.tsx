@@ -19,6 +19,8 @@ import { SelectCauses } from '@/components/select-causes'
 import { MySlider } from '@/components/slider'
 import clsx from 'clsx'
 import { InfoTooltip } from '@/components/info-tooltip'
+import Slider from 'rc-slider'
+import 'rc-slider/assets/index.css'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -323,6 +325,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           setSelectedCauses={setSelectedCauses}
         />
       </Col>
+      <InvestmentStructurePanel minimumFunding={minFunding ?? 0} />
       <Button
         className="mt-4"
         type="submit"
@@ -333,5 +336,41 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         Publish project
       </Button>
     </Col>
+  )
+}
+
+function InvestmentStructurePanel(props: { minimumFunding: number }) {
+  const { minimumFunding } = props
+  const [investorPortion, setInvestorPortion] = useState<number>(50)
+  const [ammPortion, setAMMPortion] = useState<number>(10)
+  return (
+    <Slider
+      range
+      min={0}
+      max={100}
+      marks={SLIDER_MARKS}
+      className={clsx(
+        'mx-2 mb-10 mt-3 !h-1 [&>.rc-slider-rail]:bg-orange-500',
+        '[&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-gray-200'
+      )}
+      railStyle={{ height: 4, top: 5 }}
+      trackStyle={{ height: 4, top: 5 }}
+      handleStyle={{
+        height: 16,
+        width: 16,
+        opacity: 1,
+        border: 'none',
+        boxShadow: 'none',
+        top: 4,
+      }}
+      value={[investorPortion, investorPortion + ammPortion]}
+      onChange={(value) => {
+        if (value instanceof Array) {
+          setInvestorPortion(value[0])
+          setAMMPortion(value[1] - value[0])
+        }
+      }}
+      pushable
+    />
   )
 }

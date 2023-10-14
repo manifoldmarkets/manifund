@@ -14,15 +14,15 @@ export function MySlider(props: SliderProps<number | number[]>) {
         '[&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-orange-500',
         className
       )}
-      railStyle={{ height: 4, top: 4 }}
-      trackStyle={{ height: 4, top: 4 }}
+      railStyle={{ height: 4, top: 5 }}
+      trackStyle={{ height: 4, top: 5 }}
       handleStyle={{
-        height: 24,
-        width: 24,
+        height: 16,
+        width: 16,
         opacity: 1,
         border: 'none',
         boxShadow: 'none',
-        top: -0.5,
+        top: 4,
       }}
       {...rest}
     />
