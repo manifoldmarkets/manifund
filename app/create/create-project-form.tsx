@@ -351,7 +351,7 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
       marks={SLIDER_MARKS}
       className={clsx(
         'mx-2 mb-10 mt-3 !h-1 [&>.rc-slider-rail]:bg-orange-500',
-        '[&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-gray-200'
+        '[&>.rc-slider-dot]:!border-0 [&>.rc-slider-dot]:!bg-rose-500  [&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-gray-200'
       )}
       railStyle={{ height: 4, top: 5 }}
       trackStyle={{ height: 4, top: 5 }}
