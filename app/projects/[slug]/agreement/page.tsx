@@ -44,7 +44,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
       </Row>
       <p className="mb-5 text-sm text-gray-500">
         All grant recipients are required to agree to the terms and conditions
-        outlined here before recieving funds.
+        outlined here before receiving funds.
       </p>
       <table className="text-gray-900">
         <tbody>
@@ -141,7 +141,7 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
             </td>
           </tr>
           <tr className="font-bold">
-            <td className="pt-6 pr-10 ">4</td>
+            <td className="pr-10 pt-6 ">4</td>
             <td className="pt-6 ">Monitoring and Reporting</td>
           </tr>
           <tr>
@@ -237,8 +237,8 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
                 5.5 The Charity will make the payment using the standard payment
                 routes, but the onus is on the Recipient to help the Charity
                 complete the payment if those routes fail, for example, by
-                proving alternative bank accounts or payment methods, subject to
-                the Charity&apos;s acceptance.
+                providing alternative bank accounts or payment methods, subject
+                to the Charity&apos;s acceptance.
               </p>
             </td>
           </tr>
