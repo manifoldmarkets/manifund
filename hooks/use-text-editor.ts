@@ -6,7 +6,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { noop } from 'lodash'
 import useLocalStorage from '@/hooks/use-local-storage'
 import { TIPTAP_EXTENSIONS } from '@/components/editor'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export function useTextEditor(
   defaultContent: any = '',
@@ -18,6 +18,7 @@ export function useTextEditor(
     defaultContent,
     key
   )
+  const [edited, setEdited] = useState(false)
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -31,6 +32,8 @@ export function useTextEditor(
     onUpdate: !key
       ? noop
       : ({ editor }) => {
+          setEdited(true)
+          // Persist editor content to local storage on each keystroke
           saveContent(editor.getJSON())
         },
     extensions: [
@@ -43,9 +46,9 @@ export function useTextEditor(
     ],
     content: key && content ? content : defaultContent,
   })
-  // Update editor's content when content from useLocalStorage changes
+  // Update editor's content if 1) no edits yet and 2) there's sth in local storage
   useEffect(() => {
-    if (key && content) {
+    if (!edited && key && content) {
       editor?.chain().setContent(content).run()
     }
   }, [content])
