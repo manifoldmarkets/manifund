@@ -236,7 +236,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           <p className="text-sm text-gray-600">
             Blah blah explaing what is going on and link to impact certs info.
           </p>
-          <Row className="justify-center gap-5">
+          <Row className="justify-between gap-5">
             <Row className="gap-1">
               <Input
                 value={sellingPortion}
@@ -254,6 +254,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
                 setSellingPortion(value as number)
               }}
               step={5}
+              className="w-full"
             />
           </Row>
           <Row className="m-auto w-2/3 justify-between">

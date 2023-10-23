@@ -69,9 +69,6 @@ export function Slider(props: {
         </div>
       </Track>
       <Thumb className={thumbClasses} />
-      {/* {marks.map (value) => (
-          <Mark>{value}</Mark>
-        } */}
     </RxSlider.Root>
   )
 }
@@ -115,27 +112,32 @@ export function RangeSlider(props: {
       max={max}
       disabled={disabled}
     >
-      <Track className={trackClasses}>
-        {marks?.map(({ value, label }) => (
-          <div
-            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
-            style={{ left: `${value}%` }}
-            key={value}
-          >
+      <RxSlider.Track className="relative h-1 grow rounded-full bg-orange-300 -z-10">
+        <div className="absolute left-2.5 right-2.5 h-full">
+          {marks?.map(({ value, label }) => (
             <div
-              className={clsx(
-                lowValue <= value && highValue >= value
-                  ? trackClasses
-                  : 'bg-gray-400',
-                'h-2 w-2 rounded-full'
-              )}
-            />
-            <span className="absolute left-1/2 top-4 -translate-x-1/2 text-xs text-gray-400">
-              {label}
-            </span>
-          </div>
-        ))}
-      </Track>
+              className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
+              style={{ left: `${value}%` }}
+              key={value}
+            >
+              <div
+                className={clsx(
+                  (lowValue >= value || highValue <= value)
+                    ? '!bg-orange-500'
+                    : 'bg-gray-400',
+                  'h-2 w-2 rounded-full'
+                )}
+              />
+              <span className="absolute left-1/2 top-4 -translate-x-1/2 text-xs text-gray-400">
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
+        <RxSlider.Range
+          className={'absolute h-full rounded-full bg-gray-300'}
+        />
+      </RxSlider.Track>
       <Thumb className={thumbClasses} />
       <Thumb className={thumbClasses} />
     </RxSlider.Root>
