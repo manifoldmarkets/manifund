@@ -16,10 +16,9 @@ import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
 import { MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
-import { MySlider } from '@/components/slider'
+import {RangeSlider, Slider} from '@/components/slider'
 import clsx from 'clsx'
 import { InfoTooltip } from '@/components/info-tooltip'
-import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
 
 const DESCRIPTION_OUTLINE = `
@@ -38,13 +37,13 @@ const DESCRIPTION_OUTLINE = `
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
 
-const SLIDER_MARKS = {
-  0: '0%',
-  25: '25%',
-  50: '50%',
-  75: '75%',
-  100: '100%',
-}
+const SLIDER_MARKS = [
+  {value: 0, label: "0%"},
+  {value: 25, label: "25%"},
+  {value: 50, label: "50%"},
+  {value: 75, label: "75%"},
+  {value: 100, label: "100%"},
+]
 
 export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   const { causesList } = props
@@ -248,9 +247,9 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
               ></Input>
               <p className="relative top-3">%</p>
             </Row>
-            <MySlider
+            <Slider
               marks={SLIDER_MARKS}
-              value={sellingPortion}
+              amount={sellingPortion}
               onChange={(value) => {
                 setSellingPortion(value as number)
               }}
@@ -344,8 +343,7 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
   const [investorPortion, setInvestorPortion] = useState<number>(50)
   const [ammPortion, setAMMPortion] = useState<number>(10)
   return (
-    <Slider
-      range
+    <RangeSlider
       min={0}
       max={100}
       marks={SLIDER_MARKS}
@@ -353,24 +351,12 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
         'mx-2 mb-10 mt-3 !h-1 [&>.rc-slider-rail]:bg-orange-500',
         '[&>.rc-slider-dot]:!border-0 [&>.rc-slider-dot]:!bg-rose-500  [&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-gray-200'
       )}
-      railStyle={{ height: 4, top: 5 }}
-      trackStyle={{ height: 4, top: 5 }}
-      handleStyle={{
-        height: 16,
-        width: 16,
-        opacity: 1,
-        border: 'none',
-        boxShadow: 'none',
-        top: 4,
+      lowValue={investorPortion}
+      highValue={investorPortion + ammPortion}
+      setValues={(low, high) => {
+          setInvestorPortion(low)
+          setAMMPortion(high - low)
       }}
-      value={[investorPortion, investorPortion + ammPortion]}
-      onChange={(value) => {
-        if (value instanceof Array) {
-          setInvestorPortion(value[0])
-          setAMMPortion(value[1] - value[0])
-        }
-      }}
-      pushable
     />
   )
 }
