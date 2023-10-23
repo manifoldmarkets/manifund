@@ -97,7 +97,7 @@ export function RangeSlider(props: {
     className,
   } = props
 
-  const [trackClasses, thumbClasses] = colors[color]
+  const [trackClass, thumbClasses] = colors[color]
 
   return (
     <RxSlider.Root
@@ -112,18 +112,20 @@ export function RangeSlider(props: {
       max={max}
       disabled={disabled}
     >
-      <RxSlider.Track className="relative h-1 grow rounded-full bg-orange-300 -z-10">
+      <RxSlider.Track className="relative -z-10 h-1 grow rounded-full bg-gradient-to-r from-orange-300 to-rose-300">
         <div className="absolute left-2.5 right-2.5 h-full">
           {marks?.map(({ value, label }) => (
             <div
-              className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
+              className="absolute top-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
               style={{ left: `${value}%` }}
               key={value}
             >
               <div
                 className={clsx(
-                  (lowValue >= value || highValue <= value)
-                    ? '!bg-orange-500'
+                  lowValue >= value
+                    ? colors.orange[1]
+                    : highValue <= value
+                    ? colors.rose[1]
                     : 'bg-gray-400',
                   'h-2 w-2 rounded-full'
                 )}
@@ -138,8 +140,8 @@ export function RangeSlider(props: {
           className={'absolute h-full rounded-full bg-gray-300'}
         />
       </RxSlider.Track>
-      <Thumb className={thumbClasses} />
-      <Thumb className={thumbClasses} />
+      <Thumb className={colors.orange[1]} />
+      <Thumb className={colors.rose[1]} />
     </RxSlider.Root>
   )
 }

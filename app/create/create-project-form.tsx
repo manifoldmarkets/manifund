@@ -20,6 +20,7 @@ import {RangeSlider, Slider} from '@/components/slider'
 import clsx from 'clsx'
 import { InfoTooltip } from '@/components/info-tooltip'
 import 'rc-slider/assets/index.css'
+import { formatMoneyPrecise } from '@/utils/formatting'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -343,14 +344,15 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
   const { minimumFunding } = props
   const [investorPortion, setInvestorPortion] = useState<number>(50)
   const [ammPortion, setAMMPortion] = useState<number>(10)
+  const initialValuation = (100 * (minimumFunding ?? 0)) / investorPortion
   return (
+    <Col>
     <RangeSlider
       min={0}
       max={100}
       marks={SLIDER_MARKS}
       className={clsx(
-        'mx-2 mb-10 mt-3 !h-1 [&>.rc-slider-rail]:bg-orange-500',
-        '[&>.rc-slider-dot]:!border-0 [&>.rc-slider-dot]:!bg-rose-500  [&>.rc-slider-handle]:bg-orange-500 [&>.rc-slider-track]:bg-gray-200'
+        'mx-2 mb-10 mt-3 !h-1'
       )}
       lowValue={investorPortion}
       highValue={investorPortion + ammPortion}
@@ -359,5 +361,22 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
           setAMMPortion(high - low)
       }}
     />
+    <Row className="m-auto w-2/3 justify-between">
+    <Col>
+      <p className="text-xs">Initial valuation</p>
+      <p className="text-base font-bold">
+        {formatMoneyPrecise(initialValuation)}
+      </p>
+    </Col>
+    <Col>
+      <p className="text-xs">Cost to seed AMM</p>
+      <p className="text-base font-bold">{formatMoneyPrecise(initialValuation * ammPortion / 100)}</p>
+    </Col>
+    <Col>
+      <p className="text-xs">Equity kept by founder</p>
+      <p className="text-base font-bold">{100 - ammPortion - investorPortion}%</p>
+    </Col>
+  </Row>
+</Col>
   )
 }
