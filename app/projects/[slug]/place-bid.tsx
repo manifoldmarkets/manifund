@@ -1,7 +1,7 @@
 'use client'
 
 import { Input } from 'components/input'
-import { MySlider } from '@/components/slider'
+import { Slider } from '@/components/slider'
 import { useState, useEffect } from 'react'
 import { Button } from 'components/button'
 import { Subtitle } from '@/components/subtitle'
@@ -39,18 +39,18 @@ export function PlaceBid(props: {
   const [amount, setAmount] = useState<number>(0)
   const [bidType, setBidType] = useState<BidType>('buy')
   const [submitting, setSubmitting] = useState(false)
-  const [marks, setMarks] = useState<{ [key: number]: string }>({})
+  const [marks, setMarks] = useState<{ value: number, label: string }[]>([])
   const fundableValid = !isNaN(fundable)
   useEffect(() => {
-    setMarks({
-      0: '$0',
-      25: formatMoney(fundableValid ? fundable / 4 : DEFAULT_SCALE_MAX / 4),
-      50: formatMoney(fundableValid ? fundable / 2 : DEFAULT_SCALE_MAX / 2),
-      75: formatMoney(
+    setMarks([
+      {value: 0, label:'$0'},
+      {value:25, label:formatMoney(fundableValid ? fundable / 4 : DEFAULT_SCALE_MAX / 4)},
+      {value:50, label:formatMoney(fundableValid ? fundable / 2 : DEFAULT_SCALE_MAX / 2)},
+      {value:75,label:formatMoney(
         fundableValid ? (fundable / 4) * 3 : (DEFAULT_SCALE_MAX / 4) * 3
-      ),
-      100: formatMoney(fundableValid ? fundable : DEFAULT_SCALE_MAX),
-    })
+      )},
+      {value:100, label:formatMoney(fundableValid ? fundable : DEFAULT_SCALE_MAX)},
+      ])
   }, [valuation, sellablePortion])
 
   let errorMessage: string | null = null
@@ -127,8 +127,8 @@ export function PlaceBid(props: {
           className="w-1/3"
           onChange={(event) => setAmount(Number(event.target.value))}
         />
-        <MySlider
-          value={
+        <Slider
+          amount={
             100 *
             (fundableValid ? amount / fundable : amount / DEFAULT_SCALE_MAX)
           }

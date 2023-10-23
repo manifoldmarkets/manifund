@@ -10,7 +10,7 @@ import { Dialog } from '@headlessui/react'
 import { CircleStackIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { MySlider } from '@/components/slider'
+import { Slider } from '@/components/slider'
 import { Checkbox, Input } from '@/components/input'
 import { useSupabase } from '@/db/supabase-provider'
 import { Modal } from '@/components/modal'
@@ -151,13 +151,13 @@ function Trade(props: {
   const enoughMoney = tradeAmount <= (userSpendableFunds ?? 0)
   const enoughShares =
     (tradeAmount / bid.valuation) * TOTAL_SHARES <= (userSellableShares ?? 0)
-  const marks = {
-    0: '$0',
-    25: `${formatMoney(bid.amount / 4)}`,
-    50: `${formatMoney(bid.amount / 2)}`,
-    75: `${formatMoney((bid.amount / 4) * 3)}`,
-    100: `${formatMoney(bid.amount)}`,
-  }
+  const marks = [
+    {value: 0, label: '$0'},
+    {value: 25, label: `${formatMoney(bid.amount / 4)}`},
+    {value: 50, label: `${formatMoney(bid.amount / 2)}`},
+    {value: 75, label: `${formatMoney((bid.amount / 4) * 3)}`},
+    {value: 100, label: `${formatMoney(bid.amount)}`},
+  ]
   const router = useRouter()
 
   let errorMessage: string | null = null
@@ -224,9 +224,9 @@ function Trade(props: {
                     setTradeAmount(Number(event.target.value))
                   }
                 />
-                <MySlider
+                <Slider
                   marks={marks}
-                  value={(tradeAmount / bid.amount) * 100}
+                  amount={(tradeAmount / bid.amount) * 100}
                   onChange={(value) =>
                     setTradeAmount(((value as number) * bid.amount) / 100)
                   }

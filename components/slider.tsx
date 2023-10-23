@@ -3,14 +3,10 @@ import * as RxSlider from '@radix-ui/react-slider'
 import { ReactNode } from 'react'
 
 const colors = {
-  green: ['bg-teal-400', 'focus:outline-teal-600/30 bg-teal-600'],
-  'light-green': [
-    'bg-emerald-200/50 dark:bg-emerald-800/50',
-    'focus:outline-emerald-200/20 bg-emerald-200 dark:bg-teal-200',
-  ],
-  red: ['bg-scarlet-400', 'focus:outline-scarlet-600/30 bg-scarlet-600'],
-  indigo: ['bg-primary-300', 'focus:outline-primary-500/30 bg-primary-500'],
-  // light: ['primary-200', 'primary-300']
+  emerald: ['bg-emerald-400', 'focus:outline-emerald-600/30 bg-emerald-600'],
+  rose: ['bg-rose-400', 'focus:outline-rose-600/30 bg-rose-600'],
+  orange: ['bg-orange-300', 'focus:outline-orange-500/30 bg-orange-500'],
+  'reverse-orange': ['bg-gray-300', 'focus:outline-gray-500/30 bg-gray-500'],
 } as const
 
 export function Slider(props: {
@@ -33,7 +29,7 @@ export function Slider(props: {
     marks,
     className,
     disabled,
-    color = 'indigo',
+    color = 'orange',
   } = props
 
   const [trackClasses, thumbClasses] = colors[color]
@@ -61,11 +57,11 @@ export function Slider(props: {
             >
               <div
                 className={clsx(
-                  amount >= value ? trackClasses : 'bg-ink-400',
+                  amount >= value ? trackClasses : 'bg-gray-400',
                   'h-2 w-2 rounded-full'
                 )}
               />
-              <span className="absolute left-1/2 top-4 -translate-x-1/2 text-xs text-ink-400">
+              <span className="absolute left-1/2 top-4 -translate-x-1/2 text-xs text-gray-400">
                 {label}
               </span>
             </div>
@@ -88,7 +84,6 @@ export function RangeSlider(props: {
   max?: number
   marks?: { value: number; label: string }[]
   disabled?: boolean
-  overlappable?: boolean
   color?: keyof typeof colors
   handleSize?: number
   className?: string
@@ -100,9 +95,8 @@ export function RangeSlider(props: {
     min,
     max,
     marks,
-    overlappable,
     disabled,
-    color = 'indigo',
+    color = 'orange',
     className,
   } = props
 
@@ -115,7 +109,7 @@ export function RangeSlider(props: {
         'relative flex h-7 touch-none select-none items-center'
       )}
       value={[lowValue, highValue]}
-      minStepsBetweenThumbs={overlappable ? 0 : 1}
+      minStepsBetweenThumbs={1}
       onValueChange={([low, high]) => setValues(low, high)}
       min={min}
       max={max}
@@ -130,11 +124,13 @@ export function RangeSlider(props: {
           >
             <div
               className={clsx(
-                lowValue >= value ? trackClasses : 'bg-ink-400',
+                lowValue <= value && highValue >= value
+                  ? trackClasses
+                  : 'bg-gray-400',
                 'h-2 w-2 rounded-full'
               )}
             />
-            <span className="absolute left-1/2 top-4 -translate-x-1/2 text-xs text-ink-400">
+            <span className="absolute left-1/2 top-4 -translate-x-1/2 text-xs text-gray-400">
               {label}
             </span>
           </div>
@@ -149,7 +145,7 @@ export function RangeSlider(props: {
 const Track = (props: { className: string; children?: ReactNode }) => {
   const { className, children } = props
   return (
-    <RxSlider.Track className="relative h-1 grow rounded-full bg-ink-300">
+    <RxSlider.Track className="relative h-1 grow rounded-full bg-gray-300">
       {children}
       <RxSlider.Range
         className={clsx(className, 'absolute h-full rounded-full')}
@@ -162,7 +158,7 @@ const Thumb = (props: { className: string }) => (
   <RxSlider.Thumb
     className={clsx(
       props.className,
-      'block h-5 w-5 cursor-col-resize rounded-full outline outline-4 outline-transparent transition-colors'
+      'block h-4 w-4 cursor-col-resize rounded-full outline outline-4 outline-transparent transition-colors'
     )}
   />
 )
