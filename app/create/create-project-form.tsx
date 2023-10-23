@@ -3,7 +3,7 @@
 import { useSupabase } from '@/db/supabase-provider'
 import { useState } from 'react'
 import { Checkbox, Input } from '@/components/input'
-import { Button } from '@/components/button'
+import { Button, IconButton } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { TOTAL_SHARES } from '@/db/project'
 import { ResetEditor, TextEditor } from '@/components/editor'
@@ -16,11 +16,12 @@ import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
 import { MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
-import {RangeSlider, Slider} from '@/components/slider'
+import { RangeSlider, Slider } from '@/components/slider'
 import clsx from 'clsx'
-import { InfoTooltip } from '@/components/info-tooltip'
 import 'rc-slider/assets/index.css'
 import { formatMoneyPrecise } from '@/utils/formatting'
+import { PencilIcon } from '@heroicons/react/24/outline'
+import { Card } from '@/components/layout/card'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -39,11 +40,11 @@ const DESCRIPTION_OUTLINE = `
 const DESCRIPTION_KEY = 'ProjectDescription'
 
 const SLIDER_MARKS = [
-  {value: 0, label: "0%"},
-  {value: 25, label: "25%"},
-  {value: 50, label: "50%"},
-  {value: 75, label: "75%"},
-  {value: 100, label: "100%"},
+  { value: 0, label: '0%' },
+  { value: 25, label: '25%' },
+  { value: 50, label: '50%' },
+  { value: 75, label: '75%' },
+  { value: 100, label: '100%' },
 ]
 
 export function CreateProjectForm(props: { causesList: MiniCause[] }) {
@@ -229,50 +230,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         </Col>
       </Col>
       {applyingToACX && (
-        <Col className="gap-1">
-          <label htmlFor="initialPublicOffering">
-            Portion of stake to be sold
-            <RequiredStar />
-          </label>
-          <p className="text-sm text-gray-600">
-            Blah blah explaing what is going on and link to impact certs info.
-          </p>
-          <Row className="justify-between gap-5">
-            <Row className="gap-1">
-              <Input
-                value={sellingPortion}
-                type="number"
-                onChange={(event) =>
-                  setSellingPortion(Number(event.target.value))
-                }
-              ></Input>
-              <p className="relative top-3">%</p>
-            </Row>
-            <Slider
-              marks={SLIDER_MARKS}
-              amount={sellingPortion}
-              onChange={(value) => {
-                setSellingPortion(value as number)
-              }}
-              step={5}
-              className="w-full"
-            />
-          </Row>
-          <Row className="m-auto w-2/3 justify-between">
-            <Col>
-              <p className="text-xs">Initial valuation:</p>
-              <p className="text-base font-bold">
-                {isInitialValuationValid
-                  ? `$${initialValuation.toLocaleString()}`
-                  : 'N/A'}
-              </p>
-            </Col>
-            <Col>
-              <p className="text-xs">Some AMM cost info:</p>
-              <p className="text-base font-bold">stat%</p>
-            </Col>
-          </Row>
-        </Col>
+        <InvestmentStructurePanel minimumFunding={minFunding ?? 0} />
       )}
       <Col className="gap-1">
         <label htmlFor="fundingGoal">
@@ -326,7 +284,6 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           setSelectedCauses={setSelectedCauses}
         />
       </Col>
-      <InvestmentStructurePanel minimumFunding={minFunding ?? 0} />
       <Button
         className="mt-4"
         type="submit"
@@ -344,59 +301,66 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
   const { minimumFunding } = props
   const [investorPortion, setInvestorPortion] = useState<number>(50)
   const [ammPortion, setAMMPortion] = useState<number>(10)
+  const [editing, setEditing] = useState<boolean>(false)
   const initialValuation = (100 * (minimumFunding ?? 0)) / investorPortion
   return (
-    <Col>
-    <Row className="justify-center text-sm text-gray-500 gap-10">
-      <Row className="gap-1 items-center">
-        <div className="h-2 w-2 rounded-full bg-orange-500"/>
-        <p>founder</p>
+    <Card className="relative flex flex-col">
+      <button
+        className="absolute right-2 top-2 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-orange-500 hover:bg-orange-600"
+        onClick={() => setEditing(true)}
+      >
+        <PencilIcon className="h-6 w-6 p-1 text-white" />
+      </button>
+      <Row className="justify-center gap-10 text-sm text-gray-500">
+        <Row className="items-center gap-1">
+          <div className="h-2 w-2 rounded-full bg-orange-500" />
+          <p>founder</p>
+        </Row>
+        <Row className="items-center gap-1">
+          <div className="h-2 w-2 rounded-full bg-gray-300" />
+          <p>AMM</p>
+        </Row>
+        <Row className="items-center gap-1">
+          <div className="h-2 w-2 rounded-full bg-rose-500" />
+          <p>investors</p>
+        </Row>
       </Row>
-      <Row className="gap-1 items-center">
-        <div className="h-2 w-2 rounded-full bg-gray-300"/>
-        <p>AMM</p>
-      </Row>
-      <Row className="gap-1 items-center">
-        <div className="h-2 w-2 rounded-full bg-rose-500"/>
-        <p>investors</p>
-      </Row>
-    </Row>
-    <RangeSlider
-      min={0}
-      max={100}
-      marks={SLIDER_MARKS}
-      className={clsx(
-        'mx-2 mb-10 mt-5 !h-1'
-      )}
-      lowValue={investorPortion}
-      highValue={investorPortion + ammPortion}
-      setValues={(low, high) => {
+      <RangeSlider
+        min={0}
+        max={100}
+        marks={SLIDER_MARKS}
+        className={clsx('mx-2 mb-10 mt-5 !h-1')}
+        lowValue={investorPortion}
+        highValue={investorPortion + ammPortion}
+        setValues={(low, high) => {
           setInvestorPortion(low)
           setAMMPortion(high - low)
-      }}
-    />
-    <Row className="m-auto gap-5 justify-between">
-    <Col>
-      <p className="text-xs">Equity kept by founder</p>
-      <p className="text-base font-bold">{100 - ammPortion - investorPortion}%</p>
-    </Col>
-    <Col>
-      <p className="text-xs">Cost to seed AMM</p>
-      <p className="text-base font-bold">{formatMoneyPrecise(initialValuation * ammPortion / 100)}</p>
-    </Col>
-    <Col>
-      <p className="text-xs">Equity sold to investors</p>
-      <p className="text-base font-bold">
-        {investorPortion}%
-      </p>
-    </Col>
-    <Col>
-      <p className="text-xs">Initial valuation</p>
-      <p className="text-base font-bold">
-        {formatMoneyPrecise(initialValuation)}
-      </p>
-    </Col>
-  </Row>
-</Col>
+        }}
+      />
+      <Row className="m-auto justify-between gap-5">
+        <Col>
+          <p className="text-xs">Equity kept by founder</p>
+          <p className="text-base font-bold">
+            {100 - ammPortion - investorPortion}%
+          </p>
+        </Col>
+        <Col>
+          <p className="text-xs">Cost to seed AMM</p>
+          <p className="text-base font-bold">
+            {formatMoneyPrecise((initialValuation * ammPortion) / 100)}
+          </p>
+        </Col>
+        <Col>
+          <p className="text-xs">Equity sold to investors</p>
+          <p className="text-base font-bold">{investorPortion}%</p>
+        </Col>
+        <Col>
+          <p className="text-xs">Initial valuation</p>
+          <p className="text-base font-bold">
+            {formatMoneyPrecise(initialValuation)}
+          </p>
+        </Col>
+      </Row>
+    </Card>
   )
 }
