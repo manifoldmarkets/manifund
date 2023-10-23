@@ -299,10 +299,11 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
 
 function InvestmentStructurePanel(props: { minimumFunding: number }) {
   const { minimumFunding } = props
-  const [investorPortion, setInvestorPortion] = useState<number>(50)
+  const [founderPortion, setFounderPortion] = useState<number>(50)
   const [ammPortion, setAMMPortion] = useState<number>(10)
   const [editing, setEditing] = useState<boolean>(false)
-  const initialValuation = (100 * (minimumFunding ?? 0)) / investorPortion
+  const initialValuation =
+    (100 * (minimumFunding ?? 0)) / (100 - founderPortion - ammPortion)
   return (
     <Card className="relative flex flex-col">
       <button
@@ -330,19 +331,18 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
         max={100}
         marks={SLIDER_MARKS}
         className={clsx('mx-2 mb-10 mt-5 !h-1')}
-        lowValue={investorPortion}
-        highValue={investorPortion + ammPortion}
+        lowValue={founderPortion}
+        highValue={founderPortion + ammPortion}
         setValues={(low, high) => {
-          setInvestorPortion(low)
+          setFounderPortion(low)
           setAMMPortion(high - low)
         }}
+        disabled={!editing}
       />
       <Row className="m-auto justify-between gap-5">
         <Col>
           <p className="text-xs">Equity kept by founder</p>
-          <p className="text-base font-bold">
-            {100 - ammPortion - investorPortion}%
-          </p>
+          <p className="text-base font-bold">{founderPortion}%</p>
         </Col>
         <Col>
           <p className="text-xs">Cost to seed AMM</p>
@@ -352,7 +352,9 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
         </Col>
         <Col>
           <p className="text-xs">Equity sold to investors</p>
-          <p className="text-base font-bold">{investorPortion}%</p>
+          <p className="text-base font-bold">
+            {100 - founderPortion - ammPortion}%
+          </p>
         </Col>
         <Col>
           <p className="text-xs">Initial valuation</p>
