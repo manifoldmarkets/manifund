@@ -347,12 +347,26 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
   const initialValuation = (100 * (minimumFunding ?? 0)) / investorPortion
   return (
     <Col>
+    <Row className="justify-center text-sm text-gray-500 gap-10">
+      <Row className="gap-1 items-center">
+        <div className="h-2 w-2 rounded-full bg-orange-500"/>
+        <p>founder</p>
+      </Row>
+      <Row className="gap-1 items-center">
+        <div className="h-2 w-2 rounded-full bg-gray-300"/>
+        <p>AMM</p>
+      </Row>
+      <Row className="gap-1 items-center">
+        <div className="h-2 w-2 rounded-full bg-rose-500"/>
+        <p>investors</p>
+      </Row>
+    </Row>
     <RangeSlider
       min={0}
       max={100}
       marks={SLIDER_MARKS}
       className={clsx(
-        'mx-2 mb-10 mt-3 !h-1'
+        'mx-2 mb-10 mt-5 !h-1'
       )}
       lowValue={investorPortion}
       highValue={investorPortion + ammPortion}
@@ -361,20 +375,26 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
           setAMMPortion(high - low)
       }}
     />
-    <Row className="m-auto w-2/3 justify-between">
+    <Row className="m-auto gap-5 justify-between">
     <Col>
-      <p className="text-xs">Initial valuation</p>
-      <p className="text-base font-bold">
-        {formatMoneyPrecise(initialValuation)}
-      </p>
+      <p className="text-xs">Equity kept by founder</p>
+      <p className="text-base font-bold">{100 - ammPortion - investorPortion}%</p>
     </Col>
     <Col>
       <p className="text-xs">Cost to seed AMM</p>
       <p className="text-base font-bold">{formatMoneyPrecise(initialValuation * ammPortion / 100)}</p>
     </Col>
     <Col>
-      <p className="text-xs">Equity kept by founder</p>
-      <p className="text-base font-bold">{100 - ammPortion - investorPortion}%</p>
+      <p className="text-xs">Equity sold to investors</p>
+      <p className="text-base font-bold">
+        {investorPortion}%
+      </p>
+    </Col>
+    <Col>
+      <p className="text-xs">Initial valuation</p>
+      <p className="text-base font-bold">
+        {formatMoneyPrecise(initialValuation)}
+      </p>
     </Col>
   </Row>
 </Col>
