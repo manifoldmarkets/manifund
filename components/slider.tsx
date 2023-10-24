@@ -170,7 +170,7 @@ const Thumb = (props: { className: string }) => (
       'relative block h-4 w-4 cursor-grab rounded-full outline outline-4 outline-transparent transition-colors active:cursor-grabbing'
     )}
   >
-    <span className="absolute -left-10 -top-1.5 text-gray-500">{'['}</span>
-    <span className="absolute -right-10 -top-1.5 text-gray-500">{']'}</span>
+    <span className="absolute -left-10 -top-[10px] text-gray-500">{'['}</span>
+    <span className="absolute -right-10 -top-[10px] text-gray-500">{']'}</span>
   </RxSlider.Thumb>
 )

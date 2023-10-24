@@ -1,7 +1,7 @@
 'use client'
 
 import { useSupabase } from '@/db/supabase-provider'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Checkbox, Input } from '@/components/input'
 import { Button, IconButton } from '@/components/button'
 import { useRouter } from 'next/navigation'
@@ -17,6 +17,7 @@ import { Row } from '@/components/layout/row'
 import { MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { RangeSlider, Slider } from '@/components/slider'
+import * as RxSlider from '@radix-ui/react-slider'
 import clsx from 'clsx'
 import 'rc-slider/assets/index.css'
 import { formatMoneyPrecise } from '@/utils/formatting'
@@ -299,6 +300,16 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
 
 function InvestmentStructurePanel(props: { minimumFunding: number }) {
   const { minimumFunding } = props
+  const sliderRef = useRef<HTMLSpanElement>(null)
+  const [width, setWidth] = useState(0)
+  useEffect(() => {
+    if (!sliderRef.current) return
+    const resizeObserver = new ResizeObserver(() => {
+      setWidth(sliderRef.current?.clientWidth ?? 0)
+    })
+    resizeObserver.observe(sliderRef.current)
+    return () => resizeObserver.disconnect() // clean up
+  }, [])
   const [founderPortion, setFounderPortion] = useState<number>(50)
   const [editing, setEditing] = useState<boolean>(false)
   const initialValuation =
@@ -321,19 +332,67 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
           <p>investors</p>
         </Row>
       </Row>
-      <Slider
+      <RxSlider.Root
+        className={clsx(
+          'mb-10 mt-5',
+          'relative flex h-5 touch-none select-none items-center'
+        )}
+        value={[founderPortion]}
+        onValueChange={([val]) => setFounderPortion(val)}
         min={0}
         max={100}
-        marks={SLIDER_MARKS}
-        className={clsx('mx-2 mb-10 mt-5 !h-1')}
-        rangeColor="orange"
-        trackColor="emerald"
-        amount={founderPortion}
-        onChange={(value) => {
-          setFounderPortion(value)
-        }}
+        step={1}
         disabled={!editing}
-      />
+        ref={sliderRef}
+      >
+        <RxSlider.Track
+          className={clsx('relative h-1 grow rounded-full', 'bg-emerald-300')}
+        >
+          <RxSlider.Range
+            className={clsx('bg-orange-300', 'absolute h-full rounded-full')}
+          />{' '}
+          <div className="absolute left-2.5 right-2.5 h-full">
+            {SLIDER_MARKS?.map(({ value, label }) => (
+              <div
+                className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
+                style={{ left: `${value}%` }}
+                key={value}
+              >
+                <div
+                  className={clsx(
+                    founderPortion >= value
+                      ? 'bg-orange-500 focus:outline-orange-500/30'
+                      : 'bg-emerald-500 focus:outline-emerald-500/30',
+                    'h-2 w-2 rounded-full'
+                  )}
+                />
+                <span className="absolute left-1/2 top-4 -translate-x-1/2 text-xs text-gray-400">
+                  {label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </RxSlider.Track>
+        <RxSlider.Thumb
+          className={clsx(
+            'bg-orange-500 focus:outline-orange-500/30',
+            'relative block h-4 w-4 cursor-grab rounded-full outline outline-4 outline-transparent transition-colors active:cursor-grabbing'
+          )}
+        >
+          <span
+            className="absolute -top-[6px] text-gray-500"
+            style={{ left: -width / 20 }}
+          >
+            {'['}
+          </span>
+          <span
+            className="absolute -right-10 -top-[6px] text-gray-500"
+            style={{ right: -width / 20 }}
+          >
+            {']'}
+          </span>
+        </RxSlider.Thumb>{' '}
+      </RxSlider.Root>
       <Row className="m-auto justify-between gap-5">
         <Col>
           <p className="text-xs">Equity kept by founder</p>
