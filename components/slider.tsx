@@ -34,7 +34,7 @@ export function Slider(props: {
     trackColor = 'gray',
   } = props
   const [rangeClass, thumbClass] = colors[rangeColor]
-  const trackClass = colors[trackColor][0]
+  const [trackClass, inactiveMarkClass] = colors[trackColor]
 
   return (
     <RxSlider.Root
@@ -59,7 +59,7 @@ export function Slider(props: {
             >
               <div
                 className={clsx(
-                  amount >= value ? rangeClass : trackClass,
+                  amount >= value ? thumbClass : inactiveMarkClass,
                   'h-2 w-2 rounded-full'
                 )}
               />
@@ -102,7 +102,7 @@ export function RangeSlider(props: {
   } = props
 
   const [rangeClass, thumbClass] = colors[rangeColor]
-  const trackClass = colors[trackColor][0]
+  const [trackClass, inactiveMarkClass] = colors[trackColor]
   console.log(rangeClass, trackClass)
   return (
     <RxSlider.Root
@@ -127,8 +127,8 @@ export function RangeSlider(props: {
               <div
                 className={clsx(
                   lowValue < value && highValue > value
-                    ? rangeClass
-                    : trackClass,
+                    ? thumbClass
+                    : inactiveMarkClass,
                   'h-2 w-2 rounded-full'
                 )}
               />
@@ -138,9 +138,6 @@ export function RangeSlider(props: {
             </div>
           ))}
         </div>
-        <RxSlider.Range
-          className={'absolute h-full rounded-full bg-gray-300'}
-        />
       </Track>
       <Thumb className={clsx(thumbClass, disabled ? '!h-2 !w-2' : '')} />
       <Thumb className={clsx(thumbClass, disabled ? '!h-2 !w-2' : '')} />
@@ -156,12 +153,12 @@ const Track = (props: {
   const { rangeClass, trackClass, children } = props
   return (
     <RxSlider.Track
-      className={clsx(trackClass, 'relative h-1 grow rounded-full bg-gray-300')}
+      className={clsx('relative h-1 grow rounded-full', trackClass)}
     >
-      {children}
       <RxSlider.Range
         className={clsx(rangeClass, 'absolute h-full rounded-full')}
       />
+      {children}
     </RxSlider.Track>
   )
 }
@@ -172,5 +169,8 @@ const Thumb = (props: { className: string }) => (
       props.className,
       'relative block h-4 w-4 cursor-grab rounded-full outline outline-4 outline-transparent transition-colors active:cursor-grabbing'
     )}
-  />
+  >
+    <span className="absolute -left-10 -top-1.5 text-gray-500">{'['}</span>
+    <span className="absolute -right-10 -top-1.5 text-gray-500">{']'}</span>
+  </RxSlider.Thumb>
 )

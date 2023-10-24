@@ -300,10 +300,9 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
 function InvestmentStructurePanel(props: { minimumFunding: number }) {
   const { minimumFunding } = props
   const [founderPortion, setFounderPortion] = useState<number>(50)
-  const [ammPortion, setAMMPortion] = useState<number>(10)
   const [editing, setEditing] = useState<boolean>(false)
   const initialValuation =
-    (100 * (minimumFunding ?? 0)) / (100 - founderPortion - ammPortion)
+    (100 * (minimumFunding ?? 0)) / (100 - founderPortion)
   return (
     <Card className="relative flex flex-col">
       <button
@@ -318,24 +317,20 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
           <p>founder</p>
         </Row>
         <Row className="items-center gap-1">
-          <div className="h-2 w-2 rounded-full bg-gray-300" />
-          <p>AMM</p>
-        </Row>
-        <Row className="items-center gap-1">
-          <div className="h-2 w-2 rounded-full bg-rose-500" />
+          <div className="h-2 w-2 rounded-full bg-emerald-500" />
           <p>investors</p>
         </Row>
       </Row>
-      <RangeSlider
+      <Slider
         min={0}
         max={100}
         marks={SLIDER_MARKS}
         className={clsx('mx-2 mb-10 mt-5 !h-1')}
-        lowValue={founderPortion}
-        highValue={founderPortion + ammPortion}
-        setValues={(low, high) => {
-          setFounderPortion(low)
-          setAMMPortion(high - low)
+        rangeColor="orange"
+        trackColor="emerald"
+        amount={founderPortion}
+        onChange={(value) => {
+          setFounderPortion(value)
         }}
         disabled={!editing}
       />
@@ -347,14 +342,12 @@ function InvestmentStructurePanel(props: { minimumFunding: number }) {
         <Col>
           <p className="text-xs">Cost to seed AMM</p>
           <p className="text-base font-bold">
-            {formatMoneyPrecise((initialValuation * ammPortion) / 100)}
+            {formatMoneyPrecise(initialValuation / 100)}
           </p>
         </Col>
         <Col>
           <p className="text-xs">Equity sold to investors</p>
-          <p className="text-base font-bold">
-            {100 - founderPortion - ammPortion}%
-          </p>
+          <p className="text-base font-bold">{100 - founderPortion}%</p>
         </Col>
         <Col>
           <p className="text-xs">Initial valuation</p>
