@@ -170,7 +170,7 @@ const Thumb = (props: { className: string }) => (
   <RxSlider.Thumb
     className={clsx(
       props.className,
-      'relative block h-4 w-4 cursor-col-resize rounded-full outline outline-4 outline-transparent transition-colors'
+      'relative block h-4 w-4 cursor-grab rounded-full outline outline-4 outline-transparent transition-colors active:cursor-grabbing'
     )}
   />
 )
