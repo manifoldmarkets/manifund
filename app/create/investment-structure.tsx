@@ -60,7 +60,11 @@ export function InvestmentStructurePanel(props: {
           'relative flex h-5 touch-none select-none items-center'
         )}
         value={[founderPortion]}
-        onValueChange={([val]) => setFounderPortion(val)}
+        onValueChange={([val]) =>
+          val <= 100 - ammPortion && val > ammPortion
+            ? setFounderPortion(val)
+            : null
+        }
         min={0}
         max={100}
         step={1}
