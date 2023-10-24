@@ -6,7 +6,7 @@ const colors = {
   emerald: ['bg-emerald-400', 'focus:outline-emerald-600/30 bg-emerald-600'],
   rose: ['bg-rose-400', 'focus:outline-rose-600/30 bg-rose-600'],
   orange: ['bg-orange-300', 'focus:outline-orange-500/30 bg-orange-500'],
-  'reverse-orange': ['bg-gray-300', 'focus:outline-gray-500/30 bg-gray-500'],
+  gray: ['bg-gray-300', 'focus:outline-gray-500/30 bg-gray-500'],
 } as const
 
 export function Slider(props: {
@@ -16,7 +16,8 @@ export function Slider(props: {
   max?: number
   step?: number
   marks?: { value: number; label: string }[]
-  color?: keyof typeof colors
+  rangeColor?: keyof typeof colors
+  trackColor?: keyof typeof colors
   className?: string
   disabled?: boolean
 }) {
@@ -29,10 +30,11 @@ export function Slider(props: {
     marks,
     className,
     disabled,
-    color = 'orange',
+    rangeColor = 'orange',
+    trackColor = 'gray',
   } = props
-
-  const [trackClasses, thumbClasses] = colors[color]
+  const [rangeClass, thumbClass] = colors[rangeColor]
+  const trackClass = colors[trackColor][0]
 
   return (
     <RxSlider.Root
@@ -47,7 +49,7 @@ export function Slider(props: {
       step={step}
       disabled={disabled}
     >
-      <Track className={trackClasses}>
+      <Track trackClass={trackClass} rangeClass={rangeClass}>
         <div className="absolute left-2.5 right-2.5 h-full">
           {marks?.map(({ value, label }) => (
             <div
@@ -57,7 +59,7 @@ export function Slider(props: {
             >
               <div
                 className={clsx(
-                  amount >= value ? trackClasses : 'bg-gray-400',
+                  amount >= value ? rangeClass : trackClass,
                   'h-2 w-2 rounded-full'
                 )}
               />
@@ -68,7 +70,7 @@ export function Slider(props: {
           ))}
         </div>
       </Track>
-      <Thumb className={thumbClasses} />
+      <Thumb className={clsx(thumbClass, disabled ? '!h-2 !w-2' : '')} />
     </RxSlider.Root>
   )
 }
@@ -81,7 +83,8 @@ export function RangeSlider(props: {
   max?: number
   marks?: { value: number; label: string }[]
   disabled?: boolean
-  color?: keyof typeof colors
+  rangeColor?: keyof typeof colors
+  trackColor?: keyof typeof colors
   handleSize?: number
   className?: string
 }) {
@@ -93,12 +96,14 @@ export function RangeSlider(props: {
     max,
     marks,
     disabled,
-    color = 'orange',
+    rangeColor = 'orange',
+    trackColor = 'gray',
     className,
   } = props
 
-  const [trackClass, thumbClasses] = colors[color]
-
+  const [rangeClass, thumbClass] = colors[rangeColor]
+  const trackClass = colors[trackColor][0]
+  console.log(rangeClass, trackClass)
   return (
     <RxSlider.Root
       className={clsx(
@@ -111,7 +116,7 @@ export function RangeSlider(props: {
       min={min}
       max={max}
     >
-      <RxSlider.Track className="relative h-1 grow rounded-full bg-gradient-to-r from-orange-300 to-rose-300">
+      <Track rangeClass={rangeClass} trackClass={trackClass}>
         <div className="absolute left-2.5 right-2.5 h-full">
           {marks?.map(({ value, label }) => (
             <div
@@ -121,11 +126,9 @@ export function RangeSlider(props: {
             >
               <div
                 className={clsx(
-                  lowValue >= value
-                    ? colors.orange[1]
-                    : highValue <= value
-                    ? colors.rose[1]
-                    : 'bg-gray-300',
+                  lowValue < value && highValue > value
+                    ? rangeClass
+                    : trackClass,
                   'h-2 w-2 rounded-full'
                 )}
               />
@@ -138,20 +141,26 @@ export function RangeSlider(props: {
         <RxSlider.Range
           className={'absolute h-full rounded-full bg-gray-300'}
         />
-      </RxSlider.Track>
-      <Thumb className={clsx(colors.orange[1], disabled ? '!h-2 !w-2' : '')} />
-      <Thumb className={clsx(colors.rose[1], disabled ? '!h-2 !w-2' : '')} />
+      </Track>
+      <Thumb className={clsx(thumbClass, disabled ? '!h-2 !w-2' : '')} />
+      <Thumb className={clsx(thumbClass, disabled ? '!h-2 !w-2' : '')} />
     </RxSlider.Root>
   )
 }
 
-const Track = (props: { className: string; children?: ReactNode }) => {
-  const { className, children } = props
+const Track = (props: {
+  rangeClass: string
+  trackClass: string
+  children?: ReactNode
+}) => {
+  const { rangeClass, trackClass, children } = props
   return (
-    <RxSlider.Track className="relative h-1 grow rounded-full bg-gray-300">
+    <RxSlider.Track
+      className={clsx(trackClass, 'relative h-1 grow rounded-full bg-gray-300')}
+    >
       {children}
       <RxSlider.Range
-        className={clsx(className, 'absolute h-full rounded-full')}
+        className={clsx(rangeClass, 'absolute h-full rounded-full')}
       />
     </RxSlider.Track>
   )
