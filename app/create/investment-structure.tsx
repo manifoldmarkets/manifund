@@ -17,8 +17,11 @@ const SLIDER_MARKS = [
   { value: 100, label: '100%' },
 ]
 
-export function InvestmentStructurePanel(props: { minimumFunding: number }) {
-  const { minimumFunding } = props
+export function InvestmentStructurePanel(props: {
+  minimumFunding: number
+  ammPortion: number
+}) {
+  const { minimumFunding, ammPortion } = props
   const sliderRef = useRef<HTMLSpanElement>(null)
   const [width, setWidth] = useState(0)
   useEffect(() => {
@@ -100,13 +103,13 @@ export function InvestmentStructurePanel(props: { minimumFunding: number }) {
         >
           <span
             className="absolute -top-[6px] text-gray-500"
-            style={{ left: -width / 20 }}
+            style={{ left: (-width / 100) * ammPortion }}
           >
             {'['}
           </span>
           <span
             className="absolute -right-10 -top-[6px] text-gray-500"
-            style={{ right: -width / 20 }}
+            style={{ right: (-width / 100) * ammPortion }}
           >
             {']'}
           </span>

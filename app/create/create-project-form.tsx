@@ -48,15 +48,10 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
-  // For ACX Impact Certs
-  const [applyingToACX, setApplyingToACX] = useState<boolean>(false)
-  const [sellingPortion, setSellingPortion] = useState<number>(20)
+  // For ACX Impact Certs. TODO: switch to false by default
+  const [applyingToACX, setApplyingToACX] = useState<boolean>(true)
+  const [founderPortion, setFounderPortion] = useState<number>(20)
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
-  const initialValuation = (100 * (minFunding ?? 0)) / sellingPortion
-  const isInitialValuationValid =
-    !isNaN(initialValuation) &&
-    initialValuation > 0 &&
-    isFinite(initialValuation)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
 
   let errorMessage = null
@@ -217,7 +212,10 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         </Col>
       </Col>
       {applyingToACX && (
-        <InvestmentStructurePanel minimumFunding={minFunding ?? 0} />
+        <InvestmentStructurePanel
+          minimumFunding={minFunding ?? 0}
+          ammPortion={10}
+        />
       )}
       <Col className="gap-1">
         <label htmlFor="fundingGoal">
