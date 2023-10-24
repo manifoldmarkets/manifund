@@ -1,9 +1,9 @@
 'use client'
 
 import { useSupabase } from '@/db/supabase-provider'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { Checkbox, Input } from '@/components/input'
-import { Button, IconButton } from '@/components/button'
+import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { TOTAL_SHARES } from '@/db/project'
 import { ResetEditor, TextEditor } from '@/components/editor'

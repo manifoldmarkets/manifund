@@ -27,7 +27,7 @@ export function InvestmentStructurePanel(props: { minimumFunding: number }) {
       setWidth(sliderRef.current?.clientWidth ?? 0)
     })
     resizeObserver.observe(sliderRef.current)
-    return () => resizeObserver.disconnect() // clean up
+    return () => resizeObserver.disconnect()
   }, [])
   const [founderPortion, setFounderPortion] = useState<number>(50)
   const [editing, setEditing] = useState<boolean>(false)
