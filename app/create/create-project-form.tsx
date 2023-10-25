@@ -49,17 +49,20 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   // For Impact Certs. TODO: switch to false by default
-  const [applyingToACX, setApplyingToACX] = useState<boolean>(true)
+  const [applyingToManifold, setApplyingToManifold] = useState<boolean>(true)
   const [founderPortion, setFounderPortion] = useState<number>(20)
   const ammPortion = 10
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
+  const minMinFunding = applyingToManifold ? 100 : 500
 
   let errorMessage = null
   if (title === '') {
     errorMessage = 'Your project needs a title.'
-  } else if (minFunding !== null && minFunding < 500) {
-    errorMessage = 'Your minimum funding must be at least $500.'
+  } else if (minFunding !== null && minFunding < minMinFunding) {
+    errorMessage = `Your minimum funding must be at least $${minMinFunding}.`
+  } else if (applyingToManifold && !agreedToTerms) {
+    errorMessage = 'Please confirm that you agree to the investment structure.'
   } else if (
     fundingGoal &&
     ((minFunding && minFunding > fundingGoal) || fundingGoal <= 0)
@@ -123,12 +126,14 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
-      <Row className="gap-1">
+      <Row className="items-center gap-1">
         <Checkbox
-          checked={applyingToACX}
-          onChange={(event) => setApplyingToACX(event.target.checked)}
+          checked={applyingToManifold}
+          onChange={(event) => setApplyingToManifold(event.target.checked)}
         />
-        <label className="ml-3">I am applying to ACX Grants Round 2.</label>
+        <label className="ml-2 text-sm">
+          I am applying to the Manifold Markets Community Round.
+        </label>
       </Row>
       <Col className="gap-1">
         <label htmlFor="title">
@@ -198,7 +203,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           The minimum amount of funding you need to start this project. If this
           amount is not reached, no funds will be sent. Due to the cost of
           approving grants and processing payments, we require this to be at
-          least $500.
+          least ${minMinFunding}.
         </p>
         <Col>
           <Input
@@ -207,12 +212,12 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
             autoComplete="off"
             value={minFunding !== null ? Number(minFunding).toString() : ''}
             onChange={(event) => setMinFunding(Number(event.target.value))}
-            error={minFunding !== null && minFunding < 500}
-            errorMessage="Minimum funding must be at least $500."
+            error={minFunding !== null && minFunding < minMinFunding}
+            errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
           />
         </Col>
       </Col>
-      {applyingToACX && (
+      {applyingToManifold && (
         <InvestmentStructurePanel
           minimumFunding={minFunding ?? 0}
           founderPortion={founderPortion}

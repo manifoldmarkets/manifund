@@ -182,7 +182,7 @@ export function InvestmentStructurePanel(props: {
           checked={agreedToTerms}
           onChange={(event) => setAgreedToTerms(event.target.checked)}
         />
-        <label className="ml-3 text-xs font-bold">
+        <label className="ml-3 text-sm font-bold">
           <span className="text-gray-900">
             I agree to the investment structure laid out above.
           </span>
