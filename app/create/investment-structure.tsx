@@ -35,7 +35,7 @@ export function InvestmentStructurePanel(props: {
   const [founderPortion, setFounderPortion] = useState<number>(50)
   const [editing, setEditing] = useState<boolean>(false)
   const initialValuation =
-    (100 * (minimumFunding ?? 0)) / (100 - founderPortion)
+    (100 * (minimumFunding ?? 0)) / (100 - founderPortion - ammPortion)
   return (
     <Card className="relative flex flex-col">
       <button
@@ -61,7 +61,7 @@ export function InvestmentStructurePanel(props: {
         )}
         value={[founderPortion]}
         onValueChange={([val]) =>
-          val <= 100 - ammPortion && val > ammPortion
+          val <= 100 - ammPortion && val >= ammPortion
             ? setFounderPortion(val)
             : null
         }
@@ -101,18 +101,24 @@ export function InvestmentStructurePanel(props: {
         </RxSlider.Track>
         <RxSlider.Thumb
           className={clsx(
-            'bg-orange-500 focus:outline-orange-500/30',
-            'relative block h-4 w-4 cursor-grab rounded-full outline outline-4 outline-transparent transition-colors active:cursor-grabbing'
+            editing ? 'h-4 w-4 cursor-grab active:cursor-grabbing' : 'h-2 w-2',
+            'relative block rounded-full bg-orange-500 outline outline-4 outline-transparent transition-colors focus:outline-orange-500/30'
           )}
         >
           <span
-            className="absolute -top-[6px] text-gray-500"
+            className={clsx(
+              'absolute text-gray-500',
+              editing ? '-top-1.5' : '-top-2.5'
+            )}
             style={{ left: (-width / 100) * ammPortion }}
           >
             {'['}
           </span>
           <span
-            className="absolute -right-10 -top-[6px] text-gray-500"
+            className={clsx(
+              'absolute text-gray-500',
+              editing ? '-top-1.5' : '-top-2.5'
+            )}
             style={{ right: (-width / 100) * ammPortion }}
           >
             {']'}
@@ -127,7 +133,7 @@ export function InvestmentStructurePanel(props: {
         <Col>
           <p className="text-xs">Cost to seed AMM</p>
           <p className="text-base font-bold">
-            {formatMoneyPrecise(initialValuation / 100)}
+            {formatMoneyPrecise((ammPortion * initialValuation) / 100)}
           </p>
         </Col>
         <Col>
