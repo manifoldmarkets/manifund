@@ -219,7 +219,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
       </Col>
       {applyingToManifold && (
         <InvestmentStructurePanel
-          minimumFunding={minFunding ?? 0}
+          minFunding={minFunding ?? 0}
           founderPortion={founderPortion}
           setFounderPortion={setFounderPortion}
           ammPortion={ammPortion}

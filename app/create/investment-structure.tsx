@@ -22,7 +22,7 @@ const SLIDER_MARKS = [
 ]
 
 export function InvestmentStructurePanel(props: {
-  minimumFunding: number
+  minFunding: number
   founderPortion: number
   setFounderPortion: (val: number) => void
   agreedToTerms: boolean
@@ -30,7 +30,7 @@ export function InvestmentStructurePanel(props: {
   ammPortion: number
 }) {
   const {
-    minimumFunding,
+    minFunding,
     founderPortion,
     setFounderPortion,
     agreedToTerms,
@@ -50,7 +50,7 @@ export function InvestmentStructurePanel(props: {
   const [editing, setEditing] = useState<boolean>(false)
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false)
   const initialValuation =
-    (100 * (minimumFunding ?? 0)) / (100 - founderPortion - ammPortion)
+    (100 * (minFunding ?? 0)) / (100 - founderPortion - ammPortion)
   return (
     <Card className="relative flex flex-col">
       <h1 className="font-semibold">Investment structure</h1>
@@ -203,8 +203,8 @@ export function InvestmentStructurePanel(props: {
               <span className="text-sm text-gray-600">
                 If this offer is fully accepted by any combination of investors,
                 then your project will become active and you&apos;ll recieve $
-                {minimumFunding} which can be withdrawn and used for your
-                project upfront. The remaining{' '}
+                {minFunding} which can be withdrawn and used for your project
+                upfront. The remaining{' '}
                 {formatMoneyPrecise((ammPortion * initialValuation) / 100)}{' '}
                 raised from investors, in addition to {ammPortion}% of total
                 equity, will be given to the automated market maker (amm), which
