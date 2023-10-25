@@ -2,7 +2,7 @@
 
 import { Card } from '@/components/layout/card'
 import { Row } from '@/components/layout/row'
-import { PencilIcon } from '@heroicons/react/20/solid'
+import { PencilIcon } from '@heroicons/react/24/outline'
 import { useEffect, useRef, useState } from 'react'
 import * as RxSlider from '@radix-ui/react-slider'
 import clsx from 'clsx'
@@ -39,10 +39,14 @@ export function InvestmentStructurePanel(props: {
   return (
     <Card className="relative flex flex-col">
       <button
-        className="absolute right-2 top-2 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-orange-500 hover:bg-orange-600"
-        onClick={() => setEditing(true)}
+        className="absolute right-2 top-2 flex cursor-pointer items-center justify-center rounded-full bg-orange-500 p-1 text-white hover:bg-orange-600"
+        onClick={() => setEditing(!editing)}
       >
-        <PencilIcon className="h-6 w-6 p-1 text-white" />
+        {editing ? (
+          <span className="px-2 text-xs">save</span>
+        ) : (
+          <PencilIcon className="h-6 w-6 p-1" />
+        )}
       </button>
       <Row className="justify-center gap-10 text-sm text-gray-500">
         <Row className="items-center gap-1">
@@ -61,7 +65,7 @@ export function InvestmentStructurePanel(props: {
         )}
         value={[founderPortion]}
         onValueChange={([val]) =>
-          val <= 100 - ammPortion && val >= ammPortion
+          val < 100 - ammPortion && val >= ammPortion
             ? setFounderPortion(val)
             : null
         }
