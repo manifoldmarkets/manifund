@@ -33,7 +33,7 @@ export function StripeDepositButton(props: {
       >
         {children}
       </button>
-      <Modal open={open}>
+      <Modal open={open} setOpen={setOpen}>
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
           <CircleStackIcon
             className="h-6 w-6 text-orange-600"
@@ -65,7 +65,7 @@ export function StripeDepositButton(props: {
             onChange={(event) => setAmount(Number(event.target.value))}
           />
         </div>
-        <p className="mt-3 mb-2 text-center text-rose-500">{errorMessage}</p>
+        <p className="mb-2 mt-3 text-center text-rose-500">{errorMessage}</p>
         <div className="sm:flex-2 flex flex-col gap-3 sm:flex-row">
           <Button
             type="button"

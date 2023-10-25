@@ -48,9 +48,10 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
-  // For ACX Impact Certs. TODO: switch to false by default
+  // For Impact Certs. TODO: switch to false by default
   const [applyingToACX, setApplyingToACX] = useState<boolean>(true)
   const [founderPortion, setFounderPortion] = useState<number>(20)
+  const ammPortion = 10
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
 
@@ -214,7 +215,11 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
       {applyingToACX && (
         <InvestmentStructurePanel
           minimumFunding={minFunding ?? 0}
-          ammPortion={10}
+          founderPortion={founderPortion}
+          setFounderPortion={setFounderPortion}
+          ammPortion={ammPortion}
+          agreedToTerms={agreedToTerms}
+          setAgreedToTerms={setAgreedToTerms}
         />
       )}
       <Col className="gap-1">

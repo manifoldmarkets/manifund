@@ -44,7 +44,7 @@ export function GrantVerdict(props: { projectId: string }) {
   return (
     <>
       <Button onClick={() => setOpen(true)}>🔔</Button>
-      <Modal open={open}>
+      <Modal open={open} setOpen={setOpen}>
         <div className="p-3">
           <h1 className="text-lg font-semibold">Grant verdict</h1>
           <div>

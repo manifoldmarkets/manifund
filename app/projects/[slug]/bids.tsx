@@ -152,11 +152,11 @@ function Trade(props: {
   const enoughShares =
     (tradeAmount / bid.valuation) * TOTAL_SHARES <= (userSellableShares ?? 0)
   const marks = [
-    {value: 0, label: '$0'},
-    {value: 25, label: `${formatMoney(bid.amount / 4)}`},
-    {value: 50, label: `${formatMoney(bid.amount / 2)}`},
-    {value: 75, label: `${formatMoney((bid.amount / 4) * 3)}`},
-    {value: 100, label: `${formatMoney(bid.amount)}`},
+    { value: 0, label: '$0' },
+    { value: 25, label: `${formatMoney(bid.amount / 4)}` },
+    { value: 50, label: `${formatMoney(bid.amount / 2)}` },
+    { value: 75, label: `${formatMoney((bid.amount / 4) * 3)}` },
+    { value: 100, label: `${formatMoney(bid.amount)}` },
   ]
   const router = useRouter()
 
@@ -193,7 +193,7 @@ function Trade(props: {
       >
         {bid.type === 'buy' ? 'Sell' : 'Buy'}
       </Button>
-      <Modal open={open}>
+      <Modal open={open} setOpen={setOpen}>
         <div>
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
             <CircleStackIcon
@@ -321,7 +321,7 @@ function DeleteBid(props: { bidId: string }) {
       >
         Delete
       </Button>
-      <Modal open={open}>
+      <Modal open={open} setOpen={setOpen}>
         <div>
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-100">
             <TrashIcon className="h-6 w-6 text-rose-600" aria-hidden="true" />
