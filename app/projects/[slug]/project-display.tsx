@@ -31,6 +31,7 @@ import { ProposalRequirements } from './proposal-requirements'
 import { Vote } from './vote'
 import { CauseTag } from '@/components/tags'
 import { Trade } from './trade'
+import { AssuranceBuyBox } from './assurance-buy-box'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -72,6 +73,7 @@ export function ProjectDisplay(props: {
         userProfile.id
       )
     : 0
+  // TODO: delete
   const userShares = userProfile
     ? calculateShares(userTxns, project.id, userProfile.id)
     : 0
@@ -173,6 +175,9 @@ export function ProjectDisplay(props: {
               userSellableShares={userSellableShares}
             />
           )}
+        {userProfile && project.type === 'cert' && project.stage === 'proposal' && (
+          <AssuranceBuyBox project={project} valuation={valuation} offerSizeDollars={projectBids.find((bid) => bid.type === "assurance sell")?.amount ?? 0 - amountRaised} maxBuy={userSpendableFunds} />
+        )}
         {userProfile &&
           project.type === 'grant' &&
           pendingProjectTransfers.length === 0 &&
