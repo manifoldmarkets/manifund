@@ -68,7 +68,7 @@ export function getAmountRaised(project: Project, bids?: Bid[], txns?: Txn[]) {
   return (
     (project.stage === 'proposal'
       ? bids
-          ?.filter((bid) => bid.type !== 'sell' && bid.status === 'pending')
+          ?.filter((bid) => bid.type === 'buy' || bid.type === 'assurance buy' || bid.type === 'donate' && bid.status === 'pending')
           .reduce((acc, bid) => acc + bid.amount, 0)
       : txns
           ?.filter(

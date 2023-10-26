@@ -339,6 +339,7 @@ export interface Database {
       }
       projects: {
         Row: {
+          amm_portion: number | null
           approved: boolean | null
           auction_close: string | null
           blurb: string | null
@@ -360,6 +361,7 @@ export interface Database {
           type: Database["public"]["Enums"]["project_type"]
         }
         Insert: {
+          amm_portion?: number | null
           approved?: boolean | null
           auction_close?: string | null
           blurb?: string | null
@@ -381,6 +383,7 @@ export interface Database {
           type?: Database["public"]["Enums"]["project_type"]
         }
         Update: {
+          amm_portion?: number | null
           approved?: boolean | null
           auction_close?: string | null
           blurb?: string | null
@@ -693,7 +696,7 @@ export interface Database {
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "donate"
+      bid_type: "buy" | "sell" | "donate" | "assurance sell" | "assurance buy"
       profile_type: "individual" | "org" | "amm" | "fund"
       project_stage:
         | "active"

@@ -162,24 +162,18 @@ export function ProjectDisplay(props: {
             fundingGoal={project.funding_goal}
           />
         )}
-        {userProfile && project.type === 'cert' && (
-          <PlaceBid
-            project={project}
-            userSpendableFunds={userSpendableFunds}
-            userSellableShares={userSellableShares}
-            userShares={userShares}
-          />
-        )}
-        {userProfile && project.type === 'cert' && (
-          <Trade
-            ammTxns={projectTxns.filter(
-              (txn) => txn.to_id === project.id || txn.from_id === project.id
-            )}
-            ammId={project.id}
-            userSpendableFunds={userSpendableFunds}
-            userSellableShares={userSellableShares}
-          />
-        )}
+        {userProfile &&
+          project.type === 'cert' &&
+          project.stage !== 'proposal' && (
+            <Trade
+              ammTxns={projectTxns.filter(
+                (txn) => txn.to_id === project.id || txn.from_id === project.id
+              )}
+              ammId={project.id}
+              userSpendableFunds={userSpendableFunds}
+              userSellableShares={userSellableShares}
+            />
+          )}
         {userProfile &&
           project.type === 'grant' &&
           pendingProjectTransfers.length === 0 &&
