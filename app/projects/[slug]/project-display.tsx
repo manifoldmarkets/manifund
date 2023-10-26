@@ -25,7 +25,6 @@ import {
 import { useState } from 'react'
 import { Description } from './description'
 import { Edit } from './edit'
-import { PlaceBid } from './place-bid'
 import { ProjectTabs } from './project-tabs'
 import { ProjectData } from './project-data'
 import { ProposalRequirements } from './proposal-requirements'

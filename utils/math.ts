@@ -8,7 +8,7 @@ import { isCharitableDeposit } from './constants'
 
 export function getProposalValuation(project: Project) {
   const investorPercent =
-    (TOTAL_SHARES - project.founder_portion) / TOTAL_SHARES
+    (TOTAL_SHARES - project.founder_portion - (project.amm_portion ?? 0)) / TOTAL_SHARES
   return project.min_funding / investorPercent
 }
 
