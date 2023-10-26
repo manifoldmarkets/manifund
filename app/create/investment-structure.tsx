@@ -12,6 +12,7 @@ import { InfoTooltip } from '@/components/info-tooltip'
 import { Checkbox } from '@/components/input'
 import { Modal } from '@/components/modal'
 import { Button } from '@/components/button'
+import { Tooltip } from '@/components/tooltip'
 
 const SLIDER_MARKS = [
   { value: 0, label: '0%' },
@@ -90,10 +91,7 @@ export function InvestmentStructurePanel(props: {
         </Row>
       </Row>
       <RxSlider.Root
-        className={clsx(
-          'mb-10 mt-5',
-          'relative flex h-5 touch-none select-none items-center'
-        )}
+        className="relative mb-10 mt-5 flex h-5 touch-none select-none items-center"
         value={[founderPortion]}
         onValueChange={([val]) =>
           val < 100 - ammPortion && val >= ammPortion
@@ -106,12 +104,8 @@ export function InvestmentStructurePanel(props: {
         disabled={!editing}
         ref={sliderRef}
       >
-        <RxSlider.Track
-          className={clsx('relative h-1 grow rounded-full', 'bg-emerald-300')}
-        >
-          <RxSlider.Range
-            className={clsx('bg-orange-300', 'absolute h-full rounded-full')}
-          />{' '}
+        <RxSlider.Track className="relative h-1 grow rounded-full bg-emerald-300">
+          <RxSlider.Range className="absolute h-full rounded-full bg-orange-300" />{' '}
           <div className="absolute left-2.5 right-2.5 h-full">
             {SLIDER_MARKS?.map(({ value, label }) => (
               <div
@@ -122,8 +116,8 @@ export function InvestmentStructurePanel(props: {
                 <div
                   className={clsx(
                     founderPortion >= value
-                      ? 'bg-orange-500 focus:outline-orange-500/30'
-                      : 'bg-emerald-500 focus:outline-emerald-500/30',
+                      ? 'bg-orange-500'
+                      : 'bg-emerald-500',
                     'h-2 w-2 rounded-full'
                   )}
                 />
@@ -136,7 +130,9 @@ export function InvestmentStructurePanel(props: {
         </RxSlider.Track>
         <RxSlider.Thumb
           className={clsx(
-            editing ? 'cursor-grab active:cursor-grabbing' : '',
+            editing
+              ? 'cursor-grab active:cursor-grabbing'
+              : ' cursor-not-allowed',
             'relative block rounded-full bg-orange-500 p-2 outline outline-4 outline-transparent transition-colors focus:outline-orange-500/30'
           )}
         >
