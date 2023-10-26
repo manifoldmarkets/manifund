@@ -23,6 +23,7 @@ type CreateProjectProps = {
   min_funding: number
   funding_goal: number
   founder_portion: number
+  amm_portion: number | null
   round: string
   auction_close: string
   stage: Database['public']['Tables']['projects']['Row']['stage']
@@ -38,6 +39,7 @@ export default async function handler(req: NextRequest) {
     min_funding,
     funding_goal,
     founder_portion,
+    amm_portion,
     round,
     auction_close,
     stage,
@@ -49,7 +51,7 @@ export default async function handler(req: NextRequest) {
   const user = resp.data.user
   if (!user) return NextResponse.error()
 
-  const slug = await projectSlugify(title ?? '', supabase)
+  const slug = await projectSlugify(title, supabase)
   const id = uuid()
   const project = {
     id,
@@ -59,6 +61,7 @@ export default async function handler(req: NextRequest) {
     min_funding,
     funding_goal,
     founder_portion,
+    amm_portion,
     creator: user.id,
     slug,
     round,
@@ -71,13 +74,17 @@ export default async function handler(req: NextRequest) {
   await supabase.from('projects').insert([project]).throwOnError()
   await updateProjectCauses(supabase, causeSlugs, project.id)
   await giveCreatorShares(supabase, id, user.id)
-  if (stage === 'active' && type === 'cert') {
+  if (type === 'cert') {
+    const initialValuation =
+      (TOTAL_SHARES * min_funding) /
+      (TOTAL_SHARES - founder_portion - (amm_portion ?? 0))
     await addBid(
       supabase,
       id,
       user.id,
-      min_funding,
-      (TOTAL_SHARES * min_funding) / (TOTAL_SHARES - founder_portion)
+      min_funding + ((amm_portion ?? 0) / TOTAL_SHARES) * initialValuation,
+      initialValuation,
+      stage === 'proposal' ? 'assurance sell' : 'sell'
     )
   }
   return NextResponse.json(project)
@@ -106,14 +113,15 @@ async function addBid(
   projectId: string,
   creatorId: string,
   amount: number,
-  valuation: number
+  valuation: number,
+  type: string = 'sell'
 ) {
   const bid = {
     bidder: creatorId,
     amount,
     valuation,
     project: projectId,
-    type: 'sell',
+    type: type,
   }
   const { error } = await supabase.from('bids').insert([bid])
   if (error) {

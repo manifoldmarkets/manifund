@@ -50,7 +50,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   // For Impact Certs. TODO: switch to false by default
   const [applyingToManifold, setApplyingToManifold] = useState<boolean>(true)
-  const [founderPortion, setFounderPortion] = useState<number>(20)
+  const [founderPortion, setFounderPortion] = useState<number>(50)
   const ammPortion = 10
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
@@ -84,6 +84,10 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   const handleSubmit = async () => {
     setIsSubmitting(true)
     const description = editor?.getJSON() ?? '<p>No description</p>'
+    const selectedCauseSlugs = selectedCauses.map((cause) => cause.slug)
+    if (applyingToManifold) {
+      selectedCauseSlugs.push('manifold-community')
+    }
     const response = await fetch('/api/create-project', {
       method: 'POST',
       headers: {
@@ -95,12 +99,18 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         description,
         min_funding: minFunding,
         funding_goal: fundingGoal,
-        founder_portion: TOTAL_SHARES,
-        round: 'Regrants',
+        founder_portion: applyingToManifold
+          ? (founderPortion / 100) * TOTAL_SHARES
+          : TOTAL_SHARES,
+        // TODO: replace name if Austin has an alternative
+        round: applyingToManifold ? 'Manifold Community Round' : 'Regrants',
         auction_close: verdictDate,
         stage: 'proposal',
-        type: 'grant',
-        causeSlugs: selectedCauses.map((cause) => cause.slug),
+        type: applyingToManifold ? 'cert' : 'grant',
+        causeSlugs: selectedCauseSlugs,
+        amm_portion: applyingToManifold
+          ? (ammPortion / 100) * TOTAL_SHARES
+          : null,
       }),
     })
     const newProject = await response.json()
