@@ -13,6 +13,7 @@ import { Donations } from './donations'
 import { listProjects } from '@/db/project'
 import { GrantVerdict } from './grant-verdict'
 import { AddTags } from './add-tags'
+import { DownloadTextButton } from './download-text-button'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -58,9 +59,28 @@ export default async function Admin() {
     .order('created_at')
   const balances = userBalances(txns ?? [])
 
+  const usersCSV =
+    'email,name,username,id,balance\n' +
+    userAndProfiles
+      .map((user) => {
+        return [
+          user.email,
+          user.profile?.full_name,
+          user.profile?.username,
+          user.id,
+          balances.get(user.id ?? '') ?? 0,
+        ].join(',')
+      })
+      .join('\n')
+
   return (
     <div>
       <h1>Admin</h1>
+      <DownloadTextButton
+        buttonText="Export users.csv"
+        toDownload={usersCSV}
+        filename="users.csv"
+      />
       <Table>
         <thead>
           <tr>
