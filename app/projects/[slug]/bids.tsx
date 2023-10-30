@@ -105,6 +105,8 @@ function Bid(props: {
     userSpendableFunds,
     userSellableShares,
   } = props
+  const showTrade =
+    userProfile && bid.bidder !== userProfile.id && bid.type !== 'assurance buy'
   return (
     <Row className="w-full items-center justify-between gap-3 rounded p-3 hover:bg-gray-200">
       <UserAvatarAndBadge profile={bid.profiles} />
@@ -117,20 +119,17 @@ function Bid(props: {
       ) : (
         <div>{formatMoney(bid.amount)}</div>
       )}
-      {userProfile && (
-        <div>
-          {bid.bidder === userProfile.id ? (
-            <DeleteBid bidId={bid.id} />
-          ) : (
-            <Trade
-              bid={bid}
-              project={project}
-              userId={userProfile.id}
-              userSpendableFunds={userSpendableFunds ?? 0}
-              userSellableShares={userSellableShares ?? 0}
-            />
-          )}
-        </div>
+      {userProfile && bid.bidder === userProfile.id && (
+        <DeleteBid bidId={bid.id} />
+      )}
+      {showTrade && (
+        <Trade
+          bid={bid}
+          project={project}
+          userId={userProfile.id}
+          userSpendableFunds={userSpendableFunds ?? 0}
+          userSellableShares={userSellableShares ?? 0}
+        />
       )}
     </Row>
   )
@@ -178,7 +177,6 @@ function Trade(props: {
   } else if (
     !agreedToTerms &&
     project.creator === userId &&
-    project.round === 'OP AI Worldviews Contest' &&
     bid.type === 'buy'
   ) {
     errorMessage = `Confirm that you understand the terms of this trade.`
@@ -190,6 +188,10 @@ function Trade(props: {
         onClick={() => {
           setOpen(true)
         }}
+        disabled={
+          (bid.type === 'sell' && userSpendableFunds === 0) ||
+          (bid.type === 'buy' && userSellableShares === 0)
+        }
       >
         {bid.type === 'buy' ? 'Sell' : 'Buy'}
       </Button>

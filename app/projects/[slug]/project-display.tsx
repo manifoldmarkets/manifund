@@ -17,7 +17,6 @@ import {
   calculateCashBalance,
   calculateCharityBalance,
   calculateSellableShares,
-  calculateShares,
   getActiveValuation,
   getAmountRaised,
   getProposalValuation,
@@ -72,10 +71,6 @@ export function ProjectDisplay(props: {
         project.id,
         userProfile.id
       )
-    : 0
-  // TODO: delete
-  const userShares = userProfile
-    ? calculateShares(userTxns, project.id, userProfile.id)
     : 0
   const valuation =
     project.type === 'grant'
@@ -175,9 +170,19 @@ export function ProjectDisplay(props: {
               userSellableShares={userSellableShares}
             />
           )}
-        {userProfile && project.type === 'cert' && project.stage === 'proposal' && (
-          <AssuranceBuyBox project={project} valuation={valuation} offerSizeDollars={projectBids.find((bid) => bid.type === "assurance sell")?.amount ?? 0 - amountRaised} maxBuy={userSpendableFunds} />
-        )}
+        {userProfile &&
+          project.type === 'cert' &&
+          project.stage === 'proposal' && (
+            <AssuranceBuyBox
+              project={project}
+              valuation={valuation}
+              offerSizeDollars={
+                projectBids.find((bid) => bid.type === 'assurance sell')
+                  ?.amount ?? 0 - amountRaised
+              }
+              maxBuy={userSpendableFunds}
+            />
+          )}
         {userProfile &&
           project.type === 'grant' &&
           pendingProjectTransfers.length === 0 &&

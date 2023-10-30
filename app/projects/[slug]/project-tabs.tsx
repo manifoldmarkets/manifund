@@ -72,16 +72,14 @@ export function ProjectTabs(props: {
       project.type === 'cert') ||
     project.stage === 'proposal'
   ) {
+    const bidsToShow = bids.filter((bid) => bid.type !== 'assurance sell')
     tabs.push({
-      name:
-        project.stage === 'active' || project.type === 'grant'
-          ? 'Offers'
-          : 'Bids',
+      name: 'Offers',
       id: 'bids',
-      count: bids.length,
+      count: bidsToShow.length,
       display: (
         <Bids
-          bids={bids}
+          bids={bidsToShow}
           project={project}
           userProfile={userProfile}
           userSpendableFunds={userSpendableFunds}
