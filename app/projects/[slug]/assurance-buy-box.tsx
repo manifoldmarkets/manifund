@@ -20,13 +20,13 @@ export function AssuranceBuyBox(props: {
   const { project, valuation, offerSizeDollars, maxBuy } = props
   const [amount, setAmount] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  console.log(valuation)
   const offerSizePercent = offerSizeDollars / valuation
-  console.log(offerSizePercent, '%')
   const router = useRouter()
   let errorMessage = null
   if (amount && amount > maxBuy) {
     errorMessage = `You don't have enough funds to buy $${amount}. You can buy up to $${maxBuy} worth.`
+  } else if (amount && amount > offerSizeDollars) {
+    errorMessage = `You can't buy more than ${formatPercent(offerSizePercent)} of the project.`
   }
 
   const placeBid = async () => {
@@ -54,20 +54,15 @@ export function AssuranceBuyBox(props: {
           Place a buy offer
         </h2>
           <p className="text-sm text-gray-500">
-            You are offering to donate this amount to the project on the
-            condition that it eventually becomes active. Otherwise, your funds
-            will remain in your Manifund account.
+            Offer to buy equity directly from the founder at the initial valuation. This order will only go through once the founder has received enough buy offers to cover their minimum costs.
           </p>
       </div>
       <Row className="items-center gap-2 w-full">
-      <Input
-          type="number"
-          id="amount"
-          autoComplete="off"
+      $<Input
           value={Number(amount).toString()}
           placeholder="Amount (USD)"
           onChange={(event) => setAmount(Number(event.target.value))}
-          className="w-48 max-w-full"
+          className="w-24 max-w-full"
         />
         <Slider amount={amount} onChange={setAmount} min={0} max={offerSizeDollars} marks={
           [{label: formatPercent(0), value: 0},
@@ -77,7 +72,7 @@ export function AssuranceBuyBox(props: {
           {label: formatPercent(offerSizePercent), value: offerSizeDollars}]
         }/>
       </Row>
-      <Row className="items-center justify-between gap-2">
+      <Row className="justify-end gap-2">
         <Tooltip text={errorMessage ?? ''}>
           <Button
             onClick={placeBid}
