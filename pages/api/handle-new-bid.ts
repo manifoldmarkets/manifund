@@ -1,9 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import {
-  getProjectAndProfileById,
-  Project,
-  ProjectAndProfile,
-} from '@/db/project'
+import { getProjectAndProfileById, ProjectAndProfile } from '@/db/project'
 import { maybeActivateGrant } from '@/utils/activate-grant'
 import { Bid } from '@/db/bid'
 import { calculateFullTrades } from '@/utils/math'
@@ -27,7 +23,9 @@ export default async function handler(
   }
   if (bid.type === 'donate') {
     await maybeActivateGrant(supabase, bid.project)
-  } else if (project.stage === 'active') {
+  } else if (project.stage === 'proposal') {
+    // TODO: handle proposal stage bids
+  } else {
     await findAndMakeTrades(bid, supabase)
   }
   if (bid.type === 'buy') {
