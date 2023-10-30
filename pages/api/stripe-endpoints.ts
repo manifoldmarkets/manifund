@@ -1,7 +1,7 @@
 import Stripe from 'stripe'
 import { STRIPE_SECRET_KEY } from '@/db/env'
 import { createAdminClient } from './_db'
-import { sendTemplateEmail } from '@/utils/email'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Readable } from 'node:stream'
 import uuid from 'react-uuid'
@@ -57,9 +57,8 @@ export default async function handler(
     const supabase = createAdminClient()
     const txnId = uuid()
     await issueMoneys(session, txnId, supabase)
-    const PAYMENT_CONFIRMATION_TEMPLATE_ID = 31316115
     await sendTemplateEmail(
-      PAYMENT_CONFIRMATION_TEMPLATE_ID,
+      TEMPLATE_IDS.PAYMENT_CONFIRMATION,
       {
         amount: session.metadata?.dollarQuantity,
         id: txnId,

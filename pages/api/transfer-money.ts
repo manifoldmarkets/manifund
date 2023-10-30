@@ -5,7 +5,7 @@ import { getProfileById } from '@/db/profile'
 import { getTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { calculateCharityBalance } from '@/utils/math'
-import { sendTemplateEmail } from '@/utils/email'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { getURL } from '@/utils/constants'
 
 export const config = {
@@ -70,8 +70,7 @@ export default async function handler(req: NextRequest) {
       projectTitle: project.title,
       projectUrl: `https://manifund.org/projects/${project.slug}`,
     }
-    const PROJECT_DONATION_TEMPLATE_ID = 31534853
-    await sendTemplateEmail(PROJECT_DONATION_TEMPLATE_ID, postmarkVars, toId)
+    await sendTemplateEmail(TEMPLATE_IDS.PROJECT_DONATION, postmarkVars, toId)
   } else {
     const regranterProfile = await getProfileById(supabaseAdmin, toId)
     if (!regranterProfile) {
@@ -82,8 +81,7 @@ export default async function handler(req: NextRequest) {
       donorName: donor.full_name,
       profileUrl: `${getURL()}/${regranterProfile.username}`,
     }
-    const REGRANTER_DONATION_TEMPLATE_ID = 31571248
-    await sendTemplateEmail(REGRANTER_DONATION_TEMPLATE_ID, postmarkVars, toId)
+    await sendTemplateEmail(TEMPLATE_IDS.REGRANTER_DONATION, postmarkVars, toId)
   }
 
   if (error) {

@@ -17,6 +17,7 @@ export type FullProject = Project & { profiles: Profile } & {
 } & { txns: Txn[] } & { comments: Comment[] } & { rounds: Round } & {
   project_transfers: ProjectTransfer[]
 } & { project_votes: ProjectVote[] } & { causes: MiniCause[] }
+export type MiniProject = Project & { profiles: Profile } & { txns: Txn[] }
 
 export const TOTAL_SHARES = 10_000_000
 
@@ -62,10 +63,25 @@ export async function listProjects(supabase: SupabaseClient) {
     .select(
       'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
     )
+    .neq('type', 'dummy')
     .order('created_at', { ascending: false })
     .throwOnError()
   // Scary type conversion!
   return data as unknown as FullProject[]
+}
+
+export async function listProjectsForEvals(supabase: SupabaseClient) {
+  const { data } = await supabase
+    .from('projects')
+    .select(
+      'id, title, creator, slug, stage, type, funding_goal, external_link, profiles!projects_creator_fkey(*), txns(*)'
+    )
+    .neq('type', 'cert')
+    .neq('stage', 'hidden')
+    .order('created_at', { ascending: false })
+    .throwOnError()
+  // Scary type conversion!
+  return data as unknown as MiniProject[]
 }
 
 export async function getFullProjectBySlug(
@@ -94,6 +110,21 @@ export async function getProjectAndProfileBySlug(
     .from('projects')
     .select('*, profiles!projects_creator_fkey(*)')
     .eq('slug', slug)
+    .throwOnError()
+  if (data === null) {
+    return null
+  }
+  return data[0] as ProjectAndProfile
+}
+
+export async function getProjectAndProfileById(
+  supabase: SupabaseClient,
+  id: string
+) {
+  const { data } = await supabase
+    .from('projects')
+    .select('*, profiles!projects_creator_fkey(*)')
+    .eq('id', id)
     .throwOnError()
   if (data === null) {
     return null
@@ -178,4 +209,18 @@ export async function getUserProjectVote(
     .eq('project_id', projectId)
     .throwOnError()
   return data?.find((vote) => vote.voter_id === userId) as ProjectVote | null
+}
+
+export async function getSelectProjects(
+  supabase: SupabaseClient,
+  projectIds: string[]
+) {
+  const { data: projects, error } = await supabase
+    .from('projects')
+    .select('*')
+    .in('id', projectIds)
+  if (error) {
+    throw error
+  }
+  return projects
 }

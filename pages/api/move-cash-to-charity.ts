@@ -4,7 +4,7 @@ import { getProfileById } from '@/db/profile'
 import { getTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { calculateCashBalance } from '@/utils/math'
-import { sendTemplateEmail } from '@/utils/email'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import uuid from 'react-uuid'
 
 export const config = {
@@ -50,8 +50,11 @@ export default async function handler(req: NextRequest) {
     email: user.email,
     txnId: txnId,
   }
-  const CASH_TO_CHARITY_TEMPLATE_ID = 32471388
-  await sendTemplateEmail(CASH_TO_CHARITY_TEMPLATE_ID, postmarkVars, profile.id)
+  await sendTemplateEmail(
+    TEMPLATE_IDS.CASH_TO_CHARITY,
+    postmarkVars,
+    profile.id
+  )
   if (error) {
     return NextResponse.error()
   } else {

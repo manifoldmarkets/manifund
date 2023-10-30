@@ -2,7 +2,7 @@ import { createAdminClient } from './_db'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { generateHTML } from '@tiptap/html'
 import { getFullCommentById } from '@/db/comment'
-import { sendTemplateEmail } from '@/utils/email'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
 import { calculateFullTrades } from '@/utils/math'
 import { getTxnsByProject } from '@/db/txn'
@@ -23,7 +23,6 @@ export default async function handler(
     TIPTAP_EXTENSIONS
   )
   const mentionedUserIds = parseMentions(comment.content as JSONContent)
-  const NEW_COMMENT_TEMPLATE_ID = 31316102
   const postmarkVars = {
     projectTitle: fullComment.projects.title,
     projectUrl: `https://manifund.org/projects/${fullComment.projects.slug}`,
@@ -35,7 +34,7 @@ export default async function handler(
   // Send creator email
   if (fullComment.profiles.id !== fullComment.projects.creator) {
     await sendTemplateEmail(
-      NEW_COMMENT_TEMPLATE_ID,
+      TEMPLATE_IDS.NEW_COMMENT,
       postmarkVars,
       fullComment.projects.creator
     )
@@ -52,11 +51,10 @@ export default async function handler(
     )
     const trades = calculateFullTrades(txnsAndProfiles)
     const shareholders = calculateShareholders(trades, fullComment.profiles)
-    const CREATOR_UPDATE_TEMPLATE_ID = 31328698
     shareholders.forEach(async (shareholder) => {
       if (shareholder.profile.id !== fullComment.projects.creator) {
         await sendTemplateEmail(
-          CREATOR_UPDATE_TEMPLATE_ID,
+          TEMPLATE_IDS.CREATOR_UPDATE,
           postmarkVars,
           shareholder.profile.id
         )
@@ -65,7 +63,6 @@ export default async function handler(
   }
 
   // Send mentioned user emails
-  const COMMENT_WITH_MENTION_TEMPLATE_ID = 31350706
   await Promise.all(
     mentionedUserIds
       .filter(
@@ -75,7 +72,7 @@ export default async function handler(
       )
       .map((userId) =>
         sendTemplateEmail(
-          COMMENT_WITH_MENTION_TEMPLATE_ID,
+          TEMPLATE_IDS.COMMENT_WITH_MENTION,
           postmarkVars,
           userId
         )
@@ -94,7 +91,7 @@ export default async function handler(
       parentComment.commenter !== comment.commenter
     ) {
       await sendTemplateEmail(
-        NEW_COMMENT_TEMPLATE_ID,
+        TEMPLATE_IDS.NEW_COMMENT,
         postmarkVars,
         parentComment.commenter
       )

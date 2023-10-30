@@ -3,7 +3,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { Bid, FullBid, getBidById } from '@/db/bid'
 import { formatLargeNumber, formatMoney } from './formatting'
 import { NextResponse } from 'next/server'
-import { sendTemplateEmail } from './email'
+import { sendTemplateEmail, TEMPLATE_IDS } from './email'
 import { getProfileById } from '@/db/profile'
 import uuid from 'react-uuid'
 import { TOTAL_SHARES } from '@/db/project'
@@ -53,9 +53,8 @@ export async function trade(
     usdTraded,
     tradePartner?.username ?? ''
   )
-  const TRADE_ACCEPTED_TEMPLATE_ID = 31316920
   await sendTemplateEmail(
-    TRADE_ACCEPTED_TEMPLATE_ID,
+    TEMPLATE_IDS.TRADE_ACCEPTED,
     {
       tradeText: tradeText,
       recipientProfileUrl: `manifund.org/${oldBid.profiles.username}`,

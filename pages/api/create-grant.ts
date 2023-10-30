@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
-import { sendTemplateEmail } from '@/utils/email'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { JSONContent } from '@tiptap/react'
 import { calculateCharityBalance } from '@/utils/math'
 import { getTxnsByUser } from '@/db/txn'
@@ -34,6 +34,7 @@ type GrantProps = {
   recipientName?: string
   recipientUsername?: string
   causeSlugs: string[]
+  locationDescription: string
 }
 
 export default async function handler(req: NextRequest) {
@@ -49,6 +50,7 @@ export default async function handler(req: NextRequest) {
     recipientName,
     recipientUsername,
     causeSlugs,
+    locationDescription,
   } = (await req.json()) as GrantProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
@@ -101,6 +103,7 @@ export default async function handler(req: NextRequest) {
     location_description: '',
     approved: null,
     signed_agreement: false,
+    location_description: locationDescription,
   }
   if (recipientEmail && recipientName) {
     const donorComment = {
@@ -110,7 +113,7 @@ export default async function handler(req: NextRequest) {
       content: donorNotes,
     }
     const projectTransfer = {
-      recipient_email: recipientEmail.trim(),
+      recipient_email: recipientEmail,
       recipient_name: recipientName,
       project_id: project.id,
     }
@@ -128,9 +131,8 @@ export default async function handler(req: NextRequest) {
       projectTitle: title,
       loginUrl: `${getURL()}login?email=${recipientEmail}`,
     }
-    const NEW_USER_GRANT_TEMPLATE_ID = 31479155
     await sendTemplateEmail(
-      NEW_USER_GRANT_TEMPLATE_ID,
+      TEMPLATE_IDS.NEW_USER_GRANT,
       postmarkVars,
       undefined,
       recipientEmail
@@ -161,9 +163,8 @@ export default async function handler(req: NextRequest) {
       projectTitle: title,
       projectUrl: `${getURL()}projects/${slug}`,
     }
-    const EXISTING_USER_GRANT_TEMPLATE_ID = 31480376
     await sendTemplateEmail(
-      EXISTING_USER_GRANT_TEMPLATE_ID,
+      TEMPLATE_IDS.EXISTING_USER_GRANT,
       postmarkVars,
       recipientProfile.id
     )

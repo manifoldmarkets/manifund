@@ -132,7 +132,13 @@ function Trade(props: {
   const { bid, project, userId, userSpendableFunds, userSellableShares } = props
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [tradeAmount, setTradeAmount] = useState(bid.amount)
+  const userSellableValue = (userSellableShares / TOTAL_SHARES) * bid.valuation
+  const [tradeAmount, setTradeAmount] = useState(
+    Math.min(
+      bid.type === 'buy' ? userSellableValue : userSpendableFunds,
+      bid.amount
+    )
+  )
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const enoughMoney = tradeAmount <= (userSpendableFunds ?? 0)
   const enoughShares =

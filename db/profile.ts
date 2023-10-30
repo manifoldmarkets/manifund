@@ -2,13 +2,14 @@ import { Database } from '@/db/database.types'
 import { SupabaseClient, User } from '@supabase/supabase-js'
 import { Txn } from '@/db/txn'
 import { Bid } from './bid'
-
+import { ProjectEval } from './eval'
 export type Profile = Database['public']['Tables']['profiles']['Row']
 export type ProfileAndTxns = Profile & { txns: Txn[] }
 export type ProfileAndBids = Profile & { bids: Bid[] }
 export type ProfileAndProjectTitles = Profile & {
   projects: { title: string }[]
 }
+export type ProfileAndEvals = Profile & { project_evals: ProjectEval[] }
 
 export function isAdmin(user: User | null) {
   const ADMINS = ['rachel.weinberg12@gmail.com', 'akrolsmir@gmail.com']
@@ -131,4 +132,14 @@ export async function getTeamProfiles(supabase: SupabaseClient) {
     .or('full_name.eq.Austin Chen, full_name.eq.Rachel Weinberg')
     .throwOnError()
   return data as Profile[]
+}
+
+export async function listProfilesAndEvals(supabase: SupabaseClient) {
+  const { data: profiles, error } = await supabase
+    .from('profiles')
+    .select('*, project_evals(*)')
+  if (error) {
+    throw error
+  }
+  return profiles as ProfileAndEvals[]
 }

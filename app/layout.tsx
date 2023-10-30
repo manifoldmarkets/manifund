@@ -8,7 +8,7 @@ import Sidebar from './sidebar'
 import { Readex_Pro, Josefin_Slab } from 'next/font/google'
 import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
-import { CompleteProfileBanner } from './banner'
+import { CompleteProfileBanner} from './banner'
 import { getProfileById } from '@/db/profile'
 import { Row } from '@/components/layout/row'
 

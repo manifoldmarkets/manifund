@@ -1,30 +1,41 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+
+const isServer = typeof window === 'undefined'
 
 // Like useState, but first checks for a JSON object stored under the key in the browser's localStorage
 // If key is not set, does nothing.
-const useLocalStorage = (initialValue: string, key?: string) => {
-  const [state, setState] = useState(() => {
+const useLocalStorage = <type>(initialValue: type, key?: string) => {
+  const [state, setState] = useState<type>(initialValue)
+
+  const initialize = () => {
     try {
-      const value = key ? window.localStorage.getItem(key) : initialValue
+      const initialValueString = JSON.stringify(initialValue)
+      const value = key ? window.localStorage.getItem(key) : initialValueString
       return value ? JSON.parse(value) : initialValue
     } catch (error) {
       console.log(error)
+      return initialValue
     }
-  })
+  }
 
-  const setValue = (value: any) => {
+  useEffect(() => {
+    if (!isServer) {
+      setValue(initialize())
+    }
+  }, [])
+
+  const setValue = (value: type) => {
     try {
-      if (key) {
+      setState(value)
+      if (typeof window !== 'undefined' && key) {
         window.localStorage.setItem(key, JSON.stringify(value))
       }
-      setState(value)
     } catch (error) {
       console.log(error)
     }
   }
-
-  return [state, setValue]
+  return { value: state, setValue }
 }
 
 export function clearLocalStorageItem(key: string) {

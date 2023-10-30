@@ -5,8 +5,7 @@ import { getUser, isAdmin } from '@/db/profile'
 import { getProjectById } from '@/db/project'
 import { getAdminName, getURL } from '@/utils/constants'
 import { getProfileById } from '@/db/profile'
-import { sendTemplateEmail } from '@/utils/email'
-import { getBidsByProject } from '@/db/bid'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { maybeActivateGrant } from '@/utils/activate-grant'
 
 export const config = {
@@ -22,10 +21,11 @@ type VerdictProps = {
   approved: boolean
   projectId: string
   adminComment: JSONContent | null
+  publicBenefit: string
 }
 
 export default async function handler(req: NextRequest) {
-  const { approved, projectId, adminComment } =
+  const { approved, projectId, adminComment, publicBenefit } =
     (await req.json()) as VerdictProps
   const supabase = createEdgeClient(req)
   const user = await getUser(supabase)
@@ -47,10 +47,10 @@ export default async function handler(req: NextRequest) {
       project_creator: project.creator,
       admin_id: user.id,
       admin_comment_content: adminComment,
+      public_benefit: publicBenefit,
     })
     .throwOnError()
 
-  const VERDICT_TEMPLATE_ID = 31974162
   const recipientSubject = approved
     ? 'Manifund has approved your project for funding!'
     : 'Manifund has declined to fund your project.'
@@ -65,7 +65,7 @@ export default async function handler(req: NextRequest) {
     adminName: adminName,
   }
   await sendTemplateEmail(
-    VERDICT_TEMPLATE_ID,
+    TEMPLATE_IDS.VERDICT,
     recipientPostmarkVars,
     creator.id
   )

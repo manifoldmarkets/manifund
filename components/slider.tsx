@@ -54,7 +54,7 @@ export function Slider(props: {
           {marks?.map(({ value, label }) => (
             <div
               className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
-              style={{ left: `${value / max * 100}%` }}
+              style={{ left: `${(value / max) * 100}%` }}
               key={value}
             >
               <div

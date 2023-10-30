@@ -5,7 +5,6 @@ import { Profile } from '@/db/profile'
 import Link from 'next/link'
 import { Row } from '@/components/layout/row'
 import { ProfileAndProjectTitles } from '@/db/profile'
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 import { sortBy } from 'lodash'
 import { Tooltip } from '@/components/tooltip'
@@ -15,6 +14,8 @@ import {
   WrenchIcon,
 } from '@heroicons/react/20/solid'
 import { getSponsoredAmount } from '@/utils/constants'
+import { SearchBar } from '@/components/input'
+import { searchInAny } from '@/utils/parse'
 
 export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
   const { profiles } = props
@@ -24,29 +25,17 @@ export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
       .filter((profile) => checkProfileComplete(profile))
   )
   const [search, setSearch] = useState('')
-  const selectedProfiles = searchProfiles(eligibleProfiles, search)
+  const selectedProfiles = eligibleProfiles.filter((profile) =>
+    searchInAny(
+      search,
+      profile.full_name,
+      profile.bio,
+      ...profile.projects?.map((project) => project.title)
+    )
+  )
   return (
     <Col className="w-80 justify-center gap-2 sm:w-[30rem] lg:w-[36rem]">
-      <div className="relative rounded-md shadow-sm">
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-          <MagnifyingGlassIcon
-            className="h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
-        </div>
-        <input
-          type="text"
-          name="search"
-          id="search"
-          autoComplete="off"
-          className="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:leading-6"
-          placeholder="Search..."
-          value={search}
-          onChange={(event) => {
-            setSearch(event.target.value)
-          }}
-        />
-      </div>
+      <SearchBar search={search} setSearch={setSearch} className="mt-2" />
       {selectedProfiles?.map((profile) => (
         <ProfileRow
           key={profile.id}
@@ -105,23 +94,6 @@ function ProfileRow(props: { profile: Profile; isCreator?: boolean }) {
         </span>
       </Col>
     </Link>
-  )
-}
-
-function searchProfiles(profiles: ProfileAndProjectTitles[], search: string) {
-  if (!search) return profiles
-  const check = (field: string) => {
-    return field.toLowerCase().includes(search.toLowerCase())
-  }
-  return (
-    profiles?.filter((profile) => {
-      // Not currently checking description
-      return (
-        check(profile.username) ||
-        check(profile.bio) ||
-        !!profile.projects.find((project) => check(project.title))
-      )
-    }) ?? []
   )
 }
 

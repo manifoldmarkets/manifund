@@ -3,12 +3,12 @@
 To spin up a server against the prod database:
 
 ```bash
-yarn dev
+bun run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Or run `yarn dev:dev` to connect to the dev database.
+Or run `bun run dev:dev` to connect to the dev database.
 
 ## Getting .env variables
 
@@ -16,8 +16,8 @@ You'll need the supabase client and admin keys. After you've been added to the
 Vercel project, get them with:
 
 ```bash
-npx vercel link
-npx vercel env pull
+bun run vercel link
+bun run vercel env pull
 ```
 
 And rename `.env` to `.env.local`.
@@ -28,7 +28,9 @@ You'll want to do this if we've changed the prod database schema (eg through the
 
 0. Authenticate to snaplet with `npx snaplet auth setup`
 1. Go to https://app.snaplet.dev/ and create a new snapshot.
-2. Run `yarn snap:restore` (or `yarn snap:restore-empty`) - You might need to add a `.snaplet/config.json` file with eg
+2. Run `bun run snap:restore` (or `bun run snap:restore-empty`, which is less likely to miss a table)
+
+   - You might need to add a `.snaplet/config.json` file with eg
 
    ```json
    {
