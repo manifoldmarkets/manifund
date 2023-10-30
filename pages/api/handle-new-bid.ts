@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getProjectAndProfileById, ProjectAndProfile } from '@/db/project'
-import { maybeActivateGrant } from '@/utils/activate-grant'
+import { maybeActivateProject } from '@/utils/activate-project'
 import { Bid } from '@/db/bid'
 import { calculateFullTrades } from '@/utils/math'
 import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
@@ -21,15 +21,13 @@ export default async function handler(
   if (!project) {
     return res.status(404).json({ error: 'Project not found' })
   }
-  if (bid.type === 'donate') {
-    await maybeActivateGrant(supabase, bid.project)
-  } else if (project.stage === 'proposal') {
-    // TODO: handle proposal stage bids
-  } else {
+  if (project.stage === 'proposal') {
+    await maybeActivateProject(supabase, bid.project)
+  } else if (project.type === 'cert') {
     await findAndMakeTrades(bid, supabase)
-  }
-  if (bid.type === 'buy') {
-    await sendShareholderEmails(bid, project, supabase)
+    if (bid.type === 'buy') {
+      await sendShareholderEmails(bid, project, supabase)
+    }
   }
 
   return res.status(200).json({ bid })

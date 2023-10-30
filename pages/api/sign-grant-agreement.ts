@@ -1,7 +1,7 @@
 import { getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
-import { maybeActivateGrant } from '@/utils/activate-grant'
+import { maybeActivateGrant } from '@/utils/activate-project'
 
 export const config = {
   runtime: 'edge',

@@ -6,7 +6,7 @@ import { getProjectById } from '@/db/project'
 import { getAdminName, getURL } from '@/utils/constants'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
-import { maybeActivateGrant } from '@/utils/activate-grant'
+import { maybeActivateGrant } from '@/utils/activate-project'
 
 export const config = {
   runtime: 'edge',
