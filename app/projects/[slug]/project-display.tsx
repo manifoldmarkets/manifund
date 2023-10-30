@@ -171,6 +171,7 @@ export function ProjectDisplay(props: {
             />
           )}
         {userProfile &&
+          userProfile.id !== project.creator &&
           project.type === 'cert' &&
           project.stage === 'proposal' && (
             <AssuranceBuyBox
@@ -184,6 +185,7 @@ export function ProjectDisplay(props: {
             />
           )}
         {userProfile &&
+          userProfile.id !== project.creator &&
           project.type === 'grant' &&
           pendingProjectTransfers.length === 0 &&
           (project.stage === 'proposal' || project.stage === 'active') && (
