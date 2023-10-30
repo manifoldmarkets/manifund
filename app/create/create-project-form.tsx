@@ -17,6 +17,7 @@ import { Row } from '@/components/layout/row'
 import { MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from './investment-structure'
+import { Tooltip } from '@/components/tooltip'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -48,8 +49,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
-  // For Impact Certs. TODO: switch to false by default
-  const [applyingToManifold, setApplyingToManifold] = useState<boolean>(true)
+  const [applyingToManifold, setApplyingToManifold] = useState<boolean>(false)
   const [founderPortion, setFounderPortion] = useState<number>(50)
   const ammPortion = 10
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
@@ -59,6 +59,8 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   let errorMessage = null
   if (title === '') {
     errorMessage = 'Your project needs a title.'
+  } else if (minFunding === null) {
+    errorMessage = 'Your project needs a minimum funding amount.'
   } else if (minFunding !== null && minFunding < minMinFunding) {
     errorMessage = `Your minimum funding must be at least $${minMinFunding}.`
   } else if (applyingToManifold && !agreedToTerms) {
@@ -289,15 +291,17 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           setSelectedCauses={setSelectedCauses}
         />
       </Col>
-      <Button
-        className="mt-4"
-        type="submit"
-        disabled={!!errorMessage}
-        loading={isSubmitting}
-        onClick={handleSubmit}
-      >
-        Publish project
-      </Button>
+      <Tooltip text={errorMessage} className="mt-4 w-full">
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={!!errorMessage}
+          loading={isSubmitting}
+          onClick={handleSubmit}
+        >
+          Publish project
+        </Button>
+      </Tooltip>
     </Col>
   )
 }
