@@ -32,23 +32,10 @@ export function Bids(props: {
         There are no bids on this project.
       </p>
     )
-  if (project.stage === 'proposal') {
-    return (
-      <Row className="justify-center">
-        <Col className="w-full max-w-xl">
-          {bids.map((bid) => (
-            <Bid
-              key={bid.id}
-              bid={bid}
-              project={project}
-              showValuation={false}
-            />
-          ))}
-        </Col>
-      </Row>
+  if (project.stage === 'active' || project.stage === 'proposal') {
+    const buyBids = bids.filter(
+      (bid) => bid.type === 'buy' || bid.type === 'assurance buy'
     )
-  } else if (project.stage === 'active') {
-    const buyBids = bids.filter((bid) => bid.type === 'buy')
     const sellBids = bids.filter((bid) => bid.type === 'sell')
     return (
       <Row className="w-full justify-center">
