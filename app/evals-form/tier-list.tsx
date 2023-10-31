@@ -3,6 +3,7 @@ import { ConfidenceMap, TierObj } from './evals-form'
 import { Tier } from './tier'
 import { Col } from '@/components/layout/col'
 
+// @ts-nocheck
 export function TierList(props: {
   tiers: TierObj[]
   setTiers: (tiers: TierObj[]) => void

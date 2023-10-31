@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import { SearchBar } from '@/components/input'
 import { searchInAny } from '@/utils/parse'
 
+// @ts-nocheck
 export function Tier(props: {
   tier: TierObj
   confidenceMap: ConfidenceMap

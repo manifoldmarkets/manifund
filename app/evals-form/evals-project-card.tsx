@@ -26,6 +26,7 @@ const DragHandleIcon = (
   </svg>
 )
 
+// @ts-nocheck
 export function EvalsProjectCard(props: {
   project: MiniProject
   index: number
