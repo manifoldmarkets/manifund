@@ -44,6 +44,7 @@ export function EvalsProjectCard(props: {
       ? project.funding_goal
       : getAmountRaised(project, [], project.txns)
   return (
+    // @ts-ignore
     <Draggable key={project.id} draggableId={project.id} index={index}>
       {/* @ts-ignore */}
       {(dragProvided) => (
