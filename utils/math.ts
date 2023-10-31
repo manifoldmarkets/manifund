@@ -8,7 +8,8 @@ import { isCharitableDeposit } from './constants'
 
 export function getProposalValuation(project: Project) {
   const investorPercent =
-    (TOTAL_SHARES - project.founder_portion - (project.amm_portion ?? 0)) / TOTAL_SHARES
+    (TOTAL_SHARES - project.founder_portion - (project.amm_portion ?? 0)) /
+    TOTAL_SHARES
   return project.min_funding / investorPercent
 }
 
@@ -68,7 +69,13 @@ export function getAmountRaised(project: Project, bids?: Bid[], txns?: Txn[]) {
   return (
     (project.stage === 'proposal'
       ? bids
-          ?.filter((bid) => bid.type === 'buy' || bid.type === 'assurance buy' || bid.type === 'donate' && bid.status === 'pending')
+          ?.filter(
+            (bid) =>
+              (bid.type === 'buy' ||
+                bid.type === 'assurance buy' ||
+                bid.type === 'donate') &&
+              bid.status === 'pending'
+          )
           .reduce((acc, bid) => acc + bid.amount, 0)
       : txns
           ?.filter(

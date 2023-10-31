@@ -87,6 +87,7 @@ export function ProjectDisplay(props: {
     (projectTransfer) => !projectTransfer.transferred
   )
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
+  console.log('amountRaised', amountRaised)
   const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
     undefined | string
   >(undefined)
@@ -178,8 +179,8 @@ export function ProjectDisplay(props: {
               project={project}
               valuation={valuation}
               offerSizeDollars={
-                projectBids.find((bid) => bid.type === 'assurance sell')
-                  ?.amount ?? 0 - amountRaised
+                (projectBids.find((bid) => bid.type === 'assurance sell')
+                  ?.amount ?? 0) - amountRaised
               }
               maxBuy={userSpendableFunds}
             />
