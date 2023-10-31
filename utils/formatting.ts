@@ -116,3 +116,7 @@ export async function projectSlugify(title: string, supabase: SupabaseClient) {
   }
   return slug
 }
+
+export function roundToNearestFive(n: number): number {
+  return Math.round(n / 5) * 5
+}

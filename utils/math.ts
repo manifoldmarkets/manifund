@@ -1,9 +1,11 @@
+import { TradePoint } from '@/app/projects/[slug]/price-graph'
 import { Bid } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, Txn, TxnAndProfiles } from '@/db/txn'
 import { orderBy, sortBy } from 'lodash'
+import { calculateAMMPorfolio } from './amm'
 import { isCharitableDeposit } from './constants'
 
 export function getProposalValuation(project: Project) {

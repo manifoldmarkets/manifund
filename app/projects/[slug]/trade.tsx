@@ -313,27 +313,13 @@ function BuyPanelContent(props: {
         />
         <Slider
           amount={(amount / sliderMax) * 100}
-          className={
-            isLimitOrder
-              ? ''
-              : '[&>.rc-slider-handle]:!bg-emerald-500 [&>.rc-slider-track]:!bg-emerald-500'
-          }
+          rangeColor={isLimitOrder ? 'orange' : 'emerald'}
           marks={[
-            {value: 0,
-              label: '$0',
-            },
-            {value:25, 
-              label: formatMoney(sliderMax / 4),
-            },
-            {value: 50, 
-              label: formatMoney(sliderMax / 2),
-            },
-            {value: 75, 
-              label: formatMoney((sliderMax / 4) * 3),
-            },
-            {value: 100,
-              label: formatMoney(sliderMax),
-            },
+            { value: 0, label: '$0' },
+            { value: 25, label: formatMoney(sliderMax / 4) },
+            { value: 50, label: formatMoney(sliderMax / 2) },
+            { value: 75, label: formatMoney((sliderMax / 4) * 3) },
+            { value: 100, label: formatMoney(sliderMax) },
           ]}
           onChange={(value) => {
             setAmount(((value as number) * sliderMax) / 100)
@@ -366,27 +352,22 @@ function SellPanelContent(props: {
         />
         <Slider
           amount={(amount / sliderMax) * 100}
-          className={
-            isLimitOrder
-              ? ''
-              : '[&>.rc-slider-handle]:bg-rose-500 [&>.rc-slider-track]:bg-rose-500'
-          }
+          rangeColor={isLimitOrder ? 'orange' : 'rose'}
           marks={[
-            {value: 0,
-              label: '0%',
-            },
-            {value: 25,
+            { value: 0, label: '0%' },
+            {
+              value: 25,
               label: `${formatPercent(sliderMax / 4 / TOTAL_SHARES)}`,
             },
-            {value: 50,
+            {
+              value: 50,
               label: `${formatPercent(sliderMax / 2 / TOTAL_SHARES)}`,
             },
-            {value: 75,
+            {
+              value: 75,
               label: `${formatPercent(((sliderMax / 4) * 3) / TOTAL_SHARES)}`,
             },
-            {value: 100,
-              label: `${formatPercent(sliderMax / TOTAL_SHARES)}`,
-            },
+            { value: 100, label: `${formatPercent(sliderMax / TOTAL_SHARES)}` },
           ]}
           onChange={(value) => {
             setAmount(((value as number) * sliderMax) / 100)
