@@ -634,16 +634,28 @@ export interface Database {
         }
         Returns: undefined
       }
-      execute_grant_verdict: {
-        Args: {
-          approved: boolean
-          project_id: string
-          project_creator: string
-          admin_id?: string
-          admin_comment_content?: Json
-        }
-        Returns: undefined
-      }
+      execute_grant_verdict:
+        | {
+            Args: {
+              approved: boolean
+              project_id: string
+              project_creator: string
+              admin_id?: string
+              admin_comment_content?: Json
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              approved: boolean
+              project_id: string
+              project_creator: string
+              admin_id?: string
+              admin_comment_content?: Json
+              public_benefit?: string
+            }
+            Returns: undefined
+          }
       get_user_balances: {
         Args: Record<PropertyKey, never>
         Returns: {

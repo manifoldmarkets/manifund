@@ -1,7 +1,7 @@
 import { getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
-import { maybeActivateGrant } from '@/utils/activate-project'
+import { maybeActivateProject } from '@/utils/activate-project'
 
 export const config = {
   runtime: 'edge',
@@ -26,6 +26,6 @@ export default async function handler(req: NextRequest) {
     .update({ signed_agreement: true })
     .eq('id', projectId)
     .throwOnError()
-  await maybeActivateGrant(supabase, projectId)
+  await maybeActivateProject(supabase, projectId)
   return NextResponse.json({ success: true })
 }

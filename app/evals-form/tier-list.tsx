@@ -20,6 +20,7 @@ export function TierList(props: {
         setTiers(reorderProjects(tiers, source, destination))
       }}
     >
+      {/* @ts-ignore */}
       <Col className="gap-2 rounded">
         {tiers?.map((tier) => (
           <Tier

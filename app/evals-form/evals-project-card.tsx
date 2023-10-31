@@ -44,6 +44,7 @@ export function EvalsProjectCard(props: {
       : getAmountRaised(project, [], project.txns)
   return (
     <Draggable key={project.id} draggableId={project.id} index={index}>
+      {/* @ts-ignore */}
       {(dragProvided) => (
         <div
           {...dragProvided.dragHandleProps}

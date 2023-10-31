@@ -63,6 +63,7 @@ export function Tier(props: {
           direction="horizontal"
           isCombineEnabled={false}
         >
+          {/* @ts-ignore */}
           {(dropProvided) => (
             <div
               {...dropProvided.droppableProps}
