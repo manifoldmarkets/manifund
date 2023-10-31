@@ -12,6 +12,7 @@ export function TierList(props: {
 }) {
   const { tiers, setTiers, confidenceMap, setConfidenceMap } = props
   return (
+    // @ts-ignore
     <DragDropContext
       onDragEnd={({ destination, source }) => {
         // Dropped outside the list

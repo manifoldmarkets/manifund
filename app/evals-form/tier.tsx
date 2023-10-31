@@ -58,6 +58,7 @@ export function Tier(props: {
         )}
       </Row>
       <div className="flex-inline relative w-full items-center">
+        {/* @ts-ignore */}
         <Droppable
           droppableId={tier.id}
           type={'CARD'}
