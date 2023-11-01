@@ -32,7 +32,7 @@ import { CauseTag } from '@/components/tags'
 import { Trade } from './trade'
 import { AssuranceBuyBox } from './assurance-buy-box'
 import { calculateTradePoints } from '@/utils/amm'
-import { CertValuationChart } from './price-graph'
+import { CertValuationChart } from './valuation-chart'
 
 export function ProjectDisplay(props: {
   project: FullProject

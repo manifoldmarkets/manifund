@@ -1,4 +1,4 @@
-import { TradePoint } from '@/app/projects/[slug]/price-graph'
+import { TradePoint } from '@/components/chart/chart'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn, TxnAndProfiles } from '@/db/txn'
 import { isBefore, sub } from 'date-fns'
@@ -144,7 +144,7 @@ export function calculateTradePoints(txns: TxnAndProfiles[], ammId: string) {
   const tradePoints = Object.fromEntries(
     sortedUsdTxns.map((txn) => [txn.bundle, {} as TradePoint])
   )
-  sortedUsdTxns.forEach((txn, index) => {
+  sortedUsdTxns.forEach((txn) => {
     const point = tradePoints[txn.bundle as string]
     const sharesTxn = ammTxns.find(
       (t) => t.bundle === txn.bundle && t.token !== 'USD'

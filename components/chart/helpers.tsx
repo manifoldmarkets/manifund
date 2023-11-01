@@ -1,336 +1,19 @@
-import { last } from 'lodash'
-import { scaleTime, scaleLinear } from 'd3-scale'
-import { calculateAMMPorfolio, calculateValuation } from '@/utils/amm'
-import { Row } from '@/components/layout/row'
-import { Avatar } from '@/components/avatar'
-
-const YES_GRAPH_COLOR = '#ea580c'
-
-export type TradePoint = HistoryPoint<{ profile?: Profile }>
-
-const ValuationChartTooltip = (
-  props: TooltipProps<TradePoint> & { dateLabel: string }
-) => {
-  const { prev, next, dateLabel } = props
-  console.log('prev', prev)
-  if (!prev) return null
-  const profile = prev.obj?.profile
-  return (
-    <Row className="items-center gap-2">
-      {!!profile && (
-        <Avatar
-          size="xs"
-          avatarUrl={profile.avatar_url}
-          id={profile.id}
-          username={profile.username}
-        />
-      )}
-      <span className="font-semibold">{next ? dateLabel : 'Now'}</span>
-      <span className="text-ink-600">{formatMoney(prev.y)}</span>
-    </Row>
-  )
-}
-
-export const CertValuationChart = (props: {
-  ammTxns: Txn[]
-  ammId: string
-  tradePoints: TradePoint[]
-  size: 'sm' | 'lg'
-  className?: string
-}) => {
-  const { ammTxns, ammId, size, tradePoints, className } = props
-  const [start, end] = [
-    new Date(ammTxns[0].created_at).getTime(),
-    new Date().getTime(),
-  ]
-  const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
-  const currValuation = calculateValuation(ammShares, ammUSD)
-  const now = useMemo(() => Date.now(), [tradePoints])
-  const data = useMemo(() => {
-    return [...tradePoints, { y: currValuation, x: now }]
-  }, [end, currValuation, tradePoints])
-  const rightmostDate = getRightmostVisibleDate(end, last(tradePoints)?.x, now)
-  const maxValuation = _.max(data.map((p) => p.y)) ?? 100
-
-  return (
-    <SizedContainer
-      className={clsx(
-        ' w-full pb-3 pr-10',
-        size === 'sm' ? 'h-[100px]' : 'h-[150px] sm:h-[250px]',
-        className
-      )}
-    >
-      {(w, h) => {
-        const xScale = scaleTime([start, rightmostDate], [0, w])
-        const yScale = scaleLinear([0, maxValuation], [h, 0])
-        return (
-          <SingleValueHistoryChart
-            w={w}
-            h={h}
-            xScale={xScale}
-            yScale={yScale}
-            data={data}
-            color={YES_GRAPH_COLOR}
-            Tooltip={(props) => (
-              <ValuationChartTooltip
-                {...props}
-                dateLabel={formatDateInRange(
-                  // eslint-disable-next-line react/prop-types
-                  xScale.invert(props.x),
-                  start,
-                  rightmostDate
-                )}
-              />
-            )}
-          />
-        )
-      }}
-    </SizedContainer>
-  )
-}
-
-import { bisector, extent } from 'd3-array'
-import { axisBottom, axisRight } from 'd3-axis'
-import { ScaleContinuousNumeric, ScaleTime } from 'd3-scale'
-import {
-  CurveFactory,
-  curveLinear,
-  curveStepAfter,
-  curveStepBefore,
-} from 'd3-shape'
-import { range } from 'lodash'
-import { ReactNode, useCallback, useId, useMemo, useState } from 'react'
-
-import {
-  AxisConstraints,
-  HistoryPoint,
-  Point,
-  ValueKind,
-  compressPoints,
-  viewScale,
-} from '@/utils/chart'
-import { useEvent } from '@/hooks/use-event'
-import { roundToNearestFive } from '@/utils/formatting'
-import clsx from 'clsx'
-
-const Y_AXIS_CONSTRAINTS: Record<ValueKind, AxisConstraints> = {
-  percent: { min: 0, max: 1, minExtent: 0.04 },
-  Ṁ: { minExtent: 10 },
-  amount: { minExtent: 0.04 },
-}
-
-const interpolateY = (
-  curve: CurveFactory,
-  x: number,
-  x0: number,
-  x1: number,
-  y0: number,
-  y1: number
-) => {
-  if (curve === curveLinear) {
-    if (x1 == x0) {
-      return y0
-    } else {
-      const p = (x - x0) / (x1 - x0)
-      return y0 * (1 - p) + y1 * p
-    }
-  } else if (curve === curveStepAfter) {
-    return y0
-  } else if (curve === curveStepBefore) {
-    return y1
-  } else {
-    return 0
-  }
-}
-
-const constrainExtent = (
-  extent: [number, number],
-  constraints: AxisConstraints
-) => {
-  // first clamp the extent to our min and max
-  const min = constraints.min ?? -Infinity
-  const max = constraints.max ?? Infinity
-  const minExtent = constraints.minExtent ?? 0
-  const start = Math.max(extent[0], min)
-  const end = Math.min(extent[1], max)
-
-  const size = end - start
-  if (size >= minExtent) {
-    return [start, end]
-  } else {
-    // compute how much padding we need to get to the min extent
-    const halfPad = Math.max(0, minExtent - size) / 2
-    const paddedStart = start - halfPad
-    const paddedEnd = end + halfPad
-    // we would like to return [start - halfPad, end + halfPad], but if our padding
-    // is making us go past the min and max, we need to readjust it to the other end
-    if (paddedStart < min) {
-      const underflow = min - paddedStart
-      return [min, paddedEnd + underflow]
-    } else if (paddedEnd > max) {
-      const overflow = paddedEnd - max
-      return [paddedStart - overflow, max]
-    } else {
-      return [paddedStart, paddedEnd]
-    }
-  }
-}
-
-const dataAtTimeSelector = <Y, P extends Point<number, Y>>(
-  data: P[],
-  xScale: ScaleTime<number, number>
-) => {
-  const bisect = bisector((p: P) => p.x)
-  return (posX: number) => {
-    const x = xScale.invert(posX)
-    const i = bisect.left(data, x)
-    const prev = data[i - 1] as P | undefined
-    const next = data[i] as P | undefined
-    const nearest = data[bisect.center(data, x)]
-    return { prev, next, nearest, x: posX }
-  }
-}
-
-export const SingleValueHistoryChart = <P extends HistoryPoint>(props: {
-  data: P[]
-  w: number
-  h: number
-  color: string | ((p: P) => string)
-  xScale: ScaleTime<number, number>
-  yScale: ScaleContinuousNumeric<number, number>
-  Tooltip?: (props: TooltipProps<P>) => ReactNode
-}) => {
-  const { data, w, h, color, Tooltip } = props
-  const { viewXScale, setViewXScale, viewYScale, setViewYScale } =
-    useViewScale()
-  const yKind = 'amount'
-  const xScale = viewXScale ?? props.xScale
-  const yScale = viewYScale ?? props.yScale
-
-  const [xMin, xMax] = xScale?.domain().map((d) => d.getTime()) ?? [
-    data[0].x,
-    data[data.length - 1].x,
-  ]
-
-  const { points, isCompressed } = useMemo(
-    () => compressPoints(data, xMin, xMax),
-    [data, xMin, xMax]
-  )
-
-  const curve = isCompressed ? curveLinear : curveStepAfter
-
-  const [mouse, setMouse] = useState<TooltipProps<P>>()
-
-  const px = useCallback((p: P) => xScale(p.x), [xScale])
-  const py0 = yScale(0)
-  const py1 = useCallback((p: P) => yScale(p.y), [yScale])
-  const { xAxis, yAxis } = useMemo(() => {
-    const nTicks = h < 200 ? 3 : 5
-    const xAxis = axisBottom<Date>(xScale).ticks(w / 100)
-    const yAxis = axisRight<number>(yScale)
-      .ticks(nTicks)
-      .tickFormat((n) => formatMoney(n))
-    return { xAxis, yAxis }
-  }, [w, h, yKind, xScale, yScale])
-
-  const selector = dataAtTimeSelector(points, xScale)
-  const onMouseOver = useEvent((mouseX: number) => {
-    const p = selector(mouseX)
-    if (p.prev) {
-      const x0 = xScale(p.prev.x)
-      const x1 = p.next ? xScale(p.next.x) : x0
-      const y0 = yScale(p.prev.y)
-      const y1 = p.next ? yScale(p.next.y) : y0
-      const markerY = interpolateY(curve, mouseX, x0, x1, y0, y1)
-      setMouse({ ...p, x: mouseX, y: markerY })
-    } else {
-      setMouse(undefined)
-    }
-  })
-
-  const onMouseLeave = useEvent(() => {
-    setMouse(undefined)
-  })
-
-  const rescale = useCallback((newXScale: ScaleTime<number, number> | null) => {
-    if (newXScale) {
-      setViewXScale(() => newXScale)
-      const [xMin, xMax] = newXScale.domain()
-
-      const bisect = bisector((p: P) => p.x)
-      const iMin = bisect.right(data, xMin)
-      const iMax = bisect.right(data, xMax)
-
-      // Don't zoom axis if they selected an area with only one value
-      if (iMin != iMax) {
-        const visibleYs = range(iMin - 1, iMax).map((i) => data[i]?.y)
-        const [yMin, yMax] = extent(visibleYs) as [number, number]
-        // Try to add extra space on top and bottom before constraining
-        const padding = (yMax - yMin) * 0.1
-        const domain = constrainExtent(
-          [yMin - padding, yMax + padding],
-          Y_AXIS_CONSTRAINTS[yKind]
-        )
-        setViewYScale(() => yScale.copy().domain(domain).nice())
-      }
-    } else {
-      setViewXScale(undefined)
-      setViewYScale(undefined)
-    }
-  }, [])
-
-  const gradientId = useId()
-  const stops = useMemo(
-    () =>
-      typeof color !== 'string' ? computeColorStops(points, color, px) : null,
-    [color, points, px]
-  )
-
-  return (
-    <SVGChart
-      w={w}
-      h={h}
-      xAxis={xAxis}
-      yAxis={yAxis}
-      ttParams={mouse}
-      fullScale={props.xScale}
-      onRescale={rescale}
-      onMouseOver={onMouseOver}
-      onMouseLeave={onMouseLeave}
-      Tooltip={Tooltip}
-    >
-      {stops && (
-        <defs>
-          <linearGradient gradientUnits="userSpaceOnUse" id={gradientId}>
-            {stops.map((s, i) => (
-              <stop key={i} offset={`${s.x / w}`} stopColor={s.color} />
-            ))}
-          </linearGradient>
-        </defs>
-      )}
-      <AreaWithTopStroke
-        color={typeof color === 'string' ? color : `url(#${gradientId})`}
-        data={data}
-        px={px}
-        py0={py0}
-        py1={py1}
-        curve={curve ?? curveLinear}
-      />
-      {mouse && (
-        <SliceMarker color="#5BCEFF" x={mouse.x} y0={py0} y1={mouse.y} />
-      )}
-    </SVGChart>
-  )
-}
-
 import { Axis, AxisScale } from 'd3-axis'
 import { pointer, select } from 'd3-selection'
+import { ScaleContinuousNumeric, ScaleTime } from 'd3-scale'
 import { area, line } from 'd3-shape'
 import { zoom } from 'd3-zoom'
-import React, { SVGProps, useDeferredValue, useEffect, useRef } from 'react'
+import React, {
+  ReactNode,
+  SVGProps,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { useMeasureSize } from '@/hooks/use-measure-size'
 import { clamp } from 'lodash'
-import { formatMoney } from '@/utils/formatting'
 import {
   add,
   differenceInHours,
@@ -341,10 +24,9 @@ import {
   sub,
   format,
 } from 'date-fns'
-import { Profile } from '@/db/profile'
-import { Txn } from '@/db/txn'
-import _ from 'lodash'
-import { SizedContainer } from '@/components/layout/sized-container'
+import { HistoryPoint } from '@/utils/chart'
+import { CurveFactory } from 'd3-shape'
+import clsx from 'clsx'
 
 const XAxis = <X,>(props: { w: number; h: number; axis: Axis<X> }) => {
   const { h, axis } = props
@@ -374,9 +56,14 @@ const SimpleYAxis = <Y,>(props: { w: number; axis: Axis<Y> }) => {
   return <g ref={axisRef} transform={`translate(${w}, 0)`} />
 }
 
-// Horizontal gridlines
-const YAxis = <Y,>(props: { w: number; h: number; axis: Axis<Y> }) => {
-  const { w, h, axis } = props
+// horizontal gridlines
+const YAxis = <Y,>(props: {
+  w: number
+  h: number
+  axis: Axis<Y>
+  negativeThreshold?: number
+}) => {
+  const { w, h, axis, negativeThreshold = 0 } = props
   const axisRef = useRef<SVGGElement>(null)
 
   useEffect(() => {
@@ -386,17 +73,33 @@ const YAxis = <Y,>(props: { w: number; h: number; axis: Axis<Y> }) => {
         .call((g) =>
           g.selectAll('.tick').each(function (d) {
             const tick = select(this)
-            tick
-              .select('line')
-              .attr('x2', w)
-              .attr('stroke-opacity', 0.1)
-              .attr('transform', `translate(-${w}, 0)`)
+            if (negativeThreshold && d === negativeThreshold) {
+              const color = negativeThreshold >= 0 ? '#0d9488' : '#FF2400'
+              tick
+                .select('line') // Change stroke of the line
+                .attr('x2', w)
+                .attr('stroke-opacity', 1)
+                .attr('stroke-dasharray', '10,5') // Make the line dotted
+                .attr('transform', `translate(-${w}, 0)`)
+                .attr('stroke', color)
+
+              tick
+                .select('text') // Change font of the text
+                .style('font-weight', 'bold') // Adjust this to your needs
+                .attr('fill', color)
+            } else {
+              tick
+                .select('line')
+                .attr('x2', w)
+                .attr('stroke-opacity', 0.1)
+                .attr('transform', `translate(-${w}, 0)`)
+            }
           })
         )
         .select('.domain')
         .attr('stroke-width', 0)
     }
-  }, [w, h, axis])
+  }, [w, h, axis, negativeThreshold])
 
   return <g ref={axisRef} transform={`translate(${w}, 0)`} />
 }
@@ -438,7 +141,7 @@ const AreaPath = <P,>(
   return <path {...rest} d={d} />
 }
 
-const AreaWithTopStroke = <P,>(props: {
+export const AreaWithTopStroke = <P,>(props: {
   data: P[]
   color: string
   px: number | ((p: P) => number)
@@ -475,7 +178,7 @@ const AreaWithTopStroke = <P,>(props: {
   )
 }
 
-const SliceMarker = (props: {
+export const SliceMarker = (props: {
   color: string
   x: number
   y0: number
@@ -497,7 +200,7 @@ const SliceMarker = (props: {
   )
 }
 
-const SVGChart = <
+export const SVGChart = <
   X,
   TT extends { x: number; y: number },
   S extends AxisScale<X>
@@ -513,6 +216,8 @@ const SVGChart = <
   onMouseOver?: (mouseX: number, mouseY: number) => void
   onMouseLeave?: () => void
   Tooltip?: (props: TT) => ReactNode
+  negativeThreshold?: number
+  noGridlines?: boolean
   className?: string
 }) => {
   const {
@@ -527,6 +232,8 @@ const SVGChart = <
     onMouseOver,
     onMouseLeave,
     Tooltip,
+    negativeThreshold,
+    noGridlines,
     className,
   } = props
   const svgRef = useRef<SVGSVGElement>(null)
@@ -548,7 +255,7 @@ const SVGChart = <
           if (ev instanceof WheelEvent) {
             return ev.ctrlKey || ev.metaKey || ev.altKey
           } else if (ev instanceof TouchEvent) {
-            // Disable on touch devices entirely for now to not interfere with scroll
+            // disable on touch devices entirely for now to not interfere with scroll
             return false
           }
           return !ev.button
@@ -620,7 +327,16 @@ const SVGChart = <
 
         <g>
           <XAxis axis={xAxis} w={w} h={h} />
-          <YAxis axis={yAxis} w={w} h={h} />
+          {noGridlines ? (
+            <SimpleYAxis axis={yAxis} w={w} />
+          ) : (
+            <YAxis
+              axis={yAxis}
+              w={w}
+              h={h}
+              negativeThreshold={negativeThreshold}
+            />
+          )}
           {/* clip to stop pointer events outside of graph, and mask for the blur to indicate zoom */}
           <g clipPath="url(#clip)">
             <g mask="url(#mask)">{children}</g>
@@ -650,7 +366,7 @@ const getTooltipPosition = (
   return { left, bottom }
 }
 
-type TooltipProps<T> = {
+export type TooltipProps<T> = {
   x: number
   y: number
   prev: T | undefined
@@ -682,7 +398,7 @@ const TooltipContainer = (props: {
   )
 }
 
-const getRightmostVisibleDate = (
+export const getRightmostVisibleDate = (
   contractEnd: number | null | undefined,
   lastActivity: number | null | undefined,
   now: number
@@ -697,7 +413,7 @@ const getRightmostVisibleDate = (
   }
 }
 
-const formatDate = (
+export const formatDate = (
   date: Date | number,
   opts?: {
     includeYear?: boolean
@@ -731,7 +447,7 @@ const formatDate = (
   }
 }
 
-const formatDateInRange = (
+export const formatDateInRange = (
   d: Date | number,
   start: Date | number,
   end: Date | number
@@ -744,8 +460,8 @@ const formatDateInRange = (
   return formatDate(d, opts)
 }
 
-// Assumes linear interpolation
-const computeColorStops = <P extends HistoryPoint>(
+// assumes linear interpolation
+export const computeColorStops = <P extends HistoryPoint>(
   data: P[],
   pc: (p: P) => string,
   px: (p: P) => number
@@ -760,7 +476,7 @@ const computeColorStops = <P extends HistoryPoint>(
     const prev = data[i - 1]
     const curr = data[i]
     if (pc(prev) !== pc(curr)) {
-      // Given a line through points (x0, y0) and (x1, y1), find the x value where y = 0 (intersects with x axis)
+      // given a line through points (x0, y0) and (x1, y1), find the x value where y = 0 (intersects with x axis)
       const xIntersect =
         prev.x + (prev.y * (curr.x - prev.x)) / (prev.y - curr.y)
 
@@ -777,7 +493,7 @@ const computeColorStops = <P extends HistoryPoint>(
   return stops
 }
 
-const useViewScale = () => {
+export const useViewScale = () => {
   const [viewXScale, setViewXScale] = useState<ScaleTime<number, number>>()
   const [viewYScale, setViewYScale] =
     useState<ScaleContinuousNumeric<number, number>>()
