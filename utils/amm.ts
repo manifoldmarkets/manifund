@@ -2,7 +2,7 @@ import { TradePoint } from '@/components/chart/chart'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn, TxnAndProfiles } from '@/db/txn'
 import { isBefore, sub } from 'date-fns'
-import { orderBy, sortBy } from 'lodash'
+import { sortBy } from 'lodash'
 import { formatMoneyPrecise } from './formatting'
 
 export type BinaryModeId = 'buy' | 'sell' | null
@@ -164,5 +164,5 @@ export function calculateTradePoints(txns: TxnAndProfiles[], ammId: string) {
     point.x = new Date(txn.created_at).getTime()
     point.obj = txn.profiles?.id === ammId ? sharesTxn.profiles : txn.profiles
   })
-  return orderBy(Object.values(tradePoints), 'x', 'asc') as TradePoint[]
+  return sortBy(Object.values(tradePoints), 'x') as TradePoint[]
 }
