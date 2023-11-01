@@ -162,7 +162,7 @@ export function calculateTradePoints(txns: TxnAndProfiles[], ammId: string) {
     const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxnsSoFar, ammId)
     point.y = calculateValuation(ammShares, ammUSD)
     point.x = new Date(txn.created_at).getTime()
-    point.obj = txn.profiles
+    point.obj = txn.profiles?.id === ammId ? sharesTxn.profiles : txn.profiles
   })
   return orderBy(Object.values(tradePoints), 'x', 'asc') as TradePoint[]
 }

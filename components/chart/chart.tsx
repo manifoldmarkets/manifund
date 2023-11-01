@@ -28,7 +28,7 @@ import {
   useViewScale,
 } from './helpers'
 
-export type TradePoint = HistoryPoint<{ profile?: Profile }>
+export type TradePoint = HistoryPoint<Profile>
 
 const Y_AXIS_CONSTRAINTS: Record<ValueKind, AxisConstraints> = {
   percent: { min: 0, max: 1, minExtent: 0.04 },

@@ -20,7 +20,7 @@ const ValuationChartTooltip = (
 ) => {
   const { prev, next, dateLabel } = props
   if (!prev) return null
-  const profile = prev.obj?.profile
+  const profile = prev.obj
   return (
     <Row className="items-center gap-2">
       {!!profile && (
