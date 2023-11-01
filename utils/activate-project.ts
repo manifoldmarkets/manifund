@@ -69,10 +69,12 @@ async function activateProject(project: Project) {
       })
       .throwOnError()
   } else {
-    await supabase.rpc('activate_cert', {
-      project_id: project.id,
-      project_creator: project.creator,
-    })
+    await supabase
+      .rpc('activate_cert', {
+        project_id: project.id,
+        project_creator: project.creator,
+      })
+      .throwOnError()
     await seedAmm(project, supabase)
   }
   const txns = await getTxnsByProject(supabase, project.id)
