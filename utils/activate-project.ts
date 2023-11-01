@@ -1,11 +1,18 @@
 import { getProfileById } from '@/db/profile'
-import { getProjectAndBidsById, Project, ProjectAndBids } from '@/db/project'
+import {
+  getProjectAndBidsById,
+  Project,
+  ProjectAndBids,
+  TOTAL_SHARES,
+} from '@/db/project'
 import { getTxnsByProject } from '@/db/txn'
 import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { uniq } from 'lodash'
+import uuid from 'react-uuid'
 import { getURL } from './constants'
 import { sendTemplateEmail, TEMPLATE_IDS } from './email'
+import { getProposalValuation } from './math'
 
 export async function maybeActivateProject(
   supabase: SupabaseClient,
@@ -16,7 +23,9 @@ export async function maybeActivateProject(
     console.error('Project not found')
     return
   }
+  console.log('funding ready?', checkFundingReady(project))
   if (checkFundingReady(project)) {
+    console.log('about to activate!')
     await activateProject(project)
   }
 }
@@ -37,6 +46,7 @@ function checkFundingReady(project: ProjectAndBids) {
           (bid) =>
             bid.type === 'assurance sell' && bid.bidder === project.creator
         )?.amount ?? 0
+  console.log('totalOffered', totalOffered, 'totalNeeded', totalNeeded)
   return (
     totalOffered >= totalNeeded &&
     (project.type === 'cert' || (project.approved && project.signed_agreement))
@@ -63,7 +73,7 @@ async function activateProject(project: Project) {
       project_id: project.id,
       project_creator: project.creator,
     })
-    // TODO: add seed amm function here
+    await seedAmm(project, supabase)
   }
   const txns = await getTxnsByProject(supabase, project.id)
   const donors = uniq(txns.map((txn) => txn.profiles))
@@ -106,4 +116,32 @@ async function activateProject(project: Project) {
     },
     project.creator
   )
+}
+
+async function seedAmm(project: Project, supabase: SupabaseClient) {
+  const valuation = getProposalValuation(project)
+  const ammProfile = {
+    username: `${project.slug}-amm`,
+    id: project.id,
+    type: 'amm',
+  }
+  await supabase.from('profiles').insert(ammProfile).throwOnError()
+  const bundle = uuid()
+  const usdTxn = {
+    from_id: project.creator,
+    to_id: project.id,
+    token: 'USD',
+    project: project.id,
+    bundle,
+    amount: (valuation * (project.amm_shares ?? 0)) / TOTAL_SHARES,
+  }
+  const sharesTxn = {
+    from_id: project.creator,
+    to_id: project.id,
+    token: project.id,
+    project: project.id,
+    bundle,
+    amount: project.amm_shares,
+  }
+  await supabase.from('txns').insert([usdTxn, sharesTxn]).throwOnError()
 }

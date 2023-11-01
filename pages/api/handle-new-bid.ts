@@ -21,9 +21,12 @@ export default async function handler(
   if (!project) {
     return res.status(404).json({ error: 'Project not found' })
   }
+  console.log('project', project)
   if (project.stage === 'proposal') {
+    console.log('about to maybe activate')
     await maybeActivateProject(supabase, bid.project)
   } else if (project.type === 'cert') {
+    console.log('about to find and make trades')
     await findAndMakeTrades(bid, supabase)
     if (bid.type === 'buy') {
       await sendShareholderEmails(bid, project, supabase)

@@ -339,7 +339,7 @@ export interface Database {
       }
       projects: {
         Row: {
-          amm_portion: number | null
+          amm_shares: number | null
           approved: boolean | null
           auction_close: string | null
           blurb: string | null
@@ -347,7 +347,7 @@ export interface Database {
           creator: string
           description: Json | null
           external_link: string | null
-          founder_portion: number
+          founder_shares: number
           funding_goal: number
           id: string
           location_description: string | null
@@ -361,7 +361,7 @@ export interface Database {
           type: Database["public"]["Enums"]["project_type"]
         }
         Insert: {
-          amm_portion?: number | null
+          amm_shares?: number | null
           approved?: boolean | null
           auction_close?: string | null
           blurb?: string | null
@@ -369,7 +369,7 @@ export interface Database {
           creator: string
           description?: Json | null
           external_link?: string | null
-          founder_portion: number
+          founder_shares: number
           funding_goal?: number
           id?: string
           location_description?: string | null
@@ -383,7 +383,7 @@ export interface Database {
           type?: Database["public"]["Enums"]["project_type"]
         }
         Update: {
-          amm_portion?: number | null
+          amm_shares?: number | null
           approved?: boolean | null
           auction_close?: string | null
           blurb?: string | null
@@ -391,7 +391,7 @@ export interface Database {
           creator?: string
           description?: Json | null
           external_link?: string | null
-          founder_portion?: number
+          founder_shares?: number
           funding_goal?: number
           id?: string
           location_description?: string | null
@@ -751,12 +751,11 @@ export interface Database {
         description: Json
         min_funding: number
         funding_goal: number
-        founder_portion: number
+        founder_shares: number
         type: Database["public"]["Enums"]["project_type"]
         stage: Database["public"]["Enums"]["project_stage"]
         round: string
         slug: string
-        location_description: string
       }
       transfer_row: {
         recipient_email: string

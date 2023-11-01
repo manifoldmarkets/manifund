@@ -22,8 +22,8 @@ type CreateProjectProps = {
   description: Json
   min_funding: number
   funding_goal: number
-  founder_portion: number
-  amm_portion: number | null
+  founder_shares: number
+  amm_shares: number | null
   round: string
   auction_close: string
   stage: Database['public']['Tables']['projects']['Row']['stage']
@@ -39,8 +39,8 @@ export default async function handler(req: NextRequest) {
     description,
     min_funding,
     funding_goal,
-    founder_portion,
-    amm_portion,
+    founder_shares,
+    amm_shares,
     round,
     auction_close,
     stage,
@@ -62,8 +62,8 @@ export default async function handler(req: NextRequest) {
     description,
     min_funding,
     funding_goal,
-    founder_portion,
-    amm_portion,
+    founder_shares,
+    amm_shares,
     creator: user.id,
     slug,
     round,
@@ -80,12 +80,12 @@ export default async function handler(req: NextRequest) {
   if (type === 'cert') {
     const initialValuation =
       (TOTAL_SHARES * min_funding) /
-      (TOTAL_SHARES - founder_portion - (amm_portion ?? 0))
+      (TOTAL_SHARES - founder_shares - (amm_shares ?? 0))
     await addBid(
       supabase,
       id,
       user.id,
-      min_funding + ((amm_portion ?? 0) / TOTAL_SHARES) * initialValuation,
+      min_funding + ((amm_shares ?? 0) / TOTAL_SHARES) * initialValuation,
       initialValuation,
       stage === 'proposal' ? 'assurance sell' : 'sell'
     )

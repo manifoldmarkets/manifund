@@ -102,7 +102,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         description,
         min_funding: minFunding,
         funding_goal: fundingGoal,
-        founder_portion: applyingToManifold
+        founder_shares: applyingToManifold
           ? (founderPortion / 100) * TOTAL_SHARES
           : TOTAL_SHARES,
         // TODO: replace name if Austin has an alternative
@@ -111,7 +111,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         stage: 'proposal',
         type: applyingToManifold ? 'cert' : 'grant',
         causeSlugs: selectedCauseSlugs,
-        amm_portion: applyingToManifold
+        amm_shares: applyingToManifold
           ? (ammPortion / 100) * TOTAL_SHARES
           : null,
         location_description: locationDescription,

@@ -8,7 +8,7 @@ import { isCharitableDeposit } from './constants'
 
 export function getProposalValuation(project: Project) {
   const investorPercent =
-    (TOTAL_SHARES - project.founder_portion - (project.amm_portion ?? 0)) /
+    (TOTAL_SHARES - project.founder_shares - (project.amm_shares ?? 0)) /
     TOTAL_SHARES
   return project.min_funding / investorPercent
 }
@@ -230,6 +230,7 @@ export function categorizeTxn(txn: FullTxn, userId: string) {
         if (txn.project && !txn.bundle) {
           return 'own project donation'
         } else if (!txn.bundle) {
+          4
           return 'cash to charity transfer'
         } else return 'other' // This shouldn't happen: bundle should come with project
       }

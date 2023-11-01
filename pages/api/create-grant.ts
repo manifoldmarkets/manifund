@@ -95,7 +95,7 @@ export default async function handler(req: NextRequest) {
     description,
     min_funding: minFunding,
     funding_goal: fundingGoal,
-    founder_portion: TOTAL_SHARES,
+    founder_shares: TOTAL_SHARES,
     type: 'grant' as Project['type'],
     stage: 'proposal' as Project['stage'],
     round: 'Regrants',
