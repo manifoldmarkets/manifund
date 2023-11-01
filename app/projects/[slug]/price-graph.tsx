@@ -176,34 +176,6 @@ const constrainExtent = (
   }
 }
 
-const getTickValues = (
-  min: number,
-  max: number,
-  n: number,
-  negativeThreshold?: number
-) => {
-  let step = (max - min) / (n - 1)
-  let theMin = min
-  let theMax = max
-  if (step > 10) {
-    theMin = roundToNearestFive(min)
-    theMax = roundToNearestFive(max)
-    step = (theMax - theMin) / (n - 1)
-  }
-  const defaultRange = [
-    theMin,
-    ...range(1, n - 1).map((i) => theMin + step * i),
-    theMax,
-  ]
-  if (negativeThreshold) {
-    return defaultRange
-      .filter((n) => Math.abs(negativeThreshold - n) > Math.max(step / 4, 1))
-      .concat(negativeThreshold)
-      .sort((a, b) => a - b)
-  }
-  return defaultRange
-}
-
 const dataAtTimeSelector = <Y, P extends Point<number, Y>>(
   data: P[],
   xScale: ScaleTime<number, number>
@@ -219,29 +191,19 @@ const dataAtTimeSelector = <Y, P extends Point<number, Y>>(
   }
 }
 
-export const ControllableSingleValueHistoryChart = <
-  P extends HistoryPoint
->(props: {
+export const SingleValueHistoryChart = <P extends HistoryPoint>(props: {
   data: P[]
   w: number
   h: number
   color: string | ((p: P) => string)
   xScale: ScaleTime<number, number>
   yScale: ScaleContinuousNumeric<number, number>
-  viewScaleProps: viewScale
-  showZoomer?: boolean
-  yKind?: ValueKind
-  curve?: CurveFactory
-  onMouseOver?: (p: P | undefined) => void
   Tooltip?: (props: TooltipProps<P>) => ReactNode
-  noAxes?: boolean
-  pct?: boolean
-  negativeThreshold?: number
 }) => {
-  const { data, w, h, color, Tooltip, noAxes, negativeThreshold } = props
+  const { data, w, h, color, Tooltip } = props
   const { viewXScale, setViewXScale, viewYScale, setViewYScale } =
-    props.viewScaleProps
-  const yKind = props.yKind ?? 'amount'
+    useViewScale()
+  const yKind = 'amount'
   const xScale = viewXScale ?? props.xScale
   const yScale = viewYScale ?? props.yScale
 
@@ -255,7 +217,7 @@ export const ControllableSingleValueHistoryChart = <
     [data, xMin, xMax]
   )
 
-  const curve = props.curve ?? isCompressed ? curveLinear : curveStepAfter
+  const curve = isCompressed ? curveLinear : curveStepAfter
 
   const [mouse, setMouse] = useState<TooltipProps<P>>()
 
@@ -263,27 +225,17 @@ export const ControllableSingleValueHistoryChart = <
   const py0 = yScale(0)
   const py1 = useCallback((p: P) => yScale(p.y), [yScale])
   const { xAxis, yAxis } = useMemo(() => {
-    const [min, max] = yScale.domain()
-    const nTicks = noAxes ? 0 : h < 200 ? 3 : 5
-    const customTickValues = noAxes
-      ? []
-      : getTickValues(min, max, nTicks, negativeThreshold)
-    const xAxis = axisBottom<Date>(xScale).ticks(noAxes ? 0 : w / 100)
-    const yAxis = negativeThreshold
-      ? axisRight<number>(yScale)
-          .tickValues(customTickValues)
-          .tickFormat((n) => formatMoney(n))
-      : axisRight<number>(yScale)
-          .ticks(nTicks)
-          .tickFormat((n) => formatMoney(n))
-    // : axisRight<number>(yScale).ticks(nTicks)
+    const nTicks = h < 200 ? 3 : 5
+    const xAxis = axisBottom<Date>(xScale).ticks(w / 100)
+    const yAxis = axisRight<number>(yScale)
+      .ticks(nTicks)
+      .tickFormat((n) => formatMoney(n))
     return { xAxis, yAxis }
-  }, [w, h, yKind, xScale, yScale, noAxes])
+  }, [w, h, yKind, xScale, yScale])
 
   const selector = dataAtTimeSelector(points, xScale)
   const onMouseOver = useEvent((mouseX: number) => {
     const p = selector(mouseX)
-    props.onMouseOver?.(p.prev)
     if (p.prev) {
       const x0 = xScale(p.prev.x)
       const x1 = p.next ? xScale(p.next.x) : x0
@@ -297,26 +249,23 @@ export const ControllableSingleValueHistoryChart = <
   })
 
   const onMouseLeave = useEvent(() => {
-    props.onMouseOver?.(undefined)
     setMouse(undefined)
   })
 
   const rescale = useCallback((newXScale: ScaleTime<number, number> | null) => {
     if (newXScale) {
       setViewXScale(() => newXScale)
-      if (yKind === 'percent') return
-
       const [xMin, xMax] = newXScale.domain()
 
       const bisect = bisector((p: P) => p.x)
       const iMin = bisect.right(data, xMin)
       const iMax = bisect.right(data, xMax)
 
-      // don't zoom axis if they selected an area with only one value
+      // Don't zoom axis if they selected an area with only one value
       if (iMin != iMax) {
         const visibleYs = range(iMin - 1, iMax).map((i) => data[i]?.y)
         const [yMin, yMax] = extent(visibleYs) as [number, number]
-        // try to add extra space on top and bottom before constraining
+        // Try to add extra space on top and bottom before constraining
         const padding = (yMax - yMin) * 0.1
         const domain = constrainExtent(
           [yMin - padding, yMax + padding],
@@ -338,58 +287,39 @@ export const ControllableSingleValueHistoryChart = <
   )
 
   return (
-    <>
-      <SVGChart
-        w={w}
-        h={h}
-        xAxis={xAxis}
-        yAxis={yAxis}
-        ttParams={mouse}
-        fullScale={props.xScale}
-        onRescale={rescale}
-        onMouseOver={onMouseOver}
-        onMouseLeave={onMouseLeave}
-        Tooltip={Tooltip}
-        negativeThreshold={negativeThreshold}
-      >
-        {stops && (
-          <defs>
-            <linearGradient gradientUnits="userSpaceOnUse" id={gradientId}>
-              {stops.map((s, i) => (
-                <stop key={i} offset={`${s.x / w}`} stopColor={s.color} />
-              ))}
-            </linearGradient>
-          </defs>
-        )}
-        <AreaWithTopStroke
-          color={typeof color === 'string' ? color : `url(#${gradientId})`}
-          data={data}
-          px={px}
-          py0={py0}
-          py1={py1}
-          curve={curve ?? curveLinear}
-        />
-        {mouse && (
-          <SliceMarker color="#5BCEFF" x={mouse.x} y0={py0} y1={mouse.y} />
-        )}
-      </SVGChart>
-    </>
-  )
-}
-
-export const SingleValueHistoryChart = <P extends HistoryPoint>(
-  props: Omit<
-    Parameters<typeof ControllableSingleValueHistoryChart<P>>[0],
-    'viewScaleProps'
-  >
-) => {
-  const viewScaleProps = useViewScale()
-
-  return (
-    <ControllableSingleValueHistoryChart
-      {...props}
-      viewScaleProps={viewScaleProps}
-    />
+    <SVGChart
+      w={w}
+      h={h}
+      xAxis={xAxis}
+      yAxis={yAxis}
+      ttParams={mouse}
+      fullScale={props.xScale}
+      onRescale={rescale}
+      onMouseOver={onMouseOver}
+      onMouseLeave={onMouseLeave}
+      Tooltip={Tooltip}
+    >
+      {stops && (
+        <defs>
+          <linearGradient gradientUnits="userSpaceOnUse" id={gradientId}>
+            {stops.map((s, i) => (
+              <stop key={i} offset={`${s.x / w}`} stopColor={s.color} />
+            ))}
+          </linearGradient>
+        </defs>
+      )}
+      <AreaWithTopStroke
+        color={typeof color === 'string' ? color : `url(#${gradientId})`}
+        data={data}
+        px={px}
+        py0={py0}
+        py1={py1}
+        curve={curve ?? curveLinear}
+      />
+      {mouse && (
+        <SliceMarker color="#5BCEFF" x={mouse.x} y0={py0} y1={mouse.y} />
+      )}
+    </SVGChart>
   )
 }
 
@@ -444,14 +374,9 @@ const SimpleYAxis = <Y,>(props: { w: number; axis: Axis<Y> }) => {
   return <g ref={axisRef} transform={`translate(${w}, 0)`} />
 }
 
-// horizontal gridlines
-const YAxis = <Y,>(props: {
-  w: number
-  h: number
-  axis: Axis<Y>
-  negativeThreshold?: number
-}) => {
-  const { w, h, axis, negativeThreshold = 0 } = props
+// Horizontal gridlines
+const YAxis = <Y,>(props: { w: number; h: number; axis: Axis<Y> }) => {
+  const { w, h, axis } = props
   const axisRef = useRef<SVGGElement>(null)
 
   useEffect(() => {
@@ -461,33 +386,17 @@ const YAxis = <Y,>(props: {
         .call((g) =>
           g.selectAll('.tick').each(function (d) {
             const tick = select(this)
-            if (negativeThreshold && d === negativeThreshold) {
-              const color = negativeThreshold >= 0 ? '#0d9488' : '#FF2400'
-              tick
-                .select('line') // Change stroke of the line
-                .attr('x2', w)
-                .attr('stroke-opacity', 1)
-                .attr('stroke-dasharray', '10,5') // Make the line dotted
-                .attr('transform', `translate(-${w}, 0)`)
-                .attr('stroke', color)
-
-              tick
-                .select('text') // Change font of the text
-                .style('font-weight', 'bold') // Adjust this to your needs
-                .attr('fill', color)
-            } else {
-              tick
-                .select('line')
-                .attr('x2', w)
-                .attr('stroke-opacity', 0.1)
-                .attr('transform', `translate(-${w}, 0)`)
-            }
+            tick
+              .select('line')
+              .attr('x2', w)
+              .attr('stroke-opacity', 0.1)
+              .attr('transform', `translate(-${w}, 0)`)
           })
         )
         .select('.domain')
         .attr('stroke-width', 0)
     }
-  }, [w, h, axis, negativeThreshold])
+  }, [w, h, axis])
 
   return <g ref={axisRef} transform={`translate(${w}, 0)`} />
 }
@@ -604,8 +513,6 @@ const SVGChart = <
   onMouseOver?: (mouseX: number, mouseY: number) => void
   onMouseLeave?: () => void
   Tooltip?: (props: TT) => ReactNode
-  negativeThreshold?: number
-  noGridlines?: boolean
   className?: string
 }) => {
   const {
@@ -620,8 +527,6 @@ const SVGChart = <
     onMouseOver,
     onMouseLeave,
     Tooltip,
-    negativeThreshold,
-    noGridlines,
     className,
   } = props
   const svgRef = useRef<SVGSVGElement>(null)
@@ -643,7 +548,7 @@ const SVGChart = <
           if (ev instanceof WheelEvent) {
             return ev.ctrlKey || ev.metaKey || ev.altKey
           } else if (ev instanceof TouchEvent) {
-            // disable on touch devices entirely for now to not interfere with scroll
+            // Disable on touch devices entirely for now to not interfere with scroll
             return false
           }
           return !ev.button
@@ -715,16 +620,7 @@ const SVGChart = <
 
         <g>
           <XAxis axis={xAxis} w={w} h={h} />
-          {noGridlines ? (
-            <SimpleYAxis axis={yAxis} w={w} />
-          ) : (
-            <YAxis
-              axis={yAxis}
-              w={w}
-              h={h}
-              negativeThreshold={negativeThreshold}
-            />
-          )}
+          <YAxis axis={yAxis} w={w} h={h} />
           {/* clip to stop pointer events outside of graph, and mask for the blur to indicate zoom */}
           <g clipPath="url(#clip)">
             <g mask="url(#mask)">{children}</g>
@@ -801,10 +697,6 @@ const getRightmostVisibleDate = (
   }
 }
 
-const formatPct = (n: number) => {
-  return `${(n * 100).toFixed(0)}%`
-}
-
 const formatDate = (
   date: Date | number,
   opts?: {
@@ -852,7 +744,7 @@ const formatDateInRange = (
   return formatDate(d, opts)
 }
 
-// assumes linear interpolation
+// Assumes linear interpolation
 const computeColorStops = <P extends HistoryPoint>(
   data: P[],
   pc: (p: P) => string,
@@ -868,7 +760,7 @@ const computeColorStops = <P extends HistoryPoint>(
     const prev = data[i - 1]
     const curr = data[i]
     if (pc(prev) !== pc(curr)) {
-      // given a line through points (x0, y0) and (x1, y1), find the x value where y = 0 (intersects with x axis)
+      // Given a line through points (x0, y0) and (x1, y1), find the x value where y = 0 (intersects with x axis)
       const xIntersect =
         prev.x + (prev.y * (curr.x - prev.x)) / (prev.y - curr.y)
 
