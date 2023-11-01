@@ -12,6 +12,7 @@ const ValuationChartTooltip = (
   props: TooltipProps<TradePoint> & { dateLabel: string }
 ) => {
   const { prev, next, dateLabel } = props
+  console.log('prev', prev)
   if (!prev) return null
   const profile = prev.obj?.profile
   return (
@@ -25,7 +26,7 @@ const ValuationChartTooltip = (
         />
       )}
       <span className="font-semibold">{next ? dateLabel : 'Now'}</span>
-      <span className="text-ink-600">{formatPct(prev.y)}</span>
+      <span className="text-ink-600">{formatMoney(prev.y)}</span>
     </Row>
   )
 }
@@ -36,36 +37,23 @@ export const CertValuationChart = (props: {
   tradePoints: TradePoint[]
   width: number
   height: number
-  controlledStart?: number
-  percentBounds?: { max?: number; min?: number }
-  showZoomer?: boolean
 }) => {
-  const {
-    ammTxns,
-    ammId,
-    width,
-    height,
-    controlledStart,
-    percentBounds,
-    tradePoints,
-  } = props
+  const { ammTxns, ammId, width, height, tradePoints } = props
   const [start, end] = [
     new Date(ammTxns[0].created_at).getTime(),
     new Date().getTime(),
   ]
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
-  const endP = calculateValuation(ammShares, ammUSD)
-  const rangeStart = controlledStart ?? start
-
+  const endValuation = calculateValuation(ammShares, ammUSD)
   const now = useMemo(() => Date.now(), [tradePoints])
 
   const data = useMemo(() => {
-    return [...tradePoints, { x: end ?? now, y: endP }]
-  }, [end, endP, tradePoints])
+    return [...tradePoints, { x: end ?? now, y: endValuation }]
+  }, [end, endValuation, tradePoints])
 
   const rightmostDate = getRightmostVisibleDate(end, last(tradePoints)?.x, now)
   const maxValuation = _.max(data.map((p) => p.y)) ?? 100
-  const xScale = scaleTime([rangeStart, rightmostDate], [0, width])
+  const xScale = scaleTime([start, rightmostDate], [0, width])
   const yScale = scaleLinear([0, maxValuation], [height, 0])
 
   return (
@@ -82,7 +70,7 @@ export const CertValuationChart = (props: {
           dateLabel={formatDateInRange(
             // eslint-disable-next-line react/prop-types
             xScale.invert(props.x),
-            rangeStart,
+            start,
             rightmostDate
           )}
         />
@@ -836,7 +824,7 @@ const formatDate = (
     } else if (includeYear) {
       dateFormat += ', YYYY'
     }
-    return dayName ? `[${dayName}]` : format(d, dateFormat)
+    return dayName ? `${dayName}` : format(d, dateFormat)
   }
 }
 

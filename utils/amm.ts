@@ -1,6 +1,7 @@
 import { TradePoint } from '@/app/projects/[slug]/price-graph'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn, TxnAndProfiles } from '@/db/txn'
+import { isBefore, sub } from 'date-fns'
 import { orderBy, sortBy } from 'lodash'
 import { formatMoneyPrecise } from './formatting'
 
@@ -138,26 +139,33 @@ export function calculateTradePoints(txns: TxnAndProfiles[], ammId: string) {
     (txn) =>
       txn.bundle !== null && (txn.to_id === ammId || txn.from_id === ammId)
   )
-  const sortedTxns = sortBy(ammTxns, 'created_at', 'desc')
+  const usdTxns = ammTxns.filter((txn) => txn.token === 'USD')
+  const sortedUsdTxns = sortBy(usdTxns, 'created_at', 'desc')
+  console.log('sortedUsdTxns', sortedUsdTxns)
   const tradePoints = Object.fromEntries(
-    sortedTxns.map((txn) => [txn.bundle, {} as TradePoint])
+    sortedUsdTxns.map((txn) => [txn.bundle, {} as TradePoint])
   )
-  sortedTxns.forEach((txn, index) => {
-    const point = tradePoints[txn?.bundle ?? 0]
-    if (txn.token === 'USD') {
-      const sharesTxn = txns.find(
-        (txn) => txn.bundle === txn.bundle && txn.token !== 'USD'
+  sortedUsdTxns.forEach((txn, index) => {
+    const point = tradePoints[txn.bundle as string]
+    const sharesTxn = ammTxns.find(
+      (t) => t.bundle === txn.bundle && t.token !== 'USD'
+    )
+    if (!sharesTxn) return
+    const ammTxnsSoFar = ammTxns.filter((t) =>
+      isBefore(
+        sub(new Date(t.created_at), { seconds: 1 }),
+        new Date(txn.created_at)
       )
-      if (!sharesTxn) return
-      const ammTxnsSoFar = sortedTxns.slice(0, index)
-      if (!ammTxnsSoFar.includes(sharesTxn)) {
-        ammTxnsSoFar.push(sharesTxn)
-      }
-      const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxnsSoFar, ammId)
-      point.y = calculateValuation(ammShares, ammUSD)
-      point.x = new Date(txn.created_at)
-      point.obj = txn.profiles
+    )
+    if (!ammTxnsSoFar.includes(sharesTxn)) {
+      ammTxnsSoFar.push(sharesTxn)
     }
+    const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxnsSoFar, ammId)
+    console.log('ammShares', ammShares, 'ammUSD', ammUSD)
+    point.y = calculateValuation(ammShares, ammUSD)
+    point.x = new Date(txn.created_at)
+    point.obj = txn.profiles
   })
-  return orderBy(Object.values(tradePoints), 'date', 'desc') as TradePoint[]
+  console.log(tradePoints)
+  return orderBy(Object.values(tradePoints), 'x', 'desc') as TradePoint[]
 }
