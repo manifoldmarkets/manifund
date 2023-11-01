@@ -1,5 +1,8 @@
+import { TradePoint } from '@/components/chart/chart'
 import { TOTAL_SHARES } from '@/db/project'
-import { Txn } from '@/db/txn'
+import { Txn, TxnAndProfiles } from '@/db/txn'
+import { isBefore, sub } from 'date-fns'
+import { sortBy } from 'lodash'
 import { formatMoneyPrecise } from './formatting'
 
 export type BinaryModeId = 'buy' | 'sell' | null
@@ -129,4 +132,37 @@ export const checkTradeValidity = (
   } else {
     return undefined
   }
+}
+
+export function calculateTradePoints(txns: TxnAndProfiles[], ammId: string) {
+  const ammTxns = txns.filter(
+    (txn) =>
+      txn.bundle !== null && (txn.to_id === ammId || txn.from_id === ammId)
+  )
+  const usdTxns = ammTxns.filter((txn) => txn.token === 'USD')
+  const sortedUsdTxns = sortBy(usdTxns, 'created_at', 'desc')
+  const tradePoints = Object.fromEntries(
+    sortedUsdTxns.map((txn) => [txn.bundle, {} as TradePoint])
+  )
+  sortedUsdTxns.forEach((txn) => {
+    const point = tradePoints[txn.bundle as string]
+    const sharesTxn = ammTxns.find(
+      (t) => t.bundle === txn.bundle && t.token !== 'USD'
+    )
+    if (!sharesTxn) return
+    const ammTxnsSoFar = ammTxns.filter((t) =>
+      isBefore(
+        sub(new Date(t.created_at), { seconds: 1 }),
+        new Date(txn.created_at)
+      )
+    )
+    if (!ammTxnsSoFar.includes(sharesTxn)) {
+      ammTxnsSoFar.push(sharesTxn)
+    }
+    const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxnsSoFar, ammId)
+    point.y = calculateValuation(ammShares, ammUSD)
+    point.x = new Date(txn.created_at).getTime()
+    point.obj = txn.profiles?.id === ammId ? sharesTxn.profiles : txn.profiles
+  })
+  return sortBy(Object.values(tradePoints), 'x') as TradePoint[]
 }

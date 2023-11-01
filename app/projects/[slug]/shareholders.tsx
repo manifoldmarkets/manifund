@@ -3,7 +3,11 @@ import { Row } from '@/components/layout/row'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { Profile } from '@/db/profile'
 import { TOTAL_SHARES } from '@/db/project'
-import { formatLargeNumber, showPrecision } from '@/utils/formatting'
+import {
+  formatLargeNumber,
+  formatMoneyPrecise,
+  showPrecision,
+} from '@/utils/formatting'
 import clsx from 'clsx'
 import { orderBy } from 'lodash'
 import { Avatar } from '@/components/avatar'
@@ -67,8 +71,8 @@ function History(props: { trades: FullTrade[] }) {
           </Row>
           <div>
             {formatLargeNumber((trade.numShares / TOTAL_SHARES) * 100)}%{' '}
-            <span className="text-gray-500">ownership for</span> $
-            {trade.amountUSD}
+            <span className="text-gray-500">ownership for </span>
+            {formatMoneyPrecise(trade.amountUSD)}
           </div>
           <div className="hidden text-gray-500 sm:block">
             {formatDistanceToNow(trade.date, {

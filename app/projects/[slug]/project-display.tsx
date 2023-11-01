@@ -31,6 +31,8 @@ import { Vote } from './vote'
 import { CauseTag } from '@/components/tags'
 import { Trade } from './trade'
 import { AssuranceBuyBox } from './assurance-buy-box'
+import { calculateTradePoints } from '@/utils/amm'
+import { CertValuationChart } from './valuation-chart'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -87,7 +89,7 @@ export function ProjectDisplay(props: {
     (projectTransfer) => !projectTransfer.transferred
   )
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
-  console.log('amountRaised', amountRaised)
+  const tradePoints = calculateTradePoints(projectTxns, project.id)
   const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
     undefined | string
   >(undefined)
@@ -150,6 +152,16 @@ export function ProjectDisplay(props: {
           <Edit project={project} causesList={causesList} />
         )}
         <Divider />
+        {project.stage !== 'proposal' && project.type === 'cert' && (
+          <CertValuationChart
+            tradePoints={tradePoints}
+            ammTxns={projectTxns.filter(
+              (txn) => txn.to_id === project.id || txn.from_id === project.id
+            )}
+            ammId={project.id}
+            size="lg"
+          />
+        )}
         <ProjectData project={project} raised={amountRaised} />
         {(project.stage === 'proposal' ||
           (project.stage === 'active' && project.type === 'grant')) && (
