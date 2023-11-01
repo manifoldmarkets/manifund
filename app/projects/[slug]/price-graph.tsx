@@ -44,13 +44,11 @@ export const CertValuationChart = (props: {
     new Date().getTime(),
   ]
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
-  const endValuation = calculateValuation(ammShares, ammUSD)
+  const currValuation = calculateValuation(ammShares, ammUSD)
   const now = useMemo(() => Date.now(), [tradePoints])
-
   const data = useMemo(() => {
-    return [...tradePoints, { x: end ?? now, y: endValuation }]
-  }, [end, endValuation, tradePoints])
-
+    return [...tradePoints, { y: currValuation, x: now }]
+  }, [end, currValuation, tradePoints])
   const rightmostDate = getRightmostVisibleDate(end, last(tradePoints)?.x, now)
   const maxValuation = _.max(data.map((p) => p.y)) ?? 100
   const xScale = scaleTime([start, rightmostDate], [0, width])

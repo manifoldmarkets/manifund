@@ -141,7 +141,6 @@ export function calculateTradePoints(txns: TxnAndProfiles[], ammId: string) {
   )
   const usdTxns = ammTxns.filter((txn) => txn.token === 'USD')
   const sortedUsdTxns = sortBy(usdTxns, 'created_at', 'desc')
-  console.log('sortedUsdTxns', sortedUsdTxns)
   const tradePoints = Object.fromEntries(
     sortedUsdTxns.map((txn) => [txn.bundle, {} as TradePoint])
   )
@@ -161,11 +160,9 @@ export function calculateTradePoints(txns: TxnAndProfiles[], ammId: string) {
       ammTxnsSoFar.push(sharesTxn)
     }
     const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxnsSoFar, ammId)
-    console.log('ammShares', ammShares, 'ammUSD', ammUSD)
     point.y = calculateValuation(ammShares, ammUSD)
-    point.x = new Date(txn.created_at)
+    point.x = new Date(txn.created_at).getTime()
     point.obj = txn.profiles
   })
-  console.log(tradePoints)
-  return orderBy(Object.values(tradePoints), 'x', 'desc') as TradePoint[]
+  return orderBy(Object.values(tradePoints), 'x', 'asc') as TradePoint[]
 }
