@@ -35,10 +35,10 @@ export const CertValuationChart = (props: {
   ammTxns: Txn[]
   ammId: string
   tradePoints: TradePoint[]
-  width: number
-  height: number
+  size: 'sm' | 'lg'
+  className?: string
 }) => {
-  const { ammTxns, ammId, width, height, tradePoints } = props
+  const { ammTxns, ammId, size, tradePoints, className } = props
   const [start, end] = [
     new Date(ammTxns[0].created_at).getTime(),
     new Date().getTime(),
@@ -51,29 +51,41 @@ export const CertValuationChart = (props: {
   }, [end, currValuation, tradePoints])
   const rightmostDate = getRightmostVisibleDate(end, last(tradePoints)?.x, now)
   const maxValuation = _.max(data.map((p) => p.y)) ?? 100
-  const xScale = scaleTime([start, rightmostDate], [0, width])
-  const yScale = scaleLinear([0, maxValuation], [height, 0])
 
   return (
-    <SingleValueHistoryChart
-      w={width}
-      h={height}
-      xScale={xScale}
-      yScale={yScale}
-      data={data}
-      color={YES_GRAPH_COLOR}
-      Tooltip={(props) => (
-        <ValuationChartTooltip
-          {...props}
-          dateLabel={formatDateInRange(
-            // eslint-disable-next-line react/prop-types
-            xScale.invert(props.x),
-            start,
-            rightmostDate
-          )}
-        />
+    <SizedContainer
+      className={clsx(
+        ' w-full pb-3 pr-10',
+        size === 'sm' ? 'h-[100px]' : 'h-[150px] sm:h-[250px]',
+        className
       )}
-    />
+    >
+      {(w, h) => {
+        const xScale = scaleTime([start, rightmostDate], [0, w])
+        const yScale = scaleLinear([0, maxValuation], [h, 0])
+        return (
+          <SingleValueHistoryChart
+            w={w}
+            h={h}
+            xScale={xScale}
+            yScale={yScale}
+            data={data}
+            color={YES_GRAPH_COLOR}
+            Tooltip={(props) => (
+              <ValuationChartTooltip
+                {...props}
+                dateLabel={formatDateInRange(
+                  // eslint-disable-next-line react/prop-types
+                  xScale.invert(props.x),
+                  start,
+                  rightmostDate
+                )}
+              />
+            )}
+          />
+        )
+      }}
+    </SizedContainer>
   )
 }
 
@@ -402,6 +414,7 @@ import {
 import { Profile } from '@/db/profile'
 import { Txn } from '@/db/txn'
 import _ from 'lodash'
+import { SizedContainer } from '@/components/layout/sized-container'
 
 const XAxis = <X,>(props: { w: number; h: number; axis: Axis<X> }) => {
   const { h, axis } = props

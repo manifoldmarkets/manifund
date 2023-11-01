@@ -158,8 +158,7 @@ export function ProjectDisplay(props: {
             (txn) => txn.to_id === project.id || txn.from_id === project.id
           )}
           ammId={project.id}
-          width={600}
-          height={300}
+          size="lg"
         />
         <span>price graph ^</span>
         <ProjectData project={project} raised={amountRaised} />
