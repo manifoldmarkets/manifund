@@ -19,7 +19,6 @@ const ValuationChartTooltip = (
   props: TooltipProps<TradePoint> & { dateLabel: string }
 ) => {
   const { prev, next, dateLabel } = props
-  console.log('prev', prev)
   if (!prev) return null
   const profile = prev.obj?.profile
   return (
