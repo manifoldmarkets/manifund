@@ -152,15 +152,16 @@ export function ProjectDisplay(props: {
           <Edit project={project} causesList={causesList} />
         )}
         <Divider />
-        <CertValuationChart
-          tradePoints={tradePoints}
-          ammTxns={projectTxns.filter(
-            (txn) => txn.to_id === project.id || txn.from_id === project.id
-          )}
-          ammId={project.id}
-          size="lg"
-        />
-        <span>price graph ^</span>
+        {project.stage !== 'proposal' && project.type === 'cert' && (
+          <CertValuationChart
+            tradePoints={tradePoints}
+            ammTxns={projectTxns.filter(
+              (txn) => txn.to_id === project.id || txn.from_id === project.id
+            )}
+            ammId={project.id}
+            size="lg"
+          />
+        )}
         <ProjectData project={project} raised={amountRaised} />
         {(project.stage === 'proposal' ||
           (project.stage === 'active' && project.type === 'grant')) && (
