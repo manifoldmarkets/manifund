@@ -3,6 +3,7 @@ import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, Txn, TxnAndProfiles } from '@/db/txn'
+import { SupabaseClient } from '@supabase/supabase-js'
 import { orderBy, sortBy } from 'lodash'
 import { isCharitableDeposit } from './constants'
 
