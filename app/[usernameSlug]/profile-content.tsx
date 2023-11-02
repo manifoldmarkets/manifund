@@ -7,12 +7,8 @@ import { ActiveBids } from './profile-active-bids'
 import { Investments } from './profile-investments'
 import { Projects } from './profile-projects'
 import { BalanceDisplay } from './balance-display'
-import {
-  calculateCharityBalance,
-  calculateUserBalance,
-  categorizeTxn,
-} from '@/utils/math'
-import { Txn, FullTxn } from '@/db/txn'
+import { calculateCharityBalance, calculateUserBalance } from '@/utils/math'
+import { FullTxn, TxnAndProject } from '@/db/txn'
 import { calculateCashBalance } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 import { OutgoingDonationsHistory } from './profile-donations'
@@ -31,7 +27,7 @@ export function ProfileContent(props: {
   bids: BidAndProject[]
   txns: FullTxn[]
   userProfile: ProfileAndBids | null
-  userTxns: Txn[] | null
+  userTxns: TxnAndProject[] | null
 }) {
   const { profile, projects, comments, bids, txns, userProfile, userTxns } =
     props
@@ -49,13 +45,11 @@ export function ProfileContent(props: {
   const notOwnProjectInvestments = investments.filter((investment) => {
     return investment.project && investment.project.creator !== profile.id
   })
-  const donations = txns.filter((txn) => {
-    const txnType = categorizeTxn(txn, profile.id)
-    return (
-      txnType === 'outgoing profile donation' ||
-      txnType === 'outgoing project donation'
-    )
-  })
+  const donations = txns.filter(
+    (txn) =>
+      (txn.type === 'profile donation' || txn.type === 'project donation') &&
+      txn.from_id === profile.id
+  )
   const pendingDonateBids = bids.filter(
     (bid) => bid.status === 'pending' && bid.type === 'donate'
   )

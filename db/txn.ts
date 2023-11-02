@@ -4,8 +4,10 @@ import { Profile } from './profile'
 import { Project } from './project'
 
 export type Txn = Database['public']['Tables']['txns']['Row']
+export type TxnAndProject = Txn & { projects?: Project }
 export type FullTxn = Txn & { projects?: Project } & { profiles?: Profile }
 export type TxnAndProfiles = Txn & { profiles?: Profile }
+export type TxnType = Database['public']['Tables']['txns']['Row']['type']
 
 export function isAdmin(user: User | null) {
   const ADMINS = ['rachel.weinberg12@gmail.com', 'akrolsmir@gmail.com']
@@ -27,6 +29,23 @@ export async function getFullTxnsByUser(
     throw error
   }
   return (data as FullTxn[]) ?? ([] as FullTxn[])
+}
+
+export async function getTxnAndProjectsByUser(
+  supabase: SupabaseClient,
+  user: string
+) {
+  if (!user) {
+    return []
+  }
+  const { data, error } = await supabase
+    .from('txns')
+    .select('*, projects(creator, stage, type)')
+    .or(`from_id.eq.${user},to_id.eq.${user}`)
+  if (error) {
+    throw error
+  }
+  return (data as TxnAndProject[]) ?? ([] as TxnAndProject[])
 }
 
 export async function getTxnsByUser(supabase: SupabaseClient, user: string) {

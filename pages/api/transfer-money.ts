@@ -60,6 +60,7 @@ export default async function handler(req: NextRequest) {
     amount: amount,
     token: 'USD',
     project: projectId ?? null,
+    type: projectId ? 'project donation' : 'profile donation',
   })
 
   if (projectId) {

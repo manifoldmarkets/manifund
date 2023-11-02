@@ -3,7 +3,7 @@ import { getUser, isAdmin, getProfileAndBidsById } from '@/db/profile'
 import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
-import { getTxnsByProject, getTxnsByUser } from '@/db/txn'
+import { getTxnsByProject, getTxnAndProjectsByUser } from '@/db/txn'
 import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
 import { ProjectDisplay } from './project-display'
@@ -39,7 +39,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     causesList,
   ] = await Promise.all([
     user ? await getProfileAndBidsById(supabase, user.id) : null,
-    user ? getTxnsByUser(supabase, user.id) : [],
+    user ? getTxnAndProjectsByUser(supabase, user.id) : [],
     getCommentsByProject(supabase, project.id),
     getBidsByProject(supabase, project.id),
     getTxnsByProject(supabase, project.id),

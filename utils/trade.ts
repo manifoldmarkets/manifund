@@ -31,6 +31,7 @@ export async function trade(
       project: oldBid.project,
       token: oldBid.project,
       bundle,
+      type: 'user to user trade',
     })
     .throwOnError()
   await supabase
@@ -42,6 +43,7 @@ export async function trade(
       project: oldBid.project,
       token: 'USD',
       bundle,
+      type: 'user to user trade',
     })
     .throwOnError()
   await updateBidOnTrade(oldBid, usdTraded, supabase)

@@ -1,11 +1,10 @@
 import { Bid } from '@/db/bid'
-import { Database } from '@/db/database.types'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
-import { getProjectById, Project } from '@/db/project'
+import { getProjectById } from '@/db/project'
 import { getProfileAndBidsById, getUser } from '@/db/profile'
-import { getTxnsByUser } from '@/db/txn'
+import { getTxnAndProjectsByUser } from '@/db/txn'
 import { calculateCashBalance, calculateCharityBalance } from '@/utils/math'
 
 export const config = {
@@ -33,7 +32,7 @@ export default async function handler(req: NextRequest) {
   }
   const [bidder, txns, project] = await Promise.all([
     getProfileAndBidsById(supabase, user.id),
-    getTxnsByUser(supabase, user.id),
+    getTxnAndProjectsByUser(supabase, user.id),
     getProjectById(supabase, projectId),
   ])
   const bidderBalance =
@@ -68,5 +67,3 @@ export default async function handler(req: NextRequest) {
   }
   await supabase.from('bids').insert([newBid]).throwOnError()
 }
-
-type BidInsert = Database['public']['Tables']['bids']['Insert']

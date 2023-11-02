@@ -69,6 +69,7 @@ export default async function handler(req: NextRequest) {
       amount: dollarAmount,
       token: 'USD',
       project: null,
+      type: 'withdraw',
     })
     .throwOnError()
   await supabase

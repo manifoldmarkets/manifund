@@ -12,7 +12,7 @@ import { CommentAndProfile } from '@/db/comment'
 import { ProfileAndBids } from '@/db/profile'
 import { FullProject } from '@/db/project'
 import { MiniCause } from '@/db/cause'
-import { Txn, TxnAndProfiles } from '@/db/txn'
+import { TxnAndProfiles, TxnAndProject } from '@/db/txn'
 import {
   calculateCashBalance,
   calculateCharityBalance,
@@ -36,7 +36,7 @@ import { CertValuationChart } from './valuation-chart'
 
 export function ProjectDisplay(props: {
   project: FullProject
-  userTxns: Txn[]
+  userTxns: TxnAndProject[]
   comments: CommentAndProfile[]
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]

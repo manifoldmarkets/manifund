@@ -44,12 +44,14 @@ export interface Database {
           {
             foreignKeyName: "bids_bidder_fkey"
             columns: ["bidder"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "bids_project_fkey"
             columns: ["project"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           }
@@ -108,18 +110,21 @@ export interface Database {
           {
             foreignKeyName: "comments_commenter_fkey"
             columns: ["commenter"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "comments_project_fkey"
             columns: ["project"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "comments_replying_to_fkey"
             columns: ["replying_to"]
+            isOneToOne: false
             referencedRelation: "comments"
             referencedColumns: ["id"]
           }
@@ -148,12 +153,14 @@ export interface Database {
           {
             foreignKeyName: "profile_trust_trusted_id_fkey"
             columns: ["trusted_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "profile_trust_truster_id_fkey"
             columns: ["truster_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           }
@@ -218,12 +225,14 @@ export interface Database {
           {
             foreignKeyName: "project_causes_cause_slug_fkey"
             columns: ["cause_slug"]
+            isOneToOne: false
             referencedRelation: "causes"
             referencedColumns: ["slug"]
           },
           {
             foreignKeyName: "project_causes_project_id_fkey"
             columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           }
@@ -258,12 +267,14 @@ export interface Database {
           {
             foreignKeyName: "project_evals_evaluator_id_fkey"
             columns: ["evaluator_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "project_evals_project_id_fkey"
             columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           }
@@ -298,6 +309,7 @@ export interface Database {
           {
             foreignKeyName: "project_transfers_project_id_fkey"
             columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           }
@@ -326,12 +338,14 @@ export interface Database {
           {
             foreignKeyName: "project_votes_project_id_fkey"
             columns: ["project_id"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "project_votes_voter_id_fkey"
             columns: ["voter_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           }
@@ -408,12 +422,14 @@ export interface Database {
           {
             foreignKeyName: "projects_creator_fkey"
             columns: ["creator"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "projects_round_fkey"
             columns: ["round"]
+            isOneToOne: false
             referencedRelation: "rounds"
             referencedColumns: ["title"]
           }
@@ -484,18 +500,21 @@ export interface Database {
           {
             foreignKeyName: "stripe_txns_customer_id_fkey"
             columns: ["customer_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "stripe_txns_customer_id_fkey"
             columns: ["customer_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "stripe_txns_txn_id_fkey"
             columns: ["txn_id"]
+            isOneToOne: false
             referencedRelation: "txns"
             referencedColumns: ["id"]
           }
@@ -511,6 +530,7 @@ export interface Database {
           project: string | null
           to_id: string
           token: string
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Insert: {
           amount: number
@@ -521,6 +541,7 @@ export interface Database {
           project?: string | null
           to_id: string
           token: string
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Update: {
           amount?: number
@@ -531,23 +552,27 @@ export interface Database {
           project?: string | null
           to_id?: string
           token?: string
+          type?: Database["public"]["Enums"]["txn_type"]
         }
         Relationships: [
           {
             foreignKeyName: "txns_from_id_fkey"
             columns: ["from_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "txns_project_fkey"
             columns: ["project"]
+            isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "txns_to_id_fkey"
             columns: ["to_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           }
@@ -577,14 +602,6 @@ export interface Database {
             Args: {
               project_id: string
               to_id: string
-              transfer_id: string
-            }
-            Returns: undefined
-          }
-        | {
-            Args: {
-              project_id: string
-              to_id: string
               from_id: string
               transfer_id: string
               amount: number
@@ -600,6 +617,14 @@ export interface Database {
               amount: number
               txn_id: string
               donor_comment_id?: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              project_id: string
+              to_id: string
+              transfer_id: string
             }
             Returns: undefined
           }
@@ -696,7 +721,8 @@ export interface Database {
               from_id: string
               transfer_id: string
               amount: number
-              donor_notes: Json
+              donor_comment_id: string
+              txn_id?: string
             }
             Returns: undefined
           }
@@ -707,8 +733,7 @@ export interface Database {
               from_id: string
               transfer_id: string
               amount: number
-              donor_comment_id: string
-              txn_id?: string
+              donor_notes: Json
             }
             Returns: undefined
           }
@@ -724,6 +749,15 @@ export interface Database {
         | "complete"
         | "hidden"
       project_type: "grant" | "cert" | "dummy"
+      txn_type:
+        | "profile donation"
+        | "project donation"
+        | "user to user trade"
+        | "user to amm trade"
+        | "withdraw"
+        | "deposit"
+        | "cash to charity transfer"
+        | "amm seed"
     }
     CompositeTypes: {
       bid_row: {

@@ -1,7 +1,7 @@
 import { getUser } from '@/db/profile'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
-import { getTxnsByUser } from '@/db/txn'
+import { getTxnAndProjectsByUser, getTxnsByUser, TxnType } from '@/db/txn'
 import { createEdgeClient } from './_db'
 import {
   ammSharesAtValuation,
@@ -52,7 +52,7 @@ export default async function handler(req: NextRequest) {
   const numShares = buying
     ? calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade)
     : amount
-  const userTxns = await getTxnsByUser(supabase, user.id)
+  const userTxns = await getTxnAndProjectsByUser(supabase, user.id)
   const userBids = await getBidsByUser(supabase, user.id)
   const userSpendableFunds = buying
     ? calculateCharityBalance(userTxns, userBids, user.id, false)
@@ -86,6 +86,7 @@ export default async function handler(req: NextRequest) {
       token: projectId,
       project: projectId,
       bundle: bundleId,
+      type: 'user to amm trade' as TxnType,
     }
     const usdTxn = {
       amount: numDollars,
@@ -94,6 +95,7 @@ export default async function handler(req: NextRequest) {
       token: 'USD',
       project: projectId,
       bundle: bundleId,
+      type: 'user to amm trade' as TxnType,
     }
     const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
     if (error) {

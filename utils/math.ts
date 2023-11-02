@@ -1,10 +1,12 @@
 import { Bid } from '@/db/bid'
+import { Database } from '@/db/database.types'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
-import { FullTxn, Txn, TxnAndProfiles } from '@/db/txn'
+import { FullTxn, Txn, TxnAndProfiles, TxnAndProject } from '@/db/txn'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { orderBy, sortBy } from 'lodash'
+import { isBefore } from 'date-fns'
+import { isNull, orderBy, sortBy } from 'lodash'
 import { isCharitableDeposit } from './constants'
 
 export function getProposalValuation(project: Project) {
@@ -164,7 +166,7 @@ export function calculateSellableShares(
 }
 
 export function calculateCashBalance(
-  txns: Txn[],
+  txns: TxnAndProject[],
   bids: Bid[],
   userId: string,
   accreditationStatus: boolean
@@ -173,7 +175,8 @@ export function calculateCashBalance(
   const sortedTxns = sortBy(txns, 'created_at')
   sortedTxns.forEach((txn) => {
     const txnType = categorizeTxn(txn, userId)
-    cashBalance += txn.amount * txnCashMultiplier(txnType, accreditationStatus)
+    cashBalance +=
+      txn.amount * getTxnCashMultiplier(txn, userId, accreditationStatus)
     cashBalance = Math.max(cashBalance, 0)
   })
   bids.forEach((bid) => {
@@ -185,7 +188,7 @@ export function calculateCashBalance(
 }
 
 export function calculateCharityBalance(
-  txns: Txn[],
+  txns: TxnAndProject[],
   bids: Bid[],
   userId: string,
   accreditationStatus: boolean
@@ -195,7 +198,7 @@ export function calculateCharityBalance(
   sortedTxns.forEach((txn) => {
     const txnType = categorizeTxn(txn, userId)
     charityBalance +=
-      txn.amount * txnCharityMultiplier(txnType, accreditationStatus)
+      txn.amount * getTxnCharityMultiplier(txn, userId, accreditationStatus)
     charityBalance = Math.max(charityBalance, 0)
   })
   bids.forEach((bid) => {
@@ -209,7 +212,7 @@ export function calculateCharityBalance(
   return Math.max(charityBalance, 0)
 }
 
-type TxnType =
+type TxnType2 =
   | 'incoming profile donation'
   | 'outgoing profile donation'
   | 'share purchase'
@@ -224,6 +227,87 @@ type TxnType =
   | 'non-dollar'
   | 'other'
 
+function getTxnCharityMultiplier(
+  txn: TxnAndProject,
+  userId: string,
+  accredited: boolean
+) {
+  if (
+    txn.token !== 'USD' ||
+    (txn.from_id !== userId && txn.to_id !== userId) ||
+    txn.type === 'withdraw'
+  ) {
+    return 0
+  }
+  const isIncoming = txn.to_id === userId
+  const actuallyAccredited =
+    isBefore(new Date(txn.created_at), new Date('2023-11-02')) && accredited
+  if (txn.type === 'cash to charity transfer') {
+    return 1
+  }
+  if (txn.type === 'project donation') {
+    return isIncoming ? 0 : 1
+  }
+  if (txn.type === 'profile donation') {
+    return isIncoming ? 1 : -1
+  }
+  if (txn.type === 'user to amm trade' || txn.type === 'user to user trade') {
+    const isOwnProject = txn.projects?.creator === userId
+    if (isOwnProject || actuallyAccredited) {
+      return 0
+    } else {
+      return isIncoming ? 1 : -1
+    }
+  }
+  if (txn.type === 'amm seed') {
+    return isIncoming ? 1 : 0
+  }
+  if (txn.type === 'deposit') {
+    return actuallyAccredited ? 0 : 1
+  }
+  return 0
+}
+
+function getTxnCashMultiplier(
+  txn: FullTxn,
+  userId: string,
+  accredited: boolean
+) {
+  if (
+    txn.token !== 'USD' ||
+    (txn.from_id !== userId && txn.to_id !== userId) ||
+    txn.type === 'profile donation'
+  ) {
+    return 0
+  }
+  const isIncoming = txn.to_id === userId
+  const actuallyAccredited =
+    isBefore(new Date(txn.created_at), new Date('2023-11-02')) && accredited
+  if (txn.type === 'cash to charity transfer') {
+    return -1
+  }
+  if (txn.type === 'project donation') {
+    return isIncoming ? 1 : 0
+  }
+  if (txn.type === 'user to amm trade' || txn.type === 'user to user trade') {
+    const isOwnProject = txn.projects?.creator === userId
+    if (isOwnProject || actuallyAccredited) {
+      return isIncoming ? 1 : -1
+    } else {
+      return 0
+    }
+  }
+  if (txn.type === 'amm seed') {
+    return isIncoming ? 0 : -1
+  }
+  if (txn.type === 'deposit') {
+    return actuallyAccredited ? 1 : 0
+  }
+  if (txn.type === 'withdraw') {
+    return -1
+  }
+  return 0
+}
 export function categorizeTxn(txn: FullTxn, userId: string) {
   if (txn.token === 'USD') {
     if (txn.to_id === userId) {
@@ -279,7 +363,7 @@ export function categorizeTxn(txn: FullTxn, userId: string) {
 // E.g. an outgoing donation gets a -1 multiplier for charity, and 0 for withdrawable.
 // A deposit gets 1 for charity and 0 for withdrawable for an unaccredited user, and vice versa for accredited users.
 // Withdrawable = investable for accredited investors
-export function txnCharityMultiplier(txnType: TxnType, accredited: boolean) {
+export function txnCharityMultiplier(txnType: TxnType2, accredited: boolean) {
   if (txnType === 'share purchase') {
     return accredited ? 0 : -1
   } else if (
@@ -309,7 +393,7 @@ export function txnCharityMultiplier(txnType: TxnType, accredited: boolean) {
   }
 }
 
-export function txnCashMultiplier(txnType: TxnType, accredited: boolean) {
+export function txnCashMultiplier(txnType: TxnType2, accredited: boolean) {
   if (txnType === 'share purchase') {
     return accredited ? -1 : 0
   } else if (

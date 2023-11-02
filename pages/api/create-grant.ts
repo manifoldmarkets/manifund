@@ -9,7 +9,7 @@ import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { JSONContent } from '@tiptap/react'
 import { calculateCharityBalance } from '@/utils/math'
-import { getTxnsByUser } from '@/db/txn'
+import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { updateProjectCauses } from '@/db/cause'
 
@@ -68,7 +68,7 @@ export default async function handler(req: NextRequest) {
     console.log('invalid inputs')
     return NextResponse.error()
   }
-  const regranterTxns = await getTxnsByUser(supabase, regranter.id)
+  const regranterTxns = await getTxnAndProjectsByUser(supabase, regranter.id)
   const regranterBids = await getBidsByUser(supabase, regranter.id)
   const regranterCharityBalance = calculateCharityBalance(
     regranterTxns,

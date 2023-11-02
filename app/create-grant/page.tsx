@@ -3,7 +3,7 @@ import { CreateGrantForm } from './create-grant-form'
 import { createServerClient } from '@/db/supabase-server'
 import { getUser } from '@/db/profile'
 import { getProfileById } from '@/db/profile'
-import { getTxnsByUser } from '@/db/txn'
+import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import Link from 'next/link'
 import { calculateCharityBalance } from '@/utils/math'
@@ -28,7 +28,7 @@ export default async function CreateGrantPage() {
   }
   const [profile, txns, bids, causesList] = await Promise.all([
     getProfileById(supabase, user.id),
-    getTxnsByUser(supabase, user.id),
+    getTxnAndProjectsByUser(supabase, user.id),
     getBidsByUser(supabase, user.id),
     listMiniCauses(supabase),
   ])

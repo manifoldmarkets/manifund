@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { trade } from '@/utils/trade'
-import { getTxnsByUser } from '@/db/txn'
+import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getProfileAndBidsById } from '@/db/profile'
 import { createEdgeClient } from './_db'
 import {
@@ -36,7 +36,7 @@ export default async function handler(req: NextRequest) {
   }
   const [profile, txns, oldBid] = await Promise.all([
     getProfileAndBidsById(supabase, user.id),
-    getTxnsByUser(supabase, user.id),
+    getTxnAndProjectsByUser(supabase, user.id),
     getBidById(oldBidId, supabase),
   ])
   if (oldBid.type === 'sell') {
