@@ -104,6 +104,7 @@ export async function giveCreatorShares(
     amount: TOTAL_SHARES,
     token: id,
     project: id,
+    type: 'mint cert',
   }
   const { error } = await supabase.from('txns').insert([txn])
   if (error) {

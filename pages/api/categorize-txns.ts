@@ -37,7 +37,11 @@ async function dbCategorizeTxns(txns: Txn[], supabase: SupabaseClient) {
     if (bundle.length === 1) {
       const txn = bundle[0]
       if (!!txn.project) {
-        categorizedTxns[txn.id] = 'project donation'
+        if (txn.token === 'USD') {
+          categorizedTxns[txn.id] = 'project donation'
+        } else {
+          categorizedTxns[txn.id] = 'mint cert'
+        }
       } else {
         if (txn.from_id === txn.to_id) {
           categorizedTxns[txn.id] = 'cash to charity transfer'
@@ -59,8 +63,8 @@ async function dbCategorizeTxns(txns: Txn[], supabase: SupabaseClient) {
         usdTxn.from_id === sharesTxn.from_id &&
         usdTxn.to_id === usdTxn.project
       ) {
-        categorizedTxns[usdTxn.id] = 'amm seed'
-        categorizedTxns[sharesTxn.id] = 'amm seed'
+        categorizedTxns[usdTxn.id] = 'inject amm liquidity'
+        categorizedTxns[sharesTxn.id] = 'inject amm liquidity'
       } else if (
         usdTxn.from_id === sharesTxn.to_id &&
         usdTxn.to_id === sharesTxn.from_id &&

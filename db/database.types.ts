@@ -757,7 +757,8 @@ export interface Database {
         | "withdraw"
         | "deposit"
         | "cash to charity transfer"
-        | "amm seed"
+        | "inject amm liquidity"
+        | "mint cert"
     }
     CompositeTypes: {
       bid_row: {

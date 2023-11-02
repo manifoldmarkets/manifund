@@ -259,7 +259,7 @@ function getTxnCharityMultiplier(
       return isIncoming ? 1 : -1
     }
   }
-  if (txn.type === 'amm seed') {
+  if (txn.type === 'inject amm liquidity') {
     return isIncoming ? 1 : 0
   }
   if (txn.type === 'deposit') {
@@ -297,7 +297,7 @@ function getTxnCashMultiplier(
       return 0
     }
   }
-  if (txn.type === 'amm seed') {
+  if (txn.type === 'inject amm liquidity') {
     return isIncoming ? 0 : -1
   }
   if (txn.type === 'deposit') {
