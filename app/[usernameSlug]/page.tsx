@@ -6,12 +6,6 @@ import { getProjectsByUser } from '@/db/project'
 import { ProfileContent } from './profile-content'
 import { getBidsByUser } from '@/db/bid'
 import { getCommentsByUser } from '@/db/comment'
-import {
-  categorizeTxn,
-  getBalanceMultiplier,
-  getTxnCashMultiplier,
-  getTxnCharityMultiplier,
-} from '@/utils/math'
 
 export const revalidate = 60
 
@@ -37,25 +31,6 @@ export default async function UserProfilePage(props: {
     user ? getBidsByUser(supabase, user.id) : null,
   ])
   const isOwnProfile = user?.id === profile?.id
-  console.log('TXNS')
-  txns.forEach((txn) => {
-    const charityMultiplier = getTxnCharityMultiplier(
-      txn,
-      profile.id,
-      profile.accreditation_status
-    )
-    const balanceMultiplier = getBalanceMultiplier(txn, profile.id)
-    if (balanceMultiplier < charityMultiplier) {
-      console.log(txn)
-      console.log(categorizeTxn(txn, profile.id))
-      console.log(
-        'cash multiplier',
-        getTxnCashMultiplier(txn, profile.id, profile.accreditation_status)
-      )
-      console.log('charity multiplier', charityMultiplier)
-      console.log('balance multiplier', balanceMultiplier)
-    }
-  })
   return (
     <div className="flex flex-col gap-8 p-3 sm:p-5">
       <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} />
