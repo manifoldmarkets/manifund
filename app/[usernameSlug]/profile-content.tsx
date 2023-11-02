@@ -26,11 +26,20 @@ export function ProfileContent(props: {
   comments: CommentAndProject[]
   bids: BidAndProject[]
   txns: FullTxn[]
-  userProfile: ProfileAndBids | null
+  userProfile: Profile | null
   userTxns: TxnAndProject[] | null
+  userBids: BidAndProject[] | null
 }) {
-  const { profile, projects, comments, bids, txns, userProfile, userTxns } =
-    props
+  const {
+    profile,
+    projects,
+    comments,
+    bids,
+    txns,
+    userProfile,
+    userTxns,
+    userBids,
+  } = props
   const isOwnProfile = userProfile?.id === profile.id
   const proposalBids = bids.filter(
     (bid) =>
@@ -67,10 +76,10 @@ export function ProfileContent(props: {
     profile.accreditation_status
   )
   const userCharityBalance =
-    userTxns && userProfile
+    userTxns && userBids && userProfile
       ? calculateCharityBalance(
           userTxns,
-          userProfile?.bids,
+          userBids,
           userProfile?.id,
           userProfile?.accreditation_status
         )

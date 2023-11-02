@@ -1,13 +1,13 @@
-import { Bid } from '@/db/bid'
-import { Database } from '@/db/database.types'
+import { Bid, BidAndProject } from '@/db/bid'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, Txn, TxnAndProfiles, TxnAndProject } from '@/db/txn'
-import { SupabaseClient } from '@supabase/supabase-js'
 import { isBefore } from 'date-fns'
-import { isNull, orderBy, sortBy } from 'lodash'
+import { orderBy, sortBy } from 'lodash'
 import { isCharitableDeposit } from './constants'
+
+const IGNORE_ACCREDITATION_DATE = new Date('2023-11-02')
 
 export function getProposalValuation(project: Project) {
   const investorPercent =
@@ -59,13 +59,17 @@ export function getActiveValuation(
 export function calculateUserBalance(txns: Txn[], userId: string) {
   let balance = 0
   txns.forEach((txn) => {
-    const balanceEffect =
-      txn.to_id === userId ? (txn.from_id === userId ? 0 : 1) : -1
-    if (txn.token === 'USD') {
-      balance += txn.amount * balanceEffect
-    }
+    balance += txn.amount * getBalanceMultiplier(txn, userId)
   })
   return balance
+}
+
+export function getBalanceMultiplier(txn: Txn, userId: string) {
+  if (txn.token !== 'USD') {
+    return 0
+  } else {
+    return txn.to_id === userId ? (txn.from_id === userId ? 0 : 1) : -1
+  }
 }
 
 export function getAmountRaised(project: Project, bids?: Bid[], txns?: Txn[]) {
@@ -167,49 +171,92 @@ export function calculateSellableShares(
 
 export function calculateCashBalance(
   txns: TxnAndProject[],
-  bids: Bid[],
+  bids: BidAndProject[],
   userId: string,
   accreditationStatus: boolean
 ) {
   let cashBalance = 0
   const sortedTxns = sortBy(txns, 'created_at')
+  // console.log('CASH')
   sortedTxns.forEach((txn) => {
     const txnType = categorizeTxn(txn, userId)
+    // console.log(
+    //   'txnType',
+    //   txnType,
+    //   'old multiplier',
+    //   txnCashMultiplier(txnType, accreditationStatus),
+    //   'new multiplier',
+    //   getTxnCashMultiplier(txn, userId, accreditationStatus)
+    // )
     cashBalance +=
       txn.amount * getTxnCashMultiplier(txn, userId, accreditationStatus)
-    cashBalance = Math.max(cashBalance, 0)
+    // cashBalance = Math.max(cashBalance, 0)
   })
   bids.forEach((bid) => {
-    if (bid.status === 'pending' && accreditationStatus && bid.type === 'buy') {
-      cashBalance -= bid.amount
-    }
+    cashBalance += bid.amount * getBidCashMultiplier(bid)
   })
-  return Math.max(cashBalance, 0)
+  return cashBalance
 }
 
 export function calculateCharityBalance(
   txns: TxnAndProject[],
-  bids: Bid[],
+  bids: BidAndProject[],
   userId: string,
   accreditationStatus: boolean
 ) {
   let charityBalance = 0
   const sortedTxns = sortBy(txns, 'created_at')
+  // console.log('CHARITY')
+
   sortedTxns.forEach((txn) => {
     const txnType = categorizeTxn(txn, userId)
+    // console.log(
+    //   'txnType',
+    //   txnType,
+    //   'old multiplier',
+    //   txnCharityMultiplier(txnType, accreditationStatus),
+    //   'new multiplier',
+    //   getTxnCharityMultiplier(txn, userId, accreditationStatus)
+    // )
     charityBalance +=
       txn.amount * getTxnCharityMultiplier(txn, userId, accreditationStatus)
-    charityBalance = Math.max(charityBalance, 0)
+    // charityBalance = Math.max(charityBalance, 0)
   })
   bids.forEach((bid) => {
-    if (
-      bid.status === 'pending' &&
-      (bid.type === 'donate' || (!accreditationStatus && bid.type === 'buy'))
-    ) {
-      charityBalance -= bid.amount
-    }
+    console.log('CHARITY BALANCE BEFORE', charityBalance)
+    charityBalance += bid.amount * getBidCharityMultiplier(bid)
+    console.log('bid in question', bid)
+    console.log('CHARITY BALANCE AFTER', charityBalance)
   })
-  return Math.max(charityBalance, 0)
+  return charityBalance
+}
+
+function getBidCharityMultiplier(bid: BidAndProject) {
+  const projectIsBidders = bid.projects.creator === bid.bidder
+  if (
+    bid.status !== 'pending' ||
+    bid.type === 'sell' ||
+    bid.type === 'assurance sell' ||
+    projectIsBidders
+  ) {
+    return 0
+  } else {
+    return -1
+  }
+}
+
+function getBidCashMultiplier(bid: BidAndProject) {
+  const projectIsBidders = bid.projects.creator === bid.bidder
+  if (
+    bid.status !== 'pending' ||
+    bid.type === 'sell' ||
+    bid.type === 'assurance sell' ||
+    !projectIsBidders
+  ) {
+    return 0
+  } else {
+    return -1
+  }
 }
 
 type TxnType2 =
@@ -227,7 +274,7 @@ type TxnType2 =
   | 'non-dollar'
   | 'other'
 
-function getTxnCharityMultiplier(
+export function getTxnCharityMultiplier(
   txn: TxnAndProject,
   userId: string,
   accredited: boolean
@@ -241,12 +288,15 @@ function getTxnCharityMultiplier(
   }
   const isIncoming = txn.to_id === userId
   const actuallyAccredited =
-    isBefore(new Date(txn.created_at), new Date('2023-11-02')) && accredited
+    isBefore(new Date(txn.created_at), IGNORE_ACCREDITATION_DATE) && accredited
   if (txn.type === 'cash to charity transfer') {
     return 1
   }
+  if (isIncoming && txn.from_id === userId) {
+    return 0
+  }
   if (txn.type === 'project donation') {
-    return isIncoming ? 0 : 1
+    return isIncoming ? 0 : -1
   }
   if (txn.type === 'profile donation') {
     return isIncoming ? 1 : -1
@@ -268,7 +318,7 @@ function getTxnCharityMultiplier(
   return 0
 }
 
-function getTxnCashMultiplier(
+export function getTxnCashMultiplier(
   txn: FullTxn,
   userId: string,
   accredited: boolean
@@ -285,6 +335,9 @@ function getTxnCashMultiplier(
     isBefore(new Date(txn.created_at), new Date('2023-11-02')) && accredited
   if (txn.type === 'cash to charity transfer') {
     return -1
+  }
+  if (isIncoming && txn.from_id === userId) {
+    return 0
   }
   if (txn.type === 'project donation') {
     return isIncoming ? 1 : 0
@@ -315,7 +368,6 @@ export function categorizeTxn(txn: FullTxn, userId: string) {
         if (txn.project && !txn.bundle) {
           return 'own project donation'
         } else if (!txn.bundle) {
-          4
           return 'cash to charity transfer'
         } else return 'other' // This shouldn't happen: bundle should come with project
       }
