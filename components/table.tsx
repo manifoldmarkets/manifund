@@ -4,7 +4,6 @@ import { Menu } from '@headlessui/react'
 import { EllipsisVerticalIcon, TrashIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 
-/** `<table>` with styles. Expects table html (`<thead>`, `<td>` etc) */
 export const Table = (props: {
   className?: string
   children: React.ReactNode
@@ -12,18 +11,18 @@ export const Table = (props: {
   const { className, children } = props
 
   return (
-    <table
+    <div
       className={clsx(
-        'w-full whitespace-nowrap text-left text-sm text-gray-500 [&>thead]:font-bold [&_td]:p-2 [&_th]:p-2',
+        'grid w-full grid-cols-1 divide-y divide-gray-200 whitespace-nowrap rounded-md bg-white text-sm text-gray-500 shadow',
         className
       )}
     >
       {children}
-    </table>
+    </div>
   )
 }
 
-export function ThickTableRow(props: {
+export function TableRow(props: {
   title: string | JSX.Element
   tag?: JSX.Element
   subtitle?: JSX.Element
@@ -32,23 +31,23 @@ export function ThickTableRow(props: {
 }) {
   const { title, tag, subtitle, href, deleteFunction } = props
   return (
-    <tr className="hover:bg-gray-50">
-      <td className="py-4 pl-5 align-middle font-medium text-gray-900">
-        <Link className="hover:underline" href={href}>
+    <div className="flex justify-between hover:bg-gray-50">
+      <div className="flex w-full flex-col justify-between py-4 pl-5 font-medium text-gray-900 sm:flex-row sm:items-center">
+        <Link className="text-base hover:underline" href={href}>
           {title}
         </Link>
         {subtitle && (
-          <p className="mt-1 truncate text-xs font-normal text-gray-500">
+          <span className="truncate text-xs font-normal text-gray-500">
             {subtitle}
-          </p>
+          </span>
         )}
-      </td>
-      <td className="flex h-full justify-end py-4 px-3 align-middle">
+      </div>
+      <div className="flex h-full items-center justify-end px-3 py-4">
         {tag}
         {deleteFunction && (
           <Menu as="div" className="relative z-10 inline-block">
             <Menu.Button>
-              <EllipsisVerticalIcon className="relative left-2 bottom-1 h-6 w-6 text-gray-400 hover:cursor-pointer" />
+              <EllipsisVerticalIcon className="relative bottom-1 left-2 h-6 w-6 text-gray-400 hover:cursor-pointer" />
             </Menu.Button>
             <Menu.Items className="absolute right-0 top-4 z-10 mt-2 w-24 origin-top-right rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <Menu.Item>
@@ -67,7 +66,7 @@ export function ThickTableRow(props: {
             </Menu.Items>
           </Menu>
         )}
-      </td>
-    </tr>
+      </div>
+    </div>
   )
 }

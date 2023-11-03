@@ -1,7 +1,7 @@
 'use client'
 import { Bid, BidAndProject, deleteBid } from '@/db/bid'
-import { ThickTableRow } from '@/components/table'
-import { RoundTag, Tag } from '@/components/tags'
+import { Table, TableRow } from '@/components/table'
+import { Tag } from '@/components/tags'
 import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { formatMoney } from '@/utils/formatting'
@@ -15,7 +15,7 @@ export function ActiveBids(props: {
   const { supabase } = useSupabase()
   const router = useRouter()
   const bidsDisplay = bids.map((bid) => (
-    <ThickTableRow
+    <TableRow
       key={bid.id}
       title={bid.projects.title}
       subtitle={
@@ -36,12 +36,7 @@ export function ActiveBids(props: {
   return (
     <div>
       <h1 className="mb-2 text-xl font-medium sm:text-2xl">Trade offers</h1>
-      <table
-        role="list"
-        className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
-      >
-        {bidsDisplay}
-      </table>
+      <Table>{bidsDisplay}</Table>
     </div>
   )
 }

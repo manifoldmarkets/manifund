@@ -3,7 +3,7 @@ import { Project } from '@/db/project'
 import Link from 'next/link'
 import { StageTag } from '@/components/tags'
 import { orderBy } from 'lodash'
-import { ThickTableRow } from '@/components/table'
+import { Table, TableRow } from '@/components/table'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 
@@ -14,15 +14,12 @@ export function Projects(props: { projects: Project[] }) {
   return (
     <div>
       <h1 className="mb-2 text-xl font-medium sm:text-2xl">Projects</h1>
-      <table
-        role="list"
-        className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
-      >
+      <Table>
         {projects.length == 0 ? (
           <NoProjects />
         ) : (
           sortedProjects.map((project) => (
-            <ThickTableRow
+            <TableRow
               key={project.id}
               title={project.title}
               subtitle={<NextStep project={project} />}
@@ -39,7 +36,7 @@ export function Projects(props: { projects: Project[] }) {
             />
           ))
         )}
-      </table>
+      </Table>
     </div>
   )
 }
