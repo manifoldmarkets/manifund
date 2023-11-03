@@ -35,6 +35,8 @@ export function getRoundTheme(roundTitle: string) {
       return 'rose'
     case 'Regranters':
       return 'rose'
+    case 'Manifold Community Round':
+      return 'indigo'
     default:
       return 'pink' //this should never happen
   }
