@@ -8,6 +8,7 @@ import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
 import { ProjectDisplay } from './project-display'
 import { listMiniCauses } from '@/db/cause'
+import { getBidsByUser } from '@/db/bid'
 
 export const revalidate = 0
 
@@ -33,6 +34,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const [
     userProfile,
     userTxns,
+    userBids,
     comments,
     projectBids,
     projectTxns,
@@ -40,6 +42,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   ] = await Promise.all([
     user ? await getProfileAndBidsById(supabase, user.id) : null,
     user ? getTxnAndProjectsByUser(supabase, user.id) : [],
+    user ? getBidsByUser(supabase, user.id) : [],
     getCommentsByProject(supabase, project.id),
     getBidsByProject(supabase, project.id),
     getTxnsByProject(supabase, project.id),
@@ -54,6 +57,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
       <ProjectDisplay
         project={project}
         userTxns={userTxns}
+        userBids={userBids}
         comments={comments}
         projectBids={projectBids}
         projectTxns={projectTxns}

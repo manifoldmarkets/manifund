@@ -7,9 +7,9 @@ import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
 import { ProjectCardHeader } from '@/components/project-card'
 import { SignInButton } from '@/components/sign-in-button'
-import { BidAndProfile } from '@/db/bid'
+import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
-import { ProfileAndBids } from '@/db/profile'
+import { Profile, ProfileAndBids } from '@/db/profile'
 import { FullProject } from '@/db/project'
 import { MiniCause } from '@/db/cause'
 import { TxnAndProfiles, TxnAndProject } from '@/db/txn'
@@ -37,17 +37,19 @@ import { CertValuationChart } from './valuation-chart'
 export function ProjectDisplay(props: {
   project: FullProject
   userTxns: TxnAndProject[]
+  userBids: BidAndProject[]
   comments: CommentAndProfile[]
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]
   causesList: MiniCause[]
-  userProfile?: ProfileAndBids
+  userProfile?: Profile
   creatorEmail?: string
   userIsAdmin?: boolean
 }) {
   const {
     project,
     userTxns,
+    userBids,
     comments,
     projectBids,
     projectTxns,
@@ -58,21 +60,16 @@ export function ProjectDisplay(props: {
   } = props
   const userSpendableFunds = userProfile
     ? userProfile.accreditation_status && project.type === 'cert'
-      ? calculateCashBalance(userTxns, userProfile.bids, userProfile.id, true)
+      ? calculateCashBalance(userTxns, userBids, userProfile.id, true)
       : calculateCharityBalance(
           userTxns,
-          userProfile.bids,
+          userBids,
           userProfile.id,
           userProfile.accreditation_status
         )
     : 0
   const userSellableShares = userProfile
-    ? calculateSellableShares(
-        userTxns,
-        userProfile.bids,
-        project.id,
-        userProfile.id
-      )
+    ? calculateSellableShares(userTxns, userBids, project.id, userProfile.id)
     : 0
   const valuation =
     project.type === 'grant'
