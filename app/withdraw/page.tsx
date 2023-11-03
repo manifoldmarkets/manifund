@@ -1,10 +1,11 @@
 import { createServerClient } from '@/db/supabase-server'
 import { WithdrawalSteps } from './withdrawal-steps'
-import { getProfileAndBidsById, getUser } from '@/db/profile'
+import { getProfileById, getUser } from '@/db/profile'
 import { STRIPE_SECRET_KEY } from '@/db/env'
 import { calculateCashBalance } from '@/utils/math'
 import Stripe from 'stripe'
 import { getFullTxnsByUser } from '@/db/txn'
+import { getBidsByUser } from '@/db/bid'
 
 const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
   apiVersion: '2022-11-15',
@@ -24,13 +25,17 @@ export default async function WithdrawPage() {
       </div>
     )
   }
-  const [profile, txns] = await Promise.all([
-    getProfileAndBidsById(supabase, user.id),
+  const [profile, txns, bids] = await Promise.all([
+    getProfileById(supabase, user.id),
     getFullTxnsByUser(supabase, user.id),
+    getBidsByUser(supabase, user.id),
   ])
+  if (!profile) {
+    return null
+  }
   const withdrawBalance = calculateCashBalance(
     txns,
-    profile.bids,
+    bids,
     user.id,
     profile.accreditation_status
   )
@@ -49,7 +54,7 @@ export default async function WithdrawPage() {
         })
     : null
   return (
-    <div className="absolute top-0 left-0 z-30 h-screen w-full bg-gray-50">
+    <div className="absolute left-0 top-0 z-30 h-screen w-full bg-gray-50">
       <WithdrawalSteps
         accountStatus={
           account

@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { trade } from '@/utils/trade'
 import { getTxnAndProjectsByUser } from '@/db/txn'
-import { getProfileAndBidsById } from '@/db/profile'
+import { getProfileById } from '@/db/profile'
 import { createEdgeClient } from './_db'
 import {
   calculateCashBalance,
   calculateCharityBalance,
   calculateSellableShares,
 } from '@/utils/math'
-import { getBidById } from '@/db/bid'
+import { getBidById, getBidsByUser } from '@/db/bid'
 import { TOTAL_SHARES } from '@/db/project'
 
 export const config = {
@@ -34,22 +34,27 @@ export default async function handler(req: NextRequest) {
   if (!user) {
     return NextResponse.error()
   }
-  const [profile, txns, oldBid] = await Promise.all([
-    getProfileAndBidsById(supabase, user.id),
+  const [profile, txns, bids, oldBid] = await Promise.all([
+    getProfileById(supabase, user.id),
     getTxnAndProjectsByUser(supabase, user.id),
+    getBidsByUser(supabase, user.id),
     getBidById(oldBidId, supabase),
   ])
+  if (!profile) {
+    return NextResponse.error()
+  }
   if (oldBid.type === 'sell') {
-    const balance = profile.accreditation_status
-      ? calculateCashBalance(txns, profile.bids, profile.id, true)
-      : calculateCharityBalance(txns, profile.bids, profile.id, false)
+    // TODO: instead of acc investors trading with cash, project creators trade with cash
+    const balance = profile?.accreditation_status
+      ? calculateCashBalance(txns, bids, profile.id, true)
+      : calculateCharityBalance(txns, bids, profile.id, false)
     if (balance < usdTraded) {
       return NextResponse.error()
     }
   } else if (oldBid.type === 'buy') {
     const currentShares = calculateSellableShares(
       txns,
-      profile.bids,
+      bids,
       oldBid.project,
       profile.id
     )

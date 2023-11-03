@@ -1,4 +1,4 @@
-import { Bid } from '@/db/bid'
+import { Bid, getBidsByUser } from '@/db/bid'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
@@ -30,22 +30,18 @@ export default async function handler(req: NextRequest) {
   if (!user) {
     return new Response('Unauthorized', { status: 401 })
   }
-  const [bidder, txns, project] = await Promise.all([
+  const [bidder, txns, bids, project] = await Promise.all([
     getProfileAndBidsById(supabase, user.id),
     getTxnAndProjectsByUser(supabase, user.id),
+    getBidsByUser(supabase, user.id),
     getProjectById(supabase, projectId),
   ])
   const bidderBalance =
     bidder.accreditation_status && type === 'buy'
-      ? calculateCashBalance(
-          txns,
-          bidder.bids,
-          bidder.id,
-          bidder.accreditation_status
-        )
+      ? calculateCashBalance(txns, bids, bidder.id, bidder.accreditation_status)
       : calculateCharityBalance(
           txns,
-          bidder.bids,
+          bids,
           bidder.id,
           bidder.accreditation_status
         )
