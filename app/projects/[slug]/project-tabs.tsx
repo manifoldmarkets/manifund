@@ -7,7 +7,7 @@ import { Bids } from './bids'
 import { BidAndProfile } from '@/db/bid'
 import { TxnAndProfiles } from '@/db/txn'
 import { Shareholders } from './shareholders'
-import { calculateFullTrades, FullTrade } from '@/utils/math'
+import { bundleTxns, calculateFullTrades, FullTrade } from '@/utils/math'
 import { Tabs } from '@/components/tabs'
 import { DonationsHistory } from '@/components/donations-history'
 import { CommentAndProfile } from '@/db/comment'
@@ -42,7 +42,8 @@ export function ProjectTabs(props: {
   const shareholders =
     (project.stage === 'active' || project.stage === 'complete') &&
     project.type === 'cert'
-      ? calculateShareholders(trades, creator)
+      ? // ? calculateShareholders(trades, creator)
+        getShareholders(txns)
       : undefined
   const commenterContributions = getCommenterContributions(
     comments,
@@ -146,6 +147,32 @@ export function calculateShareholders(trades: FullTrade[], creator: Profile) {
     (shareholder) =>
       shareholder.numShares > 0 || shareholder.profile.id === creator.id
   )
+}
+
+export function getShareholders(txns: TxnAndProfiles[]) {
+  const bundledTxns = bundleTxns(txns)
+  const shareholders = Object.fromEntries(
+    txns.map((txn) => [txn.to_id, { numShares: 0 } as Shareholder])
+  )
+  for (const bundle of bundledTxns) {
+    for (const txn of bundle) {
+      if (txn.token === 'USD' && txn.from_id) {
+        shareholders[txn.from_id].profile = txn.profiles as Profile
+      } else {
+        shareholders[txn.to_id].numShares += txn.amount
+        if (txn.from_id) {
+          shareholders[txn.from_id].numShares -= txn.amount
+          shareholders[txn.from_id].profile = txn.profiles as Profile
+        }
+      }
+    }
+  }
+  const shareholdersArray = Object.values(shareholders) as Shareholder[]
+  // Round to 2 decimal places for small arithmetic errors
+  shareholdersArray.forEach((shareholder) => {
+    shareholder.numShares = Math.round(shareholder.numShares)
+  })
+  return shareholdersArray.filter((shareholder) => !!shareholder.profile)
 }
 
 export function getCommenterContributions(

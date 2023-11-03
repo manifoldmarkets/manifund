@@ -1,4 +1,5 @@
 import { Txn } from '@/db/txn'
+import { bundleTxns } from '@/utils/math'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from './_db'
@@ -16,20 +17,7 @@ export default async function handler(req: NextRequest) {
 }
 
 async function dbCategorizeTxns(txns: Txn[], supabase: SupabaseClient) {
-  const bundledTxns = txns
-    .map((txn) => {
-      if (txn.bundle && txn.token === 'USD') {
-        return [
-          txn,
-          txns.find((t) => t.bundle === txn.bundle && t.token !== 'USD'),
-        ]
-      } else if (!txn.bundle) {
-        return [txn]
-      } else {
-        return null
-      }
-    })
-    .filter((txn) => txn !== null) as Txn[][]
+  const bundledTxns = bundleTxns(txns)
   const categorizedTxns = Object.fromEntries(
     txns.map((txn) => [txn.id, null as string | null])
   )

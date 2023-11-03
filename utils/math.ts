@@ -161,6 +161,24 @@ export function calculateSellableShares(
   return shares - offeredShares
 }
 
+export function bundleTxns(txns: FullTxn[]) {
+  const bundledTxns = txns
+    .map((txn) => {
+      if (txn.bundle && txn.token === 'USD') {
+        return [
+          txn,
+          txns.find((t) => t.bundle === txn.bundle && t.token !== 'USD'),
+        ]
+      } else if (!txn.bundle) {
+        return [txn]
+      } else {
+        return null
+      }
+    })
+    .filter((txn) => txn !== null) as FullTxn[][]
+  return bundledTxns
+}
+
 export function calculateCashBalance(
   txns: TxnAndProject[],
   bids: BidAndProject[],
