@@ -1,5 +1,5 @@
 'use client'
-import { Profile, ProfileAndBids } from '@/db/profile'
+import { Profile } from '@/db/profile'
 import { BidAndProject } from '@/db/bid'
 import { FullProject, Project } from '@/db/project'
 import { ProposalBids } from './profile-proposal-bids'

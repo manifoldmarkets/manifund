@@ -26,7 +26,6 @@ export function ActiveBids(props: {
           showValuation={isOwnProfile || bid.projects.stage !== 'proposal'}
         />
       }
-      tag={<RoundTag roundTitle={bid.projects.round} />}
       href={`/projects/${bid.projects.slug}`}
       deleteFunction={async () => {
         await deleteBid(supabase, bid.id)
@@ -69,7 +68,7 @@ export function BidText(props: {
       return (
         <div className="flex items-center">
           <p className="text-sm text-gray-500">
-            Bid&nbsp;
+            Offered&nbsp;
             <span className="text-black">{formatMoney(bid.amount)}</span>
             {showValuation && (
               <span>
@@ -84,7 +83,7 @@ export function BidText(props: {
     case 'active':
       return (
         <div className="flex items-center text-sm text-gray-500">
-          Offer to&nbsp;
+          Offered to&nbsp;
           <Tag
             text={bid.type === 'buy' ? 'BUY' : 'SELL'}
             color={bid.type === 'buy' ? 'emerald' : 'rose'}
@@ -98,6 +97,6 @@ export function BidText(props: {
         </div>
       )
     default:
-      return <></>
+      return null
   }
 }

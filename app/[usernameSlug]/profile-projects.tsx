@@ -1,6 +1,5 @@
 'use client'
 import { Project } from '@/db/project'
-import { RoundTag } from '@/components/tags'
 import Link from 'next/link'
 import { StageTag } from '@/components/tags'
 import { orderBy } from 'lodash'
@@ -8,6 +7,7 @@ import { ThickTableRow } from '@/components/table'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 
+// TODO: use full project and display amount raised, valuation, etc.
 export function Projects(props: { projects: Project[] }) {
   const { projects } = props
   const sortedProjects = orderBy(projects, 'created_at', 'desc')
@@ -30,9 +30,6 @@ export function Projects(props: { projects: Project[] }) {
               tag={
                 <div className="flex h-full flex-col justify-center">
                   <Row className="flex-shrink-0 justify-end gap-2">
-                    <Col className="justify-center">
-                      <RoundTag roundTitle={project.round} />
-                    </Col>
                     <Col className="justify-center">
                       <StageTag projectStage={project.stage} />
                     </Col>
