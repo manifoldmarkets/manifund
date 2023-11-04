@@ -3,8 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { generateHTML } from '@tiptap/html'
 import { getFullCommentById } from '@/db/comment'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
-import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
-import { calculateFullTrades } from '@/utils/math'
+import { getShareholders } from '@/app/projects/[slug]/project-tabs'
 import { getTxnsByProject } from '@/db/txn'
 import { parseMentions } from '@/utils/parse'
 import { Comment } from '@/db/comment'
@@ -49,8 +48,7 @@ export default async function handler(
       supabaseAdmin,
       fullComment.projects.id
     )
-    const trades = calculateFullTrades(txnsAndProfiles)
-    const shareholders = calculateShareholders(trades, fullComment.profiles)
+    const shareholders = getShareholders(txnsAndProfiles)
     shareholders.forEach(async (shareholder) => {
       if (shareholder.profile.id !== fullComment.projects.creator) {
         await sendTemplateEmail(

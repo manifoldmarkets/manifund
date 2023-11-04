@@ -2,8 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { getProjectAndProfileById, ProjectAndProfile } from '@/db/project'
 import { maybeActivateProject } from '@/utils/activate-project'
 import { Bid } from '@/db/bid'
-import { calculateFullTrades } from '@/utils/math'
-import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
+import { getShareholders } from '@/app/projects/[slug]/project-tabs'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { trade } from '@/utils/trade'
@@ -76,8 +75,7 @@ async function sendShareholderEmails(
   if (!bidder) {
     return
   }
-  const trades = calculateFullTrades(txns)
-  const shareholders = calculateShareholders(trades, project.profiles)
+  const shareholders = getShareholders(txns)
   for (const shareholder of shareholders) {
     await sendTemplateEmail(
       TEMPLATE_IDS.GENERIC_NOTIF,

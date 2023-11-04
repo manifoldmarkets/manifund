@@ -1,27 +1,26 @@
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
-import { UserAvatarAndBadge } from '@/components/user-link'
+import { UserAvatarAndBadge, UserLink } from '@/components/user-link'
 import { Profile } from '@/db/profile'
 import { TOTAL_SHARES } from '@/db/project'
 import {
-  formatLargeNumber,
   formatMoneyPrecise,
+  formatPercent,
   showPrecision,
 } from '@/utils/formatting'
 import clsx from 'clsx'
 import { orderBy } from 'lodash'
-import { Avatar } from '@/components/avatar'
-import { ArrowRightIcon } from '@heroicons/react/24/outline'
 import { formatDistanceToNow } from 'date-fns'
-import { FullTrade } from '@/utils/math'
+import { bundleTxns } from '@/utils/math'
 import { Shareholder } from './project-tabs'
+import { TxnAndProfiles } from '@/db/txn'
 
 export function Shareholders(props: {
   shareholders: Shareholder[]
-  trades: FullTrade[]
   creator: Profile
+  txns: TxnAndProfiles[]
 }) {
-  const { shareholders, trades, creator } = props
+  const { shareholders, creator, txns } = props
   const sortedShareholders = orderBy(shareholders, 'numShares', 'desc')
   return (
     <Row className="w-full justify-center">
@@ -40,48 +39,82 @@ export function Shareholders(props: {
           </Row>
         ))}
         <div className="h-8" />
-        <History trades={trades} />
+        <TradeHistory txns={txns} creatorId={creator.id} />
       </Col>
     </Row>
   )
 }
 
-function History(props: { trades: FullTrade[] }) {
-  const { trades } = props
-  const tradeDisplay = trades.map((trade) => {
-    return (
-      <Row key={trade.bundle} className="justify-center">
-        <Row className="w-full max-w-sm justify-between gap-5 rounded p-3 hover:bg-gray-200 sm:max-w-xl">
-          <Row className="gap-3">
-            <Avatar
-              username={trade.fromProfile.username}
-              avatarUrl={trade.fromProfile.avatar_url}
-              id={trade.fromProfile.id}
-              size={6}
-            />
-            <Col className="justify-center">
-              <ArrowRightIcon className="h-4 w-4" />
-            </Col>
-            <Avatar
-              username={trade.toProfile.username}
-              avatarUrl={trade.toProfile.avatar_url}
-              id={trade.toProfile.id}
-              size={6}
-            />
-          </Row>
-          <div>
-            {formatLargeNumber((trade.numShares / TOTAL_SHARES) * 100)}%{' '}
-            <span className="text-gray-500">ownership for </span>
-            {formatMoneyPrecise(trade.amountUSD)}
-          </div>
-          <div className="hidden text-gray-500 sm:block">
-            {formatDistanceToNow(trade.date, {
-              addSuffix: true,
-            })}
-          </div>
+function Trade(props: {
+  trader: Profile
+  isCreator: boolean
+  amountUSD: number
+  equityPortion: number
+  createdAt: string
+  isBuying: boolean
+}) {
+  const { trader, isCreator, amountUSD, equityPortion, createdAt, isBuying } =
+    props
+  return (
+    <Row className="justify-center">
+      <div className="grid w-full max-w-sm grid-cols-2 justify-between gap-3 rounded p-3 text-sm hover:bg-gray-200 sm:max-w-xl sm:grid-cols-3">
+        <UserAvatarAndBadge profile={trader} creatorBadge={isCreator} />
+        <Row className="justify-end gap-1">
+          <span className="text-gray-500">{isBuying ? 'bought' : 'sold'}</span>
+          {formatPercent(equityPortion)}
+          <span className="text-gray-500">for</span>
+          {formatMoneyPrecise(amountUSD)}
         </Row>
-      </Row>
-    )
+        <span className="hidden text-right text-gray-500 sm:block">
+          {formatDistanceToNow(new Date(createdAt), {
+            addSuffix: true,
+          })}
+        </span>
+      </div>
+    </Row>
+  )
+}
+
+function TradeHistory(props: { txns: TxnAndProfiles[]; creatorId: string }) {
+  const { txns, creatorId } = props
+  const tradeTxns = txns.filter(
+    (txn) =>
+      txn.type === 'user to user trade' || txn.type === 'user to amm trade'
+  )
+  const bundledTxns = bundleTxns(tradeTxns)
+  const tradeDisplay = bundledTxns.flatMap((bundle) => {
+    const usdTxn = bundle.find((txn) => txn.token === 'USD')
+    const sharesTxn = bundle.find((txn) => txn.token !== 'USD')
+    const amountUSD = usdTxn?.amount ?? 0
+    const numShares = sharesTxn?.amount ?? 1
+    const equityPortion = numShares / TOTAL_SHARES
+    if (bundle[0].type === 'user to user trade') {
+      return bundle.map((txn) => (
+        <Trade
+          key={txn.id}
+          trader={txn.profiles as Profile}
+          equityPortion={equityPortion}
+          createdAt={txn.created_at}
+          amountUSD={amountUSD}
+          isCreator={txn.from_id === creatorId}
+          isBuying={txn.token === 'USD'}
+        />
+      ))
+    } else {
+      const realTrader = bundle.find((txn) => txn.from_id !== txn.project)
+        ?.profiles as Profile
+      return (
+        <Trade
+          key={bundle[0].id}
+          trader={realTrader}
+          equityPortion={equityPortion}
+          createdAt={bundle[0].created_at}
+          amountUSD={amountUSD}
+          isCreator={realTrader.id === creatorId}
+          isBuying={usdTxn?.from_id === realTrader.id}
+        />
+      )
+    }
   })
   return (
     <div>

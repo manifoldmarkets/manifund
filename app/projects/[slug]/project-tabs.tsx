@@ -7,7 +7,7 @@ import { Bids } from './bids'
 import { BidAndProfile } from '@/db/bid'
 import { TxnAndProfiles } from '@/db/txn'
 import { Shareholders } from './shareholders'
-import { bundleTxns, calculateFullTrades, FullTrade } from '@/utils/math'
+import { bundleTxns } from '@/utils/math'
 import { Tabs } from '@/components/tabs'
 import { DonationsHistory } from '@/components/donations-history'
 import { CommentAndProfile } from '@/db/comment'
@@ -37,13 +37,11 @@ export function ProjectTabs(props: {
   } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
-  const trades = calculateFullTrades(txns)
   const creator = project.profiles
   const shareholders =
     (project.stage === 'active' || project.stage === 'complete') &&
     project.type === 'cert'
-      ? // ? calculateShareholders(trades, creator)
-        getShareholders(txns)
+      ? getShareholders(txns)
       : undefined
   const commenterContributions = getCommenterContributions(
     comments,
@@ -97,8 +95,8 @@ export function ProjectTabs(props: {
       display: (
         <Shareholders
           shareholders={shareholders}
-          trades={trades}
           creator={creator}
+          txns={txns}
         />
       ),
     })
@@ -126,29 +124,6 @@ export type Shareholder = {
   profile: Profile
   numShares: number
 }
-export function calculateShareholders(trades: FullTrade[], creator: Profile) {
-  const shareholders = Object.fromEntries(
-    trades.map((trade) => [trade.toProfile.id, { numShares: 0 } as Shareholder])
-  )
-  shareholders[creator.id] = { profile: creator, numShares: 10000000 }
-  for (const trade of trades) {
-    shareholders[trade.toProfile.id].profile = trade.toProfile
-    shareholders[trade.toProfile.id].numShares += trade.numShares
-    if (shareholders[trade.fromProfile.id]) {
-      shareholders[trade.fromProfile.id].numShares -= trade.numShares
-    }
-  }
-  const shareholdersArray = Object.values(shareholders) as Shareholder[]
-  // Round to 2 decimal places for small arithmetic errors
-  shareholdersArray.forEach((shareholder) => {
-    shareholder.numShares = Math.round(shareholder.numShares * 100) / 100
-  })
-  return shareholdersArray.filter(
-    (shareholder) =>
-      shareholder.numShares > 0 || shareholder.profile.id === creator.id
-  )
-}
-
 export function getShareholders(txns: TxnAndProfiles[]) {
   const bundledTxns = bundleTxns(txns)
   const shareholders = Object.fromEntries(
@@ -168,7 +143,7 @@ export function getShareholders(txns: TxnAndProfiles[]) {
     }
   }
   const shareholdersArray = Object.values(shareholders) as Shareholder[]
-  // Round to 2 decimal places for small arithmetic errors
+  // Round for small arithmetic errors
   shareholdersArray.forEach((shareholder) => {
     shareholder.numShares = Math.round(shareholder.numShares)
   })

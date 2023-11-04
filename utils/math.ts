@@ -1,8 +1,7 @@
 import { Bid, BidAndProject } from '@/db/bid'
-import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
-import { FullTxn, Txn, TxnAndProfiles, TxnAndProject } from '@/db/txn'
+import { FullTxn, Txn, TxnAndProject } from '@/db/txn'
 import { isBefore } from 'date-fns'
 import { orderBy, sortBy } from 'lodash'
 import { isCharitableDeposit } from './constants'
@@ -82,34 +81,6 @@ export function getAmountRaised(project: Project, bids?: Bid[], txns?: Txn[]) {
           )
           .reduce((acc, txn) => acc + txn.amount, 0)) ?? 0
   )
-}
-
-export type FullTrade = {
-  bundle: string
-  toProfile: Profile
-  fromProfile: Profile
-  amountUSD: number
-  numShares: number
-  date: Date
-}
-export function calculateFullTrades(txns: TxnAndProfiles[]) {
-  const tradeTxns = txns.filter((txn) => txn.bundle !== null)
-  const trades = Object.fromEntries(
-    tradeTxns.map((txn) => [txn.bundle, {} as FullTrade])
-  )
-  for (const txn of tradeTxns) {
-    const trade = trades[txn?.bundle ?? 0]
-    if (txn.token === 'USD') {
-      trade.amountUSD = txn.amount
-      trade.date = new Date(txn.created_at)
-      trade.toProfile = txn.profiles
-      trade.bundle = txn.bundle
-    } else {
-      trade.numShares = txn.amount
-      trade.fromProfile = txn.profiles
-    }
-  }
-  return orderBy(Object.values(trades), 'date', 'desc') as FullTrade[]
 }
 
 export function calculateUserLockedFunds(bids: Bid[]) {
