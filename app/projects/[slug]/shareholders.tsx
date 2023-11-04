@@ -14,14 +14,23 @@ import { formatDistanceToNow } from 'date-fns'
 import { bundleTxns } from '@/utils/math'
 import { Shareholder } from './project-tabs'
 import { TxnAndProfiles } from '@/db/txn'
+import { calculateAMMPorfolio } from '@/utils/amm'
 
 export function Shareholders(props: {
   shareholders: Shareholder[]
   creator: Profile
   txns: TxnAndProfiles[]
+  projectId: string
 }) {
-  const { shareholders, creator, txns } = props
-  const sortedShareholders = orderBy(shareholders, 'numShares', 'desc')
+  const { shareholders, creator, txns, projectId } = props
+  const nonAmmShareholders = shareholders.filter(
+    (shareholder) => shareholder.profile.type !== 'amm'
+  )
+  const ammTxns = txns.filter(
+    (txn) => txn.from_id === projectId || txn.to_id === projectId
+  )
+  const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
+  const sortedShareholders = orderBy(nonAmmShareholders, 'numShares', 'desc')
   return (
     <Row className="w-full justify-center">
       <Col className="w-full max-w-sm sm:max-w-xl">
@@ -38,7 +47,12 @@ export function Shareholders(props: {
             {showPrecision((shareholder.numShares / TOTAL_SHARES) * 100, 4)}%
           </Row>
         ))}
-        <div className="h-8" />
+        <span className="my-5 text-sm text-gray-500">
+          The automated market maker currently holds{' '}
+          {formatPercent(ammShares / TOTAL_SHARES)} equity and{' '}
+          {formatMoneyPrecise(ammUSD)}. Those assets will be returned to the
+          founder when the project closes.
+        </span>
         <TradeHistory txns={txns} creatorId={creator.id} />
       </Col>
     </Row>

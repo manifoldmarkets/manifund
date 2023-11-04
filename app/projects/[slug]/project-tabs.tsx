@@ -97,6 +97,7 @@ export function ProjectTabs(props: {
           shareholders={shareholders}
           creator={creator}
           txns={txns}
+          projectId={project.id}
         />
       ),
     })
