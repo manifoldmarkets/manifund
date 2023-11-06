@@ -24,17 +24,14 @@ export default async function handler(
   if (project.stage === 'proposal') {
     console.log('about to maybe activate')
     await maybeActivateProject(supabase, bid.project)
-  } else if (project.type === 'cert') {
-    console.log('about to find and make trades')
-    await findAndMakeTrades(bid, supabase)
-    if (bid.type === 'buy') {
-      await sendShareholderEmails(bid, project, supabase)
-    }
+  } else if (project.type === 'cert' && bid.type === 'buy') {
+    await sendShareholderEmails(bid, project, supabase)
   }
 
   return res.status(200).json({ bid })
 }
 
+// TODO: review and delete
 async function findAndMakeTrades(bid: Bid, supabase: SupabaseClient) {
   const newOfferType = bid.type
   const { data, error } = await supabase

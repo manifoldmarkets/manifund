@@ -13,11 +13,11 @@ import {
   getTradeErrorMessage,
 } from '@/utils/amm'
 import { calculateCharityBalance, calculateSellableShares } from '@/utils/math'
-import { Bid, getBidsByProject, getBidsByUser } from '@/db/bid'
-import { Database } from '@/db/database.types'
-import { TOTAL_SHARES } from '@/db/project'
+import { Bid, getBidsByUser } from '@/db/bid'
+import { getProjectById, TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { orderBy } from 'lodash'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
+import { formatLargeNumber, formatMoneyPrecise } from '@/utils/formatting'
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
@@ -78,33 +78,104 @@ export default async function handler(req: NextRequest) {
     !!valuation,
     valuation
   )
+  const project = await getProjectById(supabase, projectId)
   if (errorMessage) {
     return new Response(errorMessage, { status: 400 })
   }
   if (!valuation) {
-    const bundleId = uuid()
-    const sharesTxn = {
-      amount: numShares,
-      from_id: buying ? projectId : user.id,
-      to_id: buying ? user.id : projectId,
-      token: projectId,
-      project: projectId,
-      bundle: bundleId,
-      type: 'user to amm trade' as TxnType,
-    }
-    const usdTxn = {
-      amount: numDollars,
-      from_id: buying ? user.id : projectId,
-      to_id: buying ? projectId : user.id,
-      token: 'USD',
-      project: projectId,
-      bundle: bundleId,
-      type: 'user to amm trade' as TxnType,
-    }
-    const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
-    if (error) {
-      console.error(error)
-      return new Response('Error', { status: 500 })
+    let amountRemaining = amount
+    while (amountRemaining > 0) {
+      const { data: firstBid, error } = await supabase
+        .from('bids')
+        .select('*, profiles(username)')
+        .eq('project', projectId)
+        .eq('status', 'pending')
+        .eq('type', buying ? 'sell' : 'buy')
+        .order('valuation', { ascending: buying })
+        .single()
+      if (error) {
+        console.error(error)
+        return new Response('Error', { status: 500 })
+      }
+      const ammTxns = await getTxnsByUser(supabase, projectId)
+      const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
+      const valuationAfterTrade = calculateValuationAfterTrade(
+        amount,
+        ammShares,
+        ammUSD,
+        buying
+      )
+      const hitsLimitOrder =
+        !!firstBid && buying
+          ? firstBid.valuation < valuationAfterTrade
+          : firstBid.valuation > valuationAfterTrade
+      if (hitsLimitOrder) {
+        const valuationAtLo = firstBid.valuation
+        const [sharesInAmmTrade, usdInAmmTrade] = calculateTradeForValuation(
+          ammShares,
+          ammUSD,
+          valuationAtLo
+        )
+        await trade(
+          Math.abs(sharesInAmmTrade),
+          Math.abs(usdInAmmTrade),
+          projectId,
+          projectId,
+          user.id,
+          buying,
+          supabase
+        )
+        amountRemaining -= buying ? usdInAmmTrade : sharesInAmmTrade
+        const usdInUserTrade = Math.min(
+          firstBid.amount,
+          buying
+            ? amountRemaining
+            : (amountRemaining / TOTAL_SHARES) * valuationAtLo
+        )
+        const sharesInUserTrade = calculateBuyShares(
+          usdInUserTrade,
+          ammShares,
+          ammUSD
+        )
+        await trade(
+          sharesInUserTrade,
+          sharesInAmmTrade,
+          projectId,
+          firstBid.bidder,
+          user.id,
+          buying,
+          supabase
+        )
+        await updateBidFromTrade(firstBid, usdInUserTrade, supabase)
+        await sendTemplateEmail(
+          TEMPLATE_IDS.TRADE_ACCEPTED,
+          {
+            tradeText: genTradeText(firstBid, project.title, usdInUserTrade),
+            recipientProfileUrl: `manifund.org/${firstBid.profiles?.username}`,
+            bidType: buying ? 'sell' : 'buy',
+            projectTitle: project.title,
+          },
+          firstBid.bidder
+        )
+        amountRemaining -= buying ? usdInUserTrade : sharesInUserTrade
+      } else {
+        const numDollars = buying
+          ? amount
+          : calculateSellPayout(amount, ammShares, ammUSD)
+        const numShares = buying
+          ? calculateBuyShares(amount, ammShares, ammUSD)
+          : amount
+        await trade(
+          numShares,
+          numDollars,
+          projectId,
+          projectId,
+          user.id,
+          buying,
+          supabase
+        )
+        amountRemaining = 0
+      }
     }
   } else {
     const bid = {
@@ -121,98 +192,7 @@ export default async function handler(req: NextRequest) {
       return new Response('Error', { status: 500 })
     }
   }
-
   return new Response('Success', { status: 200 })
-}
-
-async function handleAmmTrade(
-  projectId: string,
-  userId: string,
-  amount: number,
-  buying: boolean,
-  supabase: SupabaseClient
-) {
-  let amountRemaining = amount
-  while (amountRemaining > 0) {
-    const projectBids = await getBidsByProject(supabase, projectId)
-    const tradeableBids = projectBids.filter(
-      (bid) =>
-        bid.status === 'pending' && bid.type === (buying ? 'sell' : 'buy')
-    )
-    const sortedBids = orderBy(
-      tradeableBids,
-      'valuation',
-      buying ? 'asc' : 'desc'
-    )
-    const ammTxns = await getTxnsByUser(supabase, projectId)
-    const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
-    const valuationAfterTrade = calculateValuationAfterTrade(
-      amount,
-      ammShares,
-      ammUSD,
-      buying
-    )
-    const hitsLimitOrder =
-      !!sortedBids[0] && buying
-        ? sortedBids[0].valuation < valuationAfterTrade
-        : sortedBids[0].valuation > valuationAfterTrade
-    if (hitsLimitOrder) {
-      const valuationAtLo = sortedBids[0].valuation
-      const [sharesInAmmTrade, usdInAmmTrade] = calculateTradeForValuation(
-        ammShares,
-        ammUSD,
-        valuationAtLo
-      )
-      await trade(
-        Math.abs(sharesInAmmTrade),
-        Math.abs(usdInAmmTrade),
-        projectId,
-        projectId,
-        userId,
-        buying,
-        supabase
-      )
-      amountRemaining -= buying ? usdInAmmTrade : sharesInAmmTrade
-      const usdInUserTrade = Math.min(
-        sortedBids[0].amount,
-        buying
-          ? amountRemaining
-          : (amountRemaining / TOTAL_SHARES) * valuationAtLo
-      )
-      const sharesInUserTrade = calculateBuyShares(
-        usdInUserTrade,
-        ammShares,
-        ammUSD
-      )
-      await trade(
-        sharesInUserTrade,
-        sharesInAmmTrade,
-        projectId,
-        sortedBids[0].bidder,
-        userId,
-        buying,
-        supabase
-      )
-      amountRemaining -= buying ? usdInUserTrade : sharesInUserTrade
-    } else {
-      const numDollars = buying
-        ? amount
-        : calculateSellPayout(amount, ammShares, ammUSD)
-      const numShares = buying
-        ? calculateBuyShares(amount, ammShares, ammUSD)
-        : amount
-      await trade(
-        numShares,
-        numDollars,
-        projectId,
-        projectId,
-        userId,
-        buying,
-        supabase
-      )
-      amountRemaining = 0
-    }
-  }
 }
 
 async function trade(
@@ -246,4 +226,36 @@ async function trade(
     type: tradeType as TxnType,
   }
   const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
+  if (error) {
+    console.error(error)
+    return new Response('Error', { status: 500 })
+  }
+}
+
+export async function updateBidFromTrade(
+  bid: Bid,
+  amountTraded: number,
+  supabase: SupabaseClient
+) {
+  const { error } = await supabase
+    .from('bids')
+    .update({
+      amount: bid.amount - amountTraded,
+      // May have issues with floating point arithmetic errors
+      status: bid.amount === amountTraded ? 'accepted' : 'pending',
+    })
+    .eq('id', bid.id)
+  if (error) {
+    throw error
+  }
+}
+
+function genTradeText(oldBid: Bid, projectTitle: string, usdTraded: number) {
+  return `Your ${
+    oldBid.type === 'buy' ? 'buy' : 'sell'
+  } offer on "${projectTitle}" has been accepted. You ${
+    oldBid.type === 'buy' ? 'bought' : 'sold'
+  } ${formatLargeNumber(
+    (usdTraded / oldBid.valuation) * 100
+  )}% ownership for ${formatMoneyPrecise(usdTraded)}.`
 }

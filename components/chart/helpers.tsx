@@ -260,7 +260,6 @@ export const SVGChart = <
           }
           return !ev.button
         })
-
       select(svgRef.current)
         .call(zoomer)
         .on('dblclick.zoom', () => onRescale?.(null))
