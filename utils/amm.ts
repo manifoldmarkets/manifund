@@ -51,9 +51,9 @@ export function calculateSellPayout(
 
 export function ammSharesAtValuation(
   uniswapProduct: number,
-  valuationAtTrade: number
+  valuation: number
 ) {
-  return Math.sqrt((uniswapProduct / valuationAtTrade) * TOTAL_SHARES)
+  return Math.sqrt((uniswapProduct / valuation) * TOTAL_SHARES)
 }
 
 export function calculateValuationAfterTrade(
@@ -83,6 +83,19 @@ export function calculateValuationAfterTrade(
     ? ammSharesAtTrade - sharesInTrade
     : ammSharesAtTrade + sharesInTrade
   return calculateValuation(ammSharesAfterTrade, ammUSDAfterTrade)
+}
+
+export function calculateTradeForValuation(
+  ammShares: number,
+  ammUSD: number,
+  goalValuation: number
+) {
+  const uniswapProduct = ammUSD * ammShares
+  const shares = ammSharesAtValuation(uniswapProduct, goalValuation)
+  const usd = uniswapProduct / shares
+  const sharesInTrade = ammShares - shares
+  const usdInTrade = ammUSD - usd
+  return [sharesInTrade, usdInTrade]
 }
 
 export function calculateValuation(ammShares: number, ammUSD: number) {

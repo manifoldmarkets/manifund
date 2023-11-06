@@ -8,11 +8,12 @@ import {
   calculateAMMPorfolio,
   calculateBuyShares,
   calculateSellPayout,
+  calculateTradeForValuation,
   calculateValuationAfterTrade,
   getTradeErrorMessage,
 } from '@/utils/amm'
 import { calculateCharityBalance, calculateSellableShares } from '@/utils/math'
-import { getBidsByProject, getBidsByUser } from '@/db/bid'
+import { Bid, getBidsByProject, getBidsByUser } from '@/db/bid'
 import { Database } from '@/db/database.types'
 import { TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/supabase-js'
@@ -113,7 +114,7 @@ export default async function handler(req: NextRequest) {
       valuation,
       type: buying ? 'buy' : 'sell',
       status: 'pending',
-    } as Database['public']['Tables']['bids']['Row']
+    } as Bid
     const { error } = await supabase.from('bids').insert([bid])
     if (error) {
       console.error(error)
@@ -126,6 +127,7 @@ export default async function handler(req: NextRequest) {
 
 async function handleAmmTrade(
   projectId: string,
+  userId: string,
   amount: number,
   buying: boolean,
   supabase: SupabaseClient
@@ -144,12 +146,6 @@ async function handleAmmTrade(
     )
     const ammTxns = await getTxnsByUser(supabase, projectId)
     const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
-    const numDollars = buying
-      ? amount
-      : calculateSellPayout(amount, ammShares, ammUSD)
-    const numShares = buying
-      ? calculateBuyShares(amount, ammShares, ammUSD)
-      : amount
     const valuationAfterTrade = calculateValuationAfterTrade(
       amount,
       ammShares,
@@ -161,7 +157,93 @@ async function handleAmmTrade(
         ? sortedBids[0].valuation < valuationAfterTrade
         : sortedBids[0].valuation > valuationAfterTrade
     if (hitsLimitOrder) {
+      const valuationAtLo = sortedBids[0].valuation
+      const [sharesInAmmTrade, usdInAmmTrade] = calculateTradeForValuation(
+        ammShares,
+        ammUSD,
+        valuationAtLo
+      )
+      await trade(
+        Math.abs(sharesInAmmTrade),
+        Math.abs(usdInAmmTrade),
+        projectId,
+        projectId,
+        userId,
+        buying,
+        supabase
+      )
+      amountRemaining -= buying ? usdInAmmTrade : sharesInAmmTrade
+      const usdInUserTrade = Math.min(
+        sortedBids[0].amount,
+        buying
+          ? amountRemaining
+          : (amountRemaining / TOTAL_SHARES) * valuationAtLo
+      )
+      const sharesInUserTrade = calculateBuyShares(
+        usdInUserTrade,
+        ammShares,
+        ammUSD
+      )
+      await trade(
+        sharesInUserTrade,
+        sharesInAmmTrade,
+        projectId,
+        sortedBids[0].bidder,
+        userId,
+        buying,
+        supabase
+      )
+      amountRemaining -= buying ? usdInUserTrade : sharesInUserTrade
     } else {
+      const numDollars = buying
+        ? amount
+        : calculateSellPayout(amount, ammShares, ammUSD)
+      const numShares = buying
+        ? calculateBuyShares(amount, ammShares, ammUSD)
+        : amount
+      await trade(
+        numShares,
+        numDollars,
+        projectId,
+        projectId,
+        userId,
+        buying,
+        supabase
+      )
+      amountRemaining = 0
     }
   }
+}
+
+async function trade(
+  numShares: number,
+  numDollars: number,
+  projectId: string,
+  tradePartnerId: string,
+  userId: string,
+  buying: boolean,
+  supabase: SupabaseClient
+) {
+  const bundleId = uuid()
+  const tradeType =
+    tradePartnerId === projectId ? 'user to user trade' : 'user to amm trade'
+  const sharesTxn = {
+    amount: numShares,
+    from_id: buying ? tradePartnerId : userId,
+    to_id: buying ? userId : tradePartnerId,
+    token: projectId,
+    project: projectId,
+    bundle: bundleId,
+    type: tradeType as TxnType,
+  }
+  const usdTxn = {
+    amount: numDollars,
+    from_id: buying ? userId : tradePartnerId,
+    to_id: buying ? tradePartnerId : userId,
+    token: 'USD',
+    project: projectId,
+    bundle: bundleId,
+    type: tradeType as TxnType,
+  }
+  const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
 }
