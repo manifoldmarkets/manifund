@@ -23,7 +23,7 @@ import {
   calculateBuyShares,
   calculateSellPayout,
   calculateValuationAfterTrade,
-  checkTradeValidity,
+  getTradeErrorMessage,
 } from '@/utils/amm'
 
 const MODES = [
@@ -161,7 +161,7 @@ function TradeInputsPanel(props: {
     setSubmitting(false)
   }
 
-  const errorMessage = checkTradeValidity(
+  const errorMessage = getTradeErrorMessage(
     amountUSD,
     percentEquity,
     modeId,

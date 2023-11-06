@@ -8,12 +8,15 @@ import {
   calculateAMMPorfolio,
   calculateBuyShares,
   calculateSellPayout,
-  checkTradeValidity,
+  calculateValuationAfterTrade,
+  getTradeErrorMessage,
 } from '@/utils/amm'
 import { calculateCharityBalance, calculateSellableShares } from '@/utils/math'
-import { getBidsByUser } from '@/db/bid'
+import { getBidsByProject, getBidsByUser } from '@/db/bid'
 import { Database } from '@/db/database.types'
 import { TOTAL_SHARES } from '@/db/project'
+import { SupabaseClient } from '@supabase/supabase-js'
+import { orderBy } from 'lodash'
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
@@ -63,7 +66,7 @@ export default async function handler(req: NextRequest) {
     projectId,
     user.id
   )
-  const errorMessage = checkTradeValidity(
+  const errorMessage = getTradeErrorMessage(
     numDollars,
     numShares / TOTAL_SHARES,
     buying ? 'buy' : 'sell',
@@ -119,4 +122,46 @@ export default async function handler(req: NextRequest) {
   }
 
   return new Response('Success', { status: 200 })
+}
+
+async function handleAmmTrade(
+  projectId: string,
+  amount: number,
+  buying: boolean,
+  supabase: SupabaseClient
+) {
+  let amountRemaining = amount
+  while (amountRemaining > 0) {
+    const projectBids = await getBidsByProject(supabase, projectId)
+    const tradeableBids = projectBids.filter(
+      (bid) =>
+        bid.status === 'pending' && bid.type === (buying ? 'sell' : 'buy')
+    )
+    const sortedBids = orderBy(
+      tradeableBids,
+      'valuation',
+      buying ? 'asc' : 'desc'
+    )
+    const ammTxns = await getTxnsByUser(supabase, projectId)
+    const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
+    const numDollars = buying
+      ? amount
+      : calculateSellPayout(amount, ammShares, ammUSD)
+    const numShares = buying
+      ? calculateBuyShares(amount, ammShares, ammUSD)
+      : amount
+    const valuationAfterTrade = calculateValuationAfterTrade(
+      amount,
+      ammShares,
+      ammUSD,
+      buying
+    )
+    const hitsLimitOrder =
+      !!sortedBids[0] && buying
+        ? sortedBids[0].valuation < valuationAfterTrade
+        : sortedBids[0].valuation > valuationAfterTrade
+    if (hitsLimitOrder) {
+    } else {
+    }
+  }
 }

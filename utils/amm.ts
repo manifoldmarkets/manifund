@@ -93,7 +93,7 @@ export function calculateMinimumValuation(ammShares: number, ammUSD: number) {
   return (ammUSD * ammShares) / TOTAL_SHARES
 }
 
-export const checkTradeValidity = (
+export const getTradeErrorMessage = (
   amountUSD: number,
   percentEquity: number,
   modeId: BinaryModeId,
