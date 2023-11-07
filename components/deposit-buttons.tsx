@@ -1,6 +1,7 @@
 'use client'
 import { Profile } from '@/db/profile'
 import { Dialog } from '@headlessui/react'
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
 import {
   CircleStackIcon,
   PlusSmallIcon,
@@ -8,10 +9,11 @@ import {
 } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { Button } from './button'
 import { Input } from './input'
 import { Modal } from './modal'
+import { SiteLink } from './site-link'
 import { Tabs } from './tabs'
 import { Tooltip } from './tooltip'
 
@@ -63,16 +65,6 @@ export function StripeDepositButton(props: {
               count: 0,
               display: <ManaTab />,
             },
-            ...(accredited
-              ? [
-                  {
-                    name: 'Add cash',
-                    id: 'cash',
-                    count: 0,
-                    display: <AirtableDepositTab />,
-                  },
-                ]
-              : []),
           ]}
           currentTabId={currentTabId}
         />
@@ -180,40 +172,127 @@ export function AirtableDepositButton() {
   )
 }
 
+// Manifold user ID for hi@manifund.org
+const MANAGRAM_DEST_ID = 'pyBueUg9y3hrDIUtrus5uAkPHCr1'
+
+type ManifoldUser = {
+  username: string
+  balance: string
+}
+
+async function checkBalance(apiKey: string) {
+  const response = await fetch('https://manifold.markets/api/v0/me', {
+    method: 'GET',
+    headers: {
+      Authorization: `Key ${apiKey}`,
+    },
+  })
+  const manifoldUser = (await response.json()) as ManifoldUser
+  return manifoldUser
+}
+
+async function managram(
+  apiKey: string,
+  toId: string,
+  amountInMana: number,
+  message: string
+) {
+  const response = await fetch('https://manifold.markets/api/v0/managram', {
+    method: 'POST',
+    headers: {
+      Authorization: `Key ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      toIds: [toId], // This expects an array of IDs
+      amount: amountInMana,
+      message,
+    }),
+  })
+  const json = await response.json()
+  return json
+}
+
 function ManaTab() {
+  const [apiKey, setApiKey] = useState('')
+  const [manifoldUser, setManifoldUser] = useState<ManifoldUser | null>(null)
+  const [transferAmount, setTransferAmount] = useState(0)
+  const [transferring, setTransferring] = useState(false)
+
+  // Check balance every time the API key changes
+  useEffect(() => {
+    console.log('checking')
+    checkBalance(apiKey).then(setManifoldUser).catch(console.error)
+  }, [apiKey])
+
   return (
     <div className="flex flex-col gap-2 p-4">
       <p className="my-2 text-sm text-gray-600">
-        Enter your Manifold API key to turn mana into your charity balance.
+        Enter your{' '}
+        <SiteLink
+          href="https://manifold.markets/profile"
+          className="text-orange-500 hover:underline hover:decoration-orange-500 hover:decoration-2"
+        >
+          Manifold API key{' '}
+          <ArrowTopRightOnSquareIcon className="inline h-4 w-4" />
+        </SiteLink>{' '}
+        to turn mana into your charity balance.
       </p>
-      <div className="space-y-2">
-        <label className="text-sm font-medium leading-none">API Key</label>
-        <input
-          className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-          id="api-key"
-          placeholder="Paste your API key"
-        />
-      </div>
-      <div className="space-y-2 rounded-md bg-gray-100 p-4 dark:bg-gray-700">
-        <p className="font-bold">Your Balance:</p>
-        <p className="text-green-600 dark:text-green-400">$0.00</p>
-      </div>
-      <div className="space-y-2">
-        <label className="text-sm font-medium leading-none">
-          Transfer Amount
-        </label>
-        <input
-          className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-          id="amount"
-          placeholder="Enter amount to transfer"
-          type="number"
-        />
-      </div>
+      <label className="text-sm font-medium leading-none">API Key</label>
+      <Input
+        type="text"
+        id="api-key"
+        autoComplete="off"
+        value={apiKey ?? ''}
+        onChange={(event) => setApiKey(event.target.value)}
+      />
+      {apiKey ? (
+        <div className="rounded-md bg-gray-100 p-4 dark:bg-gray-700">
+          <p className="font-bold">{manifoldUser?.username}&rsquo;s balance</p>
+          <p className="text-green-600 dark:text-green-400">
+            {Math.round(Number(manifoldUser?.balance))} mana
+          </p>
+
+          <div className="mt-8 flex flex-col gap-2">
+            <label className="text-sm font-medium leading-none">
+              Mana to transfer
+            </label>
+            <Input
+              type="number"
+              step="1"
+              id="amount"
+              autoComplete="off"
+              value={transferAmount ?? ''}
+              onChange={(event) =>
+                setTransferAmount(Number(event.target.value))
+              }
+            />
+            <Button
+              loading={transferring}
+              onClick={async () => {
+                setTransferring(true)
+                const resp = await managram(
+                  apiKey,
+                  MANAGRAM_DEST_ID,
+                  transferAmount,
+                  'Transfer to Manifund balance'
+                )
+                console.log('transfered', resp)
+                setTransferring(false)
+              }}
+            >
+              Transfer
+            </Button>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }
 
 function AirtableDepositTab() {
+  // TODO: Not sure if we should even still support accredited investors participating.
+  // Could simplify if it were all charity money.
   return (
     <div>
       <div className="flex flex-col space-y-1.5 p-4">
