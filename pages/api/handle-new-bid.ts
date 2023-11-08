@@ -5,7 +5,6 @@ import { Bid } from '@/db/bid'
 import { getShareholders } from '@/app/projects/[slug]/project-tabs'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { trade } from '@/utils/trade'
 import { createAdminClient } from './_db'
 import { getTxnsByProject } from '@/db/txn'
 import { getProfileById } from '@/db/profile'
@@ -20,46 +19,13 @@ export default async function handler(
   if (!project) {
     return res.status(404).json({ error: 'Project not found' })
   }
-  console.log('project', project)
   if (project.stage === 'proposal') {
-    console.log('about to maybe activate')
     await maybeActivateProject(supabase, bid.project)
   } else if (project.type === 'cert' && bid.type === 'buy') {
     await sendShareholderEmails(bid, project, supabase)
   }
 
   return res.status(200).json({ bid })
-}
-
-// TODO: review and delete
-async function findAndMakeTrades(bid: Bid, supabase: SupabaseClient) {
-  const newOfferType = bid.type
-  const { data, error } = await supabase
-    .from('bids')
-    .select()
-    .eq('project', bid.project)
-    .order('valuation', { ascending: newOfferType === 'buy' })
-  if (error) {
-    throw error
-  }
-  const oldBids = data
-    .filter((oldBid) => oldBid.bidder !== bid.bidder)
-    .filter((oldBid) => oldBid.type !== newOfferType)
-    .filter((oldBid) => oldBid.status === 'pending')
-  let budget = bid.amount
-  for (const oldBid of oldBids) {
-    if (
-      (newOfferType === 'buy'
-        ? oldBid.valuation > bid.valuation
-        : oldBid.valuation < bid.valuation) ||
-      budget <= 0
-    ) {
-      return
-    }
-    const tradeAmount = Math.min(budget, oldBid.amount)
-    budget -= tradeAmount
-    await trade(oldBid, tradeAmount, bid.bidder)
-  }
 }
 
 async function sendShareholderEmails(
