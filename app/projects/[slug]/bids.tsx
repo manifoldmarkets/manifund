@@ -15,6 +15,7 @@ import { Checkbox, Input } from '@/components/input'
 import { useSupabase } from '@/db/supabase-provider'
 import { Modal } from '@/components/modal'
 import { Profile } from '@/db/profile'
+import { Avatar } from '@/components/avatar'
 
 export function Bids(props: {
   bids: BidAndProfile[]
@@ -95,8 +96,15 @@ function Bid(props: {
   const showTrade =
     userProfile && bid.bidder !== userProfile.id && bid.type !== 'assurance buy'
   return (
-    <Row className="w-full items-center justify-between gap-3 rounded p-3 hover:bg-gray-200">
-      <UserAvatarAndBadge profile={bid.profiles} />
+    <Row className="w-full items-center justify-between gap-3 rounded p-3 text-sm hover:bg-gray-200">
+      <UserAvatarAndBadge profile={bid.profiles} className="hidden sm:flex" />
+      <Avatar
+        size="xs"
+        username={bid.profiles.username}
+        avatarUrl={bid.profiles.avatar_url}
+        id={bid.bidder}
+        className="sm:hidden"
+      />
       {showValuation ? (
         <div>
           {formatMoney(bid.amount)} <span className="text-gray-500"> @ </span>$
@@ -177,7 +185,7 @@ function Trade(props: {
   return (
     <div>
       <Button
-        className="w-14"
+        className="w-14 text-xs"
         onClick={() => {
           setOpen(true)
         }}
@@ -309,7 +317,7 @@ function DeleteBid(props: { bidId: string }) {
   return (
     <div>
       <Button
-        className="w-14 bg-rose-500 hover:bg-rose-600"
+        className="w-14 bg-rose-500 text-xs hover:bg-rose-600"
         onClick={() => {
           setOpen(true)
         }}
