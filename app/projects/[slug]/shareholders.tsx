@@ -1,6 +1,6 @@
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
-import { UserAvatarAndBadge, UserLink } from '@/components/user-link'
+import { UserAvatarAndBadge } from '@/components/user-link'
 import { Profile } from '@/db/profile'
 import { TOTAL_SHARES } from '@/db/project'
 import {

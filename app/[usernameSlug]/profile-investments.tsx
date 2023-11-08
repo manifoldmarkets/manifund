@@ -1,5 +1,4 @@
 'use client'
-import Link from 'next/link'
 import { formatMoney } from '@/utils/formatting'
 import { Investment } from './profile-content'
 import { Table, TableRow } from '@/components/table'

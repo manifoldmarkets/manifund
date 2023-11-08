@@ -31,11 +31,7 @@ import { Vote } from './vote'
 import { CauseTag } from '@/components/tags'
 import { Trade } from './trade'
 import { AssuranceBuyBox } from './assurance-buy-box'
-import {
-  calculateAMMPorfolio,
-  calculateTradePoints,
-  calculateValuation,
-} from '@/utils/amm'
+import { calculateTradePoints } from '@/utils/amm'
 import { CertValuationChart } from './valuation-chart'
 
 export function ProjectDisplay(props: {
