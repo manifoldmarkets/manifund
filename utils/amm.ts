@@ -105,7 +105,6 @@ export function calculateValuation(ammShares: number, ammUSD: number) {
   return (ammUSD / ammShares) * TOTAL_SHARES
 }
 
-// TODO: eliminate, this is the same as aboev fxn
 export function calculateMinimumValuation(ammShares: number, ammUSD: number) {
   return (ammUSD * ammShares) / TOTAL_SHARES
 }
