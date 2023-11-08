@@ -1,74 +1,47 @@
-import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { Bid, FullBid, getBidById } from '@/db/bid'
-import { formatLargeNumber, formatMoney } from './formatting'
-import { NextResponse } from 'next/server'
-import { sendTemplateEmail, TEMPLATE_IDS } from './email'
-import { getProfileById } from '@/db/profile'
+import { Bid } from '@/db/bid'
+import { formatLargeNumber, formatMoneyPrecise } from './formatting'
 import uuid from 'react-uuid'
-import { TOTAL_SHARES } from '@/db/project'
+import { TxnType } from '@/db/txn'
 
-export async function trade(
-  oldBidId: string,
-  usdTraded: number,
+export async function makeTrade(
+  numShares: number,
+  numDollars: number,
+  projectId: string,
   tradePartnerId: string,
-  newBidId?: string
+  userId: string,
+  buying: boolean,
+  supabase: SupabaseClient
 ) {
-  const supabase = createAdminClient()
-  const oldBid = await getBidById(oldBidId, supabase)
-  const newBid = newBidId ? await getBidById(newBidId, supabase) : null
-  const tradePartner = newBid
-    ? newBid.profiles
-    : await getProfileById(supabase, tradePartnerId)
-  const bundle = uuid()
-  // TODO: turn into rpc
-  await supabase
-    .from('txns')
-    .insert({
-      amount: (usdTraded / oldBid.valuation) * TOTAL_SHARES,
-      from_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
-      to_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
-      project: oldBid.project,
-      token: oldBid.project,
-      bundle,
-      type: 'user to user trade',
-    })
-    .throwOnError()
-  await supabase
-    .from('txns')
-    .insert({
-      amount: usdTraded,
-      from_id: oldBid.type === 'buy' ? oldBid.bidder : tradePartnerId,
-      to_id: oldBid.type === 'buy' ? tradePartnerId : oldBid.bidder,
-      project: oldBid.project,
-      token: 'USD',
-      bundle,
-      type: 'user to user trade',
-    })
-    .throwOnError()
-  await updateBidOnTrade(oldBid, usdTraded, supabase)
-  if (newBid) {
-    await updateBidOnTrade(newBid, usdTraded, supabase)
+  const bundleId = uuid()
+  const tradeType =
+    tradePartnerId === projectId ? 'user to amm trade' : 'user to user trade'
+  const sharesTxn = {
+    amount: numShares,
+    from_id: buying ? tradePartnerId : userId,
+    to_id: buying ? userId : tradePartnerId,
+    token: projectId,
+    project: projectId,
+    bundle: bundleId,
+    type: tradeType as TxnType,
   }
-  const tradeText = genTradeText(
-    oldBid,
-    usdTraded,
-    tradePartner?.username ?? ''
-  )
-  await sendTemplateEmail(
-    TEMPLATE_IDS.TRADE_ACCEPTED,
-    {
-      tradeText: tradeText,
-      recipientProfileUrl: `manifund.org/${oldBid.profiles.username}`,
-      bidType: oldBid.type === 'buy' ? 'buy' : 'sell',
-      projectTitle: oldBid.projects.title,
-    },
-    oldBid.bidder
-  )
-  return NextResponse.json({ success: true })
+  const usdTxn = {
+    amount: numDollars,
+    from_id: buying ? userId : tradePartnerId,
+    to_id: buying ? tradePartnerId : userId,
+    token: 'USD',
+    project: projectId,
+    bundle: bundleId,
+    type: tradeType as TxnType,
+  }
+  const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
+  if (error) {
+    console.error(error)
+    return new Response('Error', { status: 500 })
+  }
 }
 
-export async function updateBidOnTrade(
+export async function updateBidFromTrade(
   bid: Bid,
   amountTraded: number,
   supabase: SupabaseClient
@@ -86,16 +59,16 @@ export async function updateBidOnTrade(
   }
 }
 
-function genTradeText(
-  oldBid: FullBid,
-  usdTraded: number,
-  tradePartnerUsername: string
+export function genTradeText(
+  oldBid: Bid,
+  projectTitle: string,
+  usdTraded: number
 ) {
-  return `${tradePartnerUsername} has accepted your ${
+  return `Your ${
     oldBid.type === 'buy' ? 'buy' : 'sell'
-  } offer on "${oldBid.projects.title}". You ${
+  } offer on "${projectTitle}" has been accepted. You ${
     oldBid.type === 'buy' ? 'bought' : 'sold'
   } ${formatLargeNumber(
     (usdTraded / oldBid.valuation) * 100
-  )}% ownership for ${formatMoney(usdTraded)}.`
+  )}% ownership for ${formatMoneyPrecise(usdTraded)}.`
 }

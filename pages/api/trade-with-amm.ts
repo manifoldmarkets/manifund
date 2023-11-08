@@ -1,7 +1,6 @@
 import { getUser } from '@/db/profile'
 import { NextRequest } from 'next/server'
-import uuid from 'react-uuid'
-import { getTxnAndProjectsByUser, getTxnsByUser, TxnType } from '@/db/txn'
+import { getTxnAndProjectsByUser, getTxnsByUser } from '@/db/txn'
 import { createEdgeClient } from './_db'
 import {
   ammSharesAtValuation,
@@ -15,9 +14,8 @@ import {
 import { calculateCharityBalance, calculateSellableShares } from '@/utils/math'
 import { Bid, getBidsByUser } from '@/db/bid'
 import { getProjectById, TOTAL_SHARES } from '@/db/project'
-import { SupabaseClient } from '@supabase/supabase-js'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
-import { formatLargeNumber, formatMoneyPrecise } from '@/utils/formatting'
+import { makeTrade, genTradeText, updateBidFromTrade } from '@/utils/trade'
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
@@ -123,7 +121,7 @@ export default async function handler(req: NextRequest) {
           usdInAmmTrade,
           'USD;'
         )
-        await trade(
+        await makeTrade(
           Math.abs(sharesInAmmTrade),
           Math.abs(usdInAmmTrade),
           projectId,
@@ -155,7 +153,7 @@ export default async function handler(req: NextRequest) {
           usdInUserTrade,
           'USD;'
         )
-        await trade(
+        await makeTrade(
           sharesInUserTrade,
           usdInUserTrade,
           projectId,
@@ -185,7 +183,7 @@ export default async function handler(req: NextRequest) {
         const numShares = buying
           ? calculateBuyShares(amount, ammShares, ammUSD)
           : amount
-        await trade(
+        await makeTrade(
           numShares,
           numDollars,
           projectId,
@@ -214,69 +212,4 @@ export default async function handler(req: NextRequest) {
   }
   console.log('DONE')
   return new Response('Success', { status: 200 })
-}
-
-async function trade(
-  numShares: number,
-  numDollars: number,
-  projectId: string,
-  tradePartnerId: string,
-  userId: string,
-  buying: boolean,
-  supabase: SupabaseClient
-) {
-  const bundleId = uuid()
-  const tradeType =
-    tradePartnerId === projectId ? 'user to amm trade' : 'user to user trade'
-  const sharesTxn = {
-    amount: numShares,
-    from_id: buying ? tradePartnerId : userId,
-    to_id: buying ? userId : tradePartnerId,
-    token: projectId,
-    project: projectId,
-    bundle: bundleId,
-    type: tradeType as TxnType,
-  }
-  const usdTxn = {
-    amount: numDollars,
-    from_id: buying ? userId : tradePartnerId,
-    to_id: buying ? tradePartnerId : userId,
-    token: 'USD',
-    project: projectId,
-    bundle: bundleId,
-    type: tradeType as TxnType,
-  }
-  const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
-  if (error) {
-    console.error(error)
-    return new Response('Error', { status: 500 })
-  }
-}
-
-export async function updateBidFromTrade(
-  bid: Bid,
-  amountTraded: number,
-  supabase: SupabaseClient
-) {
-  const { error } = await supabase
-    .from('bids')
-    .update({
-      amount: bid.amount - amountTraded,
-      // May have issues with floating point arithmetic errors
-      status: bid.amount === amountTraded ? 'accepted' : 'pending',
-    })
-    .eq('id', bid.id)
-  if (error) {
-    throw error
-  }
-}
-
-function genTradeText(oldBid: Bid, projectTitle: string, usdTraded: number) {
-  return `Your ${
-    oldBid.type === 'buy' ? 'buy' : 'sell'
-  } offer on "${projectTitle}" has been accepted. You ${
-    oldBid.type === 'buy' ? 'bought' : 'sold'
-  } ${formatLargeNumber(
-    (usdTraded / oldBid.valuation) * 100
-  )}% ownership for ${formatMoneyPrecise(usdTraded)}.`
 }

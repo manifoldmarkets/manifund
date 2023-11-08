@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { trade } from '@/utils/trade'
+import { genTradeText, makeTrade, updateBidFromTrade } from '@/utils/trade'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getProfileById } from '@/db/profile'
 import { createEdgeClient } from './_db'
@@ -10,6 +10,7 @@ import {
 } from '@/utils/math'
 import { getBidById, getBidsByUser } from '@/db/bid'
 import { TOTAL_SHARES } from '@/db/project'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 
 export const config = {
   runtime: 'edge',
@@ -22,12 +23,11 @@ export const config = {
 
 export type TradeProps = {
   oldBidId: string
-  usdTraded: number
-  newBidId?: string
+  numDollarsInTrade: number
 }
 
 export default async function handler(req: NextRequest) {
-  const { oldBidId, usdTraded, newBidId } = (await req.json()) as TradeProps
+  const { oldBidId, numDollarsInTrade } = (await req.json()) as TradeProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
@@ -43,28 +43,52 @@ export default async function handler(req: NextRequest) {
   if (!profile) {
     return NextResponse.error()
   }
+  const numSharesInTrade = (numDollarsInTrade / oldBid.valuation) * TOTAL_SHARES
   if (oldBid.type === 'sell') {
     // TODO: instead of acc investors trading with cash, project creators trade with cash
     const balance = profile?.accreditation_status
       ? calculateCashBalance(txns, bids, profile.id, true)
       : calculateCharityBalance(txns, bids, profile.id, false)
-    if (balance < usdTraded) {
+    if (balance < numDollarsInTrade) {
       return NextResponse.error()
     }
   } else if (oldBid.type === 'buy') {
-    const currentShares = calculateSellableShares(
+    const userShares = calculateSellableShares(
       txns,
       bids,
       oldBid.project,
       profile.id
     )
-    const tradedShares = (usdTraded / oldBid.valuation) * TOTAL_SHARES
-    if (currentShares < tradedShares) {
+    if (userShares < numSharesInTrade) {
       return NextResponse.error()
     }
   } else {
     return NextResponse.error()
   }
-  await trade(oldBidId, usdTraded, user.id, newBidId)
+  await makeTrade(
+    numSharesInTrade,
+    numDollarsInTrade,
+    oldBid.project,
+    oldBid.bidder,
+    user.id,
+    oldBid.type === 'sell',
+    supabase
+  )
+  await updateBidFromTrade(oldBid, numDollarsInTrade, supabase)
+  const tradeText = genTradeText(
+    oldBid,
+    oldBid.projects.title,
+    numDollarsInTrade
+  )
+  await sendTemplateEmail(
+    TEMPLATE_IDS.TRADE_ACCEPTED,
+    {
+      tradeText: tradeText,
+      recipientProfileUrl: `manifund.org/${oldBid.profiles.username}`,
+      bidType: oldBid.type === 'buy' ? 'buy' : 'sell',
+      projectTitle: oldBid.projects.title,
+    },
+    oldBid.bidder
+  )
   return NextResponse.json({ success: true })
 }
