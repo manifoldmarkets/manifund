@@ -59,7 +59,7 @@ export function ProjectDisplay(props: {
     userIsAdmin,
   } = props
   const userSpendableFunds = userProfile
-    ? userProfile.accreditation_status && project.type === 'cert'
+    ? project.type === 'cert' && userProfile.id === project.creator
       ? calculateCashBalance(userTxns, userBids, userProfile.id, true)
       : calculateCharityBalance(
           userTxns,
