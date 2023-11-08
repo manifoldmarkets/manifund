@@ -2,19 +2,20 @@ import { DataPoint } from '@/components/data-point'
 import { Row } from '@/components/layout/row'
 import { Project } from '@/db/project'
 import { formatMoney } from '@/utils/formatting'
-import { getProposalValuation } from '@/utils/math'
 import { differenceInDays, differenceInHours, format } from 'date-fns'
 
-export function ProjectData(props: { project: Project; raised: number }) {
-  const { project, raised } = props
+export function ProjectData(props: {
+  project: Project
+  raised: number
+  valuation: number
+}) {
+  const { project, raised, valuation } = props
   const raisedString =
     raised > project.funding_goal &&
     project.type === 'cert' &&
     project.stage === 'proposal'
       ? `>${formatMoney(project.funding_goal)}`
       : `${formatMoney(raised)}`
-  const minValuation =
-    project.type === 'cert' ? getProposalValuation(project) : 0
   // Close it on 23:59:59 in UTC -12 aka "Anywhere on Earth" time
   const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
   const now = new Date()
@@ -40,11 +41,13 @@ export function ProjectData(props: { project: Project; raised: number }) {
           label={`${hoursLeft ? 'hours' : 'days'} left to contribute`}
         />
       )}
-      {project.type === 'cert' && !!minValuation && (
-        <DataPoint
-          value={formatMoney(getProposalValuation(project))}
-          label="minimum valuation"
-        />
+      {project.type === 'cert' &&
+        project.stage === 'proposal' &&
+        !!valuation && (
+          <DataPoint value={formatMoney(valuation)} label="minimum valuation" />
+        )}
+      {project.type === 'cert' && project.stage !== 'proposal' && (
+        <DataPoint value={formatMoney(valuation)} label="valuation" />
       )}
       {project.stage !== 'proposal' && (
         <DataPoint

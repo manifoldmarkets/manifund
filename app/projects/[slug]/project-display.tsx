@@ -31,7 +31,11 @@ import { Vote } from './vote'
 import { CauseTag } from '@/components/tags'
 import { Trade } from './trade'
 import { AssuranceBuyBox } from './assurance-buy-box'
-import { calculateTradePoints } from '@/utils/amm'
+import {
+  calculateAMMPorfolio,
+  calculateTradePoints,
+  calculateValuation,
+} from '@/utils/amm'
 import { CertValuationChart } from './valuation-chart'
 
 export function ProjectDisplay(props: {
@@ -79,16 +83,13 @@ export function ProjectDisplay(props: {
   const userSellableShares = userProfile
     ? calculateSellableShares(userTxns, userBids, project.id, userProfile.id)
     : 0
+  const [ammShares, ammUSD] = calculateAMMPorfolio(projectTxns, project.id)
   const valuation =
     project.type === 'grant'
       ? project.funding_goal
       : project.stage === 'proposal'
       ? getProposalValuation(project)
-      : getActiveValuation(
-          projectTxns,
-          projectBids,
-          getProposalValuation(project)
-        )
+      : calculateValuation(ammShares, ammUSD)
   const isOwnProject = userProfile?.id === project.profiles.id
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred
@@ -167,7 +168,11 @@ export function ProjectDisplay(props: {
             size="lg"
           />
         )}
-        <ProjectData project={project} raised={amountRaised} />
+        <ProjectData
+          project={project}
+          raised={amountRaised}
+          valuation={valuation}
+        />
         {(project.stage === 'proposal' ||
           (project.stage === 'active' && project.type === 'grant')) && (
           <ProgressBar

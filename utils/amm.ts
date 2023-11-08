@@ -7,7 +7,10 @@ import { formatMoneyPrecise } from './formatting'
 
 export type BinaryModeId = 'buy' | 'sell' | null
 
-export function calculateAMMPorfolio(ammTxns: Txn[], ammId: string) {
+export function calculateAMMPorfolio(txns: Txn[], ammId: string) {
+  const ammTxns = txns.filter(
+    (txn) => txn.from_id === ammId || txn.to_id === ammId
+  )
   const ammShares = ammTxns.reduce((total, txn) => {
     if (txn.token !== 'USD') {
       if (txn.to_id == ammId) {
@@ -102,6 +105,7 @@ export function calculateValuation(ammShares: number, ammUSD: number) {
   return (ammUSD / ammShares) * TOTAL_SHARES
 }
 
+// TODO: eliminate, this is the same as aboev fxn
 export function calculateMinimumValuation(ammShares: number, ammUSD: number) {
   return (ammUSD * ammShares) / TOTAL_SHARES
 }

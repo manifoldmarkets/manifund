@@ -3,7 +3,7 @@ import { Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, Txn, TxnAndProject } from '@/db/txn'
 import { isBefore } from 'date-fns'
-import { orderBy, sortBy } from 'lodash'
+import { sortBy } from 'lodash'
 import { isCharitableDeposit } from './constants'
 
 const IGNORE_ACCREDITATION_DATE = new Date('2023-11-02')
@@ -15,18 +15,15 @@ export function getProposalValuation(project: Project) {
   return project.min_funding / investorPercent
 }
 
-type MathTrade = {
-  amountUSD: number
-  numShares: number
-  date: Date
-  bundle: string
-}
 export function getActiveValuation(
   txns: Txn[],
   bids: Bid[],
   minValuation: number
 ) {
-  const tradeTxns = txns.filter((txn) => txn.bundle !== null)
+  const tradeTxns = txns.filter(
+    (txn) =>
+      txn.type === 'user to amm trade' || txn.type === 'inject amm liquidity'
+  )
   if (tradeTxns.length === 0) {
     if (bids.length === 0) {
       return minValuation
@@ -34,25 +31,13 @@ export function getActiveValuation(
       return bids[bids.length - 1].valuation
     }
   }
-  const trades = Object.fromEntries(
-    tradeTxns.map((txn) => [txn.bundle, {} as MathTrade])
-  )
-  for (const txn of tradeTxns) {
-    const trade = trades[txn?.bundle ?? 0]
-    if (txn.token === 'USD') {
-      trade.amountUSD = txn.amount
-      trade.date = new Date(txn.created_at)
-      trade.bundle = txn.bundle
-    } else {
-      trade.numShares = txn.amount
-    }
-  }
-  const sortedTrades = orderBy(
-    Object.values(trades),
-    'date',
-    'desc'
-  ) as MathTrade[]
-  return (sortedTrades[0].amountUSD / sortedTrades[0].numShares) * TOTAL_SHARES
+  const bundles = bundleTxns(tradeTxns)
+  const sortedBundles = sortBy(bundles, (bundle) => bundle[0].created_at)
+  const latestBundle = sortedBundles[sortedBundles.length - 1]
+  console.log('latest bundle', latestBundle)
+  const amountUSD = latestBundle.find((txn) => txn.token === 'USD')?.amount ?? 0
+  const numShares = latestBundle.find((txn) => txn.token !== 'USD')?.amount ?? 1
+  return (amountUSD / numShares) * TOTAL_SHARES
 }
 
 export function calculateUserBalance(txns: Txn[], userId: string) {
