@@ -422,9 +422,10 @@ function getPrices(projects: FullProject[]) {
         ? project.funding_goal
         : project.stage === 'proposal'
         ? getProposalValuation(project)
-        : getActiveValuation(
+        : // TODO: change to valuation via amm calculation
+          getActiveValuation(
             project.txns,
-            project.bids,
+            project.id,
             getProposalValuation(project)
           )
   })

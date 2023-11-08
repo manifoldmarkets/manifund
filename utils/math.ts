@@ -5,6 +5,7 @@ import { FullTxn, Txn, TxnAndProject } from '@/db/txn'
 import { isBefore } from 'date-fns'
 import { sortBy } from 'lodash'
 import { isCharitableDeposit } from './constants'
+import { calculateAMMPorfolio, calculateValuation } from './amm'
 
 const IGNORE_ACCREDITATION_DATE = new Date('2023-11-02')
 
@@ -17,27 +18,33 @@ export function getProposalValuation(project: Project) {
 
 export function getActiveValuation(
   txns: Txn[],
-  bids: Bid[],
+  projectId: string,
   minValuation: number
 ) {
-  const tradeTxns = txns.filter(
+  const ammTxns = txns.filter(
     (txn) =>
       txn.type === 'user to amm trade' || txn.type === 'inject amm liquidity'
   )
-  if (tradeTxns.length === 0) {
-    if (bids.length === 0) {
+  if (ammTxns.length === 0) {
+    const userTradeTxns = txns.filter(
+      (txn) => txn.type === 'user to user trade'
+    )
+    if (userTradeTxns.length === 0) {
       return minValuation
     } else {
-      return bids[bids.length - 1].valuation
+      const bundles = bundleTxns(ammTxns)
+      const sortedBundles = sortBy(bundles, (bundle) => bundle[0].created_at)
+      const latestBundle = sortedBundles[sortedBundles.length - 1]
+      const amountUSD =
+        latestBundle.find((txn) => txn.token === 'USD')?.amount ?? 0
+      const numShares =
+        latestBundle.find((txn) => txn.token !== 'USD')?.amount ?? 1
+      return (amountUSD / numShares) * TOTAL_SHARES
     }
+  } else {
+    const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
+    return calculateValuation(ammShares, ammUSD)
   }
-  const bundles = bundleTxns(tradeTxns)
-  const sortedBundles = sortBy(bundles, (bundle) => bundle[0].created_at)
-  const latestBundle = sortedBundles[sortedBundles.length - 1]
-  console.log('latest bundle', latestBundle)
-  const amountUSD = latestBundle.find((txn) => txn.token === 'USD')?.amount ?? 0
-  const numShares = latestBundle.find((txn) => txn.token !== 'USD')?.amount ?? 1
-  return (amountUSD / numShares) * TOTAL_SHARES
 }
 
 export function calculateUserBalance(txns: Txn[], userId: string) {

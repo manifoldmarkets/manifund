@@ -9,7 +9,7 @@ import { ProjectCardHeader } from '@/components/project-card'
 import { SignInButton } from '@/components/sign-in-button'
 import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
-import { Profile, ProfileAndBids } from '@/db/profile'
+import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
 import { MiniCause } from '@/db/cause'
 import { TxnAndProfiles, TxnAndProject } from '@/db/txn'
@@ -83,13 +83,16 @@ export function ProjectDisplay(props: {
   const userSellableShares = userProfile
     ? calculateSellableShares(userTxns, userBids, project.id, userProfile.id)
     : 0
-  const [ammShares, ammUSD] = calculateAMMPorfolio(projectTxns, project.id)
   const valuation =
     project.type === 'grant'
       ? project.funding_goal
       : project.stage === 'proposal'
       ? getProposalValuation(project)
-      : calculateValuation(ammShares, ammUSD)
+      : getActiveValuation(
+          projectTxns,
+          project.id,
+          getProposalValuation(project)
+        )
   const isOwnProject = userProfile?.id === project.profiles.id
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred
