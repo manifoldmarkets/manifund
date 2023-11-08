@@ -56,7 +56,7 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const regranter = resp.data.user
   if (!regranter) {
-    console.log('no regranter')
+    console.error('no regranter')
     return NextResponse.error()
   }
   const regranterProfile = await getProfileById(supabase, regranter.id)
@@ -65,7 +65,7 @@ export default async function handler(req: NextRequest) {
     ((!recipientEmail || !recipientName) && !recipientUsername) ||
     !regranterProfile
   ) {
-    console.log('invalid inputs')
+    console.error('invalid inputs')
     return NextResponse.error()
   }
   const regranterTxns = await getTxnAndProjectsByUser(supabase, regranter.id)
@@ -77,7 +77,7 @@ export default async function handler(req: NextRequest) {
     regranterProfile.accreditation_status
   )
   if (regranterCharityBalance < donorContribution) {
-    console.log('insufficient funds')
+    console.error('insufficient funds')
     return NextResponse.error()
   }
   const slug = await projectSlugify(title, supabase)
@@ -168,7 +168,7 @@ export default async function handler(req: NextRequest) {
       recipientProfile.id
     )
   } else {
-    console.log('invalid inputs 2')
+    console.error('invalid inputs 2')
     return NextResponse.error()
   }
   await updateProjectCauses(supabase, causeSlugs, project.id)

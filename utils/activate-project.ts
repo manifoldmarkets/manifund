@@ -23,9 +23,7 @@ export async function maybeActivateProject(
     console.error('Project not found')
     return
   }
-  console.log('funding ready?', checkFundingReady(project))
   if (checkFundingReady(project)) {
-    console.log('about to activate!')
     await activateProject(project)
   }
 }
@@ -46,7 +44,6 @@ function checkFundingReady(project: ProjectAndBids) {
           (bid) =>
             bid.type === 'assurance sell' && bid.bidder === project.creator
         )?.amount ?? 0
-  console.log('totalOffered', totalOffered, 'totalNeeded', totalNeeded)
   return (
     totalOffered >= totalNeeded &&
     (project.type === 'cert' || (project.approved && project.signed_agreement))

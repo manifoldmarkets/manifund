@@ -72,7 +72,6 @@ async function dbCategorizeTxns(txns: Txn[], supabase: SupabaseClient) {
   })
 
   const promises = txns.map(async (txn) => {
-    console.log(txn, categorizedTxns[txn.id])
     await supabase
       .from('txns')
       .update({ type: categorizedTxns[txn.id] })

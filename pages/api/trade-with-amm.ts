@@ -81,7 +81,6 @@ export default async function handler(req: NextRequest) {
     return new Response(errorMessage, { status: 400 })
   }
   if (!valuation) {
-    console.log('not a limit order')
     let amountRemaining = amount
     while (amountRemaining > 0) {
       const { data: firstBid } = await supabase
@@ -92,7 +91,6 @@ export default async function handler(req: NextRequest) {
         .eq('type', buying ? 'sell' : 'buy')
         .order('valuation', { ascending: buying })
         .single()
-      console.log('first bid', firstBid)
       const ammTxns = await getTxnsByUser(supabase, projectId)
       const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
       const valuationAfterTrade = calculateValuationAfterTrade(
@@ -107,19 +105,11 @@ export default async function handler(req: NextRequest) {
           ? firstBid.valuation < valuationAfterTrade
           : firstBid.valuation > valuationAfterTrade)
       if (hitsLimitOrder) {
-        console.log('hits limit order!')
         const valuationAtLo = firstBid.valuation
         const [sharesInAmmTrade, usdInAmmTrade] = calculateTradeForValuation(
           ammShares,
           ammUSD,
           valuationAtLo
-        )
-        console.log(
-          'about to trade with amm',
-          sharesInAmmTrade,
-          'shares;',
-          usdInAmmTrade,
-          'USD;'
         )
         await makeTrade(
           Math.abs(sharesInAmmTrade),
@@ -133,7 +123,6 @@ export default async function handler(req: NextRequest) {
         amountRemaining -= buying
           ? Math.abs(usdInAmmTrade)
           : Math.abs(sharesInAmmTrade)
-        console.log('amount remaining', amountRemaining)
         const usdInUserTrade = Math.min(
           firstBid.amount,
           buying
@@ -145,13 +134,6 @@ export default async function handler(req: NextRequest) {
           buying
             ? (amountRemaining / valuationAtLo) * TOTAL_SHARES
             : amountRemaining
-        )
-        console.log(
-          'about to trade with user',
-          sharesInUserTrade,
-          'shares;',
-          usdInUserTrade,
-          'USD;'
         )
         await makeTrade(
           sharesInUserTrade,
@@ -174,9 +156,7 @@ export default async function handler(req: NextRequest) {
           firstBid.bidder
         )
         amountRemaining -= buying ? usdInUserTrade : sharesInUserTrade
-        console.log('amount remaining at the end of loop', amountRemaining)
       } else {
-        console.log('does not hit limit order')
         const numDollars = buying
           ? amount
           : calculateSellPayout(amount, ammShares, ammUSD)
@@ -210,6 +190,5 @@ export default async function handler(req: NextRequest) {
       return new Response('Error', { status: 500 })
     }
   }
-  console.log('DONE')
   return new Response('Success', { status: 200 })
 }

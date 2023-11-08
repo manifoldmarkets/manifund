@@ -31,17 +31,17 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) {
-    console.log('no user')
+    console.error('no user')
     return NextResponse.error()
   }
   const profile = await getProfileById(supabase, user.id)
   if (!profile?.stripe_connect_id) {
-    console.log('no stripe connect id')
+    console.error('no stripe connect id')
     return NextResponse.error()
   }
   const account = await stripe.accounts.retrieve(profile.stripe_connect_id)
   if (!account.payouts_enabled || !account.details_submitted) {
-    console.log('no payouts enabled')
+    console.error('no payouts enabled')
     return NextResponse.error()
   }
   const txns = await getFullTxnsByUser(supabase, user.id)
