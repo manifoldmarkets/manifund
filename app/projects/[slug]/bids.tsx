@@ -274,7 +274,7 @@ function Trade(props: {
             loading={isSubmitting}
             disabled={errorMessage !== null}
             onClick={async () => {
-              const response = await fetch('/api/trade', {
+              const response = await fetch('/api/trade-with-limit', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
