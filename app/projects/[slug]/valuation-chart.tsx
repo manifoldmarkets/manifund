@@ -1,4 +1,4 @@
-import _, { last } from 'lodash'
+import _, { last, sortBy } from 'lodash'
 import { scaleTime, scaleLinear } from 'd3-scale'
 import { calculateAMMPorfolio, calculateValuation } from '@/utils/amm'
 import { Row } from '@/components/layout/row'
@@ -45,8 +45,9 @@ export const CertValuationChart = (props: {
   className?: string
 }) => {
   const { ammTxns, ammId, size, tradePoints, className } = props
+  const sortedAmmTxns = sortBy(ammTxns, 'created_at')
   const [start, end] = [
-    new Date(ammTxns[0].created_at).getTime(),
+    new Date(sortedAmmTxns[0].created_at).getTime(),
     new Date().getTime(),
   ]
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
