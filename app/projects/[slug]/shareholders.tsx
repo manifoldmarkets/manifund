@@ -33,7 +33,7 @@ export function Shareholders(props: {
   const sortedShareholders = orderBy(nonAmmShareholders, 'numShares', 'desc')
   return (
     <Row className="w-full justify-center">
-      <Col className="w-full max-w-sm sm:max-w-xl">
+      <Col className="w-full max-w-md sm:max-w-2xl">
         {sortedShareholders.map((shareholder) => (
           <Row
             key={shareholder.profile?.id}
@@ -71,7 +71,7 @@ function Trade(props: {
     props
   return (
     <Row className="justify-center">
-      <div className="grid w-full max-w-sm grid-cols-2 justify-between gap-3 rounded p-3 text-sm hover:bg-gray-200 sm:max-w-xl sm:grid-cols-3">
+      <div className="grid w-full max-w-md grid-cols-2 justify-between gap-3 rounded p-3 text-sm hover:bg-gray-200 sm:max-w-2xl sm:grid-cols-3">
         <UserAvatarAndBadge profile={trader} creatorBadge={isCreator} />
         <Row className="justify-end gap-1">
           <span className="text-gray-500">{isBuying ? 'bought' : 'sold'}</span>

@@ -300,6 +300,14 @@ function BuyPanelContent(props: {
   setAmount: (amount: number) => void
 }) {
   const { isLimitOrder, userSpendableFunds, amount, setAmount } = props
+  if (userSpendableFunds <= 0) {
+    return (
+      <div className="text-center text-sm text-gray-600">
+        You don&apos;t have any funds to buy with. Add funds to your account
+        through your profile page.
+      </div>
+    )
+  }
   const sliderMax = Math.min(userSpendableFunds, 100)
   return (
     <div>
@@ -337,6 +345,13 @@ function SellPanelContent(props: {
   setAmount: (amount: number) => void
 }) {
   const { isLimitOrder, userSellableShares, amount, setAmount } = props
+  if (userSellableShares <= 0) {
+    return (
+      <div className="text-center text-sm text-gray-600">
+        You don&apos;t have any shares to sell.
+      </div>
+    )
+  }
   const sliderMax = userSellableShares
   return (
     <div>

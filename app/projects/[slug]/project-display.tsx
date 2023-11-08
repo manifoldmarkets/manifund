@@ -58,16 +58,24 @@ export function ProjectDisplay(props: {
     causesList,
     userIsAdmin,
   } = props
-  const userSpendableFunds = userProfile
-    ? project.type === 'cert' && userProfile.id === project.creator
-      ? calculateCashBalance(userTxns, userBids, userProfile.id, true)
-      : calculateCharityBalance(
-          userTxns,
-          userBids,
-          userProfile.id,
-          userProfile.accreditation_status
-        )
-    : 0
+  const userSpendableFunds = Math.max(
+    userProfile
+      ? project.type === 'cert' && userProfile.id === project.creator
+        ? calculateCashBalance(
+            userTxns,
+            userBids,
+            userProfile.id,
+            userProfile.accreditation_status
+          )
+        : calculateCharityBalance(
+            userTxns,
+            userBids,
+            userProfile.id,
+            userProfile.accreditation_status
+          )
+      : 0,
+    0
+  )
   const userSellableShares = userProfile
     ? calculateSellableShares(userTxns, userBids, project.id, userProfile.id)
     : 0
