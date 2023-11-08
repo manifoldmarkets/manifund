@@ -45,10 +45,10 @@ export default async function handler(req: NextRequest) {
   }
   const numSharesInTrade = (numDollarsInTrade / oldBid.valuation) * TOTAL_SHARES
   if (oldBid.type === 'sell') {
-    // TODO: instead of acc investors trading with cash, project creators trade with cash
-    const balance = profile?.accreditation_status
-      ? calculateCashBalance(txns, bids, profile.id, true)
-      : calculateCharityBalance(txns, bids, profile.id, false)
+    const balance =
+      profile?.id === oldBid.projects.creator
+        ? calculateCashBalance(txns, bids, profile.id, true)
+        : calculateCharityBalance(txns, bids, profile.id, false)
     if (balance < numDollarsInTrade) {
       return NextResponse.error()
     }
