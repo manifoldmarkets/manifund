@@ -26,7 +26,7 @@ import { formatMoneyPrecise } from '@/utils/formatting'
 
 export function BalanceDisplay(props: {
   balance: number
-  withdrawBalance: number
+  cashBalance: number
   charityBalance: number
   accredited: boolean
   isOwnProfile?: boolean
@@ -34,7 +34,7 @@ export function BalanceDisplay(props: {
 }) {
   const {
     balance,
-    withdrawBalance,
+    cashBalance,
     charityBalance,
     accredited,
     isOwnProfile,
@@ -42,7 +42,7 @@ export function BalanceDisplay(props: {
   } = props
   const stats = [
     { name: 'charity balance', value: charityBalance },
-    { name: 'cash balance', value: withdrawBalance },
+    { name: 'cash balance', value: cashBalance },
   ]
   return (
     <Col className="h-fit">
@@ -111,8 +111,8 @@ export function BalanceDisplay(props: {
         ))}
       </Row>
       <p className="mt-2 w-full rounded bg-gray-100 p-1 text-center text-sm tracking-wider text-gray-400">
-        {formatMoneyPrecise(balance - withdrawBalance - charityBalance)} in
-        pending offers
+        {formatMoneyPrecise(balance - cashBalance - charityBalance)} in pending
+        offers
       </p>
     </Col>
   )

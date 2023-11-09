@@ -63,7 +63,7 @@ export function ProfileContent(props: {
     (bid) => bid.status === 'pending' && bid.type === 'donate'
   )
   const balance = calculateUserBalance(txns, profile.id)
-  const withdrawBalance = calculateCashBalance(
+  const cashBalance = calculateCashBalance(
     txns,
     bids,
     profile.id,
@@ -103,8 +103,8 @@ export function ProfileContent(props: {
       <BalanceDisplay
         balance={balance}
         // Hack to get around old accounting system which means some cash balances are negative
-        withdrawBalance={Math.max(withdrawBalance, 0)}
-        charityBalance={charityBalance + Math.min(withdrawBalance, 0)}
+        cashBalance={Math.max(cashBalance, 0)}
+        charityBalance={charityBalance + Math.min(cashBalance, 0)}
         accredited={profile.accreditation_status}
         isOwnProfile={isOwnProfile ?? undefined}
         userId={userProfile?.id ?? undefined}
