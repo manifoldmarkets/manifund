@@ -149,6 +149,7 @@ INSERT
 --
 --
 ---- Txns ----
+create type txn_type as enum ("profile donation", "project donation", "user to user trade", "user to amm trade", "withdraw", "deposit", "cash to charity transfer", "inject amm liquidity", "mint cert");
 create table if not exists public.txns (
   id uuid not null default gen_random_uuid(),
   from_id uuid not null references auth.users(id) on delete cascade,
@@ -156,6 +157,7 @@ create table if not exists public.txns (
   amount numeric not null,
   token text not null,
   created_at timestamp not null default now(),
+  type 
   primary key (id)
 );
 
@@ -182,7 +184,7 @@ INSERT
 --
 ---- Bids ----
 -- Create an enum type for 'buy' vs 'sell' vs 'auction'
-create type bid_type as enum ('buy', 'sell', 'donate');
+create type bid_type as enum ('buy', 'sell', 'donate', 'assurance buy', 'assurance sell');
 create type bid_status as enum ('deleted', 'pending', 'accepted', 'declined');
 
 create table if not exists public.bids (
