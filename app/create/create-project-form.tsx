@@ -39,7 +39,6 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   const { causesList } = props
   const { session } = useSupabase()
   const router = useRouter()
-  // For all
   const [title, setTitle] = useState<string>('')
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number | null>(null)
