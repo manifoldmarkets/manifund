@@ -11,7 +11,11 @@ import {
   calculateValuationAfterTrade,
   getTradeErrorMessage,
 } from '@/utils/amm'
-import { calculateCharityBalance, calculateSellableShares } from '@/utils/math'
+import {
+  calculateCashBalance,
+  calculateCharityBalance,
+  calculateSellableShares,
+} from '@/utils/math'
 import { Bid, getBidsByUser } from '@/db/bid'
 import { getProjectById, TOTAL_SHARES } from '@/db/project'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
@@ -56,9 +60,11 @@ export default async function handler(req: NextRequest) {
     : amount
   const userTxns = await getTxnAndProjectsByUser(supabase, user.id)
   const userBids = await getBidsByUser(supabase, user.id)
-  const userSpendableFunds = buying
-    ? calculateCharityBalance(userTxns, userBids, user.id, false)
-    : 0
+  const project = await getProjectById(supabase, projectId)
+  const userSpendableFunds =
+    user.id === project.creator
+      ? calculateCashBalance(userTxns, userBids, user.id, false)
+      : calculateCharityBalance(userTxns, userBids, user.id, false)
   const userSellableShares = calculateSellableShares(
     userTxns,
     userBids,
@@ -76,7 +82,6 @@ export default async function handler(req: NextRequest) {
     !!valuation,
     valuation
   )
-  const project = await getProjectById(supabase, projectId)
   if (errorMessage) {
     return new Response(errorMessage, { status: 400 })
   }
