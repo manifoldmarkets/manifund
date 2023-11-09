@@ -6,6 +6,7 @@ export function CategorizeTxns(props: { txns: Txn[] }) {
   const { txns } = props
   return (
     <Button
+      disabled
       onClick={async () => {
         const response = await fetch('/api/categorize-txns', {
           method: 'POST',

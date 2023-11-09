@@ -13,6 +13,7 @@ export const config = {
   ],
 }
 
+// Used to add txn type column to txns table
 export default async function handler(req: NextRequest) {
   const supabaseAdmin = createAdminClient()
   const { data: txns } = await supabaseAdmin.from('txns').select('*')
