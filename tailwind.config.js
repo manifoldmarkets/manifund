@@ -34,13 +34,12 @@ module.exports = {
           '50%': { transform: 'rotate(4deg)' },
         },
       },
-    },
-    colors: {
-      // ink, canvas, and primary are used by Manifold components
-      ink: colors.gray,
-      canvas: colors.white,
-      primary: colors.orange,
-      ...colors,
+      colors: {
+        // ink, canvas, and primary are used by Manifold components
+        ink: colors.gray,
+        canvas: colors.white,
+        primary: colors.orange,
+      },
     },
   },
   plugins: [
