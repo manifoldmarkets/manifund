@@ -1,6 +1,6 @@
 ---- Profiles ----
 -- add public profiles table
-create type profile_type as enum ('individual', 'org', 'amm', 'dummy');
+create type profile_type as enum ('individual', 'org', 'amm', 'fund');
 
 create table public.profiles (
   id uuid not null,
