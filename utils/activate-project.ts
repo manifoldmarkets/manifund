@@ -133,6 +133,7 @@ async function seedAmm(project: Project, supabase: SupabaseClient) {
     project: project.id,
     bundle,
     amount: (valuation * (project.amm_shares ?? 0)) / TOTAL_SHARES,
+    type: 'inject amm liquidity',
   }
   const sharesTxn = {
     from_id: project.creator,
@@ -141,6 +142,7 @@ async function seedAmm(project: Project, supabase: SupabaseClient) {
     project: project.id,
     bundle,
     amount: project.amm_shares,
+    type: 'inject amm liquidity',
   }
   await supabase.from('txns').insert([usdTxn, sharesTxn]).throwOnError()
 }
