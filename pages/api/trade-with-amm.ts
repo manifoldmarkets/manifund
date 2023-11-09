@@ -85,7 +85,21 @@ export default async function handler(req: NextRequest) {
   if (errorMessage) {
     return new Response(errorMessage, { status: 400 })
   }
-  if (!valuation) {
+  if (valuation) {
+    const bid = {
+      amount: numDollars,
+      bidder: user.id,
+      project: projectId,
+      valuation,
+      type: buying ? 'buy' : 'sell',
+      status: 'pending',
+    } as Bid
+    const { error } = await supabase.from('bids').insert([bid])
+    if (error) {
+      console.error(error)
+      return new Response('Error', { status: 500 })
+    }
+  } else {
     let amountRemaining = amount
     while (amountRemaining > 0) {
       const { data: firstBid } = await supabase
@@ -179,20 +193,6 @@ export default async function handler(req: NextRequest) {
         )
         amountRemaining = 0
       }
-    }
-  } else {
-    const bid = {
-      amount: numDollars,
-      bidder: user.id,
-      project: projectId,
-      valuation,
-      type: buying ? 'buy' : 'sell',
-      status: 'pending',
-    } as Bid
-    const { error } = await supabase.from('bids').insert([bid])
-    if (error) {
-      console.error(error)
-      return new Response('Error', { status: 500 })
     }
   }
   return new Response('Success', { status: 200 })
