@@ -99,7 +99,7 @@ export function Trade(props: {
 
 function TradeInputsPanel(props: {
   modeId: BinaryModeId
-  setModeId?: (modeId: BinaryModeId) => void
+  setModeId?: (modeId: BinaryModeId) => void // Include only for limit orders
   ammTxns: Txn[]
   ammId: string
   userSpendableFunds: number
@@ -145,7 +145,7 @@ function TradeInputsPanel(props: {
 
   const handleSubmit = async () => {
     setSubmitting(true)
-    const response = await fetch('/api/trade-with-amm', {
+    await fetch('/api/trade-with-amm', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
