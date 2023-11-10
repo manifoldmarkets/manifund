@@ -125,7 +125,7 @@ export const getTradeErrorMessage = (
   if (isLimitOrder) {
     if (!limitValuation) {
       return 'Please enter a valuation'
-    } else if (modeId === 'buy' && limitValuation > minValuation) {
+    } else if (modeId === 'buy' && limitValuation < minValuation) {
       return `Valuation must be greater than ${formatMoneyPrecise(
         minValuation
       )}`
