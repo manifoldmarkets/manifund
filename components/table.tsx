@@ -31,18 +31,18 @@ export function TableRow(props: {
 }) {
   const { title, tag, subtitle, href, deleteFunction } = props
   return (
-    <div className="flex justify-between hover:bg-gray-50">
-      <div className="flex w-full flex-col justify-between py-4 pl-5 font-medium text-gray-900 sm:flex-row sm:items-center">
-        <Link className="text-base hover:underline" href={href}>
+    <div className="flex justify-between px-5 py-4 hover:bg-gray-50">
+      <div className="flex w-full max-w-full flex-col justify-between gap-5 font-medium text-gray-900 sm:flex-row sm:items-center">
+        <Link className="flex-1 truncate text-base hover:underline" href={href}>
           {title}
         </Link>
         {subtitle && (
-          <span className="truncate text-xs font-normal text-gray-500">
+          <span className="flex-none truncate text-xs font-normal text-gray-500">
             {subtitle}
           </span>
         )}
       </div>
-      <div className="flex h-full items-center justify-end px-3 py-4">
+      <div className="flex h-full items-center justify-end">
         {tag}
         {deleteFunction && (
           <Menu as="div" className="relative z-10 inline-block">

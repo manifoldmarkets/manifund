@@ -109,7 +109,7 @@ function DonationRow(props: {
             <HeartIcon className="h-5 w-5 flex-shrink-0 text-rose-500" />
           </Tooltip>
         )}
-        <span className="text-base font-medium text-gray-900 group-hover:underline">
+        <span className="truncate text-base font-medium text-gray-900 group-hover:underline">
           {name}
         </span>
       </Row>

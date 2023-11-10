@@ -258,7 +258,7 @@ export function getTxnCharityMultiplier(
     return isIncoming ? 1 : 0
   }
   if (txn.type === 'deposit') {
-    return actuallyAccredited ? 0 : 1
+    return actuallyAccredited && !isCharitableDeposit(txn.id) ? 0 : 1
   }
   return 0
 }
@@ -299,7 +299,7 @@ export function getTxnCashMultiplier(
     return isIncoming ? 0 : -1
   }
   if (txn.type === 'deposit') {
-    return actuallyAccredited ? 1 : 0
+    return actuallyAccredited && !isCharitableDeposit(txn.id) ? 1 : 0
   }
   if (txn.type === 'withdraw') {
     return -1
