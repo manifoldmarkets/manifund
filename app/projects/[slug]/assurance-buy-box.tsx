@@ -58,37 +58,47 @@ export function AssuranceBuyBox(props: {
           received enough buy offers to cover their minimum costs.
         </p>
       </div>
-      <Row className="w-full items-center gap-2">
-        $
-        <Input
-          value={Number(amount).toString()}
-          placeholder="Amount (USD)"
-          onChange={(event) => setAmount(Number(event.target.value))}
-          className="w-24 max-w-full"
-        />
-        <Slider
-          amount={amount}
-          onChange={setAmount}
-          min={0}
-          max={offerSizeDollars}
-          marks={[
-            { label: formatPercent(0), value: 0 },
-            {
-              label: formatPercent(offerSizePercent / 4),
-              value: offerSizeDollars / 4,
-            },
-            {
-              label: formatPercent(offerSizePercent / 2),
-              value: offerSizeDollars / 2,
-            },
-            {
-              label: formatPercent((offerSizePercent / 4) * 3),
-              value: (offerSizeDollars / 4) * 3,
-            },
-            { label: formatPercent(offerSizePercent), value: offerSizeDollars },
-          ]}
-        />
-      </Row>
+      {maxBuy > 0 ? (
+        <Row className="w-full items-center gap-2">
+          $
+          <Input
+            value={Number(amount).toString()}
+            placeholder="Amount (USD)"
+            onChange={(event) => setAmount(Number(event.target.value))}
+            className="w-24 max-w-full"
+          />
+          <Slider
+            amount={amount}
+            onChange={setAmount}
+            min={0}
+            max={offerSizeDollars}
+            marks={[
+              { label: formatPercent(0), value: 0 },
+              {
+                label: formatPercent(offerSizePercent / 4),
+                value: offerSizeDollars / 4,
+              },
+              {
+                label: formatPercent(offerSizePercent / 2),
+                value: offerSizeDollars / 2,
+              },
+              {
+                label: formatPercent((offerSizePercent / 4) * 3),
+                value: (offerSizeDollars / 4) * 3,
+              },
+              {
+                label: formatPercent(offerSizePercent),
+                value: offerSizeDollars,
+              },
+            ]}
+          />
+        </Row>
+      ) : (
+        <span className="w-full text-center italic text-gray-600">
+          You have no spendable funds. Add money to your account through your
+          profile page.
+        </span>
+      )}
       <Row className="justify-end gap-2">
         <Tooltip text={errorMessage ?? ''}>
           <Button
