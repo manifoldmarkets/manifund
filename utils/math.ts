@@ -32,7 +32,7 @@ export function getActiveValuation(
     if (userTradeTxns.length === 0) {
       return minValuation
     } else {
-      const bundles = bundleTxns(ammTxns)
+      const bundles = bundleTxns(userTradeTxns)
       const sortedBundles = sortBy(bundles, (bundle) => bundle[0].created_at)
       const latestBundle = sortedBundles[sortedBundles.length - 1]
       const amountUSD =
