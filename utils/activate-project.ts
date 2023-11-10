@@ -24,6 +24,7 @@ export async function maybeActivateProject(
     return
   }
   if (checkFundingReady(project)) {
+    console.log('funding ready, about to activate')
     await activateProject(project)
   }
 }
@@ -51,6 +52,7 @@ function checkFundingReady(project: ProjectAndBids) {
 }
 
 async function activateProject(project: Project) {
+  console.log('activating project')
   const supabase = createAdminClient()
   const creatorProfile = await getProfileById(supabase, project?.creator)
   if (!project || !creatorProfile) {
@@ -66,6 +68,7 @@ async function activateProject(project: Project) {
       })
       .throwOnError()
   } else {
+    console.log('activating cert')
     await supabase
       .rpc('activate_cert', {
         project_id: project.id,
@@ -118,13 +121,15 @@ async function activateProject(project: Project) {
 }
 
 async function seedAmm(project: Project, supabase: SupabaseClient) {
+  console.log('seeding amm')
   const valuation = getProposalValuation(project)
   const ammProfile = {
     username: `${project.slug}-amm`,
     id: project.id,
     type: 'amm',
   }
-  await supabase.from('profiles').insert(ammProfile).throwOnError()
+  const { error: error1 } = await supabase.from('profiles').insert(ammProfile)
+  console.error(error1)
   const bundle = uuid()
   const usdTxn = {
     from_id: project.creator,
@@ -144,5 +149,6 @@ async function seedAmm(project: Project, supabase: SupabaseClient) {
     amount: project.amm_shares,
     type: 'inject amm liquidity',
   }
-  await supabase.from('txns').insert([usdTxn, sharesTxn]).throwOnError()
+  const { error } = await supabase.from('txns').insert([usdTxn, sharesTxn])
+  console.log(error)
 }

@@ -189,6 +189,7 @@ function TradeInputsPanel(props: {
               onChange={(event) =>
                 setLimitValuation(Number(event.target.value))
               }
+              value={limitValuation}
             />
           </Row>
           <Row className="items-center gap-2">
