@@ -157,7 +157,7 @@ create table if not exists public.txns (
   amount numeric not null,
   token text not null,
   created_at timestamp not null default now(),
-  type txn_type no null,
+  type txn_type not null,
   primary key (id)
 );
 
