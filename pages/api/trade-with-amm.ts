@@ -102,7 +102,7 @@ export default async function handler(req: NextRequest) {
   } else {
     let amountRemaining = amount
     while (amountRemaining > 0) {
-      const { data: mostElligibleBid } = await supabase
+      const { data: mostEligibleBid } = await supabase
         .from('bids')
         .select('*, profiles(username)')
         .eq('project', projectId)
@@ -119,12 +119,12 @@ export default async function handler(req: NextRequest) {
         buying
       )
       const hitsLimitOrder =
-        !!mostElligibleBid &&
+        !!mostEligibleBid &&
         (buying
-          ? mostElligibleBid.valuation < valuationAfterTrade
-          : mostElligibleBid.valuation > valuationAfterTrade)
+          ? mostEligibleBid.valuation < valuationAfterTrade
+          : mostEligibleBid.valuation > valuationAfterTrade)
       if (hitsLimitOrder) {
-        const valuationAtLo = mostElligibleBid.valuation
+        const valuationAtLo = mostEligibleBid.valuation
         const [sharesInAmmTrade, usdInAmmTrade] = calculateTradeForValuation(
           ammShares,
           ammUSD,
@@ -143,13 +143,13 @@ export default async function handler(req: NextRequest) {
           ? Math.abs(usdInAmmTrade)
           : Math.abs(sharesInAmmTrade)
         const usdInUserTrade = Math.min(
-          mostElligibleBid.amount,
+          mostEligibleBid.amount,
           buying
             ? amountRemaining
             : (amountRemaining / TOTAL_SHARES) * valuationAtLo
         )
         const sharesInUserTrade = Math.min(
-          (mostElligibleBid.amount / valuationAtLo) * TOTAL_SHARES,
+          (mostEligibleBid.amount / valuationAtLo) * TOTAL_SHARES,
           buying
             ? (amountRemaining / valuationAtLo) * TOTAL_SHARES
             : amountRemaining
@@ -158,25 +158,25 @@ export default async function handler(req: NextRequest) {
           sharesInUserTrade,
           usdInUserTrade,
           projectId,
-          mostElligibleBid.bidder,
+          mostEligibleBid.bidder,
           user.id,
           buying,
           supabase
         )
-        await updateBidFromTrade(mostElligibleBid, usdInUserTrade, supabase)
+        await updateBidFromTrade(mostEligibleBid, usdInUserTrade, supabase)
         await sendTemplateEmail(
           TEMPLATE_IDS.TRADE_ACCEPTED,
           {
             tradeText: genTradeText(
-              mostElligibleBid,
+              mostEligibleBid,
               project.title,
               usdInUserTrade
             ),
-            recipientProfileUrl: `manifund.org/${mostElligibleBid.profiles?.username}`,
+            recipientProfileUrl: `manifund.org/${mostEligibleBid.profiles?.username}`,
             bidType: buying ? 'sell' : 'buy',
             projectTitle: project.title,
           },
-          mostElligibleBid.bidder
+          mostEligibleBid.bidder
         )
         amountRemaining -= buying ? usdInUserTrade : sharesInUserTrade
       } else {
