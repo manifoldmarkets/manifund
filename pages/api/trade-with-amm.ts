@@ -1,4 +1,4 @@
-import { getUser } from '@/db/profile'
+import { getProfileById, getUser } from '@/db/profile'
 import { NextRequest } from 'next/server'
 import { getTxnAndProjectsByUser, getTxnsByUser } from '@/db/txn'
 import { createEdgeClient } from './_db'
@@ -60,11 +60,22 @@ export default async function handler(req: NextRequest) {
     : amount
   const userTxns = await getTxnAndProjectsByUser(supabase, user.id)
   const userBids = await getBidsByUser(supabase, user.id)
+  const userProfile = await getProfileById(supabase, user.id)
   const project = await getProjectById(supabase, projectId)
   const userSpendableFunds =
     user.id === project.creator
-      ? calculateCashBalance(userTxns, userBids, user.id, false)
-      : calculateCharityBalance(userTxns, userBids, user.id, false)
+      ? calculateCashBalance(
+          userTxns,
+          userBids,
+          user.id,
+          userProfile?.accreditation_status ?? false
+        )
+      : calculateCharityBalance(
+          userTxns,
+          userBids,
+          user.id,
+          userProfile?.accreditation_status ?? false
+        )
   const userSellableShares = calculateSellableShares(
     userTxns,
     userBids,
