@@ -197,6 +197,7 @@ function getBidCharityMultiplier(bid: BidAndProject) {
     bid.status !== 'pending' ||
     bid.type === 'sell' ||
     bid.type === 'assurance sell' ||
+    bid.projects.stage === 'hidden' ||
     projectIsBidders
   ) {
     return 0
@@ -211,6 +212,7 @@ function getBidCashMultiplier(bid: BidAndProject) {
     bid.status !== 'pending' ||
     bid.type === 'sell' ||
     bid.type === 'assurance sell' ||
+    bid.projects.stage === 'hidden' ||
     !projectIsBidders
   ) {
     return 0
