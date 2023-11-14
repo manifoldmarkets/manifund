@@ -7,17 +7,16 @@ import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
 import { ProjectCardHeader } from '@/components/project-card'
 import { SignInButton } from '@/components/sign-in-button'
-import { BidAndProfile } from '@/db/bid'
+import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
-import { ProfileAndBids } from '@/db/profile'
+import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
 import { MiniCause } from '@/db/cause'
-import { Txn, TxnAndProfiles } from '@/db/txn'
+import { TxnAndProfiles, TxnAndProject } from '@/db/txn'
 import {
   calculateCashBalance,
   calculateCharityBalance,
   calculateSellableShares,
-  calculateShares,
   getActiveValuation,
   getAmountRaised,
   getProposalValuation,
@@ -25,27 +24,32 @@ import {
 import { useState } from 'react'
 import { Description } from './description'
 import { Edit } from './edit'
-import { PlaceBid } from './place-bid'
 import { ProjectTabs } from './project-tabs'
 import { ProjectData } from './project-data'
 import { ProposalRequirements } from './proposal-requirements'
 import { Vote } from './vote'
 import { CauseTag } from '@/components/tags'
+import { Trade } from './trade'
+import { AssuranceBuyBox } from './assurance-buy-box'
+import { calculateTradePoints } from '@/utils/amm'
+import { CertValuationChart } from './valuation-chart'
 
 export function ProjectDisplay(props: {
   project: FullProject
-  userTxns: Txn[]
+  userTxns: TxnAndProject[]
+  userBids: BidAndProject[]
   comments: CommentAndProfile[]
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]
   causesList: MiniCause[]
-  userProfile?: ProfileAndBids
+  userProfile?: Profile
   creatorEmail?: string
   userIsAdmin?: boolean
 }) {
   const {
     project,
     userTxns,
+    userBids,
     comments,
     projectBids,
     projectTxns,
@@ -54,26 +58,26 @@ export function ProjectDisplay(props: {
     causesList,
     userIsAdmin,
   } = props
-  const userSpendableFunds = userProfile
-    ? userProfile.accreditation_status && project.type === 'cert'
-      ? calculateCashBalance(userTxns, userProfile.bids, userProfile.id, true)
-      : calculateCharityBalance(
-          userTxns,
-          userProfile.bids,
-          userProfile.id,
-          userProfile.accreditation_status
-        )
-    : 0
+  const userSpendableFunds = Math.max(
+    userProfile
+      ? project.type === 'cert' && userProfile.id === project.creator
+        ? calculateCashBalance(
+            userTxns,
+            userBids,
+            userProfile.id,
+            userProfile.accreditation_status
+          )
+        : calculateCharityBalance(
+            userTxns,
+            userBids,
+            userProfile.id,
+            userProfile.accreditation_status
+          )
+      : 0,
+    0
+  )
   const userSellableShares = userProfile
-    ? calculateSellableShares(
-        userTxns,
-        userProfile.bids,
-        project.id,
-        userProfile.id
-      )
-    : 0
-  const userShares = userProfile
-    ? calculateShares(userTxns, project.id, userProfile.id)
+    ? calculateSellableShares(userTxns, userBids, project.id, userProfile.id)
     : 0
   const valuation =
     project.type === 'grant'
@@ -82,7 +86,7 @@ export function ProjectDisplay(props: {
       ? getProposalValuation(project)
       : getActiveValuation(
           projectTxns,
-          projectBids,
+          project.id,
           getProposalValuation(project)
         )
   const isOwnProject = userProfile?.id === project.profiles.id
@@ -90,6 +94,7 @@ export function ProjectDisplay(props: {
     (projectTransfer) => !projectTransfer.transferred
   )
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
+  const tradePoints = calculateTradePoints(projectTxns, project.id)
   const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
     undefined | string
   >(undefined)
@@ -152,7 +157,21 @@ export function ProjectDisplay(props: {
           <Edit project={project} causesList={causesList} />
         )}
         <Divider />
-        <ProjectData project={project} raised={amountRaised} />
+        {project.stage !== 'proposal' && project.type === 'cert' && (
+          <CertValuationChart
+            tradePoints={tradePoints}
+            ammTxns={projectTxns.filter(
+              (txn) => txn.to_id === project.id || txn.from_id === project.id
+            )}
+            ammId={project.id}
+            size="lg"
+          />
+        )}
+        <ProjectData
+          project={project}
+          raised={amountRaised}
+          valuation={valuation}
+        />
         {(project.stage === 'proposal' ||
           (project.stage === 'active' && project.type === 'grant')) && (
           <ProgressBar
@@ -161,15 +180,34 @@ export function ProjectDisplay(props: {
             fundingGoal={project.funding_goal}
           />
         )}
-        {userProfile && project.type === 'cert' && (
-          <PlaceBid
-            project={project}
-            userSpendableFunds={userSpendableFunds}
-            userSellableShares={userSellableShares}
-            userShares={userShares}
-          />
-        )}
         {userProfile &&
+          project.type === 'cert' &&
+          project.stage !== 'proposal' && (
+            <Trade
+              ammTxns={projectTxns.filter(
+                (txn) => txn.to_id === project.id || txn.from_id === project.id
+              )}
+              ammId={project.id}
+              userSpendableFunds={userSpendableFunds}
+              userSellableShares={userSellableShares}
+            />
+          )}
+        {userProfile &&
+          userProfile.id !== project.creator &&
+          project.type === 'cert' &&
+          project.stage === 'proposal' && (
+            <AssuranceBuyBox
+              project={project}
+              valuation={valuation}
+              offerSizeDollars={
+                (projectBids.find((bid) => bid.type === 'assurance sell')
+                  ?.amount ?? 0) - amountRaised
+              }
+              maxBuy={userSpendableFunds}
+            />
+          )}
+        {userProfile &&
+          userProfile.id !== project.creator &&
           project.type === 'grant' &&
           pendingProjectTransfers.length === 0 &&
           (project.stage === 'proposal' || project.stage === 'active') && (

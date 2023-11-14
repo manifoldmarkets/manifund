@@ -1,6 +1,9 @@
 import { createServerClient } from '@/db/supabase-server'
 import { getProfileByUsername, getProfileById, getUser } from '@/db/profile'
-import { getTxnsByUser, getIncomingTxnsByUserWithDonor } from '@/db/txn'
+import {
+  getTxnAndProjectsByUser,
+  getIncomingTxnsByUserWithDonor,
+} from '@/db/txn'
 import { DonateBox } from '@/components/donate-box'
 import { getBidsByUser } from '@/db/bid'
 import Image from 'next/image'
@@ -31,7 +34,7 @@ export default async function CharityPage(props: {
   ])
   const [profile, txns, bids] = await Promise.all([
     user ? getProfileById(supabase, user.id) : null,
-    user ? getTxnsByUser(supabase, user.id) : [],
+    user ? getTxnAndProjectsByUser(supabase, user.id) : [],
     user ? getBidsByUser(supabase, user.id) : [],
   ])
 
@@ -52,7 +55,7 @@ export default async function CharityPage(props: {
           <div className="h-full w-full bg-gradient-to-r from-slate-300 to-indigo-200" />
         )}
       </figure>
-      <h1 className="mt-3 mb-2 text-3xl font-bold">{charity.full_name}</h1>
+      <h1 className="mb-2 mt-3 text-3xl font-bold">{charity.full_name}</h1>
       {charity.website && (
         <span className="text-orange-600">
           <LinkIcon className="mr-1 inline-block h-4 w-4 stroke-2" />
@@ -64,7 +67,7 @@ export default async function CharityPage(props: {
           </Link>
         </span>
       )}
-      <p className="mt-1 mb-10 text-gray-600">{charity.bio}</p>
+      <p className="mb-10 mt-1 text-gray-600">{charity.bio}</p>
       {profile && (
         <Row className="justify-between">
           <Col className="mx-5 my-3 justify-between">

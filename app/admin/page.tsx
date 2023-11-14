@@ -14,6 +14,7 @@ import { listProjects } from '@/db/project'
 import { GrantVerdict } from './grant-verdict'
 import { AddTags } from './add-tags'
 import { DownloadTextButton } from './download-text-button'
+import { CategorizeTxns } from './categorize-txns'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -81,6 +82,7 @@ export default async function Admin() {
         toDownload={usersCSV}
         filename="users.csv"
       />
+      <CategorizeTxns txns={txns ?? []} />
       <Table>
         <thead>
           <tr>

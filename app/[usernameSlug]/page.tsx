@@ -1,8 +1,4 @@
-import {
-  getProfileAndBidsById,
-  getProfileByUsername,
-  getUser,
-} from '@/db/profile'
+import { getProfileById, getProfileByUsername, getUser } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { getFullTxnsByUser, getTxnsByUser } from '@/db/txn'
@@ -29,9 +25,10 @@ export default async function UserProfilePage(props: {
     getCommentsByUser(supabase, profile.id),
     getUser(supabase),
   ])
-  const [userTxns, userProfile] = await Promise.all([
+  const [userTxns, userProfile, userBids] = await Promise.all([
     user ? getTxnsByUser(supabase, user.id) : null,
-    user ? getProfileAndBidsById(supabase, user.id) : null,
+    user ? getProfileById(supabase, user.id) : null,
+    user ? getBidsByUser(supabase, user.id) : null,
   ])
   const isOwnProfile = user?.id === profile?.id
   return (
@@ -45,6 +42,7 @@ export default async function UserProfilePage(props: {
         txns={txns}
         userProfile={userProfile}
         userTxns={userTxns}
+        userBids={userBids}
       />
     </div>
   )

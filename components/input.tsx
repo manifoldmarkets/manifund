@@ -44,7 +44,7 @@ export const Checkbox = forwardRef(
           ref={ref}
           type="checkbox"
           className={clsx(
-            'h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600',
+            'h-4 w-4 cursor-pointer rounded border-gray-300 text-orange-600 focus:ring-orange-600',
             className
           )}
           {...rest}

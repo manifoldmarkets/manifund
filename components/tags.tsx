@@ -28,15 +28,21 @@ const COLORS = [
   'bg-indigo-200',
   'bg-gray-200',
   'bg-sky-200',
+  'bg-orange-200',
+  'bg-emearld-200',
   'bg-rose-200',
   'bg-indigo-400',
   'bg-gray-400',
   'bg-sky-400',
   'bg-rose-400',
+  'bg-orange-400',
+  'bg-emerald-400',
   'text-indigo-700',
   'text-gray-700',
   'text-sky-700',
   'text-rose-700',
+  'text-orange-700',
+  'text-emerald-700',
 ]
 
 export function RoundTag(props: { roundTitle: string; roundSlug?: string }) {
@@ -191,7 +197,7 @@ export function Tag(props: {
   const { text, color = 'orange', className } = props
   return (
     <div
-      className={`max-w-fit overflow-ellipsis rounded-sm px-2 py-1 text-xs font-semibold line-clamp-1 bg-${color}-100 text-${color}-600 ${className}`}
+      className={`line-clamp-1 max-w-fit overflow-ellipsis rounded-sm px-2 py-1 text-xs font-semibold bg-${color}-100 text-${color}-700 ${className}`}
     >
       {text}
     </div>

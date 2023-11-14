@@ -9,7 +9,7 @@ import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { JSONContent } from '@tiptap/react'
 import { calculateCharityBalance } from '@/utils/math'
-import { getTxnsByUser } from '@/db/txn'
+import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { updateProjectCauses } from '@/db/cause'
 
@@ -56,7 +56,7 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const regranter = resp.data.user
   if (!regranter) {
-    console.log('no regranter')
+    console.error('no regranter')
     return NextResponse.error()
   }
   const regranterProfile = await getProfileById(supabase, regranter.id)
@@ -65,10 +65,10 @@ export default async function handler(req: NextRequest) {
     ((!recipientEmail || !recipientName) && !recipientUsername) ||
     !regranterProfile
   ) {
-    console.log('invalid inputs')
+    console.error('invalid inputs')
     return NextResponse.error()
   }
-  const regranterTxns = await getTxnsByUser(supabase, regranter.id)
+  const regranterTxns = await getTxnAndProjectsByUser(supabase, regranter.id)
   const regranterBids = await getBidsByUser(supabase, regranter.id)
   const regranterCharityBalance = calculateCharityBalance(
     regranterTxns,
@@ -77,7 +77,7 @@ export default async function handler(req: NextRequest) {
     regranterProfile.accreditation_status
   )
   if (regranterCharityBalance < donorContribution) {
-    console.log('insufficient funds')
+    console.error('insufficient funds')
     return NextResponse.error()
   }
   const slug = await projectSlugify(title, supabase)
@@ -95,7 +95,7 @@ export default async function handler(req: NextRequest) {
     description,
     min_funding: minFunding,
     funding_goal: fundingGoal,
-    founder_portion: TOTAL_SHARES,
+    founder_shares: TOTAL_SHARES,
     type: 'grant' as Project['type'],
     stage: 'proposal' as Project['stage'],
     round: 'Regrants',
@@ -168,7 +168,7 @@ export default async function handler(req: NextRequest) {
       recipientProfile.id
     )
   } else {
-    console.log('invalid inputs 2')
+    console.error('invalid inputs 2')
     return NextResponse.error()
   }
   await updateProjectCauses(supabase, causeSlugs, project.id)

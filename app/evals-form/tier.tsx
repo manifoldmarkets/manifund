@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import { SearchBar } from '@/components/input'
 import { searchInAny } from '@/utils/parse'
 
+// @ts-nocheck
 export function Tier(props: {
   tier: TierObj
   confidenceMap: ConfidenceMap
@@ -57,12 +58,14 @@ export function Tier(props: {
         )}
       </Row>
       <div className="flex-inline relative w-full items-center">
+        {/* @ts-ignore */}
         <Droppable
           droppableId={tier.id}
           type={'CARD'}
           direction="horizontal"
           isCombineEnabled={false}
         >
+          {/* @ts-ignore */}
           {(dropProvided) => (
             <div
               {...dropProvided.droppableProps}

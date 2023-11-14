@@ -29,6 +29,8 @@ export const showPrecision = (x: number, sigfigs: number) =>
   // Convert back to number for weird formatting reason
   `${Number(x.toPrecision(sigfigs))}`
 
+export const formatPercent = (x: number) => `${showPrecision(x * 100, 3)}%`
+
 // Eg 1234567.89 => 1.23M; 5678 => 5.68K
 export function formatLargeNumber(num: number, sigfigs = 2): string {
   const absNum = Math.abs(num)
@@ -113,4 +115,8 @@ export async function projectSlugify(title: string, supabase: SupabaseClient) {
     slug = slug + '-' + Math.random().toString(36).substring(2, 15)
   }
   return slug
+}
+
+export function roundToNearestFive(n: number): number {
+  return Math.round(n / 5) * 5
 }

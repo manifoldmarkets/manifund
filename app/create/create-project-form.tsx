@@ -2,7 +2,7 @@
 
 import { useSupabase } from '@/db/supabase-provider'
 import { useState } from 'react'
-import { Input } from '@/components/input'
+import { Checkbox, Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { TOTAL_SHARES } from '@/db/project'
@@ -16,6 +16,8 @@ import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
 import { MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
+import { InvestmentStructurePanel } from './investment-structure'
+import { Tooltip } from '@/components/tooltip'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -47,13 +49,22 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   const [locationDescription, setLocationDescription] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
+  const [applyingToManifold, setApplyingToManifold] = useState<boolean>(false)
+  const [founderPortion, setFounderPortion] = useState<number>(50)
+  const ammPortion = 10
+  const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
+  const minMinFunding = applyingToManifold ? 100 : 500
 
   let errorMessage = null
   if (title === '') {
     errorMessage = 'Your project needs a title.'
-  } else if (minFunding !== null && minFunding < 500) {
-    errorMessage = 'Your minimum funding must be at least $500.'
+  } else if (minFunding === null) {
+    errorMessage = 'Your project needs a minimum funding amount.'
+  } else if (minFunding !== null && minFunding < minMinFunding) {
+    errorMessage = `Your minimum funding must be at least $${minMinFunding}.`
+  } else if (applyingToManifold && !agreedToTerms) {
+    errorMessage = 'Please confirm that you agree to the investment structure.'
   } else if (
     fundingGoal &&
     ((minFunding && minFunding > fundingGoal) || fundingGoal <= 0)
@@ -75,6 +86,10 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   const handleSubmit = async () => {
     setIsSubmitting(true)
     const description = editor?.getJSON() ?? '<p>No description</p>'
+    const selectedCauseSlugs = selectedCauses.map((cause) => cause.slug)
+    if (applyingToManifold) {
+      selectedCauseSlugs.push('manifold-community')
+    }
     const response = await fetch('/api/create-project', {
       method: 'POST',
       headers: {
@@ -86,12 +101,18 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         description,
         min_funding: minFunding,
         funding_goal: fundingGoal,
-        founder_portion: TOTAL_SHARES,
-        round: 'Regrants',
+        founder_shares: applyingToManifold
+          ? (founderPortion / 100) * TOTAL_SHARES
+          : TOTAL_SHARES,
+        // TODO: replace name if Austin has an alternative
+        round: applyingToManifold ? 'Manifold Community Round' : 'Regrants',
         auction_close: verdictDate,
         stage: 'proposal',
-        type: 'grant',
-        causeSlugs: selectedCauses.map((cause) => cause.slug),
+        type: applyingToManifold ? 'cert' : 'grant',
+        causeSlugs: selectedCauseSlugs,
+        amm_shares: applyingToManifold
+          ? (ammPortion / 100) * TOTAL_SHARES
+          : null,
         location_description: locationDescription,
       }),
     })
@@ -118,6 +139,15 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
+      <Row className="items-center gap-1">
+        <Checkbox
+          checked={applyingToManifold}
+          onChange={(event) => setApplyingToManifold(event.target.checked)}
+        />
+        <label className="ml-2 text-sm">
+          I am applying to the Manifold Markets Community Round.
+        </label>
+      </Row>
       <Col className="gap-1">
         <label htmlFor="title">
           Title
@@ -186,7 +216,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           The minimum amount of funding you need to start this project. If this
           amount is not reached, no funds will be sent. Due to the cost of
           approving grants and processing payments, we require this to be at
-          least $500.
+          least ${minMinFunding}.
         </p>
         <Col>
           <Input
@@ -195,11 +225,21 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
             autoComplete="off"
             value={minFunding !== null ? Number(minFunding).toString() : ''}
             onChange={(event) => setMinFunding(Number(event.target.value))}
-            error={minFunding !== null && minFunding < 500}
-            errorMessage="Minimum funding must be at least $500."
+            error={minFunding !== null && minFunding < minMinFunding}
+            errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
           />
         </Col>
       </Col>
+      {applyingToManifold && (
+        <InvestmentStructurePanel
+          minFunding={minFunding ?? 0}
+          founderPortion={founderPortion}
+          setFounderPortion={setFounderPortion}
+          ammPortion={ammPortion}
+          agreedToTerms={agreedToTerms}
+          setAgreedToTerms={setAgreedToTerms}
+        />
+      )}
       <Col className="gap-1">
         <label htmlFor="fundingGoal">
           Funding goal (USD)
@@ -207,7 +247,10 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         </label>
         <p className="text-sm text-gray-600">
           Until this amount is raised, the project will be marked for donors as
-          not fully funded.
+          not fully funded. If this amount is different from your minimum
+          funding, please explain in your project description what you could
+          accomplish with the minimum funding and what you could accomplish with
+          the full funding.
         </p>
         <Input
           type="number"
@@ -263,15 +306,17 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           onChange={(event) => setLocationDescription(event.target.value)}
         />
       </Col>
-      <Button
-        className="mt-4"
-        type="submit"
-        disabled={!!errorMessage}
-        loading={isSubmitting}
-        onClick={handleSubmit}
-      >
-        Publish project
-      </Button>
+      <Tooltip text={errorMessage} className="mt-4 w-full">
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={!!errorMessage}
+          loading={isSubmitting}
+          onClick={handleSubmit}
+        >
+          Publish project
+        </Button>
+      </Tooltip>
     </Col>
   )
 }
