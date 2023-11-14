@@ -424,7 +424,7 @@ function getPrices(projects: FullProject[]) {
         ? getProposalValuation(project)
         : getActiveValuation(
             project.txns,
-            project.bids,
+            project.id,
             getProposalValuation(project)
           )
   })

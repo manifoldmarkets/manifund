@@ -10,11 +10,12 @@ import { Dialog } from '@headlessui/react'
 import { CircleStackIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { MySlider } from '@/components/slider'
+import { Slider } from '@/components/slider'
 import { Checkbox, Input } from '@/components/input'
 import { useSupabase } from '@/db/supabase-provider'
 import { Modal } from '@/components/modal'
 import { Profile } from '@/db/profile'
+import { Avatar } from '@/components/avatar'
 
 export function Bids(props: {
   bids: BidAndProfile[]
@@ -32,23 +33,10 @@ export function Bids(props: {
         There are no bids on this project.
       </p>
     )
-  if (project.stage === 'proposal') {
-    return (
-      <Row className="justify-center">
-        <Col className="w-full max-w-xl">
-          {bids.map((bid) => (
-            <Bid
-              key={bid.id}
-              bid={bid}
-              project={project}
-              showValuation={false}
-            />
-          ))}
-        </Col>
-      </Row>
+  if (project.stage === 'active' || project.stage === 'proposal') {
+    const buyBids = bids.filter(
+      (bid) => bid.type === 'buy' || bid.type === 'assurance buy'
     )
-  } else if (project.stage === 'active') {
-    const buyBids = bids.filter((bid) => bid.type === 'buy')
     const sellBids = bids.filter((bid) => bid.type === 'sell')
     return (
       <Row className="w-full justify-center">
@@ -105,9 +93,18 @@ function Bid(props: {
     userSpendableFunds,
     userSellableShares,
   } = props
+  const showTrade =
+    userProfile && bid.bidder !== userProfile.id && bid.type !== 'assurance buy'
   return (
-    <Row className="w-full items-center justify-between gap-3 rounded p-3 hover:bg-gray-200">
-      <UserAvatarAndBadge profile={bid.profiles} />
+    <Row className="w-full items-center justify-between gap-3 rounded p-3 text-sm hover:bg-gray-200">
+      <UserAvatarAndBadge profile={bid.profiles} className="hidden sm:flex" />
+      <Avatar
+        size="xs"
+        username={bid.profiles.username}
+        avatarUrl={bid.profiles.avatar_url}
+        id={bid.bidder}
+        className="sm:hidden"
+      />
       {showValuation ? (
         <div>
           {formatMoney(bid.amount)} <span className="text-gray-500"> @ </span>$
@@ -117,20 +114,17 @@ function Bid(props: {
       ) : (
         <div>{formatMoney(bid.amount)}</div>
       )}
-      {userProfile && (
-        <div>
-          {bid.bidder === userProfile.id ? (
-            <DeleteBid bidId={bid.id} />
-          ) : (
-            <Trade
-              bid={bid}
-              project={project}
-              userId={userProfile.id}
-              userSpendableFunds={userSpendableFunds ?? 0}
-              userSellableShares={userSellableShares ?? 0}
-            />
-          )}
-        </div>
+      {userProfile && bid.bidder === userProfile.id && (
+        <DeleteBid bidId={bid.id} />
+      )}
+      {showTrade && (
+        <Trade
+          bid={bid}
+          project={project}
+          userId={userProfile.id}
+          userSpendableFunds={userSpendableFunds ?? 0}
+          userSellableShares={userSellableShares ?? 0}
+        />
       )}
     </Row>
   )
@@ -157,13 +151,13 @@ function Trade(props: {
   const enoughMoney = tradeAmount <= (userSpendableFunds ?? 0)
   const enoughShares =
     (tradeAmount / bid.valuation) * TOTAL_SHARES <= (userSellableShares ?? 0)
-  const marks = {
-    0: '$0',
-    25: `${formatMoney(bid.amount / 4)}`,
-    50: `${formatMoney(bid.amount / 2)}`,
-    75: `${formatMoney((bid.amount / 4) * 3)}`,
-    100: `${formatMoney(bid.amount)}`,
-  }
+  const marks = [
+    { value: 0, label: '$0' },
+    { value: 25, label: `${formatMoney(bid.amount / 4)}` },
+    { value: 50, label: `${formatMoney(bid.amount / 2)}` },
+    { value: 75, label: `${formatMoney((bid.amount / 4) * 3)}` },
+    { value: 100, label: `${formatMoney(bid.amount)}` },
+  ]
   const router = useRouter()
 
   let errorMessage: string | null = null
@@ -184,7 +178,6 @@ function Trade(props: {
   } else if (
     !agreedToTerms &&
     project.creator === userId &&
-    project.round === 'OP AI Worldviews Contest' &&
     bid.type === 'buy'
   ) {
     errorMessage = `Confirm that you understand the terms of this trade.`
@@ -192,14 +185,18 @@ function Trade(props: {
   return (
     <div>
       <Button
-        className="w-14"
+        className="w-14 text-xs"
         onClick={() => {
           setOpen(true)
         }}
+        disabled={
+          (bid.type === 'sell' && userSpendableFunds === 0) ||
+          (bid.type === 'buy' && userSellableShares === 0)
+        }
       >
         {bid.type === 'buy' ? 'Sell' : 'Buy'}
       </Button>
-      <Modal open={open}>
+      <Modal open={open} setOpen={setOpen}>
         <div>
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
             <CircleStackIcon
@@ -230,9 +227,9 @@ function Trade(props: {
                     setTradeAmount(Number(event.target.value))
                   }
                 />
-                <MySlider
+                <Slider
                   marks={marks}
-                  value={(tradeAmount / bid.amount) * 100}
+                  amount={(tradeAmount / bid.amount) * 100}
                   onChange={(value) =>
                     setTradeAmount(((value as number) * bid.amount) / 100)
                   }
@@ -285,14 +282,14 @@ function Trade(props: {
             loading={isSubmitting}
             disabled={errorMessage !== null}
             onClick={async () => {
-              const response = await fetch('/api/trade', {
+              const response = await fetch('/api/trade-with-limit', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                   oldBidId: bid.id,
-                  usdTraded: tradeAmount,
+                  numDollarsInTrade: tradeAmount,
                 }),
               })
               const res = await response.json()
@@ -320,14 +317,14 @@ function DeleteBid(props: { bidId: string }) {
   return (
     <div>
       <Button
-        className="w-14 bg-rose-500 hover:bg-rose-600"
+        className="w-14 bg-rose-500 text-xs hover:bg-rose-600"
         onClick={() => {
           setOpen(true)
         }}
       >
         Delete
       </Button>
-      <Modal open={open}>
+      <Modal open={open} setOpen={setOpen}>
         <div>
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-100">
             <TrashIcon className="h-6 w-6 text-rose-600" aria-hidden="true" />

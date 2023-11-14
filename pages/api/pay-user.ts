@@ -25,6 +25,12 @@ export default async function handler(req: NextRequest) {
   // Create a new txn paying this user
   const { data: txn, error } = await supabaseAdmin
     .from('txns')
-    .insert({ amount: positiveAmount, from_id, to_id, token: 'USD' })
+    .insert({
+      amount: positiveAmount,
+      from_id,
+      to_id,
+      token: 'USD',
+      type: amount > 0 ? 'deposit' : 'withdraw',
+    })
   return NextResponse.json(txn)
 }

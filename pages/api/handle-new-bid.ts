@@ -1,16 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import {
-  getProjectAndProfileById,
-  Project,
-  ProjectAndProfile,
-} from '@/db/project'
-import { maybeActivateGrant } from '@/utils/activate-grant'
+import { getProjectAndProfileById, ProjectAndProfile } from '@/db/project'
+import { maybeActivateProject } from '@/utils/activate-project'
 import { Bid } from '@/db/bid'
-import { calculateFullTrades } from '@/utils/math'
-import { calculateShareholders } from '@/app/projects/[slug]/project-tabs'
+import { getShareholders } from '@/app/projects/[slug]/project-tabs'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { trade } from '@/utils/trade'
 import { createAdminClient } from './_db'
 import { getTxnsByProject } from '@/db/txn'
 import { getProfileById } from '@/db/profile'
@@ -25,46 +19,13 @@ export default async function handler(
   if (!project) {
     return res.status(404).json({ error: 'Project not found' })
   }
-  if (bid.type === 'donate') {
-    await maybeActivateGrant(supabase, bid.project)
-  } else if (project.stage === 'active') {
-    await findAndMakeTrades(bid, supabase)
-  }
-  if (bid.type === 'buy') {
+  if (project.stage === 'proposal') {
+    await maybeActivateProject(supabase, bid.project)
+  } else if (project.type === 'cert' && bid.type === 'buy') {
     await sendShareholderEmails(bid, project, supabase)
   }
 
   return res.status(200).json({ bid })
-}
-
-async function findAndMakeTrades(bid: Bid, supabase: SupabaseClient) {
-  const newOfferType = bid.type
-  const { data, error } = await supabase
-    .from('bids')
-    .select()
-    .eq('project', bid.project)
-    .order('valuation', { ascending: newOfferType === 'buy' })
-  if (error) {
-    throw error
-  }
-  const oldBids = data
-    .filter((oldBid) => oldBid.bidder !== bid.bidder)
-    .filter((oldBid) => oldBid.type !== newOfferType)
-    .filter((oldBid) => oldBid.status === 'pending')
-  let budget = bid.amount
-  for (const oldBid of oldBids) {
-    if (
-      (newOfferType === 'buy'
-        ? oldBid.valuation > bid.valuation
-        : oldBid.valuation < bid.valuation) ||
-      budget <= 0
-    ) {
-      return
-    }
-    const tradeAmount = Math.min(budget, oldBid.amount)
-    budget -= tradeAmount
-    await trade(oldBid, tradeAmount, bid.bidder)
-  }
 }
 
 async function sendShareholderEmails(
@@ -77,8 +38,7 @@ async function sendShareholderEmails(
   if (!bidder) {
     return
   }
-  const trades = calculateFullTrades(txns)
-  const shareholders = calculateShareholders(trades, project.profiles)
+  const shareholders = getShareholders(txns)
   for (const shareholder of shareholders) {
     await sendTemplateEmail(
       TEMPLATE_IDS.GENERIC_NOTIF,

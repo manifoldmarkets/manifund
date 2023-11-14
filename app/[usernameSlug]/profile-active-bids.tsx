@@ -1,7 +1,7 @@
 'use client'
 import { Bid, BidAndProject, deleteBid } from '@/db/bid'
-import { ThickTableRow } from '@/components/table'
-import { RoundTag, Tag } from '@/components/tags'
+import { Table, TableRow } from '@/components/table'
+import { Tag } from '@/components/tags'
 import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { formatMoney } from '@/utils/formatting'
@@ -15,7 +15,7 @@ export function ActiveBids(props: {
   const { supabase } = useSupabase()
   const router = useRouter()
   const bidsDisplay = bids.map((bid) => (
-    <ThickTableRow
+    <TableRow
       key={bid.id}
       title={bid.projects.title}
       subtitle={
@@ -26,7 +26,6 @@ export function ActiveBids(props: {
           showValuation={isOwnProfile || bid.projects.stage !== 'proposal'}
         />
       }
-      tag={<RoundTag roundTitle={bid.projects.round} />}
       href={`/projects/${bid.projects.slug}`}
       deleteFunction={async () => {
         await deleteBid(supabase, bid.id)
@@ -37,12 +36,7 @@ export function ActiveBids(props: {
   return (
     <div>
       <h1 className="mb-2 text-xl font-medium sm:text-2xl">Trade offers</h1>
-      <table
-        role="list"
-        className="w-full divide-y divide-gray-200 rounded-md bg-white shadow"
-      >
-        {bidsDisplay}
-      </table>
+      <Table>{bidsDisplay}</Table>
     </div>
   )
 }
@@ -69,7 +63,7 @@ export function BidText(props: {
       return (
         <div className="flex items-center">
           <p className="text-sm text-gray-500">
-            Bid&nbsp;
+            Offered&nbsp;
             <span className="text-black">{formatMoney(bid.amount)}</span>
             {showValuation && (
               <span>
@@ -84,7 +78,7 @@ export function BidText(props: {
     case 'active':
       return (
         <div className="flex items-center text-sm text-gray-500">
-          Offer to&nbsp;
+          Offered to&nbsp;
           <Tag
             text={bid.type === 'buy' ? 'BUY' : 'SELL'}
             color={bid.type === 'buy' ? 'emerald' : 'rose'}
@@ -98,6 +92,6 @@ export function BidText(props: {
         </div>
       )
     default:
-      return <></>
+      return null
   }
 }

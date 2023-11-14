@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
-import { getProfileAndBidsById } from '@/db/profile'
+import { getProfileById } from '@/db/profile'
 import { getFullTxnsByUser } from '@/db/txn'
 import { calculateCashBalance } from '@/utils/math'
 import Stripe from 'stripe'
@@ -8,6 +8,7 @@ import { STRIPE_SECRET_KEY } from '@/db/env'
 import uuid from 'react-uuid'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { CENTS_PER_DOLLAR } from '@/utils/constants'
+import { getBidsByUser } from '@/db/bid'
 
 export const config = {
   runtime: 'edge',
@@ -30,23 +31,24 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) {
-    console.log('no user')
+    console.error('no user')
     return NextResponse.error()
   }
-  const profile = await getProfileAndBidsById(supabase, user.id)
-  if (!profile.stripe_connect_id) {
-    console.log('no stripe connect id')
+  const profile = await getProfileById(supabase, user.id)
+  if (!profile?.stripe_connect_id) {
+    console.error('no stripe connect id')
     return NextResponse.error()
   }
   const account = await stripe.accounts.retrieve(profile.stripe_connect_id)
   if (!account.payouts_enabled || !account.details_submitted) {
-    console.log('no payouts enabled')
+    console.error('no payouts enabled')
     return NextResponse.error()
   }
   const txns = await getFullTxnsByUser(supabase, user.id)
+  const bids = await getBidsByUser(supabase, user.id)
   const withdrawBalance = calculateCashBalance(
     txns,
-    profile.bids,
+    bids,
     user.id,
     profile.accreditation_status
   )
@@ -69,6 +71,7 @@ export default async function handler(req: NextRequest) {
       amount: dollarAmount,
       token: 'USD',
       project: null,
+      type: 'withdraw',
     })
     .throwOnError()
   await supabase

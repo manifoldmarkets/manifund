@@ -3,9 +3,10 @@ import clsx from 'clsx'
 
 export type SizeType = '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 export type ColorType =
-  | 'green'
-  | 'red'
+  | 'emerald'
+  | 'emerald-outline'
   | 'rose'
+  | 'rose-outline'
   | 'blue'
   | 'orange'
   | 'yellow'
@@ -29,18 +30,18 @@ export function buttonClass(size: SizeType, color: ColorType | 'override') {
   return clsx(
     'font-md inline-flex items-center justify-center rounded-md ring-inset shadow-sm transition-colors disabled:cursor-not-allowed text-center',
     sizeClasses[size],
-    color === 'green' &&
-      'disabled:bg-gray-200 bg-teal-500 text-white hover:bg-teal-500',
-    color === 'red' &&
-      'disabled:bg-gray-200 bg-scarlet-300 text-white hover:bg-scarlet-400',
+    color === 'emerald' &&
+      'disabled:bg-gray-200 bg-emerald-500 text-white hover:bg-emerald-600',
+    color === 'emerald-outline' &&
+      'disabled:bg-gray-200 bg-white ring-emerald-500 ring-2 text-emerald-500 hover:bg-emerald-500 hover:text-white',
     color === 'rose' &&
-      'disabled:bg-gray-200 bg-rose-300 text-white hover:bg-rose-400',
-    color === 'yellow' &&
-      'disabled:bg-gray-200 bg-yellow-400 text-white hover:bg-yellow-500',
-    color === 'blue' &&
-      'disabled:bg-gray-200 bg-blue-400 text-white hover:bg-blue-500',
+      'disabled:bg-gray-200 bg-rose-500 text-white hover:bg-rose-600',
+    color === 'rose-outline' &&
+      'disabled:bg-gray-200 bg-white ring-rose-500  ring-2 text-rose-500 hover:bg-rose-500 hover:text-white',
     color === 'orange' &&
       'disabled:bg-gray-200 bg-orange-500 text-white hover:bg-orange-600',
+    color === 'orange-outline' &&
+      'disabled:bg-gray-200 bg-white ring-2 ring-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white',
     color === 'gray' &&
       'bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50',
     color === 'gray-outline' &&

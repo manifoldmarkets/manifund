@@ -22,10 +22,11 @@ import { Dialog } from '@headlessui/react'
 import { Input } from '@/components/input'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { formatMoneyPrecise } from '@/utils/formatting'
 
 export function BalanceDisplay(props: {
   balance: number
-  withdrawBalance: number
+  cashBalance: number
   charityBalance: number
   accredited: boolean
   isOwnProfile?: boolean
@@ -33,7 +34,7 @@ export function BalanceDisplay(props: {
 }) {
   const {
     balance,
-    withdrawBalance,
+    cashBalance,
     charityBalance,
     accredited,
     isOwnProfile,
@@ -41,12 +42,12 @@ export function BalanceDisplay(props: {
   } = props
   const stats = [
     { name: 'charity balance', value: charityBalance },
-    { name: 'cash balance', value: withdrawBalance },
+    { name: 'cash balance', value: cashBalance },
   ]
   return (
     <Col className="h-fit">
       <Row className="h-fit justify-between gap-1 sm:gap-4 lg:gap-8">
-        <div className="w-full min-w-fit rounded border-none bg-orange-500 py-1 px-2">
+        <div className="w-full min-w-fit rounded border-none bg-orange-500 px-2 py-1">
           <DataPoint
             label="total balance"
             value={balance.toLocaleString('en-US', {
@@ -60,7 +61,7 @@ export function BalanceDisplay(props: {
         {stats.map((stat) => (
           <Card
             key={stat.name}
-            className="relative w-full min-w-fit border-none py-1 px-2"
+            className="relative w-full min-w-fit border-none px-2 py-1"
           >
             <DataPoint
               label={stat.name}
@@ -71,7 +72,7 @@ export function BalanceDisplay(props: {
               })}
             />
             {stat.name === 'cash balance' && stat.value > 0 && isOwnProfile && (
-              <div className="absolute bottom-0 -right-1">
+              <div className="absolute -right-1 bottom-0">
                 <CashToCharityButton cashBalance={stat.value} />
               </div>
             )}
@@ -80,7 +81,7 @@ export function BalanceDisplay(props: {
                 {stat.name === 'charity balance' ? (
                   <>
                     {!accredited && (
-                      <Row className="absolute top-2 right-2">
+                      <Row className="absolute right-2 top-2">
                         <StripeDepositButton userId={userId}>
                           <div className="rounded bg-orange-500 p-0.5 shadow">
                             <Tooltip text="Add funds" placement="left">
@@ -92,7 +93,7 @@ export function BalanceDisplay(props: {
                     )}
                   </>
                 ) : (
-                  <Row className="absolute top-2 right-2 justify-between gap-1">
+                  <Row className="absolute right-2 top-2 justify-between gap-1">
                     {accredited && <AirtableDepositButton />}
                     <Link
                       href="/withdraw"
@@ -110,7 +111,8 @@ export function BalanceDisplay(props: {
         ))}
       </Row>
       <p className="mt-2 w-full rounded bg-gray-100 p-1 text-center text-sm tracking-wider text-gray-400">
-        ${balance - withdrawBalance - charityBalance} in pending offers
+        {formatMoneyPrecise(balance - cashBalance - charityBalance)} in pending
+        offers
       </p>
     </Col>
   )
@@ -139,7 +141,7 @@ function CashToCharityButton(props: { cashBalance: number }) {
         <ArrowLeftIcon className="h-4 w-4 stroke-2 text-orange-500" />
       </IconButton>
 
-      <Modal open={open}>
+      <Modal open={open} setOpen={setOpen}>
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
           <HeartIcon className="h-6 w-6 text-orange-600" aria-hidden="true" />
         </div>

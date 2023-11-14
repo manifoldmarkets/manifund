@@ -1,5 +1,5 @@
 'use client'
-import { Profile, ProfileAndBids } from '@/db/profile'
+import { Profile } from '@/db/profile'
 import { BidAndProject } from '@/db/bid'
 import { FullProject, Project } from '@/db/project'
 import { ProposalBids } from './profile-proposal-bids'
@@ -7,12 +7,8 @@ import { ActiveBids } from './profile-active-bids'
 import { Investments } from './profile-investments'
 import { Projects } from './profile-projects'
 import { BalanceDisplay } from './balance-display'
-import {
-  calculateCharityBalance,
-  calculateUserBalance,
-  categorizeTxn,
-} from '@/utils/math'
-import { Txn, FullTxn } from '@/db/txn'
+import { calculateCharityBalance, calculateUserBalance } from '@/utils/math'
+import { FullTxn, TxnAndProject } from '@/db/txn'
 import { calculateCashBalance } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 import { OutgoingDonationsHistory } from './profile-donations'
@@ -30,11 +26,20 @@ export function ProfileContent(props: {
   comments: CommentAndProject[]
   bids: BidAndProject[]
   txns: FullTxn[]
-  userProfile: ProfileAndBids | null
-  userTxns: Txn[] | null
+  userProfile: Profile | null
+  userTxns: TxnAndProject[] | null
+  userBids: BidAndProject[] | null
 }) {
-  const { profile, projects, comments, bids, txns, userProfile, userTxns } =
-    props
+  const {
+    profile,
+    projects,
+    comments,
+    bids,
+    txns,
+    userProfile,
+    userTxns,
+    userBids,
+  } = props
   const isOwnProfile = userProfile?.id === profile.id
   const proposalBids = bids.filter(
     (bid) =>
@@ -49,18 +54,16 @@ export function ProfileContent(props: {
   const notOwnProjectInvestments = investments.filter((investment) => {
     return investment.project && investment.project.creator !== profile.id
   })
-  const donations = txns.filter((txn) => {
-    const txnType = categorizeTxn(txn, profile.id)
-    return (
-      txnType === 'outgoing profile donation' ||
-      txnType === 'outgoing project donation'
-    )
-  })
+  const donations = txns.filter(
+    (txn) =>
+      (txn.type === 'profile donation' || txn.type === 'project donation') &&
+      txn.from_id === profile.id
+  )
   const pendingDonateBids = bids.filter(
     (bid) => bid.status === 'pending' && bid.type === 'donate'
   )
   const balance = calculateUserBalance(txns, profile.id)
-  const withdrawBalance = calculateCashBalance(
+  const cashBalance = calculateCashBalance(
     txns,
     bids,
     profile.id,
@@ -73,10 +76,10 @@ export function ProfileContent(props: {
     profile.accreditation_status
   )
   const userCharityBalance =
-    userTxns && userProfile
+    userTxns && userBids && userProfile
       ? calculateCharityBalance(
           userTxns,
-          userProfile?.bids,
+          userBids,
           userProfile?.id,
           userProfile?.accreditation_status
         )
@@ -99,8 +102,9 @@ export function ProfileContent(props: {
       )}
       <BalanceDisplay
         balance={balance}
-        withdrawBalance={withdrawBalance}
-        charityBalance={charityBalance}
+        // Hack to get around old accounting system which means some cash balances are negative
+        cashBalance={Math.max(cashBalance, 0)}
+        charityBalance={charityBalance + Math.min(cashBalance, 0)}
         accredited={profile.accreditation_status}
         isOwnProfile={isOwnProfile ?? undefined}
         userId={userProfile?.id ?? undefined}

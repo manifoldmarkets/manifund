@@ -7,7 +7,7 @@ import { Bids } from './bids'
 import { BidAndProfile } from '@/db/bid'
 import { TxnAndProfiles } from '@/db/txn'
 import { Shareholders } from './shareholders'
-import { calculateFullTrades, FullTrade } from '@/utils/math'
+import { bundleTxns } from '@/utils/math'
 import { Tabs } from '@/components/tabs'
 import { DonationsHistory } from '@/components/donations-history'
 import { CommentAndProfile } from '@/db/comment'
@@ -37,12 +37,11 @@ export function ProjectTabs(props: {
   } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
-  const trades = calculateFullTrades(txns)
   const creator = project.profiles
   const shareholders =
     (project.stage === 'active' || project.stage === 'complete') &&
     project.type === 'cert'
-      ? calculateShareholders(trades, creator)
+      ? getShareholders(txns)
       : undefined
   const commenterContributions = getCommenterContributions(
     comments,
@@ -72,16 +71,14 @@ export function ProjectTabs(props: {
       project.type === 'cert') ||
     project.stage === 'proposal'
   ) {
+    const bidsToShow = bids.filter((bid) => bid.type !== 'assurance sell')
     tabs.push({
-      name:
-        project.stage === 'active' || project.type === 'grant'
-          ? 'Offers'
-          : 'Bids',
+      name: 'Offers',
       id: 'bids',
-      count: bids.length,
+      count: bidsToShow.length,
       display: (
         <Bids
-          bids={bids}
+          bids={bidsToShow}
           project={project}
           userProfile={userProfile}
           userSpendableFunds={userSpendableFunds}
@@ -98,8 +95,9 @@ export function ProjectTabs(props: {
       display: (
         <Shareholders
           shareholders={shareholders}
-          trades={trades}
           creator={creator}
+          txns={txns}
+          projectId={project.id}
         />
       ),
     })
@@ -127,27 +125,30 @@ export type Shareholder = {
   profile: Profile
   numShares: number
 }
-export function calculateShareholders(trades: FullTrade[], creator: Profile) {
+export function getShareholders(txns: TxnAndProfiles[]) {
+  const bundledTxns = bundleTxns(txns)
   const shareholders = Object.fromEntries(
-    trades.map((trade) => [trade.toProfile.id, { numShares: 0 } as Shareholder])
+    txns.map((txn) => [txn.to_id, { numShares: 0 } as Shareholder])
   )
-  shareholders[creator.id] = { profile: creator, numShares: 10000000 }
-  for (const trade of trades) {
-    shareholders[trade.toProfile.id].profile = trade.toProfile
-    shareholders[trade.toProfile.id].numShares += trade.numShares
-    if (shareholders[trade.fromProfile.id]) {
-      shareholders[trade.fromProfile.id].numShares -= trade.numShares
+  for (const bundle of bundledTxns) {
+    for (const txn of bundle) {
+      if (txn.token === 'USD' && txn.from_id) {
+        shareholders[txn.from_id].profile = txn.profiles as Profile
+      } else {
+        shareholders[txn.to_id].numShares += txn.amount
+        if (txn.from_id) {
+          shareholders[txn.from_id].numShares -= txn.amount
+          shareholders[txn.from_id].profile = txn.profiles as Profile
+        }
+      }
     }
   }
   const shareholdersArray = Object.values(shareholders) as Shareholder[]
-  // Round to 2 decimal places for small arithmetic errors
+  // Round for small arithmetic errors
   shareholdersArray.forEach((shareholder) => {
-    shareholder.numShares = Math.round(shareholder.numShares * 100) / 100
+    shareholder.numShares = Math.round(shareholder.numShares)
   })
-  return shareholdersArray.filter(
-    (shareholder) =>
-      shareholder.numShares > 0 || shareholder.profile.id === creator.id
-  )
+  return shareholdersArray.filter((shareholder) => !!shareholder.profile)
 }
 
 export function getCommenterContributions(

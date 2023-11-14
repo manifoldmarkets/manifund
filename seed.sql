@@ -1,6 +1,6 @@
 ---- Profiles ----
 -- add public profiles table
-create type profile_type as enum ('individual', 'org');
+create type profile_type as enum ('individual', 'org', 'amm', 'fund');
 
 create table public.profiles (
   id uuid not null,
@@ -87,7 +87,8 @@ create table if not exists public.projects (
   creator uuid not null references auth.users(id) on delete cascade,
   min_funding float8 not null,
   funding_goal float8  not null default 0,
-  founder_portion int8 not null,
+  founder_shares int8 not null,
+  amm_shares int8 not null,
   auction_close date,
   description jsonb,
   type project_type not null default 'cert',
@@ -148,6 +149,7 @@ INSERT
 --
 --
 ---- Txns ----
+create type txn_type as enum ("profile donation", "project donation", "user to user trade", "user to amm trade", "withdraw", "deposit", "cash to charity transfer", "inject amm liquidity", "mint cert");
 create table if not exists public.txns (
   id uuid not null default gen_random_uuid(),
   from_id uuid not null references auth.users(id) on delete cascade,
@@ -155,6 +157,7 @@ create table if not exists public.txns (
   amount numeric not null,
   token text not null,
   created_at timestamp not null default now(),
+  type txn_type not null,
   primary key (id)
 );
 
@@ -181,7 +184,7 @@ INSERT
 --
 ---- Bids ----
 -- Create an enum type for 'buy' vs 'sell' vs 'auction'
-create type bid_type as enum ('buy', 'sell', 'donate');
+create type bid_type as enum ('buy', 'sell', 'donate', 'assurance buy', 'assurance sell');
 create type bid_status as enum ('deleted', 'pending', 'accepted', 'declined');
 
 create table if not exists public.bids (

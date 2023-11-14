@@ -43,6 +43,7 @@ export default async function handler(req: NextRequest) {
     to_id: user.id,
     amount: amount,
     token: 'USD',
+    type: 'cash to charity transfer',
   })
   const postmarkVars = {
     amount: amount,

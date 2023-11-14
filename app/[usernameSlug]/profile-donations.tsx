@@ -1,3 +1,5 @@
+import { Row } from '@/components/layout/row'
+import { Table } from '@/components/table'
 import { Tag } from '@/components/tags'
 import { Tooltip } from '@/components/tooltip'
 import { BidAndProject } from '@/db/bid'
@@ -67,10 +69,10 @@ export function OutgoingDonationsHistory(props: {
         Outgoing donations
       </h1>
       <div className="overflow-hidden rounded-md bg-white shadow">
-        <table role="list" className="w-full divide-y divide-gray-200">
+        <Table>
           {pendingGrantDisplay}
           {donationsDisplay}
-        </table>
+        </Table>
       </div>
     </div>
   )
@@ -85,34 +87,36 @@ function DonationRow(props: {
 }) {
   const { type, name, url, amount, date } = props
   return (
-    <Link href={url} className="table-row w-full">
-      <td className="p-3">
+    <Link href={url} className="group grid w-full grid-cols-4">
+      <Row className="col-span-2 items-center gap-5 p-3">
         {type === 'project' && (
           <Tooltip text="project">
-            <WrenchIcon className="relative top-1 h-5 w-5 flex-shrink-0 text-blue-500" />
+            <WrenchIcon className="h-5 w-5 flex-shrink-0 text-blue-500" />
           </Tooltip>
         )}
         {type === 'regranter' && (
           <Tooltip text="regranter">
-            <UserIcon className="relative top-1 h-5 w-5 flex-shrink-0 text-orange-500" />
+            <UserIcon className="h-5 w-5 flex-shrink-0 text-orange-500" />
           </Tooltip>
         )}
         {type === 'fund' && (
           <Tooltip text="charity">
-            <UserGroupIcon className="relative top-1 h-5 w-5 flex-shrink-0 text-emerald-500" />
+            <UserGroupIcon className="h-5 w-5 flex-shrink-0 text-emerald-500" />
           </Tooltip>
         )}
         {type === 'charity' && (
           <Tooltip text="charity">
-            <HeartIcon className="relative top-1 h-5 w-5 flex-shrink-0 text-rose-500" />
+            <HeartIcon className="h-5 w-5 flex-shrink-0 text-rose-500" />
           </Tooltip>
         )}
-      </td>
-      <td className="py-3">{name}</td>
-      <td className="py-3 px-3 text-right sm:px-0">${amount}</td>
-      <td className="hidden justify-end p-3 text-right text-sm text-gray-500 sm:flex">
+        <span className="truncate text-base font-medium text-gray-900 group-hover:underline">
+          {name}
+        </span>
+      </Row>
+      <div className="px-3 py-3 text-right sm:px-0">${amount}</div>
+      <div className="hidden justify-end p-3 text-right text-sm text-gray-500 sm:flex">
         {date ? date : <Tag text="PENDING" color="gray" />}
-      </td>
+      </div>
     </Link>
   )
 }
