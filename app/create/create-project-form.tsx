@@ -105,7 +105,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           ? (founderPortion / 100) * TOTAL_SHARES
           : TOTAL_SHARES,
         // TODO: replace name if Austin has an alternative
-        round: applyingToManifold ? 'Manifold Community Round' : 'Regrants',
+        round: applyingToManifold ? 'Manifold Community Fund' : 'Regrants',
         auction_close: verdictDate,
         stage: 'proposal',
         type: applyingToManifold ? 'cert' : 'grant',
