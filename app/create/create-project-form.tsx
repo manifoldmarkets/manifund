@@ -18,6 +18,7 @@ import { MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from './investment-structure'
 import { Tooltip } from '@/components/tooltip'
+import { SiteLink } from '@/components/site-link'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -145,7 +146,14 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           onChange={(event) => setApplyingToManifold(event.target.checked)}
         />
         <label className="ml-2 text-sm">
-          I am applying to the Manifold Markets Community Round.
+          I am applying to the{' '}
+          <SiteLink
+            href="http://localhost:3000/causes/manifold-community?tab=about"
+            target="_blank"
+            followsLinkClass
+          >
+            Manifold Markets Community Fund.
+          </SiteLink>
         </label>
       </Row>
       <Col className="gap-1">
