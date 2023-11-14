@@ -2,7 +2,7 @@ import { createServerClient } from '@/db/supabase-server'
 import { FullProject, getFullProjectsByCause } from '@/db/project'
 import Image from 'next/image'
 import { getCause, listMiniCauses } from '@/db/cause'
-import { ProjectsDisplay } from '@/components/projects-display'
+import { CauseContent } from './cause-content'
 import { getAmountRaised } from '@/utils/math'
 import { Row } from '@/components/layout/row'
 import { DataPoint } from '@/components/data-point'
@@ -30,7 +30,7 @@ export default async function CausePage(props: {
   const causesList = await listMiniCauses(supabase)
   const projects = await getFullProjectsByCause(supabase, cause.slug)
   return (
-    <div className="bg-dark-200 max-w-4xl p-3">
+    <div className="bg-dark-200 max-w-4xl p-6">
       {cause.header_image_url && (
         <Image
           src={cause.header_image_url}
@@ -42,7 +42,7 @@ export default async function CausePage(props: {
       )}
       <h1 className="my-3 text-2xl font-bold lg:text-3xl">{cause.title}</h1>
       <CauseData projects={projects} />
-      <ProjectsDisplay projects={projects} causesList={causesList} noFilter />
+      <CauseContent cause={cause} projects={projects} causesList={causesList} />
     </div>
   )
 }
