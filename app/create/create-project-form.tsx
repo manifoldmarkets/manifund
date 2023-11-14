@@ -149,7 +149,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         <label className="ml-2 text-sm">
           I am applying to the{' '}
           <SiteLink
-            href="http://localhost:3000/causes/manifold-community?tab=about"
+            href="/causes/manifold-community?tab=about"
             target="_blank"
             followsLinkClass
           >
