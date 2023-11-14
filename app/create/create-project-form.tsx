@@ -68,6 +68,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
     errorMessage = 'Please confirm that you agree to the investment structure.'
   } else if (
     fundingGoal &&
+    !applyingToManifold &&
     ((minFunding && minFunding > fundingGoal) || fundingGoal <= 0)
   ) {
     errorMessage =
@@ -101,7 +102,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         blurb,
         description,
         min_funding: minFunding,
-        funding_goal: fundingGoal,
+        funding_goal: fundingGoal ?? minFunding,
         founder_shares: applyingToManifold
           ? (founderPortion / 100) * TOTAL_SHARES
           : TOTAL_SHARES,
@@ -238,7 +239,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           />
         </Col>
       </Col>
-      {applyingToManifold && (
+      {applyingToManifold ? (
         <InvestmentStructurePanel
           minFunding={minFunding ?? 0}
           founderPortion={founderPortion}
@@ -247,35 +248,36 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           agreedToTerms={agreedToTerms}
           setAgreedToTerms={setAgreedToTerms}
         />
+      ) : (
+        <Col className="gap-1">
+          <label htmlFor="fundingGoal">
+            Funding goal (USD)
+            <RequiredStar />
+          </label>
+          <p className="text-sm text-gray-600">
+            Until this amount is raised, the project will be marked for donors
+            as not fully funded. If this amount is different from your minimum
+            funding, please explain in your project description what you could
+            accomplish with the minimum funding and what you could accomplish
+            with the full funding.
+          </p>
+          <Input
+            type="number"
+            id="fundingGoal"
+            autoComplete="off"
+            value={fundingGoal ? Number(fundingGoal).toString() : ''}
+            onChange={(event) => setFundingGoal(Number(event.target.value))}
+            error={
+              !!(
+                fundingGoal &&
+                minFunding &&
+                (fundingGoal <= minFunding || fundingGoal <= 0)
+              )
+            }
+            errorMessage="Funding goal must be greater than 0 and greater than or equal to your minimum funding."
+          />
+        </Col>
       )}
-      <Col className="gap-1">
-        <label htmlFor="fundingGoal">
-          Funding goal (USD)
-          <RequiredStar />
-        </label>
-        <p className="text-sm text-gray-600">
-          Until this amount is raised, the project will be marked for donors as
-          not fully funded. If this amount is different from your minimum
-          funding, please explain in your project description what you could
-          accomplish with the minimum funding and what you could accomplish with
-          the full funding.
-        </p>
-        <Input
-          type="number"
-          id="fundingGoal"
-          autoComplete="off"
-          value={fundingGoal ? Number(fundingGoal).toString() : ''}
-          onChange={(event) => setFundingGoal(Number(event.target.value))}
-          error={
-            !!(
-              fundingGoal &&
-              minFunding &&
-              (fundingGoal <= minFunding || fundingGoal <= 0)
-            )
-          }
-          errorMessage="Funding goal must be greater than 0 and greater than or equal to your minimum funding."
-        />
-      </Col>
       <Col className="gap-1">
         <label>
           Decision deadline

@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/input'
 import { Modal } from '@/components/modal'
 import { Button } from '@/components/button'
 import { Tooltip } from '@/components/tooltip'
+import { RequiredStar } from '@/components/tags'
 
 const SLIDER_MARKS = [
   { value: 0, label: '0%' },
@@ -188,6 +189,7 @@ export function InvestmentStructurePanel(props: {
           >
             See details.
           </button>
+          <RequiredStar />
           <Modal open={detailsOpen} setOpen={setDetailsOpen}>
             <Col className="items-end gap-3 px-5 py-2">
               <span className="text-sm text-gray-600">
