@@ -1,7 +1,7 @@
 'use client'
 import { Divider } from '@/components/divider'
 import { DonateBox } from '@/components/donate-box'
-import { RichContent } from '@/components/editor'
+import { Json } from '@/db/database.types'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
@@ -131,7 +131,7 @@ export function ProjectDisplay(props: {
               setCommentPrompt={setSpecialCommentPrompt}
             />
             <Col>
-              <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
+              <h2 className="text-lg font-bold leading-tight text-gray-900 sm:text-2xl">
                 {project.title}
               </h2>
             </Col>
@@ -147,11 +147,7 @@ export function ProjectDisplay(props: {
           </Row>
         </Col>
         {project.description && (
-          <div className="px-3">
-            <Description>
-              <RichContent content={project.description} className="text-sm" />
-            </Description>
-          </div>
+          <Description description={project.description} />
         )}
         {(isOwnProject || userIsAdmin) && (
           <Edit project={project} causesList={causesList} />
