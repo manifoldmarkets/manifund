@@ -10,10 +10,11 @@ import Link from 'next/link'
 import clsx from 'clsx'
 import { Card } from './layout/card'
 import { Avatar } from './avatar'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { LinkIcon } from '@heroicons/react/20/solid'
 import { Tooltip } from './tooltip'
 import { getURL } from '@/utils/constants'
+import { useSafeLayoutEffect } from '@/hooks/use-safe-layout-effect'
 
 export function Comment(props: {
   comment: Comment
@@ -36,21 +37,19 @@ export function Comment(props: {
   const [expanded, setExpanded] = useState(false)
   const [showExpandButton, setShowExpandButton] = useState(false)
   const contentElement = useRef<any>(null)
-  useLayoutEffect(() => {
+  useSafeLayoutEffect(() => {
     if (contentElement.current && contentElement.current.scrollHeight > 500) {
       setShowExpandButton(true)
     }
   }, [contentElement])
   const commentElement = useRef<any>(null)
   const [highlighted, setHighlighted] = useState(false)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (window.location.hash === `#${comment.id}`) {
-        setHighlighted(true)
-        commentElement.current.scrollIntoView({ behavior: 'smooth' })
-      } else {
-        setHighlighted(false)
-      }
+  useSafeLayoutEffect(() => {
+    if (window.location.hash === `#${comment.id}`) {
+      setHighlighted(true)
+      commentElement.current.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      setHighlighted(false)
     }
   }, [])
   return (
@@ -76,7 +75,7 @@ export function Comment(props: {
         </Link>
         <Card
           className={clsx(
-            'relative w-full rounded-xl rounded-tl-sm px-6 pt-2 pb-8',
+            'relative w-full rounded-xl rounded-tl-sm px-6 pb-8 pt-2',
             highlighted ? '!bg-orange-100 ring-2 !ring-orange-600' : ''
           )}
         >
