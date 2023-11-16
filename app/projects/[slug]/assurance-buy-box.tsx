@@ -5,7 +5,7 @@ import { Row } from '@/components/layout/row'
 import { Slider } from '@/components/slider'
 import { Tooltip } from '@/components/tooltip'
 import { Project } from '@/db/project'
-import { formatPercent } from '@/utils/formatting'
+import { formatMoneyPrecise, formatPercent } from '@/utils/formatting'
 import { getProposalValuation } from '@/utils/math'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -107,7 +107,8 @@ export function AssuranceBuyBox(props: {
             disabled={!amount || errorMessage !== null}
             loading={isSubmitting}
           >
-            Buy
+            Buy {formatPercent(amount / valuation)} at{' '}
+            {formatMoneyPrecise(valuation)} valuation
           </Button>
         </Tooltip>
       </Row>
