@@ -146,13 +146,6 @@ export function ProjectDisplay(props: {
             ))}
           </Row>
         </Col>
-        {project.description && (
-          <Description description={project.description} />
-        )}
-        {(isOwnProject || userIsAdmin) && (
-          <Edit project={project} causesList={causesList} />
-        )}
-        <Divider />
         {project.stage !== 'proposal' && project.type === 'cert' && (
           <CertValuationChart
             tradePoints={tradePoints}
@@ -163,11 +156,6 @@ export function ProjectDisplay(props: {
             size="lg"
           />
         )}
-        <ProjectData
-          project={project}
-          raised={amountRaised}
-          valuation={valuation}
-        />
         {(project.stage === 'proposal' ||
           (project.stage === 'active' && project.type === 'grant')) && (
           <ProgressBar
@@ -176,6 +164,11 @@ export function ProjectDisplay(props: {
             fundingGoal={project.funding_goal}
           />
         )}
+        <ProjectData
+          project={project}
+          raised={amountRaised}
+          valuation={valuation}
+        />
         {userProfile &&
           project.type === 'cert' &&
           project.stage !== 'proposal' && (
@@ -215,6 +208,14 @@ export function ProjectDisplay(props: {
             />
           )}
         {!userProfile && <SignInButton />}
+        {/* END OF STUFF */}
+        {project.description && (
+          <Description description={project.description} />
+        )}
+        {(isOwnProject || userIsAdmin) && (
+          <Edit project={project} causesList={causesList} />
+        )}
+        {/* WHERE STUFF USED TO GO */}
         <div id="tabs">
           <ProjectTabs
             project={project}

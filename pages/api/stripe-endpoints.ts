@@ -91,6 +91,7 @@ const issueMoneys = async (
       from_id: process.env.NEXT_PUBLIC_PROD_BANK_ID,
       to_id: userId,
       token: 'USD',
+      type: 'deposit',
     })
     .throwOnError()
   await supabase
@@ -108,6 +109,7 @@ const issueMoneys = async (
       from_id: userId,
       to_id: passFundsToId,
       token: 'USD',
+      type: 'profile donation',
     })
   }
 }
