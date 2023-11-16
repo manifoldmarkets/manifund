@@ -146,16 +146,18 @@ export function ProjectDisplay(props: {
             ))}
           </Row>
         </Col>
-        {project.stage !== 'proposal' && project.type === 'cert' && (
-          <CertValuationChart
-            tradePoints={tradePoints}
-            ammTxns={projectTxns.filter(
-              (txn) => txn.to_id === project.id || txn.from_id === project.id
-            )}
-            ammId={project.id}
-            size="lg"
-          />
-        )}
+        {project.stage !== 'proposal' &&
+          project.type === 'cert' &&
+          !!project.amm_shares && (
+            <CertValuationChart
+              tradePoints={tradePoints}
+              ammTxns={projectTxns.filter(
+                (txn) => txn.to_id === project.id || txn.from_id === project.id
+              )}
+              ammId={project.id}
+              size="lg"
+            />
+          )}
         {(project.stage === 'proposal' ||
           (project.stage === 'active' && project.type === 'grant')) && (
           <ProgressBar
@@ -171,6 +173,7 @@ export function ProjectDisplay(props: {
         />
         {userProfile &&
           project.type === 'cert' &&
+          !!project.amm_shares &&
           project.stage !== 'proposal' && (
             <Trade
               ammTxns={projectTxns.filter(
@@ -208,14 +211,12 @@ export function ProjectDisplay(props: {
             />
           )}
         {!userProfile && <SignInButton />}
-        {/* END OF STUFF */}
         {project.description && (
           <Description description={project.description} />
         )}
         {(isOwnProject || userIsAdmin) && (
           <Edit project={project} causesList={causesList} />
         )}
-        {/* WHERE STUFF USED TO GO */}
         <div id="tabs">
           <ProjectTabs
             project={project}
