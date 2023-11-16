@@ -21,11 +21,16 @@ export function Description(props: { description: Json }) {
     <div className="px-3 text-gray-500">
       <div
         className={clsx(
-          expanded || !showExpandButton ? 'max-h-fit' : 'line-clamp-[16]'
+          expanded || !showExpandButton
+            ? 'max-h-fit'
+            : 'relative line-clamp-[16]'
         )}
         ref={contentElement}
       >
         <RichContent content={description} className="text-sm" />
+        {!expanded && showExpandButton && (
+          <div className="absolute bottom-0 z-10 h-36 w-full bg-gradient-to-t from-gray-50 to-transparent" />
+        )}
       </div>
       {showExpandButton && (
         <Row className="mt-3 justify-center pt-2 text-sm">
