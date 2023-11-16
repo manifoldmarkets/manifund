@@ -74,6 +74,7 @@ async function addTxns(
         token: projectId,
         project: projectId,
         bundle: txnBundle,
+        type: 'user to user trade',
       }
       const usdTxn = {
         from_id: bid.bidder,
@@ -82,6 +83,7 @@ async function addTxns(
         token: 'USD',
         project: projectId,
         bundle: txnBundle,
+        type: 'user to user trade',
       }
       const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
       if (error) {
