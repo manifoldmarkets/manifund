@@ -23,7 +23,7 @@ export default async function handler(req: NextRequest) {
 
   const supabaseAdmin = createAdminClient()
   // Create a new txn paying this user
-  const { data: txn, error } = await supabaseAdmin
+  const { data: txn } = await supabaseAdmin
     .from('txns')
     .insert({
       amount: positiveAmount,
@@ -32,5 +32,6 @@ export default async function handler(req: NextRequest) {
       token: 'USD',
       type: amount > 0 ? 'deposit' : 'withdraw',
     })
+    .throwOnError()
   return NextResponse.json(txn)
 }
