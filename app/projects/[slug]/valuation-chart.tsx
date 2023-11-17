@@ -47,7 +47,7 @@ export const CertValuationChart = (props: {
   const { ammTxns, ammId, size, tradePoints, className } = props
   const sortedAmmTxns = sortBy(ammTxns, 'created_at')
   const [start, end] = [
-    new Date(sortedAmmTxns[0].created_at).getTime(),
+    new Date(sortedAmmTxns[0]?.created_at)?.getTime() ?? 0,
     new Date().getTime(),
   ]
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
@@ -58,7 +58,7 @@ export const CertValuationChart = (props: {
   }, [end, currValuation, tradePoints])
   const rightmostDate = getRightmostVisibleDate(end, last(tradePoints)?.x, now)
   const maxValuation = _.max(data.map((p) => p.y)) ?? 100
-
+  if (sortedAmmTxns.length === 0) return null
   return (
     <SizedContainer
       className={clsx(
