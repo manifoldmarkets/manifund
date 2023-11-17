@@ -174,7 +174,8 @@ export function ProjectDisplay(props: {
         {userProfile &&
           project.type === 'cert' &&
           !!project.amm_shares &&
-          project.stage !== 'proposal' && (
+          project.stage !== 'proposal' &&
+          project.stage !== 'hidden' && (
             <Trade
               ammTxns={projectTxns.filter(
                 (txn) => txn.to_id === project.id || txn.from_id === project.id
