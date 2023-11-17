@@ -244,6 +244,9 @@ export function EditProfileForm(props: { profile: Profile }) {
         className="max-w-xs"
         onClick={async () => {
           setSubmitting(true)
+          const formattedUsername = username
+            .replace(/ /g, '-')
+            .replace(/[^\w-]+/g, '')
           const longDescription =
             editor?.getJSON() && editor.getHTML() !== '<p></p>'
               ? editor.getJSON()
@@ -251,7 +254,7 @@ export function EditProfileForm(props: { profile: Profile }) {
           await saveProfile(
             {
               ...profile,
-              username,
+              username: formattedUsername,
               bio,
               long_description: longDescription,
               website,
@@ -261,7 +264,7 @@ export function EditProfileForm(props: { profile: Profile }) {
             supabase
           )
           setSubmitting(false)
-          router.push(`/${username}`)
+          router.push(`/${formattedUsername}`)
           router.refresh()
         }}
       >
@@ -285,9 +288,7 @@ async function saveProfile(
   const { error } = await supabase
     .from('profiles')
     .update({
-      username: new_profile.username
-        ?.replace(/ /g, '-')
-        .replace(/[^\w-]+/g, ''),
+      username: new_profile.username,
       bio: new_profile.bio,
       long_description: new_profile.long_description,
       website: new_profile.website,
