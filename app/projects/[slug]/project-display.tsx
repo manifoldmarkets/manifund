@@ -33,6 +33,7 @@ import { Trade } from './trade'
 import { AssuranceBuyBox } from './assurance-buy-box'
 import { calculateTradePoints } from '@/utils/amm'
 import { CertValuationChart } from './valuation-chart'
+import { RichContent } from '@/components/editor'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -213,7 +214,7 @@ export function ProjectDisplay(props: {
           )}
         {!userProfile && <SignInButton />}
         {project.description && (
-          <Description description={project.description} />
+          <RichContent content={project.description} className="px-3 text-sm" />
         )}
         {(isOwnProject || userIsAdmin) && (
           <Edit project={project} causesList={causesList} />
