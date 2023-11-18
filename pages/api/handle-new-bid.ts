@@ -7,7 +7,7 @@ import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from './_db'
 import { getTxnsByProject } from '@/db/txn'
-import { getProfileById } from '@/db/profile'
+import { getProfileById, Profile } from '@/db/profile'
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,10 +21,12 @@ export default async function handler(
   }
   if (project.stage === 'proposal') {
     await maybeActivateProject(supabase, bid.project)
-  } else if (project.type === 'cert' && bid.type === 'buy') {
+  } else if (
+    (project.type === 'cert' && bid.type === 'buy') ||
+    bid.type === 'assurance buy'
+  ) {
     await sendShareholderEmails(bid, project, supabase)
   }
-
   return res.status(200).json({ bid })
 }
 
@@ -43,13 +45,7 @@ async function sendShareholderEmails(
     await sendTemplateEmail(
       TEMPLATE_IDS.GENERIC_NOTIF,
       {
-        notifText: `${bidder.full_name} has made a ${
-          bid.type
-        } offer for ${Math.round(
-          (bid.amount / bid.valuation) * 100
-        )}% equity at a valuation of $${bid.valuation} for the project "${
-          project.title
-        }" on Manifund.`,
+        notifText: genBidText(bidder.full_name, bid, project),
         buttonUrl: `manifund.org/projects/${project.slug}?tab=bids`,
         buttonText: 'See offer',
         subject: `New offer from ${bidder.full_name} on "${project.title}"`,
@@ -57,4 +53,12 @@ async function sendShareholderEmails(
       shareholder.profile.id
     )
   }
+}
+
+function genBidText(bidderName: string, bid: Bid, project: ProjectAndProfile) {
+  return `${bidderName} has made a ${bid.type} offer for ${Math.round(
+    (bid.amount / bid.valuation) * 100
+  )}% equity at a valuation of $${bid.valuation} for the project "${
+    project.title
+  }" on Manifund.`
 }
