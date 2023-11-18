@@ -12,7 +12,6 @@ import { InfoTooltip } from '@/components/info-tooltip'
 import { Checkbox } from '@/components/input'
 import { Modal } from '@/components/modal'
 import { Button } from '@/components/button'
-import { Tooltip } from '@/components/tooltip'
 import { RequiredStar } from '@/components/tags'
 
 const SLIDER_MARKS = [
