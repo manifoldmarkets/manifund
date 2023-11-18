@@ -52,11 +52,11 @@ export function Comments(props: {
     )
   const threads = genThreads(rootComments, replyComments)
   const commentsDisplay = threads.map((thread) => {
-    const replyButton = (
+    const replyButton = (replyingTo: CommentAndProfile) => (
       <Tooltip text="Reply">
         <ArrowUturnRightIcon
           className="h-4 w-4 rotate-180 cursor-pointer stroke-2 text-gray-500 hover:text-gray-700"
-          onClick={() => setReplyingTo(thread.root)}
+          onClick={() => setReplyingTo(replyingTo)}
         />
       </Tooltip>
     )
@@ -71,11 +71,11 @@ export function Comments(props: {
               writtenByCreator={thread.root.commenter === project.creator}
               contributionText={commenterContributions[thread.root.commenter]}
             >
-              {userProfile && replyButton}
+              {userProfile && replyButton(thread.root)}
             </Comment>
             <div className="relative">
               {/* Bar along the left side of threads */}
-              <div className="absolute left-[62px] bottom-6 -z-10 h-full w-10 rounded-xl border-l-[3px] border-b-[3px]" />
+              <div className="absolute bottom-6 left-[62px] -z-10 h-full w-10 rounded-xl border-b-[3px] border-l-[3px]" />
               {thread.replies.map((reply) => (
                 <div className="relative ml-12 mt-1" key={reply.id}>
                   <Comment
@@ -85,7 +85,7 @@ export function Comments(props: {
                     writtenByCreator={reply.commenter === project.creator}
                     contributionText={commenterContributions[reply.commenter]}
                   >
-                    {userProfile && replyButton}
+                    {userProfile && replyButton(reply)}
                   </Comment>
                 </div>
               ))}
@@ -93,7 +93,7 @@ export function Comments(props: {
             {(replyingTo?.id === thread.root.id ||
               replyingTo?.replying_to === thread.root.id) &&
               userProfile && (
-                <div className="mt-1 ml-12">
+                <div className="ml-12 mt-1">
                   <WriteComment
                     project={project}
                     commenter={userProfile}
@@ -164,7 +164,7 @@ export function WriteComment(props: {
     specialPrompt,
   } = props
   const { supabase } = useSupabase()
-  const startingText: JSONContent | string = replyingTo?.replying_to
+  const startingText: JSONContent | string = !!replyingTo
     ? {
         type: 'doc',
         content: [
