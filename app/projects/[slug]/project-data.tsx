@@ -41,12 +41,7 @@ export function ProjectData(props: {
           label={`${hoursLeft ? 'hours' : 'days'} left to contribute`}
         />
       )}
-      {project.type === 'cert' &&
-        project.stage === 'proposal' &&
-        !!valuation && (
-          <DataPoint value={formatMoney(valuation)} label="minimum valuation" />
-        )}
-      {project.type === 'cert' && project.stage !== 'proposal' && (
+      {project.type === 'cert' && (
         <DataPoint value={formatMoney(valuation)} label="valuation" />
       )}
       {project.stage !== 'proposal' && (
