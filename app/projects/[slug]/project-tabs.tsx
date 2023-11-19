@@ -13,7 +13,7 @@ import { DonationsHistory } from '@/components/donations-history'
 import { CommentAndProfile } from '@/db/comment'
 import { uniq } from 'lodash'
 import { compareDesc } from 'date-fns'
-import { formatMoney } from '@/utils/formatting'
+import { formatMoneyPrecise, formatPercent } from '@/utils/formatting'
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -167,9 +167,9 @@ export function getCommenterContributions(
         (shareholder) => shareholder.profile.id === commenterId
       )
       if (holding) {
-        contributions[commenterId] = `holds ${
-          (holding.numShares / TOTAL_SHARES) * 100
-        }%`
+        contributions[commenterId] = `holds ${formatPercent(
+          holding.numShares / TOTAL_SHARES
+        )}`
       }
     }
     if (!contributions[commenterId] && txns) {
@@ -182,7 +182,9 @@ export function getCommenterContributions(
         0
       )
       if (totalDonated > 0) {
-        contributions[commenterId] = `donated ${formatMoney(totalDonated)}`
+        contributions[commenterId] = `donated ${formatMoneyPrecise(
+          totalDonated
+        )}`
       }
     }
     if (!contributions[commenterId]) {
@@ -196,13 +198,12 @@ export function getCommenterContributions(
       if (latestBid) {
         contributions[commenterId] =
           latestBid.type === 'donate'
-            ? `offered $${relevantBids.reduce(
-                (acc, bid) => acc + bid.amount,
-                0
+            ? `offered ${formatMoneyPrecise(
+                relevantBids.reduce((acc, bid) => acc + bid.amount, 0)
               )}`
             : latestBid.type === 'buy'
-            ? `buying at $${latestBid.valuation}`
-            : `selling at $${latestBid.valuation}`
+            ? `buying at ${formatMoneyPrecise(latestBid.valuation)}`
+            : `selling at ${formatMoneyPrecise(latestBid.valuation)}`
       }
     }
   })
