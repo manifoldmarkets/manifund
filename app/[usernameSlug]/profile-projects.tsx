@@ -22,7 +22,11 @@ export function Projects(props: { projects: Project[] }) {
             <TableRow
               key={project.id}
               title={project.title}
-              subtitle={<NextStep project={project} />}
+              subtitle={
+                project.stage === 'proposal' ? (
+                  <NextStep project={project} />
+                ) : undefined
+              }
               href={`/projects/${project.slug}`}
               tag={
                 <div className="flex h-full flex-col justify-center">

@@ -7,7 +7,7 @@ import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from './_db'
 import { getTxnsByProject } from '@/db/txn'
-import { getProfileById, Profile } from '@/db/profile'
+import { getProfileById } from '@/db/profile'
 
 export default async function handler(
   req: NextApiRequest,
