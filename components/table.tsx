@@ -31,13 +31,13 @@ export function TableRow(props: {
 }) {
   const { title, tag, subtitle, href, deleteFunction } = props
   return (
-    <div className="flex items-center justify-between px-5 py-4 hover:bg-gray-50">
-      <div className="flex w-full flex-col justify-center font-medium text-gray-900 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex items-center justify-between gap-3 px-5 py-4 hover:bg-gray-50">
+      <div className="flex w-full flex-col justify-center gap-5 font-medium text-gray-900 sm:flex-row sm:items-center sm:justify-between">
         <Link className="truncate text-base hover:underline" href={href}>
           {title}
         </Link>
         {subtitle && (
-          <span className="mt-5 flex-none truncate text-xs font-normal text-gray-500">
+          <span className="flex-none truncate text-xs font-normal text-gray-500">
             {subtitle}
           </span>
         )}
@@ -49,16 +49,16 @@ export function TableRow(props: {
             <Menu.Button>
               <EllipsisVerticalIcon className="relative bottom-1 left-2 h-6 w-6 text-gray-400 hover:cursor-pointer" />
             </Menu.Button>
-            <Menu.Items className="absolute right-0 top-4 z-10 mt-2 w-24 origin-top-right rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <Menu.Items className="absolute right-0 top-4 z-10 mt-2 origin-top-right rounded bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
               <Menu.Item>
                 {({ active }) => (
                   <button
                     className={`${
                       active && 'bg-rose-100'
-                    } flex h-full w-full justify-between  p-2 text-rose-600`}
+                    } flex h-full w-full items-center gap-1 p-2 font-semibold text-rose-600`}
                     onClick={deleteFunction}
                   >
-                    <TrashIcon className="h-6 w-6" />
+                    <TrashIcon className="h-4 w-4 stroke-[2.6px]" />
                     Delete
                   </button>
                 )}

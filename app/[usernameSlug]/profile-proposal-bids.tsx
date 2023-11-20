@@ -26,11 +26,14 @@ export function ProposalBids(props: {
         />
       }
       href={`/projects/${bid.projects.slug}`}
-      tag={<RoundTag roundTitle={bid.projects.round} />}
-      deleteFunction={async () => {
-        await deleteBid(supabase, bid.id)
-        router.refresh()
-      }}
+      deleteFunction={
+        isOwnProfile
+          ? async () => {
+              await deleteBid(supabase, bid.id)
+              router.refresh()
+            }
+          : undefined
+      }
     />
   ))
   return (
