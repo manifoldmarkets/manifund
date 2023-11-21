@@ -10,6 +10,7 @@ import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
 import { CompleteProfileBanner } from './banner'
 import { getProfileById } from '@/db/profile'
+import { Toaster } from 'react-hot-toast'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 const josefin = Josefin_Slab({
@@ -58,6 +59,7 @@ export default async function RootLayout({
           session={session}
           className={`mx-auto mb-20 w-full font-sans lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
         >
+          <Toaster />
           {/* @ts-expect-error Server Component */}
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />

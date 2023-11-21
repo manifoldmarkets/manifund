@@ -530,7 +530,7 @@ export interface Database {
           project: string | null
           to_id: string
           token: string
-          type: Database["public"]["Enums"]["txn_type"]
+          type: Database["public"]["Enums"]["txn_type"] | null
         }
         Insert: {
           amount: number
@@ -541,7 +541,7 @@ export interface Database {
           project?: string | null
           to_id: string
           token: string
-          type: Database["public"]["Enums"]["txn_type"]
+          type?: Database["public"]["Enums"]["txn_type"] | null
         }
         Update: {
           amount?: number
@@ -552,7 +552,7 @@ export interface Database {
           project?: string | null
           to_id?: string
           token?: string
-          type?: Database["public"]["Enums"]["txn_type"]
+          type?: Database["public"]["Enums"]["txn_type"] | null
         }
         Relationships: [
           {
@@ -740,8 +740,8 @@ export interface Database {
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "donate" | "assurance sell" | "assurance buy"
-      profile_type: "individual" | "org" | "amm" | "fund"
+      bid_type: "buy" | "sell" | "donate" | "assurance buy" | "assurance sell"
+      profile_type: "individual" | "org" | "fund" | "amm"
       project_stage:
         | "active"
         | "proposal"
@@ -759,6 +759,7 @@ export interface Database {
         | "cash to charity transfer"
         | "inject amm liquidity"
         | "mint cert"
+        | "mana deposit"
     }
     CompositeTypes: {
       bid_row: {
@@ -786,11 +787,12 @@ export interface Database {
         description: Json
         min_funding: number
         funding_goal: number
-        founder_shares: number
+        founder_portion: number
         type: Database["public"]["Enums"]["project_type"]
         stage: Database["public"]["Enums"]["project_stage"]
         round: string
         slug: string
+        location_description: string
       }
       transfer_row: {
         recipient_email: string

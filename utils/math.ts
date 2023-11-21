@@ -236,7 +236,7 @@ export function getTxnCharityMultiplier(
   const isIncoming = txn.to_id === userId
   const actuallyAccredited =
     isBefore(new Date(txn.created_at), IGNORE_ACCREDITATION_DATE) && accredited
-  if (txn.type === 'cash to charity transfer') {
+  if (txn.type === 'cash to charity transfer' || txn.type === 'mana deposit') {
     return 1
   }
   if (isIncoming && txn.from_id === userId) {

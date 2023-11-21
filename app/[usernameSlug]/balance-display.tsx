@@ -13,7 +13,7 @@ import { DataPoint } from '@/components/data-point'
 import { Card } from '@/components/layout/card'
 import {
   AirtableDepositButton,
-  StripeDepositButton,
+  DepositButton,
 } from '@/components/deposit-buttons'
 import Link from 'next/link'
 import { Button, IconButton } from '@/components/button'
@@ -80,21 +80,19 @@ export function BalanceDisplay(props: {
               <>
                 {stat.name === 'charity balance' ? (
                   <>
-                    {!accredited && (
-                      <Row className="absolute right-2 top-2">
-                        <StripeDepositButton userId={userId}>
-                          <div className="rounded bg-orange-500 p-0.5 shadow">
-                            <Tooltip text="Add funds" placement="left">
-                              <PlusSmallIcon className="h-4 w-4 stroke-2 text-white" />
-                            </Tooltip>
-                          </div>
-                        </StripeDepositButton>
-                      </Row>
-                    )}
+                    <Row className="absolute right-2 top-2">
+                      <DepositButton userId={userId}>
+                        <div className="rounded bg-orange-500 p-0.5 shadow">
+                          <Tooltip text="Add funds" placement="left">
+                            <PlusSmallIcon className="h-4 w-4 stroke-2 text-white" />
+                          </Tooltip>
+                        </div>
+                      </DepositButton>
+                    </Row>
                   </>
                 ) : (
                   <Row className="absolute right-2 top-2 justify-between gap-1">
-                    {accredited && <AirtableDepositButton />}
+                    {/* {accredited && <AirtableDepositButton />}
                     <Link
                       href="/withdraw"
                       className="rounded bg-orange-500 p-0.5 shadow"
@@ -102,7 +100,7 @@ export function BalanceDisplay(props: {
                       <Tooltip text="Withdraw funds" placement="left">
                         <MinusSmallIcon className="h-4 w-4 stroke-2 text-white" />
                       </Tooltip>
-                    </Link>
+                    </Link> */}
                   </Row>
                 )}
               </>
