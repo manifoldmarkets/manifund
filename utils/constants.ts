@@ -64,9 +64,10 @@ export function getSponsoredAmount(regrantorId: string) {
   return sponsoredRegrantors[regrantorId] ?? 0
 }
 
+// Needed for people who are both accredited investors and regrantors
 const CHARITABLE_DEPOSITS = [
-  '1e17c09d-aa7f-432a-b523-89691531b304',
-  'c223e240-598f-41a9-8aa0-7a961d8db258',
+  '1e17c09d-aa7f-432a-b523-89691531b304', // $50k from Manifund Bank to Zvi
+  'c223e240-598f-41a9-8aa0-7a961d8db258', // $50k from Manifund Bank to Austin
 ]
 export function isCharitableDeposit(txnId: string) {
   return CHARITABLE_DEPOSITS.includes(txnId)
