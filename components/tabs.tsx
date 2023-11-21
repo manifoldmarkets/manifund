@@ -10,7 +10,13 @@ export type Tab = {
 export function Tabs(props: { tabs: Tab[]; currentTabId?: string | null }) {
   const { tabs } = props
   // Default currentTabId to the first tab, if not provided
-  const currentTabId = props.currentTabId ?? tabs[0].id
+  let currentTabId = props.currentTabId ?? tabs[0].id
+  // If currentTabId is not in tabs, use the first tab
+  // This can happen if there's a modal with tabs, over a page with tabs
+  if (!tabs.some((tab) => tab.id === currentTabId)) {
+    currentTabId = tabs[0].id
+  }
+
   if (tabs.length === 0) return null
   return (
     <div>
@@ -45,7 +51,7 @@ function SingleTab(props: { tab: Tab; isCurrent: boolean }) {
         isCurrent
           ? 'border-orange-500 text-orange-600'
           : 'border-transparent text-gray-500 hover:border-gray-200 hover:text-gray-700',
-        'flex whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium'
+        'flex whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium'
       )}
       aria-current={isCurrent ? 'page' : undefined}
     >
@@ -56,7 +62,7 @@ function SingleTab(props: { tab: Tab; isCurrent: boolean }) {
             isCurrent
               ? 'bg-orange-100 text-orange-600'
               : 'bg-gray-100 text-gray-900',
-            'ml-3 hidden rounded-full py-0.5 px-2.5 text-xs font-medium md:inline-block'
+            'ml-3 hidden rounded-full px-2.5 py-0.5 text-xs font-medium md:inline-block'
           )}
         >
           {tab.count}

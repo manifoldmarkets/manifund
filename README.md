@@ -16,8 +16,8 @@ You'll need the supabase client and admin keys. After you've been added to the
 Vercel project, get them with:
 
 ```bash
-bun run vercel link
-bun run vercel env pull
+bunx vercel link
+bunx vercel env pull
 ```
 
 And rename `.env` to `.env.local`.
@@ -64,4 +64,10 @@ To test the Stripe webhook integration, you'll need to install the Stripe CLI, t
 stripe listen --forward-to localhost:3000/api/stripe-endpoints
 ```
 
-To receive webhook calls
+## Pulling types from the database
+
+```
+npx supabase gen types typescript --project-id fkousziwzbnkdkldjper --schema public > db/database.types.ts
+```
+
+Note that bun/bunx has some problems with the `supabase` cli, so just use npx here.

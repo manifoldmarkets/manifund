@@ -14,7 +14,7 @@ import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import {
   AirtableDepositButton,
-  StripeDepositButton,
+  DepositButton,
 } from '@/components/deposit-buttons'
 import { Col } from '@/components/layout/col'
 import { Tooltip } from '@/components/tooltip'
@@ -129,17 +129,14 @@ export async function ProfileSummary(props: { profile: Profile }) {
         </Link>
         <Row className="gap-2 py-0.5 text-sm">
           {formatMoney(calculateUserBalance(txns, profile.id))}
-          {profile.accreditation_status ? (
-            <AirtableDepositButton />
-          ) : (
-            <StripeDepositButton userId={profile.id}>
-              <div className="rounded bg-orange-500 p-0.5 shadow">
-                <Tooltip text="Add funds" placement="left">
-                  <PlusSmallIcon className="h-4 w-4 stroke-2 text-white" />
-                </Tooltip>
-              </div>
-            </StripeDepositButton>
-          )}
+
+          <DepositButton userId={profile.id}>
+            <div className="rounded bg-orange-500 p-0.5 shadow">
+              <Tooltip text="Add funds" placement="left">
+                <PlusSmallIcon className="h-4 w-4 stroke-2 text-white" />
+              </Tooltip>
+            </div>
+          </DepositButton>
         </Row>
       </Col>
     </Row>

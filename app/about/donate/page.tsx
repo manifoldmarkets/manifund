@@ -7,7 +7,7 @@ import { getUser } from '@/db/profile'
 import { Row } from '@/components/layout/row'
 import { CardlessProject } from '@/components/project-card'
 import { FullProject } from '@/db/project'
-import { StripeDepositButton } from '@/components/deposit-buttons'
+import { DepositButton } from '@/components/deposit-buttons'
 import { getProfileById } from '@/db/profile'
 import { Card } from '@/components/layout/card'
 import { SupabaseClient } from '@supabase/supabase-js'
@@ -78,14 +78,14 @@ export default async function DonatePage() {
               </div>
               {user && (
                 <Row className="mx-auto mt-3 justify-center">
-                  <StripeDepositButton
+                  <DepositButton
                     userId={user.id}
                     passFundsTo={passFundsTo ?? undefined}
                   >
                     <div className="rounded bg-orange-100 px-3 py-1.5 text-xs text-orange-500 hover:bg-orange-200">
                       Give to general regranting
                     </div>
-                  </StripeDepositButton>
+                  </DepositButton>
                 </Row>
               )}
             </Card>
@@ -110,11 +110,11 @@ export default async function DonatePage() {
               </div>
               {user && (
                 <Row className="mx-auto mt-3 justify-center">
-                  <StripeDepositButton userId={user.id}>
+                  <DepositButton userId={user.id}>
                     <div className="rounded bg-orange-100 px-3 py-1.5 text-xs text-orange-500 hover:bg-orange-200">
                       Add funds to account
                     </div>
-                  </StripeDepositButton>
+                  </DepositButton>
                 </Row>
               )}
             </Card>
