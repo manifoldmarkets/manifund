@@ -1,4 +1,5 @@
 'use client'
+import { DepositManaProps } from '@/app/api/deposit-manaz/route'
 import { Profile } from '@/db/profile'
 import { Dialog } from '@headlessui/react'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
@@ -16,6 +17,7 @@ import { Modal } from './modal'
 import { SiteLink } from './site-link'
 import { Tabs } from './tabs'
 import { Tooltip } from './tooltip'
+import { toast } from 'react-hot-toast'
 
 // TODO: rename to DepositButton
 export function StripeDepositButton(props: {
@@ -28,10 +30,6 @@ export function StripeDepositButton(props: {
   const [open, setOpen] = useState(false)
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
-  let errorMessage = null
-  // if (amount < 10) {
-  // errorMessage = 'Minimum deposit is $10.'
-  // }
   return (
     <>
       <button
@@ -78,6 +76,10 @@ function DonateTab(props: { userId: string; passFundsTo?: Profile }) {
   const router = useRouter()
   const [amount, setAmount] = useState(10)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  let errorMessage = null
+  if (amount < 10) {
+    errorMessage = 'Minimum deposit is $10.'
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -112,19 +114,19 @@ function DonateTab(props: { userId: string; passFundsTo?: Profile }) {
           onChange={(event) => setAmount(Number(event.target.value))}
         />
       </div>
-      {/* <p className="mb-2 mt-3 text-center text-rose-500">{errorMessage}</p> */}
+      <p className="mb-2 mt-3 text-center text-rose-500">{errorMessage}</p>
       <div className="sm:flex-2 flex flex-col gap-3 sm:flex-row">
         <Button
           type="button"
           color={'gray'}
           className="inline-flex w-full justify-center sm:col-start-1"
-          // onClick={() => setOpen(false)}
         >
           Cancel
         </Button>
         <Button
           type="button"
           className="sm:flex-2 inline-flex w-full justify-center"
+          disabled={errorMessage !== null}
           loading={isSubmitting}
           onClick={async () => {
             setIsSubmitting(true)
@@ -172,9 +174,6 @@ export function AirtableDepositButton() {
   )
 }
 
-// Manifold user ID for hi@manifund.org
-const MANAGRAM_DEST_ID = 'pyBueUg9y3hrDIUtrus5uAkPHCr1'
-
 type ManifoldUser = {
   username: string
   balance: string
@@ -191,23 +190,13 @@ async function checkBalance(apiKey: string) {
   return manifoldUser
 }
 
-async function managram(
-  apiKey: string,
-  toId: string,
-  amountInMana: number,
-  message: string
-) {
-  const response = await fetch('https://manifold.markets/api/v0/managram', {
+async function transfer(props: DepositManaProps) {
+  const response = await fetch('/api/deposit-mana', {
     method: 'POST',
     headers: {
-      Authorization: `Key ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      toIds: [toId], // This expects an array of IDs
-      amount: amountInMana,
-      message,
-    }),
+    body: JSON.stringify(props),
   })
   const json = await response.json()
   return json
@@ -216,14 +205,30 @@ async function managram(
 function ManaTab() {
   const [apiKey, setApiKey] = useState('')
   const [manifoldUser, setManifoldUser] = useState<ManifoldUser | null>(null)
-  const [transferAmount, setTransferAmount] = useState(0)
+  const [transferAmount, setTransferAmount] = useState(10)
+  const manaToDeposit = transferAmount * 100
   const [transferring, setTransferring] = useState(false)
 
   // Check balance every time the API key changes
   useEffect(() => {
-    console.log('checking')
     checkBalance(apiKey).then(setManifoldUser).catch(console.error)
   }, [apiKey])
+
+  async function transferMana() {
+    setTransferring(true)
+    const resp = await transfer({
+      manifoldApiKey: apiKey,
+      manaToDeposit,
+    })
+    // If error, show an error toast
+    if (resp.error) {
+      toast.error(resp.error)
+    } else {
+      toast.success('Mana transfered successfully')
+      // TODO: Route to the user's profile page after 3 seconds?
+    }
+    setTransferring(false)
+  }
 
   return (
     <div className="flex flex-col gap-2 p-4">
@@ -255,7 +260,7 @@ function ManaTab() {
 
           <div className="mt-8 flex flex-col gap-2">
             <label className="text-sm font-medium leading-none">
-              Mana to transfer
+              USD to deposit
             </label>
             <Input
               type="number"
@@ -267,21 +272,8 @@ function ManaTab() {
                 setTransferAmount(Number(event.target.value))
               }
             />
-            <Button
-              loading={transferring}
-              onClick={async () => {
-                setTransferring(true)
-                const resp = await managram(
-                  apiKey,
-                  MANAGRAM_DEST_ID,
-                  transferAmount,
-                  'Transfer to Manifund balance'
-                )
-                console.log('transfered', resp)
-                setTransferring(false)
-              }}
-            >
-              Transfer
+            <Button loading={transferring} onClick={transferMana}>
+              Transfer {manaToDeposit} mana
             </Button>
           </div>
         </div>
