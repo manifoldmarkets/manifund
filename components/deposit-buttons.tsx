@@ -41,7 +41,7 @@ export function StripeDepositButton(props: {
       >
         {children}
       </button>
-      <Modal open={open}>
+      <Modal open={open} setOpen={setOpen}>
         <div className="flex justify-end">
           <button
             type="button"
