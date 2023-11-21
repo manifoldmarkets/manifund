@@ -149,7 +149,7 @@ INSERT
 --
 --
 ---- Txns ----
-create type txn_type as enum ("profile donation", "project donation", "user to user trade", "user to amm trade", "withdraw", "deposit", "cash to charity transfer", "inject amm liquidity", "mint cert");
+create type txn_type as enum ("profile donation", "project donation", "user to user trade", "user to amm trade", "withdraw", "deposit", "cash to charity transfer", "inject amm liquidity", "mint cert", "mana deposit");
 create table if not exists public.txns (
   id uuid not null default gen_random_uuid(),
   from_id uuid not null references auth.users(id) on delete cascade,

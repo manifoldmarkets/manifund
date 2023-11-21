@@ -53,8 +53,7 @@ export default async function handler(req: NextRequest) {
       amount: manaToDeposit / 100,
       token: 'USD',
       project: null,
-      // TODO: Is this the right type to use, or should we create "deposit mana"?
-      type: 'deposit',
+      type: 'mana deposit',
     })
     .throwOnError()
 
