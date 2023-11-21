@@ -1,5 +1,4 @@
 'use client'
-import { DepositManaProps } from '@/app/api/deposit-manaz/route'
 import { Profile } from '@/db/profile'
 import { Dialog } from '@headlessui/react'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
@@ -18,15 +17,14 @@ import { SiteLink } from './site-link'
 import { Tabs } from './tabs'
 import { Tooltip } from './tooltip'
 import { toast } from 'react-hot-toast'
+import { DepositManaProps } from '@/pages/api/deposit-mana'
 
-// TODO: rename to DepositButton
-export function StripeDepositButton(props: {
+export function DepositButton(props: {
   userId: string
-  accredited: boolean
   children?: ReactNode
   passFundsTo?: Profile
 }) {
-  const { userId, children, accredited, passFundsTo } = props
+  const { userId, children, passFundsTo } = props
   const [open, setOpen] = useState(false)
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
@@ -278,25 +276,6 @@ function ManaTab() {
           </div>
         </div>
       ) : null}
-    </div>
-  )
-}
-
-function AirtableDepositTab() {
-  // TODO: Not sure if we should even still support accredited investors participating.
-  // Could simplify if it were all charity money.
-  return (
-    <div>
-      <div className="flex flex-col space-y-1.5 p-4">
-        <h3 className="text-2xl font-semibold tracking-tight">ACH Deposit</h3>
-        <p className="mt-2 text-sm text-gray-600">
-          Please fill out the form to deposit money via ACH. This form is
-          intended for accredited investors only.
-        </p>
-      </div>
-      <div className="flex items-center justify-end space-x-4 p-6">
-        <Button>Go to form</Button>
-      </div>
     </div>
   )
 }
