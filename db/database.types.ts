@@ -787,7 +787,7 @@ export interface Database {
         description: Json
         min_funding: number
         funding_goal: number
-        founder_portion: number
+        founder_shares: number
         type: Database["public"]["Enums"]["project_type"]
         stage: Database["public"]["Enums"]["project_stage"]
         round: string
