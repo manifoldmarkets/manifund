@@ -243,7 +243,7 @@ function ManaTab() {
       </p>
       <label className="text-sm font-medium leading-none">API Key</label>
       <Input
-        type="text"
+        type="password"
         id="api-key"
         autoComplete="off"
         value={apiKey ?? ''}
