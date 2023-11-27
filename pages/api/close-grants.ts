@@ -26,22 +26,19 @@ export default async function handler() {
     .select('*, bids(*), profiles!projects_creator_fkey(full_name)')
     .eq('stage', 'proposal')
   if (error) {
-    console.log('error', error)
+    console.error(error)
     return NextResponse.json('error')
   }
-  console.log('all proposals', proposals)
   const now = new Date()
   const proposalsPastDeadline = proposals?.filter((project) => {
     const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
-    console.log('project', project.title, closeDate, now)
-    console.log('is expired?', isBefore(closeDate, now))
     return (
-      isBefore(closeDate, now) && project.type === 'grant'
+      isBefore(closeDate, now) &&
+      project.type === 'grant' &&
       // Only send notifs once per week
-      // differenceInDays(closeDate, now) % 7 === 0
+      differenceInDays(closeDate, now) % 7 === 0
     )
   })
-  console.log('proposalsPastDeadline', proposalsPastDeadline)
   for (const project of proposalsPastDeadline ?? []) {
     await closeGrant(
       project,
