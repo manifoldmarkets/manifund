@@ -21,10 +21,15 @@ export default async function handler() {
     return NextResponse.json('not prod')
   }
   const supabase = createAdminClient()
-  const { data: proposals } = await supabase
+  const { data: proposals, error } = await supabase
     .from('projects')
     .select('*, bids(*), profiles(full_name)')
     .eq('stage', 'proposal')
+  if (error) {
+    console.log('error', error)
+    return NextResponse.json('error')
+  }
+  console.log('all proposals', proposals)
   const now = new Date()
   const proposalsPastDeadline = proposals?.filter((project) => {
     const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
