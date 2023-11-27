@@ -107,8 +107,8 @@ function Bid(props: {
       />
       {showValuation ? (
         <div>
-          {formatMoney(bid.amount)} <span className="text-gray-500"> @ </span>$
-          {bid.valuation}
+          {formatMoney(bid.amount)} <span className="text-gray-500"> @ </span>
+          {formatMoney(bid.valuation)}
           <span className="text-gray-500"> valuation</span>
         </div>
       ) : (
