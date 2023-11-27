@@ -23,7 +23,7 @@ export default async function handler() {
   const supabase = createAdminClient()
   const { data: proposals, error } = await supabase
     .from('projects')
-    .select('*, bids(*), profiles(full_name)')
+    .select('*, bids(*), profiles!projects_creator_fkey(full_name)')
     .eq('stage', 'proposal')
   if (error) {
     console.log('error', error)
