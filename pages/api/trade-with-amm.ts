@@ -141,15 +141,17 @@ export default async function handler(req: NextRequest) {
           ammUSD,
           valuationAtLo
         )
-        await makeTrade(
-          Math.abs(sharesInAmmTrade),
-          Math.abs(usdInAmmTrade),
-          projectId,
-          projectId,
-          user.id,
-          buying,
-          supabase
-        )
+        if (!!sharesInAmmTrade && !!usdInAmmTrade) {
+          await makeTrade(
+            Math.abs(sharesInAmmTrade),
+            Math.abs(usdInAmmTrade),
+            projectId,
+            projectId,
+            user.id,
+            buying,
+            supabase
+          )
+        }
         amountRemaining -= buying
           ? Math.abs(usdInAmmTrade)
           : Math.abs(sharesInAmmTrade)
