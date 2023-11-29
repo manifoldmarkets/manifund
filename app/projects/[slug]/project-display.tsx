@@ -95,6 +95,10 @@ export function ProjectDisplay(props: {
     (projectTransfer) => !projectTransfer.transferred
   )
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
+  const minIncludingAmm =
+    project.type === 'cert'
+      ? projectBids.find((bid) => bid.type === 'assurance sell')?.amount ?? 0
+      : project.min_funding
   const tradePoints = calculateTradePoints(projectTxns, project.id)
   const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
     undefined | string
@@ -107,7 +111,7 @@ export function ProjectDisplay(props: {
           <ProposalRequirements
             signedAgreement={project.signed_agreement}
             approved={project.approved === true}
-            reachedMinFunding={amountRaised >= project.min_funding}
+            reachedMinFunding={amountRaised >= minIncludingAmm}
             projectSlug={project.slug}
           />
         )}
@@ -163,14 +167,17 @@ export function ProjectDisplay(props: {
           (project.stage === 'active' && project.type === 'grant')) && (
           <ProgressBar
             amountRaised={amountRaised}
-            minFunding={project.min_funding}
-            fundingGoal={project.funding_goal}
+            minFunding={minIncludingAmm}
+            fundingGoal={
+              project.type === 'cert' ? minIncludingAmm : project.funding_goal
+            }
           />
         )}
         <ProjectData
           project={project}
           raised={amountRaised}
           valuation={valuation}
+          minimum={minIncludingAmm}
         />
         {userProfile &&
           project.type === 'cert' &&
@@ -193,10 +200,7 @@ export function ProjectDisplay(props: {
             <AssuranceBuyBox
               project={project}
               valuation={valuation}
-              offerSizeDollars={
-                (projectBids.find((bid) => bid.type === 'assurance sell')
-                  ?.amount ?? 0) - amountRaised
-              }
+              offerSizeDollars={minIncludingAmm - amountRaised}
               maxBuy={userSpendableFunds}
             />
           )}

@@ -1,7 +1,7 @@
 'use client'
 import { Profile } from '@/db/profile'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
-import { getAmountRaised } from '@/utils/math'
+import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
 import { FullProject, Project, ProjectTransfer } from '@/db/project'
 import Link from 'next/link'
 import { ProgressBar } from './progress-bar'
@@ -72,13 +72,21 @@ export function ProjectCard(props: {
               amountRaised < project.funding_goal)) && (
             <Row className="flex-1 items-center gap-1">
               <ProgressBar
-                fundingGoal={project.funding_goal}
-                minFunding={project.min_funding}
+                fundingGoal={
+                  project.type === 'cert'
+                    ? getMinIncludingAmm(project)
+                    : project.funding_goal
+                }
+                minFunding={getMinIncludingAmm(project)}
                 amountRaised={amountRaised}
                 small
               />
-              <p className="rounded-2xl bg-orange-100 py-1 px-2 text-center text-sm font-medium text-orange-600">
-                {formatMoney(project.funding_goal)}
+              <p className="rounded-2xl bg-orange-100 px-2 py-1 text-center text-sm font-medium text-orange-600">
+                {formatMoney(
+                  project.type === 'cert'
+                    ? getMinIncludingAmm(project)
+                    : project.funding_goal
+                )}
               </p>
             </Row>
           )}
@@ -166,7 +174,7 @@ export function ProjectCardHeader(props: {
       </div>
       {projectType === 'cert' && valuation && !isNaN(valuation) ? (
         <Tooltip text="valuation">
-          <p className="rounded-2xl bg-orange-100 py-1 px-2 text-center text-sm font-medium text-orange-600">
+          <p className="rounded-2xl bg-orange-100 px-2 py-1 text-center text-sm font-medium text-orange-600">
             {formatMoney(valuation)}
           </p>
         </Tooltip>

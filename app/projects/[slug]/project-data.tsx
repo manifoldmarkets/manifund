@@ -8,14 +8,9 @@ export function ProjectData(props: {
   project: Project
   raised: number
   valuation: number
+  minimum: number
 }) {
-  const { project, raised, valuation } = props
-  const raisedString =
-    raised > project.funding_goal &&
-    project.type === 'cert' &&
-    project.stage === 'proposal'
-      ? `>${formatMoney(project.funding_goal)}`
-      : `${formatMoney(raised)}`
+  const { project, raised, valuation, minimum } = props
   // Close it on 23:59:59 in UTC -12 aka "Anywhere on Earth" time
   const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
   const now = new Date()
@@ -24,15 +19,17 @@ export function ProjectData(props: {
   return (
     <Row className="justify-between">
       <DataPoint
-        value={raisedString}
+        value={formatMoney(raised)}
         label={`raised${
-          !!project.funding_goal ? ` of $${project.funding_goal} goal` : ''
+          !!project.funding_goal && project.type === 'grant'
+            ? ` of $${project.funding_goal} goal`
+            : ''
         }`}
       />
       {project.stage === 'proposal' && (
         <DataPoint
-          value={`${formatMoney(project.min_funding)}`}
-          label="minimum funding"
+          value={`${formatMoney(minimum)}`}
+          label="required to proceed"
         />
       )}
       {project.auction_close && project.stage === 'proposal' && (
