@@ -120,13 +120,9 @@ function TradeInputsPanel(props: {
 
   const mode = MODES.find((mode) => mode.id === modeId)
   const isLimitOrder = !!setModeId
-  const valuationAfterTrade = calculateValuationAfterTrade(
-    amount,
-    ammShares,
-    ammUSD,
-    modeId === 'buy',
-    isLimitOrder ? limitValuation : undefined
-  )
+  const valuationAfterTrade = isLimitOrder
+    ? limitValuation
+    : calculateValuationAfterTrade(amount, ammShares, ammUSD, modeId === 'buy')
   const ammSharesAtTrade = isLimitOrder
     ? ammSharesAtValuation(ammUSD * ammShares, limitValuation)
     : ammShares
@@ -135,12 +131,16 @@ function TradeInputsPanel(props: {
     : ammUSD
   const percentEquity =
     modeId === 'buy'
-      ? calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade) /
-        TOTAL_SHARES
+      ? isLimitOrder
+        ? amount / limitValuation
+        : calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade) /
+          TOTAL_SHARES
       : amount / TOTAL_SHARES
   const amountUSD =
     modeId === 'buy'
       ? amount
+      : isLimitOrder
+      ? amount / limitValuation
       : calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
 
   const handleSubmit = async () => {

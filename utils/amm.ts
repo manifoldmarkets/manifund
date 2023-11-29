@@ -136,7 +136,8 @@ export const getTradeErrorMessage = (
         minValuation
       )}`
     }
-  } else if (amountUSD === 0 || percentEquity === 0) {
+  }
+  if (amountUSD === 0 || percentEquity === 0) {
     return 'Please enter an amount'
   } else if (modeId === 'buy' && amountUSD > userSpendableFunds) {
     return 'Insufficient funds'
