@@ -16,6 +16,13 @@ export function getProposalValuation(project: Project) {
   return project.min_funding / investorPercent
 }
 
+export function getMinIncludingAmm(project: Project) {
+  return (
+    project.min_funding +
+    ((project.amm_shares ?? 0) / TOTAL_SHARES) * getProposalValuation(project)
+  )
+}
+
 export function getActiveValuation(
   txns: Txn[],
   projectId: string,

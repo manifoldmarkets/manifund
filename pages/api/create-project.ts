@@ -1,4 +1,4 @@
-import { TOTAL_SHARES } from '@/db/project'
+import { Project, TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
@@ -6,6 +6,7 @@ import { createEdgeClient } from './_db'
 import { projectSlugify } from '@/utils/formatting'
 import { Database, Json } from '@/db/database.types'
 import { updateProjectCauses } from '@/db/cause'
+import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
 
 export const config = {
   runtime: 'edge',
@@ -73,20 +74,17 @@ export default async function handler(req: NextRequest) {
     location_description,
     approved: null,
     signed_agreement: false,
-  }
+  } as Project
   await supabase.from('projects').insert(project).throwOnError()
   await updateProjectCauses(supabase, causeSlugs, project.id)
   await giveCreatorShares(supabase, id, user.id)
   if (type === 'cert') {
-    const initialValuation =
-      (TOTAL_SHARES * min_funding) /
-      (TOTAL_SHARES - founder_shares - (amm_shares ?? 0))
     await addBid(
       supabase,
       id,
       user.id,
-      min_funding + ((amm_shares ?? 0) / TOTAL_SHARES) * initialValuation,
-      initialValuation,
+      getMinIncludingAmm(project),
+      getProposalValuation(project),
       stage === 'proposal' ? 'assurance sell' : 'sell'
     )
   }
