@@ -45,6 +45,7 @@ export async function sendTemplateEmail(
       method: 'POST',
       headers: {
         Accept: 'application/json',
+        'Content-Type': 'application/json',
         'X-Postmark-Server-Token': process.env.POSTMARK_SERVER_TOKEN ?? '',
       },
       body: JSON.stringify({
