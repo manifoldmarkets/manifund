@@ -237,33 +237,29 @@ function Trade(props: {
                 />
               </div>
             </div>
-            {project.creator === userId &&
-              project.round === 'OP AI Worldviews Contest' && (
-                <div className="mb-3 flex">
-                  <Checkbox
-                    id="terms"
-                    aria-describedby="terms-description"
-                    name="terms"
-                    checked={agreedToTerms}
-                    onChange={() => setAgreedToTerms(!agreedToTerms)}
-                  />
-                  <div className="ml-3 text-sm leading-6">
-                    <label
-                      htmlFor="terms"
-                      className="font-medium text-gray-900"
-                    >
-                      I understand
-                    </label>{' '}
-                    <span id="terms-description" className="text-gray-500">
-                      <span className="sr-only">I understand </span>that by
-                      making this trade, I am agreeing to pay{' '}
-                      {formatLargeNumber((tradeAmount / bid.valuation) * 100)}%
-                      of any prize money I win to Manifund, which will be
-                      distributed to the investor who holds these shares.
-                    </span>
-                  </div>
+            {project.creator === userId && (
+              <div className="mb-3 flex">
+                <Checkbox
+                  id="terms"
+                  aria-describedby="terms-description"
+                  name="terms"
+                  checked={agreedToTerms}
+                  onChange={() => setAgreedToTerms(!agreedToTerms)}
+                />
+                <div className="ml-3 text-sm leading-6">
+                  <label htmlFor="terms" className="font-medium text-gray-900">
+                    I understand
+                  </label>{' '}
+                  <span id="terms-description" className="text-gray-500">
+                    <span className="sr-only">I understand </span>that by making
+                    this trade, I am agreeing to pay{' '}
+                    {formatLargeNumber((tradeAmount / bid.valuation) * 100)}% of
+                    any prize money I win to Manifund, which will be distributed
+                    to the investor who holds these shares.
+                  </span>
                 </div>
-              )}
+              </div>
+            )}
           </div>
         </div>
         <div className="text-center text-red-500">{errorMessage}</div>
