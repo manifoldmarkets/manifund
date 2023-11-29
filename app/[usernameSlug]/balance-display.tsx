@@ -92,7 +92,7 @@ export function BalanceDisplay(props: {
                   </>
                 ) : (
                   <Row className="absolute right-2 top-2 justify-between gap-1">
-                    {/* {accredited && <AirtableDepositButton />}
+                    {accredited && <AirtableDepositButton />}
                     <Link
                       href="/withdraw"
                       className="rounded bg-orange-500 p-0.5 shadow"
@@ -100,7 +100,7 @@ export function BalanceDisplay(props: {
                       <Tooltip text="Withdraw funds" placement="left">
                         <MinusSmallIcon className="h-4 w-4 stroke-2 text-white" />
                       </Tooltip>
-                    </Link> */}
+                    </Link>
                   </Row>
                 )}
               </>
