@@ -201,7 +201,7 @@ export function getCommenterContributions(
             ? `offered ${formatMoneyPrecise(
                 relevantBids.reduce((acc, bid) => acc + bid.amount, 0)
               )}`
-            : latestBid.type === 'buy'
+            : latestBid.type === 'buy' || latestBid.type === 'assurance buy'
             ? `buying at ${formatMoneyPrecise(latestBid.valuation)}`
             : `selling at ${formatMoneyPrecise(latestBid.valuation)}`
       }
