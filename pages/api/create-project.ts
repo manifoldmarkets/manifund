@@ -5,7 +5,7 @@ import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
 import { projectSlugify } from '@/utils/formatting'
 import { Database, Json } from '@/db/database.types'
-import { updateProjectCauses } from '@/db/cause'
+import { getPrizeCause, updateProjectCauses } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
 
 export const config = {
@@ -53,6 +53,7 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
+  const prizeCause = await getPrizeCause(causeSlugs, supabase)
 
   const slug = await projectSlugify(title, supabase)
   const id = uuid()
