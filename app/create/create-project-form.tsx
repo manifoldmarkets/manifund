@@ -260,12 +260,12 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         </Col>
       </Col>
       {/* TODO: distinguish between editable and non-editable investment structures */}
-      {!!selectedCauses ? (
+      {!!selectedPrize ? (
         <InvestmentStructurePanel
           minFunding={minFunding ?? 0}
           founderPortion={founderPortion}
           setFounderPortion={setFounderPortion}
-          ammPortion={ammPortion}
+          certParams={selectedPrize?.cert_params}
           agreedToTerms={agreedToTerms}
           setAgreedToTerms={setAgreedToTerms}
         />

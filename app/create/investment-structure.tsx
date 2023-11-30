@@ -13,6 +13,8 @@ import { Checkbox } from '@/components/input'
 import { Modal } from '@/components/modal'
 import { Button } from '@/components/button'
 import { RequiredStar } from '@/components/tags'
+import { CertParams } from '@/db/cause'
+import { TOTAL_SHARES } from '@/db/project'
 
 const SLIDER_MARKS = [
   { value: 0, label: '0%' },
@@ -28,7 +30,7 @@ export function InvestmentStructurePanel(props: {
   setFounderPortion: (val: number) => void
   agreedToTerms: boolean
   setAgreedToTerms: (val: boolean) => void
-  ammPortion: number
+  certParams: CertParams
 }) {
   const {
     minFunding,
@@ -36,7 +38,7 @@ export function InvestmentStructurePanel(props: {
     setFounderPortion,
     agreedToTerms,
     setAgreedToTerms,
-    ammPortion,
+    certParams,
   } = props
   const sliderRef = useRef<HTMLSpanElement>(null)
   const [width, setWidth] = useState(0)
@@ -50,8 +52,17 @@ export function InvestmentStructurePanel(props: {
   }, [])
   const [editing, setEditing] = useState<boolean>(false)
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false)
-  const initialValuation =
-    (100 * (minFunding ?? 0)) / (100 - founderPortion - ammPortion)
+  const initialValuation = calcInitialValuation(
+    certParams,
+    minFunding,
+    founderPortion
+  )
+  if (!initialValuation) {
+    return <span className="text-sm text-rose-600">Something went wrong.</span>
+  }
+  const ammPortion = certParams.ammShares
+    ? certParams.ammShares / TOTAL_SHARES
+    : (certParams.ammDollars as number) / initialValuation
   return (
     <Card className="relative flex flex-col">
       <h1 className="font-semibold">Investment structure</h1>
@@ -226,4 +237,25 @@ export function InvestmentStructurePanel(props: {
       </Row>
     </Card>
   )
+}
+
+function calcInitialValuation(
+  certParams: CertParams,
+  minFunding: number,
+  founderPortion: number
+) {
+  if (!certParams.ammShares && !certParams.ammDollars) {
+    return null
+  } else if (certParams.ammShares) {
+    if (certParams.ammDollars) {
+      return (certParams.ammDollars / certParams.ammShares) * TOTAL_SHARES
+    } else {
+      return (
+        (100 * minFunding) /
+        (100 - founderPortion - certParams.ammShares / TOTAL_SHARES)
+      )
+    }
+  } else if (certParams.ammDollars) {
+    return (certParams.ammDollars + minFunding) / (1 - founderPortion)
+  }
 }
