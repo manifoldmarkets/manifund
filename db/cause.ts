@@ -4,12 +4,12 @@ import { sortBy } from 'lodash'
 
 export type Cause = Omit<
   Database['public']['Tables']['causes']['Row'],
-  'cert_parameters'
-> & { cert_parameters: CertParameters }
+  'cert_params'
+> & { cert_params: CertParams }
 export type FullCause = Cause & { projects: { stage: string }[] }
 export type MiniCause = { title: string; slug: string }
 
-export type CertParameters = {
+export type CertParams = {
   ammShares: number | null
   ammDollars: number | null
   minMinFunding: number
