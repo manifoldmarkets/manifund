@@ -66,11 +66,9 @@ export function InvestmentStructurePanel(props: {
     <Card className="relative flex flex-col">
       <h1 className="font-semibold">Investment structure</h1>
       <p className="text-sm text-gray-600">
-        We recommend using the default investment structure laid out here: this
-        ensures that you&apos;ll raise at a valuation that will be able to
-        support your minimum costs, that you and your investors will be able to
-        make trades at any time, and that you will be rewarded for exceptional
-        results. Change this only if you fully understand the implications.
+        {certParams.adjustableInvestmentStructure
+          ? 'We recommend using the default investment structure laid out here: this ensures that you&apos;ll raise at a valuation that will be able to support your minimum costs, that you and your investors will be able to make trades at any time, and that you will be rewarded for exceptional results. Change this only if you fully understand the implications.'
+          : "This is the investment structure that all projects in the prize round you've selected will use."}
       </p>
       {certParams.adjustableInvestmentStructure && (
         <button
@@ -202,29 +200,13 @@ export function InvestmentStructurePanel(props: {
           <RequiredStar />
           <Modal open={detailsOpen} setOpen={setDetailsOpen}>
             <Col className="items-end gap-3 px-5 py-2">
-              <span className="text-sm text-gray-600">
-                When you create this project, an offer will be placed on your
-                behalf to sell {100 - founderPercent}% of total equity to
-                investors at a valuation of{' '}
-                {formatMoneyPrecise(initialValuation)}.
-              </span>
-              <span className="text-sm text-gray-600">
-                If this offer is fully accepted by any combination of investors,
-                then your project will become active and you&apos;ll recieve $
-                {minFunding} which can be withdrawn and used for your project
-                upfront. The remaining{' '}
-                {formatMoneyPrecise(ammPortion * initialValuation)} raised from
-                investors, in addition to {ammPercent}% of total equity, will be
-                given to the automated market maker (amm), which will allow you
-                and your investors to make trades at any time.
-              </span>
-              <span className="text-sm text-gray-600">
-                Once your project is complete and closed, all assets held by the
-                amm will be returned to you. You may then sell the{' '}
-                {founderPercent}% of equity you hold to any retroactive
-                evaluators who place offers on your project, which allows you to
-                profit off of exceptional results.
-              </span>
+              <GenInvestmentExplanation
+                certParams={certParams}
+                minFunding={minFunding}
+                founderPercent={founderPercent}
+                ammPercent={ammPercent}
+                initialValuation={initialValuation}
+              />
               <Button
                 color="gray-outline"
                 onClick={() => setDetailsOpen(false)}
@@ -237,6 +219,72 @@ export function InvestmentStructurePanel(props: {
       </Row>
     </Card>
   )
+}
+
+function GenInvestmentExplanation(props: {
+  certParams: CertParams
+  minFunding: number
+  founderPercent: number
+  ammPercent: number
+  initialValuation: number
+}) {
+  const {
+    certParams,
+    minFunding,
+    founderPercent,
+    ammPercent,
+    initialValuation,
+  } = props
+  if (certParams.proposalPhase) {
+    return (
+      <>
+        <span className="text-sm text-gray-600">
+          When you create this project, an offer will be placed on your behalf
+          to sell {100 - founderPercent}% of total equity to investors at a
+          valuation of {formatMoneyPrecise(initialValuation)}.
+        </span>
+        <span className="text-sm text-gray-600">
+          If this offer is fully accepted by any combination of investors, then
+          your project will become active and you&apos;ll recieve ${minFunding}{' '}
+          which can be withdrawn and used for your project upfront. The
+          remaining {formatMoneyPrecise((ammPercent * initialValuation) / 100)}{' '}
+          raised from investors, in addition to {ammPercent}% of total equity,
+          will be given to the automated market maker (amm), which will allow
+          you and your investors to make trades at any time.
+        </span>
+        <span className="text-sm text-gray-600">
+          Once your project is complete and closed, all assets held by the amm
+          will be returned to you. You may then sell the {founderPercent}% of
+          equity you hold to any retroactive evaluators who place offers on your
+          project, which allows you to profit off of exceptional results.
+        </span>
+      </>
+    )
+  } else {
+    return (
+      <>
+        <span className="text-sm text-gray-600">
+          When you create this project, an automated market maker (AMM) will be
+          seeded using {ammPercent}% of your equity and{' '}
+          {formatMoneyPrecise(certParams.ammDollars ?? 0)} from Manifund. The
+          AMM will allow you and potential investors to buy and sell stake in
+          your project at any time. Note though that unless you choose to sell
+          more equity to the AMM, you will keep at least {founderPercent}% of
+          your equity.
+        </span>
+        <span className="text-sm text-gray-600">
+          Once your project is complete and closed, all assets held by the AMM
+          will be returned to you. Prizes will then be awarded in the form of
+          buy offers for equity, which you can accept by selling any remaining
+          equity you hold to the evaluator who placed the offer.
+        </span>
+        <span className="text-sm text-gray-600">
+          For example, if your project earns a $1000 prize, and you hold 95% of
+          your equity at the time of close, you can sell that 95% for $950.
+        </span>
+      </>
+    )
+  }
 }
 
 function calcInitialValuation(
