@@ -2,9 +2,22 @@ import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sortBy } from 'lodash'
 
-export type Cause = Database['public']['Tables']['causes']['Row']
+export type Cause = Omit<
+  Database['public']['Tables']['causes']['Row'],
+  'cert_parameters'
+> & { cert_parameters: CertParameters }
 export type FullCause = Cause & { projects: { stage: string }[] }
 export type MiniCause = { title: string; slug: string }
+
+export type CertParameters = {
+  ammShares: number | null
+  ammDollars: number | null
+  minMinFunding: number
+  proposalPhase: boolean
+  ammOwnedByCreator: boolean
+  defaultInvestorShares: number
+  adjustableInvestmentStructure: boolean
+}
 
 export async function listFullCauses(supabase: SupabaseClient) {
   const { data, error } = await supabase
@@ -13,18 +26,11 @@ export async function listFullCauses(supabase: SupabaseClient) {
   if (error) {
     throw error
   }
-  return sortBy(data, [
-    function (cause) {
-      return cause.data.sort
-    },
-  ]) as FullCause[]
+  return sortBy(data, 'sort') as FullCause[]
 }
 
 export async function listMiniCauses(supabase: SupabaseClient) {
-  const { data, error } = await supabase
-    .from('causes')
-    .select('title, slug')
-    .contains('data', JSON.stringify({ open: true }))
+  const { data, error } = await supabase.from('causes').select('title, slug')
   if (error) {
     throw error
   }

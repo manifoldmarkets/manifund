@@ -49,20 +49,24 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   )
   const [locationDescription, setLocationDescription] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const selectableCauses = causesList.filter(
-    (cause) =>
-      typeof cause.data === 'object' &&
-      !Array.isArray(cause.data) &&
-      cause.data?.open &&
-      !cause.data?.prize
-  )
+  const selectableCauses = causesList.filter((cause) => {
+    cause.open && !cause.prize
+  })
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
-  const [applyingToManifold, setApplyingToManifold] = useState<boolean>(false)
+  const selectablePrizeCauses = causesList.filter(
+    (cause) => cause.open && cause.prize
+  )
+  const [selectedPrizeCause, setSelectedPrizeCause] = useState<Cause | null>(
+    null
+  )
+  const selectedPrizeCertParameters = selectedPrizeCause?.cert_parameters
   const [founderPortion, setFounderPortion] = useState<number>(50)
   const ammPortion = 10
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
-  const minMinFunding = applyingToManifold ? 100 : 500
+  const minMinFunding = selectedPrizeCause?.cert_parameters
+    ? selectedPrizeCause.cert_parameters.minMinFunding
+    : 500
 
   let errorMessage = null
   if (title === '') {

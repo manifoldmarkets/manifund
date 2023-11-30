@@ -59,24 +59,33 @@ export interface Database {
       }
       causes: {
         Row: {
-          data: Json | null
+          cert_parameters: Json | null
           description: Json | null
           header_image_url: string
+          open: boolean
+          prize: boolean
           slug: string
+          sort: number | null
           title: string
         }
         Insert: {
-          data?: Json | null
+          cert_parameters?: Json | null
           description?: Json | null
           header_image_url: string
+          open?: boolean
+          prize?: boolean
           slug: string
+          sort?: number | null
           title: string
         }
         Update: {
-          data?: Json | null
+          cert_parameters?: Json | null
           description?: Json | null
           header_image_url?: string
+          open?: boolean
+          prize?: boolean
           slug?: string
+          sort?: number | null
           title?: string
         }
         Relationships: []
@@ -530,7 +539,7 @@ export interface Database {
           project: string | null
           to_id: string
           token: string
-          type: Database["public"]["Enums"]["txn_type"] | null
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Insert: {
           amount: number
@@ -541,7 +550,7 @@ export interface Database {
           project?: string | null
           to_id: string
           token: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Update: {
           amount?: number
@@ -552,7 +561,7 @@ export interface Database {
           project?: string | null
           to_id?: string
           token?: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type?: Database["public"]["Enums"]["txn_type"]
         }
         Relationships: [
           {
@@ -740,8 +749,8 @@ export interface Database {
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "donate" | "assurance buy" | "assurance sell"
-      profile_type: "individual" | "org" | "fund" | "amm"
+      bid_type: "buy" | "sell" | "donate" | "assurance sell" | "assurance buy"
+      profile_type: "individual" | "org" | "amm" | "fund"
       project_stage:
         | "active"
         | "proposal"
@@ -792,7 +801,6 @@ export interface Database {
         stage: Database["public"]["Enums"]["project_stage"]
         round: string
         slug: string
-        location_description: string
       }
       transfer_row: {
         recipient_email: string

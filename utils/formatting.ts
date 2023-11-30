@@ -53,6 +53,12 @@ export function roundLargeNumber(num: number, sigfigs = 2): number {
   return Number(showPrecision(num, 3))
 }
 
+export function toTitleCase(string: string) {
+  return string.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+  })
+}
+
 export function formatDate(date: string) {
   const sections = date.split('-')
   let month = ''
