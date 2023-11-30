@@ -31,6 +31,14 @@ export async function listMiniCauses(supabase: SupabaseClient) {
   return data as MiniCause[]
 }
 
+export async function listCauses(supabase: SupabaseClient) {
+  const { data, error } = await supabase.from('causes').select('*')
+  if (error) {
+    throw error
+  }
+  return data as Cause[]
+}
+
 export async function updateProjectCauses(
   supabase: SupabaseClient,
   causeSlugs: string[],

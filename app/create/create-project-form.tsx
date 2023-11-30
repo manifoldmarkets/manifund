@@ -14,7 +14,7 @@ import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
-import { MiniCause } from '@/db/cause'
+import { Cause, MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from './investment-structure'
 import { Tooltip } from '@/components/tooltip'
@@ -36,7 +36,7 @@ const DESCRIPTION_OUTLINE = `
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
 
-export function CreateProjectForm(props: { causesList: MiniCause[] }) {
+export function CreateProjectForm(props: { causesList: Cause[] }) {
   const { causesList } = props
   const { session } = useSupabase()
   const router = useRouter()
@@ -49,6 +49,13 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   )
   const [locationDescription, setLocationDescription] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const selectableCauses = causesList.filter(
+    (cause) =>
+      typeof cause.data === 'object' &&
+      !Array.isArray(cause.data) &&
+      cause.data?.open &&
+      !cause.data?.prize
+  )
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   const [applyingToManifold, setApplyingToManifold] = useState<boolean>(false)
   const [founderPortion, setFounderPortion] = useState<number>(50)
@@ -106,7 +113,6 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         founder_shares: applyingToManifold
           ? (founderPortion / 100) * TOTAL_SHARES
           : TOTAL_SHARES,
-        // TODO: replace name if Austin has an alternative
         round: applyingToManifold ? 'Manifold Community Fund' : 'Regrants',
         auction_close: verdictDate,
         stage: 'proposal',
@@ -297,7 +303,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
       <Col className="gap-1">
         <label>Cause areas</label>
         <SelectCauses
-          causesList={causesList}
+          causesList={selectableCauses}
           selectedCauses={selectedCauses}
           setSelectedCauses={setSelectedCauses}
         />
