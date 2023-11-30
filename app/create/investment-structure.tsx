@@ -26,16 +26,16 @@ const SLIDER_MARKS = [
 
 export function InvestmentStructurePanel(props: {
   minFunding: number
-  founderPortion: number
-  setFounderPortion: (val: number) => void
+  founderPercent: number
+  setFounderPercent: (val: number) => void
   agreedToTerms: boolean
   setAgreedToTerms: (val: boolean) => void
   certParams: CertParams
 }) {
   const {
     minFunding,
-    founderPortion,
-    setFounderPortion,
+    founderPercent,
+    setFounderPercent,
     agreedToTerms,
     setAgreedToTerms,
     certParams,
@@ -55,7 +55,7 @@ export function InvestmentStructurePanel(props: {
   const initialValuation = calcInitialValuation(
     certParams,
     minFunding,
-    founderPortion
+    founderPercent
   )
   if (initialValuation === null) {
     return <span className="text-sm text-rose-600">Something went wrong.</span>
@@ -104,10 +104,10 @@ export function InvestmentStructurePanel(props: {
       </Row>
       <RxSlider.Root
         className="relative mb-10 mt-5 flex h-5 touch-none select-none items-center"
-        value={[founderPortion]}
+        value={[founderPercent]}
         onValueChange={([val]) =>
-          val < 100 - ammPercent * 100 && val >= ammPercent
-            ? setFounderPortion(val)
+          val < 100 - ammPercent && val >= ammPercent
+            ? setFounderPercent(val)
             : null
         }
         min={0}
@@ -127,7 +127,7 @@ export function InvestmentStructurePanel(props: {
               >
                 <div
                   className={clsx(
-                    founderPortion >= value
+                    founderPercent >= value
                       ? 'bg-orange-500'
                       : 'bg-emerald-500',
                     'h-2 w-2 rounded-full'
@@ -165,11 +165,11 @@ export function InvestmentStructurePanel(props: {
       <div className="m-auto grid grid-cols-2 justify-between gap-5 sm:flex">
         <Col>
           <p className="text-xs text-gray-600">Equity kept by founder</p>
-          <p className="text-base font-bold">{founderPortion}%</p>
+          <p className="text-base font-bold">{founderPercent}%</p>
         </Col>
         <Col>
           <p className="text-xs text-gray-600">Equity sold to investors</p>
-          <p className="text-base font-bold">{100 - founderPortion}%</p>
+          <p className="text-base font-bold">{100 - founderPercent}%</p>
         </Col>
         <Col>
           <p className="text-xs text-gray-600">Cost to seed AMM</p>
@@ -204,7 +204,7 @@ export function InvestmentStructurePanel(props: {
             <Col className="items-end gap-3 px-5 py-2">
               <span className="text-sm text-gray-600">
                 When you create this project, an offer will be placed on your
-                behalf to sell {100 - founderPortion}% of total equity to
+                behalf to sell {100 - founderPercent}% of total equity to
                 investors at a valuation of{' '}
                 {formatMoneyPrecise(initialValuation)}.
               </span>
@@ -221,7 +221,7 @@ export function InvestmentStructurePanel(props: {
               <span className="text-sm text-gray-600">
                 Once your project is complete and closed, all assets held by the
                 amm will be returned to you. You may then sell the{' '}
-                {founderPortion}% of equity you hold to any retroactive
+                {founderPercent}% of equity you hold to any retroactive
                 evaluators who place offers on your project, which allows you to
                 profit off of exceptional results.
               </span>

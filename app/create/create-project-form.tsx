@@ -59,7 +59,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   })
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   const [selectedPrize, setSelectedPrize] = useState<Cause | null>(null)
-  const [founderPortion, setFounderPortion] = useState<number>(50)
+  const [founderPercent, setFounderPercent] = useState<number>(50)
   const ammPortion = 10
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
@@ -114,7 +114,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         min_funding: minFunding,
         funding_goal: fundingGoal ?? minFunding,
         founder_shares: !!selectedPrize
-          ? (founderPortion / 100) * TOTAL_SHARES
+          ? (founderPercent / 100) * TOTAL_SHARES
           : TOTAL_SHARES,
         // TODO: deprecate rounds completely
         round: !!selectedPrize ? toTitleCase(selectedPrize.title) : 'Regrants',
@@ -263,8 +263,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       {!!selectedPrize ? (
         <InvestmentStructurePanel
           minFunding={minFunding ?? 0}
-          founderPortion={founderPortion}
-          setFounderPortion={setFounderPortion}
+          founderPercent={founderPercent}
+          setFounderPercent={setFounderPercent}
           certParams={selectedPrize?.cert_params}
           agreedToTerms={agreedToTerms}
           setAgreedToTerms={setAgreedToTerms}
