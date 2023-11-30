@@ -63,12 +63,18 @@ export function InvestmentStructurePanel(props: {
   const ammPortion = certParams.ammShares / TOTAL_SHARES
   const ammPercent = ammPortion * 100
   return (
-    <Card className="relative flex flex-col">
+    <Card className="relative flex flex-col gap-2">
       <h1 className="font-semibold">Investment structure</h1>
       <p className="text-sm text-gray-600">
         {certParams.adjustableInvestmentStructure
-          ? 'We recommend using the default investment structure laid out here: this ensures that you&apos;ll raise at a valuation that will be able to support your minimum costs, that you and your investors will be able to make trades at any time, and that you will be rewarded for exceptional results. Change this only if you fully understand the implications.'
+          ? "We recommend using the default investment structure laid out here: this ensures that you'll raise at a valuation that will be able to support your minimum costs, that you and your investors will be able to make trades at any time, and that you will be rewarded for exceptional results. Change this only if you fully understand the implications."
           : "This is the investment structure that all projects in the prize round you've selected will use."}
+      </p>
+      <p className="text-sm text-gray-600">
+        &quot;Equity&quot; here does not refer to legal equity, but to stake in
+        the specific prize selected here. That is, if this project later wins a
+        different award, those who hold equity in the Manifund project are not
+        entitled to a portion of that prize.
       </p>
       {certParams.adjustableInvestmentStructure && (
         <button
