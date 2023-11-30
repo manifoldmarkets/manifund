@@ -54,9 +54,9 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   )
   const [locationDescription, setLocationDescription] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const selectableCauses = causesList.filter((cause) => {
-    cause.open && !cause.prize
-  })
+  const selectableCauses = causesList.filter(
+    (cause) => cause.open && !cause.prize
+  )
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   const [selectedPrize, setSelectedPrize] = useState<Cause | null>(null)
   const [founderPercent, setFounderPercent] = useState<number>(50)
