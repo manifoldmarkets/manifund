@@ -14,7 +14,7 @@ import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
-import { Cause, MiniCause } from '@/db/cause'
+import { Cause, CertParams, MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from './investment-structure'
 import { Tooltip } from '@/components/tooltip'
@@ -79,13 +79,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     errorMessage = 'Your project needs a title.'
   } else if (
     minFunding === null &&
-    (!selectedPrize || selectedPrize.cert_params.proposalPhase)
+    (!selectedPrize || selectedPrize.cert_params?.proposalPhase)
   ) {
     errorMessage = 'Your project needs a minimum funding amount.'
   } else if (
     minFunding !== null &&
     minFunding < minMinFunding &&
-    (!selectedPrize || selectedPrize.cert_params.proposalPhase)
+    (!selectedPrize || selectedPrize.cert_params?.proposalPhase)
   ) {
     errorMessage = `Your minimum funding must be at least $${minMinFunding}.`
   } else if (selectedPrize && !agreedToTerms) {
@@ -136,7 +136,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         stage: 'proposal',
         type: !!selectedPrize ? 'cert' : 'grant',
         amm_shares: !!selectedPrize
-          ? selectedPrize.cert_params.ammShares
+          ? selectedPrize.cert_params?.ammShares
           : null,
         location_description: locationDescription,
         causeSlugs: selectedCauseSlugs,
@@ -252,36 +252,39 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         </p>
         <TextEditor editor={editor} />
       </Col>
-      <Col className="gap-1">
-        <label htmlFor="minFunding" className="mr-3 mt-4">
-          Minimum funding (USD)
-          <RequiredStar />
-        </label>
-        <p className="text-sm text-gray-600">
-          The minimum amount of funding you need to start this project. If this
-          amount is not reached, no funds will be sent. Due to the cost of
-          approving grants and processing payments, we require this to be at
-          least ${minMinFunding}.
-        </p>
-        <Col>
-          <Input
-            type="number"
-            id="minFunding"
-            autoComplete="off"
-            value={minFunding !== null ? Number(minFunding).toString() : ''}
-            onChange={(event) => setMinFunding(Number(event.target.value))}
-            error={minFunding !== null && minFunding < minMinFunding}
-            errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
-          />
-        </Col>
-      </Col>
+      {!selectedPrize ||
+        (selectedPrize.cert_params?.proposalPhase && (
+          <Col className="gap-1">
+            <label htmlFor="minFunding" className="mr-3 mt-4">
+              Minimum funding (USD)
+              <RequiredStar />
+            </label>
+            <p className="text-sm text-gray-600">
+              The minimum amount of funding you need to start this project. If
+              this amount is not reached, no funds will be sent. Due to the cost
+              of approving grants and processing payments, we require this to be
+              at least ${minMinFunding}.
+            </p>
+            <Col>
+              <Input
+                type="number"
+                id="minFunding"
+                autoComplete="off"
+                value={minFunding !== null ? Number(minFunding).toString() : ''}
+                onChange={(event) => setMinFunding(Number(event.target.value))}
+                error={minFunding !== null && minFunding < minMinFunding}
+                errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
+              />
+            </Col>
+          </Col>
+        ))}
       {/* TODO: distinguish between editable and non-editable investment structures */}
       {!!selectedPrize ? (
         <InvestmentStructurePanel
           minFunding={minFunding ?? 0}
           founderPercent={founderPercent}
           setFounderPercent={setFounderPercent}
-          certParams={selectedPrize?.cert_params}
+          certParams={selectedPrize?.cert_params as CertParams}
           agreedToTerms={agreedToTerms}
           setAgreedToTerms={setAgreedToTerms}
         />
