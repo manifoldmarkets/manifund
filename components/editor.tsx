@@ -10,8 +10,14 @@ import { Button } from './button'
 import { DisplayMention } from '@/components/user-mention/mention-extension'
 import { DisplayLink } from '@/hooks/use-text-editor'
 import StarterKit from '@tiptap/starter-kit'
+import { DisplayImage } from './editor/image'
 
-export const TIPTAP_EXTENSIONS = [StarterKit, DisplayLink, DisplayMention]
+export const TIPTAP_EXTENSIONS = [
+  StarterKit,
+  DisplayLink,
+  DisplayMention,
+  DisplayImage,
+]
 
 export function TextEditor(props: {
   editor: Editor | null
@@ -41,7 +47,7 @@ export function TextEditor(props: {
             <button
               onClick={() => editor.chain().focus().toggleItalic().run()}
               className={clsx(
-                'rounded py-0.5 pr-3 pl-2 italic',
+                'rounded py-0.5 pl-2 pr-3 italic',
                 editor.isActive('italic') && 'bg-gray-200'
               )}
             >
