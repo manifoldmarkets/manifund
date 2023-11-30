@@ -57,12 +57,13 @@ export function InvestmentStructurePanel(props: {
     minFunding,
     founderPortion
   )
-  if (!initialValuation) {
+  if (initialValuation === null) {
     return <span className="text-sm text-rose-600">Something went wrong.</span>
   }
   const ammPortion = certParams.ammShares
     ? certParams.ammShares / TOTAL_SHARES
     : (certParams.ammDollars as number) / initialValuation
+  const ammPercent = ammPortion * 100
   return (
     <Card className="relative flex flex-col">
       <h1 className="font-semibold">Investment structure</h1>
@@ -105,7 +106,7 @@ export function InvestmentStructurePanel(props: {
         className="relative mb-10 mt-5 flex h-5 touch-none select-none items-center"
         value={[founderPortion]}
         onValueChange={([val]) =>
-          val < 100 - ammPortion && val >= ammPortion
+          val < 100 - ammPercent * 100 && val >= ammPercent
             ? setFounderPortion(val)
             : null
         }
@@ -149,13 +150,13 @@ export function InvestmentStructurePanel(props: {
         >
           <span
             className="absolute -top-1.5 text-gray-600"
-            style={{ left: (-width / 100) * ammPortion }}
+            style={{ left: (-width / 100) * ammPercent }}
           >
             {'['}
           </span>
           <span
             className="absolute -top-1.5 text-gray-600"
-            style={{ right: (-width / 100) * ammPortion }}
+            style={{ right: (-width / 100) * ammPercent }}
           >
             {']'}
           </span>
@@ -173,8 +174,7 @@ export function InvestmentStructurePanel(props: {
         <Col>
           <p className="text-xs text-gray-600">Cost to seed AMM</p>
           <p className="text-base font-bold">
-            {ammPortion}%,{' '}
-            {formatMoneyPrecise((ammPortion * initialValuation) / 100)}
+            {ammPercent}%, {formatMoneyPrecise(ammPortion * initialValuation)}
           </p>
         </Col>
         <Col>
@@ -213,10 +213,10 @@ export function InvestmentStructurePanel(props: {
                 then your project will become active and you&apos;ll recieve $
                 {minFunding} which can be withdrawn and used for your project
                 upfront. The remaining{' '}
-                {formatMoneyPrecise((ammPortion * initialValuation) / 100)}{' '}
-                raised from investors, in addition to {ammPortion}% of total
-                equity, will be given to the automated market maker (amm), which
-                will allow you and your investors to make trades at any time.
+                {formatMoneyPrecise(ammPortion * initialValuation)} raised from
+                investors, in addition to {ammPercent}% of total equity, will be
+                given to the automated market maker (amm), which will allow you
+                and your investors to make trades at any time.
               </span>
               <span className="text-sm text-gray-600">
                 Once your project is complete and closed, all assets held by the
@@ -258,4 +258,5 @@ function calcInitialValuation(
   } else if (certParams.ammDollars) {
     return (certParams.ammDollars + minFunding) / (1 - founderPortion)
   }
+  return 0
 }
