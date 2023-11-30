@@ -1,7 +1,7 @@
 'use client'
 
 import { useSupabase } from '@/db/supabase-provider'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
@@ -60,6 +60,14 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   const [selectedPrize, setSelectedPrize] = useState<Cause | null>(null)
   const [founderPercent, setFounderPercent] = useState<number>(50)
+  useEffect(() => {
+    setFounderPercent(
+      (1 -
+        (selectedPrize?.cert_params?.defaultInvestorShares ?? 0) /
+          TOTAL_SHARES) *
+        100
+    )
+  }, [selectedPrize])
   const ammPortion = 10
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
