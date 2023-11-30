@@ -60,9 +60,7 @@ export function InvestmentStructurePanel(props: {
   if (initialValuation === null) {
     return <span className="text-sm text-rose-600">Something went wrong.</span>
   }
-  const ammPortion = certParams.ammShares
-    ? certParams.ammShares / TOTAL_SHARES
-    : (certParams.ammDollars as number) / initialValuation
+  const ammPortion = certParams.ammShares / TOTAL_SHARES
   const ammPercent = ammPortion * 100
   return (
     <Card className="relative flex flex-col">
@@ -74,16 +72,18 @@ export function InvestmentStructurePanel(props: {
         make trades at any time, and that you will be rewarded for exceptional
         results. Change this only if you fully understand the implications.
       </p>
-      <button
-        className="absolute right-2 top-2 flex cursor-pointer items-center justify-center rounded-full bg-orange-500 p-1 text-white hover:bg-orange-600"
-        onClick={() => setEditing(!editing)}
-      >
-        {editing ? (
-          <span className="px-2 text-xs">save</span>
-        ) : (
-          <PencilIcon className="h-6 w-6 p-1" />
-        )}
-      </button>
+      {certParams.adjustableInvestmentStructure && (
+        <button
+          className="absolute right-2 top-2 flex cursor-pointer items-center justify-center rounded-full bg-orange-500 p-1 text-white hover:bg-orange-600"
+          onClick={() => setEditing(!editing)}
+        >
+          {editing ? (
+            <span className="px-2 text-xs">save</span>
+          ) : (
+            <PencilIcon className="h-6 w-6 p-1" />
+          )}
+        </button>
+      )}
       <Row className="mt-5 justify-center gap-10 text-sm text-gray-600">
         <Row className="items-center gap-1">
           <div className="h-2 w-2 rounded-full bg-orange-500" />
