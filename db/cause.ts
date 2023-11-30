@@ -58,7 +58,7 @@ export async function getPrizeCause(
   if (error) {
     throw error
   }
-  return data as Cause
+  return data ? (data as Cause) : null
 }
 
 export async function updateProjectCauses(
