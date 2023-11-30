@@ -133,7 +133,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         // TODO: deprecate rounds completely
         round: !!selectedPrize ? toTitleCase(selectedPrize.title) : 'Regrants',
         auction_close: verdictDate,
-        stage: 'proposal',
+        stage:
+          selectedPrize && !selectedPrize.cert_params?.proposalPhase
+            ? 'active'
+            : 'proposal',
         type: !!selectedPrize ? 'cert' : 'grant',
         amm_shares: !!selectedPrize
           ? selectedPrize.cert_params?.ammShares
@@ -278,7 +281,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             </Col>
           </Col>
         ))}
-      {/* TODO: distinguish between editable and non-editable investment structures */}
       {!!selectedPrize ? (
         <InvestmentStructurePanel
           minFunding={minFunding ?? 0}
