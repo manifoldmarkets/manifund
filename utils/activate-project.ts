@@ -75,7 +75,11 @@ async function activateProject(project: Project) {
     await seedAmm(project, supabase)
   }
   const txns = await getTxnsByProject(supabase, project.id)
-  const donors = uniq(txns.map((txn) => txn.profiles))
+  const donors = uniq(
+    txns
+      .filter((txn) => txn.token === 'USD' && txn.from_id !== project.creator)
+      .map((txn) => txn.profiles)
+  )
   const donorSubject = `"${project.title}" is active!`
   const donorMessage = `The project you ${
     isGrant ? 'donated' : 'made a buy offer'
