@@ -19,6 +19,7 @@ import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from './investment-structure'
 import { Tooltip } from '@/components/tooltip'
 import { SiteLink } from '@/components/site-link'
+import { toTitleCase } from '@/utils/formatting'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -59,13 +60,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const [selectedPrizeCause, setSelectedPrizeCause] = useState<Cause | null>(
     null
   )
-  const selectedPrizeCertParameters = selectedPrizeCause?.cert_parameters
+  const selectedPrizeCertParameters = selectedPrizeCause?.cert_params
   const [founderPortion, setFounderPortion] = useState<number>(50)
   const ammPortion = 10
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
-  const minMinFunding = selectedPrizeCause?.cert_parameters
-    ? selectedPrizeCause.cert_parameters.minMinFunding
+  const minMinFunding = selectedPrizeCause?.cert_params
+    ? selectedPrizeCause.cert_params.minMinFunding
     : 500
 
   let errorMessage = null
@@ -75,11 +76,11 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     errorMessage = 'Your project needs a minimum funding amount.'
   } else if (minFunding !== null && minFunding < minMinFunding) {
     errorMessage = `Your minimum funding must be at least $${minMinFunding}.`
-  } else if (applyingToManifold && !agreedToTerms) {
+  } else if (selectedPrizeCause && !agreedToTerms) {
     errorMessage = 'Please confirm that you agree to the investment structure.'
   } else if (
     fundingGoal &&
-    !applyingToManifold &&
+    !selectedPrizeCause &&
     ((minFunding && minFunding > fundingGoal) || fundingGoal <= 0)
   ) {
     errorMessage =
@@ -100,8 +101,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     setIsSubmitting(true)
     const description = editor?.getJSON() ?? '<p>No description</p>'
     const selectedCauseSlugs = selectedCauses.map((cause) => cause.slug)
-    if (applyingToManifold) {
-      selectedCauseSlugs.push('manifold-community')
+    if (!!selectedPrizeCause) {
+      selectedCauseSlugs.push(selectedPrizeCause.slug)
     }
     const response = await fetch('/api/create-project', {
       method: 'POST',
@@ -114,15 +115,18 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         description,
         min_funding: minFunding,
         funding_goal: fundingGoal ?? minFunding,
-        founder_shares: applyingToManifold
+        founder_shares: !!selectedPrizeCause
           ? (founderPortion / 100) * TOTAL_SHARES
           : TOTAL_SHARES,
-        round: applyingToManifold ? 'Manifold Community Fund' : 'Regrants',
+        // TODO: deprecate rounds completely
+        round: !!selectedPrizeCause
+          ? toTitleCase(selectedPrizeCause.title)
+          : 'Regrants',
         auction_close: verdictDate,
         stage: 'proposal',
-        type: applyingToManifold ? 'cert' : 'grant',
+        type: !!selectedPrizeCause ? 'cert' : 'grant',
         causeSlugs: selectedCauseSlugs,
-        amm_shares: applyingToManifold
+        amm_shares: !!selectedPrizeCause
           ? (ammPortion / 100) * TOTAL_SHARES
           : null,
         location_description: locationDescription,
