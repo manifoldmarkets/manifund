@@ -10,7 +10,7 @@ export type FullCause = Cause & { projects: { stage: string }[] }
 export type MiniCause = { title: string; slug: string }
 
 export type CertParams = {
-  ammShares: number | null
+  ammShares: number
   ammDollars: number | null
   minMinFunding: number
   proposalPhase: boolean

@@ -244,19 +244,12 @@ function calcInitialValuation(
   minFunding: number,
   founderPortion: number
 ) {
-  if (!certParams.ammShares && !certParams.ammDollars) {
-    return null
-  } else if (certParams.ammShares) {
-    if (certParams.ammDollars) {
-      return (certParams.ammDollars / certParams.ammShares) * TOTAL_SHARES
-    } else {
-      return (
-        (100 * minFunding) /
-        (100 - founderPortion - certParams.ammShares / TOTAL_SHARES)
-      )
-    }
-  } else if (certParams.ammDollars) {
-    return (certParams.ammDollars + minFunding) / (1 - founderPortion)
+  if (certParams.ammDollars) {
+    return (certParams.ammDollars / certParams.ammShares) * TOTAL_SHARES
+  } else {
+    return (
+      (100 * minFunding) /
+      (100 - founderPortion - certParams.ammShares / TOTAL_SHARES)
+    )
   }
-  return 0
 }

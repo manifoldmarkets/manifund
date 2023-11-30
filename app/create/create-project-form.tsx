@@ -68,7 +68,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         100
     )
   }, [selectedPrize])
-  const ammPortion = 10
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   const minMinFunding = selectedPrize?.cert_params
@@ -78,9 +77,16 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   let errorMessage = null
   if (title === '') {
     errorMessage = 'Your project needs a title.'
-  } else if (minFunding === null) {
+  } else if (
+    minFunding === null &&
+    (!selectedPrize || selectedPrize.cert_params.proposalPhase)
+  ) {
     errorMessage = 'Your project needs a minimum funding amount.'
-  } else if (minFunding !== null && minFunding < minMinFunding) {
+  } else if (
+    minFunding !== null &&
+    minFunding < minMinFunding &&
+    (!selectedPrize || selectedPrize.cert_params.proposalPhase)
+  ) {
     errorMessage = `Your minimum funding must be at least $${minMinFunding}.`
   } else if (selectedPrize && !agreedToTerms) {
     errorMessage = 'Please confirm that you agree to the investment structure.'
@@ -129,9 +135,11 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         auction_close: verdictDate,
         stage: 'proposal',
         type: !!selectedPrize ? 'cert' : 'grant',
-        causeSlugs: selectedCauseSlugs,
-        amm_shares: !!selectedPrize ? (ammPortion / 100) * TOTAL_SHARES : null,
+        amm_shares: !!selectedPrize
+          ? selectedPrize.cert_params.ammShares
+          : null,
         location_description: locationDescription,
+        causeSlugs: selectedCauseSlugs,
       }),
     })
     const newProject = await response.json()
