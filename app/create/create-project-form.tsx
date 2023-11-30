@@ -20,6 +20,7 @@ import { InvestmentStructurePanel } from './investment-structure'
 import { Tooltip } from '@/components/tooltip'
 import { SiteLink } from '@/components/site-link'
 import { toTitleCase } from '@/utils/formatting'
+import { HorizontalRadioGroup } from '@/components/radio-group'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -41,6 +42,9 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const { causesList } = props
   const { session } = useSupabase()
   const router = useRouter()
+  const selectablePrizeCauses = causesList.filter(
+    (cause) => cause.open && cause.prize
+  )
   const [title, setTitle] = useState<string>('')
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number | null>(null)
@@ -54,19 +58,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     cause.open && !cause.prize
   })
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
-  const selectablePrizeCauses = causesList.filter(
-    (cause) => cause.open && cause.prize
-  )
-  const [selectedPrizeCause, setSelectedPrizeCause] = useState<Cause | null>(
-    null
-  )
-  const selectedPrizeCertParameters = selectedPrizeCause?.cert_params
+  const [selectedPrize, setSelectedPrize] = useState<Cause | null>(null)
   const [founderPortion, setFounderPortion] = useState<number>(50)
   const ammPortion = 10
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
-  const minMinFunding = selectedPrizeCause?.cert_params
-    ? selectedPrizeCause.cert_params.minMinFunding
+  const minMinFunding = selectedPrize?.cert_params
+    ? selectedPrize.cert_params.minMinFunding
     : 500
 
   let errorMessage = null
@@ -76,11 +74,11 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     errorMessage = 'Your project needs a minimum funding amount.'
   } else if (minFunding !== null && minFunding < minMinFunding) {
     errorMessage = `Your minimum funding must be at least $${minMinFunding}.`
-  } else if (selectedPrizeCause && !agreedToTerms) {
+  } else if (selectedPrize && !agreedToTerms) {
     errorMessage = 'Please confirm that you agree to the investment structure.'
   } else if (
     fundingGoal &&
-    !selectedPrizeCause &&
+    !selectedPrize &&
     ((minFunding && minFunding > fundingGoal) || fundingGoal <= 0)
   ) {
     errorMessage =
@@ -101,8 +99,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     setIsSubmitting(true)
     const description = editor?.getJSON() ?? '<p>No description</p>'
     const selectedCauseSlugs = selectedCauses.map((cause) => cause.slug)
-    if (!!selectedPrizeCause) {
-      selectedCauseSlugs.push(selectedPrizeCause.slug)
+    if (!!selectedPrize) {
+      selectedCauseSlugs.push(selectedPrize.slug)
     }
     const response = await fetch('/api/create-project', {
       method: 'POST',
@@ -115,20 +113,16 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         description,
         min_funding: minFunding,
         funding_goal: fundingGoal ?? minFunding,
-        founder_shares: !!selectedPrizeCause
+        founder_shares: !!selectedPrize
           ? (founderPortion / 100) * TOTAL_SHARES
           : TOTAL_SHARES,
         // TODO: deprecate rounds completely
-        round: !!selectedPrizeCause
-          ? toTitleCase(selectedPrizeCause.title)
-          : 'Regrants',
+        round: !!selectedPrize ? toTitleCase(selectedPrize.title) : 'Regrants',
         auction_close: verdictDate,
         stage: 'proposal',
-        type: !!selectedPrizeCause ? 'cert' : 'grant',
+        type: !!selectedPrize ? 'cert' : 'grant',
         causeSlugs: selectedCauseSlugs,
-        amm_shares: !!selectedPrizeCause
-          ? (ammPortion / 100) * TOTAL_SHARES
-          : null,
+        amm_shares: !!selectedPrize ? (ammPortion / 100) * TOTAL_SHARES : null,
         location_description: locationDescription,
       }),
     })
@@ -155,22 +149,23 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
-      <Row className="items-center gap-1">
-        <Checkbox
-          checked={applyingToManifold}
-          onChange={(event) => setApplyingToManifold(event.target.checked)}
-        />
-        <label className="ml-2 text-sm">
-          I am applying to the{' '}
-          <SiteLink
-            href="/causes/manifold-community?tab=about"
-            target="_blank"
-            followsLinkClass
-          >
-            Manifold Markets Community Fund.
-          </SiteLink>
-        </label>
-      </Row>
+      <HorizontalRadioGroup
+        value={selectedPrize?.slug ?? 'grant'}
+        onChange={(value) =>
+          setSelectedPrize(
+            value === 'grant'
+              ? null
+              : selectablePrizeCauses.find((cause) => cause.slug === value) ??
+                  null
+          )
+        }
+        options={{
+          grant: 'Grant',
+          ...Object.fromEntries(
+            selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
+          ),
+        }}
+      />
       <Col className="gap-1">
         <label htmlFor="title">
           Title
@@ -253,7 +248,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           />
         </Col>
       </Col>
-      {applyingToManifold ? (
+      {/* TODO: distinguish between editable and non-editable investment structures */}
+      {!!selectedCauses ? (
         <InvestmentStructurePanel
           minFunding={minFunding ?? 0}
           founderPortion={founderPortion}
