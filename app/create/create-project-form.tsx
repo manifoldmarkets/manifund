@@ -2,7 +2,7 @@
 
 import { useSupabase } from '@/db/supabase-provider'
 import { useState } from 'react'
-import { Checkbox, Input } from '@/components/input'
+import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { TOTAL_SHARES } from '@/db/project'
@@ -149,23 +149,34 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
-      <HorizontalRadioGroup
-        value={selectedPrize?.slug ?? 'grant'}
-        onChange={(value) =>
-          setSelectedPrize(
-            value === 'grant'
-              ? null
-              : selectablePrizeCauses.find((cause) => cause.slug === value) ??
-                  null
-          )
-        }
-        options={{
-          grant: 'Grant',
-          ...Object.fromEntries(
-            selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
-          ),
-        }}
-      />
+      <Col className="gap-1">
+        <label>I am applying for...</label>
+        <p className="text-sm text-gray-600">
+          Select &quot;a regular grant&quot; by default. The other options are
+          specific prizes that you can learn more about{' '}
+          <SiteLink followsLinkClass href="/causes">
+            here
+          </SiteLink>
+          .
+        </p>
+        <HorizontalRadioGroup
+          value={selectedPrize?.slug ?? 'grant'}
+          onChange={(value) =>
+            setSelectedPrize(
+              value === 'grant'
+                ? null
+                : selectablePrizeCauses.find((cause) => cause.slug === value) ??
+                    null
+            )
+          }
+          options={{
+            grant: 'A regular grant',
+            ...Object.fromEntries(
+              selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
+            ),
+          }}
+        />
+      </Col>
       <Col className="gap-1">
         <label htmlFor="title">
           Title
