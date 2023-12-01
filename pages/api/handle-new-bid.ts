@@ -1,5 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { getProjectAndProfileById, ProjectAndProfile } from '@/db/project'
+import {
+  getProjectAndProfileById,
+  ProjectAndProfile,
+  TOTAL_SHARES,
+} from '@/db/project'
 import { maybeActivateProject } from '@/utils/activate-project'
 import { Bid } from '@/db/bid'
 import { getShareholders } from '@/app/projects/[slug]/project-tabs'
@@ -8,6 +12,8 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from './_db'
 import { getTxnsByProject } from '@/db/txn'
 import { getProfileById } from '@/db/profile'
+import { makeTrade, updateBidFromTrade } from '@/utils/trade'
+import { update } from 'lodash'
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,11 +27,11 @@ export default async function handler(
   }
   if (project.stage === 'proposal') {
     await maybeActivateProject(supabase, bid.project)
-  } else if (
-    (project.type === 'cert' && bid.type === 'buy') ||
-    bid.type === 'assurance buy'
-  ) {
-    await sendShareholderEmails(bid, project, supabase)
+  } else if (project.type === 'cert') {
+    await findAndMakeTrades(bid, supabase)
+    if (bid.type === 'buy') {
+      await sendShareholderEmails(bid, project, supabase)
+    }
   }
   return res.status(200).json({ bid })
 }
@@ -52,6 +58,46 @@ async function sendShareholderEmails(
       },
       shareholder.profile.id
     )
+  }
+}
+
+async function findAndMakeTrades(bid: Bid, supabase: SupabaseClient) {
+  const newOfferType = bid.type
+  const { data, error } = await supabase
+    .from('bids')
+    .select()
+    .eq('project', bid.project)
+    .order('valuation', { ascending: newOfferType === 'buy' })
+  if (error) {
+    throw error
+  }
+  const oldBids = data
+    .filter((oldBid) => oldBid.bidder !== bid.bidder)
+    .filter((oldBid) => oldBid.type !== newOfferType)
+    .filter((oldBid) => oldBid.status === 'pending')
+  let budget = bid.amount
+  for (const oldBid of oldBids) {
+    if (
+      (newOfferType === 'buy'
+        ? oldBid.valuation > bid.valuation
+        : oldBid.valuation < bid.valuation) ||
+      budget <= 0
+    ) {
+      return
+    }
+    const tradeAmount = Math.min(budget, oldBid.amount)
+    budget -= tradeAmount
+    await makeTrade(
+      (tradeAmount / oldBid.valuation) * TOTAL_SHARES,
+      tradeAmount,
+      bid.project,
+      oldBid.bidder,
+      bid.bidder,
+      newOfferType === 'buy',
+      supabase
+    )
+    await updateBidFromTrade(oldBid, tradeAmount, supabase)
+    await updateBidFromTrade(bid, tradeAmount, supabase)
   }
 }
 
