@@ -21,6 +21,7 @@ import { Tooltip } from '@/components/tooltip'
 import { SiteLink } from '@/components/site-link'
 import { toTitleCase } from '@/utils/formatting'
 import { HorizontalRadioGroup } from '@/components/radio-group'
+import { Checkbox } from '@/components/input'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -61,7 +62,11 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const [selectedPrize, setSelectedPrize] = useState<Cause | null>(null)
   const [founderPercent, setFounderPercent] = useState<number>(50)
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
+  const [agreeToChinatalkTerms, setAgreeToChinatalkTerms] =
+    useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
+  const chinatalkPrizeSelected = selectedPrize?.slug === 'china-talk'
+
   useEffect(() => {
     setFounderPercent(
       (1 -
@@ -115,6 +120,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     !verdictDate
   ) {
     errorMessage = 'You need to set a decision deadline.'
+  } else if (chinatalkPrizeSelected && !agreeToChinatalkTerms) {
+    errorMessage = "You must agree to Chinatalk's terms and conditions."
   } else {
     errorMessage = null
   }
@@ -175,7 +182,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     )
   }
   return (
-    <Col className="gap-3 p-5">
+    <Col className="gap-4 p-5">
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
@@ -359,6 +366,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           setSelectedCauses={setSelectedCauses}
         />
       </Col>
+
       <Col className="gap-1">
         <label>
           In what countries are you and anyone else working on this located?
@@ -372,7 +380,31 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           onChange={(event) => setLocationDescription(event.target.value)}
         />
       </Col>
-      <Tooltip text={errorMessage} className="mt-4 w-full">
+
+      {/* Custom for Chinatalk: confirm terms & conditions */}
+      {chinatalkPrizeSelected && (
+        <Row className="mt-5 items-start">
+          <Checkbox
+            checked={agreeToChinatalkTerms}
+            onChange={(event) => setAgreeToChinatalkTerms(event.target.checked)}
+          />
+          <RequiredStar />
+          <span className="ml-3 leading-tight">
+            <span className="text-sm font-bold text-gray-900">
+              I agree to the{' '}
+              <SiteLink
+                href="https://www.chinatalk.info/essay"
+                className="text-orange-500 hover:text-orange-600"
+              >
+                terms and conditions
+              </SiteLink>{' '}
+              of the Chinatalk Essay Competition.
+            </span>
+          </span>
+        </Row>
+      )}
+
+      <Tooltip text={errorMessage}>
         <Button
           type="submit"
           className="w-full"
