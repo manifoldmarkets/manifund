@@ -94,13 +94,6 @@ export function ProjectDisplay(props: {
   )
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
   const minIncludingAmm = getMinIncludingAmm(project)
-  console.log(
-    'getMinIncludingAmm',
-    project.min_funding,
-    project.amm_shares,
-    'minIncludingAmm',
-    minIncludingAmm
-  )
   const tradePoints = calculateTradePoints(projectTxns, project.id)
   const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
     undefined | string
