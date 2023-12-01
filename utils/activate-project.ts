@@ -117,7 +117,11 @@ async function activateProject(project: Project) {
   )
 }
 
-export async function seedAmm(project: Project, supabase: SupabaseClient) {
+export async function seedAmm(
+  project: Project,
+  supabase: SupabaseClient,
+  ammDollars?: number
+) {
   const valuation = getProposalValuation(project)
   const ammProfile = {
     username: `${project.slug}-amm`,
@@ -132,7 +136,8 @@ export async function seedAmm(project: Project, supabase: SupabaseClient) {
     token: 'USD',
     project: project.id,
     bundle,
-    amount: (valuation * (project.amm_shares ?? 0)) / TOTAL_SHARES,
+    amount:
+      ammDollars ?? (valuation * (project.amm_shares ?? 0)) / TOTAL_SHARES,
     type: 'inject amm liquidity',
   }
   const sharesTxn = {

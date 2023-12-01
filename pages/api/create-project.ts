@@ -76,7 +76,6 @@ export default async function handler(req: NextRequest) {
     approved: null,
     signed_agreement: false,
   } as Project
-  console.log('create-project', project)
   await supabase.from('projects').insert(project).throwOnError()
   await updateProjectCauses(supabase, causeSlugs, project.id)
   await giveCreatorShares(supabase, id, user.id)
@@ -103,7 +102,7 @@ export default async function handler(req: NextRequest) {
         project: id,
         type: 'project donation',
       })
-      await seedAmm(project, supabaseAdmin)
+      await seedAmm(project, supabaseAdmin, certParams.ammDollars)
     }
   }
   return NextResponse.json(project)
