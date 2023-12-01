@@ -54,9 +54,13 @@ export default async function handler(req: NextRequest) {
     : ammUSD
   const numDollars = buying
     ? amount
+    : !!valuation
+    ? (amount / TOTAL_SHARES) * valuation
     : calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
   const numShares = buying
-    ? calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade)
+    ? !!valuation
+      ? (amount / valuation) * TOTAL_SHARES
+      : calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade)
     : amount
   const userTxns = await getTxnAndProjectsByUser(supabase, user.id)
   const userBids = await getBidsByUser(supabase, user.id)

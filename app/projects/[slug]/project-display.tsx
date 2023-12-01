@@ -1,7 +1,5 @@
 'use client'
-import { Divider } from '@/components/divider'
 import { DonateBox } from '@/components/donate-box'
-import { Json } from '@/db/database.types'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
@@ -19,10 +17,10 @@ import {
   calculateSellableShares,
   getActiveValuation,
   getAmountRaised,
+  getMinIncludingAmm,
   getProposalValuation,
 } from '@/utils/math'
 import { useState } from 'react'
-import { Description } from './description'
 import { Edit } from './edit'
 import { ProjectTabs } from './project-tabs'
 import { ProjectData } from './project-data'
@@ -95,10 +93,7 @@ export function ProjectDisplay(props: {
     (projectTransfer) => !projectTransfer.transferred
   )
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
-  const minIncludingAmm =
-    project.type === 'cert'
-      ? projectBids.find((bid) => bid.type === 'assurance sell')?.amount ?? 0
-      : project.min_funding
+  const minIncludingAmm = getMinIncludingAmm(project)
   const tradePoints = calculateTradePoints(projectTxns, project.id)
   const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
     undefined | string
@@ -181,14 +176,18 @@ export function ProjectDisplay(props: {
         />
         {userProfile &&
           project.type === 'cert' &&
-          !!project.amm_shares &&
           project.stage !== 'proposal' &&
           project.stage !== 'hidden' && (
             <Trade
-              ammTxns={projectTxns.filter(
-                (txn) => txn.to_id === project.id || txn.from_id === project.id
-              )}
-              ammId={project.id}
+              ammTxns={
+                !!project.amm_shares
+                  ? projectTxns.filter(
+                      (txn) =>
+                        txn.to_id === project.id || txn.from_id === project.id
+                    )
+                  : undefined
+              }
+              projectId={project.id}
               userSpendableFunds={userSpendableFunds}
               userSellableShares={userSellableShares}
             />

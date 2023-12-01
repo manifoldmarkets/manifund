@@ -15,10 +15,6 @@ export function HorizontalRadioGroup(props: {
       onChange={onChange}
       className={clsx('rounded-md shadow-sm', wide ? 'w-full' : 'max-w-fit')}
     >
-      <RadioGroup.Label className="sr-only">
-        {' '}
-        Choose your project type{' '}
-      </RadioGroup.Label>
       <Row
         className={clsx(
           'rounded-md border border-gray-300 bg-white p-2',
@@ -35,7 +31,7 @@ export function HorizontalRadioGroup(props: {
                 checked
                   ? 'bg-orange-500 text-white hover:bg-orange-600'
                   : 'bg-white text-gray-900',
-                'flex items-center justify-center rounded-md py-3 px-3 text-sm font-semibold'
+                'flex items-center justify-center rounded-md px-3 py-3 text-sm font-semibold'
               )
             }
           >

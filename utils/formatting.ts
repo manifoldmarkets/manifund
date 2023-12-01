@@ -14,6 +14,7 @@ export function formatMoneyPrecise(amount: number) {
 }
 
 export function formatMoney(amount: number) {
+  if (isNaN(amount)) return '$0'
   return `$${formatLargeNumber(amount)}`
 }
 
@@ -51,6 +52,12 @@ export function roundLargeNumber(num: number, sigfigs = 2): number {
   if (absNum < 100) return Number(showPrecision(num, 2))
 
   return Number(showPrecision(num, 3))
+}
+
+export function toTitleCase(string: string) {
+  return string.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substring(1)
+  })
 }
 
 export function formatDate(date: string) {

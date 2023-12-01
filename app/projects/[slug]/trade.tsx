@@ -42,45 +42,53 @@ const MODES = [
 ]
 
 export function Trade(props: {
-  ammTxns: Txn[]
-  ammId: string
+  ammTxns?: Txn[]
+  projectId: string
   userSpendableFunds: number
   userSellableShares: number
 }) {
-  const { ammTxns, ammId, userSpendableFunds, userSellableShares } = props
+  const { ammTxns, projectId, userSpendableFunds, userSellableShares } = props
+  const usingAmm = !!ammTxns
   const [modeId, setModeId] = useState<BinaryModeId>(null)
   const [isLimitOrder, setIsLimitOrder] = useState(false)
   return (
     <div>
       <Row className="mb-3 w-full justify-between gap-3 font-semibold">
-        {MODES.map((mode) => {
-          return (
-            <Button
-              key={mode.id}
-              color={
-                (modeId === mode.id && !isLimitOrder
-                  ? mode.buttonColor
-                  : `${mode.buttonColor}-outline`) as ColorType
-              }
-              className="w-full"
-              onClick={() => {
-                setModeId(modeId === mode.id && !isLimitOrder ? null : mode.id)
-                setIsLimitOrder(false)
-              }}
-            >
-              {mode.label}
-            </Button>
-          )
-        })}
+        {usingAmm &&
+          MODES.map((mode) => {
+            return (
+              <Button
+                key={mode.id}
+                color={
+                  (modeId === mode.id && !isLimitOrder
+                    ? mode.buttonColor
+                    : `${mode.buttonColor}-outline`) as ColorType
+                }
+                className="w-full"
+                onClick={() => {
+                  setModeId(
+                    modeId === mode.id && !isLimitOrder ? null : mode.id
+                  )
+                  setIsLimitOrder(false)
+                }}
+              >
+                {mode.label}
+              </Button>
+            )
+          })}
         <Button
           color={isLimitOrder ? 'orange' : 'orange-outline'}
-          className="w-32"
+          className={clsx(usingAmm ? 'w-32' : 'w-full')}
           onClick={() => {
             setIsLimitOrder(!isLimitOrder)
             setModeId(null)
           }}
         >
-          <AdjustmentsHorizontalIcon className="h-5 w-5" />
+          {usingAmm ? (
+            <AdjustmentsHorizontalIcon className="h-5 w-5" />
+          ) : (
+            'Make a trade offer'
+          )}
         </Button>
       </Row>
       {(modeId !== null || isLimitOrder) && (
@@ -88,7 +96,7 @@ export function Trade(props: {
           modeId={modeId}
           setModeId={isLimitOrder ? setModeId : undefined}
           ammTxns={ammTxns}
-          ammId={ammId}
+          projectId={projectId}
           userSpendableFunds={userSpendableFunds}
           userSellableShares={userSellableShares}
         />
@@ -100,8 +108,8 @@ export function Trade(props: {
 function TradeInputsPanel(props: {
   modeId: BinaryModeId
   setModeId?: (modeId: BinaryModeId) => void // Include only for limit orders
-  ammTxns: Txn[]
-  ammId: string
+  ammTxns?: Txn[]
+  projectId: string
   userSpendableFunds: number
   userSellableShares: number
 }) {
@@ -109,17 +117,27 @@ function TradeInputsPanel(props: {
     modeId,
     setModeId,
     ammTxns,
-    ammId,
+    projectId,
     userSpendableFunds,
     userSellableShares,
   } = props
+  const usingAmm = !!ammTxns
   const [amount, setAmount] = useState(0)
   const [limitValuation, setLimitValuation] = useState(0)
-  const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, ammId)
+  const [ammShares, ammUSD] = usingAmm
+    ? calculateAMMPorfolio(ammTxns, projectId)
+    : [0, 0]
   const [submitting, setSubmitting] = useState(false)
 
   const mode = MODES.find((mode) => mode.id === modeId)
   const isLimitOrder = !!setModeId
+  if (!isLimitOrder && !usingAmm) {
+    return (
+      <span className="text-center text-sm text-rose-600">
+        Something went wrong.
+      </span>
+    )
+  }
   const valuationAfterTrade = isLimitOrder
     ? limitValuation
     : calculateValuationAfterTrade(amount, ammShares, ammUSD, modeId === 'buy')
@@ -140,7 +158,7 @@ function TradeInputsPanel(props: {
     modeId === 'buy'
       ? amount
       : isLimitOrder
-      ? amount / limitValuation
+      ? (amount / TOTAL_SHARES) * limitValuation
       : calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
 
   const handleSubmit = async () => {
@@ -151,7 +169,7 @@ function TradeInputsPanel(props: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        projectId: ammId,
+        projectId: projectId,
         amount,
         buying: modeId === 'buy',
         valuation: isLimitOrder ? limitValuation : undefined,
@@ -289,7 +307,7 @@ const submitTradeButtonText = (
 ) => {
   return `${modeLabel ?? ''} ${isLimitOrder ? 'limit order' : ''}: ${
     isNaN(percentEquity) ? '0%' : formatPercent(percentEquity)
-  } for ${isNaN(amountUSD) ? '$0' : formatMoneyPrecise(amountUSD)} ${
+  } for ${isNaN(amountUSD) ? '0' : formatMoneyPrecise(amountUSD)} ${
     limitValuation ? `at ${formatMoneyPrecise(limitValuation)} valuation` : ''
   }`
 }

@@ -122,16 +122,21 @@ export const getTradeErrorMessage = (
 ) => {
   const minValuation = calculateMinimumValuation(ammShares, ammUSD)
   const currentValuation = calculateValuation(ammShares, ammUSD)
+  const usingAmm = ammShares > 0 && ammUSD > 0
   if (isLimitOrder) {
     if (!limitValuation) {
       return 'Please enter a valuation'
-    } else if (modeId === 'buy' && limitValuation < minValuation) {
+    } else if (usingAmm && modeId === 'buy' && limitValuation < minValuation) {
       return `Valuation must be greater than ${formatMoneyPrecise(
         minValuation
       )}`
-    } else if (modeId === 'sell' && limitValuation < currentValuation) {
+    } else if (
+      usingAmm &&
+      modeId === 'sell' &&
+      limitValuation < currentValuation
+    ) {
       return 'For sell limit orders, valuation must be greater than current valuation'
-    } else if (limitValuation < minValuation) {
+    } else if (usingAmm && limitValuation < minValuation) {
       return `Valuation must be greater than ${formatMoneyPrecise(
         minValuation
       )}`

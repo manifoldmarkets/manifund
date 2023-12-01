@@ -19,7 +19,8 @@ export function getProposalValuation(project: Project) {
 export function getMinIncludingAmm(project: Project) {
   return (
     project.min_funding +
-    ((project.amm_shares ?? 0) / TOTAL_SHARES) * getProposalValuation(project)
+    ((project.amm_shares ?? 0) / TOTAL_SHARES) *
+      (project.type === 'cert' ? getProposalValuation(project) : 1)
   )
 }
 
