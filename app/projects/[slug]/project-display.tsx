@@ -190,7 +190,7 @@ export function ProjectDisplay(props: {
                     )
                   : undefined
               }
-              ammId={!!project.amm_shares ? project.id : undefined}
+              projectId={project.id}
               userSpendableFunds={userSpendableFunds}
               userSellableShares={userSellableShares}
             />

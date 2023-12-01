@@ -43,12 +43,12 @@ const MODES = [
 
 export function Trade(props: {
   ammTxns?: Txn[]
-  ammId?: string
+  projectId: string
   userSpendableFunds: number
   userSellableShares: number
 }) {
-  const { ammTxns, ammId, userSpendableFunds, userSellableShares } = props
-  const usingAmm = !!ammTxns && !!ammId
+  const { ammTxns, projectId, userSpendableFunds, userSellableShares } = props
+  const usingAmm = !!ammTxns
   const [modeId, setModeId] = useState<BinaryModeId>(null)
   const [isLimitOrder, setIsLimitOrder] = useState(false)
   return (
@@ -96,7 +96,7 @@ export function Trade(props: {
           modeId={modeId}
           setModeId={isLimitOrder ? setModeId : undefined}
           ammTxns={ammTxns}
-          ammId={ammId}
+          projectId={projectId}
           userSpendableFunds={userSpendableFunds}
           userSellableShares={userSellableShares}
         />
@@ -105,27 +105,11 @@ export function Trade(props: {
   )
 }
 
-export function SimpleLOPanel(props: {
-  userSpendableFunds: number
-  userSellableShares: number
-}) {
-  const { userSpendableFunds, userSellableShares } = props
-  const [modeId, setModeId] = useState<BinaryModeId>(null)
-  return (
-    <TradeInputsPanel
-      modeId={modeId}
-      setModeId={setModeId}
-      userSpendableFunds={userSpendableFunds}
-      userSellableShares={userSellableShares}
-    />
-  )
-}
-
 function TradeInputsPanel(props: {
   modeId: BinaryModeId
   setModeId?: (modeId: BinaryModeId) => void // Include only for limit orders
   ammTxns?: Txn[]
-  ammId?: string
+  projectId: string
   userSpendableFunds: number
   userSellableShares: number
 }) {
@@ -133,15 +117,15 @@ function TradeInputsPanel(props: {
     modeId,
     setModeId,
     ammTxns,
-    ammId,
+    projectId,
     userSpendableFunds,
     userSellableShares,
   } = props
-  const usingAmm = !!ammTxns && !!ammId
+  const usingAmm = !!ammTxns
   const [amount, setAmount] = useState(0)
   const [limitValuation, setLimitValuation] = useState(0)
   const [ammShares, ammUSD] = usingAmm
-    ? calculateAMMPorfolio(ammTxns, ammId)
+    ? calculateAMMPorfolio(ammTxns, projectId)
     : [0, 0]
   const [submitting, setSubmitting] = useState(false)
 
@@ -185,7 +169,7 @@ function TradeInputsPanel(props: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        projectId: ammId,
+        projectId: projectId,
         amount,
         buying: modeId === 'buy',
         valuation: isLimitOrder ? limitValuation : undefined,
@@ -323,7 +307,7 @@ const submitTradeButtonText = (
 ) => {
   return `${modeLabel ?? ''} ${isLimitOrder ? 'limit order' : ''}: ${
     isNaN(percentEquity) ? '0%' : formatPercent(percentEquity)
-  } for ${isNaN(amountUSD) ? '$0' : formatMoneyPrecise(amountUSD)} ${
+  } for ${isNaN(amountUSD) ? '0' : formatMoneyPrecise(amountUSD)} ${
     limitValuation ? `at ${formatMoneyPrecise(limitValuation)} valuation` : ''
   }`
 }
