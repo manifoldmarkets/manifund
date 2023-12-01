@@ -60,6 +60,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   const [selectedPrize, setSelectedPrize] = useState<Cause | null>(null)
   const [founderPercent, setFounderPercent] = useState<number>(50)
+  const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
+  const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   useEffect(() => {
     setFounderPercent(
       (1 -
@@ -67,9 +69,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           TOTAL_SHARES) *
         100
     )
+    editor?.commands.setContent(
+      selectedPrize?.project_description_outline ?? DESCRIPTION_OUTLINE
+    )
   }, [selectedPrize])
-  const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
-  const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   const minMinFunding = selectedPrize?.cert_params
     ? selectedPrize.cert_params.minMinFunding
     : 500
@@ -240,7 +243,9 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           <ResetEditor
             storageKey={DESCRIPTION_KEY}
             editor={editor}
-            defaultContent={DESCRIPTION_OUTLINE}
+            defaultContent={
+              selectedPrize?.project_description_outline ?? DESCRIPTION_OUTLINE
+            }
           />
         </Row>
         <p className="text-sm text-gray-500">
@@ -320,22 +325,24 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           />
         </Col>
       )}
-      <Col className="gap-1">
-        <label>
-          Decision deadline
-          <RequiredStar />
-        </label>
-        <p className="text-sm text-gray-600">
-          After this deadline, if you have not reached your minimum funding bar,
-          your application will close and you will not recieve any money. This
-          date cannot be more than 6 weeks after posting.
-        </p>
-        <Input
-          type="date"
-          value={verdictDate ?? ''}
-          onChange={(event) => setVerdictDate(event.target.value)}
-        />
-      </Col>
+      {(!selectedPrize || selectedPrize.cert_params?.proposalPhase) && (
+        <Col className="gap-1">
+          <label>
+            Decision deadline
+            <RequiredStar />
+          </label>
+          <p className="text-sm text-gray-600">
+            After this deadline, if you have not reached your minimum funding
+            bar, your application will close and you will not recieve any money.
+            This date cannot be more than 6 weeks after posting.
+          </p>
+          <Input
+            type="date"
+            value={verdictDate ?? ''}
+            onChange={(event) => setVerdictDate(event.target.value)}
+          />
+        </Col>
+      )}
       <Col className="gap-1">
         <label>Cause areas</label>
         <SelectCauses
@@ -345,12 +352,11 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         />
       </Col>
       <Col className="gap-1">
-        <label>International activities</label>
+        <label>
+          In what countries are you and anyone else working on this located?
+        </label>
         <p className="text-sm text-gray-600">
-          If any part of this project will happen outside of the US, or people
-          working on the project are not US residents, please describe what will
-          happen internationally and where. Only a sentence or two needed. (This
-          is for Manifund operations, and will not be published.)
+          This is for Manifund operations and will not be published.
         </p>
         <Input
           type="text"
