@@ -14,6 +14,7 @@ export function formatMoneyPrecise(amount: number) {
 }
 
 export function formatMoney(amount: number) {
+  if (isNaN(amount)) return '$0'
   return `$${formatLargeNumber(amount)}`
 }
 

@@ -19,6 +19,7 @@ import {
   calculateSellableShares,
   getActiveValuation,
   getAmountRaised,
+  getMinIncludingAmm,
   getProposalValuation,
 } from '@/utils/math'
 import { useState } from 'react'
@@ -95,10 +96,7 @@ export function ProjectDisplay(props: {
     (projectTransfer) => !projectTransfer.transferred
   )
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
-  const minIncludingAmm =
-    project.type === 'cert'
-      ? projectBids.find((bid) => bid.type === 'assurance sell')?.amount ?? 0
-      : project.min_funding
+  const minIncludingAmm = getMinIncludingAmm(project)
   const tradePoints = calculateTradePoints(projectTxns, project.id)
   const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
     undefined | string
@@ -181,14 +179,18 @@ export function ProjectDisplay(props: {
         />
         {userProfile &&
           project.type === 'cert' &&
-          !!project.amm_shares &&
           project.stage !== 'proposal' &&
           project.stage !== 'hidden' && (
             <Trade
-              ammTxns={projectTxns.filter(
-                (txn) => txn.to_id === project.id || txn.from_id === project.id
-              )}
-              ammId={project.id}
+              ammTxns={
+                !!project.amm_shares
+                  ? projectTxns.filter(
+                      (txn) =>
+                        txn.to_id === project.id || txn.from_id === project.id
+                    )
+                  : undefined
+              }
+              ammId={!!project.amm_shares ? project.id : undefined}
               userSpendableFunds={userSpendableFunds}
               userSellableShares={userSellableShares}
             />
