@@ -1,7 +1,5 @@
 'use client'
-import { Divider } from '@/components/divider'
 import { DonateBox } from '@/components/donate-box'
-import { Json } from '@/db/database.types'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
@@ -23,7 +21,6 @@ import {
   getProposalValuation,
 } from '@/utils/math'
 import { useState } from 'react'
-import { Description } from './description'
 import { Edit } from './edit'
 import { ProjectTabs } from './project-tabs'
 import { ProjectData } from './project-data'
@@ -97,6 +94,13 @@ export function ProjectDisplay(props: {
   )
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
   const minIncludingAmm = getMinIncludingAmm(project)
+  console.log(
+    'getMinIncludingAmm',
+    project.min_funding,
+    project.amm_shares,
+    'minIncludingAmm',
+    minIncludingAmm
+  )
   const tradePoints = calculateTradePoints(projectTxns, project.id)
   const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
     undefined | string

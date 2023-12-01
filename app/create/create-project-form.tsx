@@ -163,9 +163,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     clearLocalStorageItem(DESCRIPTION_KEY)
     setIsSubmitting(false)
   }
-
   const user = session?.user
-
   if (!user) {
     return (
       <div>
