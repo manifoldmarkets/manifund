@@ -128,7 +128,10 @@ export type Shareholder = {
 export function getShareholders(txns: TxnAndProfiles[]) {
   const bundledTxns = bundleTxns(txns)
   const shareholders = Object.fromEntries(
-    txns.map((txn) => [txn.to_id, { numShares: 0 } as Shareholder])
+    txns.flatMap((txn) => [
+      [txn.from_id, { numShares: 0 } as Shareholder],
+      [txn.to_id, { numShares: 0 } as Shareholder],
+    ])
   )
   for (const bundle of bundledTxns) {
     for (const txn of bundle) {

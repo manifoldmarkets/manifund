@@ -2,7 +2,7 @@ import { Project, TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
-import { createEdgeClient } from './_db'
+import { createAdminClient, createEdgeClient } from './_db'
 import { projectSlugify } from '@/utils/formatting'
 import { Database, Json } from '@/db/database.types'
 import { getPrizeCause, updateProjectCauses } from '@/db/cause'
@@ -76,9 +76,11 @@ export default async function handler(req: NextRequest) {
     approved: null,
     signed_agreement: false,
   } as Project
+  console.log('create-project', project)
   await supabase.from('projects').insert(project).throwOnError()
   await updateProjectCauses(supabase, causeSlugs, project.id)
   await giveCreatorShares(supabase, id, user.id)
+
   const prizeCause = await getPrizeCause(causeSlugs, supabase)
   if (type === 'cert' && prizeCause) {
     const certParams = prizeCause.cert_params
@@ -92,7 +94,8 @@ export default async function handler(req: NextRequest) {
         stage === 'proposal' ? 'assurance sell' : 'sell'
       )
     } else if (certParams?.ammDollars && project.amm_shares) {
-      await supabase.from('txns').insert({
+      const supabaseAdmin = createAdminClient()
+      await supabaseAdmin.from('txns').insert({
         from_id: process.env.NEXT_PUBLIC_PROD_BANK_ID,
         to_id: user.id,
         amount: certParams.ammDollars,
@@ -100,7 +103,7 @@ export default async function handler(req: NextRequest) {
         project: id,
         type: 'project donation',
       })
-      await seedAmm(project, supabase)
+      await seedAmm(project, supabaseAdmin)
     }
   }
   return NextResponse.json(project)

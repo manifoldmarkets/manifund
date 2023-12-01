@@ -55,7 +55,7 @@ export function roundLargeNumber(num: number, sigfigs = 2): number {
 
 export function toTitleCase(string: string) {
   return string.replace(/\w\S*/g, function (txt) {
-    return txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase()
+    return txt.charAt(0).toUpperCase() + txt.substring(1)
   })
 }
 

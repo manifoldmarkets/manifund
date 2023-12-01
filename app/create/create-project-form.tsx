@@ -91,7 +91,11 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     (!selectedPrize || selectedPrize.cert_params?.proposalPhase)
   ) {
     errorMessage = `Your minimum funding must be at least $${minMinFunding}.`
-  } else if (selectedPrize && !agreedToTerms) {
+  } else if (
+    selectedPrize &&
+    selectedPrize.cert_params?.adjustableInvestmentStructure &&
+    !agreedToTerms
+  ) {
     errorMessage = 'Please confirm that you agree to the investment structure.'
   } else if (
     fundingGoal &&
@@ -136,8 +140,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         title,
         blurb,
         description,
-        min_funding: minFunding,
-        funding_goal: fundingGoal ?? minFunding,
+        min_funding: minFunding ?? 0,
+        funding_goal: fundingGoal ?? minFunding ?? 0,
         founder_shares: !!selectedPrize
           ? (founderPercent / 100) * TOTAL_SHARES
           : TOTAL_SHARES,
