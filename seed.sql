@@ -230,29 +230,33 @@ TO authenticated
 WITH CHECK (true)
 
 
- -- Tags
-create table if not exists public.tags (
+ -- causes
+create table if not exists public.causes (
   title text not null,
-  auction_close_date date,
-  description jsonb,
   slug text not null,
   subtitle text,
-  data jsonb,
-  primary key (title)
+  description jsonb,
+  header_image_url text not null,
+  open boolean not null default true,
+  prize boolean not null default false,
+  sort number not null,
+  project_description_outline text,
+  cert_params jsonb,
+  primary key (slug)
 );
 
-CREATE POLICY "Enable read access for all users" ON "public"."tags"
+CREATE POLICY "Enable read access for all users" ON "public"."causes"
 AS PERMISSIVE FOR SELECT
 TO public
 USING (true);
 
-CREATE POLICY "Enable update for rachel based on email" ON "public"."tags"
+CREATE POLICY "Enable update for rachel based on email" ON "public"."causes"
 AS PERMISSIVE FOR UPDATE
 TO public
 USING (auth.jwt() ->> 'email' = 'rachel.weinberg12@gmail.com')
 WITH CHECK (auth.jwt() ->> 'email' = 'rachel.weinberg12@gmail.com');
 
-CREATE POLICY "Enable update for austin based on email" ON "public"."tags"
+CREATE POLICY "Enable update for austin based on email" ON "public"."causes"
 AS PERMISSIVE FOR UPDATE
 TO public
 USING (auth.jwt() ->> 'email' = 'akrolsmir@gmail.com')
@@ -337,11 +341,11 @@ USING (auth.uid() = voter_id)
 WITH CHECK (auth.uid() = voter_id);
 
 
--- Project tags join table
+-- Project causes join table
 CREATE TABLE public.project_causes (
   id int8 NOT NULL,
   project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
-  tag_slug text NOT NULL REFERENCES public.tags(slug) ON DELETE CASCADE,
+  tag_slug text NOT NULL REFERENCES public.causes(slug) ON DELETE CASCADE,
   PRIMARY KEY (id)
 );
 
