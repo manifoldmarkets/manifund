@@ -30,6 +30,7 @@
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@tiptap/extension-bubble-menu": "^2.0.4",
+    "@tiptap/extension-image": "^2.0.4",
     "@tiptap/extension-link": "^2.0.4",
     "@tiptap/extension-mention": "^2.0.4",
     "@tiptap/extension-placeholder": "^2.0.4",

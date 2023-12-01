@@ -7,6 +7,8 @@ import { noop } from 'lodash'
 import useLocalStorage from '@/hooks/use-local-storage'
 import { TIPTAP_EXTENSIONS } from '@/components/editor'
 import { useEffect, useState } from 'react'
+import { useSupabase } from '@/db/supabase-provider'
+import { handleImageOnPaste } from '@/components/editor/upload-extension'
 
 export function useTextEditor(
   defaultContent: any = '',
@@ -19,6 +21,7 @@ export function useTextEditor(
     key
   )
   const [edited, setEdited] = useState(false)
+  const { supabase } = useSupabase()
   const editor = useEditor({
     editorProps: {
       attributes: {
@@ -52,6 +55,8 @@ export function useTextEditor(
       editor?.chain().setContent(content).run()
     }
   }, [content])
+
+  handleImageOnPaste(editor, supabase)
   return editor
 }
 
