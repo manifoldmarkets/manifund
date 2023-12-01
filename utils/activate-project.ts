@@ -117,7 +117,7 @@ async function activateProject(project: Project) {
   )
 }
 
-async function seedAmm(project: Project, supabase: SupabaseClient) {
+export async function seedAmm(project: Project, supabase: SupabaseClient) {
   const valuation = getProposalValuation(project)
   const ammProfile = {
     username: `${project.slug}-amm`,
