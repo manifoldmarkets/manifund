@@ -12,6 +12,7 @@ import {
   GlobeEuropeAfricaIcon,
   LightBulbIcon,
   BeakerIcon,
+  StarIcon,
 } from '@heroicons/react/24/outline'
 import { FireIcon } from '@heroicons/react/24/solid'
 import Image from 'next/image'
@@ -98,6 +99,7 @@ const CAUSE_ICONS = {
       alt="Manifold icon"
     />
   ),
+  'china-talk': <StarIcon className="h-3 w-3 stroke-2" />,
 } as { [key: string]: JSX.Element }
 
 export function CauseTag(props: {

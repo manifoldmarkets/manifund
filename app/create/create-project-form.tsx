@@ -1,8 +1,8 @@
 'use client'
 
 import { useSupabase } from '@/db/supabase-provider'
-import { useState } from 'react'
-import { Checkbox, Input } from '@/components/input'
+import { useEffect, useState } from 'react'
+import { Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { TOTAL_SHARES } from '@/db/project'
@@ -14,11 +14,14 @@ import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
-import { MiniCause } from '@/db/cause'
+import { Cause, CertParams, MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from './investment-structure'
 import { Tooltip } from '@/components/tooltip'
 import { SiteLink } from '@/components/site-link'
+import { toTitleCase } from '@/utils/formatting'
+import { HorizontalRadioGroup } from '@/components/radio-group'
+import { Checkbox } from '@/components/input'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -36,10 +39,13 @@ const DESCRIPTION_OUTLINE = `
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
 
-export function CreateProjectForm(props: { causesList: MiniCause[] }) {
+export function CreateProjectForm(props: { causesList: Cause[] }) {
   const { causesList } = props
   const { session } = useSupabase()
   const router = useRouter()
+  const selectablePrizeCauses = causesList.filter(
+    (cause) => cause.open && cause.prize
+  )
   const [title, setTitle] = useState<string>('')
   const [blurb, setBlurb] = useState<string>('')
   const [minFunding, setMinFunding] = useState<number | null>(null)
@@ -49,26 +55,56 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   )
   const [locationDescription, setLocationDescription] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const selectableCauses = causesList.filter(
+    (cause) => cause.open && !cause.prize
+  )
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
-  const [applyingToManifold, setApplyingToManifold] = useState<boolean>(false)
-  const [founderPortion, setFounderPortion] = useState<number>(50)
-  const ammPortion = 10
+  const [selectedPrize, setSelectedPrize] = useState<Cause | null>(null)
+  const [founderPercent, setFounderPercent] = useState<number>(50)
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
+  const [agreeToChinatalkTerms, setAgreeToChinatalkTerms] =
+    useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
-  const minMinFunding = applyingToManifold ? 100 : 500
+  const chinatalkPrizeSelected = selectedPrize?.slug === 'china-talk'
+
+  useEffect(() => {
+    setFounderPercent(
+      (1 -
+        (selectedPrize?.cert_params?.defaultInvestorShares ?? 0) /
+          TOTAL_SHARES) *
+        100
+    )
+    editor?.commands.setContent(
+      selectedPrize?.project_description_outline ?? DESCRIPTION_OUTLINE
+    )
+  }, [selectedPrize])
+  const minMinFunding = selectedPrize?.cert_params
+    ? selectedPrize.cert_params.minMinFunding
+    : 500
 
   let errorMessage = null
   if (title === '') {
     errorMessage = 'Your project needs a title.'
-  } else if (minFunding === null) {
+  } else if (
+    minFunding === null &&
+    (!selectedPrize || selectedPrize.cert_params?.proposalPhase)
+  ) {
     errorMessage = 'Your project needs a minimum funding amount.'
-  } else if (minFunding !== null && minFunding < minMinFunding) {
+  } else if (
+    minFunding !== null &&
+    minFunding < minMinFunding &&
+    (!selectedPrize || selectedPrize.cert_params?.proposalPhase)
+  ) {
     errorMessage = `Your minimum funding must be at least $${minMinFunding}.`
-  } else if (applyingToManifold && !agreedToTerms) {
+  } else if (
+    selectedPrize &&
+    selectedPrize.cert_params?.adjustableInvestmentStructure &&
+    !agreedToTerms
+  ) {
     errorMessage = 'Please confirm that you agree to the investment structure.'
   } else if (
     fundingGoal &&
-    !applyingToManifold &&
+    !selectedPrize &&
     ((minFunding && minFunding > fundingGoal) || fundingGoal <= 0)
   ) {
     errorMessage =
@@ -79,8 +115,13 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
   ) {
     errorMessage =
       'Your application close date must be in the future but no more than 6 weeks from now.'
-  } else if (!verdictDate) {
+  } else if (
+    (!selectedPrize || selectedPrize.cert_params?.proposalPhase) &&
+    !verdictDate
+  ) {
     errorMessage = 'You need to set a decision deadline.'
+  } else if (chinatalkPrizeSelected && !agreeToChinatalkTerms) {
+    errorMessage = "You must agree to Chinatalk's terms and conditions."
   } else {
     errorMessage = null
   }
@@ -89,9 +130,14 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
     setIsSubmitting(true)
     const description = editor?.getJSON() ?? '<p>No description</p>'
     const selectedCauseSlugs = selectedCauses.map((cause) => cause.slug)
-    if (applyingToManifold) {
-      selectedCauseSlugs.push('manifold-community')
+    if (!!selectedPrize) {
+      selectedCauseSlugs.push(selectedPrize.slug)
     }
+    const seedingAmm =
+      selectedPrize &&
+      !!selectedPrize.cert_params?.ammShares &&
+      (agreedToTerms ||
+        selectedPrize.cert_params?.adjustableInvestmentStructure)
     const response = await fetch('/api/create-project', {
       method: 'POST',
       headers: {
@@ -101,21 +147,22 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         title,
         blurb,
         description,
-        min_funding: minFunding,
-        funding_goal: fundingGoal ?? minFunding,
-        founder_shares: applyingToManifold
-          ? (founderPortion / 100) * TOTAL_SHARES
+        min_funding: minFunding ?? 0,
+        funding_goal: fundingGoal ?? minFunding ?? 0,
+        founder_shares: !!selectedPrize
+          ? (founderPercent / 100) * TOTAL_SHARES
           : TOTAL_SHARES,
-        // TODO: replace name if Austin has an alternative
-        round: applyingToManifold ? 'Manifold Community Fund' : 'Regrants',
+        // TODO: deprecate rounds completely
+        round: !!selectedPrize ? toTitleCase(selectedPrize.title) : 'Regrants',
         auction_close: verdictDate,
-        stage: 'proposal',
-        type: applyingToManifold ? 'cert' : 'grant',
-        causeSlugs: selectedCauseSlugs,
-        amm_shares: applyingToManifold
-          ? (ammPortion / 100) * TOTAL_SHARES
-          : null,
+        stage:
+          selectedPrize && !selectedPrize.cert_params?.proposalPhase
+            ? 'active'
+            : 'proposal',
+        type: !!selectedPrize ? 'cert' : 'grant',
+        amm_shares: seedingAmm ? selectedPrize.cert_params?.ammShares : null,
         location_description: locationDescription,
+        causeSlugs: selectedCauseSlugs,
       }),
     })
     const newProject = await response.json()
@@ -123,9 +170,7 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
     clearLocalStorageItem(DESCRIPTION_KEY)
     setIsSubmitting(false)
   }
-
   const user = session?.user
-
   if (!user) {
     return (
       <div>
@@ -137,26 +182,38 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
     )
   }
   return (
-    <Col className="gap-3 p-5">
+    <Col className="gap-4 p-5">
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
-      <Row className="items-center gap-1">
-        <Checkbox
-          checked={applyingToManifold}
-          onChange={(event) => setApplyingToManifold(event.target.checked)}
-        />
-        <label className="ml-2 text-sm">
-          I am applying to the{' '}
-          <SiteLink
-            href="/causes/manifold-community?tab=about"
-            target="_blank"
-            followsLinkClass
-          >
-            Manifold Markets Community Fund.
+      <Col className="gap-1">
+        <label>I am applying for...</label>
+        <p className="text-sm text-gray-600">
+          Select &quot;a regular grant&quot; by default. The other options are
+          specific prizes that you can learn more about{' '}
+          <SiteLink followsLinkClass href="/causes">
+            here
           </SiteLink>
-        </label>
-      </Row>
+          .
+        </p>
+        <HorizontalRadioGroup
+          value={selectedPrize?.slug ?? 'grant'}
+          onChange={(value) =>
+            setSelectedPrize(
+              value === 'grant'
+                ? null
+                : selectablePrizeCauses.find((cause) => cause.slug === value) ??
+                    null
+            )
+          }
+          options={{
+            grant: 'A regular grant',
+            ...Object.fromEntries(
+              selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
+            ),
+          }}
+        />
+      </Col>
       <Col className="gap-1">
         <label htmlFor="title">
           Title
@@ -201,7 +258,9 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           <ResetEditor
             storageKey={DESCRIPTION_KEY}
             editor={editor}
-            defaultContent={DESCRIPTION_OUTLINE}
+            defaultContent={
+              selectedPrize?.project_description_outline ?? DESCRIPTION_OUTLINE
+            }
           />
         </Row>
         <p className="text-sm text-gray-500">
@@ -216,35 +275,38 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
         </p>
         <TextEditor editor={editor} />
       </Col>
-      <Col className="gap-1">
-        <label htmlFor="minFunding" className="mr-3 mt-4">
-          Minimum funding (USD)
-          <RequiredStar />
-        </label>
-        <p className="text-sm text-gray-600">
-          The minimum amount of funding you need to start this project. If this
-          amount is not reached, no funds will be sent. Due to the cost of
-          approving grants and processing payments, we require this to be at
-          least ${minMinFunding}.
-        </p>
-        <Col>
-          <Input
-            type="number"
-            id="minFunding"
-            autoComplete="off"
-            value={minFunding !== null ? Number(minFunding).toString() : ''}
-            onChange={(event) => setMinFunding(Number(event.target.value))}
-            error={minFunding !== null && minFunding < minMinFunding}
-            errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
-          />
-        </Col>
-      </Col>
-      {applyingToManifold ? (
+      {!selectedPrize ||
+        (selectedPrize.cert_params?.proposalPhase && (
+          <Col className="gap-1">
+            <label htmlFor="minFunding" className="mr-3 mt-4">
+              Minimum funding (USD)
+              <RequiredStar />
+            </label>
+            <p className="text-sm text-gray-600">
+              The minimum amount of funding you need to start this project. If
+              this amount is not reached, no funds will be sent. Due to the cost
+              of approving grants and processing payments, we require this to be
+              at least ${minMinFunding}.
+            </p>
+            <Col>
+              <Input
+                type="number"
+                id="minFunding"
+                autoComplete="off"
+                value={minFunding !== null ? Number(minFunding).toString() : ''}
+                onChange={(event) => setMinFunding(Number(event.target.value))}
+                error={minFunding !== null && minFunding < minMinFunding}
+                errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
+              />
+            </Col>
+          </Col>
+        ))}
+      {!!selectedPrize ? (
         <InvestmentStructurePanel
           minFunding={minFunding ?? 0}
-          founderPortion={founderPortion}
-          setFounderPortion={setFounderPortion}
-          ammPortion={ammPortion}
+          founderPercent={founderPercent}
+          setFounderPercent={setFounderPercent}
+          certParams={selectedPrize?.cert_params as CertParams}
           agreedToTerms={agreedToTerms}
           setAgreedToTerms={setAgreedToTerms}
         />
@@ -278,37 +340,39 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           />
         </Col>
       )}
-      <Col className="gap-1">
-        <label>
-          Decision deadline
-          <RequiredStar />
-        </label>
-        <p className="text-sm text-gray-600">
-          After this deadline, if you have not reached your minimum funding bar,
-          your application will close and you will not recieve any money. This
-          date cannot be more than 6 weeks after posting.
-        </p>
-        <Input
-          type="date"
-          value={verdictDate ?? ''}
-          onChange={(event) => setVerdictDate(event.target.value)}
-        />
-      </Col>
+      {(!selectedPrize || selectedPrize.cert_params?.proposalPhase) && (
+        <Col className="gap-1">
+          <label>
+            Decision deadline
+            <RequiredStar />
+          </label>
+          <p className="text-sm text-gray-600">
+            After this deadline, if you have not reached your minimum funding
+            bar, your application will close and you will not recieve any money.
+            This date cannot be more than 6 weeks after posting.
+          </p>
+          <Input
+            type="date"
+            value={verdictDate ?? ''}
+            onChange={(event) => setVerdictDate(event.target.value)}
+          />
+        </Col>
+      )}
       <Col className="gap-1">
         <label>Cause areas</label>
         <SelectCauses
-          causesList={causesList}
+          causesList={selectableCauses}
           selectedCauses={selectedCauses}
           setSelectedCauses={setSelectedCauses}
         />
       </Col>
+
       <Col className="gap-1">
-        <label>International activities</label>
+        <label>
+          In what countries are you and anyone else working on this located?
+        </label>
         <p className="text-sm text-gray-600">
-          If any part of this project will happen outside of the US, or people
-          working on the project are not US residents, please describe what will
-          happen internationally and where. Only a sentence or two needed. (This
-          is for Manifund operations, and will not be published.)
+          This is for Manifund operations and will not be published.
         </p>
         <Input
           type="text"
@@ -316,7 +380,31 @@ export function CreateProjectForm(props: { causesList: MiniCause[] }) {
           onChange={(event) => setLocationDescription(event.target.value)}
         />
       </Col>
-      <Tooltip text={errorMessage} className="mt-4 w-full">
+
+      {/* Custom for Chinatalk: confirm terms & conditions */}
+      {chinatalkPrizeSelected && (
+        <Row className="mt-5 items-start">
+          <Checkbox
+            checked={agreeToChinatalkTerms}
+            onChange={(event) => setAgreeToChinatalkTerms(event.target.checked)}
+          />
+          <RequiredStar />
+          <span className="ml-3 leading-tight">
+            <span className="text-sm font-bold text-gray-900">
+              I agree to the{' '}
+              <SiteLink
+                href="https://www.chinatalk.info/essay"
+                className="text-orange-500 hover:text-orange-600"
+              >
+                terms and conditions
+              </SiteLink>{' '}
+              of the Chinatalk Essay Competition.
+            </span>
+          </span>
+        </Row>
+      )}
+
+      <Tooltip text={errorMessage}>
         <Button
           type="submit"
           className="w-full"

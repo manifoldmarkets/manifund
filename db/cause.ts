@@ -2,9 +2,22 @@ import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sortBy } from 'lodash'
 
-export type Cause = Database['public']['Tables']['causes']['Row']
+export type Cause = Omit<
+  Database['public']['Tables']['causes']['Row'],
+  'cert_params'
+> & { cert_params: CertParams | null }
 export type FullCause = Cause & { projects: { stage: string }[] }
 export type MiniCause = { title: string; slug: string }
+
+export type CertParams = {
+  ammShares: number
+  ammDollars: number | null
+  minMinFunding: number
+  proposalPhase: boolean
+  ammOwnedByCreator: boolean
+  defaultInvestorShares: number
+  adjustableInvestmentStructure: boolean
+}
 
 export async function listFullCauses(supabase: SupabaseClient) {
   const { data, error } = await supabase
@@ -13,22 +26,39 @@ export async function listFullCauses(supabase: SupabaseClient) {
   if (error) {
     throw error
   }
-  return sortBy(data, [
-    function (cause) {
-      return cause.data.sort
-    },
-  ]) as FullCause[]
+  return sortBy(data, 'sort') as FullCause[]
 }
 
 export async function listMiniCauses(supabase: SupabaseClient) {
-  const { data, error } = await supabase
-    .from('causes')
-    .select('title, slug')
-    .contains('data', JSON.stringify({ open: true }))
+  const { data, error } = await supabase.from('causes').select('title, slug')
   if (error) {
     throw error
   }
   return data as MiniCause[]
+}
+
+export async function listCauses(supabase: SupabaseClient) {
+  const { data, error } = await supabase.from('causes').select('*')
+  if (error) {
+    throw error
+  }
+  return data as Cause[]
+}
+
+export async function getPrizeCause(
+  causeSlugs: string[],
+  supabase: SupabaseClient
+) {
+  const { data, error } = await supabase
+    .from('causes')
+    .select('*')
+    .in('slug', causeSlugs)
+    .eq('prize', true)
+    .single()
+  if (error) {
+    throw error
+  }
+  return data ? (data as Cause) : null
 }
 
 export async function updateProjectCauses(
