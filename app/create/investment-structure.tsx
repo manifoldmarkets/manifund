@@ -248,9 +248,10 @@ export function InvestmentStructurePanel(props: {
             be temporarily given to the AMM, along with ${certParams.ammDollars}{' '}
             from Manifund, giving your project a starting valuation of $
             {(certParams.ammDollars ?? 0) / ammPortion}. This will allow you and
-            others to buy and sell shares of your project at any time. Once your
-            project is complete and closed, all equity held by the AMM and any
-            money beyond the $20 seed from Manifund will be returned to you.
+            others to buy and sell shares of your project at any time, and
+            incentivizes engagement with your work. Once your project is
+            complete and closed, all equity held by the AMM and any money beyond
+            the $20 seed from Manifund will be returned to you.
           </span>
         </span>
       </Row>

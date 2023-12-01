@@ -106,7 +106,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   ) {
     errorMessage =
       'Your application close date must be in the future but no more than 6 weeks from now.'
-  } else if (!verdictDate) {
+  } else if (
+    (!selectedPrize || selectedPrize.cert_params?.proposalPhase) &&
+    !verdictDate
+  ) {
     errorMessage = 'You need to set a decision deadline.'
   } else {
     errorMessage = null
@@ -119,6 +122,11 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     if (!!selectedPrize) {
       selectedCauseSlugs.push(selectedPrize.slug)
     }
+    const seedingAmm =
+      selectedPrize &&
+      !!selectedPrize.cert_params?.ammShares &&
+      (agreedToTerms ||
+        selectedPrize.cert_params?.adjustableInvestmentStructure)
     const response = await fetch('/api/create-project', {
       method: 'POST',
       headers: {
@@ -141,9 +149,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             ? 'active'
             : 'proposal',
         type: !!selectedPrize ? 'cert' : 'grant',
-        amm_shares: !!selectedPrize
-          ? selectedPrize.cert_params?.ammShares
-          : null,
+        amm_shares: seedingAmm ? selectedPrize.cert_params?.ammShares : null,
         location_description: locationDescription,
         causeSlugs: selectedCauseSlugs,
       }),

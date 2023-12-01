@@ -91,7 +91,7 @@ export default async function handler(req: NextRequest) {
         getProposalValuation(project),
         stage === 'proposal' ? 'assurance sell' : 'sell'
       )
-    } else if (certParams?.ammDollars) {
+    } else if (certParams?.ammDollars && project.amm_shares) {
       await supabase.from('txns').insert({
         from_id: process.env.NEXT_PUBLIC_PROD_BANK_ID,
         to_id: user.id,
