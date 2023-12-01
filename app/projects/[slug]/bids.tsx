@@ -38,6 +38,7 @@ export function Bids(props: {
       (bid) => bid.type === 'buy' || bid.type === 'assurance buy'
     )
     const sellBids = bids.filter((bid) => bid.type === 'sell')
+    const donateBids = bids.filter((bid) => bid.type === 'donate')
     return (
       <Row className="w-full justify-center">
         <div className="flex w-full flex-col">
@@ -66,6 +67,19 @@ export function Bids(props: {
                 showValuation={true}
                 userSellableShares={userSellableShares}
                 userSpendableFunds={userSpendableFunds}
+              />
+            ))}
+          </Col>
+          <Col>
+            {donateBids.length !== 0 && (
+              <h1 className="text-xl">Donation Offers</h1>
+            )}
+            {donateBids.map((bid) => (
+              <Bid
+                key={bid.id}
+                bid={bid}
+                project={project}
+                showValuation={false}
               />
             ))}
           </Col>
