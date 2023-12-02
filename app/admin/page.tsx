@@ -15,6 +15,7 @@ import { GrantVerdict } from './grant-verdict'
 import { AddTags } from './add-tags'
 import { DownloadTextButton } from './download-text-button'
 import { CategorizeTxns } from './categorize-txns'
+import { ActivateProject } from './activate-project'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -172,6 +173,7 @@ export default async function Admin() {
             <th>Creator</th>
             <th>Min funding</th>
             <th>Add tag</th>
+            <th>Activate project</th>
           </tr>
         </thead>
         <tbody>
@@ -186,6 +188,7 @@ export default async function Admin() {
                   causeSlug={'gcr'}
                   currentCauseSlugs={project.causes.map((cause) => cause.slug)}
                 />
+                <ActivateProject projectId={project.id} />
               </tr>
             )
           })}
