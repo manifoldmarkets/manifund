@@ -328,14 +328,14 @@ function GenInvestmentExplanation(props: {
 function calcInitialValuation(
   certParams: CertParams,
   minFunding: number,
-  founderPortion: number
+  founderPercent: number
 ) {
   if (certParams.ammDollars) {
     return (certParams.ammDollars / certParams.ammShares) * TOTAL_SHARES
   } else {
     return (
       (100 * minFunding) /
-      (100 - founderPortion - certParams.ammShares / TOTAL_SHARES)
+      (100 - founderPercent - (certParams.ammShares / TOTAL_SHARES) * 100)
     )
   }
 }
