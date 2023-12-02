@@ -308,7 +308,7 @@ const submitTradeButtonText = (
   modeLabel?: string,
   limitValuation?: number
 ) => {
-  return `${modeLabel ?? ''} ${isLimitOrder ? 'limit order' : ''}: ${
+  return `${modeLabel ?? ''}${isLimitOrder ? ' limit order:' : ''} ${
     isNaN(percentEquity) ? '0%' : formatPercent(percentEquity)
   } for ${isNaN(amountUSD) ? '0' : formatMoneyPrecise(amountUSD)} ${
     limitValuation ? `at ${formatMoneyPrecise(limitValuation)} valuation` : ''
