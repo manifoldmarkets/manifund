@@ -275,32 +275,31 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         </p>
         <TextEditor editor={editor} />
       </Col>
-      {!selectedPrize ||
-        (selectedPrize.cert_params?.proposalPhase && (
-          <Col className="gap-1">
-            <label htmlFor="minFunding" className="mr-3 mt-4">
-              Minimum funding (USD)
-              <RequiredStar />
-            </label>
-            <p className="text-sm text-gray-600">
-              The minimum amount of funding you need to start this project. If
-              this amount is not reached, no funds will be sent. Due to the cost
-              of approving grants and processing payments, we require this to be
-              at least ${minMinFunding}.
-            </p>
-            <Col>
-              <Input
-                type="number"
-                id="minFunding"
-                autoComplete="off"
-                value={minFunding !== null ? Number(minFunding).toString() : ''}
-                onChange={(event) => setMinFunding(Number(event.target.value))}
-                error={minFunding !== null && minFunding < minMinFunding}
-                errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
-              />
-            </Col>
+      {(!selectedPrize || selectedPrize.cert_params?.proposalPhase) && (
+        <Col className="gap-1">
+          <label htmlFor="minFunding" className="mr-3 mt-4">
+            Minimum funding (USD)
+            <RequiredStar />
+          </label>
+          <p className="text-sm text-gray-600">
+            The minimum amount of funding you need to start this project. If
+            this amount is not reached, no funds will be sent. Due to the cost
+            of approving grants and processing payments, we require this to be
+            at least ${minMinFunding}.
+          </p>
+          <Col>
+            <Input
+              type="number"
+              id="minFunding"
+              autoComplete="off"
+              value={minFunding !== null ? Number(minFunding).toString() : ''}
+              onChange={(event) => setMinFunding(Number(event.target.value))}
+              error={minFunding !== null && minFunding < minMinFunding}
+              errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
+            />
           </Col>
-        ))}
+        </Col>
+      )}
       {!!selectedPrize ? (
         <InvestmentStructurePanel
           minFunding={minFunding ?? 0}
