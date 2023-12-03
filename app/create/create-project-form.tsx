@@ -332,7 +332,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               !!(
                 fundingGoal &&
                 minFunding &&
-                (fundingGoal <= minFunding || fundingGoal <= 0)
+                (fundingGoal < minFunding || fundingGoal <= 0)
               )
             }
             errorMessage="Funding goal must be greater than 0 and greater than or equal to your minimum funding."
