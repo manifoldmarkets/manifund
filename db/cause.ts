@@ -54,7 +54,7 @@ export async function getPrizeCause(
     .select('*')
     .in('slug', causeSlugs)
     .eq('prize', true)
-    .single()
+    .maybeSingle()
   if (error) {
     throw error
   }
