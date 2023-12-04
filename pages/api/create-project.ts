@@ -79,7 +79,6 @@ export default async function handler(req: NextRequest) {
   await supabase.from('projects').insert(project).throwOnError()
   await updateProjectCauses(supabase, causeSlugs, project.id)
   await giveCreatorShares(supabase, id, user.id)
-
   const prizeCause = await getPrizeCause(causeSlugs, supabase)
   if (type === 'cert' && prizeCause) {
     const certParams = prizeCause.cert_params
