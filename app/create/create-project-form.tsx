@@ -60,10 +60,6 @@ type ProjectParams = {
 export function CreateProjectForm(props: { causesList: Cause[] }) {
   const { causesList } = props
   const { session } = useSupabase()
-  const router = useRouter()
-  const selectablePrizeCauses = causesList.filter(
-    (cause) => cause.open && cause.prize
-  )
   const [projectParams, setProjectParams] = usePartialUpdater<ProjectParams>({
     title: '',
     subtitle: '',
@@ -78,13 +74,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     agreedToTerms: false,
   })
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const selectableCauses = causesList.filter(
-    (cause) => cause.open && !cause.prize
-  )
-  const chinatalkPrizeSelected =
-    projectParams.selectedPrize?.slug === 'china-talk'
-  const [agreeToChinatalkTerms, setAgreeToChinatalkTerms] =
-    useState<boolean>(false)
+
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   useEffect(() => {
     setProjectParams({
@@ -100,16 +90,30 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         DESCRIPTION_OUTLINE
     )
   }, [projectParams.selectedPrize])
+
+  const selectablePrizeCauses = causesList.filter(
+    (cause) => cause.open && cause.prize
+  )
+  const selectableCauses = causesList.filter(
+    (cause) => cause.open && !cause.prize
+  )
   const minMinFunding = projectParams.selectedPrize?.cert_params
     ? projectParams.selectedPrize.cert_params.minMinFunding
     : 500
   const certParams = projectParams.selectedPrize?.cert_params ?? null
+  const chinatalkPrizeSelected =
+    projectParams.selectedPrize?.slug === 'china-talk'
+  const [agreeToChinatalkTerms, setAgreeToChinatalkTerms] =
+    useState<boolean>(false)
+
   const errorMessage = getCreateProjectErrorMessage(
     projectParams,
     minMinFunding,
     chinatalkPrizeSelected,
     agreeToChinatalkTerms
   )
+
+  const router = useRouter()
   const handleSubmit = async () => {
     setIsSubmitting(true)
     const description = editor?.getJSON() ?? '<p>No description</p>'
@@ -440,7 +444,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   )
 }
 
-// ChinaTalk-specific stuff is temporary
+// TODO: remove ChinaTalk-specific stuff after round is complete
 function getCreateProjectErrorMessage(
   projectParams: ProjectParams,
   minMinFunding: number,
