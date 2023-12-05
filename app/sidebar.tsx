@@ -12,10 +12,7 @@ import { getTxnsByUser } from '@/db/txn'
 import { buttonClass } from '@/components/button'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
-import {
-  AirtableDepositButton,
-  DepositButton,
-} from '@/components/deposit-buttons'
+import { DepositButton } from '@/components/deposit-buttons'
 import { Col } from '@/components/layout/col'
 import { Tooltip } from '@/components/tooltip'
 import { PlusSmallIcon } from '@heroicons/react/24/outline'
