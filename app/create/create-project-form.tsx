@@ -103,14 +103,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const minMinFunding = projectParams.selectedPrize?.cert_params
     ? projectParams.selectedPrize.cert_params.minMinFunding
     : 500
+  const certParams = projectParams.selectedPrize?.cert_params ?? null
   const errorMessage = getCreateProjectErrorMessage(
     projectParams,
     minMinFunding,
     chinatalkPrizeSelected,
     agreeToChinatalkTerms
   )
-  // TODO: factor cert params out into it's own variable for readability
-
   const handleSubmit = async () => {
     setIsSubmitting(true)
     const description = editor?.getJSON() ?? '<p>No description</p>'
@@ -121,10 +120,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       selectedCauseSlugs.push(projectParams.selectedPrize.slug)
     }
     const seedingAmm =
-      projectParams.selectedPrize &&
-      !!projectParams.selectedPrize.cert_params?.ammShares &&
-      (projectParams.agreedToTerms ||
-        projectParams.selectedPrize.cert_params?.adjustableInvestmentStructure)
+      certParams?.ammShares &&
+      (projectParams.agreedToTerms || certParams?.adjustableInvestmentStructure)
     const response = await fetch('/api/create-project', {
       method: 'POST',
       headers: {
@@ -273,8 +270,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         </p>
         <TextEditor editor={editor} />
       </Col>
-      {(!projectParams.selectedPrize ||
-        projectParams.selectedPrize.cert_params?.proposalPhase) && (
+      {(!projectParams.selectedPrize || certParams?.proposalPhase) && (
         <Col className="gap-1">
           <label htmlFor="minFunding" className="mr-3 mt-4">
             Minimum funding (USD)
@@ -308,14 +304,14 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </Col>
         </Col>
       )}
-      {!!projectParams.selectedPrize ? (
+      {!!certParams ? (
         <InvestmentStructurePanel
           minFunding={projectParams.minFunding ?? 0}
           founderPercent={projectParams.founderPercent}
           setFounderPercent={(newPercent: number) =>
             setProjectParams({ founderPercent: newPercent })
           }
-          certParams={projectParams.selectedPrize?.cert_params as CertParams}
+          certParams={certParams}
           agreedToTerms={projectParams.agreedToTerms}
           setAgreedToTerms={(newAgreedToTerms: boolean) => {
             setProjectParams({ agreedToTerms: newAgreedToTerms })
@@ -358,8 +354,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           />
         </Col>
       )}
-      {(!projectParams.selectedPrize ||
-        projectParams.selectedPrize.cert_params?.proposalPhase) && (
+      {(!projectParams.selectedPrize || certParams?.proposalPhase) && (
         <Col className="gap-1">
           <label>
             Decision deadline
