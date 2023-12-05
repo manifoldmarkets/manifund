@@ -81,12 +81,11 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const selectableCauses = causesList.filter(
     (cause) => cause.open && !cause.prize
   )
+  const chinatalkPrizeSelected =
+    projectParams.selectedPrize?.slug === 'china-talk'
   const [agreeToChinatalkTerms, setAgreeToChinatalkTerms] =
     useState<boolean>(false)
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
-  const chinatalkPrizeSelected =
-    projectParams.selectedPrize?.slug === 'china-talk'
-
   useEffect(() => {
     setProjectParams({
       founderPercent:
@@ -104,59 +103,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const minMinFunding = projectParams.selectedPrize?.cert_params
     ? projectParams.selectedPrize.cert_params.minMinFunding
     : 500
-
+  const errorMessage = getCreateProjectErrorMessage(
+    projectParams,
+    minMinFunding,
+    chinatalkPrizeSelected,
+    agreeToChinatalkTerms
+  )
   // TODO: factor cert params out into it's own variable for readability
-  let errorMessage = null
-  if (projectParams.title === '') {
-    errorMessage = 'Your project needs a title.'
-  } else if (
-    projectParams.minFunding === null &&
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase)
-  ) {
-    errorMessage = 'Your project needs a minimum funding amount.'
-  } else if (
-    projectParams.minFunding !== null &&
-    projectParams.minFunding < minMinFunding &&
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase)
-  ) {
-    errorMessage = `Your minimum funding must be at least $${minMinFunding}.`
-  } else if (
-    projectParams.selectedPrize &&
-    projectParams.selectedPrize.cert_params?.adjustableInvestmentStructure &&
-    !projectParams.agreedToTerms
-  ) {
-    errorMessage = 'Please confirm that you agree to the investment structure.'
-  } else if (
-    projectParams.fundingGoal &&
-    !projectParams.selectedPrize &&
-    ((projectParams.minFunding &&
-      projectParams.minFunding > projectParams.fundingGoal) ||
-      projectParams.fundingGoal <= 0)
-  ) {
-    errorMessage =
-      'Your funding goal must be greater than 0 and greater than or equal to your minimum funding goal.'
-  } else if (
-    isAfter(
-      new Date(projectParams.verdictDate),
-      add(new Date(), { weeks: 6 })
-    ) ||
-    isBefore(new Date(projectParams.verdictDate), new Date())
-  ) {
-    errorMessage =
-      'Your application close date must be in the future but no more than 6 weeks from now.'
-  } else if (
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase) &&
-    !projectParams.verdictDate
-  ) {
-    errorMessage = 'You need to set a decision deadline.'
-  } else if (chinatalkPrizeSelected && !agreeToChinatalkTerms) {
-    errorMessage = "You must agree to Chinatalk's terms and conditions."
-  } else {
-    errorMessage = null
-  }
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
@@ -490,4 +443,61 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       </Tooltip>
     </Col>
   )
+}
+
+// ChinaTalk-specific stuff is temporary
+function getCreateProjectErrorMessage(
+  projectParams: ProjectParams,
+  minMinFunding: number,
+  chinatalkPrizeSelected: boolean,
+  agreeToChinatalkTerms: boolean
+) {
+  if (projectParams.title === '') {
+    return 'Your project needs a title.'
+  } else if (
+    projectParams.minFunding === null &&
+    (!projectParams.selectedPrize ||
+      projectParams.selectedPrize.cert_params?.proposalPhase)
+  ) {
+    return 'Your project needs a minimum funding amount.'
+  } else if (
+    projectParams.minFunding !== null &&
+    projectParams.minFunding < minMinFunding &&
+    (!projectParams.selectedPrize ||
+      projectParams.selectedPrize.cert_params?.proposalPhase)
+  ) {
+    return `Your minimum funding must be at least $${minMinFunding}.`
+  } else if (
+    projectParams.selectedPrize &&
+    projectParams.selectedPrize.cert_params?.adjustableInvestmentStructure &&
+    !projectParams.agreedToTerms
+  ) {
+    return 'Please confirm that you agree to the investment structure.'
+  } else if (
+    projectParams.fundingGoal &&
+    !projectParams.selectedPrize &&
+    ((projectParams.minFunding &&
+      projectParams.minFunding > projectParams.fundingGoal) ||
+      projectParams.fundingGoal <= 0)
+  ) {
+    return 'Your funding goal must be greater than 0 and greater than or equal to your minimum funding goal.'
+  } else if (
+    isAfter(
+      new Date(projectParams.verdictDate),
+      add(new Date(), { weeks: 6 })
+    ) ||
+    isBefore(new Date(projectParams.verdictDate), new Date())
+  ) {
+    return 'Your application close date must be in the future but no more than 6 weeks from now.'
+  } else if (
+    (!projectParams.selectedPrize ||
+      projectParams.selectedPrize.cert_params?.proposalPhase) &&
+    !projectParams.verdictDate
+  ) {
+    return 'You need to set a decision deadline.'
+  } else if (chinatalkPrizeSelected && !agreeToChinatalkTerms) {
+    return "You must agree to Chinatalk's terms and conditions."
+  } else {
+    return null
+  }
 }
