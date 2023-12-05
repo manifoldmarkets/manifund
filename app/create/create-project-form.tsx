@@ -59,7 +59,6 @@ type ProjectParams = {
 
 export function CreateProjectForm(props: { causesList: Cause[] }) {
   const { causesList } = props
-  const { session } = useSupabase()
   const [projectParams, setProjectParams] = usePartialUpdater<ProjectParams>({
     title: '',
     subtitle: '',
@@ -162,6 +161,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     clearLocalStorageItem(DESCRIPTION_KEY)
     setIsSubmitting(false)
   }
+
+  const { session } = useSupabase()
   const user = session?.user
   if (!user) {
     return (
