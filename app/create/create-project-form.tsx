@@ -50,7 +50,7 @@ type ProjectParams = {
   fundingGoal: number | null
   verdictDate: string
   description: string
-  locationDescription: string
+  location: string
   selectedCauses: MiniCause[]
   selectedPrize: Cause | null
   founderPercent: number
@@ -71,7 +71,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     fundingGoal: null,
     verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
     description: DESCRIPTION_OUTLINE,
-    locationDescription: '',
+    location: '',
     selectedCauses: [],
     selectedPrize: null,
     founderPercent: 50,
@@ -400,9 +400,9 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         </p>
         <Input
           type="text"
-          value={projectParams.locationDescription}
+          value={projectParams.location}
           onChange={(event) =>
-            setProjectParams({ locationDescription: event.target.value })
+            setProjectParams({ location: event.target.value })
           }
         />
       </Col>
