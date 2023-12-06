@@ -60,13 +60,13 @@ export function AmountInput(
     amount: number | undefined
     onChangeAmount: (newAmount: number | undefined) => void
     error?: boolean
-    label?: string
+    errorMessage?: string
+    placeholder?: string
     disabled?: boolean
     className?: string
     inputClassName?: string
     // Needed to focus the amount input
     inputRef?: React.MutableRefObject<any>
-    quickAddMoreButton?: ReactNode
     allowFloat?: boolean
     allowNegative?: boolean
   } & JSX.IntrinsicElements['input']
@@ -75,13 +75,13 @@ export function AmountInput(
     amount,
     onChangeAmount,
     error,
-    label,
+    errorMessage,
+    placeholder = '0',
     disabled,
     className,
     inputClassName,
     inputRef,
-    quickAddMoreButton,
-    allowFloat,
+    allowFloat = true,
     allowNegative,
     ...rest
   } = props
@@ -111,39 +111,28 @@ export function AmountInput(
   }
 
   return (
-    <Col className={clsx('relative', className)}>
-      <label className="font-sm md:font-lg relative">
-        {label && (
-          <span className="absolute top-1/2 my-auto ml-2 -translate-y-1/2 text-gray-400">
-            {label}
-          </span>
-        )}
-        <div className="flex">
-          <Input
-            {...rest}
-            className={clsx(label && 'pl-9', ' !text-lg', inputClassName)}
-            ref={inputRef}
-            type={allowFloat ? 'number' : 'text'}
-            inputMode={allowFloat ? 'decimal' : 'numeric'}
-            placeholder="0"
-            maxLength={9}
-            value={amountString}
-            error={error}
-            disabled={disabled}
-            onChange={(e) => onAmountChange(e.target.value)}
-            onBlur={() => setAmountString(amount?.toString() ?? '')}
-            onKeyDown={(e) => {
-              if (e.key === 'ArrowUp') {
-                onChangeAmount((amount ?? 0) + 5)
-              } else if (e.key === 'ArrowDown') {
-                onChangeAmount(Math.max(0, (amount ?? 0) - 5))
-              }
-            }}
-          />
-          {quickAddMoreButton}
-        </div>
-      </label>
-    </Col>
+    <Input
+      {...rest}
+      className={clsx('!text-lg', inputClassName)}
+      ref={inputRef}
+      type={allowFloat ? 'number' : 'text'}
+      inputMode={allowFloat ? 'decimal' : 'numeric'}
+      placeholder={placeholder}
+      maxLength={9}
+      value={amountString}
+      error={error}
+      errorMessage={errorMessage}
+      disabled={disabled}
+      onChange={(e) => onAmountChange(e.target.value)}
+      onBlur={() => setAmountString(amount?.toString() ?? '')}
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowUp') {
+          onChangeAmount((amount ?? 0) + 5)
+        } else if (e.key === 'ArrowDown') {
+          onChangeAmount(Math.max(0, (amount ?? 0) - 5))
+        }
+      }}
+    />
   )
 }
 
