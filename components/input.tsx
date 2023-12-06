@@ -62,7 +62,6 @@ export function AmountInput(
     error?: boolean
     errorMessage?: string
     placeholder?: string
-    disabled?: boolean
     className?: string
     inputClassName?: string
     // Needed to focus the amount input
@@ -77,7 +76,6 @@ export function AmountInput(
     error,
     errorMessage,
     placeholder = '0',
-    disabled,
     className,
     inputClassName,
     inputRef,
@@ -122,7 +120,6 @@ export function AmountInput(
       value={amountString}
       error={error}
       errorMessage={errorMessage}
-      disabled={disabled}
       onChange={(e) => onAmountChange(e.target.value)}
       onBlur={() => setAmountString(amount?.toString() ?? '')}
       onKeyDown={(e) => {

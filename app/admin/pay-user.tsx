@@ -17,7 +17,7 @@ export function PayUser(props: { userId: string }) {
 
   return (
     <div className="flex flex-row">
-      <AmountInput amount={amount} onChangeAmount={setAmount} />
+      <AmountInput amount={amount} onChangeAmount={setAmount} allowNegative />
       <Button
         onClick={async () => {
           await payUser({ userId, amount: amount ?? 0 })
