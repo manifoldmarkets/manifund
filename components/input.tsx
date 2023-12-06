@@ -1,7 +1,8 @@
 /* eslint-disable react/display-name */
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
-import { forwardRef, Ref, useState } from 'react'
+import { forwardRef, ReactNode, Ref, useEffect, useState } from 'react'
+import { Col } from './layout/col'
 import { Row } from './layout/row'
 
 /** Text input. Wraps html `<input>` */
@@ -53,6 +54,98 @@ export const Checkbox = forwardRef(
     )
   }
 )
+
+export function AmountInput(
+  props: {
+    amount: number | undefined
+    onChangeAmount: (newAmount: number | undefined) => void
+    error?: boolean
+    label?: string
+    disabled?: boolean
+    className?: string
+    inputClassName?: string
+    // Needed to focus the amount input
+    inputRef?: React.MutableRefObject<any>
+    quickAddMoreButton?: ReactNode
+    allowFloat?: boolean
+    allowNegative?: boolean
+  } & JSX.IntrinsicElements['input']
+) {
+  const {
+    amount,
+    onChangeAmount,
+    error,
+    label,
+    disabled,
+    className,
+    inputClassName,
+    inputRef,
+    quickAddMoreButton,
+    allowFloat,
+    allowNegative,
+    ...rest
+  } = props
+
+  const [amountString, setAmountString] = useState(amount?.toString() ?? '')
+
+  const parse = allowFloat ? parseFloat : parseInt
+
+  const bannedChars = new RegExp(
+    `[^\\d${allowFloat && '.'}${allowNegative && '-'}]`,
+    'g'
+  )
+
+  useEffect(() => {
+    if (amount !== parse(amountString))
+      setAmountString(amount?.toString() ?? '')
+  }, [amount])
+
+  const onAmountChange = (str: string) => {
+    const s = str.replace(bannedChars, '')
+    if (s !== amountString) {
+      setAmountString(s)
+      const amount = parse(s)
+      const isInvalid = !s || isNaN(amount)
+      onChangeAmount(isInvalid ? undefined : amount)
+    }
+  }
+
+  return (
+    <Col className={clsx('relative', className)}>
+      <label className="font-sm md:font-lg relative">
+        {label && (
+          <span className="absolute top-1/2 my-auto ml-2 -translate-y-1/2 text-gray-400">
+            {label}
+          </span>
+        )}
+        <div className="flex">
+          <Input
+            {...rest}
+            className={clsx(label && 'pl-9', ' !text-lg', inputClassName)}
+            ref={inputRef}
+            type={allowFloat ? 'number' : 'text'}
+            inputMode={allowFloat ? 'decimal' : 'numeric'}
+            placeholder="0"
+            maxLength={9}
+            value={amountString}
+            error={error}
+            disabled={disabled}
+            onChange={(e) => onAmountChange(e.target.value)}
+            onBlur={() => setAmountString(amount?.toString() ?? '')}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowUp') {
+                onChangeAmount((amount ?? 0) + 5)
+              } else if (e.key === 'ArrowDown') {
+                onChangeAmount(Math.max(0, (amount ?? 0) - 5))
+              }
+            }}
+          />
+          {quickAddMoreButton}
+        </div>
+      </label>
+    </Col>
+  )
+}
 
 export function SearchBar(props: {
   search: string
