@@ -350,7 +350,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         <SelectCauses
           causesList={selectableCauses}
           selectedCauses={projectParams.selectedCauses}
-          // TODO: make sure this pattern works
           setSelectedCauses={(newCauses: MiniCause[]) =>
             setProjectParams({ selectedCauses: newCauses })
           }
