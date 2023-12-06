@@ -14,14 +14,15 @@ import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
-import { Cause, CertParams, MiniCause } from '@/db/cause'
+import { Cause, MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from './investment-structure'
 import { Tooltip } from '@/components/tooltip'
 import { SiteLink } from '@/components/site-link'
-import { toTitleCase } from '@/utils/formatting'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 import { Checkbox } from '@/components/input'
+import { usePartialUpdater } from '@/hooks/user-partial-updater'
+import { JSONContent } from '@tiptap/core'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -39,137 +40,97 @@ const DESCRIPTION_OUTLINE = `
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
 
+export type ProjectParams = {
+  title: string
+  subtitle: string | null
+  minFunding: number | null
+  fundingGoal: number | null
+  verdictDate: string
+  description: JSONContent | string
+  location: string
+  selectedCauses: MiniCause[]
+  selectedPrize: Cause | null
+  founderPercent: number
+  agreedToTerms: boolean
+}
+
 export function CreateProjectForm(props: { causesList: Cause[] }) {
   const { causesList } = props
-  const { session } = useSupabase()
-  const router = useRouter()
+  const [projectParams, updateProjectParams] = usePartialUpdater<ProjectParams>(
+    {
+      title: '',
+      subtitle: '',
+      minFunding: null,
+      fundingGoal: null,
+      verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
+      description: DESCRIPTION_OUTLINE,
+      location: '',
+      selectedCauses: [],
+      selectedPrize: null,
+      founderPercent: 50,
+      agreedToTerms: false,
+    }
+  )
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+
+  const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
+  useEffect(() => {
+    updateProjectParams({
+      founderPercent:
+        (1 -
+          (projectParams.selectedPrize?.cert_params?.defaultInvestorShares ??
+            0) /
+            TOTAL_SHARES) *
+        100,
+    })
+    editor?.commands.setContent(
+      projectParams.selectedPrize?.project_description_outline ??
+        DESCRIPTION_OUTLINE
+    )
+  }, [projectParams.selectedPrize])
+
   const selectablePrizeCauses = causesList.filter(
     (cause) => cause.open && cause.prize
   )
-  const [title, setTitle] = useState<string>('')
-  const [blurb, setBlurb] = useState<string>('')
-  const [minFunding, setMinFunding] = useState<number | null>(null)
-  const [fundingGoal, setFundingGoal] = useState<number | null>(null)
-  const [verdictDate, setVerdictDate] = useState(
-    format(add(new Date(), { months: 1 }), 'yyyy-MM-dd')
-  )
-  const [locationDescription, setLocationDescription] = useState<string>('')
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const selectableCauses = causesList.filter(
     (cause) => cause.open && !cause.prize
   )
-  const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
-  const [selectedPrize, setSelectedPrize] = useState<Cause | null>(null)
-  const [founderPercent, setFounderPercent] = useState<number>(50)
-  const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false)
+  const minMinFunding = projectParams.selectedPrize?.cert_params
+    ? projectParams.selectedPrize.cert_params.minMinFunding
+    : 500
+  const certParams = projectParams.selectedPrize?.cert_params ?? null
+  const chinatalkPrizeSelected =
+    projectParams.selectedPrize?.slug === 'china-talk'
   const [agreeToChinatalkTerms, setAgreeToChinatalkTerms] =
     useState<boolean>(false)
-  const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
-  const chinatalkPrizeSelected = selectedPrize?.slug === 'china-talk'
 
-  useEffect(() => {
-    setFounderPercent(
-      (1 -
-        (selectedPrize?.cert_params?.defaultInvestorShares ?? 0) /
-          TOTAL_SHARES) *
-        100
-    )
-    editor?.commands.setContent(
-      selectedPrize?.project_description_outline ?? DESCRIPTION_OUTLINE
-    )
-  }, [selectedPrize])
-  const minMinFunding = selectedPrize?.cert_params
-    ? selectedPrize.cert_params.minMinFunding
-    : 500
+  const errorMessage = getCreateProjectErrorMessage(
+    projectParams,
+    minMinFunding,
+    chinatalkPrizeSelected,
+    agreeToChinatalkTerms
+  )
 
-  let errorMessage = null
-  if (title === '') {
-    errorMessage = 'Your project needs a title.'
-  } else if (
-    minFunding === null &&
-    (!selectedPrize || selectedPrize.cert_params?.proposalPhase)
-  ) {
-    errorMessage = 'Your project needs a minimum funding amount.'
-  } else if (
-    minFunding !== null &&
-    minFunding < minMinFunding &&
-    (!selectedPrize || selectedPrize.cert_params?.proposalPhase)
-  ) {
-    errorMessage = `Your minimum funding must be at least $${minMinFunding}.`
-  } else if (
-    selectedPrize &&
-    selectedPrize.cert_params?.adjustableInvestmentStructure &&
-    !agreedToTerms
-  ) {
-    errorMessage = 'Please confirm that you agree to the investment structure.'
-  } else if (
-    fundingGoal &&
-    !selectedPrize &&
-    ((minFunding && minFunding > fundingGoal) || fundingGoal <= 0)
-  ) {
-    errorMessage =
-      'Your funding goal must be greater than 0 and greater than or equal to your minimum funding goal.'
-  } else if (
-    isAfter(new Date(verdictDate), add(new Date(), { weeks: 6 })) ||
-    isBefore(new Date(verdictDate), new Date())
-  ) {
-    errorMessage =
-      'Your application close date must be in the future but no more than 6 weeks from now.'
-  } else if (
-    (!selectedPrize || selectedPrize.cert_params?.proposalPhase) &&
-    !verdictDate
-  ) {
-    errorMessage = 'You need to set a decision deadline.'
-  } else if (chinatalkPrizeSelected && !agreeToChinatalkTerms) {
-    errorMessage = "You must agree to Chinatalk's terms and conditions."
-  } else {
-    errorMessage = null
-  }
-
+  const router = useRouter()
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    const description = editor?.getJSON() ?? '<p>No description</p>'
-    const selectedCauseSlugs = selectedCauses.map((cause) => cause.slug)
-    if (!!selectedPrize) {
-      selectedCauseSlugs.push(selectedPrize.slug)
-    }
-    const seedingAmm =
-      selectedPrize &&
-      !!selectedPrize.cert_params?.ammShares &&
-      (agreedToTerms ||
-        selectedPrize.cert_params?.adjustableInvestmentStructure)
+    updateProjectParams({
+      description: editor?.getJSON() ?? '<p>No description</p>',
+    })
     const response = await fetch('/api/create-project', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        title,
-        blurb,
-        description,
-        min_funding: minFunding ?? 0,
-        funding_goal: fundingGoal ?? minFunding ?? 0,
-        founder_shares: !!selectedPrize
-          ? (founderPercent / 100) * TOTAL_SHARES
-          : TOTAL_SHARES,
-        // TODO: deprecate rounds completely
-        round: !!selectedPrize ? toTitleCase(selectedPrize.title) : 'Regrants',
-        auction_close: verdictDate,
-        stage:
-          selectedPrize && !selectedPrize.cert_params?.proposalPhase
-            ? 'active'
-            : 'proposal',
-        type: !!selectedPrize ? 'cert' : 'grant',
-        amm_shares: seedingAmm ? selectedPrize.cert_params?.ammShares : null,
-        location_description: locationDescription,
-        causeSlugs: selectedCauseSlugs,
-      }),
+      body: JSON.stringify(projectParams),
     })
     const newProject = await response.json()
     router.push(`/projects/${newProject.slug}`)
     clearLocalStorageItem(DESCRIPTION_KEY)
     setIsSubmitting(false)
   }
+
+  const { session } = useSupabase()
   const user = session?.user
   if (!user) {
     return (
@@ -197,14 +158,16 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           .
         </p>
         <HorizontalRadioGroup
-          value={selectedPrize?.slug ?? 'grant'}
+          value={projectParams.selectedPrize?.slug ?? 'grant'}
           onChange={(value) =>
-            setSelectedPrize(
-              value === 'grant'
-                ? null
-                : selectablePrizeCauses.find((cause) => cause.slug === value) ??
-                    null
-            )
+            updateProjectParams({
+              selectedPrize:
+                value === 'grant'
+                  ? null
+                  : selectablePrizeCauses.find(
+                      (cause) => cause.slug === value
+                    ) ?? null,
+            })
           }
           options={{
             grant: 'A regular grant',
@@ -225,8 +188,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             id="title"
             autoComplete="off"
             maxLength={80}
-            value={title ?? ''}
-            onChange={(event) => setTitle(event.target.value)}
+            value={projectParams.title}
+            onChange={(event) =>
+              updateProjectParams({ title: event.target.value })
+            }
           />
           <span className="text-right text-xs text-gray-600">
             Maximum 80 characters
@@ -234,15 +199,17 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         </Col>
       </Col>
       <Col className="gap-1">
-        <label htmlFor="blurb">Subtitle</label>
+        <label htmlFor="subtitle">Subtitle</label>
         <Col>
           <Input
             type="text"
-            id="blurb"
+            id="subtitle"
             autoComplete="off"
             maxLength={160}
-            value={blurb ?? ''}
-            onChange={(event) => setBlurb(event.target.value)}
+            value={projectParams.subtitle ?? ''}
+            onChange={(event) =>
+              updateProjectParams({ subtitle: event.target.value })
+            }
           />
           <span className="text-right text-xs text-gray-600">
             Maximum 160 characters
@@ -259,7 +226,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             storageKey={DESCRIPTION_KEY}
             editor={editor}
             defaultContent={
-              selectedPrize?.project_description_outline ?? DESCRIPTION_OUTLINE
+              projectParams.selectedPrize?.project_description_outline ??
+              DESCRIPTION_OUTLINE
             }
           />
         </Row>
@@ -275,7 +243,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         </p>
         <TextEditor editor={editor} />
       </Col>
-      {(!selectedPrize || selectedPrize.cert_params?.proposalPhase) && (
+      {(!projectParams.selectedPrize || certParams?.proposalPhase) && (
         <Col className="gap-1">
           <label htmlFor="minFunding" className="mr-3 mt-4">
             Minimum funding (USD)
@@ -292,22 +260,35 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               type="number"
               id="minFunding"
               autoComplete="off"
-              value={minFunding !== null ? Number(minFunding).toString() : ''}
-              onChange={(event) => setMinFunding(Number(event.target.value))}
-              error={minFunding !== null && minFunding < minMinFunding}
+              value={
+                projectParams.minFunding !== null
+                  ? Number(projectParams.minFunding).toString()
+                  : ''
+              }
+              onChange={(event) =>
+                updateProjectParams({ minFunding: Number(event.target.value) })
+              }
+              error={
+                projectParams.minFunding !== null &&
+                projectParams.minFunding < minMinFunding
+              }
               errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
             />
           </Col>
         </Col>
       )}
-      {!!selectedPrize ? (
+      {!!certParams ? (
         <InvestmentStructurePanel
-          minFunding={minFunding ?? 0}
-          founderPercent={founderPercent}
-          setFounderPercent={setFounderPercent}
-          certParams={selectedPrize?.cert_params as CertParams}
-          agreedToTerms={agreedToTerms}
-          setAgreedToTerms={setAgreedToTerms}
+          minFunding={projectParams.minFunding ?? 0}
+          founderPercent={projectParams.founderPercent}
+          setFounderPercent={(newPercent: number) =>
+            updateProjectParams({ founderPercent: newPercent })
+          }
+          certParams={certParams}
+          agreedToTerms={projectParams.agreedToTerms}
+          setAgreedToTerms={(newAgreedToTerms: boolean) => {
+            updateProjectParams({ agreedToTerms: newAgreedToTerms })
+          }}
         />
       ) : (
         <Col className="gap-1">
@@ -326,20 +307,27 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             type="number"
             id="fundingGoal"
             autoComplete="off"
-            value={fundingGoal ? Number(fundingGoal).toString() : ''}
-            onChange={(event) => setFundingGoal(Number(event.target.value))}
+            value={
+              projectParams.fundingGoal
+                ? Number(projectParams.fundingGoal).toString()
+                : ''
+            }
+            onChange={(event) =>
+              updateProjectParams({ fundingGoal: Number(event.target.value) })
+            }
             error={
               !!(
-                fundingGoal &&
-                minFunding &&
-                (fundingGoal < minFunding || fundingGoal <= 0)
+                projectParams.fundingGoal &&
+                projectParams.minFunding &&
+                (projectParams.fundingGoal < projectParams.minFunding ||
+                  projectParams.fundingGoal <= 0)
               )
             }
             errorMessage="Funding goal must be greater than 0 and greater than or equal to your minimum funding."
           />
         </Col>
       )}
-      {(!selectedPrize || selectedPrize.cert_params?.proposalPhase) && (
+      {(!projectParams.selectedPrize || certParams?.proposalPhase) && (
         <Col className="gap-1">
           <label>
             Decision deadline
@@ -352,8 +340,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </p>
           <Input
             type="date"
-            value={verdictDate ?? ''}
-            onChange={(event) => setVerdictDate(event.target.value)}
+            value={projectParams.verdictDate ?? ''}
+            onChange={(event) =>
+              updateProjectParams({ verdictDate: event.target.value })
+            }
           />
         </Col>
       )}
@@ -361,8 +351,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         <label>Cause areas</label>
         <SelectCauses
           causesList={selectableCauses}
-          selectedCauses={selectedCauses}
-          setSelectedCauses={setSelectedCauses}
+          selectedCauses={projectParams.selectedCauses}
+          setSelectedCauses={(newCauses: MiniCause[]) =>
+            updateProjectParams({ selectedCauses: newCauses })
+          }
         />
       </Col>
 
@@ -375,8 +367,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         </p>
         <Input
           type="text"
-          value={locationDescription}
-          onChange={(event) => setLocationDescription(event.target.value)}
+          value={projectParams.location}
+          onChange={(event) =>
+            updateProjectParams({ location: event.target.value })
+          }
         />
       </Col>
 
@@ -387,7 +381,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             checked={agreeToChinatalkTerms}
             onChange={(event) => setAgreeToChinatalkTerms(event.target.checked)}
           />
-          <RequiredStar />
           <span className="ml-3 leading-tight">
             <span className="text-sm font-bold text-gray-900">
               I agree to the{' '}
@@ -399,6 +392,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               </SiteLink>{' '}
               of the Chinatalk Essay Competition.
             </span>
+            <RequiredStar />
           </span>
         </Row>
       )}
@@ -416,4 +410,61 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       </Tooltip>
     </Col>
   )
+}
+
+// TODO: remove ChinaTalk-specific stuff after round is complete
+function getCreateProjectErrorMessage(
+  projectParams: ProjectParams,
+  minMinFunding: number,
+  chinatalkPrizeSelected: boolean,
+  agreeToChinatalkTerms: boolean
+) {
+  if (projectParams.title === '') {
+    return 'Your project needs a title.'
+  } else if (
+    projectParams.minFunding === null &&
+    (!projectParams.selectedPrize ||
+      projectParams.selectedPrize.cert_params?.proposalPhase)
+  ) {
+    return 'Your project needs a minimum funding amount.'
+  } else if (
+    projectParams.minFunding !== null &&
+    projectParams.minFunding < minMinFunding &&
+    (!projectParams.selectedPrize ||
+      projectParams.selectedPrize.cert_params?.proposalPhase)
+  ) {
+    return `Your minimum funding must be at least $${minMinFunding}.`
+  } else if (
+    projectParams.selectedPrize &&
+    projectParams.selectedPrize.cert_params?.adjustableInvestmentStructure &&
+    !projectParams.agreedToTerms
+  ) {
+    return 'Please confirm that you agree to the investment structure.'
+  } else if (
+    projectParams.fundingGoal &&
+    !projectParams.selectedPrize &&
+    ((projectParams.minFunding &&
+      projectParams.minFunding > projectParams.fundingGoal) ||
+      projectParams.fundingGoal <= 0)
+  ) {
+    return 'Your funding goal must be greater than 0 and greater than or equal to your minimum funding goal.'
+  } else if (
+    isAfter(
+      new Date(projectParams.verdictDate),
+      add(new Date(), { weeks: 6 })
+    ) ||
+    isBefore(new Date(projectParams.verdictDate), new Date())
+  ) {
+    return 'Your application close date must be in the future but no more than 6 weeks from now.'
+  } else if (
+    (!projectParams.selectedPrize ||
+      projectParams.selectedPrize.cert_params?.proposalPhase) &&
+    !projectParams.verdictDate
+  ) {
+    return 'You need to set a decision deadline.'
+  } else if (chinatalkPrizeSelected && !agreeToChinatalkTerms) {
+    return "You must agree to Chinatalk's terms and conditions."
+  } else {
+    return null
+  }
 }

@@ -3,8 +3,8 @@ import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createAdminClient, createEdgeClient } from './_db'
-import { projectSlugify } from '@/utils/formatting'
-import { Database, Json } from '@/db/database.types'
+import { projectSlugify, toTitleCase } from '@/utils/formatting'
+import { ProjectParams } from '@/app/create/create-project-form'
 import { getPrizeCause, updateProjectCauses } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
 import { seedAmm } from '@/utils/activate-project'
@@ -18,61 +18,57 @@ export const config = {
   ],
 }
 
-type CreateProjectProps = {
-  title: string
-  blurb: string
-  description: Json
-  min_funding: number
-  funding_goal: number
-  founder_shares: number
-  amm_shares: number | null
-  round: string
-  auction_close: string
-  stage: Database['public']['Tables']['projects']['Row']['stage']
-  type: Database['public']['Tables']['projects']['Row']['type']
-  causeSlugs: string[]
-  location_description: string
-}
-
 export default async function handler(req: NextRequest) {
   const {
     title,
-    blurb,
+    subtitle,
+    minFunding,
+    fundingGoal,
+    verdictDate,
     description,
-    min_funding,
-    funding_goal,
-    founder_shares,
-    amm_shares,
-    round,
-    auction_close,
-    stage,
-    type,
-    causeSlugs,
-    location_description,
-  } = (await req.json()) as CreateProjectProps
+    location,
+    selectedCauses,
+    selectedPrize,
+    founderPercent,
+    agreedToTerms,
+  } = (await req.json()) as ProjectParams
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
 
+  const causeSlugs = selectedCauses.map((cause) => cause.slug)
+  if (!!selectedPrize) {
+    causeSlugs.push(selectedPrize.slug)
+  }
+  const seedingAmm =
+    selectedPrize?.cert_params?.ammShares &&
+    (agreedToTerms || selectedPrize?.cert_params?.adjustableInvestmentStructure)
+  const startingStage =
+    selectedPrize && !selectedPrize.cert_params?.proposalPhase
+      ? 'active'
+      : 'proposal'
+  const type = !!selectedPrize ? 'cert' : 'grant'
   const slug = await projectSlugify(title, supabase)
   const id = uuid()
   const project = {
     id,
     title,
-    blurb,
+    blurb: subtitle,
     description,
-    min_funding,
-    funding_goal,
-    founder_shares,
-    amm_shares,
+    min_funding: minFunding ?? 0,
+    funding_goal: fundingGoal ?? minFunding ?? 0,
+    founder_shares: !!selectedPrize
+      ? (founderPercent / 100) * TOTAL_SHARES
+      : TOTAL_SHARES,
+    amm_shares: seedingAmm ? selectedPrize?.cert_params?.ammShares : null,
     creator: user.id,
     slug,
-    round,
-    auction_close,
-    stage,
-    type,
-    location_description,
+    round: !!selectedPrize ? toTitleCase(selectedPrize.title) : 'Regrants',
+    auction_close: verdictDate,
+    stage: startingStage,
+    type: !!selectedPrize ? 'cert' : 'grant',
+    location_description: location,
     approved: null,
     signed_agreement: false,
   } as Project
@@ -89,7 +85,7 @@ export default async function handler(req: NextRequest) {
         user.id,
         getMinIncludingAmm(project),
         getProposalValuation(project),
-        stage === 'proposal' ? 'assurance sell' : 'sell'
+        startingStage === 'proposal' ? 'assurance sell' : 'sell'
       )
     } else if (certParams?.ammDollars && project.amm_shares) {
       const supabaseAdmin = createAdminClient()
