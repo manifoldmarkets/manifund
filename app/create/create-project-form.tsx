@@ -14,15 +14,15 @@ import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
-import { Cause, CertParams, MiniCause } from '@/db/cause'
+import { Cause, MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from './investment-structure'
 import { Tooltip } from '@/components/tooltip'
 import { SiteLink } from '@/components/site-link'
-import { toTitleCase } from '@/utils/formatting'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
+import { JSONContent } from '@tiptap/core'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -40,16 +40,13 @@ const DESCRIPTION_OUTLINE = `
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
 
-// use partial udpater with an object like this
-// getErrorMessage from this on frontend and backend
-// choose which fields to show based on prize in cleaner way
-type ProjectParams = {
+export type ProjectParams = {
   title: string
   subtitle: string | null
   minFunding: number | null
   fundingGoal: number | null
   verdictDate: string
-  description: string
+  description: JSONContent | string
   location: string
   selectedCauses: MiniCause[]
   selectedPrize: Cause | null
@@ -115,46 +112,15 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const router = useRouter()
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    const description = editor?.getJSON() ?? '<p>No description</p>'
-    const selectedCauseSlugs = projectParams.selectedCauses.map(
-      (cause) => cause.slug
-    )
-    if (!!projectParams.selectedPrize) {
-      selectedCauseSlugs.push(projectParams.selectedPrize.slug)
-    }
-    const seedingAmm =
-      certParams?.ammShares &&
-      (projectParams.agreedToTerms || certParams?.adjustableInvestmentStructure)
+    setProjectParams({
+      description: editor?.getJSON() ?? '<p>No description</p>',
+    })
     const response = await fetch('/api/create-project', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(
-        projectParams
-        // TODO: make this conversion on the backend
-        //   {
-        //   title,
-        //   blurb,
-        //   description,
-        //   min_funding: minFunding ?? 0,
-        //   funding_goal: fundingGoal ?? minFunding ?? 0,
-        //   founder_shares: !!selectedPrize
-        //     ? (founderPercent / 100) * TOTAL_SHARES
-        //     : TOTAL_SHARES,
-        //   // TODO: deprecate rounds completely
-        //   round: !!selectedPrize ? toTitleCase(selectedPrize.title) : 'Regrants',
-        //   auction_close: verdictDate,
-        //   stage:
-        //     selectedPrize && !selectedPrize.cert_params?.proposalPhase
-        //       ? 'active'
-        //       : 'proposal',
-        //   type: !!selectedPrize ? 'cert' : 'grant',
-        //   amm_shares: seedingAmm ? selectedPrize.cert_params?.ammShares : null,
-        //   location_description: locationDescription,
-        //   causeSlugs: selectedCauseSlugs,
-        // }
-      ),
+      body: JSON.stringify(projectParams),
     })
     const newProject = await response.json()
     router.push(`/projects/${newProject.slug}`)
