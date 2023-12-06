@@ -56,24 +56,26 @@ export type ProjectParams = {
 
 export function CreateProjectForm(props: { causesList: Cause[] }) {
   const { causesList } = props
-  const [projectParams, setProjectParams] = usePartialUpdater<ProjectParams>({
-    title: '',
-    subtitle: '',
-    minFunding: null,
-    fundingGoal: null,
-    verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
-    description: DESCRIPTION_OUTLINE,
-    location: '',
-    selectedCauses: [],
-    selectedPrize: null,
-    founderPercent: 50,
-    agreedToTerms: false,
-  })
+  const [projectParams, updateProjectParams] = usePartialUpdater<ProjectParams>(
+    {
+      title: '',
+      subtitle: '',
+      minFunding: null,
+      fundingGoal: null,
+      verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
+      description: DESCRIPTION_OUTLINE,
+      location: '',
+      selectedCauses: [],
+      selectedPrize: null,
+      founderPercent: 50,
+      agreedToTerms: false,
+    }
+  )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   useEffect(() => {
-    setProjectParams({
+    updateProjectParams({
       founderPercent:
         (1 -
           (projectParams.selectedPrize?.cert_params?.defaultInvestorShares ??
@@ -112,7 +114,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const router = useRouter()
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    setProjectParams({
+    updateProjectParams({
       description: editor?.getJSON() ?? '<p>No description</p>',
     })
     const response = await fetch('/api/create-project', {
@@ -158,7 +160,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         <HorizontalRadioGroup
           value={projectParams.selectedPrize?.slug ?? 'grant'}
           onChange={(value) =>
-            setProjectParams({
+            updateProjectParams({
               selectedPrize:
                 value === 'grant'
                   ? null
@@ -188,7 +190,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             maxLength={80}
             value={projectParams.title}
             onChange={(event) =>
-              setProjectParams({ title: event.target.value })
+              updateProjectParams({ title: event.target.value })
             }
           />
           <span className="text-right text-xs text-gray-600">
@@ -206,7 +208,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             maxLength={160}
             value={projectParams.subtitle ?? ''}
             onChange={(event) =>
-              setProjectParams({ subtitle: event.target.value })
+              updateProjectParams({ subtitle: event.target.value })
             }
           />
           <span className="text-right text-xs text-gray-600">
@@ -264,7 +266,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
                   : ''
               }
               onChange={(event) =>
-                setProjectParams({ minFunding: Number(event.target.value) })
+                updateProjectParams({ minFunding: Number(event.target.value) })
               }
               error={
                 projectParams.minFunding !== null &&
@@ -280,12 +282,12 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           minFunding={projectParams.minFunding ?? 0}
           founderPercent={projectParams.founderPercent}
           setFounderPercent={(newPercent: number) =>
-            setProjectParams({ founderPercent: newPercent })
+            updateProjectParams({ founderPercent: newPercent })
           }
           certParams={certParams}
           agreedToTerms={projectParams.agreedToTerms}
           setAgreedToTerms={(newAgreedToTerms: boolean) => {
-            setProjectParams({ agreedToTerms: newAgreedToTerms })
+            updateProjectParams({ agreedToTerms: newAgreedToTerms })
           }}
         />
       ) : (
@@ -311,7 +313,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
                 : ''
             }
             onChange={(event) =>
-              setProjectParams({ fundingGoal: Number(event.target.value) })
+              updateProjectParams({ fundingGoal: Number(event.target.value) })
             }
             error={
               !!(
@@ -340,7 +342,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             type="date"
             value={projectParams.verdictDate ?? ''}
             onChange={(event) =>
-              setProjectParams({ verdictDate: event.target.value })
+              updateProjectParams({ verdictDate: event.target.value })
             }
           />
         </Col>
@@ -351,7 +353,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           causesList={selectableCauses}
           selectedCauses={projectParams.selectedCauses}
           setSelectedCauses={(newCauses: MiniCause[]) =>
-            setProjectParams({ selectedCauses: newCauses })
+            updateProjectParams({ selectedCauses: newCauses })
           }
         />
       </Col>
@@ -367,7 +369,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           type="text"
           value={projectParams.location}
           onChange={(event) =>
-            setProjectParams({ location: event.target.value })
+            updateProjectParams({ location: event.target.value })
           }
         />
       </Col>
