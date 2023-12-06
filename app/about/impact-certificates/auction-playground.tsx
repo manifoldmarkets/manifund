@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@/components/button'
-import { Input } from '@/components/input'
+import { AmountInput, Input } from '@/components/input'
 import {
   PlusIcon,
   XCircleIcon,
@@ -60,8 +60,8 @@ export function AuctionPlayground() {
     },
   ] as Bid[]
 
-  const [minFunding, setMinFunding] = useState<number>(900)
-  const [founderPortion, setFounderPortion] = useState<number | null>(0.1)
+  const [minFunding, setMinFunding] = useState<number | undefined>(900)
+  const [founderPortion, setFounderPortion] = useState<number | undefined>(0.1)
   const [playBids, setPlayBids] = useState<Bid[]>(INITIAL_BIDS)
   const [playBidsDisplay, setPlayBidsDisplay] = useState<JSX.Element[]>([])
   const [seeResults, setSeeResults] = useState<boolean>(false)
@@ -72,11 +72,11 @@ export function AuctionPlayground() {
   })
 
   let minValuation = founderPortion
-    ? Math.round(minFunding / (1 - founderPortion))
+    ? Math.round((minFunding ?? 0) / (1 - founderPortion))
     : 0
 
   let errorMessage: string | null = null
-  if (founderPortion === null || founderPortion < 0 || founderPortion >= 1) {
+  if (founderPortion === null || !founderPortion || founderPortion >= 1) {
     errorMessage = 'Founder portion must be at least 0% and below 100%.'
   } else if (playBids.find((playBid) => playBid.valuation < minValuation)) {
     errorMessage = `All bids on this project must have a valuation of at least $${minValuation}.`
@@ -151,7 +151,7 @@ export function AuctionPlayground() {
   return (
     <Card className="relative flex flex-col gap-2 rounded-lg py-7">
       <ArrowPathIcon
-        className="absolute top-4 right-5 h-6 w-6 text-gray-500 hover:cursor-pointer"
+        className="absolute right-5 top-4 h-6 w-6 text-gray-500 hover:cursor-pointer"
         onClick={() => {
           setPlayBids(INITIAL_BIDS)
           setFounderPortion(0.1)
@@ -165,29 +165,25 @@ export function AuctionPlayground() {
         what would happen!
       </p>
       <div className="flex justify-center gap-1">
-        <label htmlFor="min_funding">Project Minimum Funding: $</label>
-        <Input
-          id="min_funding"
-          value={minFunding || ''}
-          type="number"
+        <label htmlFor="minFunding">Project Minimum Funding: $</label>
+        <AmountInput
+          id="minFunding"
+          amount={minFunding}
           className="relative bottom-2 w-24"
-          onChange={(e: { target: { value: any } }) => {
-            setMinFunding(Number(e.target.value))
+          onChangeAmount={(newAmount) => {
+            setMinFunding(newAmount)
             setSeeResults(false)
           }}
         />
       </div>
       <div className="flex justify-center gap-1">
-        <label htmlFor="founder_portion">Equity held by founder: </label>
-        <Input
-          id="founder_portion"
-          type="number"
+        <label htmlFor="founderPortion">Equity held by founder: </label>
+        <AmountInput
+          id="founderPortion"
           className=" relative bottom-2 w-24"
-          value={founderPortion === null ? '' : founderPortion * 100}
-          onChange={(e: { target: { value: any } }) => {
-            setFounderPortion(
-              e.target.value === '' ? null : Number(e.target.value) / 100
-            )
+          amount={founderPortion ? founderPortion * 100 : undefined}
+          onChangeAmount={(newPortion) => {
+            setFounderPortion(newPortion ? newPortion / 100 : undefined)
             setSeeResults(false)
           }}
         />
@@ -196,7 +192,7 @@ export function AuctionPlayground() {
       <p className="text-center">
         {formatMoney(minValuation)} minimum valuation
       </p>
-      <hr className="mt-2 mb-5 h-0.5 rounded-sm bg-gray-500" />
+      <hr className="mb-5 mt-2 h-0.5 rounded-sm bg-gray-500" />
       {playBidsDisplay}
       <div className="flex justify-center gap-1">
         <Button
@@ -236,7 +232,7 @@ export function AuctionPlayground() {
             onClick={() => {
               const results: Resolution = resolvePlayBids(
                 playBids,
-                minFunding,
+                minFunding ?? 0,
                 founderPortion ?? 0
               )
               setResolution(results)

@@ -1,7 +1,7 @@
 'use client'
 
 import { Button, ColorType } from '@/components/button'
-import { Input } from '@/components/input'
+import { AmountInput } from '@/components/input'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Slider } from '@/components/slider'
@@ -25,7 +25,6 @@ import {
   calculateValuationAfterTrade,
   getTradeErrorMessage,
 } from '@/utils/amm'
-import { useRouter } from 'next/navigation'
 
 const MODES = [
   {
@@ -123,13 +122,12 @@ function TradeInputsPanel(props: {
     userSellableShares,
   } = props
   const usingAmm = !!ammTxns
-  const [amount, setAmount] = useState(0)
-  const [limitValuation, setLimitValuation] = useState(0)
+  const [amount, setAmount] = useState<number>()
+  const [limitValuation, setLimitValuation] = useState<number>()
   const [ammShares, ammUSD] = usingAmm
     ? calculateAMMPorfolio(ammTxns, projectId)
     : [0, 0]
   const [submitting, setSubmitting] = useState(false)
-  const router = useRouter()
 
   const mode = MODES.find((mode) => mode.id === modeId)
   const isLimitOrder = !!setModeId
@@ -142,9 +140,14 @@ function TradeInputsPanel(props: {
   }
   const valuationAfterTrade = isLimitOrder
     ? limitValuation
-    : calculateValuationAfterTrade(amount, ammShares, ammUSD, modeId === 'buy')
+    : calculateValuationAfterTrade(
+        amount ?? 0,
+        ammShares,
+        ammUSD,
+        modeId === 'buy'
+      )
   const ammSharesAtTrade = isLimitOrder
-    ? ammSharesAtValuation(ammUSD * ammShares, limitValuation)
+    ? ammSharesAtValuation(ammUSD * ammShares, limitValuation ?? 0)
     : ammShares
   const ammUSDAtTrade = isLimitOrder
     ? (ammUSD * ammShares) / ammSharesAtTrade
@@ -152,16 +155,16 @@ function TradeInputsPanel(props: {
   const percentEquity =
     modeId === 'buy'
       ? isLimitOrder
-        ? amount / limitValuation
-        : calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade) /
+        ? (amount ?? 0) / (limitValuation ?? 1)
+        : calculateBuyShares(amount ?? 0, ammSharesAtTrade, ammUSDAtTrade) /
           TOTAL_SHARES
-      : amount / TOTAL_SHARES
+      : (amount ?? 0) / TOTAL_SHARES
   const amountUSD =
     modeId === 'buy'
       ? amount
       : isLimitOrder
-      ? (amount / TOTAL_SHARES) * limitValuation
-      : calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
+      ? ((amount ?? 0) / TOTAL_SHARES) * (limitValuation ?? 0)
+      : calculateSellPayout(amount ?? 0, ammSharesAtTrade, ammUSDAtTrade)
 
   const handleSubmit = async () => {
     setSubmitting(true)
@@ -179,19 +182,18 @@ function TradeInputsPanel(props: {
     })
     setAmount(0)
     setSubmitting(false)
-    router.refresh()
   }
 
   const errorMessage = getTradeErrorMessage(
-    amountUSD,
-    percentEquity,
     modeId,
     ammShares,
     ammUSD,
     userSpendableFunds,
     userSellableShares,
     isLimitOrder,
-    limitValuation
+    limitValuation,
+    amountUSD,
+    percentEquity
   )
   return (
     <div
@@ -204,13 +206,10 @@ function TradeInputsPanel(props: {
         <div className="flex flex-col justify-between gap-3 sm:flex-row">
           <Row className="items-center gap-2">
             <label className="text-sm text-gray-600">Valuation (USD):</label>
-            <Input
-              type="number"
+            <AmountInput
               className="w-24"
-              onChange={(event) =>
-                setLimitValuation(Number(event.target.value))
-              }
-              value={limitValuation}
+              onChangeAmount={setLimitValuation}
+              amount={limitValuation}
             />
           </Row>
           <Row className="items-center gap-2">
@@ -265,7 +264,7 @@ function TradeInputsPanel(props: {
           <Col>
             <label className="text-xs text-gray-600">Payout</label>
             <span className="font-semibold">
-              {formatMoneyPrecise(amountUSD)}
+              {formatMoneyPrecise(amountUSD ?? 0)}
             </span>
           </Col>
         )}
@@ -275,7 +274,7 @@ function TradeInputsPanel(props: {
               Valuation after trade
             </label>
             <span className="font-semibold">
-              {formatMoneyPrecise(valuationAfterTrade)}
+              {formatMoneyPrecise(valuationAfterTrade ?? 0)}
             </span>
           </Col>
         )}
@@ -289,7 +288,7 @@ function TradeInputsPanel(props: {
           onClick={handleSubmit}
         >
           {submitTradeButtonText(
-            amountUSD,
+            amountUSD ?? 0,
             percentEquity,
             isLimitOrder,
             mode?.label,
@@ -308,9 +307,9 @@ const submitTradeButtonText = (
   modeLabel?: string,
   limitValuation?: number
 ) => {
-  return `${modeLabel ?? ''}${isLimitOrder ? ' limit order:' : ''} ${
+  return `${modeLabel ?? ''} ${isLimitOrder ? 'limit order' : ''}: ${
     isNaN(percentEquity) ? '0%' : formatPercent(percentEquity)
-  } for ${isNaN(amountUSD) ? '0' : formatMoneyPrecise(amountUSD)} ${
+  } for ${formatMoneyPrecise(amountUSD)} ${
     limitValuation ? `at ${formatMoneyPrecise(limitValuation)} valuation` : ''
   }`
 }
@@ -318,8 +317,8 @@ const submitTradeButtonText = (
 function BuyPanelContent(props: {
   isLimitOrder: boolean
   userSpendableFunds: number
-  amount: number
-  setAmount: (amount: number) => void
+  amount: number | undefined
+  setAmount: (amount: number | undefined) => void
 }) {
   const { isLimitOrder, userSpendableFunds, amount, setAmount } = props
   if (userSpendableFunds <= 0) {
@@ -335,14 +334,13 @@ function BuyPanelContent(props: {
     <div>
       <label className="text-sm text-gray-600">Amount (USD)</label>
       <Row className="w-full items-center gap-4">
-        <Input
-          value={amount}
-          type="number"
+        <AmountInput
+          amount={amount}
           className="w-1/3"
-          onChange={(event) => setAmount(Number(event.target.value))}
+          onChangeAmount={setAmount}
         />
         <Slider
-          amount={(amount / sliderMax) * 100}
+          amount={((amount ?? 0) / sliderMax) * 100}
           rangeColor={isLimitOrder ? 'orange' : 'emerald'}
           marks={[
             { value: 0, label: '$0' },
@@ -363,8 +361,8 @@ function BuyPanelContent(props: {
 function SellPanelContent(props: {
   isLimitOrder: boolean
   userSellableShares: number
-  amount: number
-  setAmount: (amount: number) => void
+  amount: number | undefined
+  setAmount: (amount: number | undefined) => void
 }) {
   const { isLimitOrder, userSellableShares, amount, setAmount } = props
   if (userSellableShares <= 0) {
@@ -379,16 +377,15 @@ function SellPanelContent(props: {
     <div>
       <label className="text-sm text-gray-600">Amount (% equity)</label>
       <Row className="w-full items-center gap-4">
-        <Input
-          value={(amount / TOTAL_SHARES) * 100}
-          type="number"
+        <AmountInput
+          amount={((amount ?? 0) / TOTAL_SHARES) * 100}
           className="w-1/3"
-          onChange={(event) =>
-            setAmount((Number(event.target.value) / 100) * TOTAL_SHARES)
+          onChangeAmount={(newAmount) =>
+            setAmount((Number(newAmount) / 100) * TOTAL_SHARES)
           }
         />
         <Slider
-          amount={(amount / sliderMax) * 100}
+          amount={((amount ?? 0) / sliderMax) * 100}
           rangeColor={isLimitOrder ? 'orange' : 'rose'}
           marks={[
             { value: 0, label: '0%' },

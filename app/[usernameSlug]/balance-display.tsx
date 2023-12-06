@@ -19,7 +19,7 @@ import Link from 'next/link'
 import { Button, IconButton } from '@/components/button'
 import { Modal } from '@/components/modal'
 import { Dialog } from '@headlessui/react'
-import { Input } from '@/components/input'
+import { AmountInput } from '@/components/input'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { formatMoneyPrecise } from '@/utils/formatting'
@@ -119,7 +119,7 @@ export function BalanceDisplay(props: {
 function CashToCharityButton(props: { cashBalance: number }) {
   const { cashBalance } = props
   const [open, setOpen] = useState(false)
-  const [amount, setAmount] = useState<number | null>(null)
+  const [amount, setAmount] = useState<number>()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   let errorMessage = null
@@ -155,13 +155,12 @@ function CashToCharityButton(props: { cashBalance: number }) {
             whereas money in your cash balance can be withdrawn but not donated.
           </p>
           <label htmlFor="amount">Amount (USD): </label>
-          <Input
-            type="number"
+          <AmountInput
             step="0.01"
             id="amount"
             autoComplete="off"
-            value={amount ?? ''}
-            onChange={(event) => setAmount(Number(event.target.value))}
+            amount={amount}
+            onChangeAmount={setAmount}
           />
         </div>
         <div className="sm:flex-2 flex flex-col gap-3 sm:flex-row">
