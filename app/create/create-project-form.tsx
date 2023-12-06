@@ -379,7 +379,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             checked={agreeToChinatalkTerms}
             onChange={(event) => setAgreeToChinatalkTerms(event.target.checked)}
           />
-          <RequiredStar />
           <span className="ml-3 leading-tight">
             <span className="text-sm font-bold text-gray-900">
               I agree to the{' '}
@@ -391,6 +390,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               </SiteLink>{' '}
               of the Chinatalk Essay Competition.
             </span>
+            <RequiredStar />
           </span>
         </Row>
       )}
