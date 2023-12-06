@@ -87,15 +87,15 @@ export default async function handler(req: NextRequest) {
     user.id
   )
   const errorMessage = getTradeErrorMessage(
-    numDollars,
-    numShares / TOTAL_SHARES,
     buying ? 'buy' : 'sell',
     ammSharesAtTrade,
     ammUSDAtTrade,
     userSpendableFunds,
     userSellableShares,
     !!valuation,
-    valuation
+    valuation,
+    numDollars,
+    numShares / TOTAL_SHARES
   )
   if (errorMessage) {
     return new Response(errorMessage, { status: 400 })
