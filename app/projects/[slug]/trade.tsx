@@ -341,6 +341,7 @@ function BuyPanelContent(props: {
         />
         <Slider
           amount={((amount ?? 0) / sliderMax) * 100}
+          step={0.01}
           rangeColor={isLimitOrder ? 'orange' : 'emerald'}
           marks={[
             { value: 0, label: '$0' },
@@ -380,12 +381,14 @@ function SellPanelContent(props: {
         <AmountInput
           amount={((amount ?? 0) / TOTAL_SHARES) * 100}
           className="w-1/3"
+          maxLength={4}
           onChangeAmount={(newAmount) =>
             setAmount((Number(newAmount) / 100) * TOTAL_SHARES)
           }
         />
         <Slider
           amount={((amount ?? 0) / sliderMax) * 100}
+          step={0.01}
           rangeColor={isLimitOrder ? 'orange' : 'rose'}
           marks={[
             { value: 0, label: '0%' },

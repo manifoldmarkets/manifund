@@ -81,6 +81,7 @@ export function AmountInput(
     inputRef,
     allowFloat = true,
     allowNegative,
+    maxLength = 9,
     ...rest
   } = props
 
@@ -95,7 +96,7 @@ export function AmountInput(
 
   useEffect(() => {
     if (amount !== parse(amountString))
-      setAmountString(amount?.toString() ?? '')
+      setAmountString(amount?.toString().slice(0, maxLength + 1) ?? '')
   }, [amount])
 
   const onAmountChange = (str: string) => {
@@ -116,7 +117,7 @@ export function AmountInput(
       type={allowFloat ? 'number' : 'text'}
       inputMode={allowFloat ? 'decimal' : 'numeric'}
       placeholder={placeholder}
-      maxLength={9}
+      maxLength={maxLength + 1}
       value={amountString}
       error={error}
       errorMessage={errorMessage}
