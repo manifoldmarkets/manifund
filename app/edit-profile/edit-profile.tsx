@@ -145,66 +145,6 @@ export function EditProfileForm(props: { profile: Profile }) {
         )}
         <TextEditor editor={editor} />
       </Col>
-      <Col className="gap-1">
-        <label>Roles and capabilities</label>
-        <Row className="gap-2">
-          <Checkbox id="regrantor" checked={profile.regranter_status} />
-          {!profile.regranter_status && (
-            <a
-              target="_blank"
-              className="absolute z-10 h-5 w-5"
-              href="https://airtable.com/appOfJtzt8yUTBFcD/shrZW7S069EmghCSV"
-            />
-          )}
-          <div className="relative top-0.5 text-sm">
-            <span className="font-semibold">Regrantor: </span>
-            <span className="text-gray-500">
-              as a regrantor, you can recieve charitable funds from other users
-              and give grants to projects, including projects not yet listed on
-              Manifund.{' '}
-              <a
-                href="https://airtable.com/appOfJtzt8yUTBFcD/shrZW7S069EmghCSV"
-                className="font-semibold text-black hover:underline"
-              >
-                Use this form
-              </a>{' '}
-              to get verified as a regrantor.
-            </span>
-          </div>
-        </Row>
-        <Row className="relative gap-2">
-          <Checkbox
-            id="accredited-investor"
-            checked={profile.accreditation_status}
-            disabled
-          />
-          {!profile.accreditation_status && (
-            <a
-              target="_blank"
-              className="absolute z-10 h-5 w-5"
-              href="https://airtable.com/shrZVLeo6f34NBfR0"
-            />
-          )}
-          <div className="relative top-0.5 text-sm">
-            <span className="font-semibold">Accredited investor: </span>
-            <span className="text-gray-500">
-              as an accredited investor, you can invest in impact certificates
-              with real money and withdraw your profits. If you are
-              unaccredited, you can still invest but profits can only be used
-              for charitable purposes.{' '}
-              <a
-                href="https://airtable.com/shrZVLeo6f34NBfR0"
-                className="font-semibold text-black hover:underline"
-              >
-                Use this form
-              </a>{' '}
-              to get verified as an accredited investor. To avoid mixing of
-              funds, you cannot hold any money or investments in your Manifund
-              account at the time of verification.
-            </span>
-          </div>
-        </Row>
-      </Col>
       <label htmlFor="avatar">Choose a profile picture</label>
       <Row className="flex space-x-2">
         <div className="h-24 w-24">
