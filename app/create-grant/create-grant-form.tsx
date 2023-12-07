@@ -1,7 +1,7 @@
 'use client'
 import { ResetEditor, TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
-import { Checkbox, Input } from '@/components/input'
+import { AmountInput, Checkbox, Input } from '@/components/input'
 import { Col } from '@/components/layout/col'
 import { useEffect, useState } from 'react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
@@ -71,11 +71,9 @@ export function CreateGrantForm(props: {
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
   const [fundingOption, setFundingOption] = useState('fullyFund')
-  const [donorContribution, setDonorContribution] = useState<number | null>(
-    null
-  )
-  const [fundingGoal, setFundingGoal] = useState<number | null>(null)
-  const [minFunding, setMinFunding] = useState<number | null>(null)
+  const [donorContribution, setDonorContribution] = useState<number>()
+  const [fundingGoal, setFundingGoal] = useState<number>()
+  const [minFunding, setMinFunding] = useState<number>()
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   const [locationDescription, setLocationDescription] = useState('')
   const [agreedToTerms, setAgreedToTerms] = useState(false)
@@ -390,11 +388,10 @@ export function CreateGrantForm(props: {
           Your contribution (USD)
           <RequiredStar />
         </label>
-        <Input
-          type="number"
+        <AmountInput
           id="donorContribution"
-          value={donorContribution ? Number(donorContribution).toString() : ''}
-          onChange={(event) => setDonorContribution(Number(event.target.value))}
+          amount={donorContribution}
+          onChangeAmount={setDonorContribution}
           error={!!(donorContribution && maxDonation < donorContribution)}
           errorMessage={`You currently have $${maxDonation} to give away. If you would like to
           give a larger grant, you can add money to your account or raise more
@@ -409,11 +406,10 @@ export function CreateGrantForm(props: {
           <span className="text-sm text-gray-600">
             No money will be transferred until this amount has been raised.
           </span>
-          <Input
-            type="number"
+          <AmountInput
             id="minFunding"
-            value={minFunding ? Number(minFunding).toString() : ''}
-            onChange={(event) => setMinFunding(Number(event.target.value))}
+            amount={minFunding}
+            onChangeAmount={setMinFunding}
           />
         </Col>
       )}
@@ -426,11 +422,10 @@ export function CreateGrantForm(props: {
             Until this amount is raised, the project will be marked to other
             donors as not fully funded.
           </span>
-          <Input
-            type="number"
+          <AmountInput
             id="fundingGoal"
-            value={fundingGoal ? Number(fundingGoal).toString() : ''}
-            onChange={(event) => setFundingGoal(Number(event.target.value))}
+            amount={fundingGoal}
+            onChangeAmount={setFundingGoal}
             error={
               !!(
                 fundingGoal &&

@@ -1,7 +1,8 @@
 /* eslint-disable react/display-name */
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
-import { forwardRef, Ref, useState } from 'react'
+import { forwardRef, ReactNode, Ref, useEffect, useState } from 'react'
+import { Col } from './layout/col'
 import { Row } from './layout/row'
 
 /** Text input. Wraps html `<input>` */
@@ -53,6 +54,85 @@ export const Checkbox = forwardRef(
     )
   }
 )
+
+export function AmountInput(
+  props: {
+    amount: number | undefined
+    onChangeAmount: (newAmount: number | undefined) => void
+    error?: boolean
+    errorMessage?: string
+    placeholder?: string
+    className?: string
+    inputClassName?: string
+    // Needed to focus the amount input
+    inputRef?: React.MutableRefObject<any>
+    allowFloat?: boolean
+    allowNegative?: boolean
+  } & JSX.IntrinsicElements['input']
+) {
+  const {
+    amount,
+    onChangeAmount,
+    error,
+    errorMessage,
+    placeholder = '0',
+    className,
+    inputClassName,
+    inputRef,
+    allowFloat = true,
+    allowNegative,
+    maxLength = 9,
+    ...rest
+  } = props
+
+  const [amountString, setAmountString] = useState(amount?.toString() ?? '')
+
+  const parse = allowFloat ? parseFloat : parseInt
+
+  const bannedChars = new RegExp(
+    `[^\\d${allowFloat && '.'}${allowNegative && '-'}]`,
+    'g'
+  )
+
+  useEffect(() => {
+    if (amount !== parse(amountString))
+      setAmountString(amount?.toString().slice(0, maxLength + 1) ?? '')
+  }, [amount])
+
+  const onAmountChange = (str: string) => {
+    const s = str.replace(bannedChars, '')
+    if (s !== amountString) {
+      setAmountString(s)
+      const amount = parse(s)
+      const isInvalid = !s || isNaN(amount)
+      onChangeAmount(isInvalid ? undefined : amount)
+    }
+  }
+
+  return (
+    <Input
+      {...rest}
+      className={clsx('!text-lg', inputClassName)}
+      ref={inputRef}
+      type={allowFloat ? 'number' : 'text'}
+      inputMode={allowFloat ? 'decimal' : 'numeric'}
+      placeholder={placeholder}
+      maxLength={maxLength + 1}
+      value={amountString}
+      error={error}
+      errorMessage={errorMessage}
+      onChange={(e) => onAmountChange(e.target.value)}
+      onBlur={() => setAmountString(amount?.toString() ?? '')}
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowUp') {
+          onChangeAmount((amount ?? 0) + 5)
+        } else if (e.key === 'ArrowDown') {
+          onChangeAmount(Math.max(0, (amount ?? 0) - 5))
+        }
+      }}
+    />
+  )
+}
 
 export function SearchBar(props: {
   search: string

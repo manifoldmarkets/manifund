@@ -11,7 +11,7 @@ import clsx from 'clsx'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
 import { Button } from './button'
-import { Input } from './input'
+import { AmountInput, Input } from './input'
 import { Modal } from './modal'
 import { SiteLink } from './site-link'
 import { Tabs } from './tabs'
@@ -72,10 +72,10 @@ export function DepositButton(props: {
 function DonateTab(props: { userId: string; passFundsTo?: Profile }) {
   const { userId, passFundsTo } = props
   const router = useRouter()
-  const [amount, setAmount] = useState(10)
+  const [amount, setAmount] = useState<number | undefined>(10)
   const [isSubmitting, setIsSubmitting] = useState(false)
   let errorMessage = null
-  if (amount < 10) {
+  if (!amount || amount < 10) {
     errorMessage = 'Minimum deposit is $10.'
   }
 
@@ -103,13 +103,11 @@ function DonateTab(props: { userId: string; passFundsTo?: Profile }) {
           </p>
         )}
         <label htmlFor="amount">Amount (USD): </label>
-        <Input
-          type="number"
+        <AmountInput
           step="0.01"
           id="amount"
-          autoComplete="off"
-          value={amount ?? ''}
-          onChange={(event) => setAmount(Number(event.target.value))}
+          amount={amount}
+          onChangeAmount={setAmount}
         />
       </div>
       <p className="mb-2 mt-3 text-center text-rose-500">{errorMessage}</p>
@@ -203,8 +201,8 @@ async function transfer(props: DepositManaProps) {
 function ManaTab() {
   const [apiKey, setApiKey] = useState('')
   const [manifoldUser, setManifoldUser] = useState<ManifoldUser | null>(null)
-  const [transferAmount, setTransferAmount] = useState(10)
-  const manaToDeposit = transferAmount * 100
+  const [transferAmount, setTransferAmount] = useState<number | undefined>(10)
+  const manaToDeposit = (transferAmount ?? 0) * 100
   const [transferring, setTransferring] = useState(false)
 
   // Check balance every time the API key changes
@@ -260,15 +258,12 @@ function ManaTab() {
             <label className="text-sm font-medium leading-none">
               USD to deposit
             </label>
-            <Input
-              type="number"
-              step="1"
+            <AmountInput
               id="amount"
               autoComplete="off"
-              value={transferAmount ?? ''}
-              onChange={(event) =>
-                setTransferAmount(Number(event.target.value))
-              }
+              amount={transferAmount}
+              onChangeAmount={setTransferAmount}
+              allowFloat={false}
             />
             <Button loading={transferring} onClick={transferMana}>
               Transfer {manaToDeposit} mana

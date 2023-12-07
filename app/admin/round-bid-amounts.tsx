@@ -1,21 +1,21 @@
 'use client'
-import { Input } from '@/components/input'
+import { AmountInput } from '@/components/input'
 import { formatLargeNumber, roundLargeNumber } from '@/utils/formatting'
 import { useState } from 'react'
 
 export function RoundBidAmounts() {
-  const [amount, setAmount] = useState<number>(0)
+  const [amount, setAmount] = useState<number>()
   return (
     <div>
-      <Input
-        type="number"
+      <AmountInput
         id="amount"
         name="amount"
-        value={amount}
-        onChange={(e) => setAmount(parseInt(e.target.value))}
+        amount={amount}
+        onChangeAmount={setAmount}
+        allowFloat={false}
       />
-      <p>Format Large Number says: {formatLargeNumber(amount)}</p>
-      <p>Round Large Number says: {roundLargeNumber(amount)}</p>
+      <p>Format Large Number says: {formatLargeNumber(amount ?? 0)}</p>
+      <p>Round Large Number says: {roundLargeNumber(amount ?? 0)}</p>
     </div>
   )
 }

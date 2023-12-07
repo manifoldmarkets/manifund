@@ -110,15 +110,15 @@ export function calculateMinimumValuation(ammShares: number, ammUSD: number) {
 }
 
 export const getTradeErrorMessage = (
-  amountUSD: number,
-  percentEquity: number,
   modeId: BinaryModeId,
   ammShares: number,
   ammUSD: number,
   userSpendableFunds: number,
   userSellableShares: number,
   isLimitOrder: boolean,
-  limitValuation?: number
+  limitValuation?: number,
+  amountUSD?: number,
+  percentEquity?: number
 ) => {
   const minValuation = calculateMinimumValuation(ammShares, ammUSD)
   const currentValuation = calculateValuation(ammShares, ammUSD)
@@ -142,7 +142,7 @@ export const getTradeErrorMessage = (
       )}`
     }
   }
-  if (amountUSD === 0 || percentEquity === 0) {
+  if (!amountUSD || !percentEquity) {
     return 'Please enter an amount'
   } else if (modeId === 'buy' && amountUSD > userSpendableFunds) {
     return 'Insufficient funds'
