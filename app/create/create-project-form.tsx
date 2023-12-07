@@ -74,6 +74,15 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
+  const [madeChanges, setMadeChanges] = useState<boolean>(false)
+  useEffect(() => {
+    if (editor && !editor.isDestroyed) {
+      editor.on('update', () => {
+        setMadeChanges(true)
+        console.log('made changes')
+      })
+    }
+  }, [editor])
   useEffect(() => {
     updateProjectParams({
       founderPercent:
@@ -83,10 +92,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             TOTAL_SHARES) *
         100,
     })
-    editor?.commands.setContent(
-      projectParams.selectedPrize?.project_description_outline ??
-        DESCRIPTION_OUTLINE
-    )
+    if (!madeChanges) {
+      editor?.commands.setContent(
+        projectParams.selectedPrize?.project_description_outline ??
+          DESCRIPTION_OUTLINE
+      )
+      setMadeChanges(false)
+    }
   }, [projectParams.selectedPrize])
 
   const selectablePrizeCauses = causesList.filter(
