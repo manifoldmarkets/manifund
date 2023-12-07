@@ -81,13 +81,15 @@ export function ProjectCard(props: {
                 amountRaised={amountRaised}
                 small
               />
-              <p className="rounded-2xl bg-orange-100 px-2 py-1 text-center text-sm font-medium text-orange-600">
-                {formatMoney(
-                  project.type === 'cert'
-                    ? getMinIncludingAmm(project)
-                    : project.funding_goal
-                )}
-              </p>
+              <Tooltip text="Minimum funding required">
+                <span className="rounded-2xl bg-orange-100 px-2 py-1 text-center text-sm font-medium text-orange-600">
+                  {formatMoney(
+                    project.type === 'cert'
+                      ? getMinIncludingAmm(project)
+                      : project.funding_goal
+                  )}
+                </span>
+              </Tooltip>
             </Row>
           )}
           <ProjectCardData
@@ -111,19 +113,25 @@ function ProjectCardData(props: {
   const { numComments, voteCount, amountRaised, projectSlug } = props
   return (
     <div className="grid grid-cols-3 text-sm text-gray-400">
-      <Row className="items-center justify-start gap-0">
-        <ChevronUpDownIcon className="h-4 w-4 stroke-2" />
-        <span>{voteCount}</span>
+      <Row className="justify-start">
+        <Tooltip text="Votes" className="flex items-center gap-0">
+          <ChevronUpDownIcon className="h-4 w-4 stroke-2" />
+          <span>{voteCount}</span>
+        </Tooltip>
       </Row>
-      <Link href={`/projects/${projectSlug}#tabs`}>
-        <Row className="items-center justify-center gap-1">
-          <ChatBubbleLeftEllipsisIcon className="h-4 w-4 stroke-2" />
-          <span>{numComments}</span>
-        </Row>
-      </Link>
-      <Row className="items-center justify-end gap-0.5">
-        <CurrencyDollarIcon className="h-4 w-4 stroke-2" />
-        <span>{formatLargeNumber(amountRaised)}</span>
+      <Row className="justify-center">
+        <Link href={`/projects/${projectSlug}#tabs`}>
+          <Tooltip text="Comments" className="flex items-center gap-1">
+            <ChatBubbleLeftEllipsisIcon className="h-4 w-4 stroke-2" />
+            <span>{numComments}</span>
+          </Tooltip>
+        </Link>
+      </Row>
+      <Row className="justify-end">
+        <Tooltip text="Total raised" className="flex items-center gap-0.5">
+          <CurrencyDollarIcon className="h-4 w-4 stroke-2" />
+          <span>{formatLargeNumber(amountRaised)}</span>
+        </Tooltip>
       </Row>
     </div>
   )
