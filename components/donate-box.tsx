@@ -2,7 +2,7 @@
 import { scrollToComments } from '@/app/projects/[slug]/project-display'
 import { Button } from '@/components/button'
 import { Card } from '@/components/layout/card'
-import { Input } from '@/components/input'
+import { AmountInput } from '@/components/input'
 import { Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { useRouter } from 'next/navigation'
@@ -18,7 +18,7 @@ export function DonateBox(props: {
   setCommentPrompt?: (value: string) => void
 }) {
   const { charity, project, profile, maxDonation, setCommentPrompt } = props
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState<number>()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const isBid = project && project.stage === 'proposal'
@@ -88,13 +88,11 @@ export function DonateBox(props: {
         )}
       </div>
       <Row className="items-center justify-between gap-2">
-        <Input
-          type="number"
+        <AmountInput
           id="amount"
-          autoComplete="off"
-          value={Number(amount).toString()}
+          amount={amount}
           placeholder="Amount (USD)"
-          onChange={(event) => setAmount(Number(event.target.value))}
+          onChangeAmount={setAmount}
           className="w-48 max-w-full"
         />
         <Tooltip text={errorMessage ?? ''}>

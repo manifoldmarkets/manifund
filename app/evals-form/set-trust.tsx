@@ -8,7 +8,7 @@ import {
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { ProfileAndEvals } from '@/db/profile'
-import { Input } from '@/components/input'
+import { AmountInput } from '@/components/input'
 import { cloneDeep } from 'lodash'
 import { Button } from '@/components/button'
 import { Col } from '@/components/layout/col'
@@ -84,13 +84,12 @@ function SetSingleTrust(props: {
           index={index}
         />
       </div>
-      <Input
-        type="number"
+      <AmountInput
         className="h-8 w-20 !px-2 text-sm"
-        value={trust.trust}
-        onChange={(event) => {
+        amount={trust.trust}
+        onChangeAmount={(newTrust) => {
           const newTrustList = cloneDeep(trustList)
-          newTrustList[index].trust = parseFloat(event.target.value)
+          newTrustList[index].trust = newTrust ?? 0
           setTrustList(newTrustList)
         }}
       />

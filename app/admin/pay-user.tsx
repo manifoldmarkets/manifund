@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/button'
+import { AmountInput } from '@/components/input'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -12,20 +13,17 @@ export type PayUserProps = {
 export function PayUser(props: { userId: string }) {
   const { userId } = props
   const router = useRouter()
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState<number>()
 
   return (
     <div className="flex flex-row">
-      <input
-        type="number"
-        value={amount}
-        onChange={(e) => setAmount(Number(e.target.value))}
-      />
+      <AmountInput amount={amount} onChangeAmount={setAmount} allowNegative />
       <Button
         onClick={async () => {
-          await payUser({ userId, amount })
+          await payUser({ userId, amount: amount ?? 0 })
           router.refresh()
         }}
+        disabled={!amount}
       >
         Add
       </Button>

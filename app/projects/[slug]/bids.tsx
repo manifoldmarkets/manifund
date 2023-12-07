@@ -11,7 +11,7 @@ import { CircleStackIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Slider } from '@/components/slider'
-import { Checkbox, Input } from '@/components/input'
+import { AmountInput, Checkbox } from '@/components/input'
 import { useSupabase } from '@/db/supabase-provider'
 import { Modal } from '@/components/modal'
 import { Profile } from '@/db/profile'
@@ -155,16 +155,17 @@ function Trade(props: {
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const userSellableValue = (userSellableShares / TOTAL_SHARES) * bid.valuation
-  const [tradeAmount, setTradeAmount] = useState(
+  const [tradeAmount, setTradeAmount] = useState<number | undefined>(
     Math.min(
       bid.type === 'buy' ? userSellableValue : userSpendableFunds,
       bid.amount
     )
   )
   const [agreedToTerms, setAgreedToTerms] = useState(false)
-  const enoughMoney = tradeAmount <= (userSpendableFunds ?? 0)
+  const enoughMoney = !!tradeAmount && tradeAmount <= (userSpendableFunds ?? 0)
   const enoughShares =
-    (tradeAmount / bid.valuation) * TOTAL_SHARES <= (userSellableShares ?? 0)
+    ((tradeAmount ?? 0) / bid.valuation) * TOTAL_SHARES <=
+    (userSellableShares ?? 0)
   const marks = [
     { value: 0, label: '$0' },
     { value: 25, label: `${formatMoney(bid.amount / 4)}` },
@@ -183,12 +184,12 @@ function Trade(props: {
     errorMessage = `You don't have enough funds to make this trade. If all of the buy bids you have already placed are accepted, you will only have ${formatMoney(
       userSpendableFunds
     )} left.`
+  } else if (!tradeAmount || tradeAmount <= 0) {
+    errorMessage = `You must trade over $0.`
   } else if (tradeAmount > bid.amount) {
     errorMessage = `You can only trade up to the amount offered: ${formatLargeNumber(
       (tradeAmount / bid.valuation) * 100
     )}% for ${formatMoney(tradeAmount)}.`
-  } else if (tradeAmount <= 0) {
-    errorMessage = `You must trade over $0.`
   } else if (
     !agreedToTerms &&
     project.creator === userId &&
@@ -233,17 +234,14 @@ function Trade(props: {
             <div className="mt-5 flex justify-center">
               <div className="flex w-11/12 justify-center gap-2">
                 <p className="relative top-3">$</p>
-                <Input
-                  value={tradeAmount}
-                  type="number"
+                <AmountInput
                   className="w-1/3"
-                  onChange={(event) =>
-                    setTradeAmount(Number(event.target.value))
-                  }
+                  amount={tradeAmount}
+                  onChangeAmount={setTradeAmount}
                 />
                 <Slider
                   marks={marks}
-                  amount={(tradeAmount / bid.amount) * 100}
+                  amount={((tradeAmount ?? 0) / bid.amount) * 100}
                   onChange={(value) =>
                     setTradeAmount(((value as number) * bid.amount) / 100)
                   }
@@ -267,9 +265,11 @@ function Trade(props: {
                   <span id="terms-description" className="text-gray-500">
                     <span className="sr-only">I understand </span>that by making
                     this trade, I am agreeing to pay{' '}
-                    {formatLargeNumber((tradeAmount / bid.valuation) * 100)}% of
-                    any prize money I win to Manifund, which will be distributed
-                    to the investor who holds these shares.
+                    {formatLargeNumber(
+                      ((tradeAmount ?? 0) / bid.valuation) * 100
+                    )}
+                    % of any prize money I win to Manifund, which will be
+                    distributed to the investor who holds these shares.
                   </span>
                 </div>
               </div>
@@ -309,8 +309,8 @@ function Trade(props: {
             }}
           >
             {`${bid.type === 'buy' ? 'Sell' : 'Buy'} ${formatLargeNumber(
-              (tradeAmount / bid.valuation) * 100
-            )}% for ${formatMoney(tradeAmount)}`}
+              ((tradeAmount ?? 0) / bid.valuation) * 100
+            )}% for ${formatMoney(tradeAmount ?? 0)}`}
           </Button>
         </div>
       </Modal>

@@ -2,7 +2,7 @@
 
 import { useSupabase } from '@/db/supabase-provider'
 import { useEffect, useState } from 'react'
-import { Input } from '@/components/input'
+import { AmountInput, Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { TOTAL_SHARES } from '@/db/project'
@@ -43,8 +43,8 @@ const DESCRIPTION_KEY = 'ProjectDescription'
 export type ProjectParams = {
   title: string
   subtitle: string | null
-  minFunding: number | null
-  fundingGoal: number | null
+  minFunding?: number
+  fundingGoal?: number
   verdictDate: string
   description: JSONContent | string
   location: string
@@ -60,8 +60,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     {
       title: '',
       subtitle: '',
-      minFunding: null,
-      fundingGoal: null,
       verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
       description: DESCRIPTION_OUTLINE,
       location: '',
@@ -268,20 +266,15 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             at least ${minMinFunding}.
           </p>
           <Col>
-            <Input
-              type="number"
+            <AmountInput
               id="minFunding"
-              autoComplete="off"
-              value={
-                projectParams.minFunding !== null
-                  ? Number(projectParams.minFunding).toString()
-                  : ''
+              amount={projectParams.minFunding}
+              onChangeAmount={(newMin) =>
+                updateProjectParams({ minFunding: newMin })
               }
-              onChange={(event) =>
-                updateProjectParams({ minFunding: Number(event.target.value) })
-              }
+              placeholder={minMinFunding.toString()}
               error={
-                projectParams.minFunding !== null &&
+                projectParams.minFunding !== undefined &&
                 projectParams.minFunding < minMinFunding
               }
               errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
@@ -315,18 +308,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             accomplish with the minimum funding and what you could accomplish
             with the full funding.
           </p>
-          <Input
-            type="number"
+          <AmountInput
             id="fundingGoal"
-            autoComplete="off"
-            value={
-              projectParams.fundingGoal
-                ? Number(projectParams.fundingGoal).toString()
-                : ''
+            amount={projectParams.fundingGoal}
+            onChangeAmount={(newGoal) =>
+              updateProjectParams({ fundingGoal: Number(newGoal) })
             }
-            onChange={(event) =>
-              updateProjectParams({ fundingGoal: Number(event.target.value) })
-            }
+            placeholder={minMinFunding.toString()}
             error={
               !!(
                 projectParams.fundingGoal &&
@@ -440,7 +428,7 @@ function getCreateProjectErrorMessage(
   ) {
     return 'Your project needs a minimum funding amount.'
   } else if (
-    projectParams.minFunding !== null &&
+    projectParams.minFunding !== undefined &&
     projectParams.minFunding < minMinFunding &&
     (!projectParams.selectedPrize ||
       projectParams.selectedPrize.cert_params?.proposalPhase)
