@@ -8,14 +8,32 @@ export type BidAndProject = Bid & { projects: Project }
 export type BidAndProfile = Bid & { profiles: Profile }
 export type FullBid = Bid & { profiles: Profile } & { projects: Project }
 
-export async function getBidsByUser(supabase: SupabaseClient, user: string) {
-  if (!user) {
+export async function getBidsByUser(supabase: SupabaseClient, userId: string) {
+  if (!userId) {
     return []
   }
   const { data, error } = await supabase
     .from('bids')
     .select('*, projects(*)')
-    .eq('bidder', user)
+    .eq('bidder', userId)
+  if (error) {
+    throw error
+  }
+  return data as BidAndProject[]
+}
+
+export async function getPendingBidsByUser(
+  supabase: SupabaseClient,
+  userId: string
+) {
+  if (!userId) {
+    return []
+  }
+  const { data, error } = await supabase
+    .from('bids')
+    .select('*, projects(creator, stage, type)')
+    .eq('bidder', userId)
+    .eq('status', 'pending')
   if (error) {
     throw error
   }
