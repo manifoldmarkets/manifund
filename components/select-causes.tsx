@@ -29,7 +29,7 @@ export function SelectCauses(props: {
               noLink
               className={clsx(
                 '!sm:text-sm !p-3',
-                selectedCauses.includes(cause)
+                !!selectedCauses.find((c) => c.slug === cause.slug)
                   ? 'bg-orange-500 text-white hover:bg-orange-600'
                   : 'bg-gray-200 hover:bg-gray-300'
               )}
