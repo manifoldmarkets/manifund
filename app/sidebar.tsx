@@ -7,8 +7,12 @@ import { SidebarItem } from './sidebar-item'
 import { SUPABASE_ENV } from '@/db/env'
 import { Avatar } from '@/components/avatar'
 import { formatMoney } from '@/utils/formatting'
-import { calculateUserBalance } from '@/utils/math'
-import { getTxnsByUser } from '@/db/txn'
+import {
+  calculateCashBalance,
+  calculateCharityBalance,
+  calculateUserBalance,
+} from '@/utils/math'
+import { getTxnAndProjectsByUser } from '@/db/txn'
 import { buttonClass } from '@/components/button'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
@@ -16,6 +20,7 @@ import { DepositButton } from '@/components/deposit-buttons'
 import { Col } from '@/components/layout/col'
 import { Tooltip } from '@/components/tooltip'
 import { PlusSmallIcon } from '@heroicons/react/24/outline'
+import { getPendingBidsByUser } from '@/db/bid'
 
 export const revalidate = 30
 export default async function Sidebar() {
@@ -113,7 +118,20 @@ export default async function Sidebar() {
 export async function ProfileSummary(props: { profile: Profile }) {
   const { profile } = props
   const supabase = createServerClient()
-  const txns = await getTxnsByUser(supabase, profile.id)
+  const txns = await getTxnAndProjectsByUser(supabase, profile.id)
+  const bids = await getPendingBidsByUser(supabase, profile.id)
+  const cashBalance = calculateCashBalance(
+    txns,
+    bids,
+    profile.id,
+    profile.accreditation_status
+  )
+  const charityBalance = calculateCharityBalance(
+    txns,
+    bids,
+    profile.id,
+    profile.accreditation_status
+  )
   return (
     <Row className="group mb-3 items-center gap-2 truncate rounded-md px-1 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
       <Avatar
@@ -122,12 +140,15 @@ export async function ProfileSummary(props: { profile: Profile }) {
         id={profile.id}
       />
       <Col className="w-full">
-        <Link href={`/${profile.username}`} className="w-full">
-          <div className="font-medium">{profile.full_name}</div>
+        <Link href={`/${profile.username}`} className="w-full font-medium">
+          {profile.full_name}
         </Link>
         <Row className="gap-2 py-0.5 text-sm">
-          {formatMoney(calculateUserBalance(txns, profile.id))}
-
+          {formatMoney(Math.max(cashBalance, 0))} cash //
+          {formatMoney(
+            Math.max(charityBalance, 0) - Math.min(cashBalance, 0)
+          )}{' '}
+          charity
           <DepositButton userId={profile.id}>
             <div className="rounded bg-orange-500 p-0.5 shadow">
               <Tooltip text="Add funds" placement="left">
