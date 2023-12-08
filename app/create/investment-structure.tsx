@@ -28,8 +28,8 @@ export function InvestmentStructurePanel(props: {
   minFunding: number
   founderPercent: number
   setFounderPercent: (val: number) => void
-  agreedToTerms: boolean
-  setAgreedToTerms: (val: boolean) => void
+  agreedToTerms?: boolean
+  setAgreedToTerms?: (val: boolean) => void
   certParams: CertParams
 }) {
   const {
@@ -192,44 +192,46 @@ export function InvestmentStructurePanel(props: {
             </p>
           </Col>
         </div>
-        <Row className="mt-5 items-center">
-          <Checkbox
-            checked={agreedToTerms}
-            onChange={(event) => setAgreedToTerms(event.target.checked)}
-          />
-          <label className="ml-3 text-sm font-bold">
-            <span className="text-gray-900">
-              I agree to the investment structure laid out above.
-            </span>
-            <button
-              className="ml-1 text-orange-500 hover:text-orange-600"
-              onClick={() => setDetailsOpen(true)}
-            >
-              See details.
-            </button>
-            <RequiredStar />
-            <Modal open={detailsOpen} setOpen={setDetailsOpen}>
-              <Col className="items-end gap-3 px-5 py-2">
-                <GenInvestmentExplanation
-                  certParams={certParams}
-                  minFunding={minFunding}
-                  founderPercent={founderPercent}
-                  ammPercent={ammPercent}
-                  initialValuation={initialValuation}
-                />
-                <Button
-                  color="gray-outline"
-                  onClick={() => setDetailsOpen(false)}
-                >
-                  Close
-                </Button>
-              </Col>
-            </Modal>
-          </label>
-        </Row>
+        {agreedToTerms && !!setAgreedToTerms && (
+          <Row className="mt-5 items-center">
+            <Checkbox
+              checked={agreedToTerms}
+              onChange={(event) => setAgreedToTerms(event.target.checked)}
+            />
+            <label className="ml-3 text-sm font-bold">
+              <span className="text-gray-900">
+                I agree to the investment structure laid out above.
+              </span>
+              <button
+                className="ml-1 text-orange-500 hover:text-orange-600"
+                onClick={() => setDetailsOpen(true)}
+              >
+                See details.
+              </button>
+              <RequiredStar />
+              <Modal open={detailsOpen} setOpen={setDetailsOpen}>
+                <Col className="items-end gap-3 px-5 py-2">
+                  <GenInvestmentExplanation
+                    certParams={certParams}
+                    minFunding={minFunding}
+                    founderPercent={founderPercent}
+                    ammPercent={ammPercent}
+                    initialValuation={initialValuation}
+                  />
+                  <Button
+                    color="gray-outline"
+                    onClick={() => setDetailsOpen(false)}
+                  >
+                    Close
+                  </Button>
+                </Col>
+              </Modal>
+            </label>
+          </Row>
+        )}
       </Card>
     )
-  } else {
+  } else if (agreedToTerms && !!setAgreedToTerms) {
     return (
       <Row className="mt-5 items-start">
         <Checkbox
@@ -256,6 +258,8 @@ export function InvestmentStructurePanel(props: {
         </span>
       </Row>
     )
+  } else {
+    return null
   }
 }
 

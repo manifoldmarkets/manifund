@@ -4,7 +4,7 @@ import { Button, IconButton } from '@/components/button'
 import { useSupabase } from '@/db/supabase-provider'
 import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
-import { ProjectWithCauses } from '@/db/project'
+import { ProjectWithCauses, TOTAL_SHARES } from '@/db/project'
 import { useState } from 'react'
 import { PencilIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
@@ -15,6 +15,7 @@ import { Col } from '@/components/layout/col'
 import { Cause, MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { isAdmin } from '@/db/txn'
+import { InvestmentStructurePanel } from '@/app/create/investment-structure'
 
 export function Edit(props: {
   project: ProjectWithCauses
@@ -28,10 +29,19 @@ export function Edit(props: {
   const [title, setTitle] = useState(project.title)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
   const [selectedCauses, setSelectedCauses] = useState(project.causes)
+  const [minFunding, setMinFunding] = useState(project.min_funding)
+  const [founderPercent, setFounderPercent] = useState(
+    (project.founder_shares / TOTAL_SHARES) * 100
+  )
+
   const [saving, setSaving] = useState(false)
   const selectableCauses = causesList.filter((cause) => {
     return !prizeCauses.find((prizeCause) => prizeCause.slug === cause.slug)
   })
+  const prizeCause = prizeCauses.find((cause) =>
+    project.causes.find((c) => c.slug === cause.slug)
+  )
+  const certParams = prizeCause?.cert_params
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
   if (!user || (!isAdmin(user) && user.id !== project.creator)) {
@@ -100,6 +110,14 @@ export function Edit(props: {
               setSelectedCauses={setSelectedCauses}
             />
           </Col>
+          {certParams && (
+            <InvestmentStructurePanel
+              minFunding={minFunding}
+              founderPercent={founderPercent}
+              setFounderPercent={setFounderPercent}
+              certParams={certParams}
+            />
+          )}
           <Row className="mt-3 justify-center gap-5">
             <Button
               color="gray"
