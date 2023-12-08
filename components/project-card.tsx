@@ -39,6 +39,9 @@ export function ProjectCard(props: {
     (acc, vote) => vote.magnitude + acc,
     0
   )
+  const minIncludingAmm = getMinIncludingAmm(project)
+  const fundingGoal =
+    project.type === 'cert' ? minIncludingAmm : project.funding_goal
   return (
     <Card className="px-4 pb-2 pt-1">
       <Col className="h-full justify-between">
@@ -66,36 +69,22 @@ export function ProjectCard(props: {
             />
           ))}
         </Row>
-        <Col>
+        <Col className="mt-1 gap-1">
           {(project.stage === 'proposal' ||
             (project.stage === 'active' &&
               amountRaised < project.funding_goal)) && (
-            <Row className="flex-1 items-center gap-1">
-              <ProgressBar
-                fundingGoal={
-                  project.type === 'cert'
-                    ? getMinIncludingAmm(project)
-                    : project.funding_goal
-                }
-                minFunding={getMinIncludingAmm(project)}
-                amountRaised={amountRaised}
-                small
-              />
-              <Tooltip text="Minimum funding required">
-                <span className="rounded-2xl bg-orange-100 px-2 py-1 text-center text-sm font-medium text-orange-600">
-                  {formatMoney(
-                    project.type === 'cert'
-                      ? getMinIncludingAmm(project)
-                      : project.funding_goal
-                  )}
-                </span>
-              </Tooltip>
-            </Row>
+            <ProgressBar
+              fundingGoal={fundingGoal}
+              minFunding={minIncludingAmm}
+              amountRaised={amountRaised}
+              small
+            />
           )}
           <ProjectCardData
             voteCount={voteCount}
             numComments={project.comments.length}
             amountRaised={amountRaised}
+            fundingGoal={project.stage === 'proposal' ? fundingGoal : undefined}
             projectSlug={project.slug}
           />
         </Col>
@@ -108,9 +97,11 @@ function ProjectCardData(props: {
   numComments: number
   voteCount: number
   amountRaised: number
+  fundingGoal?: number
   projectSlug: string
 }) {
-  const { numComments, voteCount, amountRaised, projectSlug } = props
+  const { numComments, voteCount, amountRaised, fundingGoal, projectSlug } =
+    props
   return (
     <div className="grid grid-cols-3 text-sm text-gray-400">
       <Row className="justify-start">
@@ -130,7 +121,10 @@ function ProjectCardData(props: {
       <Row className="justify-end">
         <Tooltip text="Total raised" className="flex items-center gap-0.5">
           <CurrencyDollarIcon className="h-4 w-4 stroke-2" />
-          <span>{formatLargeNumber(amountRaised)}</span>
+          <span>
+            {formatLargeNumber(amountRaised)}
+            {fundingGoal && `/${formatLargeNumber(fundingGoal)}`}
+          </span>
         </Tooltip>
       </Row>
     </div>
