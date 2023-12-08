@@ -7,11 +7,7 @@ import { SidebarItem } from './sidebar-item'
 import { SUPABASE_ENV } from '@/db/env'
 import { Avatar } from '@/components/avatar'
 import { formatMoney } from '@/utils/formatting'
-import {
-  calculateCashBalance,
-  calculateCharityBalance,
-  calculateUserBalance,
-} from '@/utils/math'
+import { calculateCashBalance, calculateCharityBalance } from '@/utils/math'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { buttonClass } from '@/components/button'
 import clsx from 'clsx'
