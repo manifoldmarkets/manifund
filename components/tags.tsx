@@ -24,6 +24,7 @@ import { BiDonateHeart, BiHeart } from 'react-icons/bi'
 import { TbCrystalBall, TbWorldX } from 'react-icons/tb'
 import { PiBirdBold, PiVirusBold } from 'react-icons/pi'
 import { ArrowTrendingUpIcon, CheckBadgeIcon } from '@heroicons/react/20/solid'
+import { ManifoldIcon } from './icons'
 
 const COLORS = [
   'bg-indigo-200',
@@ -91,13 +92,7 @@ const CAUSE_ICONS = {
   science: <BeakerIcon className="h-3 w-3 stroke-2" />,
   forecasting: <ArrowTrendingUpIcon className="h-3 w-3 stroke-2" />,
   'manifold-community': (
-    <Image
-      className="h-4 w-4"
-      src="/ManifoldIcon.svg"
-      width="50"
-      height="50"
-      alt="Manifold icon"
-    />
+    <ManifoldIcon className="h-4 w-4 stroke-[1.3]" size={50} />
   ),
   'china-talk': <StarIcon className="h-3 w-3 stroke-2" />,
 } as { [key: string]: JSX.Element }
