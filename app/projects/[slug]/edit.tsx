@@ -12,15 +12,16 @@ import { Tooltip } from '@/components/tooltip'
 import { Input } from '@/components/input'
 import { useRouter } from 'next/navigation'
 import { Col } from '@/components/layout/col'
-import { MiniCause } from '@/db/cause'
+import { Cause, MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { isAdmin } from '@/db/txn'
 
 export function Edit(props: {
   project: ProjectWithCauses
   causesList: MiniCause[]
+  prizeCauses: Cause[]
 }) {
-  const { project, causesList } = props
+  const { project, causesList, prizeCauses } = props
   const { session } = useSupabase()
   const user = session?.user
   const [showEditor, setShowEditor] = useState(false)

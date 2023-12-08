@@ -37,6 +37,17 @@ export async function listMiniCauses(supabase: SupabaseClient) {
   return data as MiniCause[]
 }
 
+export async function listPrizeCauses(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from('causes')
+    .select('*')
+    .eq('prize', true)
+  if (error) {
+    throw error
+  }
+  return sortBy(data, 'sort') as Cause[]
+}
+
 export async function listCauses(supabase: SupabaseClient) {
   const { data, error } = await supabase.from('causes').select('*')
   if (error) {

@@ -9,7 +9,7 @@ import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
-import { MiniCause } from '@/db/cause'
+import { Cause, MiniCause } from '@/db/cause'
 import { TxnAndProfiles, TxnAndProject } from '@/db/txn'
 import {
   calculateCashBalance,
@@ -41,6 +41,7 @@ export function ProjectDisplay(props: {
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]
   causesList: MiniCause[]
+  prizeCauses: Cause[]
   userProfile?: Profile
   creatorEmail?: string
   userIsAdmin?: boolean
@@ -55,6 +56,7 @@ export function ProjectDisplay(props: {
     userProfile,
     creatorEmail,
     causesList,
+    prizeCauses,
     userIsAdmin,
   } = props
   const userSpendableFunds = Math.max(
@@ -220,7 +222,11 @@ export function ProjectDisplay(props: {
           <RichContent content={project.description} className="px-3 text-sm" />
         )}
         {(isOwnProject || userIsAdmin) && (
-          <Edit project={project} causesList={causesList} />
+          <Edit
+            project={project}
+            causesList={causesList}
+            prizeCauses={prizeCauses}
+          />
         )}
         <div id="tabs">
           <ProjectTabs
