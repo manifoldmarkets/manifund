@@ -29,6 +29,9 @@ export function Edit(props: {
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
   const [selectedCauses, setSelectedCauses] = useState(project.causes)
   const [saving, setSaving] = useState(false)
+  const selectableCauses = causesList.filter((cause) => {
+    return !prizeCauses.find((prizeCause) => prizeCause.slug === cause.slug)
+  })
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
   if (!user || (!isAdmin(user) && user.id !== project.creator)) {
@@ -92,7 +95,7 @@ export function Edit(props: {
           <Col className="gap-1">
             <label>Causes</label>
             <SelectCauses
-              causesList={causesList}
+              causesList={selectableCauses}
               selectedCauses={selectedCauses}
               setSelectedCauses={setSelectedCauses}
             />
