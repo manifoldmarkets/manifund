@@ -144,20 +144,13 @@ export async function ProfileSummary(props: { profile: Profile }) {
         <Link href={`/${profile.username}`} className="w-full font-medium">
           {profile.full_name}
         </Link>
-        <Row className="w-full items-start justify-between">
+        <Row className="w-full items-start gap-3">
           <Col>
             <span className="text-sm">
               {formatMoney(
                 Math.max(charityBalance, 0) - Math.min(cashBalance, 0)
               )}
-              <span className="text-xs"> charity</span>
             </span>
-            {cashBalance > 0 && (
-              <span className="text-sm">
-                {formatMoney(Math.max(cashBalance, 0))}
-                <span className="text-xs"> cash</span>
-              </span>
-            )}
           </Col>
           <DepositButton userId={profile.id}>
             <div className="rounded bg-orange-500 p-0.5 shadow">
