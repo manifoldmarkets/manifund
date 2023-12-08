@@ -138,17 +138,27 @@ export async function ProfileSummary(props: { profile: Profile }) {
         username={profile.username}
         avatarUrl={profile.avatar_url}
         id={profile.id}
+        size={14}
       />
-      <Col className="w-full">
+      <Col className="w-full items-start">
         <Link href={`/${profile.username}`} className="w-full font-medium">
           {profile.full_name}
         </Link>
-        <Row className="gap-2 py-0.5 text-sm">
-          {formatMoney(Math.max(cashBalance, 0))} cash //
-          {formatMoney(
-            Math.max(charityBalance, 0) - Math.min(cashBalance, 0)
-          )}{' '}
-          charity
+        <Row className="w-full items-start justify-between">
+          <Col>
+            <span className="text-sm">
+              {formatMoney(
+                Math.max(charityBalance, 0) - Math.min(cashBalance, 0)
+              )}
+              <span className="text-xs"> charity</span>
+            </span>
+            {cashBalance > 0 && (
+              <span className="text-sm">
+                {formatMoney(Math.max(cashBalance, 0))}
+                <span className="text-xs"> cash</span>
+              </span>
+            )}
+          </Col>
           <DepositButton userId={profile.id}>
             <div className="rounded bg-orange-500 p-0.5 shadow">
               <Tooltip text="Add funds" placement="left">
