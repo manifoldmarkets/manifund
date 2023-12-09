@@ -9,7 +9,7 @@ import { useState } from 'react'
 import { PencilIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
-import { Input } from '@/components/input'
+import { AmountInput, Input } from '@/components/input'
 import { useRouter } from 'next/navigation'
 import { Col } from '@/components/layout/col'
 import { Cause, MiniCause } from '@/db/cause'
@@ -31,7 +31,9 @@ export function Edit(props: {
   const [title, setTitle] = useState(project.title)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
   const [selectedCauses, setSelectedCauses] = useState(project.causes)
-  const [minFunding, setMinFunding] = useState(project.min_funding)
+  const [minFunding, setMinFunding] = useState<number | undefined>(
+    project.min_funding
+  )
   const [founderPercent, setFounderPercent] = useState(
     (project.founder_shares / TOTAL_SHARES) * 100
   )
@@ -115,9 +117,19 @@ export function Edit(props: {
               setSelectedCauses={setSelectedCauses}
             />
           </Col>
+          <Col className="gap-1">
+            <label>Minimum funding</label>
+            <Col>
+              <AmountInput
+                type="number"
+                amount={minFunding}
+                onChangeAmount={setMinFunding}
+              />
+            </Col>
+          </Col>
           {certParams && (
             <InvestmentStructurePanel
-              minFunding={minFunding}
+              minFunding={minFunding ?? 0}
               founderPercent={founderPercent}
               setFounderPercent={setFounderPercent}
               certParams={certParams}
