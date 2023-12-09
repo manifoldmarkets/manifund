@@ -131,7 +131,7 @@ export function Edit(props: {
               />
             </Col>
           </Col>
-          {certParams && (
+          {certParams && certParams.adjustableInvestmentStructure && (
             <InvestmentStructurePanel
               minFunding={minFunding ?? 0}
               founderPercent={founderPercent}
@@ -194,8 +194,9 @@ function getEditError(
       ? calcInitialValuation(certParams, minFunding, founderPercent)
       : 0
   const minMinFunding = certParams ? certParams.minMinFunding : 500
-
-  if (project.type === 'cert' && !certParams) {
+  if (!title) {
+    return 'Enter a project title'
+  } else if (project.type === 'cert' && !certParams) {
     return 'Something went wrong'
   } else if (!minFunding) {
     return 'Enter a minimum funding amount'
@@ -211,6 +212,6 @@ function getEditError(
     return `Since you've already raised $${totalRaised}, you must set your minimum funding such that the amount needed to proceed to the active stage is less than or equal to $${totalRaised}`
   }
   if (fundingBids.length > 0 && newValuation > currentValuation) {
-    return 'Cannot increase valuation while there are bids'
+    return 'Cannot increase valuation while there are existing bids'
   }
 }
