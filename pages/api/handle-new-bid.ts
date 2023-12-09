@@ -13,7 +13,6 @@ import { createAdminClient } from './_db'
 import { getTxnsByProject } from '@/db/txn'
 import { getProfileById } from '@/db/profile'
 import { makeTrade, updateBidFromTrade } from '@/utils/trade'
-import { update } from 'lodash'
 
 export default async function handler(
   req: NextApiRequest,

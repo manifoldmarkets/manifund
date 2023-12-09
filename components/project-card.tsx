@@ -72,7 +72,8 @@ export function ProjectCard(props: {
         <Col className="mt-1 gap-1">
           {(project.stage === 'proposal' ||
             (project.stage === 'active' &&
-              amountRaised < project.funding_goal)) && (
+              amountRaised < project.funding_goal &&
+              project.type === 'grant')) && (
             <ProgressBar
               fundingGoal={fundingGoal}
               minFunding={minIncludingAmm}

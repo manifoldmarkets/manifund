@@ -2,10 +2,11 @@ import { Bid, getBidsByUser } from '@/db/bid'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
 import { createEdgeClient } from './_db'
-import { getProjectById } from '@/db/project'
+import { getProjectAndBidsById } from '@/db/project'
 import { getProfileAndBidsById, getUser } from '@/db/profile'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { calculateCashBalance, calculateCharityBalance } from '@/utils/math'
+import { calcFundingNeeded, calcTotalOffered } from '@/utils/activate-project'
 
 export const config = {
   runtime: 'edge',
@@ -34,7 +35,7 @@ export default async function handler(req: NextRequest) {
     getProfileAndBidsById(supabase, user.id),
     getTxnAndProjectsByUser(supabase, user.id),
     getBidsByUser(supabase, user.id),
-    getProjectById(supabase, projectId),
+    getProjectAndBidsById(supabase, projectId),
   ])
   const bidderBalance =
     bidder.accreditation_status && type === 'buy'
@@ -51,13 +52,27 @@ export default async function handler(req: NextRequest) {
   if (!project) {
     return new Response('Project not found', { status: 404 })
   }
+  // Round bids up slightly to fully fund projects if close (floating point errors)
+  let actualBidAmount = amount
+  if (project.stage === 'proposal' && type === 'assurance buy') {
+    const totalOffered = calcTotalOffered(project) + amount
+    const totalNeeded = calcFundingNeeded(project)
+    const difference = totalNeeded - totalOffered
+    if (
+      difference < 0 &&
+      difference > -1 &&
+      amount - difference <= bidderBalance
+    ) {
+      actualBidAmount = totalNeeded - totalOffered
+    }
+  }
   const id = uuid()
   const newBid = {
     id,
     project: projectId,
     bidder: user.id,
     valuation,
-    amount,
+    amount: actualBidAmount,
     status: 'pending' as Bid['status'],
     type,
   }
