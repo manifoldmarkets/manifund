@@ -21,6 +21,7 @@ import {
 } from '@/app/create/investment-structure'
 import { Bid } from '@/db/bid'
 import { getProposalValuation } from '@/utils/math'
+import { RequiredStar } from '@/components/tags'
 
 export function Edit(props: {
   project: ProjectWithCauses
@@ -84,7 +85,10 @@ export function Edit(props: {
       {showEditor ? (
         <Col className="gap-3">
           <Col className="gap-1">
-            <label>Title</label>
+            <label>
+              Title
+              <RequiredStar />
+            </label>
             <Col>
               <Input
                 maxLength={80}
@@ -110,7 +114,10 @@ export function Edit(props: {
             </Col>
           </Col>
           <Col className="gap-1">
-            <label>Description</label>
+            <label>
+              Description
+              <RequiredStar />
+            </label>
             <TextEditor editor={editor} />
           </Col>
           <Col className="gap-1">
@@ -122,7 +129,10 @@ export function Edit(props: {
             />
           </Col>
           <Col className="gap-1">
-            <label>Minimum funding</label>
+            <label>
+              Minimum funding (USD)
+              <RequiredStar />
+            </label>
             <Col>
               <AmountInput
                 type="number"
