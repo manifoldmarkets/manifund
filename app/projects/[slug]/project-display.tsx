@@ -224,6 +224,7 @@ export function ProjectDisplay(props: {
         {(isOwnProject || userIsAdmin) && (
           <Edit
             project={project}
+            bids={projectBids}
             causesList={causesList}
             prizeCauses={prizeCauses}
           />

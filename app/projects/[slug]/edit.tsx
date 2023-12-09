@@ -16,9 +16,11 @@ import { Cause, MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { isAdmin } from '@/db/txn'
 import { InvestmentStructurePanel } from '@/app/create/investment-structure'
+import { Bid } from '@/db/bid'
 
 export function Edit(props: {
   project: ProjectWithCauses
+  bids: Bid[]
   causesList: MiniCause[]
   prizeCauses: Cause[]
 }) {
@@ -62,6 +64,9 @@ export function Edit(props: {
         subtitle,
         description,
         causeSlugs: selectedCauses.map((cause) => cause.slug),
+        // TODO: handle these variables on the backend
+        minFunding,
+        founderPercent,
       }),
     })
     setShowEditor(false)
