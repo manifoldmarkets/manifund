@@ -329,7 +329,7 @@ function GenInvestmentExplanation(props: {
   }
 }
 
-function calcInitialValuation(
+export function calcInitialValuation(
   certParams: CertParams,
   minFunding: number,
   founderPercent: number

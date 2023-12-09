@@ -12,11 +12,15 @@ import { Tooltip } from '@/components/tooltip'
 import { AmountInput, Input } from '@/components/input'
 import { useRouter } from 'next/navigation'
 import { Col } from '@/components/layout/col'
-import { Cause, MiniCause } from '@/db/cause'
+import { Cause, CertParams, MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { isAdmin } from '@/db/txn'
-import { InvestmentStructurePanel } from '@/app/create/investment-structure'
+import {
+  calcInitialValuation,
+  InvestmentStructurePanel,
+} from '@/app/create/investment-structure'
 import { Bid } from '@/db/bid'
+import { getProposalValuation } from '@/utils/math'
 
 export function Edit(props: {
   project: ProjectWithCauses
@@ -174,6 +178,7 @@ function getEditError(
   project: Project,
   bids: Bid[],
   title: string,
+  certParams?: CertParams,
   minFunding?: number,
   founderPercent?: number
 ) {
@@ -182,7 +187,30 @@ function getEditError(
       ? bid.type === 'donate'
       : bid.type === 'assurance buy'
   )
-  const totalRaised = bids.reduce((total, bid) => total + bid.amount, 0)
-  const currentValuation = 0
-  const hasTitle = title.length > 0
+  const totalRaised = fundingBids.reduce((total, bid) => total + bid.amount, 0)
+  const currentValuation = getProposalValuation(project)
+  const newValuation =
+    certParams && minFunding && founderPercent
+      ? calcInitialValuation(certParams, minFunding, founderPercent)
+      : 0
+  const minMinFunding = certParams ? certParams.minMinFunding : 500
+
+  if (project.type === 'cert' && !certParams) {
+    return 'Something went wrong'
+  } else if (!minFunding) {
+    return 'Enter a minimum funding amount'
+  } else if (minFunding < minMinFunding) {
+    return `Your minimum funding must be at least $${minMinFunding}`
+  }
+  const neededToProceed =
+    project.type === 'grant'
+      ? minFunding
+      : ((certParams?.ammShares ?? 0) / TOTAL_SHARES) * newValuation +
+        minFunding
+  if (neededToProceed < totalRaised) {
+    return `Since you've already raised $${totalRaised}, you must set your minimum funding such that the amount needed to proceed to the active stage is less than or equal to $${totalRaised}`
+  }
+  if (fundingBids.length > 0 && newValuation > currentValuation) {
+    return 'Cannot increase valuation while there are bids'
+  }
 }

@@ -40,7 +40,7 @@ export async function getPendingBidsByUser(
   return data as BidAndProject[]
 }
 
-export async function getBidsByProject(
+export async function getPendingBidsByProject(
   supabase: SupabaseClient,
   project: string
 ) {
@@ -48,6 +48,7 @@ export async function getBidsByProject(
     .from('bids')
     .select('*, profiles(*)')
     .eq('project', project)
+    .eq('status', 'pending')
   if (error) {
     throw error
   }

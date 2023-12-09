@@ -2,7 +2,7 @@ import { createServerClient } from '@/db/supabase-server'
 import { getUser, isAdmin, getProfileAndBidsById } from '@/db/profile'
 import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
-import { getBidsByProject } from '@/db/bid'
+import { getPendingBidsByProject } from '@/db/bid'
 import { getTxnsByProject, getTxnAndProjectsByUser } from '@/db/txn'
 import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
@@ -45,7 +45,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     user ? getTxnAndProjectsByUser(supabase, user.id) : [],
     user ? getBidsByUser(supabase, user.id) : [],
     getCommentsByProject(supabase, project.id),
-    getBidsByProject(supabase, project.id),
+    getPendingBidsByProject(supabase, project.id),
     getTxnsByProject(supabase, project.id),
     listMiniCauses(supabase),
     listPrizeCauses(supabase),
