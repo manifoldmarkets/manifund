@@ -4,7 +4,7 @@ import { Button, IconButton } from '@/components/button'
 import { useSupabase } from '@/db/supabase-provider'
 import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
-import { ProjectWithCauses, TOTAL_SHARES } from '@/db/project'
+import { Project, ProjectWithCauses, TOTAL_SHARES } from '@/db/project'
 import { useState } from 'react'
 import { PencilIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
@@ -168,4 +168,21 @@ export function Edit(props: {
       )}
     </div>
   )
+}
+
+function getEditError(
+  project: Project,
+  bids: Bid[],
+  title: string,
+  minFunding?: number,
+  founderPercent?: number
+) {
+  const fundingBids = bids.filter((bid) =>
+    project.type === 'grant'
+      ? bid.type === 'donate'
+      : bid.type === 'assurance buy'
+  )
+  const totalRaised = bids.reduce((total, bid) => total + bid.amount, 0)
+  const currentValuation = 0
+  const hasTitle = title.length > 0
 }
