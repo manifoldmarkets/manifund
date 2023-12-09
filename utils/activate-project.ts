@@ -29,25 +29,31 @@ export async function maybeActivateProject(
 }
 
 function checkFundingReady(project: ProjectAndBids) {
+  const totalOffered = calcTotalOffered(project)
+  const totalNeeded = calcFundingNeeded(project)
+  return (
+    totalOffered >= totalNeeded &&
+    (project.type === 'cert' || (project.approved && project.signed_agreement))
+  )
+}
+
+export function calcFundingNeeded(project: ProjectAndBids) {
+  return project.type === 'grant'
+    ? project.min_funding
+    : project.bids.find(
+        (bid) => bid.type === 'assurance sell' && bid.bidder === project.creator
+      )?.amount ?? 0
+}
+
+export function calcTotalOffered(project: ProjectAndBids) {
   const fundingBids = project.bids.filter((bid) =>
     project.type === 'grant'
       ? bid.type === 'donate'
       : bid.type === 'assurance buy'
   )
-  const totalOffered = fundingBids
+  return fundingBids
     .filter((bid) => bid.status === 'pending')
     .reduce((acc, bid) => acc + bid.amount, 0)
-  const totalNeeded =
-    project.type === 'grant'
-      ? project.min_funding
-      : project.bids.find(
-          (bid) =>
-            bid.type === 'assurance sell' && bid.bidder === project.creator
-        )?.amount ?? 0
-  return (
-    totalOffered >= totalNeeded &&
-    (project.type === 'cert' || (project.approved && project.signed_agreement))
-  )
 }
 
 async function activateProject(project: Project) {
