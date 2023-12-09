@@ -58,7 +58,11 @@ export default async function handler(req: NextRequest) {
     const totalOffered = calcTotalOffered(project) + amount
     const totalNeeded = calcFundingNeeded(project)
     const difference = totalNeeded - totalOffered
-    if (difference < 0 && difference > -1) {
+    if (
+      difference < 0 &&
+      difference > -1 &&
+      amount - difference <= bidderBalance
+    ) {
       actualBidAmount = totalNeeded - totalOffered
     }
   }
