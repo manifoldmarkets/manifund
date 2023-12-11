@@ -136,6 +136,12 @@ export const getTradeErrorMessage = (
       limitValuation < currentValuation
     ) {
       return 'For sell limit orders, valuation must be greater than current valuation'
+    } else if (
+      usingAmm &&
+      modeId === 'buy' &&
+      limitValuation > currentValuation
+    ) {
+      return 'For buy limit orders, valuation must be less than current valuation'
     } else if (usingAmm && limitValuation < minValuation) {
       return `Valuation must be greater than ${formatMoneyPrecise(
         minValuation
