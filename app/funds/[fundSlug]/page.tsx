@@ -1,3 +1,4 @@
+import { RichContent } from '@/components/editor'
 import { getFundByUsername } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import Image from 'next/image'
@@ -22,7 +23,9 @@ export default async function FundPage(props: {
           alt="fund header image"
         />
       )}
-      fund {fund.full_name}
+      <h1 className="mt-4 text-4xl font-bold">{fund.full_name}</h1>
+      <span className="text-gray-600">{fund.bio}</span>
+      <RichContent content={fund.long_description} />
     </div>
   )
 }
