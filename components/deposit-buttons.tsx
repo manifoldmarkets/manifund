@@ -47,23 +47,27 @@ export function DepositButton(props: {
             <XMarkIcon className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <Tabs
-          tabs={[
-            {
-              name: 'Donate money',
-              id: 'donate',
-              count: 0,
-              display: <DonateTab userId={userId} passFundsTo={passFundsTo} />,
-            },
-            {
-              name: 'Transfer mana',
-              id: 'mana',
-              count: 0,
-              display: <ManaTab />,
-            },
-          ]}
-          currentTabId={currentTabId}
-        />
+        {passFundsTo ? (
+          <DonateTab userId={userId} passFundsTo={passFundsTo} />
+        ) : (
+          <Tabs
+            tabs={[
+              {
+                name: 'Donate money',
+                id: 'donate',
+                count: 0,
+                display: <DonateTab userId={userId} />,
+              },
+              {
+                name: 'Transfer mana',
+                id: 'mana',
+                count: 0,
+                display: <ManaTab />,
+              },
+            ]}
+            currentTabId={currentTabId}
+          />
+        )}
       </Modal>
     </>
   )
