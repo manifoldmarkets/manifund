@@ -36,7 +36,6 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
-
   const causeSlugs = selectedCauses.map((cause) => cause.slug)
   if (!!selectedPrize) {
     causeSlugs.push(selectedPrize.slug)
