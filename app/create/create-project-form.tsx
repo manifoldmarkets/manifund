@@ -46,7 +46,7 @@ export type ProjectParams = {
   minFunding?: number
   fundingGoal?: number
   verdictDate: string
-  description: JSONContent | string
+  description?: JSONContent | string
   location: string
   selectedCauses: MiniCause[]
   selectedPrize: Cause | null
@@ -61,7 +61,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       title: '',
       subtitle: '',
       verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
-      description: DESCRIPTION_OUTLINE,
       location: '',
       selectedCauses: [],
       selectedPrize: null,
