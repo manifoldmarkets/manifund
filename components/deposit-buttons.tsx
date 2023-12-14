@@ -44,7 +44,11 @@ export function DepositButton(props: {
           </button>
         </div>
         {passFundsTo ? (
-          <DonateTab userId={userId} passFundsTo={passFundsTo} />
+          <DonateTab
+            userId={userId}
+            setOpen={setOpen}
+            passFundsTo={passFundsTo}
+          />
         ) : (
           <Tabs
             tabs={[
@@ -52,7 +56,7 @@ export function DepositButton(props: {
                 name: 'Donate money',
                 id: 'donate',
                 count: 0,
-                display: <DonateTab userId={userId} />,
+                display: <DonateTab userId={userId} setOpen={setOpen} />,
               },
               {
                 name: 'Transfer mana',
@@ -69,8 +73,12 @@ export function DepositButton(props: {
   )
 }
 
-function DonateTab(props: { userId: string; passFundsTo?: Profile }) {
-  const { userId, passFundsTo } = props
+function DonateTab(props: {
+  userId: string
+  setOpen: (value: boolean) => void
+  passFundsTo?: Profile
+}) {
+  const { userId, setOpen, passFundsTo } = props
   const router = useRouter()
   const [amount, setAmount] = useState<number | undefined>(10)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -116,6 +124,7 @@ function DonateTab(props: { userId: string; passFundsTo?: Profile }) {
           type="button"
           color={'gray'}
           className="inline-flex w-full justify-center sm:col-start-1"
+          onClick={() => setOpen(false)}
         >
           Cancel
         </Button>
