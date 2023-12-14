@@ -46,7 +46,7 @@ export type ProjectParams = {
   minFunding?: number
   fundingGoal?: number
   verdictDate: string
-  description: JSONContent | string
+  description?: JSONContent | string
   location: string
   selectedCauses: MiniCause[]
   selectedPrize: Cause | null
@@ -61,7 +61,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       title: '',
       subtitle: '',
       verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
-      description: DESCRIPTION_OUTLINE,
       location: '',
       selectedCauses: [],
       selectedPrize: null,
@@ -77,7 +76,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     if (editor && !editor.isDestroyed) {
       editor.on('update', () => {
         setMadeChanges(true)
-        console.log('made changes')
       })
     }
   }, [editor])
@@ -98,7 +96,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       setMadeChanges(false)
     }
   }, [projectParams.selectedPrize])
-
   const selectablePrizeCauses = causesList.filter(
     (cause) => cause.open && cause.prize
   )
@@ -124,15 +121,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const router = useRouter()
   const handleSubmit = async () => {
     setIsSubmitting(true)
-    updateProjectParams({
-      description: editor?.getJSON() ?? '<p>No description</p>',
-    })
+    const finalDescription = editor?.getJSON() ?? '<p>No description</p>'
     const response = await fetch('/api/create-project', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(projectParams),
+      body: JSON.stringify({ ...projectParams, description: finalDescription }),
     })
     const newProject = await response.json()
     router.push(`/projects/${newProject.slug}`)
