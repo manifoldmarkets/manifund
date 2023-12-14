@@ -10,6 +10,7 @@ import { useState } from 'react'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
+import { formatMoneyPrecise } from '@/utils/formatting'
 
 export function DonateTab(props: {
   fund: Profile
@@ -22,7 +23,9 @@ export function DonateTab(props: {
   if (!amount) {
     fromBalanceError = 'Please enter an amount'
   } else if (amount > charityBalance) {
-    fromBalanceError = `Not enough funds. You only have $${charityBalance} available to give.}`
+    fromBalanceError = `Not enough funds. You only have ${formatMoneyPrecise(
+      charityBalance
+    )} available to give.`
   } else fromBalanceError = null
   return (
     <div className="my-5">
