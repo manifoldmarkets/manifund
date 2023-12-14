@@ -63,7 +63,6 @@ export function AmountInput(
     errorMessage?: string
     placeholder?: string
     className?: string
-    inputClassName?: string
     // Needed to focus the amount input
     inputRef?: React.MutableRefObject<any>
     allowFloat?: boolean
@@ -77,7 +76,6 @@ export function AmountInput(
     errorMessage,
     placeholder = '0',
     className,
-    inputClassName,
     inputRef,
     allowFloat = true,
     allowNegative,
@@ -112,7 +110,7 @@ export function AmountInput(
   return (
     <Input
       {...rest}
-      className={clsx('!text-lg', inputClassName)}
+      className={clsx('!text-lg', className)}
       ref={inputRef}
       type={allowFloat ? 'number' : 'text'}
       inputMode={allowFloat ? 'decimal' : 'numeric'}

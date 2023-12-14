@@ -30,11 +30,7 @@ export function DepositButton(props: {
   const currentTabId = searchParams.get('tab')
   return (
     <>
-      <button
-        type="button"
-        className="rounded shadow"
-        onClick={() => setOpen(true)}
-      >
+      <button type="button" onClick={() => setOpen(true)}>
         {children}
       </button>
       <Modal open={open} setOpen={setOpen}>
