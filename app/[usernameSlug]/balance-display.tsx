@@ -172,30 +172,32 @@ function CashToCharityButton(props: { cashBalance: number }) {
           >
             Cancel
           </Button>
-          <Button
-            type="button"
-            disabled={errorMessage !== null}
-            className="sm:flex-2 inline-flex w-full justify-center"
-            loading={isSubmitting}
-            onClick={async () => {
-              setIsSubmitting(true)
-              const response = await fetch('/api/move-cash-to-charity', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  amount: amount,
-                }),
-              })
-              const json = await response.json()
-              setOpen(false)
-              setIsSubmitting(false)
-              router.push(json.url)
-            }}
-          >
-            Transfer money
-          </Button>
+          <Tooltip text={errorMessage ?? ''} placement="top">
+            <Button
+              type="button"
+              disabled={errorMessage !== null}
+              className="sm:flex-2 inline-flex w-full justify-center"
+              loading={isSubmitting}
+              onClick={async () => {
+                setIsSubmitting(true)
+                const response = await fetch('/api/move-cash-to-charity', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    amount: amount,
+                  }),
+                })
+                const json = await response.json()
+                setOpen(false)
+                setIsSubmitting(false)
+                router.push(json.url)
+              }}
+            >
+              Transfer money
+            </Button>
+          </Tooltip>
         </div>
         <p className="mt-4 text-xs text-gray-500">
           This constitutes a donation to Manifold for Charity, a registered

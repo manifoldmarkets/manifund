@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
-import { getTxnsByUser } from '@/db/txn'
-import { getBidsByUser } from '@/db/bid'
+import { getTxnAndProjectsByUser } from '@/db/txn'
+import { getPendingBidsByUser } from '@/db/bid'
 import { calculateCashBalance } from '@/utils/math'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import uuid from 'react-uuid'
@@ -23,17 +23,19 @@ export default async function handler(req: NextRequest) {
   const user = resp.data.user
   const profile = await getProfileById(supabase, user?.id)
   if (!profile || !user) {
+    console.error('no user or profile')
     return NextResponse.error()
   }
-  const txns = await getTxnsByUser(supabase, user?.id ?? '')
-  const bids = await getBidsByUser(supabase, user?.id ?? '')
-  const userCashBalance = calculateCashBalance(
+  const txns = await getTxnAndProjectsByUser(supabase, user.id)
+  const bids = await getPendingBidsByUser(supabase, user.id)
+  const cashBalance = calculateCashBalance(
     txns,
     bids,
     user.id,
     profile.accreditation_status
   )
-  if (amount > userCashBalance) {
+  if (amount > cashBalance) {
+    console.error('amount too high')
     return NextResponse.error()
   }
   const txnId = uuid()
@@ -45,6 +47,10 @@ export default async function handler(req: NextRequest) {
     token: 'USD',
     type: 'cash to charity transfer',
   })
+  if (error) {
+    console.error(error)
+    return NextResponse.error()
+  }
   const postmarkVars = {
     amount: amount,
     name: profile.full_name,
@@ -54,11 +60,8 @@ export default async function handler(req: NextRequest) {
   await sendTemplateEmail(
     TEMPLATE_IDS.CASH_TO_CHARITY,
     postmarkVars,
-    profile.id
+    undefined,
+    user.email
   )
-  if (error) {
-    return NextResponse.error()
-  } else {
-    return NextResponse.json('success')
-  }
+  return NextResponse.json('success')
 }
