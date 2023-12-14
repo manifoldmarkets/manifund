@@ -246,12 +246,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </Link>{' '}
           for hyperlinks, bullet points, headers, and more.
         </p>
-        <span className="my-2 rounded bg-rose-100 p-3 text-sm text-rose-600">
-          We&apos;re experiencing technical issues with our editor, where
-          sometimes descriptions do not save correctly.{' '}
-          <b>Please back up your descriptions elsewhere for now</b> (e.g. Google
-          Docs) before publishing your project.
-        </span>
         <TextEditor editor={editor} />
       </Col>
       {(!projectParams.selectedPrize || certParams?.proposalPhase) && (
