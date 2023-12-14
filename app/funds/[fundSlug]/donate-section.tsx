@@ -93,8 +93,7 @@ export function DonateSection(props: {
           <div>
             <h3 className="text-lg font-bold">Wire, ACH, or DAF</h3>
             <p className="text-gray-600">
-              For {'>'}$5k only. Follow the link below to find details on how to
-              send your donation.
+              Recommended for large donations (e.g. {'>'}$5k) for lower fees.
             </p>
           </div>
           <a
