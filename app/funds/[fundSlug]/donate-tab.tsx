@@ -92,7 +92,7 @@ export function DonateTab(props: {
         </Card>
         <Card className="flex flex-col items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold">US bank or DAF</h3>
+            <h3 className="text-lg font-bold">Wire, ACH, or DAF</h3>
             <p className="text-gray-600">
               For {'>'}$5k only. Follow the link below to find details on how to
               send your donation.
