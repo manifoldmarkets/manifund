@@ -104,6 +104,7 @@ export function DonateTab(props: {
               buttonClass('sm', 'light-orange'),
               'w-fit font-bold'
             )}
+            target="_blank"
           >
             See details
           </a>
