@@ -52,7 +52,24 @@ export function DonateTab(props: {
             placeholder="Amount"
             className="w-full"
           />
-          <Button className="w-fit font-bold" color="light-orange" size="sm">
+          <Button
+            className="w-fit font-bold"
+            color="light-orange"
+            size="sm"
+            onClick={async () => {
+              await fetch('/api/transfer-money', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  amount,
+                  to: fund.id,
+                  from: userId,
+                }),
+              })
+            }}
+          >
             Donate
           </Button>
         </Card>
