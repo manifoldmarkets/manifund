@@ -5,8 +5,9 @@ import { DepositButton } from '@/components/deposit-buttons'
 import { AmountInput } from '@/components/input'
 import { Card } from '@/components/layout/card'
 import { Profile } from '@/db/profile'
-import clsx from 'clsx'
 import { useState } from 'react'
+
+import clsx from 'clsx'
 
 export function DonateTab(props: {
   fund: Profile
@@ -77,12 +78,12 @@ export function DonateTab(props: {
           <div>
             <h3 className="text-lg font-bold">US bank or DAF</h3>
             <p className="text-gray-600">
-              For {'>'}$5k only. Follow the link below for details on how you
-              can make a donation with lower transaction fees.
+              For {'>'}$5k only. Follow the link below to find details on how to
+              send your donation.
             </p>
           </div>
           <a
-            href={`https://venmo.com/${fund.username}`}
+            href="https://manifoldmarkets.notion.site/Instructions-for-donations-via-wire-ACH-or-DAF-02aee92e884a47e49efd4d93242e2080?pvs=4"
             className={clsx(
               buttonClass('sm', 'light-orange'),
               'w-fit font-bold'
