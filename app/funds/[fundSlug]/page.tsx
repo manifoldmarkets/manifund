@@ -34,7 +34,7 @@ export default async function FundPage(props: {
       )
     : 0
   return (
-    <div className="p-3">
+    <div className="p-5">
       {fund.avatar_url && (
         <Image
           src={fund.avatar_url}
