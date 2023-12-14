@@ -143,3 +143,18 @@ export async function listProfilesAndEvals(supabase: SupabaseClient) {
   }
   return profiles as ProfileAndEvals[]
 }
+
+export async function getFundByUsername(
+  supabase: SupabaseClient,
+  username: string
+) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, full_name, username, avatar_url, bio, long_description')
+    .eq('username', username)
+    .maybeSingle()
+  if (error) {
+    throw error
+  }
+  return data
+}

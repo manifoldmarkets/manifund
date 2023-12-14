@@ -138,7 +138,6 @@ function CashToCharityButton(props: { cashBalance: number }) {
       >
         <ArrowLeftIcon className="h-4 w-4 stroke-2 text-orange-500" />
       </IconButton>
-
       <Modal open={open} setOpen={setOpen}>
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
           <HeartIcon className="h-6 w-6 text-orange-600" aria-hidden="true" />
@@ -172,7 +171,7 @@ function CashToCharityButton(props: { cashBalance: number }) {
           >
             Cancel
           </Button>
-          <Tooltip text={errorMessage ?? ''} placement="top">
+          <Tooltip text={errorMessage} placement="top">
             <Button
               type="button"
               disabled={errorMessage !== null}

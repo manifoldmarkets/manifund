@@ -15,7 +15,7 @@ export default async function UserProfilePage(props: {
   const { usernameSlug } = props.params
   const supabase = createServerClient()
   const profile = await getProfileByUsername(supabase, usernameSlug)
-  if (!profile) {
+  if (!profile || profile.type !== 'individual') {
     return <div>User not found</div>
   }
   const [bids, projects, txns, comments, user] = await Promise.all([

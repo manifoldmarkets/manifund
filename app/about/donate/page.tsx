@@ -11,6 +11,7 @@ import { DepositButton } from '@/components/deposit-buttons'
 import { getProfileById } from '@/db/profile'
 import { Card } from '@/components/layout/card'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { buttonClass } from '@/components/button'
 
 const FEATURED_PROJECT_SLUGS = [
   'apollo-research-scale-up-interpretability--behavioral-model-evals-research',
@@ -82,7 +83,7 @@ export default async function DonatePage() {
                     userId={user.id}
                     passFundsTo={passFundsTo ?? undefined}
                   >
-                    <div className="rounded bg-orange-100 px-3 py-1.5 text-xs text-orange-500 hover:bg-orange-200">
+                    <div className={buttonClass('2xs', 'light-orange')}>
                       Give to general regranting
                     </div>
                   </DepositButton>
@@ -111,7 +112,7 @@ export default async function DonatePage() {
               {user && (
                 <Row className="mx-auto mt-3 justify-center">
                   <DepositButton userId={user.id}>
-                    <div className="rounded bg-orange-100 px-3 py-1.5 text-xs text-orange-500 hover:bg-orange-200">
+                    <div className={buttonClass('2xs', 'light-orange')}>
                       Add funds to account
                     </div>
                   </DepositButton>

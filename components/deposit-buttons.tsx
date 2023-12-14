@@ -30,11 +30,7 @@ export function DepositButton(props: {
   const currentTabId = searchParams.get('tab')
   return (
     <>
-      <button
-        type="button"
-        className="rounded shadow"
-        onClick={() => setOpen(true)}
-      >
+      <button type="button" onClick={() => setOpen(true)}>
         {children}
       </button>
       <Modal open={open} setOpen={setOpen}>
@@ -47,30 +43,42 @@ export function DepositButton(props: {
             <XMarkIcon className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <Tabs
-          tabs={[
-            {
-              name: 'Donate money',
-              id: 'donate',
-              count: 0,
-              display: <DonateTab userId={userId} passFundsTo={passFundsTo} />,
-            },
-            {
-              name: 'Transfer mana',
-              id: 'mana',
-              count: 0,
-              display: <ManaTab />,
-            },
-          ]}
-          currentTabId={currentTabId}
-        />
+        {passFundsTo ? (
+          <DonateTab
+            userId={userId}
+            setOpen={setOpen}
+            passFundsTo={passFundsTo}
+          />
+        ) : (
+          <Tabs
+            tabs={[
+              {
+                name: 'Donate money',
+                id: 'donate',
+                count: 0,
+                display: <DonateTab userId={userId} setOpen={setOpen} />,
+              },
+              {
+                name: 'Transfer mana',
+                id: 'mana',
+                count: 0,
+                display: <ManaTab />,
+              },
+            ]}
+            currentTabId={currentTabId}
+          />
+        )}
       </Modal>
     </>
   )
 }
 
-function DonateTab(props: { userId: string; passFundsTo?: Profile }) {
-  const { userId, passFundsTo } = props
+function DonateTab(props: {
+  userId: string
+  setOpen: (value: boolean) => void
+  passFundsTo?: Profile
+}) {
+  const { userId, setOpen, passFundsTo } = props
   const router = useRouter()
   const [amount, setAmount] = useState<number | undefined>(10)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -116,6 +124,7 @@ function DonateTab(props: { userId: string; passFundsTo?: Profile }) {
           type="button"
           color={'gray'}
           className="inline-flex w-full justify-center sm:col-start-1"
+          onClick={() => setOpen(false)}
         >
           Cancel
         </Button>
