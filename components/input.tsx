@@ -110,7 +110,7 @@ export function AmountInput(
   return (
     <Input
       {...rest}
-      className={clsx('!text-lg', className)}
+      className={clsx('text-lg', className)}
       ref={inputRef}
       type={allowFloat ? 'number' : 'text'}
       inputMode={allowFloat ? 'decimal' : 'numeric'}

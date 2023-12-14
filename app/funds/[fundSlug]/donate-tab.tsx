@@ -8,14 +8,22 @@ import { Profile } from '@/db/profile'
 import { useState } from 'react'
 
 import clsx from 'clsx'
+import { Row } from '@/components/layout/row'
+import { Tooltip } from '@/components/tooltip'
 
 export function DonateTab(props: {
   fund: Profile
   userId: string
-  charityBalance?: number
+  charityBalance: number
 }) {
   const { fund, userId, charityBalance } = props
   const [amount, setAmount] = useState<number>()
+  let fromBalanceError = null
+  if (!amount) {
+    fromBalanceError = 'Please enter an amount'
+  } else if (amount > charityBalance) {
+    fromBalanceError = `Not enough funds. You only have $${charityBalance} available to give.}`
+  } else fromBalanceError = null
   return (
     <div className="my-5">
       <h1 className="text-lg font-bold">Donate via...</h1>
@@ -38,41 +46,46 @@ export function DonateTab(props: {
             </span>
           </DepositButton>
         </Card>
-        <Card className="flex flex-col items-center justify-between gap-2">
+        <Card className="flex flex-col items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-bold">Manifund balance</h3>
             <p className="text-gray-600">
               Transfer money from your existing charity balance to{' '}
-              {fund.full_name}. You currently have ${charityBalance} available
-              to give.
+              {fund.full_name}.
             </p>
           </div>
-          <AmountInput
-            amount={amount}
-            onChangeAmount={setAmount}
-            placeholder="Amount"
-            className="w-full"
-          />
-          <Button
-            className="w-fit font-bold"
-            color="light-orange"
-            size="sm"
-            onClick={async () => {
-              await fetch('/api/transfer-money', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  amount,
-                  to: fund.id,
-                  from: userId,
-                }),
-              })
-            }}
-          >
-            Donate
-          </Button>
+          <Row className="items-center justify-center gap-1 text-gray-500">
+            $
+            <AmountInput
+              amount={amount}
+              onChangeAmount={setAmount}
+              placeholder="Amount"
+              className="!h-8 !w-24 !px-3 text-sm"
+            />
+          </Row>
+          <Tooltip text={fromBalanceError}>
+            <Button
+              className="w-fit font-bold"
+              color="light-orange"
+              size="sm"
+              disabled={fromBalanceError !== null}
+              onClick={async () => {
+                await fetch('/api/transfer-money', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    amount,
+                    to: fund.id,
+                    from: userId,
+                  }),
+                })
+              }}
+            >
+              Donate
+            </Button>
+          </Tooltip>
         </Card>
         <Card className="flex flex-col items-center justify-between">
           <div>
