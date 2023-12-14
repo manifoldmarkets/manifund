@@ -44,7 +44,7 @@ export function DonateSection(props: {
                 'w-fit font-bold'
               )}
             >
-              Check out
+              Checkout
             </span>
           </DepositButton>
         </Card>
