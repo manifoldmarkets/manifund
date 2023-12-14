@@ -80,8 +80,8 @@ export function DonateTab(props: {
                   },
                   body: JSON.stringify({
                     amount,
-                    to: fund.id,
-                    from: userId,
+                    toId: fund.id,
+                    fromId: userId,
                   }),
                 })
               }}
