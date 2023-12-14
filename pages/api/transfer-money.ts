@@ -2,8 +2,8 @@ import { getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
-import { getTxnsByUser } from '@/db/txn'
-import { getBidsByUser } from '@/db/bid'
+import { getTxnAndProjectsByUser } from '@/db/txn'
+import { getPendingBidsByUser } from '@/db/bid'
 import { calculateCharityBalance } from '@/utils/math'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { getURL } from '@/utils/constants'
@@ -42,8 +42,8 @@ export default async function handler(req: NextRequest) {
   if (!donor) {
     return NextResponse.error()
   }
-  const txns = await getTxnsByUser(supabase, user?.id ?? '')
-  const bids = await getBidsByUser(supabase, user?.id ?? '')
+  const txns = await getTxnAndProjectsByUser(supabase, user?.id ?? '')
+  const bids = await getPendingBidsByUser(supabase, user?.id ?? '')
   const userSpendableFunds = calculateCharityBalance(
     txns,
     bids,
@@ -51,6 +51,7 @@ export default async function handler(req: NextRequest) {
     profile?.accreditation_status
   )
   if (userSpendableFunds < amount) {
+    console.error('not enough funds')
     return NextResponse.error()
   }
   const supabaseAdmin = createAdminClient()
@@ -62,7 +63,7 @@ export default async function handler(req: NextRequest) {
     project: projectId ?? null,
     type: projectId ? 'project donation' : 'profile donation',
   })
-
+  console.error(error)
   if (projectId) {
     const project = await getProjectById(supabaseAdmin, projectId)
     const postmarkVars = {
@@ -76,13 +77,18 @@ export default async function handler(req: NextRequest) {
     const regranterProfile = await getProfileById(supabaseAdmin, toId)
     if (!regranterProfile) {
       return NextResponse.error()
+    } else if (regranterProfile.type === 'individual') {
+      const postmarkVars = {
+        amount: amount,
+        donorName: donor.full_name,
+        profileUrl: `${getURL()}/${regranterProfile.username}`,
+      }
+      await sendTemplateEmail(
+        TEMPLATE_IDS.REGRANTER_DONATION,
+        postmarkVars,
+        toId
+      )
     }
-    const postmarkVars = {
-      amount: amount,
-      donorName: donor.full_name,
-      profileUrl: `${getURL()}/${regranterProfile.username}`,
-    }
-    await sendTemplateEmail(TEMPLATE_IDS.REGRANTER_DONATION, postmarkVars, toId)
   }
 
   if (error) {
