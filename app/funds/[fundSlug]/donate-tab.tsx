@@ -27,7 +27,14 @@ export function DonateTab(props: {
             </p>
           </div>
           <DepositButton userId={userId} passFundsTo={fund}>
-            <span className={buttonClass('md', 'orange')}>Check out</span>
+            <span
+              className={clsx(
+                buttonClass('sm', 'light-orange'),
+                'w-fit font-bold'
+              )}
+            >
+              Check out
+            </span>
           </DepositButton>
         </Card>
         <Card className="flex flex-col items-center justify-between gap-2">
@@ -45,7 +52,9 @@ export function DonateTab(props: {
             placeholder="Amount"
             className="w-full"
           />
-          <Button className="w-fit">Donate</Button>
+          <Button className="w-fit font-bold" color="light-orange" size="sm">
+            Donate
+          </Button>
         </Card>
         <Card className="flex flex-col items-center justify-between">
           <div>
@@ -57,7 +66,10 @@ export function DonateTab(props: {
           </div>
           <a
             href={`https://venmo.com/${fund.username}`}
-            className={clsx(buttonClass('md', 'orange'), 'w-fit')}
+            className={clsx(
+              buttonClass('sm', 'light-orange'),
+              'w-fit font-bold'
+            )}
           >
             See details
           </a>
