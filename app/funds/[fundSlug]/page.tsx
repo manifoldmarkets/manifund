@@ -10,7 +10,7 @@ import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getPendingBidsByUser } from '@/db/bid'
 import { calculateCharityBalance } from '@/utils/math'
 import Image from 'next/image'
-import { DonateTab } from './donate-tab'
+import { DonateSection } from './donate-section'
 
 export default async function FundPage(props: {
   params: { fundSlug: string }
@@ -44,10 +44,10 @@ export default async function FundPage(props: {
           alt="fund header image"
         />
       )}
-      <h1 className="mt-4 text-4xl font-bold">{fund.full_name}</h1>
+      <h1 className="mt-4 text-4xl font-bold">{fund.full_name} fund</h1>
       <span className="text-gray-600">{fund.bio}</span>
       {user && (
-        <DonateTab
+        <DonateSection
           userId={user.id}
           fund={fund as Profile}
           charityBalance={charityBalance}

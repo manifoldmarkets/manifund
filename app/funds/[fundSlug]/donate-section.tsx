@@ -6,13 +6,12 @@ import { AmountInput } from '@/components/input'
 import { Card } from '@/components/layout/card'
 import { Profile } from '@/db/profile'
 import { useState } from 'react'
-
-import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
 import { formatMoneyPrecise } from '@/utils/formatting'
+import clsx from 'clsx'
 
-export function DonateTab(props: {
+export function DonateSection(props: {
   fund: Profile
   userId: string
   charityBalance: number
