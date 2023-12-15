@@ -25,6 +25,7 @@ import {
   calculateValuationAfterTrade,
   getTradeErrorMessage,
 } from '@/utils/amm'
+import { useRouter } from 'next/navigation'
 
 const MODES = [
   {
@@ -128,6 +129,7 @@ function TradeInputsPanel(props: {
     ? calculateAMMPorfolio(ammTxns, projectId)
     : [0, 0]
   const [submitting, setSubmitting] = useState(false)
+  const router = useRouter()
 
   const mode = MODES.find((mode) => mode.id === modeId)
   const isLimitOrder = !!setModeId
@@ -182,6 +184,7 @@ function TradeInputsPanel(props: {
     })
     setAmount(0)
     setSubmitting(false)
+    router.refresh()
   }
 
   const errorMessage = getTradeErrorMessage(
