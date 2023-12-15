@@ -11,6 +11,10 @@ import { getPendingBidsByUser } from '@/db/bid'
 import { calculateCharityBalance } from '@/utils/math'
 import Image from 'next/image'
 import { DonateSection } from './donate-section'
+import Link from 'next/link'
+import { buttonClass } from '@/components/button'
+import clsx from 'clsx'
+import { Row } from '@/components/layout/row'
 
 export default async function FundPage(props: {
   params: { fundSlug: string }
@@ -47,12 +51,20 @@ export default async function FundPage(props: {
       <h1 className="mt-4 text-4xl font-bold">{fund.full_name} fund</h1>
       <span className="text-gray-600">{fund.bio}</span>
       {user && (
-        <DonateSection
-          userId={user.id}
-          fund={fund as Profile}
-          charityBalance={charityBalance}
-        />
+        <Row className="my-10 justify-center">
+          <Link
+            className={clsx(buttonClass('xl', 'gradient'), 'font-semibold')}
+            href="/login"
+          >
+            Sign in to donate
+          </Link>
+        </Row>
       )}
+      <DonateSection
+        userId={user?.id}
+        fund={fund as Profile}
+        charityBalance={charityBalance}
+      />
       <RichContent className="mt-6" content={fund.long_description} />
     </div>
   )
