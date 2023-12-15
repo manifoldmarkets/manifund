@@ -50,7 +50,7 @@ export default async function FundPage(props: {
       )}
       <h1 className="mt-4 text-4xl font-bold">{fund.full_name} fund</h1>
       <span className="text-gray-600">{fund.bio}</span>
-      {user && (
+      {!user && (
         <Row className="my-10 justify-center">
           <Link
             className={clsx(buttonClass('xl', 'gradient'), 'font-semibold')}
