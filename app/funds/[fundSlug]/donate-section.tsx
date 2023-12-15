@@ -13,7 +13,7 @@ import clsx from 'clsx'
 
 export function DonateSection(props: {
   fund: Profile
-  userId: string
+  userId?: string
   charityBalance: number
 }) {
   const { fund, userId, charityBalance } = props
@@ -37,16 +37,18 @@ export function DonateSection(props: {
               Any funds you deposit will go straight to {fund.full_name}.
             </p>
           </div>
-          <DepositButton userId={userId} passFundsTo={fund}>
-            <span
-              className={clsx(
-                buttonClass('sm', 'light-orange'),
-                'w-fit font-bold'
-              )}
-            >
-              Checkout
-            </span>
-          </DepositButton>
+          {userId && (
+            <DepositButton userId={userId} passFundsTo={fund}>
+              <span
+                className={clsx(
+                  buttonClass('sm', 'light-orange'),
+                  'w-fit font-bold'
+                )}
+              >
+                Checkout
+              </span>
+            </DepositButton>
+          )}
         </Card>
         <Card className="flex flex-col items-center justify-between gap-4">
           <div>
@@ -56,40 +58,44 @@ export function DonateSection(props: {
               {fund.full_name}.
             </p>
           </div>
-          <Row className="items-center justify-center gap-1 text-gray-500">
-            $
-            <AmountInput
-              amount={amount}
-              onChangeAmount={setAmount}
-              placeholder="Amount"
-              className="!h-8 !w-24 !px-3 text-sm"
-            />
-          </Row>
-          <Tooltip text={fromBalanceError}>
-            <Button
-              className="w-fit font-bold"
-              color="light-orange"
-              size="sm"
-              disabled={fromBalanceError !== null}
-              onClick={async () => {
-                await fetch('/api/transfer-money', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    amount,
-                    toId: fund.id,
-                    fromId: userId,
-                  }),
-                })
-              }}
-            >
-              Donate
-            </Button>
-          </Tooltip>
+          {userId && (
+            <>
+              <Row className="items-center justify-center gap-1 text-gray-500">
+                $
+                <AmountInput
+                  amount={amount}
+                  onChangeAmount={setAmount}
+                  placeholder="Amount"
+                  className="!h-8 !w-24 !px-3 text-sm"
+                />
+              </Row>
+              <Tooltip text={fromBalanceError}>
+                <Button
+                  className="w-fit font-bold"
+                  color="light-orange"
+                  size="sm"
+                  disabled={fromBalanceError !== null}
+                  onClick={async () => {
+                    await fetch('/api/transfer-money', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        amount,
+                        toId: fund.id,
+                        fromId: userId,
+                      }),
+                    })
+                  }}
+                >
+                  Donate
+                </Button>
+              </Tooltip>
+            </>
+          )}
         </Card>
-        <Card className="flex flex-col items-center justify-between">
+        <Card className="flex flex-col items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-bold">Wire, ACH, or DAF</h3>
             <p className="text-gray-600">
