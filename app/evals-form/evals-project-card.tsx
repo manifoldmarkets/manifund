@@ -87,7 +87,7 @@ export function EvalsProjectCard(props: {
                     disabled={confidenceMap[project.id] < 0.1}
                     className="disabled:opacity-50"
                   >
-                    <RightCarrotIcon className="rotate-180" color="#6b7280" />
+                    <RightCarrotIcon className="rotate-180" />
                   </button>
                   <p className="text-xs">{confidenceMap[project.id] * 100}%</p>
                   <button
@@ -103,7 +103,7 @@ export function EvalsProjectCard(props: {
                     disabled={confidenceMap[project.id] > 0.9}
                     className="disabled:opacity-50"
                   >
-                    <RightCarrotIcon color="#6b7280" />
+                    <RightCarrotIcon />
                   </button>
                 </Row>
                 <p className="text-[0.6rem]">confidence</p>

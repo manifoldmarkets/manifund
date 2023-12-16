@@ -183,10 +183,7 @@ function AboutMeSection(props: { content: any }) {
     <div className="flex flex-col gap-2 rounded-md bg-white p-4 ring-2 ring-orange-600">
       <Row className="items-center gap-2 text-sm text-gray-900">
         <button onClick={() => setExpanded(!expanded)}>
-          <RightCarrotIcon
-            className={clsx(expanded && 'rotate-90')}
-            color="black"
-          />
+          <RightCarrotIcon className={clsx(expanded && 'rotate-90')} />
         </button>
         About Me
       </Row>
