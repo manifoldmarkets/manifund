@@ -1,18 +1,14 @@
 import clsx from 'clsx'
 
 // Color is a hex code
-export function RightCarrotIcon(props: {
-  color: string
-  className?: string
-  size?: number
-}) {
-  const { color, className, size = 16 } = props
+export function RightCarrotIcon(props: { className?: string; size?: number }) {
+  const { className, size = 16 } = props
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
-      fill={color}
+      fill="currentColor"
       className={clsx('bi bi-caret-right-fill', className)}
       viewBox="0 0 16 16"
     >
