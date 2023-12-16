@@ -6,7 +6,10 @@ import {
   getProfileById,
 } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
-import { getTxnAndProjectsByUser } from '@/db/txn'
+import {
+  getTxnAndProjectsByUser,
+  getIncomingTxnsByUserWithDonor,
+} from '@/db/txn'
 import { getPendingBidsByUser } from '@/db/bid'
 import { calculateCharityBalance } from '@/utils/math'
 import Image from 'next/image'
@@ -15,6 +18,7 @@ import Link from 'next/link'
 import { buttonClass } from '@/components/button'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
+import { ExpandableDonationsHistory } from '@/components/donations-history'
 
 export default async function FundPage(props: {
   params: { fundSlug: string }
@@ -26,6 +30,7 @@ export default async function FundPage(props: {
   if (!fund) {
     return <div>Fund not found</div>
   }
+  const fundTxns = await getIncomingTxnsByUserWithDonor(supabase, fund.id)
   const userTxns = user ? await getTxnAndProjectsByUser(supabase, user.id) : []
   const userBids = user ? await getPendingBidsByUser(supabase, user.id) : []
   const userProfile = user ? await getProfileById(supabase, user.id) : null
@@ -65,6 +70,7 @@ export default async function FundPage(props: {
         fund={fund as Profile}
         charityBalance={charityBalance}
       />
+      <ExpandableDonationsHistory donations={fundTxns} />
       <RichContent className="mt-6" content={fund.long_description} />
     </div>
   )
