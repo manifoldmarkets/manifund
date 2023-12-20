@@ -134,7 +134,6 @@ export async function ProfileSummary(props: { profile: Profile }) {
         username={profile.username}
         avatarUrl={profile.avatar_url}
         id={profile.id}
-        size={14}
       />
       <Col className="w-full items-start">
         <Link href={`/${profile.username}`} className="w-full font-medium">
