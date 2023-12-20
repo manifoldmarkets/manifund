@@ -46,21 +46,15 @@ export default async function handler(req: NextRequest) {
   }
   const ammTxns = await getTxnsByUser(supabase, projectId)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
-  const ammSharesAtTrade = valuation
-    ? ammSharesAtValuation(ammShares * ammUSD, valuation)
-    : ammShares
-  const ammUSDAtTrade = valuation
-    ? (ammShares * ammUSD) / ammSharesAtTrade
-    : ammUSD
   const numDollars = buying
     ? amount
     : !!valuation
     ? (amount / TOTAL_SHARES) * valuation
-    : calculateSellPayout(amount, ammSharesAtTrade, ammUSDAtTrade)
+    : calculateSellPayout(amount, ammShares, ammUSD)
   const numShares = buying
     ? !!valuation
       ? (amount / valuation) * TOTAL_SHARES
-      : calculateBuyShares(amount, ammSharesAtTrade, ammUSDAtTrade)
+      : calculateBuyShares(amount, ammShares, ammUSD)
     : amount
   const userTxns = await getTxnAndProjectsByUser(supabase, user.id)
   const userBids = await getBidsByUser(supabase, user.id)
@@ -88,8 +82,8 @@ export default async function handler(req: NextRequest) {
   )
   const errorMessage = getTradeErrorMessage(
     buying ? 'buy' : 'sell',
-    ammSharesAtTrade,
-    ammUSDAtTrade,
+    ammShares,
+    ammUSD,
     userSpendableFunds,
     userSellableShares,
     !!valuation,
@@ -98,6 +92,7 @@ export default async function handler(req: NextRequest) {
     numShares / TOTAL_SHARES
   )
   if (errorMessage) {
+    console.error(errorMessage)
     return new Response(errorMessage, { status: 400 })
   }
   if (valuation) {
