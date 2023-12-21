@@ -96,7 +96,12 @@ function TradeHistory(props: { txns: TxnAndProfiles[]; creatorId: string }) {
       txn.type === 'user to user trade' || txn.type === 'user to amm trade'
   )
   const bundledTxns = bundleTxns(tradeTxns)
-  const tradeDisplay = bundledTxns.flatMap((bundle) => {
+  const sortedBundles = orderBy(
+    bundledTxns,
+    (bundle) => bundle[0].created_at,
+    'desc'
+  )
+  const tradeDisplay = sortedBundles.flatMap((bundle) => {
     const usdTxn = bundle.find((txn) => txn.token === 'USD')
     const sharesTxn = bundle.find((txn) => txn.token !== 'USD')
     const amountUSD = usdTxn?.amount ?? 0
