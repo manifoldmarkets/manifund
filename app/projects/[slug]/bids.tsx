@@ -16,6 +16,7 @@ import { useSupabase } from '@/db/supabase-provider'
 import { Modal } from '@/components/modal'
 import { Profile } from '@/db/profile'
 import { Avatar } from '@/components/avatar'
+import { formatDistanceToNow } from 'date-fns'
 
 export function Bids(props: {
   bids: BidAndProfile[]
@@ -26,7 +27,6 @@ export function Bids(props: {
 }) {
   const { bids, project, userSpendableFunds, userSellableShares, userProfile } =
     props
-
   if (bids.length === 0)
     return (
       <p className="text-center italic text-gray-500">
@@ -110,37 +110,48 @@ function Bid(props: {
   const showTrade =
     userProfile && bid.bidder !== userProfile.id && bid.type !== 'assurance buy'
   return (
-    <Row className="w-full items-center justify-between gap-3 rounded p-3 text-sm hover:bg-gray-200">
-      <UserAvatarAndBadge profile={bid.profiles} className="hidden sm:flex" />
-      <Avatar
-        size="xs"
-        username={bid.profiles.username}
-        avatarUrl={bid.profiles.avatar_url}
-        id={bid.bidder}
-        className="sm:hidden"
-      />
-      {showValuation ? (
-        <div>
-          {formatMoney(bid.amount)} <span className="text-gray-500"> @ </span>
-          {formatMoney(bid.valuation)}
-          <span className="text-gray-500"> valuation</span>
-        </div>
-      ) : (
-        <div>{formatMoney(bid.amount)}</div>
-      )}
-      {userProfile && bid.bidder === userProfile.id && (
-        <DeleteBid bidId={bid.id} />
-      )}
-      {showTrade && (
-        <Trade
-          bid={bid}
-          project={project}
-          userId={userProfile.id}
-          userSpendableFunds={userSpendableFunds ?? 0}
-          userSellableShares={userSellableShares ?? 0}
+    <div className="grid w-full grid-cols-3 items-center gap-3 rounded p-3 text-sm hover:bg-gray-200">
+      <Row className="justify-start">
+        <UserAvatarAndBadge profile={bid.profiles} className="hidden sm:flex" />
+        <Avatar
+          size="xs"
+          username={bid.profiles.username}
+          avatarUrl={bid.profiles.avatar_url}
+          id={bid.bidder}
+          className="sm:hidden"
         />
-      )}
-    </Row>
+      </Row>
+      <Row className="justify-end">
+        {showValuation ? (
+          <div>
+            {formatMoney(bid.amount)} <span className="text-gray-500"> @ </span>
+            {formatMoney(bid.valuation)}
+            <span className="text-gray-500"> valuation</span>
+          </div>
+        ) : (
+          <div>{formatMoney(bid.amount)}</div>
+        )}
+        {userProfile && bid.bidder === userProfile.id && (
+          <DeleteBid bidId={bid.id} />
+        )}
+        {showTrade && (
+          <Trade
+            bid={bid}
+            project={project}
+            userId={userProfile.id}
+            userSpendableFunds={userSpendableFunds ?? 0}
+            userSellableShares={userSellableShares ?? 0}
+          />
+        )}
+      </Row>
+      <Row className="justify-end">
+        <span className="hidden text-right text-gray-500 sm:block">
+          {formatDistanceToNow(new Date(bid.created_at), {
+            addSuffix: true,
+          })}
+        </span>
+      </Row>
+    </div>
   )
 }
 

@@ -34,6 +34,7 @@ export async function getPendingBidsByUser(
     .select('*, projects(creator, stage, type)')
     .eq('bidder', userId)
     .eq('status', 'pending')
+    .order('created_at', { ascending: false })
   if (error) {
     throw error
   }
