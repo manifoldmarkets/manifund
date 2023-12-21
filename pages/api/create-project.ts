@@ -49,9 +49,9 @@ export default async function handler(req: NextRequest) {
       : 'proposal'
   const type = !!selectedPrize ? 'cert' : 'grant'
   const slug = await projectSlugify(title, supabase)
-  const id = uuid()
+  const projectId = uuid()
   const project = {
-    id,
+    id: projectId,
     title,
     blurb: subtitle,
     description,
@@ -72,15 +72,16 @@ export default async function handler(req: NextRequest) {
     signed_agreement: false,
   } as Project
   await supabase.from('projects').insert(project).throwOnError()
+  await upvoteOwnProject(supabase, projectId, user.id)
   await updateProjectCauses(supabase, causeSlugs, project.id)
-  await giveCreatorShares(supabase, id, user.id)
+  await giveCreatorShares(supabase, projectId, user.id)
   const prizeCause = await getPrizeCause(causeSlugs, supabase)
   if (type === 'cert' && prizeCause) {
     const certParams = prizeCause.cert_params
     if (certParams?.proposalPhase) {
       await addBid(
         supabase,
-        id,
+        projectId,
         user.id,
         getMinIncludingAmm(project),
         getProposalValuation(project),
@@ -93,7 +94,7 @@ export default async function handler(req: NextRequest) {
         to_id: user.id,
         amount: certParams.ammDollars,
         token: 'USD',
-        project: id,
+        project: projectId,
         type: 'project donation',
       })
       await seedAmm(project, supabaseAdmin, certParams.ammDollars)
@@ -137,6 +138,23 @@ async function addBid(
     type: type,
   }
   const { error } = await supabase.from('bids').insert([bid])
+  if (error) {
+    console.error('create-project', error)
+  }
+}
+
+async function upvoteOwnProject(
+  supabase: SupabaseClient,
+  projectId: string,
+  userId: string
+) {
+  const { error } = await supabase.from('project_votes').insert([
+    {
+      project_id: projectId,
+      voter_id: userId,
+      magnitude: 1,
+    },
+  ])
   if (error) {
     console.error('create-project', error)
   }
