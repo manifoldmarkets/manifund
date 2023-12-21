@@ -34,13 +34,12 @@ export default async function handler() {
     const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
     return (
       isBefore(closeDate, now) &&
-      project.type === 'grant' &&
       // Only send notifs once per week
       differenceInDays(closeDate, now) % 7 === 0
     )
   })
   for (const project of proposalsPastDeadline ?? []) {
-    await closeGrant(
+    await closeProject(
       project,
       project.bids,
       project.profiles?.full_name ?? '',
@@ -50,7 +49,7 @@ export default async function handler() {
   return NextResponse.json('closed grants')
 }
 
-async function closeGrant(
+async function closeProject(
   project: Project,
   bids: Bid[],
   creatorName: string,
@@ -58,7 +57,7 @@ async function closeGrant(
 ) {
   const amountRaised = getAmountRaised(project, bids)
   if (amountRaised >= project.min_funding) {
-    if (!project.signed_agreement) {
+    if (project.type === 'grant' && !project.signed_agreement) {
       await sendTemplateEmail(
         TEMPLATE_IDS.GENERIC_NOTIF,
         {
@@ -70,7 +69,7 @@ async function closeGrant(
         project.creator
       )
     }
-    if (!project.approved) {
+    if (project.type === 'grant' && !project.approved) {
       await sendTemplateEmail(
         TEMPLATE_IDS.GENERIC_NOTIF,
         {
@@ -85,7 +84,7 @@ async function closeGrant(
     }
   } else {
     await supabase
-      .rpc('reject_grant', {
+      .rpc('reject_proposal', {
         project_id: project.id,
       })
       .throwOnError()
