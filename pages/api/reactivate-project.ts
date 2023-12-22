@@ -20,11 +20,10 @@ export default async function handler(req: NextRequest) {
     console.error('no project or user')
     return Response.error()
   }
-  const prizeCause =
-    (await getPrizeCause(
-      project.causes.map((c) => c.slug),
-      supabase
-    )) ?? undefined
+  const prizeCause = await getPrizeCause(
+    project.causes.map((c) => c.slug),
+    supabase
+  )
   if (!checkReactivateEligible(project, prizeCause)) {
     console.error('not eligible')
     return Response.error()

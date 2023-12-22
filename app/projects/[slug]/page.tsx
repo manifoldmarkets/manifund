@@ -48,11 +48,10 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     getTxnsByProject(supabase, project.id),
     listMiniCauses(supabase),
   ])
-  const prizeCause =
-    (await getPrizeCause(
-      project.causes.map((c) => c.slug),
-      supabase
-    )) ?? undefined
+  const prizeCause = await getPrizeCause(
+    project.causes.map((c) => c.slug),
+    supabase
+  )
   const creatorEmail = userProfile?.regranter_status
     ? await getUserEmail(createAdminClient(), project.creator)
     : undefined

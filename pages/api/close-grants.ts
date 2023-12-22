@@ -7,6 +7,8 @@ import { Bid } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { isProd } from '@/db/env'
+import { Cause, getPrizeCause } from '@/db/cause'
+import { checkReactivateEligible } from '@/app/projects/[slug]/reactivate-button'
 
 export const config = {
   runtime: 'edge',
@@ -23,7 +25,9 @@ export default async function handler() {
   const supabase = createAdminClient()
   const { data: proposals, error } = await supabase
     .from('projects')
-    .select('*, bids(*), profiles!projects_creator_fkey(full_name)')
+    .select(
+      '*, bids(*), profiles!projects_creator_fkey(full_name), causes(slug)'
+    )
     .eq('stage', 'proposal')
   if (error) {
     console.error(error)
@@ -39,11 +43,16 @@ export default async function handler() {
     )
   })
   for (const project of proposalsPastDeadline ?? []) {
+    const prizeCause = await getPrizeCause(
+      project.causes.map((c) => c.slug),
+      supabase
+    )
     await closeProject(
       project,
       project.bids,
       project.profiles?.full_name ?? '',
-      supabase
+      supabase,
+      prizeCause
     )
   }
   return NextResponse.json('closed grants')
@@ -53,7 +62,8 @@ async function closeProject(
   project: Project,
   bids: Bid[],
   creatorName: string,
-  supabase: SupabaseClient
+  supabase: SupabaseClient,
+  prizeCause?: Cause
 ) {
   const amountRaised = getAmountRaised(project, bids)
   if (amountRaised >= project.min_funding) {
@@ -88,9 +98,18 @@ async function closeProject(
         project_id: project.id,
       })
       .throwOnError()
+    const reactivateEligible = checkReactivateEligible(project, prizeCause)
     const recipientPostmarkVars = {
       recipientFullName: creatorName,
-      verdictMessage: `We regret to inform you that your project, "${project.title}," has not been funded. It received $${amountRaised} in funding offers but had a minimum funding goal of $${project.min_funding}. Thank you for posting your project, and please let us know on our discord if you have any questions or feedback about the process.`,
+      verdictMessage: `We regret to inform you that your project, "${
+        project.title
+      }," has not been funded. It received $${amountRaised} in funding offers but had a minimum funding goal of $${
+        project.min_funding
+      }. ${
+        reactivateEligible
+          ? "You can activate your project from your project page if you'd like your project to stay eligible for trading and retroactive funding, though you will still not recieve any upfront funding."
+          : ''
+      } Thank you for posting your project, and please let us know on our discord if you have any questions or feedback about the process.`,
       projectUrl: `https://manifund.org/projects/${project.slug}`,
       subject: `Manifund project not funded: "${project.title}"`,
       adminName: 'Rachel',
