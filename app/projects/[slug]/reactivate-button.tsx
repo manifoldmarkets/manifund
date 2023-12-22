@@ -57,7 +57,6 @@ export function ReactivateButton(props: { projectId: string }) {
             loading={isSubmitting}
             onClick={async () => {
               setIsSubmitting(true)
-              // TODO: Make different endpoint for this
               const response = await fetch('/api/reactivate-project', {
                 method: 'POST',
                 headers: {
@@ -72,7 +71,7 @@ export function ReactivateButton(props: { projectId: string }) {
               router.refresh()
             }}
           >
-            Transfer money
+            Reactivate
           </Button>
         </div>
       </Modal>

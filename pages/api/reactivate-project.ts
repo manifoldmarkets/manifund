@@ -17,6 +17,7 @@ export default async function handler(req: NextRequest) {
   const user = await getUser(supabase)
   const project = await getProjectWithCausesById(supabase, projectId)
   if (!project || !user || user.id !== project.creator) {
+    console.error('no project or user')
     return Response.error()
   }
   const prizeCause =
@@ -25,6 +26,7 @@ export default async function handler(req: NextRequest) {
       supabase
     )) ?? undefined
   if (!checkReactivateEligible(project, prizeCause)) {
+    console.error('not eligible')
     return Response.error()
   }
   await reactivateProject(supabase, projectId)
@@ -32,9 +34,11 @@ export default async function handler(req: NextRequest) {
 }
 
 async function reactivateProject(supabase: SupabaseClient, projectId: string) {
-  await supabase
+  const { error } = await supabase
     .from('projects')
     .update({ stage: 'active', amm_shares: 0 })
     .eq('id', projectId)
-  return NextResponse.json('success')
+  if (error) {
+    console.error(error)
+  }
 }

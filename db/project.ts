@@ -236,8 +236,5 @@ export async function getProjectWithCausesById(
     .eq('id', projectId)
     .maybeSingle()
     .throwOnError()
-  if (data === null) {
-    return null
-  }
-  return data[0] as ProjectWithCauses
+  return data ? (data as ProjectWithCauses) : undefined
 }
