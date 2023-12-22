@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/button'
 import { Modal } from '@/components/modal'
-import { Tooltip } from '@/components/tooltip'
 import { Cause } from '@/db/cause'
 import { Project } from '@/db/project'
 import { Dialog } from '@headlessui/react'
@@ -10,8 +9,8 @@ import { FireIcon } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function ReactivateButton(props: { project: Project }) {
-  const { project } = props
+export function ReactivateButton(props: { projectId: string }) {
+  const { projectId } = props
   const [modalOpen, setModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -59,14 +58,15 @@ export function ReactivateButton(props: { project: Project }) {
             onClick={async () => {
               setIsSubmitting(true)
               // TODO: Make different endpoint for this
-              const response = await fetch('/api/move-cash-to-charity', {
+              const response = await fetch('/api/reactivate-project', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({}),
+                body: JSON.stringify({
+                  projectId,
+                }),
               })
-              const json = await response.json()
               setModalOpen(false)
               setIsSubmitting(false)
               router.refresh()
@@ -80,10 +80,7 @@ export function ReactivateButton(props: { project: Project }) {
   )
 }
 
-export function checkReactivationEligibility(
-  project: Project,
-  prizeCause?: Cause
-) {
+export function checkReactivateEligible(project: Project, prizeCause?: Cause) {
   if (
     project.stage === 'not funded' &&
     project.type === 'cert' &&

@@ -32,10 +32,7 @@ import { AssuranceBuyBox } from './assurance-buy-box'
 import { calculateTradePoints } from '@/utils/amm'
 import { CertValuationChart } from './valuation-chart'
 import { RichContent } from '@/components/editor'
-import {
-  ReactivateButton,
-  checkReactivationEligibility,
-} from './reactivate-button'
+import { ReactivateButton, checkReactivateEligible } from './reactivate-button'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -197,8 +194,8 @@ export function ProjectDisplay(props: {
               userSellableShares={userSellableShares}
             />
           )}
-        {isOwnProject && checkReactivationEligibility(project, prizeCause) && (
-          <ReactivateButton project={project} />
+        {isOwnProject && checkReactivateEligible(project, prizeCause) && (
+          <ReactivateButton projectId={project.id} />
         )}
         {userProfile &&
           userProfile.id !== project.creator &&
