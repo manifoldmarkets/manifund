@@ -2,10 +2,11 @@
 
 import { Button } from '@/components/button'
 import { Modal } from '@/components/modal'
-import { FullProject } from '@/db/project'
+import { Cause } from '@/db/cause'
+import { FullProject, Project } from '@/db/project'
 import { useState } from 'react'
 
-export function ReactivateButton(props: { project: FullProject }) {
+export function ReactivateButton(props: { project: Project }) {
   const { project } = props
   const [modalOpen, setModalOpen] = useState(false)
   return (
@@ -24,4 +25,20 @@ export function ReactivateButton(props: { project: FullProject }) {
       </Modal>
     </>
   )
+}
+
+export function checkReactivationEligibility(
+  project: Project,
+  prizeCause?: Cause
+) {
+  if (
+    project.stage === 'not funded' &&
+    project.type === 'cert' &&
+    prizeCause &&
+    prizeCause.cert_params &&
+    prizeCause.cert_params.judgeUnfundedProjects
+  ) {
+    return true
+  }
+  return false
 }

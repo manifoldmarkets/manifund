@@ -9,7 +9,7 @@ import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
-import { MiniCause } from '@/db/cause'
+import { Cause, MiniCause } from '@/db/cause'
 import { TxnAndProfiles, TxnAndProject } from '@/db/txn'
 import {
   calculateCashBalance,
@@ -32,6 +32,10 @@ import { AssuranceBuyBox } from './assurance-buy-box'
 import { calculateTradePoints } from '@/utils/amm'
 import { CertValuationChart } from './valuation-chart'
 import { RichContent } from '@/components/editor'
+import {
+  ReactivateButton,
+  checkReactivationEligibility,
+} from './reactivate-button'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -41,6 +45,7 @@ export function ProjectDisplay(props: {
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]
   causesList: MiniCause[]
+  prizeCause?: Cause
   userProfile?: Profile
   creatorEmail?: string
   userIsAdmin?: boolean
@@ -55,6 +60,7 @@ export function ProjectDisplay(props: {
     userProfile,
     creatorEmail,
     causesList,
+    prizeCause,
     userIsAdmin,
   } = props
   const userSpendableFunds = Math.max(
@@ -176,8 +182,7 @@ export function ProjectDisplay(props: {
         />
         {userProfile &&
           project.type === 'cert' &&
-          project.stage !== 'proposal' &&
-          project.stage !== 'hidden' && (
+          project.stage === 'active' && (
             <Trade
               ammTxns={
                 !!project.amm_shares
@@ -192,6 +197,9 @@ export function ProjectDisplay(props: {
               userSellableShares={userSellableShares}
             />
           )}
+        {isOwnProject && checkReactivationEligibility(project, prizeCause) && (
+          <ReactivateButton project={project} />
+        )}
         {userProfile &&
           userProfile.id !== project.creator &&
           project.type === 'cert' &&
