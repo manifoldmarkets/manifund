@@ -17,6 +17,7 @@ export type CertParams = {
   ammOwnedByCreator: boolean
   defaultInvestorShares: number
   adjustableInvestmentStructure: boolean
+  judgeUnfundedProjects: boolean
 }
 
 export async function listFullCauses(supabase: SupabaseClient) {
@@ -58,7 +59,7 @@ export async function getPrizeCause(
   if (error) {
     throw error
   }
-  return data ? (data as Cause) : null
+  return data ? (data as Cause) : undefined
 }
 
 export async function updateProjectCauses(

@@ -7,7 +7,7 @@ import { getTxnsByProject, getTxnAndProjectsByUser } from '@/db/txn'
 import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
 import { ProjectDisplay } from './project-display'
-import { listMiniCauses } from '@/db/cause'
+import { getPrizeCause, listMiniCauses } from '@/db/cause'
 import { getBidsByUser } from '@/db/bid'
 
 export const revalidate = 0
@@ -48,6 +48,10 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     getTxnsByProject(supabase, project.id),
     listMiniCauses(supabase),
   ])
+  const prizeCause = await getPrizeCause(
+    project.causes.map((c) => c.slug),
+    supabase
+  )
   const creatorEmail = userProfile?.regranter_status
     ? await getUserEmail(createAdminClient(), project.creator)
     : undefined
@@ -64,6 +68,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
         creatorEmail={creatorEmail}
         userProfile={userProfile ?? undefined}
         causesList={causesList}
+        prizeCause={prizeCause}
         userIsAdmin={userIsAdmin}
       />
     </div>

@@ -718,6 +718,12 @@ export interface Database {
         }
         Returns: undefined
       }
+      reject_proposal: {
+        Args: {
+          project_id: string
+        }
+        Returns: undefined
+      }
       transfer_project:
         | {
             Args: {
