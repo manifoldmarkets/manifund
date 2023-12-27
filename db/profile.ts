@@ -12,7 +12,11 @@ export type ProfileAndProjectTitles = Profile & {
 export type ProfileAndEvals = Profile & { project_evals: ProjectEval[] }
 
 export function isAdmin(user: User | null) {
-  const ADMINS = ['rachel.weinberg12@gmail.com', 'akrolsmir@gmail.com']
+  const ADMINS = [
+    'rachel.weinberg12@gmail.com',
+    'akrolsmir@gmail.com',
+    'dave@manifund.org',
+  ]
   return ADMINS.includes(user?.email ?? '')
 }
 
