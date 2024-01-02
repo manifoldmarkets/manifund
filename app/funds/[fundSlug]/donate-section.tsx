@@ -10,6 +10,7 @@ import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
 import { formatMoneyPrecise } from '@/utils/formatting'
 import clsx from 'clsx'
+import { useRouter } from 'next/navigation'
 
 export function DonateSection(props: {
   fund: Profile
@@ -19,6 +20,7 @@ export function DonateSection(props: {
   const { fund, userId, charityBalance } = props
   const [amount, setAmount] = useState<number>()
   let fromBalanceError = null
+  const router = useRouter()
   if (!amount) {
     fromBalanceError = 'Please enter an amount'
   } else if (amount > charityBalance) {
@@ -87,6 +89,7 @@ export function DonateSection(props: {
                         fromId: userId,
                       }),
                     })
+                    router.refresh()
                   }}
                 >
                   Donate
