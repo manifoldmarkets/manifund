@@ -43,6 +43,5 @@ export default async function handler(req: NextRequest) {
     undefined,
     'final report'
   )
-  // TODO: add email to investors/shareholders
   return NextResponse.json('success')
 }

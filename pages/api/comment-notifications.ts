@@ -60,6 +60,8 @@ export default async function handler(
     })
   }
 
+  // TODO: Add donors to shareholders and send special emial for final report
+
   // Send mentioned user emails
   await Promise.all(
     mentionedUserIds

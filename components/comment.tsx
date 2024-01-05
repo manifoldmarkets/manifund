@@ -93,6 +93,13 @@ export function Comment(props: {
                 })}
               </p>
             </Row>
+            {comment.special_type && (
+              <Tag
+                text={comment.special_type}
+                className="text-xs"
+                color="blue"
+              />
+            )}
           </Row>
           <div
             id="content"
