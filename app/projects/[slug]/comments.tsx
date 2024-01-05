@@ -303,12 +303,12 @@ export function WriteComment(props: {
               project.stage === 'active' && (
                 <button
                   onClick={() => {
-                    setIsCreatorUpdate(!isCreatorUpdate)
-                    if (isCreatorUpdate) {
-                      editor?.commands.setContent
+                    if (!isCreatorUpdate) {
+                      editor?.commands.setContent(CREATOR_UPDATE_OUTLINE)
                     } else {
                       editor?.commands.clearContent()
                     }
+                    setIsCreatorUpdate(!isCreatorUpdate)
                   }}
                   className="h-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 hover:cursor-pointer hover:bg-blue-200"
                 >
