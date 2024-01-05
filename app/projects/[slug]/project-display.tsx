@@ -226,7 +226,11 @@ export function ProjectDisplay(props: {
           <RichContent content={project.description} className="px-3 text-sm" />
         )}
         {(isOwnProject || userIsAdmin) && (
-          <CreatorActionPanel project={project} causesList={causesList} />
+          <CreatorActionPanel
+            project={project}
+            causesList={causesList}
+            prizeCause={prizeCause}
+          />
         )}
         {/* {isOwnProject && checkReactivateEligible(project, prizeCause) && (
           <ReactivateButton projectId={project.id} />

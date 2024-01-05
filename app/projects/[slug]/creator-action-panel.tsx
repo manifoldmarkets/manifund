@@ -22,8 +22,9 @@ import { FireIcon } from '@heroicons/react/20/solid'
 export function CreatorActionPanel(props: {
   project: FullProject
   causesList: MiniCause[]
+  prizeCause?: Cause
 }) {
-  const { project, causesList } = props
+  const { project, causesList, prizeCause } = props
   return (
     <Row className="justify-end">
       <Row className="flex-row-reverse items-center">
@@ -31,8 +32,15 @@ export function CreatorActionPanel(props: {
           <Edit project={project} causesList={causesList} />
         </div>
         <Row className="relative left-3 items-center gap-1 rounded bg-orange-500 p-1 pr-3">
-          <ProgressUpdateButton project={project} />
-          <CloseProjectButton projectId={project.id} />
+          {project.stage === 'active' && (
+            <ProgressUpdateButton project={project} />
+          )}
+          {project.stage === 'active' && (
+            <CloseProjectButton projectId={project.id} />
+          )}
+          {checkReactivateEligible(project, prizeCause) && (
+            <ReactivateButton projectId={project.id} />
+          )}
         </Row>
       </Row>
     </Row>
