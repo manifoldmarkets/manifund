@@ -211,6 +211,7 @@ export function WriteComment(props: {
       if (!content || content.length === 0 || !editor || !htmlContent) {
         return
       }
+      // TODO: move onto edge
       await sendComment(
         supabase,
         content,

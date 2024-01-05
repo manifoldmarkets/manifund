@@ -21,9 +21,15 @@ export function CloseProjectForm(props: { projectSlug: string }) {
       <TextEditor editor={editor} />
       <Button
         size="xl"
-        onClick={() => {
-          const report = editor?.getJSON()
-          // TODO: add API call
+        onClick={async () => {
+          const reportContent = editor?.getJSON()
+          await fetch('/api/close-project', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ projectSlug, reportContent }),
+          })
           router.push(`/projects/${projectSlug}`)
         }}
       >
