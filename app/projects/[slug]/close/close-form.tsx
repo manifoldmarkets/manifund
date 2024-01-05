@@ -20,14 +20,14 @@ export function CloseProjectForm(props: { projectSlug: string }) {
     <Col className="items-center gap-5">
       <TextEditor editor={editor} />
       <Button
-        size="lg"
+        size="xl"
         onClick={() => {
           const report = editor?.getJSON()
           // TODO: add API call
           router.push(`/projects/${projectSlug}`)
         }}
       >
-        Submit
+        Submit report & close project
       </Button>
     </Col>
   )
