@@ -1,7 +1,6 @@
 'use client'
 
-import { Button, IconButton } from '@/components/button'
-import { useSupabase } from '@/db/supabase-provider'
+import { Button } from '@/components/button'
 import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
 import { ProjectWithCauses } from '@/db/project'
@@ -14,15 +13,12 @@ import { useRouter } from 'next/navigation'
 import { Col } from '@/components/layout/col'
 import { MiniCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
-import { isAdmin } from '@/db/txn'
 
 export function Edit(props: {
   project: ProjectWithCauses
   causesList: MiniCause[]
 }) {
   const { project, causesList } = props
-  const { session } = useSupabase()
-  const user = session?.user
   const [showEditor, setShowEditor] = useState(false)
   const [title, setTitle] = useState(project.title)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
@@ -30,9 +26,6 @@ export function Edit(props: {
   const [saving, setSaving] = useState(false)
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
-  if (!user || (!isAdmin(user) && user.id !== project.creator)) {
-    return null
-  }
 
   async function saveText() {
     setSaving(true)
