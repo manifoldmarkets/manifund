@@ -147,6 +147,15 @@ function genThreads(
   return orderBy(threadsArray, 'root.created_at', 'desc')
 }
 
+const CREATOR_UPDATE_OUTLINE = `
+<h3>What progress have you made since your last update?</h3>
+</br>
+<h3>What are your next steps?</h3>
+</br>
+<h3>Is there anything others could help you with?</h3>
+</br>
+`
+
 export function WriteComment(props: {
   project: Project
   commenter: Profile
@@ -164,6 +173,17 @@ export function WriteComment(props: {
     specialPrompt,
   } = props
   const { supabase } = useSupabase()
+  const [isCreatorUpdate, setIsCreatorUpdate] = useState(false)
+  useEffect(() => {
+    if (replyingTo) {
+      setIsCreatorUpdate(false)
+    }
+  }, [replyingTo])
+  const showCancelButton = !!setReplyingTo
+  const showCreatorUpdateButton =
+    !setReplyingTo &&
+    project.creator === commenter.id &&
+    project.stage === 'active'
   const startingText: JSONContent | string = !!replyingTo
     ? {
         type: 'doc',
@@ -219,7 +239,8 @@ export function WriteComment(props: {
         commenter.id,
         replyingTo?.replying_to
           ? (replyingTo.replying_to as string)
-          : replyingTo?.id
+          : replyingTo?.id,
+        isCreatorUpdate ? 'update' : undefined
       )
       if (setReplyingTo) {
         setReplyingTo(null)
@@ -263,11 +284,13 @@ export function WriteComment(props: {
           </div>
           <Row
             className={clsx(
-              'absolute inset-x-0 bottom-0 border-t border-t-gray-200 bg-white py-0.5 pl-3',
-              setReplyingTo ? 'justify-between' : 'justify-end'
+              'absolute bottom-0 w-full items-center border-t border-t-gray-200 bg-white py-0.5 pl-3',
+              showCancelButton || showCreatorUpdateButton
+                ? 'justify-between'
+                : 'justify-end'
             )}
           >
-            {setReplyingTo && (
+            {showCancelButton && (
               <button
                 onClick={() => setReplyingTo(null)}
                 className="text-sm text-gray-500 hover:cursor-pointer hover:text-gray-700"
@@ -275,6 +298,23 @@ export function WriteComment(props: {
                 Cancel
               </button>
             )}
+            {showCreatorUpdateButton &&
+              project.creator === commenter.id &&
+              project.stage === 'active' && (
+                <button
+                  onClick={() => {
+                    setIsCreatorUpdate(!isCreatorUpdate)
+                    if (isCreatorUpdate) {
+                      editor?.commands.setContent
+                    } else {
+                      editor?.commands.clearContent()
+                    }
+                  }}
+                  className="h-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 hover:cursor-pointer hover:bg-blue-200"
+                >
+                  {isCreatorUpdate ? 'Reset editor' : 'Write a creator update'}
+                </button>
+              )}
             <IconButton
               loading={isSubmitting}
               onClick={async () => {
