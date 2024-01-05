@@ -9,6 +9,7 @@ import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Tag } from '@/components/tags'
 import { format } from 'date-fns'
+import { CloseProjectForm } from './close-form'
 
 export default async function CloseProjectPage(props: {
   params: { slug: string }
@@ -26,7 +27,7 @@ export default async function CloseProjectPage(props: {
     return <div>404</div>
   }
   return (
-    <div className="p-5">
+    <Col className="gap-3 p-5">
       <h1 className="text-2xl font-bold">Close project - {project.title}</h1>
       <p className="text-sm text-gray-500">
         Closing this project ends the grant period, marks the project as
@@ -35,8 +36,11 @@ export default async function CloseProjectPage(props: {
         the initial proposal, have spent all of the funds you recieved, and/or
         do not plan to work on this project further.
       </p>
-      {/* Add RTE here */}
-      {/* Add submit button here */}
-    </div>
+      <p className="text-sm text-gray-500">
+        If there&apos;s anything you&apos;d like to share with Manifund but
+        cannot post publicly, you can email rachel@manifund.org.
+      </p>
+      <CloseProjectForm projectSlug={slug} />
+    </Col>
   )
 }
