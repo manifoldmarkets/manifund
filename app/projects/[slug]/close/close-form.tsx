@@ -31,6 +31,7 @@ export function CloseProjectForm(props: { projectSlug: string }) {
             body: JSON.stringify({ projectSlug, reportContent }),
           })
           router.push(`/projects/${projectSlug}`)
+          router.refresh()
         }}
       >
         Submit final report & close project

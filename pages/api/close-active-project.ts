@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { updateProjectCauses } from '@/db/cause'
-import { createAdminClient, createEdgeClient } from './_db'
-import { isAdmin } from '@/db/txn'
+import { createEdgeClient } from './_db'
 import { getProjectBySlug } from '@/db/project'
 import { JSONContent } from '@tiptap/core'
 import { sendComment } from '@/db/comment'
@@ -37,7 +35,14 @@ export default async function handler(req: NextRequest) {
     console.error('update stage', error)
     return NextResponse.error()
   }
-  await sendComment(supabase, reportContent, project.id, user.id)
+  await sendComment(
+    supabase,
+    reportContent,
+    project.id,
+    user.id,
+    undefined,
+    'final report'
+  )
   // TODO: add email to investors/shareholders
   return NextResponse.json('success')
 }

@@ -60,38 +60,35 @@ export interface Database {
       causes: {
         Row: {
           cert_params: Json | null
-          data: Json | null
           description: Json | null
           header_image_url: string
           open: boolean
           prize: boolean
           project_description_outline: string | null
           slug: string
-          sort: number
+          sort: number | null
           title: string
         }
         Insert: {
           cert_params?: Json | null
-          data?: Json | null
           description?: Json | null
           header_image_url: string
           open?: boolean
           prize?: boolean
           project_description_outline?: string | null
           slug: string
-          sort?: number
+          sort?: number | null
           title: string
         }
         Update: {
           cert_params?: Json | null
-          data?: Json | null
           description?: Json | null
           header_image_url?: string
           open?: boolean
           prize?: boolean
           project_description_outline?: string | null
           slug?: string
-          sort?: number
+          sort?: number | null
           title?: string
         }
         Relationships: []
@@ -104,6 +101,7 @@ export interface Database {
           id: string
           project: string
           replying_to: string | null
+          special_type: Database["public"]["Enums"]["comment_type"] | null
         }
         Insert: {
           commenter: string
@@ -112,6 +110,7 @@ export interface Database {
           id?: string
           project: string
           replying_to?: string | null
+          special_type?: Database["public"]["Enums"]["comment_type"] | null
         }
         Update: {
           commenter?: string
@@ -120,6 +119,7 @@ export interface Database {
           id?: string
           project?: string
           replying_to?: string | null
+          special_type?: Database["public"]["Enums"]["comment_type"] | null
         }
         Relationships: [
           {
@@ -545,7 +545,7 @@ export interface Database {
           project: string | null
           to_id: string
           token: string
-          type: Database["public"]["Enums"]["txn_type"] | null
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Insert: {
           amount: number
@@ -556,7 +556,7 @@ export interface Database {
           project?: string | null
           to_id: string
           token: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Update: {
           amount?: number
@@ -567,7 +567,7 @@ export interface Database {
           project?: string | null
           to_id?: string
           token?: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type?: Database["public"]["Enums"]["txn_type"]
         }
         Relationships: [
           {
@@ -718,12 +718,6 @@ export interface Database {
         }
         Returns: undefined
       }
-      reject_proposal: {
-        Args: {
-          project_id: string
-        }
-        Returns: undefined
-      }
       transfer_project:
         | {
             Args: {
@@ -761,8 +755,9 @@ export interface Database {
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "donate" | "assurance buy" | "assurance sell"
-      profile_type: "individual" | "org" | "fund" | "amm"
+      bid_type: "buy" | "sell" | "donate" | "assurance sell" | "assurance buy"
+      comment_type: "update" | "final report"
+      profile_type: "individual" | "org" | "amm" | "fund"
       project_stage:
         | "active"
         | "proposal"
@@ -813,7 +808,6 @@ export interface Database {
         stage: Database["public"]["Enums"]["project_stage"]
         round: string
         slug: string
-        location_description: string
       }
       transfer_row: {
         recipient_email: string
