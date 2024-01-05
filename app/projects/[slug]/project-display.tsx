@@ -35,6 +35,7 @@ import { RichContent } from '@/components/editor'
 import { ReactivateButton, checkReactivateEligible } from './reactivate-button'
 import { buttonClass } from '@/components/button'
 import Link from 'next/link'
+import clsx from 'clsx'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -199,10 +200,10 @@ export function ProjectDisplay(props: {
         {isOwnProject && checkReactivateEligible(project, prizeCause) && (
           <ReactivateButton projectId={project.id} />
         )}
-        {isOwnProject && project.stage === 'proposal' && (
+        {isOwnProject && project.stage === 'active' && (
           <Link
             href={`/projects/${project.slug}/close`}
-            className={buttonClass('xl', 'orange')}
+            className={clsx(buttonClass('xl', 'orange'), 'mx-auto')}
           >
             Close project
           </Link>
