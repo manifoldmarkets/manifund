@@ -8,7 +8,7 @@ import { SignInButton } from '@/components/sign-in-button'
 import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
 import { Profile } from '@/db/profile'
-import { FullProject } from '@/db/project'
+import { FullProject, Project } from '@/db/project'
 import { Cause, MiniCause } from '@/db/cause'
 import { TxnAndProfiles, TxnAndProject } from '@/db/txn'
 import {
@@ -33,6 +33,8 @@ import { calculateTradePoints } from '@/utils/amm'
 import { CertValuationChart } from './valuation-chart'
 import { RichContent } from '@/components/editor'
 import { ReactivateButton, checkReactivateEligible } from './reactivate-button'
+import { buttonClass } from '@/components/button'
+import Link from 'next/link'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -196,6 +198,14 @@ export function ProjectDisplay(props: {
           )}
         {isOwnProject && checkReactivateEligible(project, prizeCause) && (
           <ReactivateButton projectId={project.id} />
+        )}
+        {isOwnProject && project.stage === 'proposal' && (
+          <Link
+            href={`/projects/${project.slug}/close`}
+            className={buttonClass('xl', 'orange')}
+          >
+            Close project
+          </Link>
         )}
         {userProfile &&
           userProfile.id !== project.creator &&
