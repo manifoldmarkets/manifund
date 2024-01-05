@@ -441,7 +441,7 @@ export const formatDate = (
     } else if (includeHour) {
       dateFormat += ', ha'
     } else if (includeYear) {
-      dateFormat += ', YYYY'
+      dateFormat += ', yyyy'
     }
     return dayName ? `${dayName}` : format(d, dateFormat)
   }
