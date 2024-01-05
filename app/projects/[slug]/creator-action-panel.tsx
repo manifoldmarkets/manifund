@@ -14,7 +14,6 @@ import { Input } from '@/components/input'
 import { useRouter } from 'next/navigation'
 import { Col } from '@/components/layout/col'
 import { SelectCauses } from '@/components/select-causes'
-import clsx from 'clsx'
 
 export function CreatorActionPanel(props: {
   project: FullProject
@@ -39,9 +38,9 @@ export function CreatorActionPanel(props: {
 function ProgressUpdateButton(props: { project: Project }) {
   const { project } = props
   return (
-    <Button className="flex items-center" size="xs" color="light-orange">
+    <Button className="flex items-center" size="2xs" color="light-orange">
       <PaperAirplaneIcon className="mr-1 h-4 w-4" />
-      Post progress update
+      Post update
     </Button>
   )
 }
@@ -49,7 +48,7 @@ function ProgressUpdateButton(props: { project: Project }) {
 function CloseProjectButton(props: { project: Project }) {
   const { project } = props
   return (
-    <Button className="flex items-center" size="xs" color="light-orange">
+    <Button className="flex items-center" size="2xs" color="light-orange">
       <LockClosedIcon className="mr-1 h-4 w-4" />
       Close project
     </Button>
@@ -154,9 +153,9 @@ function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
           className="rounded-full bg-orange-500 p-1"
         >
           <Tooltip text="Edit project">
-            <div className="h-12 w-12 rounded-full bg-orange-100 shadow hover:bg-orange-200">
+            <div className="h-10 w-10 rounded-full bg-orange-100 shadow hover:bg-orange-200">
               <PencilIcon
-                className="h-12 w-12 p-3 text-orange-500"
+                className="h-10 w-10 p-2 text-orange-500"
                 aria-hidden
               />
             </div>
