@@ -147,15 +147,6 @@ function genThreads(
   return orderBy(threadsArray, 'root.created_at', 'desc')
 }
 
-const CREATOR_UPDATE_OUTLINE = `
-<h3>What progress have you made since your last update?</h3>
-</br>
-<h3>What are your next steps?</h3>
-</br>
-<h3>Is there anything others could help you with?</h3>
-</br>
-`
-
 export function WriteComment(props: {
   project: Project
   commenter: Profile
