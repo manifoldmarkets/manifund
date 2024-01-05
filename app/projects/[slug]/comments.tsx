@@ -218,17 +218,20 @@ export function WriteComment(props: {
       if (!content || content.length === 0 || !editor || !htmlContent) {
         return
       }
-      // TODO: move onto edge
-      await sendComment(
-        supabase,
-        content,
-        project.id,
-        commenter.id,
-        replyingTo?.replying_to
-          ? (replyingTo.replying_to as string)
-          : replyingTo?.id,
-        isCreatorUpdate ? 'update' : undefined
-      )
+      await fetch('/api/post-comment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: content,
+          projectId: project.id,
+          replyingTo: replyingTo?.replying_to
+            ? (replyingTo.replying_to as string)
+            : replyingTo?.id,
+          specialType: isCreatorUpdate ? 'update' : undefined,
+        }),
+      })
       if (setReplyingTo) {
         setReplyingTo(null)
       }
