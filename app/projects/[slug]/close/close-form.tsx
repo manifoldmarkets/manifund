@@ -23,7 +23,7 @@ export function CloseProjectForm(props: { projectSlug: string }) {
         size="xl"
         onClick={async () => {
           const reportContent = editor?.getJSON()
-          await fetch('/api/close-project', {
+          await fetch('/api/close-active-project', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ export function CloseProjectForm(props: { projectSlug: string }) {
           router.push(`/projects/${projectSlug}`)
         }}
       >
-        Submit report & close project
+        Submit final report & close project
       </Button>
     </Col>
   )
