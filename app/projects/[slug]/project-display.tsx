@@ -36,7 +36,6 @@ import { ReactivateButton, checkReactivateEligible } from './reactivate-button'
 import { buttonClass } from '@/components/button'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { CreatorActionPanel } from './creator-action-panel'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -198,6 +197,17 @@ export function ProjectDisplay(props: {
               userSellableShares={userSellableShares}
             />
           )}
+        {isOwnProject && checkReactivateEligible(project, prizeCause) && (
+          <ReactivateButton projectId={project.id} />
+        )}
+        {isOwnProject && project.stage === 'active' && (
+          <Link
+            href={`/projects/${project.slug}/close`}
+            className={clsx(buttonClass('xl', 'orange'), 'mx-auto')}
+          >
+            Close project
+          </Link>
+        )}
         {userProfile &&
           userProfile.id !== project.creator &&
           project.type === 'cert' &&
@@ -226,19 +236,8 @@ export function ProjectDisplay(props: {
           <RichContent content={project.description} className="px-3 text-sm" />
         )}
         {(isOwnProject || userIsAdmin) && (
-          <CreatorActionPanel project={project} causesList={causesList} />
+          <Edit project={project} causesList={causesList} />
         )}
-        {/* {isOwnProject && checkReactivateEligible(project, prizeCause) && (
-          <ReactivateButton projectId={project.id} />
-        )}
-        {isOwnProject && project.stage === 'active' && (
-          <Link
-            href={`/projects/${project.slug}/close`}
-            className={clsx(buttonClass('xl', 'orange'), 'mx-auto')}
-          >
-            Close project
-          </Link>
-        )} */}
         <div id="tabs">
           <ProjectTabs
             project={project}

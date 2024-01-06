@@ -117,13 +117,15 @@ export function Edit(props: {
           </Row>
         </Col>
       ) : (
-        <button onClick={() => setShowEditor(true)}>
-          <Tooltip text="Edit project">
-            <div className="h-10 w-10 rounded-full bg-orange-500 hover:bg-orange-600">
-              <PencilIcon className="h-10 w-10 p-2 text-white" aria-hidden />
-            </div>
-          </Tooltip>
-        </button>
+        <Row className="justify-end">
+          <IconButton size="sm" onClick={() => setShowEditor(true)}>
+            <Tooltip text="Edit project">
+              <div className="h-10 w-10 rounded-full bg-orange-500 hover:bg-orange-600">
+                <PencilIcon className="h-10 w-10 p-2 text-white" aria-hidden />
+              </div>
+            </Tooltip>
+          </IconButton>
+        </Row>
       )}
     </div>
   )

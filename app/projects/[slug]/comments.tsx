@@ -180,6 +180,10 @@ export function WriteComment(props: {
     }
   }, [replyingTo])
   const showCancelButton = !!setReplyingTo
+  const showCreatorUpdateButton =
+    !setReplyingTo &&
+    project.creator === commenter.id &&
+    project.stage === 'active'
   const startingText: JSONContent | string = !!replyingTo
     ? {
         type: 'doc',
@@ -281,7 +285,9 @@ export function WriteComment(props: {
           <Row
             className={clsx(
               'absolute bottom-0 w-full items-center border-t border-t-gray-200 bg-white py-0.5 pl-3',
-              showCancelButton ? 'justify-between' : 'justify-end'
+              showCancelButton || showCreatorUpdateButton
+                ? 'justify-between'
+                : 'justify-end'
             )}
           >
             {showCancelButton && (
@@ -292,6 +298,23 @@ export function WriteComment(props: {
                 Cancel
               </button>
             )}
+            {showCreatorUpdateButton &&
+              project.creator === commenter.id &&
+              project.stage === 'active' && (
+                <button
+                  onClick={() => {
+                    if (!isCreatorUpdate) {
+                      editor?.commands.setContent(CREATOR_UPDATE_OUTLINE)
+                    } else {
+                      editor?.commands.clearContent()
+                    }
+                    setIsCreatorUpdate(!isCreatorUpdate)
+                  }}
+                  className="h-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 hover:cursor-pointer hover:bg-blue-200"
+                >
+                  {isCreatorUpdate ? 'Reset editor' : 'Write a creator update'}
+                </button>
+              )}
             <IconButton
               loading={isSubmitting}
               onClick={async () => {
