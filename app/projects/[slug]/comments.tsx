@@ -229,7 +229,7 @@ export function WriteComment(props: {
           replyingTo: replyingTo?.replying_to
             ? (replyingTo.replying_to as string)
             : replyingTo?.id,
-          specialType: isCreatorUpdate ? 'update' : undefined,
+          specialType: isCreatorUpdate ? 'progress update' : undefined,
         }),
       })
       if (setReplyingTo) {
