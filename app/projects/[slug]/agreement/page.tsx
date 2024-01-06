@@ -1,10 +1,6 @@
 import { createServerClient } from '@/db/supabase-server'
 import { getUser } from '@/db/profile'
-import {
-  FullProject,
-  getProjectAndProfileBySlug,
-  ProjectAndProfile,
-} from '@/db/project'
+import { getProjectAndProfileBySlug, ProjectAndProfile } from '@/db/project'
 import { Col } from '@/components/layout/col'
 import { SignAgreement } from './sign-agreement'
 import { Row } from '@/components/layout/row'
