@@ -18,6 +18,7 @@ import { Modal } from '@/components/modal'
 import { Cause } from '@/db/cause'
 import { Dialog } from '@headlessui/react'
 import { FireIcon } from '@heroicons/react/20/solid'
+import { checkReactivateEligible } from '@/utils/activate-project'
 
 export function CreatorActionPanel(props: {
   project: FullProject
@@ -280,19 +281,6 @@ export function ReactivateButton(props: { projectId: string }) {
       </Modal>
     </>
   )
-}
-
-export function checkReactivateEligible(project: Project, prizeCause?: Cause) {
-  if (
-    project.stage === 'not funded' &&
-    project.type === 'cert' &&
-    !!prizeCause &&
-    !!prizeCause.cert_params &&
-    prizeCause.cert_params.judgeUnfundedProjects
-  ) {
-    return true
-  }
-  return false
 }
 
 function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {

@@ -2,8 +2,6 @@
 
 import { Button } from '@/components/button'
 import { Modal } from '@/components/modal'
-import { Cause } from '@/db/cause'
-import { Project } from '@/db/project'
 import { Dialog } from '@headlessui/react'
 import { FireIcon } from '@heroicons/react/20/solid'
 import { useRouter } from 'next/navigation'
@@ -77,17 +75,4 @@ export function ReactivateButton(props: { projectId: string }) {
       </Modal>
     </>
   )
-}
-
-export function checkReactivateEligible(project: Project, prizeCause?: Cause) {
-  if (
-    project.stage === 'not funded' &&
-    project.type === 'cert' &&
-    !!prizeCause &&
-    !!prizeCause.cert_params &&
-    prizeCause.cert_params.judgeUnfundedProjects
-  ) {
-    return true
-  }
-  return false
 }
