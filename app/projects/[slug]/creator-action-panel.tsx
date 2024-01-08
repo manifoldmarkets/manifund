@@ -30,25 +30,18 @@ export function CreatorActionPanel(props: {
 }) {
   const { project, causesList, prizeCause } = props
   return (
-    <Row className="justify-end">
-      <Row className="flex-row-reverse items-center">
-        {/* <div className="relative top-0.5 z-10">
-          <Edit project={project} causesList={causesList} />
-        </div> */}
-        <Row className="items-center gap-1 rounded-lg bg-orange-500 p-1">
-          <Edit project={project} causesList={causesList} />
-          {project.stage === 'active' && (
-            <ProgressUpdateButton project={project} />
-          )}
-          {project.stage === 'active' && (
-            <CloseProjectButton projectId={project.id} />
-          )}
-          {checkReactivateEligible(project, prizeCause) && (
-            <ReactivateButton projectId={project.id} />
-          )}
-        </Row>
-      </Row>
+    // <Row className="justify-end">
+    <Row className="items-center gap-1">
+      <Edit project={project} causesList={causesList} />
+      {project.stage === 'active' && <ProgressUpdateButton project={project} />}
+      {project.stage === 'active' && (
+        <CloseProjectButton projectId={project.id} />
+      )}
+      {checkReactivateEligible(project, prizeCause) && (
+        <ReactivateButton projectId={project.id} />
+      )}
     </Row>
+    // </Row>
   )
 }
 
