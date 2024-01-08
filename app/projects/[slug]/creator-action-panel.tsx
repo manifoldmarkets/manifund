@@ -282,16 +282,16 @@ export function ReactivateButton(props: { projectId: string }) {
 
 function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
   const { project, causesList } = props
-  const [showEditor, setShowEditor] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
   const [title, setTitle] = useState(project.title)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
   const [selectedCauses, setSelectedCauses] = useState(project.causes)
-  const [saving, setSaving] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
 
-  async function saveText() {
-    setSaving(true)
+  async function save() {
+    setIsSubmitting(true)
     const description = editor?.getJSON()
     await fetch('/api/edit-project', {
       method: 'POST',
@@ -306,13 +306,33 @@ function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
         causeSlugs: selectedCauses.map((cause) => cause.slug),
       }),
     })
-    setShowEditor(false)
-    setSaving(false)
+    setModalOpen(false)
+    setIsSubmitting(false)
     router.refresh()
   }
   return (
-    <div>
-      {showEditor ? (
+    <>
+      <Button
+        className="flex items-center"
+        size="2xs"
+        color="light-orange"
+        onClick={() => setModalOpen(true)}
+      >
+        <PencilIcon className="relative right-1 h-4 w-4" />
+        Edit project
+      </Button>
+      <Modal open={modalOpen} setOpen={setModalOpen}>
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+          <PencilIcon className="h-6 w-6 text-orange-600" aria-hidden="true" />
+        </div>
+        <div className="my-3 text-center">
+          <Dialog.Title
+            as="h3"
+            className="text-base font-semibold leading-6 text-gray-900"
+          >
+            Edit project details
+          </Dialog.Title>
+        </div>
         <Col className="gap-3">
           <Col className="gap-1">
             <label>Title</label>
@@ -352,37 +372,27 @@ function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
               setSelectedCauses={setSelectedCauses}
             />
           </Col>
-          <Row className="mt-3 justify-center gap-5">
+          <div className="sm:flex-2 mt-3 flex flex-col gap-3 sm:flex-row">
             <Button
               color="gray"
-              onClick={() => setShowEditor(false)}
-              className="font-semibold"
+              className="inline-flex w-full justify-center sm:col-start-1"
+              onClick={() => setModalOpen(false)}
             >
               Cancel
             </Button>
             <Tooltip text={title ? '' : 'Enter a project title.'}>
               <Button
-                onClick={saveText}
-                disabled={saving || !title}
-                loading={saving}
-                className="font-semibold"
+                className="sm:flex-2 inline-flex w-full justify-center"
+                loading={isSubmitting}
+                disabled={!title}
+                onClick={save}
               >
-                Save
+                Save changes
               </Button>
             </Tooltip>
-          </Row>
+          </div>
         </Col>
-      ) : (
-        <Button
-          className="flex items-center"
-          size="2xs"
-          color="light-orange"
-          onClick={() => setShowEditor(true)}
-        >
-          <PencilIcon className="relative right-1 h-4 w-4" />
-          Edit description
-        </Button>
-      )}
-    </div>
+      </Modal>
+    </>
   )
 }
