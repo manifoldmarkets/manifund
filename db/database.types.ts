@@ -756,7 +756,7 @@ export interface Database {
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
       bid_type: "buy" | "sell" | "donate" | "assurance sell" | "assurance buy"
-      comment_type: "update" | "final report"
+      comment_type: "progress update" | "final report"
       profile_type: "individual" | "org" | "amm" | "fund"
       project_stage:
         | "active"
