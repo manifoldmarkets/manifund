@@ -30,8 +30,7 @@ export function CreatorActionPanel(props: {
 }) {
   const { project, causesList, prizeCause } = props
   return (
-    // <Row className="justify-end">
-    <Row className="items-center gap-1">
+    <Row className="items-center gap-1" id="creator-actions">
       <Edit project={project} causesList={causesList} />
       {project.stage === 'active' && <ProgressUpdateButton project={project} />}
       {project.stage === 'active' && (
@@ -41,7 +40,6 @@ export function CreatorActionPanel(props: {
         <ReactivateButton projectId={project.id} />
       )}
     </Row>
-    // </Row>
   )
 }
 
