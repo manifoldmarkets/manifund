@@ -3,12 +3,15 @@ import { Button } from '@/components/button'
 import { Row } from '@/components/layout/row'
 import { MiniCause } from '@/db/cause'
 import { FullProject, Project } from '@/db/project'
-import { LockClosedIcon, PaperAirplaneIcon } from '@heroicons/react/20/solid'
+import {
+  LockClosedIcon,
+  PaperAirplaneIcon,
+  PencilIcon,
+} from '@heroicons/react/20/solid'
 import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
 import { ProjectWithCauses } from '@/db/project'
 import { useState } from 'react'
-import { PencilIcon } from '@heroicons/react/24/outline'
 import { Tooltip } from '@/components/tooltip'
 import { Input } from '@/components/input'
 import { useRouter } from 'next/navigation'
@@ -29,10 +32,11 @@ export function CreatorActionPanel(props: {
   return (
     <Row className="justify-end">
       <Row className="flex-row-reverse items-center">
-        <div className="relative top-0.5 z-10">
+        {/* <div className="relative top-0.5 z-10">
           <Edit project={project} causesList={causesList} />
-        </div>
-        <Row className="relative left-3 items-center gap-1 rounded bg-orange-500 p-1 pr-3">
+        </div> */}
+        <Row className="items-center gap-1 rounded-lg bg-orange-500 p-1">
+          <Edit project={project} causesList={causesList} />
           {project.stage === 'active' && (
             <ProgressUpdateButton project={project} />
           )}
@@ -376,19 +380,15 @@ function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
           </Row>
         </Col>
       ) : (
-        <button
+        <Button
+          className="flex items-center"
+          size="2xs"
+          color="light-orange"
           onClick={() => setShowEditor(true)}
-          className="rounded-full bg-orange-500 p-1"
         >
-          <Tooltip text="Edit project">
-            <div className="h-10 w-10 rounded-full bg-orange-100 shadow hover:bg-orange-200">
-              <PencilIcon
-                className="h-10 w-10 p-2 text-orange-500"
-                aria-hidden
-              />
-            </div>
-          </Tooltip>
-        </button>
+          <PencilIcon className="relative right-1 h-4 w-4" />
+          Edit description
+        </Button>
       )}
     </div>
   )
