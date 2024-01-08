@@ -21,7 +21,6 @@ import {
   getProposalValuation,
 } from '@/utils/math'
 import { useState } from 'react'
-import { Edit } from './edit'
 import { ProjectTabs } from './project-tabs'
 import { ProjectData } from './project-data'
 import { ProposalRequirements } from './proposal-requirements'
@@ -113,7 +112,7 @@ export function ProjectDisplay(props: {
             projectSlug={project.slug}
           />
         )}
-      <Col className="gap-4 px-3">
+      <Col className="gap-4">
         <ProjectCardHeader
           projectType={project.type}
           projectTransfer={
