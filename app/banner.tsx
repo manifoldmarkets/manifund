@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 export function CompleteProfileBanner() {
   return (
-    <div className="relative isolate -mx-2 mb-6 flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1">
+    <div className="relative isolate -mx-2 mb-3 flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1">
       <svg
         viewBox="0 0 577 310"
         aria-hidden="true"
@@ -61,7 +61,7 @@ export function ACXFundBanner() {
   const [show, setShow] = useState(true)
   if (!show) return null
   return (
-    <div className="relative isolate -mx-2 mb-6 flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1">
+    <div className="relative isolate -mx-2 mb-3 flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1">
       <svg
         viewBox="0 0 577 310"
         aria-hidden="true"
