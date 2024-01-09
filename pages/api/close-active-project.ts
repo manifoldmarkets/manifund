@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
-import { getProjectBySlug } from '@/db/project'
+import { getProjectById } from '@/db/project'
 import { JSONContent } from '@tiptap/core'
 import { sendComment } from '@/db/comment'
 
@@ -14,23 +14,23 @@ export const config = {
 }
 
 type closeProjectProps = {
-  projectSlug: string
+  projectId: string
   reportContent: JSONContent
 }
 
 export default async function handler(req: NextRequest) {
-  const { projectSlug, reportContent } = (await req.json()) as closeProjectProps
+  const { projectId, reportContent } = (await req.json()) as closeProjectProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
-  const project = await getProjectBySlug(supabase, projectSlug)
+  const project = await getProjectById(supabase, projectId)
   if (!user || user.id !== project.creator) return NextResponse.error()
   const { error } = await supabase
     .from('projects')
     .update({
       stage: 'complete',
     })
-    .eq('slug', projectSlug)
+    .eq('id', projectId)
   if (error) {
     console.error('update stage', error)
     return NextResponse.error()
