@@ -21,7 +21,6 @@ import {
   getProposalValuation,
 } from '@/utils/math'
 import { useState } from 'react'
-import { Edit } from './edit'
 import { ProjectTabs } from './project-tabs'
 import { ProjectData } from './project-data'
 import { ProposalRequirements } from './proposal-requirements'
@@ -32,7 +31,7 @@ import { AssuranceBuyBox } from './assurance-buy-box'
 import { calculateTradePoints } from '@/utils/amm'
 import { CertValuationChart } from './valuation-chart'
 import { RichContent } from '@/components/editor'
-import { ReactivateButton, checkReactivateEligible } from './reactivate-button'
+import { CreatorActionPanel } from './creator-action-panel'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -113,7 +112,7 @@ export function ProjectDisplay(props: {
             projectSlug={project.slug}
           />
         )}
-      <Col className="gap-4 px-3">
+      <Col className="gap-4">
         <ProjectCardHeader
           projectType={project.type}
           projectTransfer={
@@ -194,9 +193,6 @@ export function ProjectDisplay(props: {
               userSellableShares={userSellableShares}
             />
           )}
-        {isOwnProject && checkReactivateEligible(project, prizeCause) && (
-          <ReactivateButton projectId={project.id} />
-        )}
         {userProfile &&
           userProfile.id !== project.creator &&
           project.type === 'cert' &&
@@ -225,7 +221,11 @@ export function ProjectDisplay(props: {
           <RichContent content={project.description} className="px-3 text-sm" />
         )}
         {(isOwnProject || userIsAdmin) && (
-          <Edit project={project} causesList={causesList} />
+          <CreatorActionPanel
+            project={project}
+            causesList={causesList}
+            prizeCause={prizeCause}
+          />
         )}
         <div id="tabs">
           <ProjectTabs

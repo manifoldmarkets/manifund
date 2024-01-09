@@ -88,8 +88,5 @@
   },
   "trustedDependencies": [
     "supabase"
-  ],
-  "resolutions": {
-    "better-sqlite3": "^8.5.0"
-  }
+  ]
 }

@@ -3,7 +3,7 @@ import { createEdgeClient } from './_db'
 import { getUser } from '@/db/profile'
 import { getProjectWithCausesById } from '@/db/project'
 import { getPrizeCause } from '@/db/cause'
-import { checkReactivateEligible } from '@/app/projects/[slug]/reactivate-button'
+import { checkReactivateEligible } from '@/utils/activate-project'
 import { SupabaseClient } from '@supabase/supabase-js'
 
 export const config = {

@@ -1,6 +1,6 @@
 'use client'
 import { Profile } from '@/db/profile'
-import { CommentAndProfile, sendComment } from '@/db/comment'
+import { CommentAndProfile } from '@/db/comment'
 import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
 import { Project } from '@/db/project'
@@ -12,7 +12,6 @@ import { useEffect, useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import { Tooltip } from '@/components/tooltip'
 import { Avatar } from '@/components/avatar'
-import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { JSONContent } from '@tiptap/react'
 import clsx from 'clsx'
@@ -163,7 +162,7 @@ export function WriteComment(props: {
     onSubmit,
     specialPrompt,
   } = props
-  const { supabase } = useSupabase()
+  const showCancelButton = !!setReplyingTo
   const startingText: JSONContent | string = !!replyingTo
     ? {
         type: 'doc',
@@ -211,15 +210,19 @@ export function WriteComment(props: {
       if (!content || content.length === 0 || !editor || !htmlContent) {
         return
       }
-      await sendComment(
-        supabase,
-        content,
-        project.id,
-        commenter.id,
-        replyingTo?.replying_to
-          ? (replyingTo.replying_to as string)
-          : replyingTo?.id
-      )
+      await fetch('/api/post-comment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: content,
+          projectId: project.id,
+          replyingTo: replyingTo?.replying_to
+            ? (replyingTo.replying_to as string)
+            : replyingTo?.id,
+        }),
+      })
       if (setReplyingTo) {
         setReplyingTo(null)
       }
@@ -262,11 +265,11 @@ export function WriteComment(props: {
           </div>
           <Row
             className={clsx(
-              'absolute inset-x-0 bottom-0 border-t border-t-gray-200 bg-white py-0.5 pl-3',
-              setReplyingTo ? 'justify-between' : 'justify-end'
+              'absolute bottom-0 w-full items-center border-t border-t-gray-200 bg-white py-0.5 pl-3',
+              showCancelButton ? 'justify-between' : 'justify-end'
             )}
           >
-            {setReplyingTo && (
+            {showCancelButton && (
               <button
                 onClick={() => setReplyingTo(null)}
                 className="text-sm text-gray-500 hover:cursor-pointer hover:text-gray-700"

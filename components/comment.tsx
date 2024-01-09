@@ -15,6 +15,7 @@ import { LinkIcon } from '@heroicons/react/20/solid'
 import { Tooltip } from './tooltip'
 import { getURL } from '@/utils/constants'
 import { useSafeLayoutEffect } from '@/hooks/use-safe-layout-effect'
+import { toSentenceCase } from '@/utils/formatting'
 
 export function Comment(props: {
   comment: Comment
@@ -93,6 +94,13 @@ export function Comment(props: {
                 })}
               </p>
             </Row>
+            {comment.special_type && (
+              <Tag
+                text={toSentenceCase(comment.special_type)}
+                className="text-xs"
+                color="blue"
+              />
+            )}
           </Row>
           <div
             id="content"
