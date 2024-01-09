@@ -104,6 +104,7 @@ export interface Database {
           id: string
           project: string
           replying_to: string | null
+          special_type: Database["public"]["Enums"]["comment_type"] | null
         }
         Insert: {
           commenter: string
@@ -112,6 +113,7 @@ export interface Database {
           id?: string
           project: string
           replying_to?: string | null
+          special_type?: Database["public"]["Enums"]["comment_type"] | null
         }
         Update: {
           commenter?: string
@@ -120,6 +122,7 @@ export interface Database {
           id?: string
           project?: string
           replying_to?: string | null
+          special_type?: Database["public"]["Enums"]["comment_type"] | null
         }
         Relationships: [
           {
@@ -762,6 +765,7 @@ export interface Database {
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
       bid_type: "buy" | "sell" | "donate" | "assurance buy" | "assurance sell"
+      comment_type: "progress update" | "final report"
       profile_type: "individual" | "org" | "fund" | "amm"
       project_stage:
         | "active"

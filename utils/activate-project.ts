@@ -1,3 +1,4 @@
+import { Cause } from '@/db/cause'
 import { getProfileById } from '@/db/profile'
 import {
   getProjectAndBidsById,
@@ -54,6 +55,16 @@ export function calcTotalOffered(project: ProjectAndBids) {
   return fundingBids
     .filter((bid) => bid.status === 'pending')
     .reduce((acc, bid) => acc + bid.amount, 0)
+}
+
+export function checkReactivateEligible(project: Project, prizeCause?: Cause) {
+  return (
+    project.stage === 'not funded' &&
+    project.type === 'cert' &&
+    !!prizeCause &&
+    !!prizeCause.cert_params &&
+    prizeCause.cert_params.judgeUnfundedProjects
+  )
 }
 
 async function activateProject(project: Project) {

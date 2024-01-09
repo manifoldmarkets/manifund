@@ -31,16 +31,16 @@ export async function sendComment(
   content: JSONContent,
   projectId: string,
   commenterId: string,
-  replyingTo?: string
+  replyingTo?: string,
+  specialType?: Comment['special_type']
 ) {
-  const commentId = uuid()
   const { error } = await supabase.from('comments').insert([
     {
-      id: commentId,
       content,
       project: projectId,
       commenter: commenterId,
       replying_to: replyingTo ?? null,
+      special_type: specialType ?? null,
     },
   ])
   if (error) {

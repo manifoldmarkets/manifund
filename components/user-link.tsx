@@ -2,7 +2,7 @@ import { SiteLink } from './site-link'
 import clsx from 'clsx'
 import { Tooltip } from './tooltip'
 import { Avatar } from './avatar'
-import { ShieldCheckIcon, StarIcon } from '@heroicons/react/20/solid'
+import { ShieldCheckIcon, WrenchIcon } from '@heroicons/react/20/solid'
 import { Profile } from '@/db/profile'
 
 export function shortenName(name: string) {
@@ -67,7 +67,10 @@ export function UserLink(props: {
       )}
       followsLinkClass
     >
-      <p className="truncate">{shortName}{shortened ? '...' : ''}</p>
+      <p className="truncate">
+        {shortName}
+        {shortened ? '...' : ''}
+      </p>
       {!hideBadge && <UserBadge username={username} />}
       {creatorBadge && <CreatorBadge />}
     </SiteLink>
@@ -95,7 +98,7 @@ function CoreBadge() {
 function CreatorBadge() {
   return (
     <Tooltip text="Project creator" placement="right">
-      <StarIcon className="h-4 w-4 text-amber-400" aria-hidden="true" />
+      <WrenchIcon className="h-4 w-4 text-blue-500" aria-hidden="true" />
     </Tooltip>
   )
 }

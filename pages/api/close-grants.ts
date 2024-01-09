@@ -8,7 +8,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { isProd } from '@/db/env'
 import { Cause, getPrizeCause } from '@/db/cause'
-import { checkReactivateEligible } from '@/app/projects/[slug]/reactivate-button'
+import { checkReactivateEligible } from '@/utils/activate-project'
 
 export const config = {
   runtime: 'edge',

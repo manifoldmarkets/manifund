@@ -107,9 +107,7 @@ export function ProjectTabs(props: {
     (project.stage === 'active' || project.stage === 'complete') &&
     project.type === 'grant'
   ) {
-    const donations = txns.filter(
-      (txn) => txn.project === project.id && txn.token === 'USD' && !txn.bundle
-    )
+    const donations = txns.filter((txn) => txn.type === 'project donation')
     tabs.push({
       name: 'Donations',
       id: 'donations',
