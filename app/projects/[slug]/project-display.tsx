@@ -227,17 +227,6 @@ export function ProjectDisplay(props: {
             prizeCause={prizeCause}
           />
         )}
-        {/* {isOwnProject && checkReactivateEligible(project, prizeCause) && (
-          <ReactivateButton projectId={project.id} />
-        )}
-        {isOwnProject && project.stage === 'active' && (
-          <Link
-            href={`/projects/${project.slug}/close`}
-            className={clsx(buttonClass('xl', 'orange'), 'mx-auto')}
-          >
-            Close project
-          </Link>
-        )} */}
         <div id="tabs">
           <ProjectTabs
             project={project}
