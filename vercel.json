@@ -3,6 +3,10 @@
     {
       "path": "/api/close-grants",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/request-updates",
+      "schedule": "0 15 * * 1"
     }
   ]
 }
