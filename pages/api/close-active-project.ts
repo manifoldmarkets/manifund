@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
-import { getProjectById } from '@/db/project'
+import { getProjectById, updateProjectStage } from '@/db/project'
 import { JSONContent } from '@tiptap/core'
 import { sendComment } from '@/db/comment'
 
@@ -25,16 +25,7 @@ export default async function handler(req: NextRequest) {
   const user = resp.data.user
   const project = await getProjectById(supabase, projectId)
   if (!user || user.id !== project.creator) return NextResponse.error()
-  const { error } = await supabase
-    .from('projects')
-    .update({
-      stage: 'complete',
-    })
-    .eq('id', projectId)
-  if (error) {
-    console.error('update stage', error)
-    return NextResponse.error()
-  }
+  await updateProjectStage(supabase, projectId, 'complete')
   await sendComment(
     supabase,
     reportContent,
