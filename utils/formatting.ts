@@ -60,6 +60,10 @@ export function toTitleCase(string: string) {
   })
 }
 
+export function toSentenceCase(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
 export function formatDate(date: string) {
   const sections = date.split('-')
   let month = ''
