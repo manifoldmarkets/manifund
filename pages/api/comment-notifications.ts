@@ -32,7 +32,7 @@ export default async function handler(
   }
 
   // Send creator email
-  if (fullComment.profiles.id !== fullComment.projects.creator) {
+  if (comment.commenter !== fullComment.projects.creator) {
     await sendTemplateEmail(
       TEMPLATE_IDS.NEW_COMMENT,
       postmarkVars,
@@ -55,7 +55,7 @@ export default async function handler(
     const supporterIds = supporters
       .filter(
         (supporter) =>
-          supporter && supporter?.id !== fullComment.projects.creator
+          !!supporter && supporter?.id !== fullComment.projects.creator
       )
       .map((supporter) => supporter?.id)
     const uniqueSupporterIds = uniq(supporterIds)
@@ -91,8 +91,6 @@ export default async function handler(
       }
     })
   }
-
-  // TODO: Add donors to shareholders and send special emial for final report
 
   // Send mentioned user emails
   await Promise.all(
@@ -132,5 +130,4 @@ export default async function handler(
   res.status(200).json({
     comment,
   })
-  return res
 }
