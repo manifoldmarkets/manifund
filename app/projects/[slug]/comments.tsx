@@ -1,6 +1,6 @@
 'use client'
 import { Profile } from '@/db/profile'
-import { CommentAndProfile, sendComment } from '@/db/comment'
+import { CommentAndProfile } from '@/db/comment'
 import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
 import { Project } from '@/db/project'
@@ -12,7 +12,6 @@ import { useEffect, useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import { Tooltip } from '@/components/tooltip'
 import { Avatar } from '@/components/avatar'
-import { useSupabase } from '@/db/supabase-provider'
 import { useRouter } from 'next/navigation'
 import { JSONContent } from '@tiptap/react'
 import clsx from 'clsx'
@@ -163,13 +162,6 @@ export function WriteComment(props: {
     onSubmit,
     specialPrompt,
   } = props
-  const { supabase } = useSupabase()
-  const [isCreatorUpdate, setIsCreatorUpdate] = useState(false)
-  useEffect(() => {
-    if (replyingTo) {
-      setIsCreatorUpdate(false)
-    }
-  }, [replyingTo])
   const showCancelButton = !!setReplyingTo
   const startingText: JSONContent | string = !!replyingTo
     ? {
@@ -229,7 +221,6 @@ export function WriteComment(props: {
           replyingTo: replyingTo?.replying_to
             ? (replyingTo.replying_to as string)
             : replyingTo?.id,
-          specialType: isCreatorUpdate ? 'progress update' : undefined,
         }),
       })
       if (setReplyingTo) {
