@@ -238,3 +238,19 @@ export async function getProjectWithCausesById(
     .throwOnError()
   return data ? (data as ProjectWithCauses) : undefined
 }
+
+export async function updateProjectStage(
+  supabase: SupabaseClient,
+  projectId: string,
+  newStage: string
+) {
+  const { error } = await supabase
+    .from('projects')
+    .update({
+      stage: newStage,
+    })
+    .eq('id', projectId)
+  if (error) {
+    console.error('update stage', error)
+  }
+}
