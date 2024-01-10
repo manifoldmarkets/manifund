@@ -3,7 +3,6 @@ import { DonateBox } from '@/components/donate-box'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
-import { ProjectCardHeader } from '@/components/project-card'
 import { SignInButton } from '@/components/sign-in-button'
 import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
@@ -32,6 +31,9 @@ import { calculateTradePoints } from '@/utils/amm'
 import { CertValuationChart } from './valuation-chart'
 import { RichContent } from '@/components/editor'
 import { CreatorActionPanel } from './creator-action-panel'
+import { UserAvatarAndBadge } from '@/components/user-link'
+import { Tooltip } from '@/components/tooltip'
+import { EnvelopeIcon } from '@heroicons/react/20/solid'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -112,18 +114,7 @@ export function ProjectDisplay(props: {
             projectSlug={project.slug}
           />
         )}
-      <Col className="gap-4">
-        <ProjectCardHeader
-          projectType={project.type}
-          projectTransfer={
-            pendingProjectTransfers?.length === 0
-              ? undefined
-              : project.project_transfers[0]
-          }
-          creator={project.profiles}
-          valuation={isNaN(valuation) ? undefined : valuation}
-          creatorEmail={creatorEmail}
-        />
+      <Col className="gap-3">
         <Col className="gap-1">
           <Row className="flex-2 items-center gap-3">
             <Vote
@@ -148,6 +139,30 @@ export function ProjectDisplay(props: {
             ))}
           </Row>
         </Col>
+        <Row className="items-center justify-between">
+          <Row className="items-center gap-1">
+            <UserAvatarAndBadge
+              profile={project.profiles}
+              className="text-sm text-gray-500"
+            />
+            {creatorEmail && (
+              <Tooltip text="Copy creator email">
+                <EnvelopeIcon
+                  className="h-4 w-4 cursor-pointer stroke-2 text-gray-500 hover:text-gray-700"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(creatorEmail)
+                  }}
+                />
+              </Tooltip>
+            )}
+          </Row>
+          <ProjectData
+            project={project}
+            raised={amountRaised}
+            valuation={valuation}
+            minimum={minIncludingAmm}
+          />
+        </Row>
         {project.stage !== 'proposal' &&
           project.type === 'cert' &&
           !!project.amm_shares && (
@@ -170,12 +185,6 @@ export function ProjectDisplay(props: {
             }
           />
         )}
-        <ProjectData
-          project={project}
-          raised={amountRaised}
-          valuation={valuation}
-          minimum={minIncludingAmm}
-        />
         {userProfile &&
           project.type === 'cert' &&
           project.stage === 'active' && (
