@@ -26,7 +26,6 @@ export function ProjectCard(props: {
   project: FullProject
   causes: MiniCause[]
   valuation?: number
-  creatorEmail?: string
 }) {
   const { project, causes, valuation } = props
   const amountRaised = getAmountRaised(project, project.bids, project.txns)
@@ -139,7 +138,6 @@ export function ProjectCardHeader(props: {
   valuation?: number
   regrantorInitiated?: boolean
   hideRound?: boolean
-  creatorEmail?: string
 }) {
   const {
     creator,
@@ -147,25 +145,12 @@ export function ProjectCardHeader(props: {
     projectTransfer,
     projectType,
     regrantorInitiated,
-    creatorEmail,
   } = props
   return (
     <Row className="mt-1 items-start justify-between">
       <div>
         <div className="h-1" />
-        <Row className="items-center gap-1">
-          <UserAvatarAndBadge profile={creator} />
-          {creatorEmail && (
-            <Tooltip text="Copy creator email">
-              <EnvelopeIcon
-                className="relative h-4 w-4 cursor-pointer stroke-2 text-orange-600"
-                onClick={async () => {
-                  await navigator.clipboard.writeText(creatorEmail)
-                }}
-              />
-            </Tooltip>
-          )}
-        </Row>
+        <UserAvatarAndBadge profile={creator} />
         {projectTransfer && (
           <Row className="gap-1">
             <Tag text={'PENDING TRANSFER'} className="mt-1" color="orange" />
