@@ -78,6 +78,33 @@ export default async function Admin() {
   return (
     <div>
       <h1>Admin</h1>
+      <h1>Projects Pending Approval</h1>
+      <Table>
+        <thead>
+          <tr>
+            <th>Creator</th>
+            <th>Project</th>
+            <th>Grant verdict</th>
+          </tr>
+        </thead>
+        <tbody>
+          {projectsToApprove.map((project) => (
+            <tr key={project.id}>
+              <td>
+                <a href={`/${project.profiles.username}`}>
+                  {project.profiles.full_name}
+                </a>
+              </td>
+              <td>
+                <a href={`/projects/${project.slug}`}>{project.title}</a>
+              </td>
+              <td>
+                <GrantVerdict projectId={project.id} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
       <DownloadTextButton
         buttonText="Export users.csv"
         toDownload={usersCSV}
@@ -110,33 +137,6 @@ export default async function Admin() {
               <td>{balances.get(user.id ?? '') ?? 0}</td>
               <td>
                 <PayUser userId={user.id ?? ''} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-      <h1>Projects Pending Approval</h1>
-      <Table>
-        <thead>
-          <tr>
-            <th>Creator</th>
-            <th>Project</th>
-            <th>Grant verdict</th>
-          </tr>
-        </thead>
-        <tbody>
-          {projectsToApprove.map((project) => (
-            <tr key={project.id}>
-              <td>
-                <a href={`/${project.profiles.username}`}>
-                  {project.profiles.full_name}
-                </a>
-              </td>
-              <td>
-                <a href={`/projects/${project.slug}`}>{project.title}</a>
-              </td>
-              <td>
-                <GrantVerdict projectId={project.id} />
               </td>
             </tr>
           ))}
