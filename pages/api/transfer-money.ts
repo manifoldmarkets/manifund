@@ -7,6 +7,7 @@ import { getPendingBidsByUser } from '@/db/bid'
 import { calculateCharityBalance } from '@/utils/math'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { getURL } from '@/utils/constants'
+import { isAdmin } from '@/db/profile'
 
 export const config = {
   runtime: 'edge',
@@ -31,23 +32,23 @@ export default async function handler(req: NextRequest) {
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
-  if (user?.id !== fromId) {
+  if (user?.id !== fromId && !isAdmin(user)) {
     return NextResponse.error()
   }
-  const profile = await getProfileById(supabase, user?.id)
+  const profile = await getProfileById(supabase, fromId)
   if (!profile) {
     return NextResponse.error()
   }
-  const donor = await getProfileById(supabase, user?.id)
+  const donor = await getProfileById(supabase, fromId)
   if (!donor) {
     return NextResponse.error()
   }
-  const txns = await getTxnAndProjectsByUser(supabase, user?.id ?? '')
-  const bids = await getPendingBidsByUser(supabase, user?.id ?? '')
+  const txns = await getTxnAndProjectsByUser(supabase, fromId)
+  const bids = await getPendingBidsByUser(supabase, fromId)
   const userSpendableFunds = calculateCharityBalance(
     txns,
     bids,
-    user.id,
+    fromId,
     profile?.accreditation_status
   )
   if (userSpendableFunds < amount) {
