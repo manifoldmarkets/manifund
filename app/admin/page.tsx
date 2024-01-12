@@ -16,6 +16,7 @@ import { AddTags } from './add-tags'
 import { DownloadTextButton } from './download-text-button'
 import { CategorizeTxns } from './categorize-txns'
 import { ActivateProject } from './activate-project'
+import { CreateTxn } from './create-txn'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -105,6 +106,7 @@ export default async function Admin() {
           ))}
         </tbody>
       </Table>
+      <CreateTxn />
       <DownloadTextButton
         buttonText="Export users.csv"
         toDownload={usersCSV}
