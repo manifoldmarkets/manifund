@@ -8,6 +8,7 @@ import {
   CircleStackIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline'
+import { PiTarget } from 'react-icons/pi'
 import { differenceInDays, differenceInHours, format } from 'date-fns'
 import { Tooltip } from '@/components/tooltip'
 
@@ -45,6 +46,12 @@ export function ProjectData(props: {
       show: project.stage === 'proposal',
     },
     {
+      label: 'funding goal',
+      value: formatMoney(project.funding_goal),
+      icon: PiTarget,
+      show: true,
+    },
+    {
       label: 'valuation',
       value: formatMoney(valuation),
       icon: ArrowTrendingUpIcon,
@@ -52,7 +59,9 @@ export function ProjectData(props: {
     },
     {
       label: `${hoursLeft ? 'hours' : 'days'} left to contribute`,
-      value: `${Math.max(hoursLeft ? hoursLeft : daysLeft, 0)}`,
+      value: `${Math.max(hoursLeft ? hoursLeft : daysLeft, 0)} ${
+        hoursLeft ? 'hours' : 'days'
+      }`,
       icon: ClockIcon,
       show: project.auction_close && project.stage === 'proposal',
     },
@@ -78,11 +87,9 @@ function SmallDataPoint(props: { dataPoint: dataPoint }) {
   const { dataPoint } = props
   return (
     <Tooltip text={dataPoint.label}>
-      <Row className="items-center gap-1">
-        <dataPoint.icon className="h-4 w-4 stroke-2 text-gray-500" />
-        <span className="text-xs font-medium text-gray-500">
-          {dataPoint.value}{' '}
-        </span>
+      <Row className="items-center gap-0.5">
+        <dataPoint.icon className="h-5 w-5 text-gray-500" />
+        <span className="text-xs text-gray-500">{dataPoint.value} </span>
       </Row>
     </Tooltip>
   )
