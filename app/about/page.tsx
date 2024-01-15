@@ -99,7 +99,7 @@ export default async function AboutPage() {
               return (
                 <Card
                   key={feature.title}
-                  className="relative px-4 pt-4 pb-6 pl-10"
+                  className="relative px-4 pb-6 pl-10 pt-4"
                 >
                   <div className="inline font-semibold text-gray-900">
                     <feature.icon
