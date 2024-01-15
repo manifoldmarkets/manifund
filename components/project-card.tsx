@@ -10,7 +10,6 @@ import {
   ChatBubbleLeftEllipsisIcon,
   ChevronUpDownIcon,
   CurrencyDollarIcon,
-  EnvelopeIcon,
   CheckBadgeIcon,
 } from '@heroicons/react/20/solid'
 import { orderBy } from 'lodash'
