@@ -44,9 +44,9 @@ export function Stats(props: { txns: FullTxn[] }) {
     )
     .reduce((acc, txn) => acc + txn.amount, 0)
   const dollarsToProjects = dollarsToGrants + dollarsToCerts
-  const numProjectsFunded =
-    uniq(grantDonations.map((txn) => txn.project)).length +
-    uniq(certTradesToCreator.map((txn) => txn.project)).length
+  const grantsFunded = uniq(grantDonations.map((txn) => txn.project)).length
+  const certsFunded = uniq(certTradesToCreator.map((txn) => txn.project)).length
+  const numProjectsFunded = grantsFunded + certsFunded
   const grantsToAmounts = Object.fromEntries(
     grantDonations.map((txn) => [txn.project, 0])
   )
@@ -90,9 +90,9 @@ export function Stats(props: { txns: FullTxn[] }) {
       ).length,
     },
     {
-      bucket: '<$400K',
+      bucket: '<$500K',
       'number of grants': grantSizes.filter(
-        (grantSize) => grantSize >= 100000 && grantSize < 400000
+        (grantSize) => grantSize >= 100000 && grantSize < 500000
       ).length,
       'number of certs': certSizes.filter(
         (certSize) => certSize >= 100000 && certSize < 400000
