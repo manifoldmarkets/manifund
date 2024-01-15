@@ -90,12 +90,13 @@ export async function getTxnsByProject(
   return data as TxnAndProfiles[]
 }
 
-export async function getAllTxns(supabase: SupabaseClient) {
+export async function getAllProjectTxns(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('txns')
     .select(
       '*, profiles!txns_from_id_fkey(regranter_status), projects(creator, stage, type)'
     )
+    .not('project', 'is', null)
   if (error) {
     throw error
   }

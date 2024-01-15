@@ -16,7 +16,7 @@ import {
 import clsx from 'clsx'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getAllTxns } from '@/db/txn'
+import { getAllProjectTxns } from '@/db/txn'
 import { Stats } from './stats'
 import { Card } from '@/components/layout/card'
 
@@ -83,7 +83,7 @@ const TEAM_MEMBERS = [
 
 export default async function AboutPage() {
   const supabase = createServerClient()
-  const txns = await getAllTxns(supabase)
+  const txns = await getAllProjectTxns(supabase)
   return (
     <>
       <Col className="w-full gap-10 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5 sm:p-10">
