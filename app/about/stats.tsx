@@ -11,44 +11,56 @@ import {
   XAxis,
   YAxis,
   ResponsiveContainer,
-  Label,
   Legend,
 } from 'recharts'
 
 export function Stats(props: { txns: FullTxn[] }) {
   const { txns } = props
-  const usdTxnsToProjects = txns.filter(
-    (txn) => txn.token === 'USD' && txn.projects?.creator === txn.to_id
+  const grantDonations = txns.filter(
+    (txn) => txn.type === 'project donation' && txn.projects?.type === 'grant'
   )
-  const dollarsToProjects = usdTxnsToProjects.reduce(
+  const certTradesToCreator = txns.filter(
+    (txn) =>
+      (txn.type === 'user to amm trade' || txn.type === 'user to user trade') &&
+      txn.projects?.creator === txn.to_id &&
+      txn.token === 'USD'
+  )
+  const certTradesFromCreator = txns.filter(
+    (txn) =>
+      (txn.type === 'user to amm trade' || txn.type === 'user to user trade') &&
+      txn.projects?.creator === txn.from_id &&
+      txn.token === 'USD'
+  )
+  const dollarsToGrants = grantDonations.reduce(
     (acc, txn) => acc + txn.amount,
     0
   )
-  const dollarsThroughRegrantors = usdTxnsToProjects
+  const dollarsToCerts =
+    certTradesToCreator.reduce((acc, txn) => acc + txn.amount, 0) -
+    certTradesFromCreator.reduce((acc, txn) => acc + txn.amount, 0)
+  const dollarsThroughRegrantors = grantDonations
     .filter(
       (txn) => txn.profiles?.regranter_status && txn.projects?.type === 'grant'
     )
     .reduce((acc, txn) => acc + txn.amount, 0)
-  const numProjectsFunded = uniq(
-    usdTxnsToProjects.map((txn) => txn.project)
-  ).length
-  const usdTxnsToGrants = usdTxnsToProjects.filter(
-    (txn) => txn.projects?.type === 'grant'
-  )
-  const usdTxnsToCerts = usdTxnsToProjects.filter(
-    (txn) => txn.projects?.type === 'cert'
-  )
+  const dollarsToProjects = dollarsToGrants + dollarsToCerts
+  const numProjectsFunded =
+    uniq(grantDonations.map((txn) => txn.project)).length +
+    uniq(certTradesToCreator.map((txn) => txn.project)).length
   const grantsToAmounts = Object.fromEntries(
-    usdTxnsToGrants.map((txn) => [txn.project, 0])
+    grantDonations.map((txn) => [txn.project, 0])
   )
   const certsToAmounts = Object.fromEntries(
-    usdTxnsToCerts.map((txn) => [txn.project, 0])
+    certTradesToCreator.map((txn) => [txn.project, 0])
   )
-  usdTxnsToGrants.forEach((txn) => {
+  grantDonations.forEach((txn) => {
     grantsToAmounts[txn.project as string] += txn.amount
   })
-  usdTxnsToCerts.forEach((txn) => {
+  certTradesToCreator.forEach((txn) => {
     certsToAmounts[txn.project as string] += txn.amount
+  })
+  certTradesFromCreator.forEach((txn) => {
+    certsToAmounts[txn.project as string] -= txn.amount
   })
   const grantSizes = Object.values(grantsToAmounts) as number[]
   const certSizes = Object.values(certsToAmounts) as number[]
