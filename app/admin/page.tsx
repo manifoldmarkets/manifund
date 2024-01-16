@@ -17,6 +17,8 @@ import { DownloadTextButton } from './download-text-button'
 import { CategorizeTxns } from './categorize-txns'
 import { ActivateProject } from './activate-project'
 import { CreateTxn } from './create-txn'
+import clsx from 'clsx'
+import Link from 'next/link'
 
 export default async function Admin() {
   const supabase = createServerClient()
@@ -42,8 +44,8 @@ export default async function Admin() {
     .filter(
       (project) =>
         project.stage === 'proposal' &&
-        project.signed_agreement &&
-        project.approved === null
+        project.approved === null &&
+        project.type === 'grant'
     )
     .filter(
       (project) =>
@@ -92,12 +94,19 @@ export default async function Admin() {
           {projectsToApprove.map((project) => (
             <tr key={project.id}>
               <td>
-                <a href={`/${project.profiles.username}`}>
+                <Link href={`/${project.profiles.username}`}>
                   {project.profiles.full_name}
-                </a>
+                </Link>
               </td>
               <td>
-                <a href={`/projects/${project.slug}`}>{project.title}</a>
+                <Link
+                  href={`/projects/${project.slug}`}
+                  className={clsx(
+                    project.signed_agreement ? 'text-gray-900' : 'text-rose-600'
+                  )}
+                >
+                  {project.title}
+                </Link>
               </td>
               <td>
                 <GrantVerdict projectId={project.id} />
