@@ -60,7 +60,6 @@ export interface Database {
       causes: {
         Row: {
           cert_params: Json | null
-          data: Json | null
           description: Json | null
           header_image_url: string
           open: boolean
@@ -72,7 +71,6 @@ export interface Database {
         }
         Insert: {
           cert_params?: Json | null
-          data?: Json | null
           description?: Json | null
           header_image_url: string
           open?: boolean
@@ -84,7 +82,6 @@ export interface Database {
         }
         Update: {
           cert_params?: Json | null
-          data?: Json | null
           description?: Json | null
           header_image_url?: string
           open?: boolean
