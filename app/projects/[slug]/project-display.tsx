@@ -34,6 +34,7 @@ import { CreatorActionPanel } from './creator-action-panel'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { Tooltip } from '@/components/tooltip'
 import { EnvelopeIcon } from '@heroicons/react/20/solid'
+import { ViewerActionPanel } from './viewer-action-panel'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -104,6 +105,7 @@ export function ProjectDisplay(props: {
   >(undefined)
   return (
     <>
+      <ViewerActionPanel />
       {project.type === 'grant' &&
         project.stage === 'proposal' &&
         pendingProjectTransfers.length === 0 && (
