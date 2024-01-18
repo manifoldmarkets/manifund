@@ -116,7 +116,7 @@ export function ProjectDisplay(props: {
           />
         )}
       <Col className="gap-3">
-        <ViewerActionPanel />
+        {userProfile && <ViewerActionPanel />}
         <Col className="gap-1">
           <Row className="flex-2 items-center gap-3">
             <Vote
