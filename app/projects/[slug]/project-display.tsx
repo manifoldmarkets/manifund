@@ -105,7 +105,6 @@ export function ProjectDisplay(props: {
   >(undefined)
   return (
     <>
-      <ViewerActionPanel />
       {project.type === 'grant' &&
         project.stage === 'proposal' &&
         pendingProjectTransfers.length === 0 && (
@@ -117,6 +116,7 @@ export function ProjectDisplay(props: {
           />
         )}
       <Col className="gap-3">
+        <ViewerActionPanel />
         <Col className="gap-1">
           <Row className="flex-2 items-center gap-3">
             <Vote
