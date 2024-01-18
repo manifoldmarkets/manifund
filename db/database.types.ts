@@ -66,7 +66,7 @@ export interface Database {
           prize: boolean
           project_description_outline: string | null
           slug: string
-          sort: number
+          sort: number | null
           title: string
         }
         Insert: {
@@ -77,7 +77,7 @@ export interface Database {
           prize?: boolean
           project_description_outline?: string | null
           slug: string
-          sort?: number
+          sort?: number | null
           title: string
         }
         Update: {
@@ -88,7 +88,7 @@ export interface Database {
           prize?: boolean
           project_description_outline?: string | null
           slug?: string
-          sort?: number
+          sort?: number | null
           title?: string
         }
         Relationships: []
@@ -288,6 +288,36 @@ export interface Database {
           },
           {
             foreignKeyName: "project_evals_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      project_follows: {
+        Row: {
+          follower_id: string
+          project_id: string
+        }
+        Insert: {
+          follower_id: string
+          project_id: string
+        }
+        Update: {
+          follower_id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_follows_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
@@ -545,7 +575,7 @@ export interface Database {
           project: string | null
           to_id: string
           token: string
-          type: Database["public"]["Enums"]["txn_type"] | null
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Insert: {
           amount: number
@@ -556,7 +586,7 @@ export interface Database {
           project?: string | null
           to_id: string
           token: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Update: {
           amount?: number
@@ -567,7 +597,7 @@ export interface Database {
           project?: string | null
           to_id?: string
           token?: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type?: Database["public"]["Enums"]["txn_type"]
         }
         Relationships: [
           {
@@ -761,9 +791,9 @@ export interface Database {
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "donate" | "assurance buy" | "assurance sell"
+      bid_type: "buy" | "sell" | "donate" | "assurance sell" | "assurance buy"
       comment_type: "progress update" | "final report"
-      profile_type: "individual" | "org" | "fund" | "amm"
+      profile_type: "individual" | "org" | "amm" | "fund"
       project_stage:
         | "active"
         | "proposal"
@@ -814,7 +844,6 @@ export interface Database {
         stage: Database["public"]["Enums"]["project_stage"]
         round: string
         slug: string
-        location_description: string
       }
       transfer_row: {
         recipient_email: string

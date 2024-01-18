@@ -430,3 +430,9 @@ AS PERMISSIVE FOR DELETE
 TO public
 USING (auth.uid() = truster_id)
 
+-- Project follows
+CREATE TABLE public.project_follows (
+  follower_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
+  PRIMARY KEY (follower_id, project_id)
+);
