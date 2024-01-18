@@ -301,7 +301,7 @@ export interface Database {
           project_id: string
         }
         Insert: {
-          follower_id: string
+          follower_id?: string
           project_id: string
         }
         Update: {
@@ -726,6 +726,13 @@ export interface Database {
             }
             Returns: undefined
           }
+      follow_project: {
+        Args: {
+          project_id: string
+          follower_id: string
+        }
+        Returns: undefined
+      }
       get_user_balances: {
         Args: Record<PropertyKey, never>
         Returns: {
