@@ -97,6 +97,12 @@ export function ProjectDisplay(props: {
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred
   )
+  const numFollowers = project.project_follows?.length ?? 0
+  const userIsFollower =
+    !!userProfile &&
+    !!project.project_follows.find(
+      (follow) => follow.follower_id === userProfile.id
+    )
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
   const minIncludingAmm = getMinIncludingAmm(project)
   const tradePoints = calculateTradePoints(projectTxns, project.id)
@@ -116,7 +122,12 @@ export function ProjectDisplay(props: {
           />
         )}
       <Col className="gap-3">
-        {userProfile && <ViewerActionPanel />}
+        {userProfile && (
+          <ViewerActionPanel
+            projectId={project.id}
+            currentlyFollowing={userIsFollower}
+          />
+        )}
         <Col className="gap-1">
           <Row className="flex-2 items-center gap-3">
             <Vote
