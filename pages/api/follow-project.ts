@@ -16,11 +16,13 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
-  const { data: currentFollow } = await supabase
-    .from('project_follows')
-    .select()
-    .eq('project_id', projectId)
-    .eq('follower_id', user.id)
-
+  const { error } = await supabase.rpc('follow_project', {
+    project_id: projectId,
+    follower_id: user.id,
+  })
+  if (error) {
+    console.error(error)
+    return NextResponse.error()
+  }
   return NextResponse.json(projectId)
 }
