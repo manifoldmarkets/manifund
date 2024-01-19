@@ -25,5 +25,13 @@ export default async function handler(req: NextRequest) {
   const user = resp.data.user
   if (!user) return NextResponse.error()
   await sendComment(supabase, content, projectId, user.id, replyingTo)
+  const { error } = await supabase.rpc('follow_project', {
+    project_id: projectId,
+    follower_id: user.id,
+  })
+  if (error) {
+    console.error(error)
+    return NextResponse.error()
+  }
   return NextResponse.json('success')
 }

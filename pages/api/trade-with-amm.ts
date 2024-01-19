@@ -1,9 +1,8 @@
 import { getProfileById, getUser } from '@/db/profile'
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { getTxnAndProjectsByUser, getTxnsByUser } from '@/db/txn'
 import { createEdgeClient } from './_db'
 import {
-  ammSharesAtValuation,
   calculateAMMPorfolio,
   calculateBuyShares,
   calculateSellPayout,
@@ -204,6 +203,14 @@ export default async function handler(req: NextRequest) {
         amountRemaining = 0
       }
     }
+    const { error } = await supabase.rpc('follow_project', {
+      project_id: projectId,
+      follower_id: user.id,
+    })
+    if (error) {
+      console.error(error)
+      return NextResponse.error()
+    }
   }
-  return new Response('Success', { status: 200 })
+  return NextResponse.json('success')
 }

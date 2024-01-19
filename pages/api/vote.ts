@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
-import { getUser, isAdmin } from '@/db/profile'
+import { getUser } from '@/db/profile'
 import { getUserProjectVote } from '@/db/project'
 
 export const config = {
@@ -32,6 +32,16 @@ export default async function handler(req: NextRequest) {
       .insert([
         { project_id: projectId, voter_id: user.id, magnitude: newMagnitude },
       ])
+  }
+  if (newMagnitude === 1) {
+    const { error } = await supabase.rpc('follow_project', {
+      project_id: projectId,
+      follower_id: user.id,
+    })
+    if (error) {
+      console.error(error)
+      return NextResponse.error()
+    }
   }
   return NextResponse.json('voted!')
 }

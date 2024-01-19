@@ -91,5 +91,13 @@ export default async function handler(req: NextRequest) {
     },
     oldBid.bidder
   )
+  const { error } = await supabase.rpc('follow_project', {
+    project_id: oldBid.project,
+    follower_id: user.id,
+  })
+  if (error) {
+    console.error(error)
+    return NextResponse.error()
+  }
   return NextResponse.json({ success: true })
 }
