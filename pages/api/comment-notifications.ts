@@ -1,23 +1,26 @@
-import { createAdminClient } from './_db'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { generateHTML } from '@tiptap/html'
 import { getFullCommentById } from '@/db/comment'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
-import { getShareholders } from '@/app/projects/[slug]/project-tabs'
-import { getTxnsByProject } from '@/db/txn'
 import { parseMentions } from '@/utils/parse'
 import { Comment } from '@/db/comment'
 import { JSONContent } from '@tiptap/core'
-import { uniq } from 'lodash'
 import { TIPTAP_EXTENSIONS } from '@/components/editor'
+import { getProjectFollowerIds } from '@/db/follows'
+import { createServerClient } from '@/db/supabase-server'
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const comment = req.body.record as Comment
-  const supabaseAdmin = createAdminClient()
-  const fullComment = await getFullCommentById(supabaseAdmin, comment.id)
+  const supabase = createServerClient()
+  const fullComment = await getFullCommentById(supabase, comment.id)
+  const projectFollowerIds = await getProjectFollowerIds(
+    supabase,
+    comment.project
+  )
+
   const htmlContent = generateHTML(
     comment.content as JSONContent,
     TIPTAP_EXTENSIONS
@@ -42,24 +45,26 @@ export default async function handler(
 
   // Send investor / donor emails
   if (!comment.replying_to) {
-    const txnsAndProfiles = await getTxnsByProject(
-      supabaseAdmin,
-      fullComment.projects.id
-    )
-    const supporters =
-      fullComment.projects.type === 'cert'
-        ? getShareholders(txnsAndProfiles).map((s) => s.profile)
-        : txnsAndProfiles
-            .filter((txn) => txn.type === 'project donation')
-            .map((t) => t.profiles)
-    const supporterIds = supporters
-      .filter(
-        (supporter) =>
-          !!supporter && supporter?.id !== fullComment.projects.creator
-      )
-      .map((supporter) => supporter?.id)
-    const uniqueSupporterIds = uniq(supporterIds)
-    uniqueSupporterIds.forEach(async (supporterId) => {
+    // const txnsAndProfiles = await getTxnsByProject(
+    //   supabase,
+    //   fullComment.projects.id
+    // )
+    // const supporters =
+    //   fullComment.projects.type === 'cert'
+    //     ? getShareholders(txnsAndProfiles).map((s) => s.profile)
+    //     : txnsAndProfiles
+    //         .filter((txn) => txn.type === 'project donation')
+    //         .map((t) => t.profiles)
+    // const supporterIds = supporters
+    //   .filter(
+    //     (supporter) =>
+    //       !!supporter && supporter?.id !== fullComment.projects.creator
+    //   )
+    //   .map((supporter) => supporter?.id)
+    projectFollowerIds.forEach(async (followerId) => {
+      if (followerId === fullComment.projects.creator) {
+        return
+      }
       if (comment.special_type === 'progress update') {
         await sendTemplateEmail(
           TEMPLATE_IDS.GENERIC_NOTIF,
@@ -69,7 +74,7 @@ export default async function handler(
             buttonText: 'View project',
             subject: `Manifund: Update posted for "${fullComment.projects.title}"`,
           },
-          supporterId
+          followerId
         )
       } else if (comment.special_type === 'final report') {
         await sendTemplateEmail(
@@ -80,13 +85,13 @@ export default async function handler(
             buttonText: 'View project',
             subject: `Manifund: Final report posted for "${fullComment.projects.title}"`,
           },
-          supporterId
+          followerId
         )
       } else {
         await sendTemplateEmail(
           TEMPLATE_IDS.NEW_COMMENT,
           postmarkVars,
-          supporterId
+          followerId
         )
       }
     })
@@ -112,12 +117,13 @@ export default async function handler(
   // Send parent commenter email
   if (comment.replying_to) {
     const parentComment = await getFullCommentById(
-      supabaseAdmin,
+      supabase,
       comment.replying_to
     )
     if (
       parentComment.commenter !== fullComment.projects.creator &&
-      !mentionedUserIds.includes(parentComment.profiles.id) &&
+      !mentionedUserIds.includes(parentComment.commenter) &&
+      !projectFollowerIds.includes(parentComment.commenter) &&
       parentComment.commenter !== comment.commenter
     ) {
       await sendTemplateEmail(
