@@ -13,6 +13,7 @@ export const config = {
 export default async function handler(req: NextRequest) {
   const { projectId } = (await req.json()) as { projectId: string }
   const supabase = createEdgeClient(req)
+  console.log('in handler')
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()

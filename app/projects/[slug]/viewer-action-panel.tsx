@@ -13,6 +13,8 @@ export function ViewerActionPanel(props: {
 }) {
   const { projectId, currentlyFollowing } = props
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [displayAsFollowing, setDisplayAsFollowing] =
+    useState(currentlyFollowing)
   const router = useRouter()
   return (
     <Row className="flex items-center justify-end gap-3">
@@ -23,6 +25,7 @@ export function ViewerActionPanel(props: {
           disabled={isSubmitting}
           onClick={async () => {
             setIsSubmitting(true)
+            setDisplayAsFollowing(!currentlyFollowing)
             await fetch('/api/toggle-follow', {
               method: 'POST',
               body: JSON.stringify({ projectId: projectId }),
@@ -34,7 +37,7 @@ export function ViewerActionPanel(props: {
           <EyeIcon
             className={clsx(
               'h-5 w-5 stroke-2',
-              currentlyFollowing ? 'text-orange-600' : 'text-gray-500'
+              displayAsFollowing ? 'text-orange-600' : 'text-gray-500'
             )}
           />
         </button>
