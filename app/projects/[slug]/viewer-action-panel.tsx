@@ -22,11 +22,13 @@ export function ViewerActionPanel(props: {
           className="hover:cursor-pointer disabled:cursor-not-allowed"
           disabled={isSubmitting}
           onClick={async () => {
-            await fetch('/api/follow-project', {
+            setIsSubmitting(true)
+            await fetch('/api/toggle-follow', {
               method: 'POST',
               body: JSON.stringify({ projectId: projectId }),
             })
             router.refresh()
+            setIsSubmitting(false)
           }}
         >
           <EyeIcon

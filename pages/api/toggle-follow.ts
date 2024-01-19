@@ -16,7 +16,7 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
-  const { error } = await supabase.rpc('follow_project', {
+  const { error } = await supabase.rpc('toggle_follow', {
     project_id: projectId,
     follower_id: user.id,
   })

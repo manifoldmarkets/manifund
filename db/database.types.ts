@@ -761,6 +761,13 @@ export interface Database {
         }
         Returns: undefined
       }
+      toggle_follow: {
+        Args: {
+          project_id: string
+          follower_id: string
+        }
+        Returns: undefined
+      }
       transfer_project:
         | {
             Args: {
@@ -795,6 +802,13 @@ export interface Database {
             }
             Returns: undefined
           }
+      unfollow_project: {
+        Args: {
+          project_id: string
+          follower_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
