@@ -12,7 +12,6 @@ export function ViewerActionPanel(props: {
   currentlyFollowing: boolean
 }) {
   const { projectId, currentlyFollowing } = props
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [displayAsFollowing, setDisplayAsFollowing] =
     useState(currentlyFollowing)
   const router = useRouter()
@@ -22,16 +21,14 @@ export function ViewerActionPanel(props: {
       <Tooltip text={currentlyFollowing ? 'Unfollow' : 'Follow'}>
         <button
           className="hover:cursor-pointer disabled:cursor-not-allowed"
-          disabled={isSubmitting}
+          disabled={displayAsFollowing !== currentlyFollowing}
           onClick={async () => {
-            setIsSubmitting(true)
             setDisplayAsFollowing(!currentlyFollowing)
             await fetch('/api/toggle-follow', {
               method: 'POST',
               body: JSON.stringify({ projectId: projectId }),
             })
             router.refresh()
-            setIsSubmitting(false)
           }}
         >
           <EyeIcon
