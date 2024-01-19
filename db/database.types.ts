@@ -66,7 +66,7 @@ export interface Database {
           prize: boolean
           project_description_outline: string | null
           slug: string
-          sort: number | null
+          sort: number
           title: string
         }
         Insert: {
@@ -77,7 +77,7 @@ export interface Database {
           prize?: boolean
           project_description_outline?: string | null
           slug: string
-          sort?: number | null
+          sort?: number
           title: string
         }
         Update: {
@@ -88,7 +88,7 @@ export interface Database {
           prize?: boolean
           project_description_outline?: string | null
           slug?: string
-          sort?: number | null
+          sort?: number
           title?: string
         }
         Relationships: []
@@ -575,7 +575,7 @@ export interface Database {
           project: string | null
           to_id: string
           token: string
-          type: Database["public"]["Enums"]["txn_type"]
+          type: Database["public"]["Enums"]["txn_type"] | null
         }
         Insert: {
           amount: number
@@ -586,7 +586,7 @@ export interface Database {
           project?: string | null
           to_id: string
           token: string
-          type: Database["public"]["Enums"]["txn_type"]
+          type?: Database["public"]["Enums"]["txn_type"] | null
         }
         Update: {
           amount?: number
@@ -597,7 +597,7 @@ export interface Database {
           project?: string | null
           to_id?: string
           token?: string
-          type?: Database["public"]["Enums"]["txn_type"]
+          type?: Database["public"]["Enums"]["txn_type"] | null
         }
         Relationships: [
           {
@@ -812,9 +812,9 @@ export interface Database {
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "donate" | "assurance sell" | "assurance buy"
+      bid_type: "buy" | "sell" | "donate" | "assurance buy" | "assurance sell"
       comment_type: "progress update" | "final report"
-      profile_type: "individual" | "org" | "amm" | "fund"
+      profile_type: "individual" | "org" | "fund" | "amm"
       project_stage:
         | "active"
         | "proposal"
@@ -865,6 +865,7 @@ export interface Database {
         stage: Database["public"]["Enums"]["project_stage"]
         round: string
         slug: string
+        location_description: string
       }
       transfer_row: {
         recipient_email: string
