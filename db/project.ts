@@ -6,6 +6,7 @@ import { Profile } from './profile'
 import { Comment } from '@/db/comment'
 import { Round } from './round'
 import { MiniCause } from './cause'
+import { ProjectFollow } from './follows'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectTransfer =
@@ -20,8 +21,6 @@ export type FullProject = Project & { profiles: Profile } & {
   project_follows: ProjectFollow[]
 }
 export type MiniProject = Project & { profiles: Profile } & { txns: Txn[] }
-export type ProjectFollow =
-  Database['public']['Tables']['project_follows']['Row']
 
 export const TOTAL_SHARES = 10_000_000
 
@@ -62,10 +61,11 @@ export async function getProjectsByUser(
 }
 
 export async function listProjects(supabase: SupabaseClient) {
+  // TODO: remove commenter after adding followers
   const { data } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, amm_shares, founder_shares, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, amm_shares, founder_shares, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id, commenter), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
     )
     .neq('type', 'dummy')
     .order('created_at', { ascending: false })
