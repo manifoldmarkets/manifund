@@ -2,9 +2,7 @@
 
 import { Button } from '@/components/button'
 import { Row } from '@/components/layout/row'
-import { Tooltip } from '@/components/tooltip'
 import { LinkIcon, EyeIcon } from '@heroicons/react/20/solid'
-import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
