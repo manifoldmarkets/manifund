@@ -97,7 +97,6 @@ export function ProjectDisplay(props: {
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred
   )
-  const numFollowers = project.project_follows?.length ?? 0
   const userIsFollower =
     !!userProfile &&
     !!project.project_follows.find(
@@ -121,8 +120,8 @@ export function ProjectDisplay(props: {
             projectSlug={project.slug}
           />
         )}
-      <Col className="gap-3">
-        {userProfile && (
+      <Col className="gap-2">
+        {userProfile && !isOwnProject && (
           <ViewerActionPanel
             projectId={project.id}
             projectSlug={project.slug}
