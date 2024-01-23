@@ -9,6 +9,7 @@ import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { isProd } from '@/db/env'
 import { Cause, getPrizeCause } from '@/db/cause'
 import { checkReactivateEligible } from '@/utils/activate-project'
+import { uniq } from 'lodash'
 
 export const config = {
   runtime: 'edge',
@@ -124,7 +125,9 @@ async function closeProject(
       creatorPostmarkVars,
       project.creator
     )
-    bids.forEach(async (bid) => {
+    const bidders = bids.map((bid) => bid.bidder)
+    const uniqueBidders = uniq(bidders)
+    uniqueBidders.forEach(async (bidder) => {
       const bidderPostmarkVars = {
         projectTitle: project.title,
         result: 'declined',
@@ -135,7 +138,7 @@ async function closeProject(
       await sendTemplateEmail(
         TEMPLATE_IDS.OFFER_RESOLVED,
         bidderPostmarkVars,
-        bid.bidder
+        bidder
       )
     })
     const unnotifiedFollowers = followerIds.filter(
