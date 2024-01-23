@@ -34,6 +34,6 @@ export default async function handler() {
       })
     )
     await Promise.all(addFollowerPromises)
-    console.log('added followers for project', project.id)
+    console.log('added followers for project', project.title)
   }
 }

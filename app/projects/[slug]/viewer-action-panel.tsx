@@ -37,14 +37,15 @@ export function ViewerActionPanel(props: {
         disabled={displayAsFollowing !== currentlyFollowing}
         onClick={async () => {
           setDisplayAsFollowing(!currentlyFollowing)
-          await fetch('/api/toggle-follow', {
+          const response = await fetch('/api/toggle-follow', {
             method: 'POST',
             body: JSON.stringify({ projectId: projectId }),
           })
+          console.log('response', response)
           router.refresh()
         }}
       >
-        <EyeIcon className={'relative right-0.5 h-4 w-4 stroke-2'} />
+        <EyeIcon className="relative right-0.5 h-4 w-4 stroke-2" />
         {displayAsFollowing ? 'Following' : 'Follow'}
       </Button>
     </Row>
