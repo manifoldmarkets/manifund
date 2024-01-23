@@ -43,24 +43,8 @@ export default async function handler(
     )
   }
 
-  // Send investor / donor emails
+  // Send follower emails
   if (!comment.replying_to) {
-    // const txnsAndProfiles = await getTxnsByProject(
-    //   supabase,
-    //   fullComment.projects.id
-    // )
-    // const supporters =
-    //   fullComment.projects.type === 'cert'
-    //     ? getShareholders(txnsAndProfiles).map((s) => s.profile)
-    //     : txnsAndProfiles
-    //         .filter((txn) => txn.type === 'project donation')
-    //         .map((t) => t.profiles)
-    // const supporterIds = supporters
-    //   .filter(
-    //     (supporter) =>
-    //       !!supporter && supporter?.id !== fullComment.projects.creator
-    //   )
-    //   .map((supporter) => supporter?.id)
     projectFollowerIds.forEach(async (followerId) => {
       if (followerId === fullComment.projects.creator) {
         return
