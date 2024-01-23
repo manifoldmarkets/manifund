@@ -64,7 +64,10 @@ export default async function handler(req: NextRequest) {
     project: projectId ?? null,
     type: projectId ? 'project donation' : 'profile donation',
   })
-  console.error(error)
+  if (error) {
+    console.error(error)
+    return NextResponse.error()
+  }
   if (projectId) {
     const project = await getProjectById(supabaseAdmin, projectId)
     const postmarkVars = {
@@ -74,6 +77,14 @@ export default async function handler(req: NextRequest) {
       projectUrl: `https://manifund.org/projects/${project.slug}`,
     }
     await sendTemplateEmail(TEMPLATE_IDS.PROJECT_DONATION, postmarkVars, toId)
+    const { error } = await supabase.rpc('follow_project', {
+      project_id: projectId,
+      follower_id: donor.id,
+    })
+    if (error) {
+      console.error(error)
+      return NextResponse.error()
+    }
   } else {
     const regranterProfile = await getProfileById(supabaseAdmin, toId)
     if (!regranterProfile) {

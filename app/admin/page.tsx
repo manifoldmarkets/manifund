@@ -14,7 +14,7 @@ import { listProjects } from '@/db/project'
 import { GrantVerdict } from './grant-verdict'
 import { AddTags } from './add-tags'
 import { DownloadTextButton } from './download-text-button'
-import { CategorizeTxns } from './categorize-txns'
+import { RunScript } from './run-script'
 import { ActivateProject } from './activate-project'
 import { CreateTxn } from './create-txn'
 import clsx from 'clsx'
@@ -121,7 +121,7 @@ export default async function Admin() {
         toDownload={usersCSV}
         filename="users.csv"
       />
-      <CategorizeTxns txns={txns ?? []} />
+      <RunScript />
       <Table>
         <thead>
           <tr>

@@ -34,6 +34,7 @@ import { CreatorActionPanel } from './creator-action-panel'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { Tooltip } from '@/components/tooltip'
 import { EnvelopeIcon } from '@heroicons/react/20/solid'
+import { ViewerActionPanel } from './viewer-action-panel'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -96,6 +97,11 @@ export function ProjectDisplay(props: {
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred
   )
+  const userIsFollower =
+    !!userProfile &&
+    !!project.project_follows.find(
+      (follow) => follow.follower_id === userProfile.id
+    )
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
   const minIncludingAmm = getMinIncludingAmm(project)
   const tradePoints = calculateTradePoints(projectTxns, project.id)
@@ -114,7 +120,14 @@ export function ProjectDisplay(props: {
             projectSlug={project.slug}
           />
         )}
-      <Col className="gap-3">
+      <Col className="gap-2">
+        {userProfile && !isOwnProject && (
+          <ViewerActionPanel
+            projectId={project.id}
+            projectSlug={project.slug}
+            currentlyFollowing={userIsFollower}
+          />
+        )}
         <Col className="gap-1">
           <Row className="flex-2 items-center gap-3">
             <Vote

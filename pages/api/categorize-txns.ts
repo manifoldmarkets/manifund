@@ -14,7 +14,7 @@ export const config = {
 }
 
 // Used to add txn type column to txns table
-export default async function handler(req: NextRequest) {
+export default async function handler() {
   const supabaseAdmin = createAdminClient()
   const { data: txns } = await supabaseAdmin.from('txns').select('*')
   await dbCategorizeTxns(txns ?? [], supabaseAdmin)

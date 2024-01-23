@@ -26,7 +26,7 @@ export default async function handler() {
   const { data: proposals, error } = await supabase
     .from('projects')
     .select(
-      '*, bids(*), profiles!projects_creator_fkey(full_name), causes(slug)'
+      '*, bids(*), profiles!projects_creator_fkey(full_name), causes(slug), project_follows(follower_id)'
     )
     .eq('stage', 'proposal')
   if (error) {
@@ -50,6 +50,7 @@ export default async function handler() {
     await closeProject(
       project,
       project.bids,
+      project.project_follows.map((f) => f.follower_id),
       project.profiles?.full_name ?? '',
       supabase,
       prizeCause
@@ -61,6 +62,7 @@ export default async function handler() {
 async function closeProject(
   project: Project,
   bids: Bid[],
+  followerIds: string[],
   creatorName: string,
   supabase: SupabaseClient,
   prizeCause?: Cause
@@ -99,7 +101,7 @@ async function closeProject(
       })
       .throwOnError()
     const reactivateEligible = checkReactivateEligible(project, prizeCause)
-    const recipientPostmarkVars = {
+    const creatorPostmarkVars = {
       recipientFullName: creatorName,
       verdictMessage: `We regret to inform you that your project, "${
         project.title
@@ -116,7 +118,7 @@ async function closeProject(
     }
     await sendTemplateEmail(
       TEMPLATE_IDS.VERDICT,
-      recipientPostmarkVars,
+      creatorPostmarkVars,
       project.creator
     )
     bids.forEach(async (bid) => {
@@ -133,5 +135,20 @@ async function closeProject(
         bid.bidder
       )
     })
+    const unnotifiedFollowers = followerIds.filter(
+      (id) => id !== project.creator && !bids.find((bid) => bid.bidder === id)
+    )
+    for (const followerId of unnotifiedFollowers) {
+      await sendTemplateEmail(
+        TEMPLATE_IDS.GENERIC_NOTIF,
+        {
+          notifText: `This project was not funded, because it received only $${amountRaised} in funding, which is less than its' minimum funding goal of $${project.min_funding}.`,
+          buttonUrl: `https://manifund.org/projects/${project.slug}`,
+          buttonText: 'See project',
+          subject: `Manifund: ${project.title} was not funded`,
+        },
+        followerId
+      )
+    }
   }
 }

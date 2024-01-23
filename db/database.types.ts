@@ -295,6 +295,36 @@ export interface Database {
           }
         ]
       }
+      project_follows: {
+        Row: {
+          follower_id: string
+          project_id: string
+        }
+        Insert: {
+          follower_id?: string
+          project_id: string
+        }
+        Update: {
+          follower_id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_follows_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_follows_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       project_transfers: {
         Row: {
           created_at: string
@@ -696,6 +726,13 @@ export interface Database {
             }
             Returns: undefined
           }
+      follow_project: {
+        Args: {
+          project_id: string
+          follower_id: string
+        }
+        Returns: undefined
+      }
       get_user_balances: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -721,6 +758,13 @@ export interface Database {
       reject_proposal: {
         Args: {
           project_id: string
+        }
+        Returns: undefined
+      }
+      toggle_follow: {
+        Args: {
+          project_id: string
+          follower_id: string
         }
         Returns: undefined
       }
@@ -758,6 +802,13 @@ export interface Database {
             }
             Returns: undefined
           }
+      unfollow_project: {
+        Args: {
+          project_id: string
+          follower_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
