@@ -9,15 +9,27 @@ import { useState } from 'react'
 
 export function ViewerActionPanel(props: {
   projectId: string
+  projectSlug: string
   currentlyFollowing: boolean
 }) {
-  const { projectId, currentlyFollowing } = props
+  const { projectId, projectSlug, currentlyFollowing } = props
   const [displayAsFollowing, setDisplayAsFollowing] =
     useState(currentlyFollowing)
   const router = useRouter()
   return (
-    <Row className="flex items-center justify-end gap-3">
-      <LinkIcon className="h-5 w-5 stroke-2 text-gray-500" />
+    <Row className="flex items-center justify-end gap-2">
+      <Tooltip text="Copy link to project">
+        <button
+          className="hover:cursor-pointer"
+          onClick={async () => {
+            await navigator.clipboard.writeText(
+              `${window.location.origin}/projects/${projectSlug}`
+            )
+          }}
+        >
+          <LinkIcon className="h-5 w-5 stroke-2 text-gray-500" />
+        </button>
+      </Tooltip>
       <Tooltip text={currentlyFollowing ? 'Unfollow' : 'Follow'}>
         <button
           className="hover:cursor-pointer disabled:cursor-not-allowed"

@@ -125,6 +125,7 @@ export function ProjectDisplay(props: {
         {userProfile && (
           <ViewerActionPanel
             projectId={project.id}
+            projectSlug={project.slug}
             currentlyFollowing={userIsFollower}
           />
         )}
