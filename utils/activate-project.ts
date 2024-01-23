@@ -1,7 +1,7 @@
 import { Cause } from '@/db/cause'
 import { getProfileById } from '@/db/profile'
 import {
-  getProjectAndBidsById,
+  getProjectBidsAndFollowsById,
   Project,
   ProjectAndBids,
   TOTAL_SHARES,
@@ -19,13 +19,16 @@ export async function maybeActivateProject(
   supabase: SupabaseClient,
   projectId: string
 ) {
-  const project = await getProjectAndBidsById(supabase, projectId)
+  const project = await getProjectBidsAndFollowsById(supabase, projectId)
   if (!project || !project.bids) {
     console.error('Project not found')
     return
   }
   if (checkFundingReady(project)) {
-    await activateProject(project)
+    await activateProject(
+      project,
+      project.project_follows.map((f) => f.follower_id)
+    )
   }
 }
 
@@ -67,7 +70,7 @@ export function checkReactivateEligible(project: Project, prizeCause?: Cause) {
   )
 }
 
-async function activateProject(project: Project) {
+async function activateProject(project: Project, followerIds: string[]) {
   const supabase = createAdminClient()
   const creatorProfile = await getProfileById(supabase, project?.creator)
   if (!project || !creatorProfile) {
@@ -123,19 +126,34 @@ async function activateProject(project: Project) {
       )
     })
   )
-  const recipientSubject = `Your project, "${project.title}" is active!`
-  const recipientMessage = `Your project, "${project.title}", has completed the seed funding process and become active! You can now withdraw any funds you've recieved for this project from your profile page.`
+  const creatorSubject = `Your project, "${project.title}" is active!`
+  const creatorMessage = `Your project, "${project.title}", has completed the seed funding process and become active! You can now withdraw any funds you've recieved for this project from your profile page.`
   await sendTemplateEmail(
     TEMPLATE_IDS.VERDICT,
     {
       recipientFullName: creatorProfile.full_name ?? 'project creator',
-      verdictMessage: recipientMessage,
+      verdictMessage: creatorMessage,
       projectUrl: `${getURL()}/projects/${project.slug}`,
-      subject: recipientSubject,
+      subject: creatorSubject,
       adminName: 'Rachel from Manifund',
     },
     project.creator
   )
+  const unnotifiedFollowers = followerIds.filter(
+    (id) => id !== project.creator && !donors.find((donor) => donor?.id === id)
+  )
+  for (const followerId of unnotifiedFollowers) {
+    await sendTemplateEmail(
+      TEMPLATE_IDS.GENERIC_NOTIF,
+      {
+        notifText: `This project has completed the seed funding process and become active!`,
+        buttonUrl: `${getURL()}/projects/${project.slug}`,
+        buttonText: 'See project',
+        subject: `Manifund: ${project.title} is active!`,
+      },
+      followerId
+    )
+  }
 }
 
 export async function seedAmm(

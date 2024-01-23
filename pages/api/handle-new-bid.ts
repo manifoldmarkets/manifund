@@ -32,6 +32,14 @@ export default async function handler(
       await sendShareholderEmails(bid, project, supabase)
     }
   }
+  const { error } = await supabase.rpc('follow_project', {
+    project_id: project.id,
+    follower_id: bid.bidder,
+  })
+  if (error) {
+    console.error(error)
+    return res.status(500).json({ error: 'Error following project' })
+  }
   return res.status(200).json({ bid })
 }
 

@@ -1,25 +1,21 @@
 'use client'
 import { Button } from '@/components/button'
-import { Txn } from '@/db/txn'
 
-export function CategorizeTxns(props: { txns: Txn[] }) {
-  const { txns } = props
+export function RunScript() {
   return (
     <Button
       disabled
       onClick={async () => {
-        const response = await fetch('/api/categorize-txns', {
+        // Change script here
+        const response = await fetch('/api/add-all-followers', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            txns,
-          }),
         })
       }}
     >
-      Categorize Txns
+      Add followers
     </Button>
   )
 }

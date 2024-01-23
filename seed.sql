@@ -430,3 +430,26 @@ AS PERMISSIVE FOR DELETE
 TO public
 USING (auth.uid() = truster_id)
 
+-- Project follows
+CREATE TABLE public.project_follows (
+  follower_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
+  PRIMARY KEY (follower_id, project_id)
+);
+
+-- Project follows RLS
+CREATE POLICY "Enable read access for all users" ON "public"."project_follows"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
+
+CREATE POLICY "Enable delete for users based on user_id" ON "public"."project_follows"
+AS PERMISSIVE FOR DELETE
+TO public
+USING (auth.uid() = follower_id)
+
+CREATE POLICY "Enable insert for users based on user_id" ON "public"."project_follows"
+AS PERMISSIVE FOR INSERT
+TO public
+
+WITH CHECK (auth.uid() = follower_id)
