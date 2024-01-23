@@ -65,11 +65,10 @@ export async function getProjectsByUser(
 }
 
 export async function listProjects(supabase: SupabaseClient) {
-  // TODO: remove commenter after adding followers
   const { data } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, amm_shares, founder_shares, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id, commenter), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, amm_shares, founder_shares, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
     )
     .neq('type', 'dummy')
     .order('created_at', { ascending: false })
