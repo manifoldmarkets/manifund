@@ -4,7 +4,7 @@ import { Button } from '@/components/button'
 export function RunScript() {
   return (
     <Button
-      // disabled
+      disabled
       onClick={async () => {
         // Change script here
         const response = await fetch('/api/add-all-followers', {
