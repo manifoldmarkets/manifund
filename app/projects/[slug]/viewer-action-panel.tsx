@@ -37,11 +37,10 @@ export function ViewerActionPanel(props: {
         disabled={displayAsFollowing !== currentlyFollowing}
         onClick={async () => {
           setDisplayAsFollowing(!currentlyFollowing)
-          const response = await fetch('/api/toggle-follow', {
+          await fetch('/api/toggle-follow', {
             method: 'POST',
             body: JSON.stringify({ projectId: projectId }),
           })
-          console.log('response', response)
           router.refresh()
         }}
       >
