@@ -1,7 +1,7 @@
 import { differenceInDays, isBefore } from 'date-fns'
 import { NextResponse } from 'next/server'
 import { createAdminClient } from './_db'
-import { getAmountRaised } from '@/utils/math'
+import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
 import { Project } from '@/db/project'
 import { Bid } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
@@ -68,7 +68,8 @@ async function closeProject(
   prizeCause?: Cause
 ) {
   const amountRaised = getAmountRaised(project, bids)
-  if (amountRaised >= project.min_funding) {
+  const minIncludingAmm = getMinIncludingAmm(project)
+  if (amountRaised >= minIncludingAmm) {
     if (project.type === 'grant' && !project.signed_agreement) {
       await sendTemplateEmail(
         TEMPLATE_IDS.GENERIC_NOTIF,
@@ -95,11 +96,13 @@ async function closeProject(
       )
     }
   } else {
-    await supabase
-      .rpc('reject_proposal', {
-        project_id: project.id,
-      })
-      .throwOnError()
+    const { error } = await supabase.rpc('reject_proposal', {
+      project_id: project.id,
+    })
+    if (error) {
+      console.error(error)
+      return
+    }
     const reactivateEligible = checkReactivateEligible(project, prizeCause)
     const creatorPostmarkVars = {
       recipientFullName: creatorName,
