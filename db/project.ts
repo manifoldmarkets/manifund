@@ -13,6 +13,10 @@ export type ProjectTransfer =
   Database['public']['Tables']['project_transfers']['Row']
 export type ProjectVote = Database['public']['Tables']['project_votes']['Row']
 export type ProjectWithCauses = Project & { causes: MiniCause[] }
+export type ProjectAndBids = Project & { bids: Bid[] }
+export type ProjectBidsAndFollows = Project & { bids: Bid[] } & {
+  project_follows: ProjectFollow[]
+}
 export type FullProject = Project & { profiles: Profile } & {
   bids: Bid[]
 } & { txns: Txn[] } & { comments: Comment[] } & { rounds: Round } & {
@@ -187,7 +191,6 @@ export async function getProjectsPendingTransferByUser(
   }) as Project[]
 }
 
-export type ProjectAndBids = Project & { bids: Bid[] }
 export async function getProjectAndBidsById(
   supabase: SupabaseClient,
   projectId: string
@@ -201,6 +204,21 @@ export async function getProjectAndBidsById(
     return null
   }
   return data[0] as ProjectAndBids
+}
+
+export async function getProjectBidsAndFollowsById(
+  supabase: SupabaseClient,
+  projectId: string
+) {
+  const { data } = await supabase
+    .from('projects')
+    .select('*, bids(*), project_follows(follower_id)')
+    .eq('id', projectId)
+    .throwOnError()
+  if (data === null) {
+    return null
+  }
+  return data[0] as ProjectBidsAndFollows
 }
 
 export async function getUserProjectVote(
