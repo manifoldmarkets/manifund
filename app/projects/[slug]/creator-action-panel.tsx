@@ -57,7 +57,7 @@ function ProgressUpdateButton(props: { project: Project }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const PROGRESS_UPDATE_KEY = `${project.id}ProgressUpdate`
-  const editor = useTextEditor(PROGRESS_UPDATE_OUTLINE)
+  const editor = useTextEditor(PROGRESS_UPDATE_OUTLINE, PROGRESS_UPDATE_KEY)
   return (
     <>
       <Button
