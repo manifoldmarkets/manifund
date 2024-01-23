@@ -99,5 +99,5 @@ export default async function handler(req: NextRequest) {
     console.error(error)
     return NextResponse.error()
   }
-  return NextResponse.json({ success: true })
+  return NextResponse.json('success')
 }
