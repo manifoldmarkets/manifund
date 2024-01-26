@@ -121,7 +121,7 @@ function Bid(props: {
           className="sm:hidden"
         />
       </Row>
-      <Row className="justify-end">
+      <Row className="items-center justify-end">
         {showValuation ? (
           <div>
             {formatMoney(bid.amount)} <span className="text-gray-500"> @ </span>
@@ -131,6 +131,13 @@ function Bid(props: {
         ) : (
           <div>{formatMoney(bid.amount)}</div>
         )}
+      </Row>
+      <Row className="items-center justify-end gap-2">
+        <span className="hidden text-right text-gray-500 sm:block">
+          {formatDistanceToNow(new Date(bid.created_at), {
+            addSuffix: true,
+          })}
+        </span>
         {userProfile && bid.bidder === userProfile.id && (
           <DeleteBid bidId={bid.id} />
         )}
@@ -143,13 +150,6 @@ function Bid(props: {
             userSellableShares={userSellableShares ?? 0}
           />
         )}
-      </Row>
-      <Row className="justify-end">
-        <span className="hidden text-right text-gray-500 sm:block">
-          {formatDistanceToNow(new Date(bid.created_at), {
-            addSuffix: true,
-          })}
-        </span>
       </Row>
     </div>
   )
