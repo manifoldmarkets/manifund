@@ -56,7 +56,7 @@ export default async function handler() {
         }". Please post an update to let Manifund and your ${
           project.type === 'cert' ? 'investors' : 'donors'
         } know how things are going. If you're done working on this or want to end your grant period, you can select to close your project and post a final report instead.`,
-        buttonUrl: `manifund.org/projects/${project.slug}#creator-actions`,
+        buttonUrl: `https://manifund.org/projects/${project.slug}#creator-actions`,
         buttonText: 'Post an update',
         subject: `Your Manifund project is due for an update`,
       },
