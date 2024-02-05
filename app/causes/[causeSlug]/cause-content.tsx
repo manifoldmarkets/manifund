@@ -18,7 +18,9 @@ export function CauseContent(props: {
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
   const visibleProjects = projects.filter(
-    (project) => project.stage !== 'hidden'
+    // TODO: add filter back
+    (project) => true
+    // project.stage !== 'hidden'
   )
   if (cause.description) {
     const tabs = [
