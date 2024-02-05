@@ -48,6 +48,7 @@ export function ProjectCard(props: {
           creator={project.profiles}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
           regrantorInitiated={regrantorInitiated}
+          projectRecipient={project.project_transfers?.[0]?.recipient_name}
         />
         <Link
           href={`/projects/${project.slug}`}
@@ -133,15 +134,14 @@ function ProjectCardData(props: {
 export function ProjectCardHeader(props: {
   creator: Profile
   projectType: Project['type']
-  projectTransfer?: ProjectTransfer
+  projectRecipient?: string
   valuation?: number
   regrantorInitiated?: boolean
-  hideRound?: boolean
 }) {
   const {
     creator,
     valuation,
-    projectTransfer,
+    projectRecipient,
     projectType,
     regrantorInitiated,
   } = props
@@ -149,14 +149,10 @@ export function ProjectCardHeader(props: {
     <Row className="mt-1 items-start justify-between">
       <div>
         <div className="h-1" />
-        <UserAvatarAndBadge profile={creator} />
-        {projectTransfer && (
-          <Row className="gap-1">
-            <Tag text={'PENDING TRANSFER'} className="mt-1" color="orange" />
-            <Col className="relative top-0.5 justify-center text-sm text-gray-500">
-              to {projectTransfer.recipient_name}
-            </Col>
-          </Row>
+        {projectRecipient && (
+          <span className="relative top-0.5 justify-center text-sm text-gray-500">
+            {projectRecipient}
+          </span>
         )}
       </div>
       {projectType === 'cert' && valuation && !isNaN(valuation) ? (
