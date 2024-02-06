@@ -46,8 +46,8 @@ export function SmallStat(props: { statData: statData }) {
   return (
     <Tooltip text={statData.label}>
       <Row className="items-center gap-0.5">
-        <statData.icon className="h-5 w-5 text-gray-500" />
-        <span className="text-xs text-gray-500">{statData.value} </span>
+        <statData.icon className="h-4 w-4 stroke-[1.7] text-gray-500" />
+        <span className="text-xs text-gray-500">{statData.value}</span>
       </Row>
     </Tooltip>
   )
