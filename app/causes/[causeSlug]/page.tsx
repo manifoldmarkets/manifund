@@ -2,7 +2,7 @@ import { createServerClient } from '@/db/supabase-server'
 import { getFullProjectsByCause } from '@/db/project'
 import Image from 'next/image'
 import { getCause, listMiniCauses } from '@/db/cause'
-import { CauseContent } from './cause-content'
+import { CauseContent } from './cause-tabs'
 import { CauseData } from './cause-data'
 
 export const revalidate = 60
