@@ -37,7 +37,7 @@ export default async function CausePage(props: {
           alt="round header image"
         />
       )}
-      <h1 className="mb-1 mt-3 text-2xl font-bold lg:text-3xl">
+      <h1 className="mb-1 mt-3 text-3xl font-bold lg:text-4xl">
         {cause.title}
       </h1>
       <CauseData projects={projects} />
