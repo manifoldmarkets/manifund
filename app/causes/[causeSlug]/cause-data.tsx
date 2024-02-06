@@ -29,7 +29,7 @@ export function CauseData(props: { projects: FullProject[] }) {
     },
     {
       label: 'total projects in the active stage',
-      value: `${numProposalProjects.toString()} active projects`,
+      value: `${numActiveProjects.toString()} active projects`,
       icon: FireIcon,
     },
     {
@@ -39,7 +39,7 @@ export function CauseData(props: { projects: FullProject[] }) {
     },
   ] as statData[]
   return (
-    <Row className="gap-5">
+    <Row className="mb-2 gap-5">
       {stats.map((statData) => (
         <SmallStat key={statData.label} statData={statData} />
       ))}
