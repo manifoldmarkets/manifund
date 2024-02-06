@@ -2,7 +2,7 @@
 import { Profile } from '@/db/profile'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
-import { FullProject, Project, ProjectTransfer } from '@/db/project'
+import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
