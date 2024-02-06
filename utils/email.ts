@@ -68,8 +68,9 @@ export async function getUserEmail(
     .from('users')
     .select('email')
     .eq('id', userId)
+    .maybeSingle()
   if (error) {
     console.log(error)
   }
-  return data ? data[0].email : null
+  return data ? data.email : null
 }
