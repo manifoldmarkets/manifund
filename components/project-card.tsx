@@ -149,10 +149,12 @@ export function ProjectCardHeader(props: {
     <Row className="mt-1 items-start justify-between">
       <div>
         <div className="h-1" />
-        {projectRecipient && (
+        {projectRecipient ? (
           <span className="relative top-0.5 justify-center text-sm text-gray-500">
             {projectRecipient}
           </span>
+        ) : (
+          <UserAvatarAndBadge profile={creator} className="text-sm" />
         )}
       </div>
       {projectType === 'cert' && valuation && !isNaN(valuation) ? (
