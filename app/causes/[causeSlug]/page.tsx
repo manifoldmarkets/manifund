@@ -37,10 +37,10 @@ export default async function CausePage(props: {
   const user = await getUser(supabase)
   const fund = cause.fund_id
     ? await getProfileById(supabase, cause.fund_id)
-    : null
+    : undefined
   const fundTxns = fund
     ? await getIncomingTxnsByUserWithDonor(supabase, fund.id)
-    : null
+    : []
   const userTxns = user ? await getTxnAndProjectsByUser(supabase, user.id) : []
   const userBids = user ? await getPendingBidsByUser(supabase, user.id) : []
   const userProfile = user ? await getProfileById(supabase, user.id) : null
@@ -72,6 +72,7 @@ export default async function CausePage(props: {
         projects={projects}
         causesList={causesList}
         fund={fund}
+        fundTxns={fundTxns}
         userId={user?.id}
         charityBalance={charityBalance}
       />

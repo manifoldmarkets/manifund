@@ -11,6 +11,7 @@ import { EditCause } from './edit-cause'
 import { Profile } from '@/db/profile'
 import { TxnAndProfiles } from '@/db/txn'
 import { DonateSection } from './donate-section'
+import { ExpandableDonationsHistory } from '@/components/donations-history'
 
 export function CauseTabs(props: {
   cause: Cause
@@ -99,6 +100,7 @@ export function CauseTabs(props: {
               userId={userId}
             />
           )}
+          {fundTxns && <ExpandableDonationsHistory donations={fundTxns} />}
           <RichContent content={cause.description} />
           <EditCause cause={cause} />
         </>
