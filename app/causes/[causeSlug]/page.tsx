@@ -5,7 +5,7 @@ import { getCause, listMiniCauses } from '@/db/cause'
 import { CauseContent } from './cause-content'
 import { getAmountRaised } from '@/utils/math'
 import { Row } from '@/components/layout/row'
-import { DataPoint } from '@/components/data-point'
+import { Stat } from '@/components/stat'
 import { formatMoney } from '@/utils/formatting'
 
 export const revalidate = 60
@@ -60,9 +60,9 @@ function CauseData(props: { projects: FullProject[] }) {
   }, 0)
   return (
     <Row className="my-3 justify-between px-5">
-      <DataPoint label="proposals" value={numProposalProjects.toString()} />
-      <DataPoint label="active projects" value={numActiveProjects.toString()} />
-      <DataPoint label="given" value={formatMoney(totalRaised)} />
+      <Stat label="proposals" value={numProposalProjects.toString()} />
+      <Stat label="active projects" value={numActiveProjects.toString()} />
+      <Stat label="given" value={formatMoney(totalRaised)} />
     </Row>
   )
 }

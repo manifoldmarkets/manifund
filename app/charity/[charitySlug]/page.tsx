@@ -9,7 +9,7 @@ import { getBidsByUser } from '@/db/bid'
 import Image from 'next/image'
 import { LinkIcon } from '@heroicons/react/24/outline'
 import { Row } from '@/components/layout/row'
-import { DataPoint } from '@/components/data-point'
+import { Stat } from '@/components/stat'
 import { formatMoney, addHttpToUrl } from '@/utils/formatting'
 import { uniq } from 'lodash'
 import { Col } from '@/components/layout/col'
@@ -71,8 +71,8 @@ export default async function CharityPage(props: {
       {profile && (
         <Row className="justify-between">
           <Col className="mx-5 my-3 justify-between">
-            <DataPoint label="raised" value={formatMoney(raised)} />
-            <DataPoint label="supporters" value={numSupporters.toString()} />
+            <Stat label="raised" value={formatMoney(raised)} />
+            <Stat label="supporters" value={numSupporters.toString()} />
           </Col>
           <div className="mx-5">
             <DonateBox

@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { HeartIcon } from '@heroicons/react/24/solid'
 import React from 'react'
-import { DataPoint } from '@/components/data-point'
+import { Stat } from '@/components/stat'
 import { Card } from '@/components/layout/card'
 import {
   AirtableDepositButton,
@@ -48,7 +48,7 @@ export function BalanceDisplay(props: {
     <Col className="h-fit">
       <Row className="h-fit justify-between gap-1 sm:gap-4 lg:gap-8">
         <div className="w-full min-w-fit rounded border-none bg-orange-500 px-2 py-1">
-          <DataPoint
+          <Stat
             label="total balance"
             value={balance.toLocaleString('en-US', {
               style: 'currency',
@@ -63,7 +63,7 @@ export function BalanceDisplay(props: {
             key={stat.name}
             className="relative w-full min-w-fit border-none px-2 py-1"
           >
-            <DataPoint
+            <Stat
               label={stat.name}
               value={stat.value.toLocaleString('en-US', {
                 style: 'currency',
