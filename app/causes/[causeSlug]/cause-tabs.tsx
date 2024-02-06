@@ -94,11 +94,14 @@ export function CauseTabs(props: {
       display: (
         <>
           {fund && (
-            <DonateSection
-              fund={fund}
-              charityBalance={charityBalance}
-              userId={userId}
-            />
+            <>
+              <span className="text-gray-600">{fund.bio}</span>
+              <DonateSection
+                fund={fund}
+                charityBalance={charityBalance}
+                userId={userId}
+              />
+            </>
           )}
           {fundTxns && <ExpandableDonationsHistory donations={fundTxns} />}
           <RichContent content={cause.description} />
