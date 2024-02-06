@@ -12,6 +12,7 @@ import { Profile } from '@/db/profile'
 import { TxnAndProfiles } from '@/db/txn'
 import { DonateSection } from './donate-section'
 import { DonationsHistory } from '@/components/donations-history'
+import { DividerWithHeader } from '@/components/divider-with-header'
 
 export function CauseTabs(props: {
   cause: Cause
@@ -112,6 +113,7 @@ export function CauseTabs(props: {
             charityBalance={charityBalance}
             userId={userId}
           />
+          <DividerWithHeader header="Donations history" />
           <DonationsHistory donations={fundTxns} />
         </>
       ),
