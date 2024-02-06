@@ -241,7 +241,12 @@ export function ProjectDisplay(props: {
               setCommentPrompt={setSpecialCommentPrompt}
             />
           )}
-        {!userProfile && <SignInButton />}
+        {!userProfile && (
+          <SignInButton
+            buttonText="Sign in to contribute"
+            className="mx-auto my-4"
+          />
+        )}
         {project.description && (
           <RichContent content={project.description} className="px-3 text-sm" />
         )}

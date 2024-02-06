@@ -1,4 +1,4 @@
-import { getUser } from '@/db/profile'
+import { getUser, Profile } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { calculateCharityBalance } from '@/utils/math'
 import {
@@ -7,8 +7,12 @@ import {
 } from '@/db/txn'
 import { getPendingBidsByUser } from '@/db/bid'
 import { getProfileById } from '@/db/profile'
+import { ExpandableDonationsHistory } from '@/components/donations-history'
+import { DonateSection } from './donate-section'
+import { Row } from '@/components/layout/row'
+import { SignInButton } from '@/components/sign-in-button'
 
-export async function FundSection(props: { fundId: string }) {
+export async function AboutDonating(props: { fundId: string }) {
   const { fundId } = props
   const supabase = createServerClient()
   const user = await getUser(supabase)
@@ -28,4 +32,20 @@ export async function FundSection(props: { fundId: string }) {
         userProfile.accreditation_status
       )
     : 0
+  return (
+    <>
+      {!user && (
+        <SignInButton
+          buttonText="Sign in to donate"
+          className="mx-auto my-10"
+        />
+      )}
+      <DonateSection
+        userId={user?.id}
+        fund={fund as Profile}
+        charityBalance={charityBalance}
+      />
+      <ExpandableDonationsHistory donations={fundTxns} />
+    </>
+  )
 }

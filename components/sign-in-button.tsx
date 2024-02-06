@@ -3,16 +3,17 @@ import { buttonClass } from '@/components/button'
 import clsx from 'clsx'
 import Link from 'next/link'
 
-export const SignInButton = () => {
+export const SignInButton = (props: {
+  buttonText: string
+  className?: string
+}) => {
+  const { buttonText, className } = props
   return (
     <Link
       href="/login"
-      className={clsx(
-        buttonClass('xl', 'gradient'),
-        'mx-auto mt-4 max-w-md bg-gradient-to-r'
-      )}
+      className={clsx(buttonClass('xl', 'gradient'), className)}
     >
-      Sign in to contribute
+      {buttonText}
     </Link>
   )
 }
