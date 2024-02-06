@@ -8,13 +8,28 @@ import { Cause, MiniCause } from '@/db/cause'
 import { WrenchIcon } from '@heroicons/react/20/solid'
 import { useSearchParams } from 'next/navigation'
 import { EditCause } from './edit-cause'
+import { Profile } from '@/db/profile'
+import { TxnAndProfiles } from '@/db/txn'
+import { DonateSection } from './donate-section'
 
-export function CauseContent(props: {
+export function CauseTabs(props: {
   cause: Cause
   causesList: MiniCause[]
   projects: FullProject[]
+  fund?: Profile
+  fundTxns?: TxnAndProfiles[]
+  userId?: string
+  charityBalance: number
 }) {
-  const { cause, causesList, projects } = props
+  const {
+    cause,
+    causesList,
+    projects,
+    fund,
+    fundTxns,
+    userId,
+    charityBalance,
+  } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
   const visibleProjects = projects.filter(
@@ -77,6 +92,13 @@ export function CauseContent(props: {
       count: 0,
       display: (
         <>
+          {fund && (
+            <DonateSection
+              fund={fund}
+              charityBalance={charityBalance}
+              userId={userId}
+            />
+          )}
           <RichContent content={cause.description} />
           <EditCause cause={cause} />
         </>
