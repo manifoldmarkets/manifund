@@ -1,12 +1,9 @@
 import { createServerClient } from '@/db/supabase-server'
-import { FullProject, getFullProjectsByCause } from '@/db/project'
+import { getFullProjectsByCause } from '@/db/project'
 import Image from 'next/image'
 import { getCause, listMiniCauses } from '@/db/cause'
 import { CauseContent } from './cause-content'
-import { getAmountRaised } from '@/utils/math'
-import { Row } from '@/components/layout/row'
-import { Stat } from '@/components/stat'
-import { formatMoney } from '@/utils/formatting'
+import { CauseData } from './cause-data'
 
 export const revalidate = 60
 
@@ -44,25 +41,5 @@ export default async function CausePage(props: {
       <CauseData projects={projects} />
       <CauseContent cause={cause} projects={projects} causesList={causesList} />
     </div>
-  )
-}
-
-function CauseData(props: { projects: FullProject[] }) {
-  const { projects } = props
-  const numActiveProjects = projects.filter(
-    (project) => project.stage === 'active'
-  ).length
-  const numProposalProjects = projects.filter(
-    (project) => project.stage === 'proposal'
-  ).length
-  const totalRaised = projects.reduce((acc, project) => {
-    return acc + getAmountRaised(project, project.bids, project.txns)
-  }, 0)
-  return (
-    <Row className="my-3 justify-between px-5">
-      <Stat label="proposals" value={numProposalProjects.toString()} />
-      <Stat label="active projects" value={numActiveProjects.toString()} />
-      <Stat label="given" value={formatMoney(totalRaised)} />
-    </Row>
   )
 }
