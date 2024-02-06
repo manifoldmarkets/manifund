@@ -153,20 +153,23 @@ export function ProjectDisplay(props: {
           </Row>
         </Col>
         <Row className="items-center justify-between">
-          <Row className="items-center gap-1">
-            <UserAvatarAndBadge
-              profile={project.profiles}
-              className="text-sm text-gray-500"
-            />
+          <Row className="items-center gap-1 text-sm text-gray-700">
+            <UserAvatarAndBadge profile={project.profiles} />
             {creatorEmail && (
               <Tooltip text="Copy creator email">
                 <EnvelopeIcon
-                  className="h-4 w-4 cursor-pointer stroke-2 text-gray-500 hover:text-gray-700"
+                  className="h-4 w-4 cursor-pointer stroke-2 hover:text-gray-800"
                   onClick={async () => {
                     await navigator.clipboard.writeText(creatorEmail)
                   }}
                 />
               </Tooltip>
+            )}
+            {pendingProjectTransfers.length > 0 && (
+              <>
+                <span className="text-gray-500">- pending transfer to </span>
+                {pendingProjectTransfers[0].recipient_name}
+              </>
             )}
           </Row>
           <ProjectData
