@@ -11,7 +11,7 @@ import { EditCause } from './edit-cause'
 import { Profile } from '@/db/profile'
 import { TxnAndProfiles } from '@/db/txn'
 import { DonateSection } from './donate-section'
-import { ExpandableDonationsHistory } from '@/components/donations-history'
+import { DonationsHistory } from '@/components/donations-history'
 
 export function CauseTabs(props: {
   cause: Cause
@@ -93,19 +93,26 @@ export function CauseTabs(props: {
       count: 0,
       display: (
         <>
-          {fund && (
-            <>
-              <span className="text-gray-600">{fund.bio}</span>
-              <DonateSection
-                fund={fund}
-                charityBalance={charityBalance}
-                userId={userId}
-              />
-            </>
-          )}
-          {fundTxns && <ExpandableDonationsHistory donations={fundTxns} />}
           <RichContent content={cause.description} />
           <EditCause cause={cause} />
+        </>
+      ),
+    })
+  }
+  if (fund && fundTxns) {
+    tabs.push({
+      name: 'Donate',
+      id: 'donate',
+      count: 0,
+      display: (
+        <>
+          <span className="text-gray-600">{fund.bio}</span>
+          <DonateSection
+            fund={fund}
+            charityBalance={charityBalance}
+            userId={userId}
+          />
+          <DonationsHistory donations={fundTxns} />
         </>
       ),
     })
