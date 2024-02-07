@@ -21,6 +21,7 @@ export default async function handler() {
     if (transfer.projects.type === 'grant') {
       if (recipientExists) {
         // email A
+        const htmlContent = `<div><span>Dear ${transfer.recipient_name},</span><br /><br /><span>Congratulations on receiving an ACX Grant! Your ACX project has now been added to your Manifund account. Please sign the grant agreement (link at the top of your project page) and then withdraw your funds using <a href='https://airtable.com/appOfJtzt8yUTBFcD/shrI3XFPivduhbnG'>this form </a>(also available from your profile page).</span><br /><br /><span>If you have any questions, you can reply to this email or join us on Discord!</span><br /><span>Best,</span><br /><br /><span>Rachel from Manifund</span></div>`
       } else {
         // email B
       }
