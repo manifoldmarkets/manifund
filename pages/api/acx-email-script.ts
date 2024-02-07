@@ -114,13 +114,16 @@ function getEmailHtmlContent(
       <p>Dear ${recipientName},</p>
       <p>
         Congratulations on receiving an ACX Grant! We’ve created an entry for your
-        project on Manifund, which you’ll need to sign in to accept. After creating
+        project on Manifund, which you’ll need to sign up to accept. After creating
         an account, go to your project page to sign your grant agreement. Lastly,
         give us your payment details using<a
           href="https://airtable.com/appOfJtzt8yUTBFcD/shrI3XFPivduhbnG"
         >
           this form </a
         >(also available from your profile page).
+      </p>
+      <p>
+      If you already have an account on Manifund under a different email address, let us know and we can transfer the project to the correct account.
       </p>
       <p>
         Note that your project has it’s own public page which other users can
@@ -167,7 +170,7 @@ function getEmailHtmlContent(
           your project where other users can read about your work or comment. If you’d
           like to get notified about comments or participate in the discussion, you
           can create an account on Manifund using this email address, and the project
-          will be automatically transferred to your account.
+          will be automatically transferred to your account. If you already have an account on Manifund under a different email address, let us know and we can transfer the project to the correct account.
         </p>
         <p>
           Note that your project has it’s own public page which other users can
