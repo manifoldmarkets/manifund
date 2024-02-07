@@ -66,12 +66,14 @@ export function ProjectsDisplay(props: {
       project.title,
       project.blurb ?? '',
       project.profiles.full_name,
-      project.profiles.username
+      project.profiles.username,
+      project.project_transfers?.[0]?.recipient_name ?? ''
     )
   })
   const router = useRouter()
 
   const proposals = selectedProjects.filter(
+    // TODO: actually remove hidden projects from the list
     (project) => project.stage == 'proposal' || project.stage === 'hidden'
   )
   const activeProjects = selectedProjects.filter(
