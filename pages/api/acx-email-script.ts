@@ -57,8 +57,7 @@ export default async function handler() {
     await updateProjectStage(
       supabase,
       transfer.project_id,
-      // isGrant ? 'proposal' : 'active'
-      'hidden'
+      isGrant ? 'proposal' : 'active'
     )
     console.log('------------done with transfer----------')
   }
