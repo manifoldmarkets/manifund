@@ -14,8 +14,24 @@ export default async function handler() {
   const supabase = createAdminClient()
   const transfersWithProjects = await getIncompleteTransfers(supabase)
   for (const transfer of transfersWithProjects) {
+    const recipientExists = await doesUserWithEmailExist(
+      supabase,
+      transfer.recipient_email
+    )
     if (transfer.projects.type === 'grant') {
+      if (recipientExists) {
+        // email A
+      } else {
+        // email B
+      }
+      // update project stage to proposal
     } else if (transfer.projects.type === 'dummy') {
+      if (recipientExists) {
+        // email C
+      } else {
+        // email D
+      }
+      // update project stage to active
     }
   }
 }
