@@ -1,6 +1,6 @@
 'use client'
 import { Profile } from '@/db/profile'
-import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import { formatMoney } from '@/utils/formatting'
 import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
 import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
@@ -9,11 +9,11 @@ import { Col } from './layout/col'
 import {
   ChatBubbleLeftEllipsisIcon,
   ChevronUpDownIcon,
-  CurrencyDollarIcon,
   CheckBadgeIcon,
+  CircleStackIcon,
 } from '@heroicons/react/20/solid'
 import { orderBy } from 'lodash'
-import { Tag, CauseTag } from './tags'
+import { CauseTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { Card } from './layout/card'
 import { Row } from './layout/row'
@@ -120,10 +120,10 @@ function ProjectCardData(props: {
       </Row>
       <Row className="justify-end">
         <Tooltip text="Total raised" className="flex items-center gap-0.5">
-          <CurrencyDollarIcon className="h-4 w-4 stroke-2" />
+          <CircleStackIcon className="h-4 w-4 stroke-2" />
           <span>
-            {formatLargeNumber(amountRaised)}
-            {fundingGoal && `/${formatLargeNumber(fundingGoal)}`}
+            {formatMoney(amountRaised)}
+            {fundingGoal && `/${formatMoney(fundingGoal)}`}
           </span>
         </Tooltip>
       </Row>
