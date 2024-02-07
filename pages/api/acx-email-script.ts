@@ -2,6 +2,7 @@ import { createAdminClient } from './_db'
 import { getIncompleteTransfers } from '@/db/project-transfer'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
+import { updateProjectStage } from '@/db/project'
 
 export const config = {
   runtime: 'edge',
@@ -15,10 +16,8 @@ export default async function handler() {
   const supabase = createAdminClient()
   const transfersWithProjects = await getIncompleteTransfers(supabase)
   for (const transfer of transfersWithProjects) {
-    const recipientExists = await doesUserWithEmailExist(
-      supabase,
-      transfer.recipient_email
-    )
+    const userId = await getUserIdFromEmail(supabase, transfer.recipient_email)
+    const recipientExists = !!userId
     const isGrant = transfer.projects.type === 'grant'
     const emailSubject = isGrant
       ? 'Next steps for receiving your ACX Grant'
@@ -35,17 +34,22 @@ export default async function handler() {
       buttonText: 'buttonText_Value',
     })
     if (recipientExists) {
-      // transfer project to them
+      let args = {
+        project_id: transfer.projects.id,
+        to_id: userId,
+        transfer_id: transfer.id,
+      }
+      await supabase.rpc('_transfer_project', args).throwOnError()
     }
-    if (transfer.projects.type === 'grant') {
-      // update project stage to proposal
-    } else {
-      // update project stage to active
-    }
+    await updateProjectStage(
+      supabase,
+      transfer.project_id,
+      isGrant ? 'proposal' : 'active'
+    )
   }
 }
 
-async function doesUserWithEmailExist(
+async function getUserIdFromEmail(
   supabaseAdmin: SupabaseClient,
   email: string
 ) {
@@ -57,7 +61,7 @@ async function doesUserWithEmailExist(
   if (error) {
     console.log(error)
   }
-  return !!data
+  return data?.id
 }
 
 function getEmailHtmlContent(
