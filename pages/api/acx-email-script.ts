@@ -16,24 +16,36 @@ export default async function handler() {
   const supabase = createAdminClient()
   const transfersWithProjects = await getIncompleteTransfers(supabase)
   for (const transfer of transfersWithProjects) {
+    console.log('TRANSFERING PROJECT: ', transfer.projects.title)
     const userId = await getUserIdFromEmail(supabase, transfer.recipient_email)
+    console.log('user id: ', userId)
     const recipientExists = !!userId
+    console.log('recipient exists: ', recipientExists)
     const isGrant = transfer.projects.type === 'grant'
-    const emailSubject = isGrant
-      ? 'Next steps for receiving your ACX Grant'
-      : 'Your ACX Grant project is now on Manifund'
     const emailHtmlContent = getEmailHtmlContent(
       isGrant,
       recipientExists,
       transfer.recipient_name
     )
-    await sendTemplateEmail(TEMPLATE_IDS.GENERIC_NOTIF_HTML, {
-      subject: emailSubject,
-      htmlContent: emailHtmlContent,
-      buttonUrl: 'buttonUrl_Value',
-      buttonText: 'buttonText_Value',
-    })
+    console.log('about to send email!')
+    console.log(emailHtmlContent)
+    await sendTemplateEmail(
+      TEMPLATE_IDS.GENERIC_NOTIF_HTML,
+      {
+        subject: isGrant
+          ? 'Next steps for receiving your ACX Grant'
+          : 'Your ACX Grant project is now on Manifund',
+        htmlContent: emailHtmlContent,
+        buttonUrl: recipientExists
+          ? `https://manifund.org/projects/${transfer.projects.slug}`
+          : `https://manifund.org/login?email=${transfer.recipient_email}`,
+        buttonText: recipientExists ? 'View your project' : 'Create an account',
+      },
+      undefined,
+      transfer.recipient_email
+    )
     if (recipientExists) {
+      console.log('recipient exists, transferring project')
       let args = {
         project_id: transfer.projects.id,
         to_id: userId,
@@ -41,11 +53,13 @@ export default async function handler() {
       }
       await supabase.rpc('_transfer_project', args).throwOnError()
     }
+    console.log('updating project stage to ', isGrant ? 'proposal' : 'active')
     await updateProjectStage(
       supabase,
       transfer.project_id,
       isGrant ? 'proposal' : 'active'
     )
+    console.log('------------done with transfer----------')
   }
 }
 
@@ -60,6 +74,7 @@ async function getUserIdFromEmail(
     .maybeSingle()
   if (error) {
     console.log(error)
+    throw error
   }
   return data?.id
 }
