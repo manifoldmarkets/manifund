@@ -57,7 +57,8 @@ export default async function handler() {
     await updateProjectStage(
       supabase,
       transfer.project_id,
-      isGrant ? 'proposal' : 'active'
+      // isGrant ? 'proposal' : 'active'
+      'hidden'
     )
     console.log('------------done with transfer----------')
   }
@@ -90,11 +91,8 @@ function getEmailHtmlContent(
       <p>Dear ${recipientName},</p>
       <p>
         Congratulations on receiving an ACX Grant! Please sign the grant agreement
-        (link at the top of your project page) and then withdraw your funds using<a
-          href="https://airtable.com/appOfJtzt8yUTBFcD/shrI3XFPivduhbnG"
-        >
-          this form </a
-        >(also available from your profile page).
+        (link at the top of your project page) and then withdraw your funds using <a
+          href="https://airtable.com/appOfJtzt8yUTBFcD/shrI3XFPivduhbnG">this form</a> (also available from your profile page).
       </p>
       <p>
         Note that your project has it’s own public page which other users can
@@ -116,12 +114,9 @@ function getEmailHtmlContent(
         Congratulations on receiving an ACX Grant! We’ve created an entry for your
         project on Manifund, which you’ll need to sign up to accept. After creating
         an account, go to your project page to sign your grant agreement. Lastly,
-        give us your payment details using<a
-          href="https://airtable.com/appOfJtzt8yUTBFcD/shrI3XFPivduhbnG"
-        >
-          this form </a
-        >(also available from your profile page).
-      </p>
+        give us your payment details using <a
+        href="https://airtable.com/appOfJtzt8yUTBFcD/shrI3XFPivduhbnG">this form</a> (also available from your profile page).
+    </p>
       <p>
       If you already have an account on Manifund under a different email address, let us know and we can transfer the project to the correct account.
       </p>
