@@ -53,7 +53,7 @@ export default async function CausePage(props: {
       )
     : 0
   return (
-    <div className="bg-dark-200 max-w-4xl p-6">
+    <div className="bg-dark-200 mx-auto max-w-4xl p-6">
       {cause.header_image_url && (
         <Image
           src={cause.header_image_url}
