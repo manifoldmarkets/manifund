@@ -39,7 +39,9 @@ export function CauseTabs(props: {
     (project) => true
     // project.stage !== 'hidden'
   )
-  const grants = visibleProjects.filter((project) => project.type === 'grant')
+  const grants = visibleProjects.filter(
+    (project) => project.type === 'grant' || project.type === 'dummy'
+  )
   const certs = visibleProjects.filter((project) => project.type === 'cert')
   const tabs = [
     {
