@@ -152,7 +152,7 @@ export function ProjectDisplay(props: {
             ))}
           </Row>
         </Col>
-        <Row className="items-center justify-between">
+        <div className="flex flex-col-reverse gap-3 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
           <Row className="items-center gap-1 text-sm text-gray-700">
             <UserAvatarAndBadge profile={project.profiles} />
             {creatorEmail && (
@@ -167,8 +167,10 @@ export function ProjectDisplay(props: {
             )}
             {pendingProjectTransfers.length > 0 && (
               <>
-                <span className="text-gray-500">- pending transfer to </span>
-                {pendingProjectTransfers[0].recipient_name}
+                <span className="text-gray-500">
+                  (pending transfer to{' '}
+                  {pendingProjectTransfers[0].recipient_name})
+                </span>
               </>
             )}
           </Row>
@@ -178,7 +180,7 @@ export function ProjectDisplay(props: {
             valuation={valuation}
             minimum={minIncludingAmm}
           />
-        </Row>
+        </div>
         {project.stage !== 'proposal' &&
           project.type === 'cert' &&
           !!project.amm_shares && (

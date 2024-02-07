@@ -66,7 +66,7 @@ export function ProjectData(props: {
     },
   ] as statData[]
   return (
-    <Row className="justify-end gap-5">
+    <Row className="gap-5 px-1 sm:justify-end">
       {stats.map((statData) => {
         if (statData.show) {
           return <SmallStat key={statData.label} statData={statData} />
