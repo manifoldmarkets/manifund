@@ -13,7 +13,7 @@ import { useTextEditor } from '@/hooks/use-text-editor'
 import { ProjectWithCauses } from '@/db/project'
 import { useState } from 'react'
 import { Tooltip } from '@/components/tooltip'
-import { Input } from '@/components/input'
+import { AmountInput, Input } from '@/components/input'
 import { useRouter } from 'next/navigation'
 import { Col } from '@/components/layout/col'
 import { SelectCauses } from '@/components/select-causes'
@@ -283,10 +283,20 @@ function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
   const [modalOpen, setModalOpen] = useState(false)
   const [title, setTitle] = useState(project.title)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
+  const [fundingGoal, setFundingGoal] = useState<number | undefined>(
+    project.funding_goal
+  )
   const [selectedCauses, setSelectedCauses] = useState(project.causes)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
+
+  let errorMessage = null
+  if (title.length === 0) {
+    errorMessage = 'Enter a project title.'
+  } else if (!fundingGoal || fundingGoal < project.min_funding) {
+    errorMessage = `Funding goal must be at least the minimum funding of ${project.min_funding}.`
+  }
 
   async function save() {
     setIsSubmitting(true)
@@ -301,6 +311,7 @@ function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
         title,
         subtitle,
         description,
+        fundingGoal,
         causeSlugs: selectedCauses.map((cause) => cause.slug),
       }),
     })
@@ -363,6 +374,10 @@ function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
             <TextEditor editor={editor} />
           </Col>
           <Col className="gap-1">
+            <label>Funding goal</label>
+            <AmountInput amount={fundingGoal} onChangeAmount={setFundingGoal} />
+          </Col>
+          <Col className="gap-1">
             <label>Causes</label>
             <SelectCauses
               causesList={causesList}
@@ -378,11 +393,11 @@ function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
             >
               Cancel
             </Button>
-            <Tooltip text={title ? '' : 'Enter a project title.'}>
+            <Tooltip text={errorMessage}>
               <Button
                 className="sm:flex-2 inline-flex w-full justify-center"
                 loading={isSubmitting}
-                disabled={!title}
+                disabled={!!errorMessage}
                 onClick={save}
               >
                 Save changes

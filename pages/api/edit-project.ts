@@ -17,11 +17,12 @@ type EditProjectProps = {
   title: string
   subtitle: string
   description: string
+  fundingGoal: number
   causeSlugs: string[]
 }
 
 export default async function handler(req: NextRequest) {
-  const { projectId, title, subtitle, description, causeSlugs } =
+  const { projectId, title, subtitle, description, fundingGoal, causeSlugs } =
     (await req.json()) as EditProjectProps
   const supabaseEdge = createEdgeClient(req)
   const resp = await supabaseEdge.auth.getUser()
@@ -34,6 +35,7 @@ export default async function handler(req: NextRequest) {
       description: description,
       blurb: subtitle,
       title: title,
+      funding_goal: fundingGoal,
     })
     .eq('id', projectId)
   if (error) {
