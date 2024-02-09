@@ -1,12 +1,9 @@
 import { createAdminClient } from './_db'
-import { NextApiRequest, NextApiResponse } from 'next'
+import { NextApiRequest } from 'next'
 import { User } from '@supabase/supabase-js'
 import { getTransfersByEmail } from '@/db/project-transfer'
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest) {
   const user = req.body.record as User
   const supabaseAdmin = createAdminClient()
   const projectTransfers = await getTransfersByEmail(
@@ -23,8 +20,4 @@ export default async function handler(
       await supabaseAdmin.rpc('_transfer_project', args).throwOnError()
     }
   })
-  res.status(200).json({
-    message: `Transferred ${projectTransfers.length} projects to ${user.id}`,
-  })
-  return res
 }
