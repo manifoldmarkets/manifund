@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/components/button'
 import { Row } from '@/components/layout/row'
-import { MiniCause } from '@/db/cause'
+import { MiniCause, SimpleCause, Cause } from '@/db/cause'
 import { FullProject, Project } from '@/db/project'
 import {
   LockClosedIcon,
@@ -18,14 +18,13 @@ import { useRouter } from 'next/navigation'
 import { Col } from '@/components/layout/col'
 import { SelectCauses } from '@/components/select-causes'
 import { Modal } from '@/components/modal'
-import { Cause } from '@/db/cause'
 import { Dialog } from '@headlessui/react'
 import { FireIcon } from '@heroicons/react/20/solid'
 import { checkReactivateEligible } from '@/utils/activate-project'
 
 export function CreatorActionPanel(props: {
   project: FullProject
-  causesList: MiniCause[]
+  causesList: SimpleCause[]
   prizeCause?: Cause
 }) {
   const { project, causesList, prizeCause } = props
@@ -278,7 +277,10 @@ export function ReactivateButton(props: { projectId: string }) {
   )
 }
 
-function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
+function Edit(props: {
+  project: ProjectWithCauses
+  causesList: SimpleCause[]
+}) {
   const { project, causesList } = props
   const [modalOpen, setModalOpen] = useState(false)
   const [title, setTitle] = useState(project.title)
@@ -290,6 +292,7 @@ function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
+  const selectableCauses = causesList.filter((cause) => cause.open)
 
   let errorMessage = null
   if (title.length === 0) {
@@ -380,7 +383,7 @@ function Edit(props: { project: ProjectWithCauses; causesList: MiniCause[] }) {
           <Col className="gap-1">
             <label>Causes</label>
             <SelectCauses
-              causesList={causesList}
+              causesList={selectableCauses}
               selectedCauses={selectedCauses}
               setSelectedCauses={setSelectedCauses}
             />

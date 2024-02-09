@@ -8,7 +8,7 @@ import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
-import { Cause, MiniCause } from '@/db/cause'
+import { Cause, SimpleCause } from '@/db/cause'
 import { TxnAndProfiles, TxnAndProject } from '@/db/txn'
 import {
   calculateCashBalance,
@@ -43,7 +43,7 @@ export function ProjectDisplay(props: {
   comments: CommentAndProfile[]
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]
-  causesList: MiniCause[]
+  causesList: SimpleCause[]
   prizeCause?: Cause
   userProfile?: Profile
   creatorEmail?: string

@@ -8,6 +8,12 @@ export type Cause = Omit<
 > & { cert_params: CertParams | null }
 export type FullCause = Cause & { projects: { stage: string }[] }
 export type MiniCause = { title: string; slug: string }
+export type SimpleCause = {
+  title: string
+  slug: string
+  prize: boolean
+  open: boolean
+}
 
 export type CertParams = {
   ammShares: number
@@ -36,6 +42,16 @@ export async function listMiniCauses(supabase: SupabaseClient) {
     throw error
   }
   return data as MiniCause[]
+}
+
+export async function listSimpleCauses(supabase: SupabaseClient) {
+  const { data, error } = await supabase
+    .from('causes')
+    .select('title, slug, prize, open')
+  if (error) {
+    throw error
+  }
+  return data as SimpleCause[]
 }
 
 export async function listCauses(supabase: SupabaseClient) {

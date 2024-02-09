@@ -7,7 +7,7 @@ import { getTxnsByProject, getTxnAndProjectsByUser } from '@/db/txn'
 import { getUserEmail } from '@/utils/email'
 import { createAdminClient } from '@/pages/api/_db'
 import { ProjectDisplay } from './project-display'
-import { getPrizeCause, listMiniCauses } from '@/db/cause'
+import { getPrizeCause, listSimpleCauses } from '@/db/cause'
 import { getBidsByUser } from '@/db/bid'
 
 export const revalidate = 0
@@ -46,7 +46,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     getCommentsByProject(supabase, project.id),
     getBidsByProject(supabase, project.id),
     getTxnsByProject(supabase, project.id),
-    listMiniCauses(supabase),
+    listSimpleCauses(supabase),
   ])
   const prizeCause = await getPrizeCause(
     project.causes.map((c) => c.slug),
