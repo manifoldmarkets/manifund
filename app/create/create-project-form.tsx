@@ -52,6 +52,7 @@ export type ProjectParams = {
   selectedPrize: Cause | null
   founderPercent: number
   agreedToTerms: boolean
+  lobbying: boolean
 }
 
 export function CreateProjectForm(props: { causesList: Cause[] }) {
@@ -66,6 +67,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       selectedPrize: null,
       founderPercent: 50,
       agreedToTerms: false,
+      lobbying: false,
     }
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
@@ -368,6 +370,33 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           }
         />
       </Col>
+
+      <Row className="items-start">
+        <Checkbox
+          checked={projectParams.lobbying}
+          onChange={(event) =>
+            updateProjectParams({ lobbying: event.target.checked })
+          }
+        />
+        <span className="ml-3 mt-0.5 text-sm leading-tight">
+          <span className="font-bold">
+            This project will engage in{' '}
+            <a
+              href="https://www.irs.gov/charities-non-profits/lobbying"
+              className="text-orange-600 hover:underline"
+            >
+              lobbying
+            </a>
+            .
+          </span>
+          <span>
+            {' '}
+            Check this box if you will use this money to fund lobbying
+            activities within the US or internationally.
+          </span>
+          <RequiredStar />
+        </span>
+      </Row>
 
       {/* Custom for Chinatalk: confirm terms & conditions */}
       {chinatalkPrizeSelected && (

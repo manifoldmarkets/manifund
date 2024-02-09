@@ -31,6 +31,7 @@ export default async function handler(req: NextRequest) {
     selectedPrize,
     founderPercent,
     agreedToTerms,
+    lobbying,
   } = (await req.json()) as ProjectParams
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
@@ -70,6 +71,7 @@ export default async function handler(req: NextRequest) {
     location_description: location,
     approved: null,
     signed_agreement: false,
+    lobbying,
   } as Project
   await supabase.from('projects').insert(project).throwOnError()
   await upvoteOwnProject(supabase, projectId, user.id)
