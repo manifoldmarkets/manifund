@@ -35,9 +35,7 @@ export function CauseTabs(props: {
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
   const visibleProjects = projects.filter(
-    // TODO: add filter back
-    (project) => true
-    // project.stage !== 'hidden'
+    (project) => project.stage !== 'hidden'
   )
   const grants = visibleProjects.filter(
     (project) => project.type === 'grant' || project.type === 'dummy'
