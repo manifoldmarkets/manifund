@@ -20,6 +20,7 @@ import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { getSponsoredAmount } from '@/utils/constants'
 import { MiniCause } from '@/db/cause'
+import { pt } from 'date-fns/locale'
 
 export function ProjectCard(props: {
   project: FullProject
@@ -40,6 +41,10 @@ export function ProjectCard(props: {
   const minIncludingAmm = getMinIncludingAmm(project)
   const fundingGoal =
     project.type === 'cert' ? minIncludingAmm : project.funding_goal
+  const projectTransfers = project.project_transfers
+  const incompleteProjectTransfers = projectTransfers.filter(
+    (pt) => !pt.transferred
+  )
   return (
     <Card className="px-4 pb-2 pt-1">
       <Col className="h-full justify-between">
@@ -48,7 +53,13 @@ export function ProjectCard(props: {
           creator={project.profiles}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
           regrantorInitiated={regrantorInitiated}
-          projectRecipient={project.project_transfers?.[0]?.recipient_name}
+          projectRecipient={
+            incompleteProjectTransfers.length > 0
+              ? incompleteProjectTransfers[0].recipient_name
+              : projectTransfers.length > 0 && !project.profiles.full_name
+              ? projectTransfers[0].recipient_name
+              : undefined
+          }
         />
         <Link
           href={`/projects/${project.slug}`}
