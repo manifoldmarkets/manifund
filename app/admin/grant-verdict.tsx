@@ -20,8 +20,8 @@ const DEFAULT_REJECT_MESSAGES = [
   'custom',
 ]
 
-export function GrantVerdict(props: { projectId: string }) {
-  const { projectId } = props
+export function GrantVerdict(props: { projectId: string; lobbying: boolean }) {
+  const { projectId, lobbying } = props
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [approveGrant, setApproveGrant] = useState(false)
   const [publicBenefit, setPublicBenefit] = useState<string>('')
@@ -49,6 +49,7 @@ export function GrantVerdict(props: { projectId: string }) {
       <Modal open={open} setOpen={setOpen}>
         <div className="p-3">
           <h1 className="text-lg font-semibold">Grant verdict</h1>
+          {lobbying && <p>🚨 This project involves lobbying 🚨</p>}
           <div>
             <HorizontalRadioGroup
               value={approveGrant ? 'approve' : 'reject'}
