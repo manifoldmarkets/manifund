@@ -121,17 +121,19 @@ function GrantAgreement(props: { project: ProjectAndProfile }) {
                   scientific, literary, educational, or other purpose specified
                   in Section 170(c)(2)(B) of the Internal Revenue Code (“IRC”).
                 </p>
+                {!project.lobbying && (
+                  <p>
+                    (b) To attempt to influence legislation, within the meaning
+                    of Section 501(c)(3) of the IRC.
+                  </p>
+                )}
                 <p>
-                  (b) To attempt to influence legislation, within the meaning of
-                  Section 501(c)(3) of the IRC.
-                </p>
-                <p>
-                  (c) To participate or intervene in any political campaign on
-                  behalf of or in opposition to any candidate for public office,
-                  to induce or encourage violations of law or public policy, to
-                  cause any private inurement or improper private benefit to
-                  occur, or to take any other action inconsistent with Section
-                  501(c)(3) of the IRC.
+                  ({project.lobbying ? 'b' : 'c'}) To participate or intervene
+                  in any political campaign on behalf of or in opposition to any
+                  candidate for public office, to induce or encourage violations
+                  of law or public policy, to cause any private inurement or
+                  improper private benefit to occur, or to take any other action
+                  inconsistent with Section 501(c)(3) of the IRC.
                 </p>
               </Col>
             </td>
