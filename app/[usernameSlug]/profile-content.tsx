@@ -26,9 +26,9 @@ export function ProfileContent(props: {
   comments: CommentAndProject[]
   bids: BidAndProject[]
   txns: FullTxn[]
-  userProfile: Profile | null
-  userTxns: TxnAndProject[] | null
-  userBids: BidAndProject[] | null
+  userProfile?: Profile
+  userTxns?: TxnAndProject[]
+  userBids?: BidAndProject[]
 }) {
   const {
     profile,

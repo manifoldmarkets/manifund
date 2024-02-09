@@ -66,7 +66,8 @@ export function ProjectsDisplay(props: {
       project.title,
       project.blurb ?? '',
       project.profiles.full_name,
-      project.profiles.username
+      project.profiles.username,
+      project.project_transfers?.[0]?.recipient_name ?? ''
     )
   })
   const router = useRouter()
@@ -226,23 +227,6 @@ function filterProjects(projects: FullProject[], includedCauses: Cause[]) {
       })
     })
   })
-}
-
-function searchProjects(projects: FullProject[], search: string) {
-  const check = (field: string) => {
-    return field.toLowerCase().includes(search.toLowerCase())
-  }
-  return (
-    projects?.filter((project) => {
-      // Not currently checking description
-      return (
-        check(project.title) ||
-        check(project.blurb ?? '') ||
-        check(project.profiles.username) ||
-        check(project.profiles.full_name)
-      )
-    }) ?? []
-  )
 }
 
 function SortSelect(props: {

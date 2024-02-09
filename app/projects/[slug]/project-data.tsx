@@ -10,14 +10,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { PiTarget } from 'react-icons/pi'
 import { differenceInDays, differenceInHours, format } from 'date-fns'
-import { Tooltip } from '@/components/tooltip'
-
-type dataPoint = {
-  label: string
-  value: string
-  icon: typeof ArrowTrendingUpIcon
-  show: boolean
-}
+import { statData, SmallStat } from '@/components/stat'
 
 export function ProjectData(props: {
   project: Project
@@ -32,7 +25,7 @@ export function ProjectData(props: {
   const daysLeft = differenceInDays(closeDate, now)
   const hoursLeft = daysLeft < 1 ? differenceInHours(closeDate, now) : 0
   0
-  const dataPoints = [
+  const stats = [
     {
       label: 'total funds raised',
       value: formatMoney(raised),
@@ -71,26 +64,14 @@ export function ProjectData(props: {
       icon: CalendarIcon,
       show: project.stage !== 'proposal',
     },
-  ] as dataPoint[]
+  ] as statData[]
   return (
-    <Row className="justify-end gap-5">
-      {dataPoints.map((dataPoint) => {
-        if (dataPoint.show) {
-          return <SmallDataPoint key={dataPoint.label} dataPoint={dataPoint} />
+    <Row className="gap-5 px-1 sm:justify-end">
+      {stats.map((statData) => {
+        if (statData.show) {
+          return <SmallStat key={statData.label} statData={statData} />
         }
       })}
     </Row>
-  )
-}
-
-function SmallDataPoint(props: { dataPoint: dataPoint }) {
-  const { dataPoint } = props
-  return (
-    <Tooltip text={dataPoint.label}>
-      <Row className="items-center gap-0.5">
-        <dataPoint.icon className="h-5 w-5 text-gray-500" />
-        <span className="text-xs text-gray-500">{dataPoint.value} </span>
-      </Row>
-    </Tooltip>
   )
 }

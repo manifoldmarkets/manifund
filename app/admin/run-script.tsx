@@ -4,10 +4,9 @@ import { Button } from '@/components/button'
 export function RunScript() {
   return (
     <Button
-      disabled
       onClick={async () => {
         // Change script here
-        const response = await fetch('/api/add-all-followers', {
+        const response = await fetch('/api/acx-email-script', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -15,7 +14,7 @@ export function RunScript() {
         })
       }}
     >
-      Add followers
+      ACX email script
     </Button>
   )
 }
