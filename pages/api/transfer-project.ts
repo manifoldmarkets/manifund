@@ -1,13 +1,7 @@
 import { createAdminClient } from './_db'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { SupabaseClient, User } from '@supabase/supabase-js'
-import { Database } from '@/db/database.types'
-import { Project } from '@/db/project'
-
-type ProjectTransferAndProject =
-  Database['public']['Tables']['project_transfers']['Row'] & {
-    projects: Project
-  }
+import { User } from '@supabase/supabase-js'
+import { getTransfersByEmail } from '@/db/project-transfer'
 
 export default async function handler(
   req: NextApiRequest,
@@ -33,18 +27,4 @@ export default async function handler(
     message: `Transferred ${projectTransfers.length} projects to ${user.id}`,
   })
   return res
-}
-
-async function getTransfersByEmail(
-  supabase: SupabaseClient,
-  recipientEmail: string
-) {
-  const { data, error } = await supabase
-    .from('project_transfers')
-    .select('*, projects(*)')
-    .eq('recipient_email', recipientEmail)
-  if (error) {
-    throw error
-  }
-  return data as ProjectTransferAndProject[]
 }

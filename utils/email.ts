@@ -3,6 +3,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 
 export const TEMPLATE_IDS = {
   GENERIC_NOTIF: 32825293,
+  GENERIC_NOTIF_HTML: 34725473,
   VERDICT: 31974162,
   NEW_COMMENT: 31316102,
   COMMENT_WITH_MENTION: 31350706,
@@ -68,8 +69,9 @@ export async function getUserEmail(
     .from('users')
     .select('email')
     .eq('id', userId)
+    .maybeSingle()
   if (error) {
     console.log(error)
   }
-  return data ? data[0].email : null
+  return data ? data.email : null
 }

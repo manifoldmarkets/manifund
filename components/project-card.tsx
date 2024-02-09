@@ -1,19 +1,19 @@
 'use client'
 import { Profile } from '@/db/profile'
-import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import { formatMoney } from '@/utils/formatting'
 import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
-import { FullProject, Project, ProjectTransfer } from '@/db/project'
+import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
 import {
   ChatBubbleLeftEllipsisIcon,
   ChevronUpDownIcon,
-  CurrencyDollarIcon,
   CheckBadgeIcon,
+  CircleStackIcon,
 } from '@heroicons/react/20/solid'
 import { orderBy } from 'lodash'
-import { Tag, CauseTag } from './tags'
+import { CauseTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { Card } from './layout/card'
 import { Row } from './layout/row'
@@ -48,6 +48,7 @@ export function ProjectCard(props: {
           creator={project.profiles}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
           regrantorInitiated={regrantorInitiated}
+          projectRecipient={project.project_transfers?.[0]?.recipient_name}
         />
         <Link
           href={`/projects/${project.slug}`}
@@ -119,10 +120,10 @@ function ProjectCardData(props: {
       </Row>
       <Row className="justify-end">
         <Tooltip text="Total raised" className="flex items-center gap-0.5">
-          <CurrencyDollarIcon className="h-4 w-4 stroke-2" />
+          <CircleStackIcon className="h-4 w-4 stroke-2" />
           <span>
-            {formatLargeNumber(amountRaised)}
-            {fundingGoal && `/${formatLargeNumber(fundingGoal)}`}
+            {formatMoney(amountRaised)}
+            {fundingGoal && `/${formatMoney(fundingGoal)}`}
           </span>
         </Tooltip>
       </Row>
@@ -133,15 +134,14 @@ function ProjectCardData(props: {
 export function ProjectCardHeader(props: {
   creator: Profile
   projectType: Project['type']
-  projectTransfer?: ProjectTransfer
+  projectRecipient?: string
   valuation?: number
   regrantorInitiated?: boolean
-  hideRound?: boolean
 }) {
   const {
     creator,
     valuation,
-    projectTransfer,
+    projectRecipient,
     projectType,
     regrantorInitiated,
   } = props
@@ -149,14 +149,12 @@ export function ProjectCardHeader(props: {
     <Row className="mt-1 items-start justify-between">
       <div>
         <div className="h-1" />
-        <UserAvatarAndBadge profile={creator} />
-        {projectTransfer && (
-          <Row className="gap-1">
-            <Tag text={'PENDING TRANSFER'} className="mt-1" color="orange" />
-            <Col className="relative top-0.5 justify-center text-sm text-gray-500">
-              to {projectTransfer.recipient_name}
-            </Col>
-          </Row>
+        {projectRecipient ? (
+          <span className="relative top-0.5 justify-center text-sm text-gray-500">
+            {projectRecipient}
+          </span>
+        ) : (
+          <UserAvatarAndBadge profile={creator} className="text-sm" />
         )}
       </div>
       {projectType === 'cert' && valuation && !isNaN(valuation) ? (

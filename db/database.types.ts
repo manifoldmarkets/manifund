@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       bids: {
@@ -61,37 +61,48 @@ export interface Database {
         Row: {
           cert_params: Json | null
           description: Json | null
+          fund_id: string | null
           header_image_url: string
           open: boolean
           prize: boolean
           project_description_outline: string | null
           slug: string
-          sort: number
+          sort: number | null
           title: string
         }
         Insert: {
           cert_params?: Json | null
           description?: Json | null
+          fund_id?: string | null
           header_image_url: string
           open?: boolean
           prize?: boolean
           project_description_outline?: string | null
           slug: string
-          sort?: number
+          sort?: number | null
           title: string
         }
         Update: {
           cert_params?: Json | null
           description?: Json | null
+          fund_id?: string | null
           header_image_url?: string
           open?: boolean
           prize?: boolean
           project_description_outline?: string | null
           slug?: string
-          sort?: number
+          sort?: number | null
           title?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "causes_fund_id_fkey"
+            columns: ["fund_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       comments: {
         Row: {
@@ -575,7 +586,7 @@ export interface Database {
           project: string | null
           to_id: string
           token: string
-          type: Database["public"]["Enums"]["txn_type"] | null
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Insert: {
           amount: number
@@ -586,7 +597,7 @@ export interface Database {
           project?: string | null
           to_id: string
           token: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Update: {
           amount?: number
@@ -597,7 +608,7 @@ export interface Database {
           project?: string | null
           to_id?: string
           token?: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type?: Database["public"]["Enums"]["txn_type"]
         }
         Relationships: [
           {
@@ -812,9 +823,9 @@ export interface Database {
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "donate" | "assurance buy" | "assurance sell"
+      bid_type: "buy" | "sell" | "donate" | "assurance sell" | "assurance buy"
       comment_type: "progress update" | "final report"
-      profile_type: "individual" | "org" | "fund" | "amm"
+      profile_type: "individual" | "org" | "amm" | "fund"
       project_stage:
         | "active"
         | "proposal"
@@ -865,7 +876,6 @@ export interface Database {
         stage: Database["public"]["Enums"]["project_stage"]
         round: string
         slug: string
-        location_description: string
       }
       transfer_row: {
         recipient_email: string

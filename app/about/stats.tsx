@@ -1,5 +1,5 @@
 'use client'
-import { DataPoint } from '@/components/data-point'
+import { Stat } from '@/components/stat'
 import { Row } from '@/components/layout/row'
 import { FullTxn } from '@/db/txn'
 import { formatMoney } from '@/utils/formatting'
@@ -102,17 +102,17 @@ export function Stats(props: { txns: FullTxn[] }) {
   return (
     <div>
       <Row className="justify-between gap-5 px-5 py-10">
-        <DataPoint
+        <Stat
           label="projects funded"
           className="!text-2xl !font-bold sm:!text-3xl"
           value={numProjectsFunded.toString()}
         />
-        <DataPoint
+        <Stat
           label="to projects"
           className="!text-2xl !font-bold sm:!text-3xl"
           value={formatMoney(dollarsToProjects)}
         />
-        <DataPoint
+        <Stat
           label="through regrantors"
           className="!text-2xl !font-bold sm:!text-3xl"
           value={formatMoney(dollarsThroughRegrantors)}

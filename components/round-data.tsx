@@ -5,7 +5,7 @@ import { createServerClient } from '@/db/supabase-server'
 import { getRoundTheme } from '@/utils/constants'
 import { formatMoney, showPrecision } from '@/utils/formatting'
 import { differenceInDays } from 'date-fns'
-import { DataPoint } from './data-point'
+import { Stat } from './stat'
 import { Col } from './layout/col'
 import { Row } from './layout/row'
 
@@ -33,21 +33,21 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
     <Col className="w-full">
       <Row className="flex justify-between gap-3">
         {round.title === 'Regrants' && (
-          <DataPoint
+          <Stat
             value={regranters.length.toString()}
             label="regrantors"
             theme={getRoundTheme(round.title)}
           />
         )}
         {(round.title === 'Regrants' || daysTilEvals < 0) && (
-          <DataPoint
+          <Stat
             value={projects.length.toString()}
             label={projects.length === 1 ? 'project' : 'projects'}
             theme={getRoundTheme(round.title)}
           />
         )}
         {round.title === 'Independent' || daysTilAuctionClose > 0 ? (
-          <DataPoint
+          <Stat
             value={projects
               .filter((project) => project.stage === 'proposal')
               .length.toString()}
@@ -56,7 +56,7 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
           />
         ) : null}
         {round.title === 'Independent' && (
-          <DataPoint
+          <Stat
             value={projects
               .filter((project) => project.stage === 'not funded')
               .length.toString()}
@@ -65,7 +65,7 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
           />
         )}
         {round.title === 'Independent' || daysTilAuctionClose < 0 ? (
-          <DataPoint
+          <Stat
             value={projects
               .filter((project) => project.stage === 'active')
               .length.toString()}
@@ -74,21 +74,21 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
           />
         ) : null}
         {round.retro_pool && (
-          <DataPoint
+          <Stat
             value={formatMoney(round.retro_pool)}
             label="available funding"
             theme={getRoundTheme(round.title)}
           />
         )}
         {daysTilAuctionClose > 0 && round.auction_close_date !== null ? (
-          <DataPoint
+          <Stat
             value={showPrecision(daysTilAuctionClose, 3)}
             label="days to bid"
             theme={getRoundTheme(round.title)}
           />
         ) : null}
         {daysTilProposalsDue > 0 && round.proposal_due_date !== null ? (
-          <DataPoint
+          <Stat
             value={showPrecision(daysTilProposalsDue, 3)}
             label="days to submit projects"
             theme={getRoundTheme(round.title)}
@@ -96,7 +96,7 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
         ) : null}
         {(daysTilAuctionClose < 0 || round.auction_close_date === null) &&
         daysTilEvals > 0 ? (
-          <DataPoint
+          <Stat
             value={showPrecision(daysTilEvals, 3)}
             label="days until project evals"
             theme={getRoundTheme(round.title)}

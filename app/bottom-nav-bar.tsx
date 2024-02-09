@@ -38,12 +38,12 @@ export async function BottomNavBar() {
     },
   ]
   const navOptionsDisplay = navigationOptions.map((item) => {
-    if (item.name === 'Profile' && profile !== null) {
+    if (item.name === 'Profile' && !!profile) {
       return (
         <Link
           key={item.name}
           href={item.href ?? '#'}
-          className="block w-full py-1 px-3 text-center transition-colors sm:hover:bg-gray-200 sm:hover:text-orange-600"
+          className="block w-full px-3 py-1 text-center transition-colors sm:hover:bg-gray-200 sm:hover:text-orange-600"
         >
           <Col>
             <div className="mx-auto my-1">

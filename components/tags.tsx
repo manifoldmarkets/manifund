@@ -23,6 +23,7 @@ import { LuBrainCircuit } from 'react-icons/lu'
 import { BiDonateHeart, BiHeart } from 'react-icons/bi'
 import { TbCrystalBall, TbWorldX } from 'react-icons/tb'
 import { PiBirdBold, PiVirusBold } from 'react-icons/pi'
+import { PiSpiralBold } from 'react-icons/pi'
 import { ArrowTrendingUpIcon, CheckBadgeIcon } from '@heroicons/react/20/solid'
 
 const COLORS = [
@@ -106,6 +107,7 @@ const CAUSE_ICONS = {
     />
   ),
   'china-talk': <StarIcon className="h-3 w-3 stroke-2" />,
+  'acx-grants-2024': <PiSpiralBold className="h-3 w-3" />,
 } as { [key: string]: JSX.Element }
 
 export function CauseTag(props: {

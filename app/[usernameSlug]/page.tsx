@@ -26,9 +26,9 @@ export default async function UserProfilePage(props: {
     getUser(supabase),
   ])
   const [userTxns, userProfile, userBids] = await Promise.all([
-    user ? getTxnsByUser(supabase, user.id) : null,
-    user ? getProfileById(supabase, user.id) : null,
-    user ? getBidsByUser(supabase, user.id) : null,
+    user ? getTxnsByUser(supabase, user.id) : undefined,
+    user ? getProfileById(supabase, user.id) : undefined,
+    user ? getBidsByUser(supabase, user.id) : undefined,
   ])
   const isOwnProfile = user?.id === profile?.id
   return (
