@@ -20,8 +20,6 @@ bunx vercel link
 bunx vercel env pull
 ```
 
-And rename `.env` to `.env.local`.
-
 ## Updating the dev database
 
 You'll want to do this if we've changed the prod database schema (eg through the Supabase web UI).

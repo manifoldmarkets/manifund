@@ -16,6 +16,7 @@ export function isAdmin(user: User | null) {
     'rachel.weinberg12@gmail.com',
     'akrolsmir@gmail.com',
     'dave@manifund.org',
+    'saulsmunn@gmail.com',
   ]
   return ADMINS.includes(user?.email ?? '')
 }

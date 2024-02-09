@@ -8,21 +8,22 @@ import { getURL } from '@/utils/constants'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 
-export default function ClientAuth(props: { redirectTo?: string }) {
-  const { redirectTo } = props
+export default function ClientAuth(props: { profileComplete?: boolean }) {
+  const { profileComplete } = props
   const { supabase, session } = useSupabase()
   const user = session?.user
   const router = useRouter()
-  if (user && redirectTo) {
-    router.push(redirectTo)
-  }
   const params = useSearchParams()
   const recommendedEmail = params?.get('email')
+  const redirect = params?.get('redirect')
+  if (user) {
+    router.push(profileComplete ? redirect ?? '/projects' : '/edit-profile')
+  }
   if (user) {
     return (
       <div className="flex h-[70vh] w-full items-center justify-center">
         <div className="relative flex h-20 w-20 animate-spin flex-col items-center justify-center rounded-full bg-orange-200 ">
-          <div className="absolute top-0 right-0 h-10 w-10 rounded-tr-full bg-orange-500" />
+          <div className="absolute right-0 top-0 h-10 w-10 rounded-tr-full bg-orange-500" />
           <div className="z-10 h-16 w-16 rounded-full bg-gray-50" />
         </div>
       </div>
