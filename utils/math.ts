@@ -64,6 +64,9 @@ export function calculateUserBalance(txns: Txn[], userId: string) {
 }
 
 export function getAmountRaised(project: Project, bids?: Bid[], txns?: Txn[]) {
+  if (project.type === 'dummy') {
+    return project.funding_goal
+  }
   return (
     (project.stage === 'proposal'
       ? bids
