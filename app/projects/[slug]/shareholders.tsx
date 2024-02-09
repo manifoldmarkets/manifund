@@ -15,6 +15,7 @@ import { bundleTxns } from '@/utils/math'
 import { Shareholder } from './project-tabs'
 import { TxnAndProfiles } from '@/db/txn'
 import { calculateAMMPorfolio } from '@/utils/amm'
+import { DividerWithHeader } from '@/components/divider-with-header'
 
 export function Shareholders(props: {
   shareholders: Shareholder[]
@@ -137,15 +138,7 @@ function TradeHistory(props: { txns: TxnAndProfiles[]; creatorId: string }) {
   })
   return (
     <div>
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center" aria-hidden="true">
-          <div className="w-full border-t border-gray-300" />
-        </div>
-        <div className="relative flex justify-center">
-          <span className="bg-gray-50 px-2 text-gray-500">Trade history</span>
-        </div>
-      </div>
-      <div className="h-4" />
+      <DividerWithHeader header="Trade history" />
       {tradeDisplay}
     </div>
   )

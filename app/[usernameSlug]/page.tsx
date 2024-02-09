@@ -6,6 +6,7 @@ import { getProjectsByUser } from '@/db/project'
 import { ProfileContent } from './profile-content'
 import { getBidsByUser } from '@/db/bid'
 import { getCommentsByUser } from '@/db/comment'
+import FundPage from '../funds/[fundSlug]/page'
 
 export const revalidate = 60
 
@@ -15,8 +16,13 @@ export default async function UserProfilePage(props: {
   const { usernameSlug } = props.params
   const supabase = createServerClient()
   const profile = await getProfileByUsername(supabase, usernameSlug)
-  if (!profile || profile.type !== 'individual') {
+  if (!profile) {
     return <div>User not found</div>
+  } else if (profile.type === 'fund') {
+    /* @ts-expect-error Server Component */
+    return <FundPage params={{ fundSlug: usernameSlug }} />
+  } else if (profile.type !== 'individual') {
+    return <div>Profile type not supported</div>
   }
   const [bids, projects, txns, comments, user] = await Promise.all([
     getBidsByUser(supabase, profile.id),
