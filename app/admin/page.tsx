@@ -109,7 +109,10 @@ export default async function Admin() {
                 </Link>
               </td>
               <td>
-                <GrantVerdict projectId={project.id} />
+                <GrantVerdict
+                  projectId={project.id}
+                  lobbying={project.lobbying}
+                />
               </td>
             </tr>
           ))}
