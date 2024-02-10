@@ -123,6 +123,14 @@ UPDATE
     auth.jwt() ->> 'email' = 'rachel.weinberg12@gmail.com'
   );
 
+CREATE POLICY "Enable update for saul based on email" ON "public"."projects" AS PERMISSIVE FOR
+UPDATE
+  TO public USING (
+    auth.jwt() ->> 'email' = 'saulsmunn@gmail.com'
+  ) WITH CHECK (
+    auth.jwt() ->> 'email' = 'saulsmunn@gmail.com'
+  );
+
 -- add RLS policies to avatar bucket
 CREATE POLICY "Give users access to own folder 1oj01fe_0" ON storage.objects FOR
 SELECT
@@ -262,6 +270,15 @@ TO public
 USING (auth.jwt() ->> 'email' = 'akrolsmir@gmail.com')
 WITH CHECK (auth.jwt() ->> 'email' = 'akrolsmir@gmail.com');
 
+CREATE POLICY "Enable update for saul based on email" ON "public"."causes" AS PERMISSIVE FOR
+UPDATE
+  TO public USING (
+    auth.jwt() ->> 'email' = 'saulsmunn@gmail.com'
+  ) WITH CHECK (
+    auth.jwt() ->> 'email' = 'saulsmunn@gmail.com'
+  );
+
+
 -- Round header image RLS
 CREATE POLICY "Give edit access to rachel 1w84ji1_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'rachel.weinberg12@gmail.com');
 CREATE POLICY "Give edit access to rachel 1w84ji1_0" ON storage.objects FOR UPDATE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'rachel.weinberg12@gmail.com');
@@ -270,6 +287,11 @@ CREATE POLICY "Give edit access to rachel 1w84ji1_0" ON storage.objects FOR DELE
 CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
 CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR UPDATE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
 CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR DELETE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
+
+
+CREATE POLICY "Give edit access to saul 1w84ji1_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'saulsmunn@gmail.com');
+CREATE POLICY "Give edit access to saul 1w84ji1_0" ON storage.objects FOR UPDATE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'saulsmunn@gmail.com');
+CREATE POLICY "Give edit access to saul 1w84ji1_0" ON storage.objects FOR DELETE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'saulsmunn@gmail.com');
 
 -- Stripe txns
 create table if not exists public.stripe_txns (
