@@ -235,14 +235,21 @@ export function ProjectDisplay(props: {
           userProfile.id !== project.creator &&
           project.type === 'grant' &&
           pendingProjectTransfers.length === 0 &&
-          amountRaised < project.funding_goal &&
           (project.stage === 'proposal' || project.stage === 'active') && (
-            <DonateBox
-              project={project}
-              profile={userProfile}
-              maxDonation={userSpendableFunds}
-              setCommentPrompt={setSpecialCommentPrompt}
-            />
+            <>
+              {amountRaised < project.funding_goal ? (
+                <DonateBox
+                  project={project}
+                  profile={userProfile}
+                  maxDonation={userSpendableFunds}
+                  setCommentPrompt={setSpecialCommentPrompt}
+                />
+              ) : (
+                <span className="mx-auto mb-5 text-sm italic text-gray-500">
+                  Fully funded and not currently accepting donations.
+                </span>
+              )}
+            </>
           )}
         {!userProfile && (
           <SignInButton
