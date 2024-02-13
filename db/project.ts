@@ -68,7 +68,7 @@ export async function listProjects(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, amm_shares, founder_shares, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
+      'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, lobbying, amm_shares, founder_shares, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
     )
     .neq('stage', 'hidden')
     .order('created_at', { ascending: false })
