@@ -1,4 +1,4 @@
-import { Table } from '@/components/table'
+import { Table, TableRow } from '@/components/table'
 import { getUser, isAdmin } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { createAdminClient } from '@/pages/api/_db'
@@ -80,17 +80,21 @@ export default async function Admin() {
 
   return (
     <div>
-      <h1>Admin</h1>
-      <h1>Projects Pending Approval</h1>
+      <div className="rounded-bl-lg rounded-br-lg bg-gradient-to-r from-orange-500 to-rose-500 px-0 py-8 hover:shadow-lg sm:px-8">
+        <h1 className="text-center text-5xl font-semibold text-white">
+          Admin Panel
+        </h1>
+      </div>
+      <h2 className="pb-3 pt-10 text-2xl">Projects Pending Approval</h2>
       <Table>
         <thead>
           <tr>
-            <th>Creator</th>
-            <th>Project</th>
-            <th>Grant verdict</th>
+            <th className="p-2 text-center">Creator</th>
+            <th className="p-2 text-center">Project</th>
+            <th className="p-2 text-center">Grant verdict</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="p-2">
           {projectsToApprove.map((project) => (
             <tr key={project.id}>
               <td>
@@ -125,18 +129,19 @@ export default async function Admin() {
         filename="users.csv"
       />
       <RunScript />
+      <h1 className="pb-3 pt-10 text-2xl">User Database</h1>
       <Table>
         <thead>
           <tr>
-            <th>Email</th>
-            <th>Username</th>
-            <th>Id</th>
-            <th>Accredited</th>
-            <th>Balance</th>
-            <th>Pay user</th>
+            <th className="p-2">Email</th>
+            <th className="p-2">Username</th>
+            <th className="p-2">Id</th>
+            <th className="p-2">Accredited</th>
+            <th className="p-2">Balance</th>
+            <th className="p-2">Pay user</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="p-2">
           {userAndProfiles.map((user) => (
             <tr key={user.id}>
               <td>{user.email}</td>
@@ -156,15 +161,15 @@ export default async function Admin() {
           ))}
         </tbody>
       </Table>
-      <h2>Transactions</h2>
+      <h2 className="pb-3 pt-10 text-2xl">Transactions</h2>
       <Table>
         <thead>
           <tr>
-            <th>From</th>
-            <th>To</th>
-            <th>Amount</th>
-            <th>Token</th>
-            <th>Created at</th>
+            <th className="p-2">From</th>
+            <th className="p-2">To</th>
+            <th className="p-2">Amount</th>
+            <th className="p-2">Token</th>
+            <th className="p-2">Created at</th>
           </tr>
         </thead>
         <tbody>
@@ -179,15 +184,15 @@ export default async function Admin() {
           ))}
         </tbody>
       </Table>
-      <h2>Projects</h2>
+      <h2 className="pb-3 pt-10 text-2xl">Projects</h2>
       <Table>
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Creator</th>
-            <th>Min funding</th>
-            <th>Add tag</th>
-            <th>Activate project</th>
+            <th className="p-2">Title</th>
+            <th className="p-2">Creator</th>
+            <th className="p-2">Min funding</th>
+            <th className="p-2">Add tag</th>
+            <th className="p-2">Activate project</th>
           </tr>
         </thead>
         <tbody>
