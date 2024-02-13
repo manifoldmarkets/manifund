@@ -23,16 +23,12 @@ const DEFAULT_REJECT_MESSAGES = [
 export function GrantVerdict(props: { projectId: string; lobbying: boolean }) {
   const { projectId, lobbying } = props
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [approveGrant, setApproveGrant] = useState(false)
+  const [approveGrant, setApproveGrant] = useState(true)
   const [publicBenefit, setPublicBenefit] = useState<string>('')
   const [defaultMessage, setDefaultMessage] = useState<string | null>('custom')
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  const editor = useTextEditor(
-    `${REJECT_MESSAGE_INTRO} ${
-      defaultMessage === 'custom' ? '...' : defaultMessage
-    }`
-  )
+  const editor = useTextEditor()
   const verdictOptions = {
     approve: 'Approve',
     reject: 'Reject',
@@ -114,6 +110,7 @@ export function GrantVerdict(props: { projectId: string; lobbying: boolean }) {
               Cancel
             </Button>
             <Button
+              disabled={!publicBenefit && approveGrant}
               loading={isSubmitting}
               onClick={async () => {
                 setIsSubmitting(true)
