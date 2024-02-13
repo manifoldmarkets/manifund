@@ -376,10 +376,15 @@ function Edit(props: {
             <label>Description</label>
             <TextEditor editor={editor} />
           </Col>
-          <Col className="gap-1">
-            <label>Funding goal</label>
-            <AmountInput amount={fundingGoal} onChangeAmount={setFundingGoal} />
-          </Col>
+          {project.type === 'grant' && !project.lobbying && (
+            <Col className="gap-1">
+              <label>Funding goal</label>
+              <AmountInput
+                amount={fundingGoal}
+                onChangeAmount={setFundingGoal}
+              />
+            </Col>
+          )}
           <Col className="gap-1">
             <label>Causes</label>
             <SelectCauses
