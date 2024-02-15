@@ -14,14 +14,18 @@ import { FullProject } from '@/db/project'
 import { MiniCause } from '@/db/cause'
 import { Tag } from '@/components/tags'
 import { Card } from '@/components/layout/card'
+import { Bid } from './[slug]/bids'
+import { FullBid } from '@/db/bid'
 
 export function FeedTabs(props: {
   recentComments: FullComment[]
   recentDonations: FullTxn[]
+  recentBids: FullBid[]
   projects: FullProject[]
   causesList: MiniCause[]
 }) {
-  const { recentComments, recentDonations, projects, causesList } = props
+  const { recentComments, recentDonations, recentBids, projects, causesList } =
+    props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
   const [page, setPage] = useState(1)
@@ -47,15 +51,19 @@ export function FeedTabs(props: {
     </Col>
   )
 
+  const PaginationWrapper = (
+    <Pagination
+      page={page}
+      itemsPerPage={20}
+      totalItems={140}
+      setPage={setPage}
+      savePageToQuery={true}
+    />
+  )
+
   const CommentsTab = (
     <>
-      <Pagination
-        page={page}
-        itemsPerPage={20}
-        totalItems={140}
-        setPage={setPage}
-        savePageToQuery={true}
-      />
+      {PaginationWrapper}
       <Col className="gap-8">
         {recentComments.map((comment) => {
           return (
@@ -73,16 +81,20 @@ export function FeedTabs(props: {
   )
   const DonationsTab = (
     <>
-      <Pagination
-        page={page}
-        itemsPerPage={20}
-        totalItems={140}
-        setPage={setPage}
-        savePageToQuery={true}
-      />
+      {PaginationWrapper}
       <Col className="gap-8">
         {recentDonations.map((txn) => {
           return <FullDonation txn={txn} key={txn.id} />
+        })}
+      </Col>
+    </>
+  )
+  const OffersTab = (
+    <>
+      {PaginationWrapper}
+      <Col className="gap-8">
+        {recentBids.map((bid) => {
+          return <FullOffer bid={bid} key={bid.id} />
         })}
       </Col>
     </>
@@ -109,16 +121,16 @@ export function FeedTabs(props: {
             display: DonationsTab,
             count: 0,
           },
+          {
+            name: 'Offers',
+            id: 'offers',
+            display: OffersTab,
+            count: 0,
+          },
         ]}
         currentTabId={currentTabId}
       />
-      <Pagination
-        page={page}
-        itemsPerPage={20}
-        totalItems={140}
-        setPage={setPage}
-        savePageToQuery={true}
-      />
+      {PaginationWrapper}
     </div>
   )
 }
@@ -132,13 +144,34 @@ function FullDonation(props: { txn: FullTxn }) {
   return (
     <Col>
       <Link
-        href={`/projects/${txn.projects.slug}?tab=${txn.projects.type === 'grant' ? 'donations' : 'shareholders'}`}
+        href={`/projects/${txn.projects.slug}?tab=${
+          txn.projects.type === 'grant' ? 'donations' : 'shareholders'
+        }`}
         className="w-fit"
       >
         <Tag text={txn.projects.title} className="hover:bg-orange-200" />
       </Link>
       <Card className="rounded-tl-sm !p-1">
         <Donation txn={txn} key={txn.id} />
+      </Card>
+    </Col>
+  )
+}
+
+function FullOffer(props: { bid: FullBid }) {
+  const { bid } = props
+  return (
+    <Col>
+      <Link
+        href={`/projects/${bid.projects.slug}?tab=${
+          bid.projects.type === 'grant' ? 'donations' : 'shareholders'
+        }`}
+        className="w-fit"
+      >
+        <Tag text={bid.projects.title} className="hover:bg-orange-200" />
+      </Link>
+      <Card className="rounded-tl-sm !p-1">
+        <Bid bid={bid} showValuation={false} />
       </Card>
     </Col>
   )

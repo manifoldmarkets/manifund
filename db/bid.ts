@@ -90,3 +90,18 @@ export async function deleteBid(supabase: SupabaseClient, bidId: string) {
     console.log(error)
   }
 }
+
+export async function getRecentFullBids(
+  supabase: SupabaseClient,
+  size: number = 10,
+  start: number = 0
+) {
+  const { data } = await supabase
+    .from('bids')
+    .select('*, profiles(*), projects(*)')
+    .order('created_at', { ascending: false })
+    .eq('status', 'pending')
+    .range(start, start + size)
+    .throwOnError()
+  return data as FullBid[]
+}
