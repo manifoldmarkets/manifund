@@ -18,6 +18,7 @@ export function SignAgreement(props: { project: ProjectAndProfile }) {
           id="terms"
           aria-describedby="terms-description"
           name="terms"
+          disabled={agreed}
           checked={agreed}
           onChange={() => setAgreed(!agreed)}
         />
