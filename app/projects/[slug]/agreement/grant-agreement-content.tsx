@@ -17,9 +17,7 @@ export function GrantAgreementPageContent(props: {
       <Button onClick={() => toPDF()}>Download PDF</Button>
       <Col className="gap-5 p-5" ref={targetRef}>
         <GrantAgreement project={project} />
-        {userId === project.creator && !project.signed_agreement && (
-          <SignAgreement project={project} />
-        )}
+        {userId === project.creator && <SignAgreement project={project} />}
       </Col>
     </div>
   )
