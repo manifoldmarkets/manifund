@@ -141,7 +141,7 @@ export function Bid(props: {
         {userProfile && bid.bidder === userProfile.id && (
           <DeleteBid bidId={bid.id} />
         )}
-        {showTrade && (
+        {showTrade && project && (
           <Trade
             bid={bid}
             project={project}
