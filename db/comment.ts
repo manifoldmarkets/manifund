@@ -4,6 +4,7 @@ import { JSONContent } from '@tiptap/react'
 import { Project } from './project'
 import { Profile } from './profile'
 import uuid from 'react-uuid'
+import { BidAndProfile } from './bid'
 
 export type Comment = Database['public']['Tables']['comments']['Row']
 export type CommentAndProfile = Comment & { profiles: Profile }

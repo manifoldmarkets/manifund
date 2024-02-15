@@ -91,10 +91,10 @@ export function Bids(props: {
   }
 }
 
-function Bid(props: {
+export function Bid(props: {
   bid: BidAndProfile
   showValuation: boolean
-  project: Project
+  project?: Project
   userProfile?: Profile
   userSpendableFunds?: number
   userSellableShares?: number

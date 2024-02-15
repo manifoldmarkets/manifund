@@ -14,6 +14,7 @@ import { listMiniCauses } from '@/db/cause'
 import { getRecentFullComments } from '@/db/comment'
 import { getRecentFullTxns } from '@/db/txn'
 import { FeedTabs } from './feed-tabs'
+import { getRecentFullBids } from '@/db/bid'
 
 export const revalidate = 60
 
@@ -44,6 +45,7 @@ export default async function Projects(props: {
     regrantors,
     recentComments,
     recentDonations,
+    recentBids,
     causesList,
   ] = await Promise.all([
     getUser(supabase),
@@ -51,6 +53,7 @@ export default async function Projects(props: {
     getRegranters(supabase),
     getRecentFullComments(supabase, PAGE_SIZE, start),
     getRecentFullTxns(supabase, PAGE_SIZE, start),
+    getRecentFullBids(supabase, PAGE_SIZE, start),
     listMiniCauses(supabase),
   ])
   const featuredRegrantors = featuredRegrantorIds.map((id) => {
@@ -109,6 +112,7 @@ export default async function Projects(props: {
       <FeedTabs
         recentComments={recentComments}
         recentDonations={recentDonations}
+        recentBids={recentBids}
         projects={projects}
         causesList={causesList}
       />
