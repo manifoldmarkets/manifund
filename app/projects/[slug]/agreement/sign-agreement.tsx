@@ -8,7 +8,7 @@ import { useState } from 'react'
 
 export function SignAgreement(props: { project: ProjectAndProfile }) {
   const { project } = props
-  const [agreed, setAgreed] = useState(false)
+  const [agreed, setAgreed] = useState(project.signed_agreement)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   return (
@@ -18,6 +18,7 @@ export function SignAgreement(props: { project: ProjectAndProfile }) {
           id="terms"
           aria-describedby="terms-description"
           name="terms"
+          disabled={agreed}
           checked={agreed}
           onChange={() => setAgreed(!agreed)}
         />
@@ -28,28 +29,30 @@ export function SignAgreement(props: { project: ProjectAndProfile }) {
           </label>
         </div>
       </Row>
-      <Row className="justify-center">
-        <Button
-          onClick={async () => {
-            setIsSubmitting(true)
-            await fetch(`/api/sign-grant-agreement`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                projectId: project.id,
-              }),
-            })
-            setIsSubmitting(false)
-            router.push(`/projects/${project.slug}`)
-          }}
-          loading={isSubmitting}
-          disabled={!agreed}
-        >
-          Submit Agreement
-        </Button>
-      </Row>
+      {!project.signed_agreement && (
+        <Row className="justify-center">
+          <Button
+            onClick={async () => {
+              setIsSubmitting(true)
+              await fetch(`/api/sign-grant-agreement`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  projectId: project.id,
+                }),
+              })
+              setIsSubmitting(false)
+              router.push(`/projects/${project.slug}`)
+            }}
+            loading={isSubmitting}
+            disabled={!agreed}
+          >
+            Submit Agreement
+          </Button>
+        </Row>
+      )}
     </>
   )
 }
