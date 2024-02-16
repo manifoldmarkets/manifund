@@ -6,8 +6,11 @@ import { ProjectAndProfile } from '@/db/project'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function SignAgreement(props: { project: ProjectAndProfile }) {
-  const { project } = props
+export function SignAgreement(props: {
+  project: ProjectAndProfile
+  userIsOwner: boolean
+}) {
+  const { project, userIsOwner } = props
   const [agreed, setAgreed] = useState(project.signed_agreement)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -18,7 +21,7 @@ export function SignAgreement(props: { project: ProjectAndProfile }) {
           id="terms"
           aria-describedby="terms-description"
           name="terms"
-          disabled={agreed}
+          disabled={agreed || !userIsOwner}
           checked={agreed}
           onChange={() => setAgreed(!agreed)}
         />
@@ -29,7 +32,7 @@ export function SignAgreement(props: { project: ProjectAndProfile }) {
           </label>
         </div>
       </Row>
-      {!project.signed_agreement && (
+      {!project.signed_agreement && userIsOwner && (
         <Row className="justify-center">
           <Button
             onClick={async () => {
