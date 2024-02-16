@@ -19,7 +19,10 @@ export default async function GrantAgreementPage(props: {
   return (
     <Col className="gap-5 p-5">
       <GrantAgreement project={project} />
-      {user?.id === project.creator && <SignAgreement project={project} />}
+      <SignAgreement
+        project={project}
+        userIsOwner={user?.id === project.creator}
+      />
     </Col>
   )
 }
