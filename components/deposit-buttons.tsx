@@ -18,6 +18,9 @@ import { Tabs } from './tabs'
 import { Tooltip } from './tooltip'
 import { toast } from 'react-hot-toast'
 import { DepositManaProps } from '@/pages/api/deposit-mana'
+import { Col } from './layout/col'
+import Link from 'next/link'
+import AlertBox from './alert-box'
 
 export function DepositButton(props: {
   userId: string
@@ -53,7 +56,7 @@ export function DepositButton(props: {
           <Tabs
             tabs={[
               {
-                name: 'Donate money',
+                name: 'Credit card',
                 id: 'donate',
                 count: 0,
                 display: <DonateTab userId={userId} setOpen={setOpen} />,
@@ -80,7 +83,7 @@ function DonateTab(props: {
 }) {
   const { userId, setOpen, passFundsTo } = props
   const router = useRouter()
-  const [amount, setAmount] = useState<number | undefined>(10)
+  const [amount, setAmount] = useState<number | undefined>(100)
   const [isSubmitting, setIsSubmitting] = useState(false)
   let errorMessage = null
   if (!amount || amount < 10) {
@@ -89,20 +92,20 @@ function DonateTab(props: {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+      {/* <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
         <CircleStackIcon
           className="h-6 w-6 text-orange-600"
           aria-hidden="true"
         />
-      </div>
-      <div className="mt-3 text-center sm:mt-5">
+      </div> */}
+      <div className="mt-3 sm:mt-5">
         <Dialog.Title
           as="h3"
           className="mb-1 text-base font-semibold leading-6 text-gray-900"
         >
           {passFundsTo
             ? `Send money to ${passFundsTo.full_name}`
-            : 'Add money to your Manifund account'}
+            : 'Add funds to your Manifund account'}
         </Dialog.Title>
         {!passFundsTo && (
           <p className="my-2 text-sm text-gray-500">
@@ -110,15 +113,31 @@ function DonateTab(props: {
             but not withdrawn.
           </p>
         )}
-        <label htmlFor="amount">Amount (USD): </label>
+        <label htmlFor="amount">$ </label>
         <AmountInput
           step="0.01"
           id="amount"
           amount={amount}
           onChangeAmount={setAmount}
         />
+        {/* Show an alert box if the user is trying to donate $10k or more */}
+        {amount && amount >= 10000 && (
+          <AlertBox title="Large donations" type="warning">
+            For donations of $10,000+, consider{' '}
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-orange-500 hover:underline hover:decoration-orange-500 hover:decoration-2"
+              href="https://manifoldmarkets.notion.site/Donations-via-DAF-wire-ACH-crypto-02aee92e884a47e49efd4d93242e2080?pvs=4"
+            >
+              using a DAF, bank transfer, or crypto
+              <ArrowTopRightOnSquareIcon className="inline h-4 w-4" />
+            </Link>{' '}
+            for lower fees.
+          </AlertBox>
+        )}
       </div>
-      <p className="mb-2 mt-3 text-center text-rose-500">{errorMessage}</p>
+      {errorMessage && <AlertBox title={errorMessage} type="error" />}
       <div className="sm:flex-2 flex flex-col gap-3 sm:flex-row">
         <Button
           type="button"
@@ -154,7 +173,7 @@ function DonateTab(props: {
           Checkout
         </Button>
       </div>
-      <p className="mt-4 text-xs text-gray-500">
+      <p className="mt-4 text-xs font-light text-gray-500">
         Your purchase constitutes a donation to Manifold for Charity, a
         registered 501(c)(3) nonprofit.{' '}
         {passFundsTo
