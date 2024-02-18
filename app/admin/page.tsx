@@ -20,8 +20,13 @@ import { CreateTxn } from './create-txn'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { CircleStackIcon } from '@heroicons/react/24/solid'
+import { Tabs } from '@/components/tabs'
 
-export default async function Admin() {
+export default async function Admin({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string }
+}) {
   const supabase = createServerClient()
   const user = await getUser(supabase)
   if (!user || !isAdmin(user)) {
@@ -79,58 +84,56 @@ export default async function Admin() {
       })
       .join('\n')
 
-  return (
-    <div>
-      <div className="rounded-bl-lg rounded-br-lg bg-gradient-to-r from-orange-500 to-rose-500 px-0 py-8 hover:shadow-lg sm:px-8">
-        <h1 className="text-center text-5xl font-semibold text-white">
-          Admin Panel
-        </h1>
-      </div>
-      <h2 className="pb-3 pt-10 text-2xl">Projects Pending Approval</h2>
-      <Table>
-        <thead>
-          <tr>
-            <th className="p-2 text-center">Creator</th>
-            <th className="p-2 text-center">Project</th>
-            <th className="p-2 text-center">Grant verdict</th>
+  // const searchParams = useSearchParams() ?? new URLSearchParams()
+  // const currentTabId = searchParams.get('tab')
+  const currentTabId = searchParams['tab']
+
+  const ApprovalTab = (
+    <Table>
+      <thead>
+        <tr>
+          <th className="p-2 text-center">Creator</th>
+          <th className="p-2 text-center">Project</th>
+          <th className="p-2 text-center">Grant verdict</th>
+        </tr>
+      </thead>
+      <tbody className="p-2">
+        {projectsToApprove.map((project) => (
+          <tr key={project.id}>
+            <td>
+              <Link href={`/${project.profiles.username}`}>
+                {project.profiles.full_name}
+              </Link>
+            </td>
+            <td>
+              <Link
+                href={`/projects/${project.slug}`}
+                className={clsx(
+                  project.signed_agreement ? 'text-gray-900' : 'text-rose-600'
+                )}
+              >
+                {project.title}
+              </Link>
+            </td>
+            <td>
+              <GrantVerdict
+                projectId={project.id}
+                lobbying={project.lobbying}
+              />
+            </td>
           </tr>
-        </thead>
-        <tbody className="p-2">
-          {projectsToApprove.map((project) => (
-            <tr key={project.id}>
-              <td>
-                <Link href={`/${project.profiles.username}`}>
-                  {project.profiles.full_name}
-                </Link>
-              </td>
-              <td>
-                <Link
-                  href={`/projects/${project.slug}`}
-                  className={clsx(
-                    project.signed_agreement ? 'text-gray-900' : 'text-rose-600'
-                  )}
-                >
-                  {project.title}
-                </Link>
-              </td>
-              <td>
-                <GrantVerdict
-                  projectId={project.id}
-                  lobbying={project.lobbying}
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-      <CreateTxn />
+        ))}
+      </tbody>
+    </Table>
+  )
+
+  const UsersTab = (
+    <>
       <DownloadTextButton
         buttonText="Export users.csv"
         toDownload={usersCSV}
         filename="users.csv"
       />
-      <RunScript />
-      <h1 className="pb-3 pt-10 text-2xl">User Database</h1>
       <Table>
         <thead>
           <tr>
@@ -162,7 +165,13 @@ export default async function Admin() {
           ))}
         </tbody>
       </Table>
-      <h2 className="pb-3 pt-10 text-2xl">Transactions</h2>
+    </>
+  )
+
+  const TxnsTab = (
+    <>
+      <h3 className="text-lg">Create transaction</h3>
+      <CreateTxn />
       <Table>
         <thead>
           <tr>
@@ -185,53 +194,102 @@ export default async function Admin() {
           ))}
         </tbody>
       </Table>
-      <h2 className="pb-3 pt-10 text-2xl">Projects</h2>
-      <Table>
-        <thead>
-          <tr>
-            <th className="p-2">DB</th>
-            <th className="p-2">Title</th>
-            <th className="p-2">Creator</th>
-            <th className="p-2">Min funding</th>
-            <th className="p-2">Add tag</th>
-            <th className="p-2">Activate project</th>
-          </tr>
-        </thead>
-        <tbody>
-          {(projects ?? []).map((project) => {
-            return (
-              <tr key={project.id}>
-                <td className="pr-2">
-                  <Link
-                    href={`https://supabase.com/dashboard/project/fkousziwzbnkdkldjper/editor/27111?filter=id%3Aeq%3A${project.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline"
-                  >
-                    <CircleStackIcon className="inline h-3 w-3" />
-                  </Link>
-                </td>
-                <td className="max-w-sm overflow-hidden hover:underline">
-                  <Link href={`/projects/${project.slug}`}>
-                    {project.title}
-                  </Link>
-                </td>
-                <td>{getName(project.creator)}</td>
-                <td>{project.min_funding}</td>
-                <AddTags
-                  projectId={project.id}
-                  causeSlug={'gcr'}
-                  currentCauseSlugs={project.causes.map((cause) => cause.slug)}
-                />
-                <ActivateProject projectId={project.id} />
-              </tr>
-            )
-          })}
-        </tbody>
-      </Table>
-      <Donations charities={charities ?? []} txns={txns ?? []} />
-      <h2>Round Bid Amounts</h2>
-      <RoundBidAmounts />
+    </>
+  )
+
+  const ProjectsTab = (
+    <Table>
+      <thead>
+        <tr>
+          <th className="p-2">DB</th>
+          <th className="p-2">Title</th>
+          <th className="p-2">Creator</th>
+          <th className="p-2">Min funding</th>
+          <th className="p-2">Add tag</th>
+          <th className="p-2">Activate project</th>
+        </tr>
+      </thead>
+      <tbody>
+        {(projects ?? []).map((project) => {
+          return (
+            <tr key={project.id}>
+              <td className="pr-2">
+                <Link
+                  href={`https://supabase.com/dashboard/project/fkousziwzbnkdkldjper/editor/27111?filter=id%3Aeq%3A${project.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  <CircleStackIcon className="inline h-3 w-3" />
+                </Link>
+              </td>
+              <td className="max-w-sm overflow-hidden hover:underline">
+                <Link href={`/projects/${project.slug}`}>{project.title}</Link>
+              </td>
+              <td>{getName(project.creator)}</td>
+              <td>{project.min_funding}</td>
+              <AddTags
+                projectId={project.id}
+                causeSlug={'gcr'}
+                currentCauseSlugs={project.causes.map((cause) => cause.slug)}
+              />
+              <ActivateProject projectId={project.id} />
+            </tr>
+          )
+        })}
+      </tbody>
+    </Table>
+  )
+
+  return (
+    <div>
+      <div className="rounded-bl-lg rounded-br-lg bg-gradient-to-r from-orange-500 to-rose-500 px-0 py-8 hover:shadow-lg sm:px-8">
+        <h1 className="text-center text-5xl font-semibold text-white">
+          Admin Panel
+        </h1>
+      </div>
+
+      <Tabs
+        tabs={[
+          {
+            name: 'Pending approval',
+            id: 'to-approve',
+            display: ApprovalTab,
+            count: projectsToApprove.length,
+          },
+          {
+            name: 'Users',
+            id: 'users',
+            display: UsersTab,
+            count: userAndProfiles.length,
+          },
+          {
+            name: 'Transactions',
+            id: 'txns',
+            display: TxnsTab,
+            count: txns?.length,
+          },
+          {
+            name: 'Projects',
+            id: 'projects',
+            display: ProjectsTab,
+            count: projects.length,
+          },
+          {
+            name: 'Tools',
+            id: 'tools',
+            display: (
+              <>
+                <RunScript />
+                <Donations charities={charities ?? []} txns={txns ?? []} />
+                <h2 className="text-lg">Round Bid Amounts</h2>
+                <RoundBidAmounts />
+              </>
+            ),
+          },
+        ]}
+        currentTabId={currentTabId}
+      />
     </div>
   )
 }
