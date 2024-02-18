@@ -1,6 +1,9 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 
+// TODO: Consider rewriting the tab navigation pattern to use Parallel Routes:
+// https://nextjs.org/docs/app/building-your-application/routing/parallel-routes#tab-groups
+
 export type Tab = {
   name: string
   id: string
