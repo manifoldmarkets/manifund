@@ -113,19 +113,16 @@ export function FeedTabs(props: {
             name: 'Comments',
             id: 'comments',
             display: CommentsTab,
-            count: 0,
           },
           {
             name: 'Donations',
             id: 'donations',
             display: DonationsTab,
-            count: 0,
           },
           {
             name: 'Offers',
             id: 'offers',
             display: OffersTab,
-            count: 0,
           },
         ]}
         currentTabId={currentTabId}
