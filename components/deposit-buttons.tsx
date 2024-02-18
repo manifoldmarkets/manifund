@@ -58,13 +58,11 @@ export function DepositButton(props: {
               {
                 name: 'Credit card',
                 id: 'donate',
-                count: 0,
                 display: <DonateTab userId={userId} setOpen={setOpen} />,
               },
               {
                 name: 'Transfer mana',
                 id: 'mana',
-                count: 0,
                 display: <ManaTab />,
               },
             ]}

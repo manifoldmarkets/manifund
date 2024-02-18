@@ -4,7 +4,7 @@ import Link from 'next/link'
 export type Tab = {
   name: string
   id: string
-  count: number
+  count?: number
   display: JSX.Element
 }
 export function Tabs(props: { tabs: Tab[]; currentTabId?: string | null }) {
@@ -56,7 +56,7 @@ function SingleTab(props: { tab: Tab; isCurrent: boolean }) {
       aria-current={isCurrent ? 'page' : undefined}
     >
       {tab.name}
-      {tab.count > 0 ? (
+      {tab.count && tab.count > 0 ? (
         <span
           className={clsx(
             isCurrent
