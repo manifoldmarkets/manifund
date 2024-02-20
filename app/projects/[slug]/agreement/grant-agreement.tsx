@@ -25,7 +25,7 @@ export function GrantAgreement(props: { project: ProjectAndProfile }) {
         <tbody>
           <tr className="font-bold">
             <td className="pr-10 ">1</td>
-            <td className="">Background</td>
+            <td>Background</td>
           </tr>
           <tr>
             <td />
@@ -44,7 +44,7 @@ export function GrantAgreement(props: { project: ProjectAndProfile }) {
                 for Charity: &quot;{project.title}&quot; (the “Project”).
               </p>
               <p>
-                1.4 The start date for your grant will be{' '}
+                1.4 The start date for this grant will be{' '}
                 {format(new Date(project.created_at), 'MMMM do, yyyy')} (the
                 “Commencement Date”) and will run for the duration (the “Grant
                 Period”) until the Recipient marks the Project as complete (the
