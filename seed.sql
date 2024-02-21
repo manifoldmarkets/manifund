@@ -77,7 +77,7 @@ from
 --
 ---- Projects ----
 create type project_type as enum ('grant', 'cert');
-create type project_stage as enum ('active', 'proposal', 'not funded', 'hidden', 'complete')
+create type project_stage as enum ('active', 'proposal', 'not funded', 'hidden', 'complete', 'pre-proposal')
 create table if not exists public.projects (
   id uuid not null default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -287,7 +287,6 @@ CREATE POLICY "Give edit access to rachel 1w84ji1_0" ON storage.objects FOR DELE
 CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
 CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR UPDATE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
 CREATE POLICY "Give edit access to austin 1w84ji1_0" ON storage.objects FOR DELETE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'akrolsmir@gmail.com');
-
 
 CREATE POLICY "Give edit access to saul 1w84ji1_0" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'saulsmunn@gmail.com');
 CREATE POLICY "Give edit access to saul 1w84ji1_0" ON storage.objects FOR UPDATE TO public WITH CHECK (bucket_id = 'round-header-images' AND auth.jwt() ->> 'email'::text = 'saulsmunn@gmail.com');

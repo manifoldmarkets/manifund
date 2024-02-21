@@ -67,7 +67,7 @@ export type Database = {
           prize: boolean
           project_description_outline: string | null
           slug: string
-          sort: number
+          sort: number | null
           title: string
         }
         Insert: {
@@ -79,7 +79,7 @@ export type Database = {
           prize?: boolean
           project_description_outline?: string | null
           slug: string
-          sort?: number
+          sort?: number | null
           title: string
         }
         Update: {
@@ -91,7 +91,7 @@ export type Database = {
           prize?: boolean
           project_description_outline?: string | null
           slug?: string
-          sort?: number
+          sort?: number | null
           title?: string
         }
         Relationships: [
@@ -589,7 +589,7 @@ export type Database = {
           project: string | null
           to_id: string
           token: string
-          type: Database["public"]["Enums"]["txn_type"] | null
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Insert: {
           amount: number
@@ -600,7 +600,7 @@ export type Database = {
           project?: string | null
           to_id: string
           token: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type: Database["public"]["Enums"]["txn_type"]
         }
         Update: {
           amount?: number
@@ -611,7 +611,7 @@ export type Database = {
           project?: string | null
           to_id?: string
           token?: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type?: Database["public"]["Enums"]["txn_type"]
         }
         Relationships: [
           {
@@ -826,15 +826,16 @@ export type Database = {
     }
     Enums: {
       bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "donate" | "assurance buy" | "assurance sell"
+      bid_type: "buy" | "sell" | "donate" | "assurance sell" | "assurance buy"
       comment_type: "progress update" | "final report"
-      profile_type: "individual" | "org" | "fund" | "amm"
+      profile_type: "individual" | "org" | "amm" | "fund"
       project_stage:
         | "active"
         | "proposal"
         | "not funded"
         | "complete"
         | "hidden"
+        | "pre-proposal"
       project_type: "grant" | "cert" | "dummy"
       txn_type:
         | "profile donation"
@@ -879,7 +880,6 @@ export type Database = {
         stage: Database["public"]["Enums"]["project_stage"]
         round: string
         slug: string
-        location_description: string
       }
       transfer_row: {
         recipient_email: string
