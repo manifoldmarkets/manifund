@@ -19,7 +19,7 @@ export async function generateMetadata(props: { params: { slug: string } }) {
   return {
     title: project.title,
     robots: {
-      index: project.stage !== 'hidden' && project.stage !== 'pre-proposal',
+      index: project.stage !== 'hidden' && project.stage !== 'draft',
     },
   }
 }
@@ -61,7 +61,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   const userIsAdmin = user ? isAdmin(user) : false
   const userIsOwner = user?.id === project.creator
   const projectIsPrivate =
-    project.stage === 'hidden' || project.stage === 'pre-proposal'
+    project.stage === 'hidden' || project.stage === 'draft'
   return (
     <div className="p-4">
       {projectIsPrivate && !userIsOwner && !userIsAdmin ? (

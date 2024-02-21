@@ -31,7 +31,7 @@ export function CreatorActionPanel(props: {
   const { project, causesList, prizeCause } = props
   return (
     <Row className="items-center gap-1" id="creator-actions">
-      {project.stage === 'pre-proposal' ? (
+      {project.stage === 'draft' ? (
         <Publish projectSlug={project.slug} />
       ) : (
         <Edit project={project} causesList={causesList} />

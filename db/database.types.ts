@@ -422,6 +422,7 @@ export type Database = {
           id: string
           lobbying: boolean
           location_description: string | null
+          markets: Json | null
           min_funding: number
           public_benefit: string | null
           round: string
@@ -445,6 +446,7 @@ export type Database = {
           id?: string
           lobbying?: boolean
           location_description?: string | null
+          markets?: Json | null
           min_funding: number
           public_benefit?: string | null
           round: string
@@ -468,6 +470,7 @@ export type Database = {
           id?: string
           lobbying?: boolean
           location_description?: string | null
+          markets?: Json | null
           min_funding?: number
           public_benefit?: string | null
           round?: string
@@ -835,7 +838,7 @@ export type Database = {
         | "not funded"
         | "complete"
         | "hidden"
-        | "pre-proposal"
+        | "draft"
       project_type: "grant" | "cert" | "dummy"
       txn_type:
         | "profile donation"

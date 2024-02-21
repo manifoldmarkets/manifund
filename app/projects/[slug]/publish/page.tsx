@@ -14,7 +14,7 @@ export default async function PublishProjectPage(props: {
   const user = await getUser(supabase)
   if (
     !project ||
-    !(project.stage === 'pre-proposal') ||
+    !(project.stage === 'draft') ||
     !(user?.id === project.creator)
   ) {
     return <div>404</div>

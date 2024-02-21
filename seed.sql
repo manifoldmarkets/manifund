@@ -77,7 +77,7 @@ from
 --
 ---- Projects ----
 create type project_type as enum ('grant', 'cert');
-create type project_stage as enum ('active', 'proposal', 'not funded', 'hidden', 'complete', 'pre-proposal')
+create type project_stage as enum ('active', 'proposal', 'not funded', 'hidden', 'complete', 'draft')
 create table if not exists public.projects (
   id uuid not null default gen_random_uuid(),
   created_at timestamptz not null default now(),

@@ -92,7 +92,7 @@ export function ProfileContent(props: {
     )
     .filter(
       (project) =>
-        (project.stage !== 'hidden' && project.stage !== 'pre-proposal') ||
+        (project.stage !== 'hidden' && project.stage !== 'draft') ||
         isOwnProfile
     )
   return (
