@@ -71,6 +71,7 @@ export async function listProjects(supabase: SupabaseClient) {
       'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, lobbying, amm_shares, founder_shares, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
     )
     .neq('stage', 'hidden')
+    .neq('stage', 'pre-proposal')
     .order('created_at', { ascending: false })
     .throwOnError()
   // Scary type conversion!
@@ -85,6 +86,7 @@ export async function listProjectsForEvals(supabase: SupabaseClient) {
     )
     .neq('type', 'cert')
     .neq('stage', 'hidden')
+    .neq('stage', 'pre-proposal')
     .order('created_at', { ascending: false })
     .throwOnError()
   // Scary type conversion!
@@ -149,6 +151,8 @@ export async function getFullProjectsByRound(
     .select(
       'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
     )
+    .neq('stage', 'hidden')
+    .neq('stage', 'pre-proposal')
     .eq('round', roundTitle)
   if (error) {
     throw error
@@ -167,6 +171,8 @@ export async function getFullProjectsByCause(
       'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, amm_shares, founder_shares, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_causes!inner(cause_slug), causes(title, slug)'
     )
     .eq('project_causes.cause_slug', causeSlug)
+    .neq('stage', 'hidden')
+    .neq('stage', 'pre-proposal')
   if (error) {
     throw error
   }
