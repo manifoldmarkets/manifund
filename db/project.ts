@@ -13,6 +13,7 @@ export type ProjectTransfer =
   Database['public']['Tables']['project_transfers']['Row']
 export type ProjectVote = Database['public']['Tables']['project_votes']['Row']
 export type ProjectWithCauses = Project & { causes: MiniCause[] }
+export type ProjectAndProfile = Project & { profiles: Profile }
 export type ProjectAndBids = Project & { bids: Bid[] }
 export type ProjectBidsAndFollows = Project & { bids: Bid[] } & {
   project_follows: ProjectFollow[]
@@ -110,7 +111,6 @@ export async function getFullProjectBySlug(
   return data[0] as FullProject
 }
 
-export type ProjectAndProfile = Project & { profiles: Profile }
 export async function getProjectAndProfileBySlug(
   supabase: SupabaseClient,
   slug: string
@@ -261,6 +261,19 @@ export async function getProjectWithCausesById(
     .from('projects')
     .select('*, causes(slug)')
     .eq('id', projectId)
+    .maybeSingle()
+    .throwOnError()
+  return data ? (data as ProjectWithCauses) : undefined
+}
+
+export async function getProjectWithCausesBySlug(
+  supabase: SupabaseClient,
+  projectSlug: string
+) {
+  const { data } = await supabase
+    .from('projects')
+    .select('*, causes(slug)')
+    .eq('slug', projectSlug)
     .maybeSingle()
     .throwOnError()
   return data ? (data as ProjectWithCauses) : undefined
