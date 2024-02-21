@@ -57,7 +57,12 @@ export function PublishProjectForm(props: {
       location: project.location_description ?? '',
       selectedCauses: project.causes,
       selectedPrize: prizeCause ?? null,
-      founderPercent: (project.founder_shares / TOTAL_SHARES) * 100,
+      founderPercent: prizeCause
+        ? (1 -
+            (prizeCause.cert_params?.defaultInvestorShares ?? 0) /
+              TOTAL_SHARES) *
+          100
+        : (project.founder_shares * TOTAL_SHARES) / 100,
       agreedToTerms: false,
       lobbying: false,
     }
