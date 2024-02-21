@@ -59,10 +59,10 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
 
   return (
     <div className="p-4">
-      {project.stage === 'hidden' ||
-        (project.stage === 'pre-proposal' && (
-          <meta name="robots" content="noindex" key="robots" />
-        ))}
+      {(project.stage === 'hidden' || project.stage === 'pre-proposal') && (
+        <meta name="robots" content="noindex" key="robots" />
+      )}
+
       <ProjectDisplay
         project={project}
         userTxns={userTxns}
