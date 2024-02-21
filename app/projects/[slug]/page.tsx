@@ -56,6 +56,16 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     ? await getUserEmail(createAdminClient(), project.creator)
     : undefined
   const userIsAdmin = user ? isAdmin(user) : false
+  if (
+    project.stage === 'hidden' ||
+    (project.stage === 'pre-proposal' &&
+      !(userProfile?.id === project.creator) &&
+      !userIsAdmin)
+  ) {
+    if (!project) {
+      return <div>404: Project not found.</div>
+    }
+  }
   return (
     <div className="p-4">
       <ProjectDisplay
