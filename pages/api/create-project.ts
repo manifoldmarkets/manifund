@@ -7,6 +7,7 @@ import { projectSlugify, toTitleCase } from '@/utils/formatting'
 import { ProjectParams } from '@/app/create/create-project-form'
 import { getPrizeCause, updateProjectCauses } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
+import { insertBid } from '@/db/bid'
 import { seedAmm } from '@/utils/activate-project'
 
 export const config = {
@@ -67,7 +68,7 @@ export default async function handler(req: NextRequest) {
     round: !!selectedPrize ? toTitleCase(selectedPrize.title) : 'Regrants',
     auction_close: verdictDate,
     stage: startingStage,
-    type: !!selectedPrize ? 'cert' : 'grant',
+    type,
     location_description: location,
     approved: null,
     signed_agreement: false,
@@ -81,14 +82,13 @@ export default async function handler(req: NextRequest) {
   if (type === 'cert' && prizeCause) {
     const certParams = prizeCause.cert_params
     if (certParams?.proposalPhase) {
-      await addBid(
-        supabase,
-        projectId,
-        user.id,
-        getMinIncludingAmm(project),
-        getProposalValuation(project),
-        startingStage === 'proposal' ? 'assurance sell' : 'sell'
-      )
+      await insertBid(supabase, {
+        project: projectId,
+        bidder: user.id,
+        amount: getMinIncludingAmm(project),
+        valuation: getProposalValuation(project),
+        type: startingStage === 'proposal' ? 'assurance sell' : 'sell',
+      })
     } else if (certParams?.ammDollars && project.amm_shares) {
       const supabaseAdmin = createAdminClient()
       await supabaseAdmin.from('txns').insert({

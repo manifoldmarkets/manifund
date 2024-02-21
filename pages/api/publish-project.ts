@@ -1,13 +1,14 @@
 import { Project, TOTAL_SHARES } from '@/db/project'
-import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createAdminClient, createEdgeClient } from './_db'
-import { projectSlugify, toTitleCase } from '@/utils/formatting'
+import { toTitleCase } from '@/utils/formatting'
 import { ProjectParams } from '@/app/create/create-project-form'
 import { getPrizeCause, updateProjectCauses } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
 import { seedAmm } from '@/utils/activate-project'
+import { upvoteOwnProject, giveCreatorShares } from '@/utils/upsert-project'
+import { insertBid } from '@/db/bid'
 
 export const config = {
   runtime: 'edge',
@@ -32,7 +33,8 @@ export default async function handler(req: NextRequest) {
     founderPercent,
     agreedToTerms,
     lobbying,
-  } = (await req.json()) as ProjectParams
+    slug,
+  } = (await req.json()) as ProjectParams & { slug: string }
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
@@ -49,7 +51,6 @@ export default async function handler(req: NextRequest) {
       ? 'active'
       : 'proposal'
   const type = !!selectedPrize ? 'cert' : 'grant'
-  const slug = await projectSlugify(title, supabase)
   const projectId = uuid()
   const project = {
     id: projectId,
@@ -67,7 +68,7 @@ export default async function handler(req: NextRequest) {
     round: !!selectedPrize ? toTitleCase(selectedPrize.title) : 'Regrants',
     auction_close: verdictDate,
     stage: startingStage,
-    type: !!selectedPrize ? 'cert' : 'grant',
+    type,
     location_description: location,
     approved: null,
     signed_agreement: false,
@@ -81,14 +82,13 @@ export default async function handler(req: NextRequest) {
   if (type === 'cert' && prizeCause) {
     const certParams = prizeCause.cert_params
     if (certParams?.proposalPhase) {
-      await addBid(
-        supabase,
-        projectId,
-        user.id,
-        getMinIncludingAmm(project),
-        getProposalValuation(project),
-        startingStage === 'proposal' ? 'assurance sell' : 'sell'
-      )
+      await insertBid(supabase, {
+        project: projectId,
+        bidder: user.id,
+        amount: getMinIncludingAmm(project),
+        valuation: getProposalValuation(project),
+        type: startingStage === 'proposal' ? 'assurance sell' : 'sell',
+      })
     } else if (certParams?.ammDollars && project.amm_shares) {
       const supabaseAdmin = createAdminClient()
       await supabaseAdmin.from('txns').insert({
@@ -103,61 +103,4 @@ export default async function handler(req: NextRequest) {
     }
   }
   return NextResponse.json(project)
-}
-
-export async function giveCreatorShares(
-  supabase: SupabaseClient,
-  id: string,
-  creator: string
-) {
-  const txn = {
-    from_id: null,
-    to_id: creator,
-    amount: TOTAL_SHARES,
-    token: id,
-    project: id,
-    type: 'mint cert',
-  }
-  const { error } = await supabase.from('txns').insert([txn])
-  if (error) {
-    console.error('create-project', error)
-  }
-}
-
-async function addBid(
-  supabase: SupabaseClient,
-  projectId: string,
-  creatorId: string,
-  amount: number,
-  valuation: number,
-  type: string = 'sell'
-) {
-  const bid = {
-    bidder: creatorId,
-    amount,
-    valuation,
-    project: projectId,
-    type: type,
-  }
-  const { error } = await supabase.from('bids').insert([bid])
-  if (error) {
-    console.error('create-project', error)
-  }
-}
-
-async function upvoteOwnProject(
-  supabase: SupabaseClient,
-  projectId: string,
-  userId: string
-) {
-  const { error } = await supabase.from('project_votes').insert([
-    {
-      project_id: projectId,
-      voter_id: userId,
-      magnitude: 1,
-    },
-  ])
-  if (error) {
-    console.error('create-project', error)
-  }
 }
