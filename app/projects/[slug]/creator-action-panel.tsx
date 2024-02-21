@@ -1,7 +1,7 @@
 'use client'
 import { Button, buttonClass } from '@/components/button'
 import { Row } from '@/components/layout/row'
-import { MiniCause, SimpleCause, Cause } from '@/db/cause'
+import { SimpleCause, Cause } from '@/db/cause'
 import { FullProject, Project } from '@/db/project'
 import {
   LockClosedIcon,
