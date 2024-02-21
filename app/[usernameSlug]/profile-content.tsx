@@ -90,7 +90,11 @@ export function ProfileContent(props: {
         project.project_transfers.filter((transfer) => !transfer.transferred)
           .length === 0
     )
-    .filter((project) => project.stage !== 'hidden' || isOwnProfile)
+    .filter(
+      (project) =>
+        (project.stage !== 'hidden' && project.stage !== 'pre-proposal') ||
+        isOwnProfile
+    )
   return (
     <div className="flex flex-col gap-6">
       {profile.regranter_status && !isOwnProfile && userProfile && (
