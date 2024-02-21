@@ -56,26 +56,31 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     ? await getUserEmail(createAdminClient(), project.creator)
     : undefined
   const userIsAdmin = user ? isAdmin(user) : false
-
+  const userIsOwner = user?.id === project.creator
   return (
     <div className="p-4">
       {(project.stage === 'hidden' || project.stage === 'pre-proposal') && (
         <meta name="robots" content="noindex" key="robots" />
       )}
-
-      <ProjectDisplay
-        project={project}
-        userTxns={userTxns}
-        userBids={userBids}
-        comments={comments}
-        projectBids={projectBids}
-        projectTxns={projectTxns}
-        creatorEmail={creatorEmail}
-        userProfile={userProfile ?? undefined}
-        causesList={causesList}
-        prizeCause={prizeCause}
-        userIsAdmin={userIsAdmin}
-      />
+      {(project.stage === 'hidden' || project.stage === 'pre-proposal') &&
+      !userIsOwner &&
+      !userIsAdmin ? (
+        <div>404: Project not found.</div>
+      ) : (
+        <ProjectDisplay
+          project={project}
+          userTxns={userTxns}
+          userBids={userBids}
+          comments={comments}
+          projectBids={projectBids}
+          projectTxns={projectTxns}
+          creatorEmail={creatorEmail}
+          userProfile={userProfile ?? undefined}
+          causesList={causesList}
+          prizeCause={prizeCause}
+          userIsAdmin={userIsAdmin}
+        />
+      )}
     </div>
   )
 }
