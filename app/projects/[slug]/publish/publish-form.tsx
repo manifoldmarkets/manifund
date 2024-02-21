@@ -64,7 +64,10 @@ export function PublishProjectForm(props: {
     {
       title: project.title,
       subtitle: project.blurb,
-      verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
+      verdictDate: format(
+        new Date(project.auction_close ?? add(new Date(), { months: 1 })),
+        'yyyy-MM-dd'
+      ),
       location: project.location_description ?? '',
       selectedCauses: project.causes,
       selectedPrize: prizeCause ?? null,
@@ -75,35 +78,7 @@ export function PublishProjectForm(props: {
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
-  const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
-  const [madeChanges, setMadeChanges] = useState<boolean>(false)
-  useEffect(() => {
-    if (editor && !editor.isDestroyed) {
-      editor.on('update', () => {
-        setMadeChanges(true)
-      })
-    }
-  }, [editor])
-  useEffect(() => {
-    updateProjectParams({
-      founderPercent:
-        (1 -
-          (projectParams.selectedPrize?.cert_params?.defaultInvestorShares ??
-            0) /
-            TOTAL_SHARES) *
-        100,
-    })
-    if (!madeChanges) {
-      editor?.commands.setContent(
-        projectParams.selectedPrize?.project_description_outline ??
-          DESCRIPTION_OUTLINE
-      )
-      setMadeChanges(false)
-    }
-  }, [projectParams.selectedPrize])
-  const selectablePrizeCauses = causesList.filter(
-    (cause) => cause.open && cause.prize
-  )
+  const editor = useTextEditor(project.description, DESCRIPTION_KEY)
   const selectableCauses = causesList.filter(
     (cause) => cause.open && !cause.prize
   )
@@ -155,7 +130,7 @@ export function PublishProjectForm(props: {
   return (
     <Col className="gap-4 p-5">
       <div className="flex flex-col md:flex-row md:justify-between">
-        <h1 className="text-3xl font-bold">Add a project</h1>
+        <h1 className="text-3xl font-bold">Edit & publish your project</h1>
       </div>
       {/* <Col className="gap-1">
         <label>I am applying for...</label>
@@ -232,14 +207,6 @@ export function PublishProjectForm(props: {
             Project description
             <RequiredStar />
           </label>
-          <ResetEditor
-            storageKey={DESCRIPTION_KEY}
-            editor={editor}
-            defaultContent={
-              projectParams.selectedPrize?.project_description_outline ??
-              DESCRIPTION_OUTLINE
-            }
-          />
         </Row>
         <p className="text-sm text-gray-500">
           Note that the editor offers formatting shortcuts{' '}
