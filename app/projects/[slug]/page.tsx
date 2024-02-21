@@ -18,6 +18,9 @@ export async function generateMetadata(props: { params: { slug: string } }) {
   const project = await getProjectBySlug(supabase, slug)
   return {
     title: project.title,
+    robots: {
+      index: project.stage !== 'hidden' && project.stage !== 'pre-proposal',
+    },
   }
 }
 
@@ -61,9 +64,6 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     project.stage === 'hidden' || project.stage === 'pre-proposal'
   return (
     <div className="p-4">
-      {projectIsPrivate && (
-        <meta name="robots" content="noindex" key="robots" />
-      )}
       {projectIsPrivate && !userIsOwner && !userIsAdmin ? (
         <div>404: Project not found.</div>
       ) : (
