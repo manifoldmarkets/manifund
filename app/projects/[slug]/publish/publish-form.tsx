@@ -22,6 +22,7 @@ import { SiteLink } from '@/components/site-link'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { JSONContent } from '@tiptap/core'
+import { roundLargeNumber } from '@/utils/formatting'
 
 export type ProjectParams = {
   title: string
@@ -58,10 +59,12 @@ export function PublishProjectForm(props: {
       selectedCauses: project.causes,
       selectedPrize: prizeCause ?? null,
       founderPercent: prizeCause
-        ? (1 -
-            (prizeCause.cert_params?.defaultInvestorShares ?? 0) /
-              TOTAL_SHARES) *
-          100
+        ? roundLargeNumber(
+            (1 -
+              (prizeCause.cert_params?.defaultInvestorShares ?? 0) /
+                TOTAL_SHARES) *
+              100
+          )
         : (project.founder_shares * TOTAL_SHARES) / 100,
       agreedToTerms: false,
       lobbying: false,
