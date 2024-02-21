@@ -1,12 +1,12 @@
 'use client'
 
 import { useSupabase } from '@/db/supabase-provider'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { AmountInput, Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { ProjectWithCauses, TOTAL_SHARES } from '@/db/project'
-import { ResetEditor, TextEditor } from '@/components/editor'
+import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
 import Link from 'next/link'
 import { add, format, isAfter, isBefore } from 'date-fns'
@@ -22,22 +22,6 @@ import { SiteLink } from '@/components/site-link'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { JSONContent } from '@tiptap/core'
-
-const DESCRIPTION_OUTLINE = `
-<h3>Project summary</h3>
-</br>
-<h3>What are this project's goals and how will you achieve them?</h3>
-</br>
-<h3>How will this funding be used?</h3>
-</br>
-<h3>Who is on your team and what's your track record on similar projects?</h3>
-</br>
-<h3>What are the most likely causes and outcomes if this project fails? (premortem)</h3>
-</br>
-<h3>What other funding are you or your project getting?</h3>
-</br>
-`
-const DESCRIPTION_KEY = 'ProjectDescription'
 
 export type ProjectParams = {
   title: string
@@ -64,6 +48,8 @@ export function PublishProjectForm(props: {
     {
       title: project.title,
       subtitle: project.blurb,
+      minFunding: project.min_funding,
+      fundingGoal: project.funding_goal,
       verdictDate: format(
         new Date(project.auction_close ?? add(new Date(), { months: 1 })),
         'yyyy-MM-dd'
@@ -78,7 +64,8 @@ export function PublishProjectForm(props: {
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
-  const editor = useTextEditor(project.description, DESCRIPTION_KEY)
+  const descriptionKey = `ProjectDescription${project.slug}`
+  const editor = useTextEditor(project.description, descriptionKey)
   const selectableCauses = causesList.filter(
     (cause) => cause.open && !cause.prize
   )
@@ -111,21 +98,8 @@ export function PublishProjectForm(props: {
     })
     const newProject = await response.json()
     router.push(`/projects/${newProject.slug}`)
-    clearLocalStorageItem(DESCRIPTION_KEY)
+    clearLocalStorageItem(descriptionKey)
     setIsSubmitting(false)
-  }
-
-  const { session } = useSupabase()
-  const user = session?.user
-  if (!user) {
-    return (
-      <div>
-        <Link href="/login" className="text-orange-500 hover:text-orange-600">
-          Log in
-        </Link>{' '}
-        to create a project!
-      </div>
-    )
   }
   return (
     <Col className="gap-4 p-5">
