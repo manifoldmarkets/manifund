@@ -1,5 +1,5 @@
 'use client'
-import { Button } from '@/components/button'
+import { Button, buttonClass } from '@/components/button'
 import { Row } from '@/components/layout/row'
 import { MiniCause, SimpleCause, Cause } from '@/db/cause'
 import { FullProject, Project } from '@/db/project'
@@ -21,6 +21,7 @@ import { Modal } from '@/components/modal'
 import { Dialog } from '@headlessui/react'
 import { FireIcon } from '@heroicons/react/20/solid'
 import { checkReactivateEligible } from '@/utils/activate-project'
+import Link from 'next/link'
 
 export function CreatorActionPanel(props: {
   project: FullProject
@@ -30,13 +31,15 @@ export function CreatorActionPanel(props: {
   const { project, causesList, prizeCause } = props
   return (
     <Row className="items-center gap-1" id="creator-actions">
-      <Edit project={project} causesList={causesList} />
-      {project.stage === 'active' && <ProgressUpdateButton project={project} />}
-      {project.stage === 'active' && (
-        <CloseProjectButton projectId={project.id} />
+      {project.stage === 'pre-proposal' ? (
+        <Publish />
+      ) : (
+        <Edit project={project} causesList={causesList} />
       )}
+      {project.stage === 'active' && <ProgressUpdate project={project} />}
+      {project.stage === 'active' && <CloseProject projectId={project.id} />}
       {checkReactivateEligible(project, prizeCause) && (
-        <ReactivateButton projectId={project.id} />
+        <Reactivate projectId={project.id} />
       )}
     </Row>
   )
@@ -50,7 +53,7 @@ const PROGRESS_UPDATE_OUTLINE = `
 <h3>Is there anything others could help you with?</h3>
 </br>
 `
-function ProgressUpdateButton(props: { project: Project }) {
+function ProgressUpdate(props: { project: Project }) {
   const { project } = props
   const [modalOpen, setModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -130,7 +133,7 @@ const REPORT_OUTLINE = `
 <h3>Spending breakdown</h3>
 </br>
 `
-function CloseProjectButton(props: { projectId: string }) {
+function CloseProject(props: { projectId: string }) {
   const { projectId } = props
   const [modalOpen, setModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -208,7 +211,7 @@ function CloseProjectButton(props: { projectId: string }) {
   )
 }
 
-export function ReactivateButton(props: { projectId: string }) {
+export function Reactivate(props: { projectId: string }) {
   const { projectId } = props
   const [modalOpen, setModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -415,5 +418,13 @@ function Edit(props: {
         </Col>
       </Modal>
     </>
+  )
+}
+
+function Publish() {
+  return (
+    <Link className={buttonClass('2xs', 'light-orange')} href="/publish">
+      Edit & publish
+    </Link>
   )
 }
