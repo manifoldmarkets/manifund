@@ -3,7 +3,7 @@ import { getUser } from '@/db/profile'
 import { getProjectWithCausesBySlug } from '@/db/project'
 import { getPrizeCause, listSimpleCauses } from '@/db/cause'
 import React from 'react'
-import { Col } from '@/components/layout/col'
+import { PublishProjectForm } from './publish-form'
 
 export default async function PublishProjectPage(props: {
   params: { slug: string }
@@ -25,6 +25,10 @@ export default async function PublishProjectPage(props: {
     supabase
   )
   return (
-    <Col className="gap-5 p-5">publish project page for {project?.title}</Col>
+    <PublishProjectForm
+      causesList={causesList}
+      prizeCause={prizeCause}
+      project={project}
+    />
   )
 }

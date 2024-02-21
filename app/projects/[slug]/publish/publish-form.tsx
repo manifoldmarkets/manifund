@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { AmountInput, Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
-import { FullProject, TOTAL_SHARES } from '@/db/project'
+import { ProjectWithCauses, TOTAL_SHARES } from '@/db/project'
 import { ResetEditor, TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
 import Link from 'next/link'
@@ -19,7 +19,6 @@ import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from '@/components/investment-structure'
 import { Tooltip } from '@/components/tooltip'
 import { SiteLink } from '@/components/site-link'
-import { HorizontalRadioGroup } from '@/components/radio-group'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { JSONContent } from '@tiptap/core'
@@ -56,9 +55,9 @@ export type ProjectParams = {
 }
 
 export function PublishProjectForm(props: {
-  project: FullProject
+  project: ProjectWithCauses
   causesList: SimpleCause[]
-  prizeCause: Cause
+  prizeCause?: Cause
 }) {
   const { causesList, prizeCause, project } = props
   const [projectParams, updateProjectParams] = usePartialUpdater<ProjectParams>(
@@ -68,7 +67,7 @@ export function PublishProjectForm(props: {
       verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
       location: project.location_description ?? '',
       selectedCauses: project.causes,
-      selectedPrize: prizeCause,
+      selectedPrize: prizeCause ?? null,
       founderPercent: (project.founder_shares / TOTAL_SHARES) * 100,
       agreedToTerms: false,
       lobbying: false,
