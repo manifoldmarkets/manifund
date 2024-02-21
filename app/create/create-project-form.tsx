@@ -108,16 +108,9 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     ? projectParams.selectedPrize.cert_params.minMinFunding
     : 500
   const certParams = projectParams.selectedPrize?.cert_params ?? null
-  const chinatalkPrizeSelected =
-    projectParams.selectedPrize?.slug === 'china-talk'
-  const [agreeToChinatalkTerms, setAgreeToChinatalkTerms] =
-    useState<boolean>(false)
-
   const errorMessage = getCreateProjectErrorMessage(
     projectParams,
-    minMinFunding,
-    chinatalkPrizeSelected,
-    agreeToChinatalkTerms
+    minMinFunding
   )
 
   const router = useRouter()
@@ -397,30 +390,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           <RequiredStar />
         </span>
       </Row>
-
-      {/* Custom for Chinatalk: confirm terms & conditions */}
-      {chinatalkPrizeSelected && (
-        <Row className="mt-5 items-start">
-          <Checkbox
-            checked={agreeToChinatalkTerms}
-            onChange={(event) => setAgreeToChinatalkTerms(event.target.checked)}
-          />
-          <span className="ml-3 leading-tight">
-            <span className="text-sm font-bold text-gray-900">
-              I agree to the{' '}
-              <SiteLink
-                href="https://www.chinatalk.info/essay"
-                className="text-orange-500 hover:text-orange-600"
-              >
-                terms and conditions
-              </SiteLink>{' '}
-              of the Chinatalk Essay Competition.
-            </span>
-            <RequiredStar />
-          </span>
-        </Row>
-      )}
-
       <Tooltip text={errorMessage}>
         <Button
           type="submit"
@@ -436,12 +405,9 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   )
 }
 
-// TODO: remove ChinaTalk-specific stuff after round is complete
-function getCreateProjectErrorMessage(
+export function getCreateProjectErrorMessage(
   projectParams: ProjectParams,
-  minMinFunding: number,
-  chinatalkPrizeSelected: boolean,
-  agreeToChinatalkTerms: boolean
+  minMinFunding: number
 ) {
   if (projectParams.title === '') {
     return 'Your project needs a title.'
@@ -486,8 +452,6 @@ function getCreateProjectErrorMessage(
     !projectParams.verdictDate
   ) {
     return 'You need to set a decision deadline.'
-  } else if (chinatalkPrizeSelected && !agreeToChinatalkTerms) {
-    return "You must agree to Chinatalk's terms and conditions."
   } else {
     return null
   }

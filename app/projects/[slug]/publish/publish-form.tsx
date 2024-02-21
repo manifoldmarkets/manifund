@@ -1,6 +1,5 @@
 'use client'
 
-import { useSupabase } from '@/db/supabase-provider'
 import { useState } from 'react'
 import { AmountInput, Input } from '@/components/input'
 import { Button } from '@/components/button'
@@ -9,7 +8,7 @@ import { ProjectWithCauses, TOTAL_SHARES } from '@/db/project'
 import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
 import Link from 'next/link'
-import { add, format, isAfter, isBefore } from 'date-fns'
+import { add, format } from 'date-fns'
 import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
@@ -18,11 +17,11 @@ import { Cause, MiniCause, SimpleCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from '@/components/investment-structure'
 import { Tooltip } from '@/components/tooltip'
-import { SiteLink } from '@/components/site-link'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { JSONContent } from '@tiptap/core'
 import { roundLargeNumber } from '@/utils/formatting'
+import { getCreateProjectErrorMessage } from '@/app/create/create-project-form'
 
 export type ProjectParams = {
   title: string
@@ -81,16 +80,9 @@ export function PublishProjectForm(props: {
     ? projectParams.selectedPrize.cert_params.minMinFunding
     : 500
   const certParams = projectParams.selectedPrize?.cert_params ?? null
-  const chinatalkPrizeSelected =
-    projectParams.selectedPrize?.slug === 'china-talk'
-  const [agreeToChinatalkTerms, setAgreeToChinatalkTerms] =
-    useState<boolean>(false)
-
   const errorMessage = getCreateProjectErrorMessage(
     projectParams,
-    minMinFunding,
-    chinatalkPrizeSelected,
-    agreeToChinatalkTerms
+    minMinFunding
   )
 
   const router = useRouter()
@@ -114,36 +106,6 @@ export function PublishProjectForm(props: {
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Edit & publish your project</h1>
       </div>
-      {/* <Col className="gap-1">
-        <label>I am applying for...</label>
-        <p className="text-sm text-gray-600">
-          Select &quot;a regular grant&quot; by default. The other options are
-          specific prizes that you can learn more about{' '}
-          <SiteLink followsLinkClass href="/causes">
-            here
-          </SiteLink>
-          .
-        </p>
-        <HorizontalRadioGroup
-          value={projectParams.selectedPrize?.slug ?? 'grant'}
-          onChange={(value) =>
-            updateProjectParams({
-              selectedPrize:
-                value === 'grant'
-                  ? null
-                  : selectablePrizeCauses.find(
-                      (cause) => cause.slug === value
-                    ) ?? null,
-            })
-          }
-          options={{
-            grant: 'A regular grant',
-            ...Object.fromEntries(
-              selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
-            ),
-          }}
-        />
-      </Col> */}
       <Col className="gap-1">
         <label htmlFor="title">
           Title
@@ -349,30 +311,6 @@ export function PublishProjectForm(props: {
           <RequiredStar />
         </span>
       </Row>
-
-      {/* Custom for Chinatalk: confirm terms & conditions */}
-      {chinatalkPrizeSelected && (
-        <Row className="mt-5 items-start">
-          <Checkbox
-            checked={agreeToChinatalkTerms}
-            onChange={(event) => setAgreeToChinatalkTerms(event.target.checked)}
-          />
-          <span className="ml-3 leading-tight">
-            <span className="text-sm font-bold text-gray-900">
-              I agree to the{' '}
-              <SiteLink
-                href="https://www.chinatalk.info/essay"
-                className="text-orange-500 hover:text-orange-600"
-              >
-                terms and conditions
-              </SiteLink>{' '}
-              of the Chinatalk Essay Competition.
-            </span>
-            <RequiredStar />
-          </span>
-        </Row>
-      )}
-
       <Tooltip text={errorMessage}>
         <Button
           type="submit"
@@ -386,61 +324,4 @@ export function PublishProjectForm(props: {
       </Tooltip>
     </Col>
   )
-}
-
-// TODO: remove ChinaTalk-specific stuff after round is complete
-function getCreateProjectErrorMessage(
-  projectParams: ProjectParams,
-  minMinFunding: number,
-  chinatalkPrizeSelected: boolean,
-  agreeToChinatalkTerms: boolean
-) {
-  if (projectParams.title === '') {
-    return 'Your project needs a title.'
-  } else if (
-    projectParams.minFunding === null &&
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase)
-  ) {
-    return 'Your project needs a minimum funding amount.'
-  } else if (
-    projectParams.minFunding !== undefined &&
-    projectParams.minFunding < minMinFunding &&
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase)
-  ) {
-    return `Your minimum funding must be at least $${minMinFunding}.`
-  } else if (
-    projectParams.selectedPrize &&
-    projectParams.selectedPrize.cert_params?.adjustableInvestmentStructure &&
-    !projectParams.agreedToTerms
-  ) {
-    return 'Please confirm that you agree to the investment structure.'
-  } else if (
-    projectParams.fundingGoal &&
-    !projectParams.selectedPrize &&
-    ((projectParams.minFunding &&
-      projectParams.minFunding > projectParams.fundingGoal) ||
-      projectParams.fundingGoal <= 0)
-  ) {
-    return 'Your funding goal must be greater than 0 and greater than or equal to your minimum funding goal.'
-  } else if (
-    isAfter(
-      new Date(projectParams.verdictDate),
-      add(new Date(), { weeks: 6 })
-    ) ||
-    isBefore(new Date(projectParams.verdictDate), new Date())
-  ) {
-    return 'Your application close date must be in the future but no more than 6 weeks from now.'
-  } else if (
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase) &&
-    !projectParams.verdictDate
-  ) {
-    return 'You need to set a decision deadline.'
-  } else if (chinatalkPrizeSelected && !agreeToChinatalkTerms) {
-    return "You must agree to Chinatalk's terms and conditions."
-  } else {
-    return null
-  }
 }
