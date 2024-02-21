@@ -57,14 +57,14 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     : undefined
   const userIsAdmin = user ? isAdmin(user) : false
   const userIsOwner = user?.id === project.creator
+  const projectIsPrivate =
+    project.stage === 'hidden' || project.stage === 'pre-proposal'
   return (
     <div className="p-4">
-      {(project.stage === 'hidden' || project.stage === 'pre-proposal') && (
+      {projectIsPrivate && (
         <meta name="robots" content="noindex" key="robots" />
       )}
-      {(project.stage === 'hidden' || project.stage === 'pre-proposal') &&
-      !userIsOwner &&
-      !userIsAdmin ? (
+      {projectIsPrivate && !userIsOwner && !userIsAdmin ? (
         <div>404: Project not found.</div>
       ) : (
         <ProjectDisplay
