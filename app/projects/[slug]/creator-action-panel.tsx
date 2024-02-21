@@ -32,7 +32,7 @@ export function CreatorActionPanel(props: {
   return (
     <Row className="items-center gap-1" id="creator-actions">
       {project.stage === 'pre-proposal' ? (
-        <Publish />
+        <Publish projectSlug={project.slug} />
       ) : (
         <Edit project={project} causesList={causesList} />
       )}
@@ -421,9 +421,12 @@ function Edit(props: {
   )
 }
 
-function Publish() {
+function Publish(props: { projectSlug: string }) {
   return (
-    <Link className={buttonClass('2xs', 'light-orange')} href="/publish">
+    <Link
+      className={buttonClass('2xs', 'light-orange')}
+      href={`/projects/${props.projectSlug}/publish`}
+    >
       Edit & publish
     </Link>
   )
