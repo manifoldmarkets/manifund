@@ -80,5 +80,9 @@ function NextStep(props: { project: Project }) {
     return <p>pending admin approval</p>
   } else if (project.stage === 'proposal') {
     return <p>pending sufficient pledged funds</p>
-  } else return null
+  } else if (project.stage === 'pre-proposal') {
+    return <p>pending publishing</p>
+  } else {
+    return null
+  }
 }
