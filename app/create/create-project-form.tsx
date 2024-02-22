@@ -22,7 +22,7 @@ import { SiteLink } from '@/components/site-link'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
-import { JSONContent } from '@tiptap/core'
+import { ProjectParams } from '@/utils/upsert-project'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -39,21 +39,6 @@ const DESCRIPTION_OUTLINE = `
 </br>
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
-
-export type ProjectParams = {
-  title: string
-  subtitle: string | null
-  minFunding?: number
-  fundingGoal?: number
-  verdictDate: string
-  description?: JSONContent | string
-  location: string
-  selectedCauses: MiniCause[]
-  selectedPrize: Cause | null
-  founderPercent: number
-  agreedToTerms: boolean
-  lobbying: boolean
-}
 
 export function CreateProjectForm(props: { causesList: Cause[] }) {
   const { causesList } = props

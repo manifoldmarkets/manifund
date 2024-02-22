@@ -27,7 +27,6 @@ export type FullProject = Project & { profiles: Profile } & {
   project_follows: ProjectFollow[]
 }
 export type MiniProject = Project & { profiles: Profile } & { txns: Txn[] }
-
 export const TOTAL_SHARES = 10_000_000
 
 export async function getProjectBySlug(supabase: SupabaseClient, slug: string) {
