@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/button'
+import { EmptyContent } from '@/components/empty-content'
 import { Input } from '@/components/input'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
@@ -26,19 +27,11 @@ export function MarketTab(props: { project: FullProject }) {
         <iframe key={i} className="h-96 w-full" src={market}></iframe>
       ))}
       {/* Button to add a market */}
-      <button
-        type="button"
-        className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+      <EmptyContent
+        icon={<FolderPlusIcon className="mx-auto h-12 w-12 text-gray-400" />}
+        subtitle="Add prediction markets about this project"
         onClick={() => setEditing(!editing)}
-      >
-        <FolderPlusIcon
-          className="mx-auto h-12 w-12 text-gray-400"
-          aria-hidden="true"
-        />
-        <span className="mt-2 block text-sm font-semibold text-gray-900">
-          Add prediction markets about this project
-        </span>
-      </button>
+      />
     </Col>
   )
 }
