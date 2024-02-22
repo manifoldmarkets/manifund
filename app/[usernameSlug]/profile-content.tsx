@@ -116,6 +116,9 @@ export function ProfileContent(props: {
       {profile.long_description && (
         <AboutMeSection content={profile.long_description} />
       )}
+      {(relevantProjects.length > 0 || isOwnProfile) && (
+        <Projects projects={relevantProjects} />
+      )}
       {(donations.length > 0 || pendingDonateBids.length > 0) && (
         <OutgoingDonationsHistory
           donations={donations}
@@ -130,9 +133,6 @@ export function ProfileContent(props: {
       )}
       {proposalBids.length > 0 && (
         <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
-      )}
-      {(relevantProjects.length > 0 || isOwnProfile) && (
-        <Projects projects={relevantProjects} />
       )}
       {comments.length > 0 && (
         <ProfileComments comments={comments} profile={profile} />
