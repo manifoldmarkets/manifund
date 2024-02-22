@@ -14,17 +14,23 @@ export const config = {
 }
 
 export default async function handler(req: NextRequest) {
+  console.log(0)
   const { projectUpdate, projectId, causeSlugs } = (await req.json()) as {
     projectUpdate: ProjectUpdate
     projectId: string
     causeSlugs: string[]
   }
+  console.log(1)
   const supabaseEdge = createEdgeClient(req)
   const resp = await supabaseEdge.auth.getUser()
   const user = resp.data.user
   const supabase = isAdmin(user) ? createAdminClient() : supabaseEdge
+  console.log(2)
   if (!user) return NextResponse.error()
+  console.log(3)
   await updateProject(supabase, projectId, projectUpdate)
+  console.log(4)
   await updateProjectCauses(supabase, causeSlugs, projectId)
+  console.log(5)
   return NextResponse.json('success')
 }

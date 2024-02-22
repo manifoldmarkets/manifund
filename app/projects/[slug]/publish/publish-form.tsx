@@ -93,21 +93,20 @@ export function PublishProjectForm(props: {
   const save = async () => {
     setIsSubmitting(true)
     const finalDescription = editor?.getJSON() ?? '<p>No description</p>'
-    await fetch('/api/edit-project'),
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          projectUpdate: createUpdateFromParams({
-            ...projectParams,
-            description: finalDescription,
-          }),
-          causeSlugs: projectParams.selectedCauses.map((cause) => cause.slug),
-          projectId: project.id,
+    await fetch('/api/edit-project', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        projectUpdate: createUpdateFromParams({
+          ...projectParams,
+          description: finalDescription,
         }),
-      }
+        causeSlugs: projectParams.selectedCauses.map((cause) => cause.slug),
+        projectId: project.id,
+      }),
+    })
     router.push(`/projects/${project.slug}`)
     clearLocalStorageItem(descriptionKey)
     setIsSubmitting(false)
