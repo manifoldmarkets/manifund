@@ -314,11 +314,13 @@ function Edit(props: {
       },
       body: JSON.stringify({
         projectId: project.id,
-        title,
-        subtitle,
-        description,
-        fundingGoal,
         causeSlugs: selectedCauses.map((cause) => cause.slug),
+        projectUpdate: {
+          title,
+          blurb: subtitle,
+          description,
+          funding_goal: fundingGoal,
+        },
       }),
     })
     setModalOpen(false)
