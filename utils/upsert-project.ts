@@ -1,4 +1,4 @@
-import { TOTAL_SHARES } from '@/db/project'
+import { Project, TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/supabase-js'
 
 export async function giveCreatorShares(
@@ -32,6 +32,13 @@ export async function upvoteOwnProject(
       magnitude: 1,
     },
   ])
+  if (error) {
+    console.error(error)
+  }
+}
+
+export async function saveProject(supabase: SupabaseClient, project: Project) {
+  const { error } = await supabase.from('projects').insert([project])
   if (error) {
     console.error(error)
   }

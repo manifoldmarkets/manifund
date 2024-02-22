@@ -9,6 +9,7 @@ import { MiniCause } from './cause'
 import { ProjectFollow } from './follows'
 
 export type Project = Database['public']['Tables']['projects']['Row']
+export type ProjectUpdate = Database['public']['Tables']['projects']['Update']
 export type ProjectTransfer =
   Database['public']['Tables']['project_transfers']['Row']
 export type ProjectVote = Database['public']['Tables']['project_votes']['Row']
@@ -292,5 +293,19 @@ export async function updateProjectStage(
     .eq('id', projectId)
   if (error) {
     console.error('update stage', error)
+  }
+}
+
+export async function updateProject(
+  supabase: SupabaseClient,
+  projectId: string,
+  projectUpdate: ProjectUpdate
+) {
+  const { error } = await supabase
+    .from('projects')
+    .update(projectUpdate)
+    .eq('id', projectId)
+  if (error) {
+    console.error(error)
   }
 }
