@@ -86,7 +86,7 @@ export function PublishProjectForm(props: {
   )
 
   const router = useRouter()
-  const handleSubmit = async () => {
+  const publish = async () => {
     setIsSubmitting(true)
     const finalDescription = editor?.getJSON() ?? '<p>No description</p>'
     const response = await fetch('/api/create-project', {
@@ -311,17 +311,29 @@ export function PublishProjectForm(props: {
           <RequiredStar />
         </span>
       </Row>
-      <Tooltip text={errorMessage}>
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={!!errorMessage}
-          loading={isSubmitting}
-          onClick={handleSubmit}
-        >
-          Publish project
-        </Button>
-      </Tooltip>
+      <Col className="w-full gap-3">
+        <Row className="w-full gap-3">
+          <Button className="w-full" color="gray-outline">
+            Cancel
+          </Button>
+          <Tooltip className="w-full" text={errorMessage}>
+            <Button className="w-full" disabled={!!errorMessage}>
+              Save draft
+            </Button>
+          </Tooltip>
+        </Row>
+        <Tooltip text={errorMessage}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={!!errorMessage}
+            loading={isSubmitting}
+            onClick={publish}
+          >
+            Publish project
+          </Button>
+        </Tooltip>
+      </Col>
     </Col>
   )
 }
