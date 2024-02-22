@@ -119,7 +119,10 @@ export function PublishProjectForm(props: {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ...projectParams, description: finalDescription }),
+      body: JSON.stringify({
+        projectParams: { ...projectParams, description: finalDescription },
+        projectId: project.id,
+      }),
     })
     router.push(`/projects/${project.slug}`)
     clearLocalStorageItem(descriptionKey)

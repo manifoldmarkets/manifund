@@ -2,10 +2,9 @@ import { updateProject, getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, createEdgeClient } from './_db'
 import { createUpdateFromParams, ProjectParams } from '@/utils/upsert-project'
-import { getPrizeCause, updateProjectCauses } from '@/db/cause'
+import { getPrizeCause } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
 import { seedAmm } from '@/utils/activate-project'
-import { upvoteOwnProject, giveCreatorShares } from '@/utils/upsert-project'
 import { insertBid } from '@/db/bid'
 
 export const config = {
