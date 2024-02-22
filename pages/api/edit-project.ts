@@ -25,6 +25,7 @@ export default async function handler(req: NextRequest) {
   const supabase = isAdmin(user) ? createAdminClient() : supabaseEdge
   if (!user) return NextResponse.error()
   await updateProject(supabase, projectId, projectUpdate)
+  console.log(causeSlugs)
   await updateProjectCauses(supabase, causeSlugs, projectId)
   return NextResponse.json('success')
 }

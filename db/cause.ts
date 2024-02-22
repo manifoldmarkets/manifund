@@ -1,6 +1,6 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { sortBy } from 'lodash'
+import { sortBy, uniq } from 'lodash'
 
 export type Cause = Omit<
   Database['public']['Tables']['causes']['Row'],
@@ -83,6 +83,7 @@ export async function updateProjectCauses(
   causeSlugs: string[],
   projectId: string
 ) {
+  const uniqCauseSlugs = uniq(causeSlugs)
   await supabase
     .from('project_causes')
     .delete()
@@ -91,7 +92,10 @@ export async function updateProjectCauses(
   await supabase
     .from('project_causes')
     .insert(
-      causeSlugs.map((slug) => ({ project_id: projectId, cause_slug: slug }))
+      uniqCauseSlugs.map((slug) => ({
+        project_id: projectId,
+        cause_slug: slug,
+      }))
     )
     .throwOnError()
 }
