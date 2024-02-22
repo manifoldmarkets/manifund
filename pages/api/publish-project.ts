@@ -31,17 +31,13 @@ export default async function handler(req: NextRequest) {
     founderPercent,
     agreedToTerms,
     lobbying,
-    slug,
     id,
-  } = (await req.json()) as ProjectParams & { slug: string; id: string }
+  } = (await req.json()) as ProjectParams & { id: string }
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
   const causeSlugs = selectedCauses.map((cause) => cause.slug)
-  if (!!selectedPrize) {
-    causeSlugs.push(selectedPrize.slug)
-  }
   const seedingAmm =
     selectedPrize?.cert_params?.ammShares &&
     (agreedToTerms || selectedPrize?.cert_params?.adjustableInvestmentStructure)
@@ -62,10 +58,7 @@ export default async function handler(req: NextRequest) {
     amm_shares: seedingAmm ? selectedPrize?.cert_params?.ammShares : null,
     auction_close: verdictDate,
     stage: startingStage,
-    type,
     location_description: location,
-    approved: null,
-    signed_agreement: false,
     lobbying,
   } as Project
   await updateProject(supabase, id, projectChanges)
