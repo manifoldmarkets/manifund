@@ -31,9 +31,9 @@ export function TableRow(props: {
 }) {
   const { title, tag, subtitle, href, deleteFunction } = props
   return (
-    <div className="flex items-center justify-between gap-3 px-5 py-4 hover:bg-gray-50">
-      <div className="flex w-full flex-col justify-center gap-5 font-medium text-gray-900 sm:flex-row sm:items-center sm:justify-between">
-        <Link className="truncate text-base hover:underline" href={href}>
+    <div className="flex items-start justify-between gap-3 px-5 py-4 hover:bg-gray-50">
+      <div className="flex w-full flex-col justify-center gap-2 font-medium text-gray-900 sm:flex-row sm:items-center sm:justify-between">
+        <Link className="mr-5 truncate text-base hover:underline" href={href}>
           {title}
         </Link>
         {subtitle && (
@@ -42,7 +42,7 @@ export function TableRow(props: {
           </span>
         )}
       </div>
-      <div className="flex h-full items-center justify-end">
+      <div className="flex h-full min-w-0 items-start justify-end">
         {tag}
         {deleteFunction && (
           <Menu as="div" className="relative z-10 inline-block">
