@@ -46,7 +46,7 @@ export default async function handler(req: NextRequest) {
       ? 'active'
       : 'proposal'
   const type = !!selectedPrize ? 'cert' : 'grant'
-  const projectChanges = {
+  const projectUpdate = {
     title,
     blurb: subtitle,
     description,
@@ -61,7 +61,7 @@ export default async function handler(req: NextRequest) {
     location_description: location,
     lobbying,
   } as Project
-  await updateProject(supabase, id, projectChanges)
+  await updateProject(supabase, id, projectUpdate)
   await upvoteOwnProject(supabase, id, user.id)
   await updateProjectCauses(supabase, causeSlugs, id)
   await giveCreatorShares(supabase, id, user.id)
@@ -72,13 +72,13 @@ export default async function handler(req: NextRequest) {
       await insertBid(supabase, {
         project: id,
         bidder: user.id,
-        amount: getMinIncludingAmm(projectChanges),
-        valuation: getProposalValuation(projectChanges),
+        amount: getMinIncludingAmm(projectUpdate),
+        valuation: getProposalValuation(projectUpdate),
         type: startingStage === 'proposal' ? 'assurance sell' : 'sell',
       })
-    } else if (certParams?.ammDollars && projectChanges.amm_shares) {
+    } else if (certParams?.ammDollars && projectUpdate.amm_shares) {
       const supabaseAdmin = createAdminClient()
-      await supabaseAdmin.from('txns').insert({
+      const { error } = await supabaseAdmin.from('txns').insert({
         from_id: process.env.NEXT_PUBLIC_PROD_BANK_ID,
         to_id: user.id,
         amount: certParams.ammDollars,
@@ -86,7 +86,11 @@ export default async function handler(req: NextRequest) {
         project: id,
         type: 'project donation',
       })
-      await seedAmm(projectChanges, supabaseAdmin, certParams.ammDollars)
+      if (error) {
+        console.error(error)
+        throw error
+      }
+      await seedAmm(projectUpdate, supabaseAdmin, certParams.ammDollars)
     }
   }
   return NextResponse.json('success')
