@@ -22,6 +22,7 @@ import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { JSONContent } from '@tiptap/core'
 import { roundLargeNumber } from '@/utils/formatting'
 import { getCreateProjectErrorMessage } from '@/app/create/create-project-form'
+import { createUpdateFromParams } from '@/utils/upsert-project'
 
 export type ProjectParams = {
   title: string
@@ -99,8 +100,12 @@ export function PublishProjectForm(props: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...projectParams,
-          description: finalDescription,
+          projectUpdate: createUpdateFromParams({
+            ...projectParams,
+            description: finalDescription,
+          }),
+          causeSlugs: projectParams.selectedCauses.map((cause) => cause.slug),
+          projectId: project.id,
         }),
       }
     router.push(`/projects/${project.slug}`)
@@ -333,11 +338,11 @@ export function PublishProjectForm(props: {
       </Row>
       <Col className="w-full gap-3">
         <Row className="w-full gap-3">
-          <Button className="w-full" color="gray-outline">
+          <Button className="w-full" color="gray-outline" onClick={cancel}>
             Cancel
           </Button>
           <Tooltip className="w-full" text={errorMessage}>
-            <Button className="w-full" disabled={!!errorMessage}>
+            <Button className="w-full" disabled={!!errorMessage} onClick={save}>
               Save draft
             </Button>
           </Tooltip>
