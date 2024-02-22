@@ -34,10 +34,10 @@ export default async function handler(req: NextRequest) {
       : 'proposal'
   const type = !!selectedPrize ? 'cert' : 'grant'
   const projectUpdate = createUpdateFromParams(projectParams)
-  await updateProject(supabase, projectId, projectUpdate)
-  await upvoteOwnProject(supabase, projectId, user.id)
-  await updateProjectCauses(supabase, causeSlugs, projectId)
-  await giveCreatorShares(supabase, projectId, user.id)
+  await updateProject(supabase, projectId, {
+    ...projectUpdate,
+    stage: startingStage,
+  })
   const updatedProject = await getProjectById(supabase, projectId)
   const prizeCause = await getPrizeCause(causeSlugs, supabase)
   if (type === 'cert' && prizeCause) {
