@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { Menu } from '@headlessui/react'
 import { EllipsisVerticalIcon, TrashIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
+import { Row } from './layout/row'
 
 export const Table = (props: {
   className?: string
@@ -31,9 +32,12 @@ export function TableRow(props: {
 }) {
   const { title, tag, subtitle, href, deleteFunction } = props
   return (
-    <div className="flex items-start justify-between gap-3 px-5 py-4 hover:bg-gray-50">
+    <Row className="flex items-start justify-between gap-3 px-5 py-4 hover:bg-gray-50">
       <div className="flex w-full flex-col justify-center gap-2 font-medium text-gray-900 sm:flex-row sm:items-center sm:justify-between">
-        <Link className="mr-5 truncate text-base hover:underline" href={href}>
+        <Link
+          className="mr-5 flex-shrink truncate text-base hover:underline"
+          href={href}
+        >
           {title}
         </Link>
         {subtitle && (
@@ -42,7 +46,7 @@ export function TableRow(props: {
           </span>
         )}
       </div>
-      <div className="flex h-full min-w-0 items-start justify-end">
+      <Row className="flex h-full min-w-0 items-start justify-end">
         {tag}
         {deleteFunction && (
           <Menu as="div" className="relative z-10 inline-block">
@@ -66,7 +70,7 @@ export function TableRow(props: {
             </Menu.Items>
           </Menu>
         )}
-      </div>
-    </div>
+      </Row>
+    </Row>
   )
 }
