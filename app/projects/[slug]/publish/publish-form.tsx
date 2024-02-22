@@ -86,18 +86,38 @@ export function PublishProjectForm(props: {
   )
 
   const router = useRouter()
+  const cancel = () => {
+    router.push(`/projects/${project.slug}`)
+  }
+  const save = async () => {
+    setIsSubmitting(true)
+    const finalDescription = editor?.getJSON() ?? '<p>No description</p>'
+    await fetch('/api/edit-project'),
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...projectParams,
+          description: finalDescription,
+        }),
+      }
+    router.push(`/projects/${project.slug}`)
+    clearLocalStorageItem(descriptionKey)
+    setIsSubmitting(false)
+  }
   const publish = async () => {
     setIsSubmitting(true)
     const finalDescription = editor?.getJSON() ?? '<p>No description</p>'
-    const response = await fetch('/api/create-project', {
+    await fetch('/api/publish-project', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ ...projectParams, description: finalDescription }),
     })
-    const newProject = await response.json()
-    router.push(`/projects/${newProject.slug}`)
+    router.push(`/projects/${project.slug}`)
     clearLocalStorageItem(descriptionKey)
     setIsSubmitting(false)
   }
