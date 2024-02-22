@@ -69,7 +69,14 @@ function NextStep(props: { project: Project }) {
   } else if (project.stage === 'proposal') {
     return <p>pending sufficient pledged funds</p>
   } else if (project.stage === 'draft') {
-    return <p>pending publishing</p>
+    return (
+      <Link
+        href={`/projects/${project.slug}/publish`}
+        className="truncate text-xs font-normal text-gray-500 hover:underline"
+      >
+        pending publishing
+      </Link>
+    )
   } else {
     return null
   }
