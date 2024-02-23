@@ -299,6 +299,7 @@ export function PublishProjectForm(props: {
       <Col className="gap-1">
         <label>
           In what countries are you and anyone else working on this located?
+          <RequiredStar />
         </label>
         <p className="text-sm text-gray-600">
           This is for Manifund operations and will not be published.
