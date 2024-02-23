@@ -1,5 +1,4 @@
 import { Project, TOTAL_SHARES } from '@/db/project'
-import { SupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createAdminClient, createEdgeClient } from './_db'
@@ -9,6 +8,7 @@ import { getPrizeCause, updateProjectCauses } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
 import { insertBid } from '@/db/bid'
 import { seedAmm } from '@/utils/activate-project'
+import { upvoteOwnProject, giveCreatorShares } from '@/utils/upsert-project'
 
 export const config = {
   runtime: 'edge',
@@ -103,61 +103,4 @@ export default async function handler(req: NextRequest) {
     }
   }
   return NextResponse.json(project)
-}
-
-export async function giveCreatorShares(
-  supabase: SupabaseClient,
-  id: string,
-  creator: string
-) {
-  const txn = {
-    from_id: null,
-    to_id: creator,
-    amount: TOTAL_SHARES,
-    token: id,
-    project: id,
-    type: 'mint cert',
-  }
-  const { error } = await supabase.from('txns').insert([txn])
-  if (error) {
-    console.error('create-project', error)
-  }
-}
-
-async function addBid(
-  supabase: SupabaseClient,
-  projectId: string,
-  creatorId: string,
-  amount: number,
-  valuation: number,
-  type: string = 'sell'
-) {
-  const bid = {
-    bidder: creatorId,
-    amount,
-    valuation,
-    project: projectId,
-    type: type,
-  }
-  const { error } = await supabase.from('bids').insert([bid])
-  if (error) {
-    console.error('create-project', error)
-  }
-}
-
-async function upvoteOwnProject(
-  supabase: SupabaseClient,
-  projectId: string,
-  userId: string
-) {
-  const { error } = await supabase.from('project_votes').insert([
-    {
-      project_id: projectId,
-      voter_id: userId,
-      magnitude: 1,
-    },
-  ])
-  if (error) {
-    console.error('create-project', error)
-  }
 }
