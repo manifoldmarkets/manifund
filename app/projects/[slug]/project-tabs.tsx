@@ -14,6 +14,7 @@ import { CommentAndProfile } from '@/db/comment'
 import { uniq } from 'lodash'
 import { compareDesc } from 'date-fns'
 import { formatMoneyPrecise, formatPercent } from '@/utils/formatting'
+import { MarketTab } from '../market-tab'
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -115,6 +116,14 @@ export function ProjectTabs(props: {
       display: <DonationsHistory donations={donations} />,
     })
   }
+
+  const markets = project.markets as string[]
+  tabs.push({
+    name: 'Predictions',
+    id: 'predictions',
+    display: <MarketTab project={project} userProfile={userProfile} />,
+    count: markets?.length ?? 0,
+  })
 
   return <Tabs tabs={tabs} currentTabId={currentTabId} />
 }
