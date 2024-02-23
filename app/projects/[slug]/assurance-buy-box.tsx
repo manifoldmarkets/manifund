@@ -11,7 +11,6 @@ import {
   formatMoneyPrecise,
   formatPercent,
 } from '@/utils/formatting'
-import { getProposalValuation } from '@/utils/math'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -51,7 +50,7 @@ export function AssuranceBuyBox(props: {
       },
       body: JSON.stringify({
         projectId: project.id,
-        valuation: getProposalValuation(project),
+        valuation: valuation,
         amount,
         type: 'assurance buy',
       }),
