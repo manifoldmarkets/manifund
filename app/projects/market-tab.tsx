@@ -5,6 +5,7 @@ import { EmptyContent } from '@/components/empty-content'
 import { Input } from '@/components/input'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
+import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
 import { FolderPlusIcon } from '@heroicons/react/24/outline'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
@@ -12,26 +13,34 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function MarketTab(props: { project: FullProject }) {
+export function MarketTab(props: {
+  project: FullProject
+  userProfile?: Profile
+}) {
+  const { project, userProfile } = props
   const markets = (props.project.markets || []) as string[]
   const [editing, setEditing] = useState(false)
   return editing ? (
-    <EditMarkets
-      project={props.project}
-      markets={markets}
-      setEditing={setEditing}
-    />
+    <EditMarkets project={project} markets={markets} setEditing={setEditing} />
   ) : (
     <Col className="gap-4">
       {markets.map((market, i) => (
         <iframe key={i} className="h-96 w-full" src={market}></iframe>
       ))}
       {/* Button to add a market */}
-      <EmptyContent
-        icon={<FolderPlusIcon className="mx-auto h-12 w-12 text-gray-400" />}
-        subtitle="Add prediction markets about this project"
-        onClick={() => setEditing(!editing)}
-      />
+      {/* TODO: Allow admins (or anyone?) to add markets too! */}
+      {userProfile?.id === project.creator && (
+        <EmptyContent
+          icon={<FolderPlusIcon className="mx-auto h-12 w-12 text-gray-400" />}
+          subtitle="Add prediction markets about this project"
+          onClick={() => setEditing(!editing)}
+        />
+      )}
+      {markets.length == 0 && (
+        <div className="text-center text-gray-500">
+          No prediction markets added yet
+        </div>
+      )}
     </Col>
   )
 }

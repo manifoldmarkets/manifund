@@ -121,7 +121,7 @@ export function ProjectTabs(props: {
   tabs.push({
     name: 'Predictions',
     id: 'predictions',
-    display: <MarketTab project={project} />,
+    display: <MarketTab project={project} userProfile={userProfile} />,
     count: markets?.length ?? 0,
   })
 
