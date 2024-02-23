@@ -30,7 +30,7 @@ export default async function Admin({
   const supabase = createServerClient()
   const user = await getUser(supabase)
   if (!user || !isAdmin(user)) {
-    return <div>Not authorized</div>
+    return <div>Not AUTHORIZED</div>
   }
 
   const supabaseAdmin = createAdminClient()
