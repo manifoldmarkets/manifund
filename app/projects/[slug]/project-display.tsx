@@ -105,6 +105,8 @@ export function ProjectDisplay(props: {
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
   const minIncludingAmm = getMinIncludingAmm(project)
   const tradePoints = calculateTradePoints(projectTxns, project.id)
+  const activeAuction =
+    !!prizeCause?.cert_params?.auction && project.stage === 'proposal'
   const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
     undefined | string
   >(undefined)
@@ -280,6 +282,7 @@ export function ProjectDisplay(props: {
             userSpendableFunds={userSpendableFunds}
             userSellableShares={userSellableShares}
             specialCommentPrompt={specialCommentPrompt}
+            activeAuction={activeAuction}
           />
         </div>
       </Col>
