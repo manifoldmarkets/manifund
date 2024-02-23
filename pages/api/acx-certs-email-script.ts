@@ -23,7 +23,6 @@ export default async function handler() {
     console.log('recipient exists: ', recipientExists)
     const isGrant = transfer.projects.type === 'grant'
     const emailHtmlContent = getEmailHtmlContent(
-      isGrant,
       recipientExists,
       transfer.recipient_name
     )
@@ -82,50 +81,32 @@ async function getUserIdFromEmail(
 function getEmailHtmlContent(recipientExists: boolean, recipientName: string) {
   if (recipientExists) {
     return `<div>
-      <p>Dear ${recipientName},</p>
+      <p>Hi ${recipientName},</p>
       <p>
-        Congratulations on receiving an ACX Grant! Please sign the grant agreement
-        (link at the top of your project page) and then withdraw your funds using <a
-          href="https://airtable.com/appOfJtzt8yUTBFcD/shrI3XFPivduhbnG">this form</a> (also available from your profile page).
+      An impact certificate for your ACX application has been added to your Manifund account. It’s currently in draft mode, which means only you can see it. Feel free to make whatever edits to the description and investment structure that you like before publishing.
       </p>
       <p>
-        Note that your project has it’s own public page which other users can
-        comment on or use to donate to your work. If you had any privacy conditions
-        on your application to ACX Grants, we’ve honored those in creating this
-        page, though feel free to edit your project entry however you like.
+      If you would not like to participate in the impact certificate portion of the round, no need to take any action. If you’re still unsure, you can read about impact certificates <a href="https://www.brasstacks.blog/explain-im/">here</a> or <a href="https://www.astralcodexten.com/p/impact-markets-the-annoying-details">here</a>.
       </p>
       <p>
-        If you have any questions, you can reply to this email or join us on
-        <a href="https://discord.gg/ZGsDMWSA5Q">Discord</a>!
+        You can also ask us questions by replying to this email or joining us on <a href="https://discord.gg/ZGsDMWSA5Q">Discord</a>!
       </p>
       <p>Best,</p>
       <p>Rachel from Manifund</p>
     </div>`
   } else {
     return `<div>
-      <p>Dear ${recipientName},</p>
-      <p>
-        Congratulations on receiving an ACX Grant! We’ve created an entry for your
-        project on Manifund, which you’ll need to sign up to accept. After creating
-        an account, go to your project page to sign your grant agreement. Lastly,
-        give us your payment details using <a
-        href="https://airtable.com/appOfJtzt8yUTBFcD/shrI3XFPivduhbnG">this form</a> (also available from your profile page).
+    <p>Hi ${recipientName},</p>
+    <p>
+    An impact certificate for your ACX application has been added to Manifund. Create an account with this email to accept and get access to the project. It'll start out in draft mode, which means only you can see it. Once you publish, all information in the description and on your profile will be publicly accessible, so make sure to make any important changes before publishing.</p>
+    <p>
+    If you would not like to participate in the impact certificate portion of the round, no need to take any action. If you’re still unsure, you can read about impact certificates <a href="https://www.brasstacks.blog/explain-im/">here</a> or <a href="https://www.astralcodexten.com/p/impact-markets-the-annoying-details">here</a>.
     </p>
-      <p>
-      If you already have an account on Manifund under a different email address, let us know and we can transfer the project to the correct account.
-      </p>
-      <p>
-        Note that your project has it’s own public page which other users can
-        comment on or use to donate to your work. If you had any privacy conditions
-        on your application to ACX Grants, we’ve honored those in creating this
-        page, though feel free to edit your project entry however you like.
-      </p>
-      <p>
-        If you have any questions, you can reply to this email or join us on
-        <a href="https://discord.gg/ZGsDMWSA5Q">Discord</a>!
-      </p>
-      <p>Best,</p>
-      <p>Rachel from Manifund</p>
-    </div>`
+    <p>
+      You can also ask us questions by replying to this email or joining us on <a href="https://discord.gg/ZGsDMWSA5Q">Discord</a>!
+    </p>
+    <p>Best,</p>
+    <p>Rachel from Manifund</p>
+  </div>`
   }
 }
