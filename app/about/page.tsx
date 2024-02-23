@@ -56,11 +56,11 @@ const FUNDING_MECHANISMS = [
     href: '/about/regranting',
   },
   {
-    title: 'Impact certificates',
+    title: 'Impact markets',
     icon: <ArrowTrendingUpIcon className="h-6 w-6 stroke-2 text-white" />,
     description:
-      'In the past, we ran two funding rounds using impact certificates, which work like VC-funding, but for non-profits!',
-    href: '/about/impact-certificates',
+      'In the past, we ran two funding rounds using an impact market, which works like VC-funding, but for non-profits!',
+    href: '/about/impact-markets',
   },
 ]
 
