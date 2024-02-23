@@ -95,6 +95,7 @@ create table if not exists public.projects (
   stage project_stage not null default 'proposal',
   approved boolean,
   signed_agreement boolean not null default false,
+  markets jsonb,
   primary key (id)
 );
 
