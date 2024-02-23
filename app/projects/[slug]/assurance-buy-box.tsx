@@ -1,6 +1,7 @@
 import { Button } from '@/components/button'
-import { Input } from '@/components/input'
+import { AmountInput, Input } from '@/components/input'
 import { Card } from '@/components/layout/card'
+import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Slider } from '@/components/slider'
 import { Tooltip } from '@/components/tooltip'
@@ -12,14 +13,17 @@ import { useState } from 'react'
 
 export function AssuranceBuyBox(props: {
   project: Project
-  valuation: number
+  minValuation: number
   offerSizeDollars: number
   maxBuy: number
+  activeAuction?: boolean
 }) {
-  const { project, valuation, offerSizeDollars, maxBuy } = props
-  const [amount, setAmount] = useState(0)
+  const { project, minValuation, offerSizeDollars, maxBuy, activeAuction } =
+    props
+  const [amount, setAmount] = useState<number | undefined>(0)
+  const [valuation, setValuation] = useState<number | undefined>(minValuation)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const offerSizePercent = offerSizeDollars / valuation
+  const offerSizePercent = valuation ? offerSizeDollars / valuation : 0
   const router = useRouter()
   let errorMessage = null
   if (amount && amount > maxBuy) {
@@ -59,40 +63,42 @@ export function AssuranceBuyBox(props: {
         </p>
       </div>
       {maxBuy > 0 ? (
-        <Row className="w-full items-center gap-2">
-          $
-          <Input
-            value={Number(amount).toString()}
-            placeholder="Amount (USD)"
-            onChange={(event) => setAmount(Number(event.target.value))}
-            className="w-24 max-w-full"
-          />
-          <Slider
-            amount={amount}
-            onChange={setAmount}
-            min={0}
-            max={offerSizeDollars}
-            marks={[
-              { label: formatPercent(0), value: 0 },
-              {
-                label: formatPercent(offerSizePercent / 4),
-                value: offerSizeDollars / 4,
-              },
-              {
-                label: formatPercent(offerSizePercent / 2),
-                value: offerSizeDollars / 2,
-              },
-              {
-                label: formatPercent((offerSizePercent / 4) * 3),
-                value: (offerSizeDollars / 4) * 3,
-              },
-              {
-                label: formatPercent(offerSizePercent),
-                value: offerSizeDollars,
-              },
-            ]}
-          />
-        </Row>
+        <Col>
+          <Row className="w-full items-center gap-2">
+            $
+            <AmountInput
+              amount={amount}
+              placeholder="Amount (USD)"
+              onChangeAmount={setAmount}
+              className="w-24 max-w-full"
+            />
+            <Slider
+              amount={amount ?? 0}
+              onChange={setAmount}
+              min={0}
+              max={offerSizeDollars}
+              marks={[
+                { label: formatPercent(0), value: 0 },
+                {
+                  label: formatPercent(offerSizePercent / 4),
+                  value: offerSizeDollars / 4,
+                },
+                {
+                  label: formatPercent(offerSizePercent / 2),
+                  value: offerSizeDollars / 2,
+                },
+                {
+                  label: formatPercent((offerSizePercent / 4) * 3),
+                  value: (offerSizeDollars / 4) * 3,
+                },
+                {
+                  label: formatPercent(offerSizePercent),
+                  value: offerSizeDollars,
+                },
+              ]}
+            />
+          </Row>
+        </Col>
       ) : (
         <span className="w-full text-center italic text-gray-600">
           You have no spendable funds. Add money to your account through your
@@ -107,8 +113,8 @@ export function AssuranceBuyBox(props: {
             disabled={!amount || errorMessage !== null}
             loading={isSubmitting}
           >
-            Buy {formatPercent(amount / valuation)} at{' '}
-            {formatMoneyPrecise(valuation)} valuation
+            Buy {formatPercent(valuation ? (amount ?? 0) / valuation : 0)} at{' '}
+            {formatMoneyPrecise(valuation ?? 0)} valuation
           </Button>
         </Tooltip>
       </Row>

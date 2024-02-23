@@ -222,9 +222,11 @@ export function ProjectDisplay(props: {
           project.stage === 'proposal' && (
             <AssuranceBuyBox
               project={project}
-              valuation={valuation}
+              minValuation={valuation}
               offerSizeDollars={minIncludingAmm - amountRaised}
               maxBuy={userSpendableFunds}
+              // TODO: change this back to activeAuction
+              activeAuction={true}
             />
           )}
         {userProfile &&
