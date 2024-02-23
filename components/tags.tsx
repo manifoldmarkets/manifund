@@ -13,6 +13,7 @@ import {
   LightBulbIcon,
   BeakerIcon,
   StarIcon,
+  EyeSlashIcon,
 } from '@heroicons/react/24/outline'
 import { FireIcon } from '@heroicons/react/24/solid'
 import Image from 'next/image'
@@ -149,28 +150,40 @@ export function StageTag(props: { projectStage: string }) {
   const { projectStage } = props
 
   switch (projectStage) {
+    case 'draft':
+      return (
+        <Tooltip text="draft">
+          <PencilIcon className="m-auto h-5 w-5 text-gray-500" />
+        </Tooltip>
+      )
     case 'proposal':
       return (
         <Tooltip text="proposal">
-          <EllipsisHorizontalCircleIcon className="m-auto h-6 w-6 text-gray-500" />
+          <EllipsisHorizontalCircleIcon className="m-auto h-5 w-5 text-gray-500" />
         </Tooltip>
       )
     case 'active':
       return (
         <Tooltip text="active">
-          <FireIcon className="m-auto h-6 w-6 text-orange-500" />
+          <FireIcon className="m-auto h-5 w-5 text-orange-500" />
         </Tooltip>
       )
     case 'not funded':
       return (
         <Tooltip text="not funded">
-          <XCircleIcon className="m-auto h-6 w-6 text-gray-500" />
+          <XCircleIcon className="m-auto h-5 w-5 text-gray-500" />
         </Tooltip>
       )
-    case 'completed':
+    case 'complete':
       return (
         <Tooltip text="completed">
-          <CheckCircleIcon className="m-auto h-6 w-6 text-gray-500" />
+          <CheckCircleIcon className="m-auto h-5 w-5 text-gray-500" />
+        </Tooltip>
+      )
+    case 'hidden':
+      return (
+        <Tooltip text="hidden">
+          <EyeSlashIcon className="m-auto h-5 w-5 text-gray-500" />
         </Tooltip>
       )
     default:

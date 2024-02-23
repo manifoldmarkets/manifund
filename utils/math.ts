@@ -10,17 +10,18 @@ import { calculateAMMPorfolio, calculateValuation } from './amm'
 const IGNORE_ACCREDITATION_DATE = new Date('2023-11-02')
 
 export function getProposalValuation(project: Project) {
+  const { min_funding, amm_shares, founder_shares } = project
   const investorPercent =
-    (TOTAL_SHARES - project.founder_shares - (project.amm_shares ?? 0)) /
-    TOTAL_SHARES
-  return project.min_funding / investorPercent
+    (TOTAL_SHARES - founder_shares - (amm_shares ?? 0)) / TOTAL_SHARES
+  return min_funding / investorPercent
 }
 
 export function getMinIncludingAmm(project: Project) {
+  const { min_funding, amm_shares, type } = project
   return (
-    project.min_funding +
-    ((project.amm_shares ?? 0) / TOTAL_SHARES) *
-      (project.type === 'cert' ? getProposalValuation(project) : 1)
+    min_funding +
+    ((amm_shares ?? 0) / TOTAL_SHARES) *
+      (type === 'cert' ? getProposalValuation(project) : 1)
   )
 }
 

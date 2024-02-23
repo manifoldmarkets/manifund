@@ -22,21 +22,9 @@ export function Projects(props: { projects: Project[] }) {
             <TableRow
               key={project.id}
               title={project.title}
-              subtitle={
-                project.stage === 'proposal' ? (
-                  <NextStep project={project} />
-                ) : undefined
-              }
+              subtitle={<NextStep project={project} />}
               href={`/projects/${project.slug}`}
-              tag={
-                <div className="flex h-full flex-col justify-center">
-                  <Row className="flex-shrink-0 justify-end gap-2">
-                    <Col className="justify-center">
-                      <StageTag projectStage={project.stage} />
-                    </Col>
-                  </Row>
-                </div>
-              }
+              tag={<StageTag projectStage={project.stage} />}
             />
           ))
         )}
@@ -80,5 +68,16 @@ function NextStep(props: { project: Project }) {
     return <p>pending admin approval</p>
   } else if (project.stage === 'proposal') {
     return <p>pending sufficient pledged funds</p>
-  } else return null
+  } else if (project.stage === 'draft') {
+    return (
+      <Link
+        href={`/projects/${project.slug}/publish`}
+        className="truncate text-xs font-normal text-gray-500 hover:underline"
+      >
+        pending publishing
+      </Link>
+    )
+  } else {
+    return null
+  }
 }

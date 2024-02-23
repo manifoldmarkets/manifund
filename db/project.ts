@@ -9,10 +9,12 @@ import { MiniCause } from './cause'
 import { ProjectFollow } from './follows'
 
 export type Project = Database['public']['Tables']['projects']['Row']
+export type ProjectUpdate = Database['public']['Tables']['projects']['Update']
 export type ProjectTransfer =
   Database['public']['Tables']['project_transfers']['Row']
 export type ProjectVote = Database['public']['Tables']['project_votes']['Row']
 export type ProjectWithCauses = Project & { causes: MiniCause[] }
+export type ProjectAndProfile = Project & { profiles: Profile }
 export type ProjectAndBids = Project & { bids: Bid[] }
 export type ProjectBidsAndFollows = Project & { bids: Bid[] } & {
   project_follows: ProjectFollow[]
@@ -25,7 +27,6 @@ export type FullProject = Project & { profiles: Profile } & {
   project_follows: ProjectFollow[]
 }
 export type MiniProject = Project & { profiles: Profile } & { txns: Txn[] }
-
 export const TOTAL_SHARES = 10_000_000
 
 export async function getProjectBySlug(supabase: SupabaseClient, slug: string) {
@@ -71,6 +72,7 @@ export async function listProjects(supabase: SupabaseClient) {
       'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, approved, signed_agreement, lobbying, amm_shares, founder_shares, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
     )
     .neq('stage', 'hidden')
+    .neq('stage', 'draft')
     .order('created_at', { ascending: false })
     .throwOnError()
   // Scary type conversion!
@@ -85,6 +87,7 @@ export async function listProjectsForEvals(supabase: SupabaseClient) {
     )
     .neq('type', 'cert')
     .neq('stage', 'hidden')
+    .neq('stage', 'draft')
     .order('created_at', { ascending: false })
     .throwOnError()
   // Scary type conversion!
@@ -108,7 +111,6 @@ export async function getFullProjectBySlug(
   return data[0] as FullProject
 }
 
-export type ProjectAndProfile = Project & { profiles: Profile }
 export async function getProjectAndProfileBySlug(
   supabase: SupabaseClient,
   slug: string
@@ -149,6 +151,8 @@ export async function getFullProjectsByRound(
     .select(
       'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
     )
+    .neq('stage', 'hidden')
+    .neq('stage', 'draft')
     .eq('round', roundTitle)
   if (error) {
     throw error
@@ -167,6 +171,8 @@ export async function getFullProjectsByCause(
       'title, id, created_at, creator, slug, blurb, stage, funding_goal, min_funding, type, amm_shares, founder_shares, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(*), rounds(title, slug), project_transfers(*), project_votes(magnitude), project_causes!inner(cause_slug), causes(title, slug)'
     )
     .eq('project_causes.cause_slug', causeSlug)
+    .neq('stage', 'hidden')
+    .neq('stage', 'draft')
   if (error) {
     throw error
   }
@@ -260,6 +266,19 @@ export async function getProjectWithCausesById(
   return data ? (data as ProjectWithCauses) : undefined
 }
 
+export async function getProjectWithCausesBySlug(
+  supabase: SupabaseClient,
+  projectSlug: string
+) {
+  const { data } = await supabase
+    .from('projects')
+    .select('*, causes(slug)')
+    .eq('slug', projectSlug)
+    .maybeSingle()
+    .throwOnError()
+  return data ? (data as ProjectWithCauses) : undefined
+}
+
 export async function updateProjectStage(
   supabase: SupabaseClient,
   projectId: string,
@@ -273,5 +292,19 @@ export async function updateProjectStage(
     .eq('id', projectId)
   if (error) {
     console.error('update stage', error)
+  }
+}
+
+export async function updateProject(
+  supabase: SupabaseClient,
+  projectId: string,
+  projectUpdate: ProjectUpdate
+) {
+  const { error } = await supabase
+    .from('projects')
+    .update(projectUpdate)
+    .eq('id', projectId)
+  if (error) {
+    console.error(error)
   }
 }

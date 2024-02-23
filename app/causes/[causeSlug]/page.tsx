@@ -22,7 +22,7 @@ export async function generateMetadata(props: {
   const supabase = createServerClient()
   const cause = await getCause(supabase, causeSlug)
   return {
-    title: cause.slug,
+    title: cause.title,
   }
 }
 

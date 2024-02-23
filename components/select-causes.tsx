@@ -12,10 +12,13 @@ export function SelectCauses(props: {
   return (
     <Row className="flex-wrap gap-1">
       {causesList.map((cause) => {
+        const causeIncluded = !!selectedCauses.find(
+          (c) => c.slug === cause.slug
+        )
         return (
           <button
             onClick={() => {
-              if (selectedCauses.includes(cause)) {
+              if (causeIncluded) {
                 setSelectedCauses(selectedCauses.filter((t) => t !== cause))
               } else {
                 setSelectedCauses([...selectedCauses, cause])
@@ -29,7 +32,7 @@ export function SelectCauses(props: {
               noLink
               className={clsx(
                 '!sm:text-sm !p-3',
-                selectedCauses.includes(cause)
+                causeIncluded
                   ? 'bg-orange-500 text-white hover:bg-orange-600'
                   : 'bg-gray-200 hover:bg-gray-300'
               )}

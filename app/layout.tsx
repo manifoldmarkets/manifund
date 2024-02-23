@@ -8,7 +8,7 @@ import Sidebar from './sidebar'
 import { Readex_Pro, Josefin_Slab } from 'next/font/google'
 import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
-import { ACXFundBanner, CompleteProfileBanner } from './banner'
+import { CompleteProfileBanner } from './banner'
 import { getProfileById } from '@/db/profile'
 import { Toaster } from 'react-hot-toast'
 
@@ -49,10 +49,6 @@ export default async function RootLayout({
     (userProfile.username === userProfile.id || !userProfile.full_name)
   return (
     <html lang="en" className={fontVars}>
-      {/*
-      <head /> will contain the components returned by the nearest parent
-      head.tsx. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
-    */}
       <head />
       <body className="min-h-screen w-full bg-gray-50">
         <SupabaseProvider

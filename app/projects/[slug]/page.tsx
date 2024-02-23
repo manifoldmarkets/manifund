@@ -18,6 +18,9 @@ export async function generateMetadata(props: { params: { slug: string } }) {
   const project = await getProjectBySlug(supabase, slug)
   return {
     title: project.title,
+    robots: {
+      index: project.stage !== 'hidden' && project.stage !== 'draft',
+    },
   }
 }
 
@@ -56,21 +59,28 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     ? await getUserEmail(createAdminClient(), project.creator)
     : undefined
   const userIsAdmin = user ? isAdmin(user) : false
+  const userIsOwner = user?.id === project.creator
+  const projectIsPrivate =
+    project.stage === 'hidden' || project.stage === 'draft'
   return (
     <div className="p-4">
-      <ProjectDisplay
-        project={project}
-        userTxns={userTxns}
-        userBids={userBids}
-        comments={comments}
-        projectBids={projectBids}
-        projectTxns={projectTxns}
-        creatorEmail={creatorEmail}
-        userProfile={userProfile ?? undefined}
-        causesList={causesList}
-        prizeCause={prizeCause}
-        userIsAdmin={userIsAdmin}
-      />
+      {projectIsPrivate && !userIsOwner && !userIsAdmin ? (
+        <div>404: Project not found.</div>
+      ) : (
+        <ProjectDisplay
+          project={project}
+          userTxns={userTxns}
+          userBids={userBids}
+          comments={comments}
+          projectBids={projectBids}
+          projectTxns={projectTxns}
+          creatorEmail={creatorEmail}
+          userProfile={userProfile ?? undefined}
+          causesList={causesList}
+          prizeCause={prizeCause}
+          userIsAdmin={userIsAdmin}
+        />
+      )}
     </div>
   )
 }

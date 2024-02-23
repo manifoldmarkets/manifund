@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateProjectCauses } from '@/db/cause'
 import { createAdminClient, createEdgeClient } from './_db'
+import { ProjectUpdate, updateProject } from '@/db/project'
 import { isAdmin } from '@/db/txn'
 
 export const config = {
@@ -12,35 +13,19 @@ export const config = {
   ],
 }
 
-type EditProjectProps = {
-  projectId: string
-  title: string
-  subtitle: string
-  description: string
-  fundingGoal: number
-  causeSlugs: string[]
-}
-
 export default async function handler(req: NextRequest) {
-  const { projectId, title, subtitle, description, fundingGoal, causeSlugs } =
-    (await req.json()) as EditProjectProps
+  const { projectUpdate, projectId, causeSlugs } = (await req.json()) as {
+    projectUpdate: ProjectUpdate
+    projectId: string
+    causeSlugs: string[]
+  }
   const supabaseEdge = createEdgeClient(req)
   const resp = await supabaseEdge.auth.getUser()
   const user = resp.data.user
   const supabase = isAdmin(user) ? createAdminClient() : supabaseEdge
   if (!user) return NextResponse.error()
-  const { error } = await supabase
-    .from('projects')
-    .update({
-      description: description,
-      blurb: subtitle,
-      title: title,
-      funding_goal: fundingGoal,
-    })
-    .eq('id', projectId)
-  if (error) {
-    console.error('saveText', error)
-  }
+  await updateProject(supabase, projectId, projectUpdate)
+  console.log(causeSlugs)
   await updateProjectCauses(supabase, causeSlugs, projectId)
   return NextResponse.json('success')
 }

@@ -120,14 +120,8 @@ export function ProjectDisplay(props: {
             projectSlug={project.slug}
           />
         )}
+
       <Col className="gap-2">
-        {userProfile && !isOwnProject && (
-          <ViewerActionPanel
-            projectId={project.id}
-            projectSlug={project.slug}
-            currentlyFollowing={userIsFollower}
-          />
-        )}
         <Col className="gap-1">
           <Row className="flex-2 items-center gap-3">
             <Vote
@@ -260,13 +254,22 @@ export function ProjectDisplay(props: {
         {project.description && (
           <RichContent content={project.description} className="px-3 text-sm" />
         )}
-        {(isOwnProject || userIsAdmin) && (
-          <CreatorActionPanel
-            project={project}
-            causesList={causesList}
-            prizeCause={prizeCause}
-          />
-        )}
+        <Row className="justify-between">
+          {userProfile && !isOwnProject && (
+            <ViewerActionPanel
+              projectId={project.id}
+              projectSlug={project.slug}
+              currentlyFollowing={userIsFollower}
+            />
+          )}
+          {(isOwnProject || userIsAdmin) && (
+            <CreatorActionPanel
+              project={project}
+              causesList={causesList}
+              prizeCause={prizeCause}
+            />
+          )}
+        </Row>
         <div id="tabs">
           <ProjectTabs
             project={project}
