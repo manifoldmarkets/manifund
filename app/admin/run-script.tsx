@@ -6,7 +6,7 @@ export function RunScript() {
     <Button
       onClick={async () => {
         // Change script here
-        const response = await fetch('/api/acx-email-script', {
+        const response = await fetch('/api/close-chinatalk', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -14,7 +14,7 @@ export function RunScript() {
         })
       }}
     >
-      ACX email script
+      Close ChinaTalk
     </Button>
   )
 }
