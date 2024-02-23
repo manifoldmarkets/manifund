@@ -20,6 +20,7 @@ export type CertParams = {
   ammDollars: number | null
   minMinFunding: number
   proposalPhase: boolean
+  auction?: boolean
   ammOwnedByCreator: boolean
   defaultInvestorShares: number
   adjustableInvestmentStructure: boolean
