@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/components/button'
 import { useSupabase } from '@/db/supabase-provider'
-import { giveCreatorShares } from '@/pages/api/create-project'
+import { giveCreatorShares } from '@/utils/upsert-project'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
