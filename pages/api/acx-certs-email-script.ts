@@ -86,6 +86,9 @@ function getEmailHtmlContent(recipientExists: boolean, recipientName: string) {
       An impact certificate for your ACX application has been added to your Manifund account. It’s currently in draft mode, which means only you can see it. Feel free to make whatever edits to the description and investment structure that you like before publishing.
       </p>
       <p>
+      Next week Scott will post about this on ACX and investors will start placing offers on projects. You can read more about how initial funding will work <a href="https://www.notion.so/manifoldmarkets/ACX-Impact-Market-Process-and-Mechanisms-aa71000b9932440ba82a4697a7bcc233?pvs=4">here</a>.
+      </p>
+      <p>
       If you would not like to participate in the impact certificate portion of the round, no need to take any action. If you’re still unsure, you can read about impact certificates <a href="https://www.brasstacks.blog/explain-im/">here</a> or <a href="https://www.astralcodexten.com/p/impact-markets-the-annoying-details">here</a>.
       </p>
       <p>
@@ -100,7 +103,10 @@ function getEmailHtmlContent(recipientExists: boolean, recipientName: string) {
     <p>
     An impact certificate for your ACX application has been added to Manifund. Create an account with this email to accept and get access to the project. It'll start out in draft mode, which means only you can see it. Once you publish, all information in the description and on your profile will be publicly accessible, so make sure to make any important changes before publishing.</p>
     <p>
-    If you would not like to participate in the impact certificate portion of the round, no need to take any action. If you’re still unsure, you can read about impact certificates <a href="https://www.brasstacks.blog/explain-im/">here</a> or <a href="https://www.astralcodexten.com/p/impact-markets-the-annoying-details">here</a>.
+    Next week Scott will post about this on ACX and investors will start placing offers on projects. You can read more about how initial funding will work <a href="https://www.notion.so/manifoldmarkets/ACX-Impact-Market-Process-and-Mechanisms-aa71000b9932440ba82a4697a7bcc233?pvs=4">here</a>.
+    </p>
+    <p>
+    If you would not like to participate in the impact certificate portion of the round, no need to take any action. If you’re still unsure, you can read about impact markets <a href="https://www.brasstacks.blog/explain-im/">here</a> or <a href="https://www.astralcodexten.com/p/impact-markets-the-annoying-details">here</a>.
     </p>
     <p>
       You can also ask us questions by replying to this email or joining us on <a href="https://discord.gg/ZGsDMWSA5Q">Discord</a>!
