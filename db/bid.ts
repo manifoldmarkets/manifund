@@ -4,6 +4,7 @@ import { Profile } from './profile'
 import { Project } from './project'
 
 export type Bid = Database['public']['Tables']['bids']['Row']
+export type BidInsert = Database['public']['Tables']['bids']['Insert']
 export type BidAndProject = Bid & { projects: Project }
 export type BidAndProfile = Bid & { profiles: Profile }
 export type FullBid = Bid & { profiles: Profile } & { projects: Project }
@@ -104,4 +105,11 @@ export async function getRecentFullBids(
     .range(start, start + size)
     .throwOnError()
   return data as FullBid[]
+}
+
+export async function insertBid(supabase: SupabaseClient, bid: BidInsert) {
+  const { error } = await supabase.from('bids').insert([bid])
+  if (error) {
+    console.error(error)
+  }
 }

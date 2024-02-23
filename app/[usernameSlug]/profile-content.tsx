@@ -90,7 +90,11 @@ export function ProfileContent(props: {
         project.project_transfers.filter((transfer) => !transfer.transferred)
           .length === 0
     )
-    .filter((project) => project.stage !== 'hidden' || isOwnProfile)
+    .filter(
+      (project) =>
+        (project.stage !== 'hidden' && project.stage !== 'draft') ||
+        isOwnProfile
+    )
   return (
     <div className="flex flex-col gap-6">
       {profile.regranter_status && !isOwnProfile && userProfile && (
@@ -112,6 +116,9 @@ export function ProfileContent(props: {
       {profile.long_description && (
         <AboutMeSection content={profile.long_description} />
       )}
+      {(relevantProjects.length > 0 || isOwnProfile) && (
+        <Projects projects={relevantProjects} />
+      )}
       {(donations.length > 0 || pendingDonateBids.length > 0) && (
         <OutgoingDonationsHistory
           donations={donations}
@@ -126,9 +133,6 @@ export function ProfileContent(props: {
       )}
       {proposalBids.length > 0 && (
         <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
-      )}
-      {(relevantProjects.length > 0 || isOwnProfile) && (
-        <Projects projects={relevantProjects} />
       )}
       {comments.length > 0 && (
         <ProfileComments comments={comments} profile={profile} />

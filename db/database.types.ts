@@ -838,6 +838,7 @@ export type Database = {
         | "not funded"
         | "complete"
         | "hidden"
+        | "draft"
       project_type: "grant" | "cert" | "dummy"
       txn_type:
         | "profile donation"

@@ -1,91 +1,79 @@
 'use client'
 
-import { useSupabase } from '@/db/supabase-provider'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { AmountInput, Input } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
-import { TOTAL_SHARES } from '@/db/project'
-import { ResetEditor, TextEditor } from '@/components/editor'
+import { ProjectWithCauses, TOTAL_SHARES } from '@/db/project'
+import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
 import Link from 'next/link'
-import { add, format, isAfter, isBefore } from 'date-fns'
+import { add, format } from 'date-fns'
 import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
-import { Cause, MiniCause } from '@/db/cause'
+import { Cause, MiniCause, SimpleCause } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from '@/components/investment-structure'
 import { Tooltip } from '@/components/tooltip'
-import { SiteLink } from '@/components/site-link'
-import { HorizontalRadioGroup } from '@/components/radio-group'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
-import { ProjectParams } from '@/utils/upsert-project'
+import { JSONContent } from '@tiptap/core'
+import { roundLargeNumber } from '@/utils/formatting'
+import { getCreateProjectErrorMessage } from '@/app/create/create-project-form'
+import { createUpdateFromParams } from '@/utils/upsert-project'
 
-const DESCRIPTION_OUTLINE = `
-<h3>Project summary</h3>
-</br>
-<h3>What are this project's goals and how will you achieve them?</h3>
-</br>
-<h3>How will this funding be used?</h3>
-</br>
-<h3>Who is on your team and what's your track record on similar projects?</h3>
-</br>
-<h3>What are the most likely causes and outcomes if this project fails? (premortem)</h3>
-</br>
-<h3>What other funding are you or your project getting?</h3>
-</br>
-`
-const DESCRIPTION_KEY = 'ProjectDescription'
+export type ProjectParams = {
+  title: string
+  subtitle: string | null
+  minFunding?: number
+  fundingGoal?: number
+  verdictDate: string
+  description?: JSONContent | string
+  location: string
+  selectedCauses: MiniCause[]
+  selectedPrize: Cause | null
+  founderPercent: number
+  agreedToTerms: boolean
+  lobbying: boolean
+}
 
-export function CreateProjectForm(props: { causesList: Cause[] }) {
-  const { causesList } = props
+export function PublishProjectForm(props: {
+  project: ProjectWithCauses
+  causesList: SimpleCause[]
+  prizeCause?: Cause
+}) {
+  const { causesList, prizeCause, project } = props
   const [projectParams, updateProjectParams] = usePartialUpdater<ProjectParams>(
     {
-      title: '',
-      subtitle: '',
-      verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
-      location: '',
-      selectedCauses: [],
-      selectedPrize: null,
-      founderPercent: 50,
+      title: project.title,
+      subtitle: project.blurb,
+      minFunding: project.min_funding,
+      fundingGoal: project.funding_goal,
+      verdictDate: format(
+        new Date(project.auction_close ?? add(new Date(), { months: 1 })),
+        'yyyy-MM-dd'
+      ),
+      location: project.location_description ?? '',
+      selectedCauses: project.causes,
+      selectedPrize: prizeCause ?? null,
+      founderPercent: prizeCause
+        ? roundLargeNumber(
+            (1 -
+              (prizeCause.cert_params?.defaultInvestorShares ?? 0) /
+                TOTAL_SHARES) *
+              100
+          )
+        : (project.founder_shares * TOTAL_SHARES) / 100,
       agreedToTerms: false,
       lobbying: false,
     }
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
-  const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
-  const [madeChanges, setMadeChanges] = useState<boolean>(false)
-  useEffect(() => {
-    if (editor && !editor.isDestroyed) {
-      editor.on('update', () => {
-        setMadeChanges(true)
-      })
-    }
-  }, [editor])
-  useEffect(() => {
-    updateProjectParams({
-      founderPercent:
-        (1 -
-          (projectParams.selectedPrize?.cert_params?.defaultInvestorShares ??
-            0) /
-            TOTAL_SHARES) *
-        100,
-    })
-    if (!madeChanges) {
-      editor?.commands.setContent(
-        projectParams.selectedPrize?.project_description_outline ??
-          DESCRIPTION_OUTLINE
-      )
-      setMadeChanges(false)
-    }
-  }, [projectParams.selectedPrize])
-  const selectablePrizeCauses = causesList.filter(
-    (cause) => cause.open && cause.prize
-  )
+  const descriptionKey = `ProjectDescription${project.slug}`
+  const editor = useTextEditor(project.description, descriptionKey)
   const selectableCauses = causesList.filter(
     (cause) => cause.open && !cause.prize
   )
@@ -99,69 +87,52 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   )
 
   const router = useRouter()
-  const handleSubmit = async () => {
+  const cancel = () => {
+    router.push(`/projects/${project.slug}`)
+  }
+  const save = async () => {
     setIsSubmitting(true)
     const finalDescription = editor?.getJSON() ?? '<p>No description</p>'
-    const response = await fetch('/api/create-project', {
+    await fetch('/api/edit-project', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ...projectParams, description: finalDescription }),
+      body: JSON.stringify({
+        projectUpdate: createUpdateFromParams({
+          ...projectParams,
+          description: finalDescription,
+        }),
+        causeSlugs: projectParams.selectedCauses.map((cause) => cause.slug),
+        projectId: project.id,
+      }),
     })
-    const newProject = await response.json()
-    router.push(`/projects/${newProject.slug}`)
-    clearLocalStorageItem(DESCRIPTION_KEY)
+    clearLocalStorageItem(descriptionKey)
+    router.push(`/projects/${project.slug}`)
     setIsSubmitting(false)
   }
-
-  const { session } = useSupabase()
-  const user = session?.user
-  if (!user) {
-    return (
-      <div>
-        <Link href="/login" className="text-orange-500 hover:text-orange-600">
-          Log in
-        </Link>{' '}
-        to create a project!
-      </div>
-    )
+  const publish = async () => {
+    setIsSubmitting(true)
+    const finalDescription = editor?.getJSON() ?? '<p>No description</p>'
+    await fetch('/api/publish-project', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        projectParams: { ...projectParams, description: finalDescription },
+        projectId: project.id,
+      }),
+    })
+    clearLocalStorageItem(descriptionKey)
+    router.push(`/projects/${project.slug}`)
+    setIsSubmitting(false)
   }
   return (
     <Col className="gap-4 p-5">
       <div className="flex flex-col md:flex-row md:justify-between">
-        <h1 className="text-3xl font-bold">Add a project</h1>
+        <h1 className="text-3xl font-bold">Edit & publish your project</h1>
       </div>
-      <Col className="gap-1">
-        <label>I am applying for...</label>
-        <p className="text-sm text-gray-600">
-          Select &quot;a regular grant&quot; by default. The other options are
-          specific prizes that you can learn more about{' '}
-          <SiteLink followsLinkClass href="/causes">
-            here
-          </SiteLink>
-          .
-        </p>
-        <HorizontalRadioGroup
-          value={projectParams.selectedPrize?.slug ?? 'grant'}
-          onChange={(value) =>
-            updateProjectParams({
-              selectedPrize:
-                value === 'grant'
-                  ? null
-                  : selectablePrizeCauses.find(
-                      (cause) => cause.slug === value
-                    ) ?? null,
-            })
-          }
-          options={{
-            grant: 'A regular grant',
-            ...Object.fromEntries(
-              selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
-            ),
-          }}
-        />
-      </Col>
       <Col className="gap-1">
         <label htmlFor="title">
           Title
@@ -207,14 +178,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             Project description
             <RequiredStar />
           </label>
-          <ResetEditor
-            storageKey={DESCRIPTION_KEY}
-            editor={editor}
-            defaultContent={
-              projectParams.selectedPrize?.project_description_outline ??
-              DESCRIPTION_OUTLINE
-            }
-          />
         </Row>
         <p className="text-sm text-gray-500">
           Note that the editor offers formatting shortcuts{' '}
@@ -336,6 +299,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       <Col className="gap-1">
         <label>
           In what countries are you and anyone else working on this located?
+          <RequiredStar />
         </label>
         <p className="text-sm text-gray-600">
           This is for Manifund operations and will not be published.
@@ -375,69 +339,29 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           <RequiredStar />
         </span>
       </Row>
-      <Tooltip text={errorMessage}>
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={!!errorMessage}
-          loading={isSubmitting}
-          onClick={handleSubmit}
-        >
-          Publish project
-        </Button>
-      </Tooltip>
+      <Col className="w-full gap-3">
+        <Row className="w-full gap-3">
+          <Button className="w-full" color="gray-outline" onClick={cancel}>
+            Cancel
+          </Button>
+          <Tooltip className="w-full" text={errorMessage}>
+            <Button className="w-full" disabled={!!errorMessage} onClick={save}>
+              Save draft
+            </Button>
+          </Tooltip>
+        </Row>
+        <Tooltip text={errorMessage}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={!!errorMessage}
+            loading={isSubmitting}
+            onClick={publish}
+          >
+            Publish project
+          </Button>
+        </Tooltip>
+      </Col>
     </Col>
   )
-}
-
-export function getCreateProjectErrorMessage(
-  projectParams: ProjectParams,
-  minMinFunding: number
-) {
-  if (projectParams.title === '') {
-    return 'Your project needs a title.'
-  } else if (
-    projectParams.minFunding === null &&
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase)
-  ) {
-    return 'Your project needs a minimum funding amount.'
-  } else if (
-    projectParams.minFunding !== undefined &&
-    projectParams.minFunding < minMinFunding &&
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase)
-  ) {
-    return `Your minimum funding must be at least $${minMinFunding}.`
-  } else if (
-    projectParams.selectedPrize &&
-    projectParams.selectedPrize.cert_params?.adjustableInvestmentStructure &&
-    !projectParams.agreedToTerms
-  ) {
-    return 'Please confirm that you agree to the investment structure.'
-  } else if (
-    projectParams.fundingGoal &&
-    !projectParams.selectedPrize &&
-    ((projectParams.minFunding &&
-      projectParams.minFunding > projectParams.fundingGoal) ||
-      projectParams.fundingGoal <= 0)
-  ) {
-    return 'Your funding goal must be greater than 0 and greater than or equal to your minimum funding goal.'
-  } else if (
-    isAfter(
-      new Date(projectParams.verdictDate),
-      add(new Date(), { weeks: 6 })
-    ) ||
-    isBefore(new Date(projectParams.verdictDate), new Date())
-  ) {
-    return 'Your application close date must be in the future but no more than 6 weeks from now.'
-  } else if (
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase) &&
-    !projectParams.verdictDate
-  ) {
-    return 'You need to set a decision deadline.'
-  } else {
-    return null
-  }
 }
