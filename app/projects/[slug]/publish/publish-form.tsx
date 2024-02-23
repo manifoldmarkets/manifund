@@ -107,8 +107,8 @@ export function PublishProjectForm(props: {
         projectId: project.id,
       }),
     })
-    router.push(`/projects/${project.slug}`)
     clearLocalStorageItem(descriptionKey)
+    router.push(`/projects/${project.slug}`)
     setIsSubmitting(false)
   }
   const publish = async () => {
@@ -124,8 +124,8 @@ export function PublishProjectForm(props: {
         projectId: project.id,
       }),
     })
-    router.push(`/projects/${project.slug}`)
     clearLocalStorageItem(descriptionKey)
+    router.push(`/projects/${project.slug}`)
     setIsSubmitting(false)
   }
   return (
