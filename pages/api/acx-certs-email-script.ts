@@ -13,8 +13,11 @@ export const config = {
 
 export default async function handler() {
   const supabase = createAdminClient()
-  const transfersWithProjects = await getIncompleteTransfers(supabase)
-  for (const transfer of transfersWithProjects) {
+  const transfers = await getIncompleteTransfers(supabase)
+  const acxCertTransfers = transfers.filter(
+    (transfer) => transfer.projects.round === 'ACX Grants 2024'
+  )
+  for (const transfer of acxCertTransfers) {
     console.log('TRANSFERING PROJECT: ', transfer.projects.title)
     const userId = await getUserIdFromEmail(supabase, transfer.recipient_email)
     console.log('user id: ', userId)
