@@ -11,6 +11,7 @@ import {
   formatMoneyPrecise,
   formatPercent,
 } from '@/utils/formatting'
+import { format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -68,8 +69,13 @@ export function AssuranceBuyBox(props: {
           {activeAuction
             ? 'or above the minimum valuation'
             : 'the initial valuation'}
-          . This order will only go through once the founder has received enough
-          buy offers to cover their minimum costs.
+          . This order will only go through once{' '}
+          {activeAuction
+            ? `the auction closes on ${format(
+                new Date(project.auction_close ?? 0),
+                'MM/dd/yyyy'
+              )}, if at that time the founder has received enough buy offers to cover their minimum costs.`
+            : 'the founder has received enough buy offers to cover their minimum costs.'}
         </p>
       </div>
       {maxBuy > 0 ? (
