@@ -225,8 +225,7 @@ export function ProjectDisplay(props: {
               minValuation={valuation}
               offerSizeDollars={minIncludingAmm - amountRaised}
               maxBuy={userSpendableFunds}
-              // TODO: change this back to activeAuction
-              activeAuction={true}
+              activeAuction={activeAuction}
             />
           )}
         {userProfile &&
