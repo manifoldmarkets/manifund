@@ -1,4 +1,4 @@
-import { Cause } from '@/db/cause'
+import { Cause, getPrizeCause } from '@/db/cause'
 import { getProfileById } from '@/db/profile'
 import {
   getProjectBidsAndFollowsById,
@@ -22,6 +22,12 @@ export async function maybeActivateProject(
   const project = await getProjectBidsAndFollowsById(supabase, projectId)
   if (!project || !project.bids) {
     console.error('Project not found')
+    return
+  }
+  const activeAuction =
+    project.causes.find((c) => !!c.cert_params && c.cert_params.auction) &&
+    project.type === 'cert'
+  if (activeAuction) {
     return
   }
   if (checkFundingReady(project)) {
