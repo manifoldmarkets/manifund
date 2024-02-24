@@ -1,4 +1,4 @@
-import { Cause, getPrizeCause } from '@/db/cause'
+import { Cause } from '@/db/cause'
 import { getProfileById } from '@/db/profile'
 import {
   getProjectBidsAndFollowsById,
