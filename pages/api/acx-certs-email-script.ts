@@ -13,12 +13,22 @@ export const config = {
 
 export default async function handler() {
   const supabase = createAdminClient()
+  console.log(1)
   const transfers = await getIncompleteTransfers(supabase)
-  const acxCertTransfers = transfers.filter(
-    (transfer) => transfer.projects.round === 'ACX Grants 2024'
+  console.log(2)
+  const acxCertTransfers = transfers
+    .filter(
+      (transfer) =>
+        transfer.projects.round === 'ACX Grants 2024' &&
+        transfer.projects.type === 'cert'
+    )
+    .slice(0, 10)
+  console.log(
+    'ACX cert transfers:',
+    acxCertTransfers.map((t) => t.projects.title)
   )
   for (const transfer of acxCertTransfers) {
-    console.log('TRANSFERING PROJECT: ', transfer.projects.title)
+    console.log('ON PROJECT: ', transfer.projects.title)
     const userId = await getUserIdFromEmail(supabase, transfer.recipient_email)
     console.log('user id: ', userId)
     const recipientExists = !!userId
@@ -30,7 +40,7 @@ export default async function handler() {
         to_id: userId,
         transfer_id: transfer.id,
       }
-      await supabase.rpc('_transfer_project', args).throwOnError()
+      // await supabase.rpc('_transfer_project', args).throwOnError()
     }
     const emailHtmlContent = getEmailHtmlContent(
       recipientExists,
@@ -48,7 +58,9 @@ export default async function handler() {
         buttonUrl: recipientExists
           ? `https://manifund.org/projects/${transfer.projects.slug}`
           : `https://manifund.org/login?email=${transfer.recipient_email}`,
-        buttonText: recipientExists ? 'View your project' : 'Create an account',
+        buttonText: recipientExists
+          ? 'View your project'
+          : 'Create your account',
       },
       undefined,
       transfer.recipient_email
@@ -83,6 +95,11 @@ function getEmailHtmlContent(recipientExists: boolean, recipientName: string) {
           : 'An impact certificate for your ACX application has been added to Manifund. Create an account with this email to accept and get access to the project.'
       } It'll start out in draft mode, which means only you can see it. Once you publish, all information in the description and on your profile will be publicly accessible, so make sure to make any important changes before publishing.
       </p>
+      ${
+        recipientExists
+          ? ''
+          : '<p>If you already have a Manifund account but under a different email address and would like this project transferred to that account, let us know by replying to this email.</p>'
+      }
       <p>
       Next week Scott will post about this on ACX and investors will start placing offers on projects. You can read more about how initial funding will work <a href="https://www.notion.so/manifoldmarkets/ACX-Impact-Market-Process-and-Mechanisms-aa71000b9932440ba82a4697a7bcc233?pvs=4">here</a>.
       </p>
