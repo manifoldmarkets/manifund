@@ -50,7 +50,7 @@ export function InvestmentStructurePanel(props: {
     resizeObserver.observe(sliderRef.current)
     return () => resizeObserver.disconnect()
   }, [])
-  const [editing, setEditing] = useState<boolean>(false)
+  const editable = certParams.adjustableInvestmentStructure
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false)
   const initialValuation = calcInitialValuation(
     certParams,
@@ -63,17 +63,12 @@ export function InvestmentStructurePanel(props: {
   const usingAmm = certParams.ammShares > 0
   const ammPortion = certParams.ammShares / TOTAL_SHARES
   const ammPercent = ammPortion * 100
-  if (certParams.adjustableInvestmentStructure) {
+  if (editable) {
     return (
       <Card className="relative flex flex-col gap-2">
         <h1 className="font-semibold">Investment structure</h1>
         <p className="text-sm text-gray-600">
-          We recommend using the default investment structure laid out here:
-          this ensures that you&apos;ll raise at a valuation that will be able
-          to support your minimum costs, that you and your investors will be
-          able to make trades at any time, and that you will be rewarded for
-          exceptional results. Change this only if you fully understand the
-          implications.
+          Change this only if you fully understand the implications.
         </p>
         <p className="text-sm text-gray-600">
           &quot;Equity&quot; here does not refer to legal equity, but to stake
@@ -81,18 +76,6 @@ export function InvestmentStructurePanel(props: {
           wins a different award, those who hold equity in the Manifund project
           are not entitled to a portion of that prize.
         </p>
-        {certParams.adjustableInvestmentStructure && (
-          <button
-            className="absolute right-2 top-2 flex cursor-pointer items-center justify-center rounded-full bg-orange-500 p-1 text-white hover:bg-orange-600"
-            onClick={() => setEditing(!editing)}
-          >
-            {editing ? (
-              <span className="px-2 text-xs">save</span>
-            ) : (
-              <PencilIcon className="h-6 w-6 p-1" />
-            )}
-          </button>
-        )}
         <Row className="mt-5 justify-center gap-10 text-sm text-gray-600">
           <Row className="items-center gap-1">
             <div className="h-2 w-2 rounded-full bg-orange-500" />
@@ -124,7 +107,7 @@ export function InvestmentStructurePanel(props: {
           min={0}
           max={100}
           step={1}
-          disabled={!editing}
+          disabled={!editable}
           ref={sliderRef}
         >
           <RxSlider.Track className="relative h-1 grow rounded-full bg-emerald-300">
@@ -153,7 +136,7 @@ export function InvestmentStructurePanel(props: {
           </RxSlider.Track>
           <RxSlider.Thumb
             className={clsx(
-              editing
+              editable
                 ? 'cursor-grab active:cursor-grabbing'
                 : ' cursor-not-allowed',
               'relative block rounded-full bg-orange-500 p-2 outline outline-4 outline-transparent transition-colors focus:outline-orange-500/30'
@@ -294,17 +277,21 @@ function GenInvestmentExplanation(props: {
         <span className="text-sm text-gray-600">
           If this offer is fully accepted by any combination of investors, then
           your project will become active and you&apos;ll recieve ${minFunding}{' '}
-          which can be withdrawn and used for your project upfront. The
-          remaining {formatMoneyPrecise((ammPercent * initialValuation) / 100)}{' '}
-          raised from investors, in addition to {ammPercent}% of total equity,
-          will be given to the automated market maker (amm), which will allow
-          you and your investors to make trades at any time.
+          which can be withdrawn and used for your project upfront.{' '}
+          {ammPercent > 0 &&
+            `The remaining ${formatMoneyPrecise(
+              (ammPercent * initialValuation) / 100
+            )} raised from investors, in addition to {ammPercent}% of total equity, will be given to the automated market maker (amm), which will allow you and your investors to make trades at any time.`}
         </span>
         <span className="text-sm text-gray-600">
-          Once your project is complete and closed, all assets held by the amm
-          will be returned to you. You may then sell the {founderPercent}% of
-          equity you hold to any retroactive evaluators who place offers on your
-          project, which allows you to profit off of exceptional results.
+          Once your project is complete and closed,{' '}
+          {ammPercent > 0
+            ? `all assets held by the amm
+          will be returned to you. You may then`
+            : 'you may'}{' '}
+          sell the {founderPercent}% of equity you hold to any retroactive
+          funders who place offers on your project, which allows you to profit
+          off of exceptional results.
         </span>
       </>
     )

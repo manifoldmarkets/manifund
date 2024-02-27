@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AmountInput, Input } from '@/components/input'
+import { AmountInput, Input, RadioButton } from '@/components/input'
 import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { ProjectWithCauses, TOTAL_SHARES } from '@/db/project'
@@ -58,17 +58,17 @@ export function PublishProjectForm(props: {
       location: project.location_description ?? '',
       selectedCauses: project.causes,
       selectedPrize: prizeCause ?? null,
-      founderPercent: prizeCause
-        ? roundLargeNumber(
-            (1 -
-              (prizeCause.cert_params?.defaultInvestorShares ?? 0) /
-                TOTAL_SHARES) *
-              100
-          )
-        : (project.founder_shares * TOTAL_SHARES) / 100,
-      agreedToTerms: false,
+      founderPercent: (project.founder_shares / TOTAL_SHARES) * 100,
+      agreedToTerms: true,
       lobbying: false,
     }
+  )
+  const defaultFounderPercent = roundLargeNumber(
+    (1 - (prizeCause?.cert_params?.defaultInvestorShares ?? 0) / TOTAL_SHARES) *
+      100
+  )
+  const [showInvestmentPanel, setShowInvestmentPanel] = useState<boolean>(
+    !!prizeCause && defaultFounderPercent === projectParams.founderPercent
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
@@ -192,78 +192,126 @@ export function PublishProjectForm(props: {
         <TextEditor editor={editor} />
       </Col>
       {(!projectParams.selectedPrize || certParams?.proposalPhase) && (
-        <Col className="gap-1">
-          <label htmlFor="minFunding" className="mr-3 mt-4">
-            Minimum funding (USD)
-            <RequiredStar />
-          </label>
-          <p className="text-sm text-gray-600">
-            The minimum amount of funding you need to start this project. If
-            this amount is not reached, no funds will be sent. Due to the cost
-            of approving grants and processing payments, we require this to be
-            at least ${minMinFunding}.
-          </p>
-          <Col>
+        <>
+          <Col className="gap-1">
+            <label htmlFor="minFunding" className="mr-3 mt-4">
+              Minimum funding (USD)
+              <RequiredStar />
+            </label>
+            <p className="text-sm text-gray-600">
+              The minimum amount of funding you need to start this project. If
+              this amount is not reached, no funds will be sent. Due to the cost
+              of approving grants and processing payments, we require this to be
+              at least ${minMinFunding}.
+            </p>
+            <Col>
+              <AmountInput
+                id="minFunding"
+                amount={projectParams.minFunding}
+                onChangeAmount={(newMin) =>
+                  updateProjectParams({ minFunding: newMin })
+                }
+                placeholder={minMinFunding.toString()}
+                error={
+                  projectParams.minFunding !== undefined &&
+                  projectParams.minFunding < minMinFunding
+                }
+                errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
+              />
+            </Col>
+          </Col>
+          <Col className="gap-1">
+            <label htmlFor="fundingGoal">
+              Funding goal (USD)
+              <RequiredStar />
+            </label>
+            <p className="text-sm text-gray-600">
+              Until this amount is raised, the project will be marked for donors
+              as not fully funded. If this amount is different from your minimum
+              funding, please explain in your project description what you could
+              accomplish with the minimum funding and what you could accomplish
+              with the full funding.
+            </p>
             <AmountInput
-              id="minFunding"
-              amount={projectParams.minFunding}
-              onChangeAmount={(newMin) =>
-                updateProjectParams({ minFunding: newMin })
+              id="fundingGoal"
+              amount={projectParams.fundingGoal}
+              onChangeAmount={(newGoal) =>
+                updateProjectParams({ fundingGoal: Number(newGoal) })
               }
               placeholder={minMinFunding.toString()}
               error={
-                projectParams.minFunding !== undefined &&
-                projectParams.minFunding < minMinFunding
+                !!(
+                  projectParams.fundingGoal &&
+                  projectParams.minFunding &&
+                  (projectParams.fundingGoal < projectParams.minFunding ||
+                    projectParams.fundingGoal <= 0)
+                )
               }
-              errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
+              errorMessage="Funding goal must be greater than 0 and greater than or equal to your minimum funding."
             />
           </Col>
-        </Col>
+        </>
       )}
-      {!!certParams ? (
-        <InvestmentStructurePanel
-          minFunding={projectParams.minFunding ?? 0}
-          founderPercent={projectParams.founderPercent}
-          setFounderPercent={(newPercent: number) =>
-            updateProjectParams({ founderPercent: newPercent })
-          }
-          certParams={certParams}
-          agreedToTerms={projectParams.agreedToTerms}
-          setAgreedToTerms={(newAgreedToTerms: boolean) => {
-            updateProjectParams({ agreedToTerms: newAgreedToTerms })
-          }}
-        />
-      ) : (
-        <Col className="gap-1">
-          <label htmlFor="fundingGoal">
-            Funding goal (USD)
-            <RequiredStar />
-          </label>
-          <p className="text-sm text-gray-600">
-            Until this amount is raised, the project will be marked for donors
-            as not fully funded. If this amount is different from your minimum
-            funding, please explain in your project description what you could
-            accomplish with the minimum funding and what you could accomplish
-            with the full funding.
-          </p>
-          <AmountInput
-            id="fundingGoal"
-            amount={projectParams.fundingGoal}
-            onChangeAmount={(newGoal) =>
-              updateProjectParams({ fundingGoal: Number(newGoal) })
-            }
-            placeholder={minMinFunding.toString()}
-            error={
-              !!(
-                projectParams.fundingGoal &&
-                projectParams.minFunding &&
-                (projectParams.fundingGoal < projectParams.minFunding ||
-                  projectParams.fundingGoal <= 0)
-              )
-            }
-            errorMessage="Funding goal must be greater than 0 and greater than or equal to your minimum funding."
-          />
-        </Col>
+
+      {!!certParams && (
+        <>
+          <Row className="items-start">
+            <RadioButton
+              checked={!showInvestmentPanel}
+              onChange={() => {
+                setShowInvestmentPanel(false)
+                updateProjectParams({ agreedToTerms: true })
+              }}
+            />
+            <span className="ml-3 mt-0.5 text-sm leading-tight">
+              <span className="font-bold">
+                Default investment structure (recommended).
+              </span>
+              <span>
+                {' '}
+                You will receive some amount of upfront funding between your
+                minimum and your goal listed above, or none at all. This option
+                maximizes your chances of getting upfront funding, but means you
+                will not recieve any prize money if your project is awarded by a
+                retroactive funder at the end of this round.
+              </span>
+            </span>
+          </Row>
+          <Row>
+            <RadioButton
+              checked={showInvestmentPanel}
+              onChange={() => {
+                setShowInvestmentPanel(true)
+                updateProjectParams({ agreedToTerms: false })
+              }}
+            />
+            <span className="ml-3 mt-0.5 text-sm leading-tight">
+              <span className="font-bold">Custom investment structure.</span>
+              <span>
+                {' '}
+                Specify below how much equity you would like to sell to your
+                investors upfront. Selling more raises your chances of getting
+                upfront funding, whereas selling less lowers your chances of
+                upfront funding but gives you more potential upside if your
+                project is awaded by a retroactive funder.
+              </span>
+            </span>
+          </Row>
+          {showInvestmentPanel && (
+            <InvestmentStructurePanel
+              minFunding={projectParams.minFunding ?? 0}
+              founderPercent={projectParams.founderPercent}
+              setFounderPercent={(newPercent: number) =>
+                updateProjectParams({ founderPercent: newPercent })
+              }
+              certParams={certParams}
+              agreedToTerms={projectParams.agreedToTerms}
+              setAgreedToTerms={(newAgreedToTerms: boolean) => {
+                updateProjectParams({ agreedToTerms: newAgreedToTerms })
+              }}
+            />
+          )}
+        </>
       )}
       {(!projectParams.selectedPrize || certParams?.proposalPhase) && (
         <Col className="gap-1">
