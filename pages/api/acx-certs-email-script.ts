@@ -101,7 +101,7 @@ function getEmailHtmlContent(recipientExists: boolean, recipientName: string) {
           : '<p>If you already have a Manifund account but under a different email address and would like this project transferred to that account, let us know by replying to this email.</p>'
       }
       <p>
-      Next week Scott will post about this on ACX and investors will start placing offers on projects. You can read more about how initial funding will work <a href="https://www.notion.so/manifoldmarkets/ACX-Impact-Market-Process-and-Mechanisms-aa71000b9932440ba82a4697a7bcc233?pvs=4">here</a>.
+      Next week Scott will post about this on ACX and investors will start placing offers on projects. You can read more about how initial funding will work <a href="https://manifoldmarkets.notion.site/ACXG-Impact-Market-Timeline-aa71000b9932440ba82a4697a7bcc233?pvs=4">here</a>.
       </p>
       <p>
       If you would not like to participate in the impact certificate portion of the round, no need to take any action. If you’re still unsure, you can read about impact certificates <a href="https://www.brasstacks.blog/explain-im/">here</a> or <a href="https://www.astralcodexten.com/p/impact-markets-the-annoying-details">here</a>.

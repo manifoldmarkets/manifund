@@ -60,6 +60,7 @@ export function InvestmentStructurePanel(props: {
   if (initialValuation === null) {
     return <span className="text-sm text-rose-600">Something went wrong.</span>
   }
+  const usingAmm = certParams.ammShares > 0
   const ammPortion = certParams.ammShares / TOTAL_SHARES
   const ammPercent = ammPortion * 100
   if (certParams.adjustableInvestmentStructure) {
@@ -101,14 +102,16 @@ export function InvestmentStructurePanel(props: {
             <div className="h-2 w-2 rounded-full bg-emerald-500" />
             <label>investors</label>
           </Row>
-          <Row className="items-center gap-1">
-            <span className="text-xs text-gray-600">[]</span>
-            <label>amm</label>
-            <InfoTooltip
-              className="relative bottom-0.5 !h-4 !w-4 !text-gray-400"
-              text="The automated market maker (amm) allows investors to buy and sell shares of your project at any time. The amm is seeded with assets it can trade using some of the founder's equity and some of the investor's dollars. All assets in the AMM are returned to the founder after the project is complete and closed."
-            />
-          </Row>
+          {usingAmm && (
+            <Row className="items-center gap-1">
+              <span className="text-xs text-gray-600">[]</span>
+              <label>amm</label>
+              <InfoTooltip
+                className="relative bottom-0.5 !h-4 !w-4 !text-gray-400"
+                text="The automated market maker (amm) allows investors to buy and sell shares of your project at any time. The amm is seeded with assets it can trade using some of the founder's equity and some of the investor's dollars. All assets in the AMM are returned to the founder after the project is complete and closed."
+              />
+            </Row>
+          )}
         </Row>
         <RxSlider.Root
           className="relative mb-10 mt-5 flex h-5 touch-none select-none items-center"
@@ -156,18 +159,22 @@ export function InvestmentStructurePanel(props: {
               'relative block rounded-full bg-orange-500 p-2 outline outline-4 outline-transparent transition-colors focus:outline-orange-500/30'
             )}
           >
-            <span
-              className="absolute -top-1.5 text-gray-600"
-              style={{ left: (-width / 100) * ammPercent }}
-            >
-              {'['}
-            </span>
-            <span
-              className="absolute -top-1.5 text-gray-600"
-              style={{ right: (-width / 100) * ammPercent }}
-            >
-              {']'}
-            </span>
+            {usingAmm && (
+              <>
+                <span
+                  className="absolute -top-1.5 text-gray-600"
+                  style={{ left: (-width / 100) * ammPercent }}
+                >
+                  {'['}
+                </span>
+                <span
+                  className="absolute -top-1.5 text-gray-600"
+                  style={{ right: (-width / 100) * ammPercent }}
+                >
+                  {']'}
+                </span>
+              </>
+            )}
           </RxSlider.Thumb>{' '}
         </RxSlider.Root>
         <div className="m-auto grid grid-cols-2 justify-between gap-5 sm:flex">
