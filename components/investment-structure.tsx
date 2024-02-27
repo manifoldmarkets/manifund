@@ -186,12 +186,15 @@ export function InvestmentStructurePanel(props: {
             <p className="text-xs text-gray-600">Equity sold to investors</p>
             <p className="text-base font-bold">{100 - founderPercent}%</p>
           </Col>
-          <Col>
-            <p className="text-xs text-gray-600">Cost to seed AMM</p>
-            <p className="text-base font-bold">
-              {ammPercent}%, {formatMoneyPrecise(ammPortion * initialValuation)}
-            </p>
-          </Col>
+          {usingAmm && (
+            <Col>
+              <p className="text-xs text-gray-600">Cost to seed AMM</p>
+              <p className="text-base font-bold">
+                {ammPercent}%,{' '}
+                {formatMoneyPrecise(ammPortion * initialValuation)}
+              </p>
+            </Col>
+          )}
           <Col>
             <p className="text-xs text-gray-600">Initial valuation</p>
             <p className="text-base font-bold">
