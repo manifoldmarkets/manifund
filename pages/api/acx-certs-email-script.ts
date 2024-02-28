@@ -2,7 +2,6 @@ import { createAdminClient } from './_db'
 import { getIncompleteTransfers } from '@/db/project-transfer'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
-import { NextResponse } from 'next/server'
 
 export const config = {
   runtime: 'edge',
@@ -14,16 +13,12 @@ export const config = {
 
 export default async function handler() {
   const supabase = createAdminClient()
-  console.log(1)
   const transfers = await getIncompleteTransfers(supabase)
-  console.log(2)
-  const acxCertTransfers = transfers
-    .filter(
-      (transfer) =>
-        transfer.projects.round === 'ACX Grants 2024' &&
-        transfer.projects.type === 'cert'
-    )
-    .slice(10, 20)
+  const acxCertTransfers = transfers.filter(
+    (transfer) =>
+      transfer.projects.round === 'ACX Grants 2024' &&
+      transfer.projects.type === 'cert'
+  )
   console.log(
     'ACX cert transfers:',
     acxCertTransfers.map((t) => t.projects.title)
