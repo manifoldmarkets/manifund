@@ -2,6 +2,7 @@ import { createAdminClient } from './_db'
 import { getIncompleteTransfers } from '@/db/project-transfer'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
+import { NextResponse } from 'next/server'
 
 export const config = {
   runtime: 'edge',
@@ -22,7 +23,7 @@ export default async function handler() {
         transfer.projects.round === 'ACX Grants 2024' &&
         transfer.projects.type === 'cert'
     )
-    .slice(0, 10)
+    .slice(10, 20)
   console.log(
     'ACX cert transfers:',
     acxCertTransfers.map((t) => t.projects.title)
@@ -91,8 +92,8 @@ function getEmailHtmlContent(recipientExists: boolean, recipientName: string) {
       <p>
       ${
         recipientExists
-          ? 'An impact certificate for your ACX application has been added to your Manifund account.'
-          : 'An impact certificate for your ACX application has been added to Manifund. Create an account with this email to accept and get access to the project.'
+          ? 'An impact certificate for your ACX application has been added to your Manifund account!'
+          : 'An impact certificate for your ACX application has been added to Manifund! Create an account with this email address to accept and get access to the project.'
       } It'll start out in draft mode, which means only you can see it. Once you publish, all information in the description and on your profile will be publicly accessible, so make sure to make any important changes before publishing.
       </p>
       ${
@@ -101,7 +102,7 @@ function getEmailHtmlContent(recipientExists: boolean, recipientName: string) {
           : '<p>If you already have a Manifund account but under a different email address and would like this project transferred to that account, let us know by replying to this email.</p>'
       }
       <p>
-      Next week Scott will post about this on ACX and investors will start placing offers on projects. You can read more about how initial funding will work <a href="https://manifoldmarkets.notion.site/ACXG-Impact-Market-Timeline-aa71000b9932440ba82a4697a7bcc233?pvs=4">here</a>.
+      In a few days, Scott will post about this on ACX and investors will start placing offers on projects. You can read more about how initial funding will work <a href="https://manifoldmarkets.notion.site/ACXG-Impact-Market-Timeline-aa71000b9932440ba82a4697a7bcc233?pvs=4">here</a>.
       </p>
       <p>
       If you would not like to participate in the impact certificate portion of the round, no need to take any action. If you’re still unsure, you can read about impact certificates <a href="https://www.brasstacks.blog/explain-im/">here</a> or <a href="https://www.astralcodexten.com/p/impact-markets-the-annoying-details">here</a>.

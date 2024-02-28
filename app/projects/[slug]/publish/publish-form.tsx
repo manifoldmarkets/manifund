@@ -273,7 +273,8 @@ export function PublishProjectForm(props: {
                 minimum and your goal listed above, or none at all. This option
                 maximizes your chances of getting upfront funding, but means you
                 will not recieve any prize money if your project is awarded by a
-                retroactive funder at the end of this round.
+                retroactive funder at the end of this round. That is, this will
+                work basically as a normal grant.
               </span>
             </span>
           </Row>
@@ -290,10 +291,7 @@ export function PublishProjectForm(props: {
               <span>
                 {' '}
                 Specify below how much equity you would like to sell to your
-                investors upfront. Selling more raises your chances of getting
-                upfront funding, whereas selling less lowers your chances of
-                upfront funding but gives you more potential upside if your
-                project is awaded by a retroactive funder.
+                investors upfront.
               </span>
             </span>
           </Row>
