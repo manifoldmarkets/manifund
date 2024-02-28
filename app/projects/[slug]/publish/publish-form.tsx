@@ -199,10 +199,10 @@ export function PublishProjectForm(props: {
               <RequiredStar />
             </label>
             <p className="text-sm text-gray-600">
-              The minimum amount of funding you need to start this project. If
-              this amount is not reached, no funds will be sent. Due to the cost
-              of approving grants and processing payments, we require this to be
-              at least ${minMinFunding}.
+              The minimum amount of funding you need to do this project as
+              described above. If this amount is not reached, no funds will be
+              sent. Due to the cost of approving grants and processing payments,
+              we require this to be at least ${minMinFunding}.
             </p>
             <Col>
               <AmountInput
