@@ -41,7 +41,7 @@ export default async function handler() {
         to_id: userId,
         transfer_id: transfer.id,
       }
-      // await supabase.rpc('_transfer_project', args).throwOnError()
+      await supabase.rpc('_transfer_project', args).throwOnError()
     }
     const emailHtmlContent = getEmailHtmlContent(
       recipientExists,
@@ -53,8 +53,8 @@ export default async function handler() {
       TEMPLATE_IDS.GENERIC_NOTIF_HTML,
       {
         subject: recipientExists
-          ? 'Your ACX impact certificate has been added to your Manifund account.'
-          : 'Your ACX impact certificate is on Manifund. Sign in to accept',
+          ? 'Your ACX impact certificate has been added to your Manifund account'
+          : 'Your ACX impact certificate is on Manifund. Sign in to accept!',
         htmlContent: emailHtmlContent,
         buttonUrl: recipientExists
           ? `https://manifund.org/projects/${transfer.projects.slug}`
