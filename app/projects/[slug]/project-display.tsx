@@ -112,17 +112,14 @@ export function ProjectDisplay(props: {
   >(undefined)
   return (
     <>
-      {project.type === 'grant' &&
-        project.stage === 'proposal' &&
-        pendingProjectTransfers.length === 0 && (
-          <ProposalRequirements
-            signedAgreement={project.signed_agreement}
-            approved={project.approved === true}
-            reachedMinFunding={amountRaised >= minIncludingAmm}
-            projectSlug={project.slug}
-          />
-        )}
-
+      {project.stage === 'proposal' && pendingProjectTransfers.length === 0 && (
+        <ProposalRequirements
+          signedAgreement={project.signed_agreement}
+          approved={project.approved === true}
+          reachedMinFunding={amountRaised >= minIncludingAmm}
+          projectSlug={project.slug}
+        />
+      )}
       <Col className="gap-2">
         <Col className="gap-1">
           <Row className="flex-2 items-center gap-3">
@@ -162,12 +159,9 @@ export function ProjectDisplay(props: {
               </Tooltip>
             )}
             {pendingProjectTransfers.length > 0 && (
-              <>
-                <span className="text-gray-500">
-                  (pending transfer to{' '}
-                  {pendingProjectTransfers[0].recipient_name})
-                </span>
-              </>
+              <span className="text-gray-500">
+                pending transfer to {pendingProjectTransfers[0].recipient_name}
+              </span>
             )}
           </Row>
           <ProjectData
