@@ -18,7 +18,7 @@ export default async function CausesPage() {
 function CauseCard(props: { cause: FullCause }) {
   const { cause } = props
   const numProjects = cause.projects.filter(
-    (project) => project.stage !== 'hidden'
+    (project) => project.stage !== 'hidden' && project.stage !== 'draft'
   ).length
   return (
     <Link

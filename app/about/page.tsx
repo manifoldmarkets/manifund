@@ -5,13 +5,13 @@ import { createServerClient } from '@/db/supabase-server'
 import {
   ArrowPathIcon,
   ArrowTrendingUpIcon,
-  CheckBadgeIcon,
   EyeIcon,
 } from '@heroicons/react/20/solid'
 import {
   ArrowLongRightIcon,
   BeakerIcon,
   BoltIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
@@ -19,65 +19,83 @@ import Image from 'next/image'
 import { getAllProjectTxns } from '@/db/txn'
 import { Stats } from './stats'
 import { Card } from '@/components/layout/card'
+import { SpeakerWaveIcon } from '@heroicons/react/24/outline'
 
-const APROACH_FEATURES = [
+const APPROACH_FEATURES = [
   {
     title: 'Transparent',
     icon: EyeIcon,
     description:
-      'We publish all grant proposals, decision rationales, and bookkeeping to facilitate public discourse and accountability.',
+      'Everything about Manifund is public: our grant proposals, evals, and finances. Even our source code and meeting notes!',
   },
   {
     title: 'Fast',
     icon: BoltIcon,
     description:
-      "We prioritize fast turnaround times for grants and use software automations where we can so money can move where it's needed quickly.",
+      "We turn around grants in days instead of weeks, and automate flows with software, so money can move where it's needed - quickly.",
   },
   {
     title: 'Experimental',
     icon: BeakerIcon,
     description:
-      'Oftentimes the best way to see if something will work is to try it out, so we are willing to give people and approaches a shot and then iterate.',
+      "We bet on unproven people, speculative projects, and weird funding mechanisms. Not everything works, but that's okay!",
   },
   {
-    title: 'Expert led',
-    icon: CheckBadgeIcon,
+    title: 'Collaborative',
+    icon: UserGroupIcon,
     description:
-      'We leverage the knowledge and networks of domain experts and see our role as providing the infrastructure and operational support to make their work easier.',
+      "We're good at building websites, but we don't know everything - so we ask domain experts (and people like you!) to help decide what to fund.",
   },
 ]
+
+// TODO: our partners (logos)
+// TODO: testimonials
 
 const FUNDING_MECHANISMS = [
   {
     title: 'Regranting',
     icon: <ArrowPathIcon className="h-6 w-6 stroke-2 text-white" />,
     description:
-      'Our regranting program puts grantmaking decisions in the hands of domain experts, and allows donors to outsource their donation decisions to experts of their choice.',
+      'We delegate grant budgets to regrantors who are experts in their fields, and let donors choose which ones best align with their interests.',
     href: '/about/regranting',
   },
   {
     title: 'Impact markets',
     icon: <ArrowTrendingUpIcon className="h-6 w-6 stroke-2 text-white" />,
     description:
-      'In the past, we ran two funding rounds using an impact market, which works like VC-funding, but for non-profits!',
-    href: '/about/impact-markets',
+      'We run funding rounds where funders can invest in projects vying for charitable prizes - similar to a VC ecosystem.',
+    href: '/about/impact-certificates',
+  },
+  {
+    title: 'Open call',
+    icon: <SpeakerWaveIcon className="h-6 w-6 stroke-2 text-white" />,
+    description:
+      'We let anyone propose a charitable project, and look for funders on our site - acting as Kickstarter for non-profits.',
+    href: '/',
   },
 ]
 
 const TEAM_MEMBERS = [
   {
     name: 'Austin Chen',
-    title: 'Co-founder & CEO',
+    title: 'Cofounder, CEO',
     avatarUrl:
       'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/10bd8a14-4002-47ff-af4a-92b227423a74/avatar',
     username: 'Austin',
   },
   {
     name: 'Rachel Weinberg',
-    title: 'Co-founder & Engineer',
+    title: 'Cofounder, Engineer',
     avatarUrl:
       'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/4de2634d-3802-4141-881e-9ce687f87485/8271a711-1159-0a97-6620-bd082b6ebc3b',
     username: 'Rachel',
+  },
+  {
+    name: 'Saul Munn',
+    title: 'Strategy & Ops',
+    avatarUrl:
+      'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/afc2bd64-9df3-4706-b5d8-752c5681283e/bcd39763-0107-14de-68ca-a79b0bf0f54a',
+    username: 'saulmunn',
   },
 ]
 
@@ -88,14 +106,14 @@ export default async function AboutPage() {
     <>
       <Col className="w-full gap-10 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5 sm:p-10">
         <h1 className="text-center font-semibold text-white">
-          We design software and organize programs that fund impactful projects.
+          We write code and run programs to fund impactful projects.
         </h1>
         <h2 className="text-center text-4xl font-bold text-white">
           Our approach is...
         </h2>
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2">
-            {APROACH_FEATURES.map((feature) => {
+            {APPROACH_FEATURES.map((feature) => {
               return (
                 <Card
                   key={feature.title}
@@ -118,7 +136,7 @@ export default async function AboutPage() {
           href="/about/donate"
           className="w-full text-right text-sm font-semibold text-white"
         >
-          Learn about donating
+          Donate to Manifund
           <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
         </Link>
       </Col>
