@@ -105,22 +105,21 @@ export function ProjectDisplay(props: {
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
   const minIncludingAmm = getMinIncludingAmm(project)
   const tradePoints = calculateTradePoints(projectTxns, project.id)
+  const activeAuction =
+    !!prizeCause?.cert_params?.auction && project.stage === 'proposal'
   const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
     undefined | string
   >(undefined)
   return (
     <>
-      {project.type === 'grant' &&
-        project.stage === 'proposal' &&
-        pendingProjectTransfers.length === 0 && (
-          <ProposalRequirements
-            signedAgreement={project.signed_agreement}
-            approved={project.approved === true}
-            reachedMinFunding={amountRaised >= minIncludingAmm}
-            projectSlug={project.slug}
-          />
-        )}
-
+      {project.stage === 'proposal' && pendingProjectTransfers.length === 0 && (
+        <ProposalRequirements
+          signedAgreement={project.signed_agreement}
+          approved={project.approved === true}
+          reachedMinFunding={amountRaised >= minIncludingAmm}
+          projectSlug={project.slug}
+        />
+      )}
       <Col className="gap-2">
         <Col className="gap-1">
           <Row className="flex-2 items-center gap-3">
@@ -160,12 +159,9 @@ export function ProjectDisplay(props: {
               </Tooltip>
             )}
             {pendingProjectTransfers.length > 0 && (
-              <>
-                <span className="text-gray-500">
-                  (pending transfer to{' '}
-                  {pendingProjectTransfers[0].recipient_name})
-                </span>
-              </>
+              <span className="text-gray-500">
+                pending transfer to {pendingProjectTransfers[0].recipient_name}
+              </span>
             )}
           </Row>
           <ProjectData
@@ -220,9 +216,10 @@ export function ProjectDisplay(props: {
           project.stage === 'proposal' && (
             <AssuranceBuyBox
               project={project}
-              valuation={valuation}
+              minValuation={valuation}
               offerSizeDollars={minIncludingAmm - amountRaised}
               maxBuy={userSpendableFunds}
+              activeAuction={activeAuction}
             />
           )}
         {userProfile &&
@@ -280,6 +277,7 @@ export function ProjectDisplay(props: {
             userSpendableFunds={userSpendableFunds}
             userSellableShares={userSellableShares}
             specialCommentPrompt={specialCommentPrompt}
+            activeAuction={activeAuction}
           />
         </div>
       </Col>

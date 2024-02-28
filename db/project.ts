@@ -5,7 +5,7 @@ import { Txn } from './txn'
 import { Profile } from './profile'
 import { Comment } from '@/db/comment'
 import { Round } from './round'
-import { MiniCause } from './cause'
+import { CertParams, MiniCause } from './cause'
 import { ProjectFollow } from './follows'
 
 export type Project = Database['public']['Tables']['projects']['Row']
@@ -18,7 +18,7 @@ export type ProjectAndProfile = Project & { profiles: Profile }
 export type ProjectAndBids = Project & { bids: Bid[] }
 export type ProjectBidsAndFollows = Project & { bids: Bid[] } & {
   project_follows: ProjectFollow[]
-}
+} & { causes: { cert_params: CertParams | null }[] }
 export type FullProject = Project & { profiles: Profile } & {
   bids: Bid[]
 } & { txns: Txn[] } & { comments: Comment[] } & { rounds: Round } & {
@@ -217,7 +217,7 @@ export async function getProjectBidsAndFollowsById(
 ) {
   const { data } = await supabase
     .from('projects')
-    .select('*, bids(*), project_follows(follower_id)')
+    .select('*, bids(*), project_follows(follower_id), causes(cert_params)')
     .eq('id', projectId)
     .throwOnError()
   if (data === null) {

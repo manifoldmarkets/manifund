@@ -55,6 +55,25 @@ export const Checkbox = forwardRef(
   }
 )
 
+export const RadioButton = forwardRef(
+  (props: JSX.IntrinsicElements['input'], ref: Ref<HTMLInputElement>) => {
+    const { className, ...rest } = props
+    return (
+      <Row className="h-6 items-center">
+        <input
+          ref={ref}
+          type="radio"
+          className={clsx(
+            'h-4 w-4 cursor-pointer rounded-full border-gray-300 text-orange-600 focus:ring-orange-600',
+            className
+          )}
+          {...rest}
+        />
+      </Row>
+    )
+  }
+)
+
 export function AmountInput(
   props: {
     amount: number | undefined
