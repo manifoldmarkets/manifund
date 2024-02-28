@@ -1,5 +1,5 @@
 import { createServerClient } from '@/db/supabase-server'
-import { getUser } from '@/db/profile'
+import { getUser, isAdmin } from '@/db/profile'
 import { getProjectWithCausesBySlug } from '@/db/project'
 import { getPrizeCause, listSimpleCauses } from '@/db/cause'
 import React from 'react'
@@ -15,7 +15,7 @@ export default async function PublishProjectPage(props: {
   if (
     !project ||
     !(project.stage === 'draft') ||
-    !(user?.id === project.creator)
+    !(user?.id === project.creator || isAdmin(user))
   ) {
     return <div>404</div>
   }

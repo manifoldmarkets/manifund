@@ -24,9 +24,16 @@ export function Bids(props: {
   userSpendableFunds: number
   userSellableShares: number
   userProfile?: Profile
+  activeAuction?: boolean
 }) {
-  const { bids, project, userSpendableFunds, userSellableShares, userProfile } =
-    props
+  const {
+    bids,
+    project,
+    userSpendableFunds,
+    userSellableShares,
+    userProfile,
+    activeAuction,
+  } = props
   if (bids.length === 0)
     return (
       <p className="text-center italic text-gray-500">
@@ -50,7 +57,7 @@ export function Bids(props: {
                 bid={bid}
                 project={project}
                 userProfile={userProfile}
-                showValuation={true}
+                showValuation={!activeAuction}
                 userSellableShares={userSellableShares}
                 userSpendableFunds={userSpendableFunds}
               />
@@ -87,7 +94,7 @@ export function Bids(props: {
       </Row>
     )
   } else {
-    return <></>
+    return null
   }
 }
 

@@ -24,7 +24,10 @@ export async function maybeActivateProject(
     console.error('Project not found')
     return
   }
-  if (checkFundingReady(project)) {
+  const activeAuction =
+    !!project.causes.find((c) => !!c.cert_params && c.cert_params.auction) &&
+    project.type === 'cert'
+  if (!activeAuction && checkFundingReady(project)) {
     await activateProject(
       project,
       project.project_follows.map((f) => f.follower_id)
