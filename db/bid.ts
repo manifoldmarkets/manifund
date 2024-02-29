@@ -102,6 +102,7 @@ export async function getRecentFullBids(
     .select('*, profiles(*), projects(*)')
     .order('created_at', { ascending: false })
     .eq('status', 'pending')
+    .or('type.eq.donate, type.eq.buy')
     .range(start, start + size)
     .throwOnError()
   return data as FullBid[]
