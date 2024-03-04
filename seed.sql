@@ -81,7 +81,7 @@ create type project_stage as enum ('active', 'proposal', 'not funded', 'hidden',
 create table if not exists public.projects (
   id uuid not null default gen_random_uuid(),
   created_at timestamptz not null default now(),
-  slug text not null,
+  slug text not null unique,
   title text not null,
   blurb text,
   creator uuid not null references auth.users(id) on delete cascade,
@@ -242,7 +242,7 @@ WITH CHECK (true)
  -- causes
 create table if not exists public.causes (
   title text not null,
-  slug text not null,
+  slug text not null unique,
   subtitle text,
   description jsonb,
   header_image_url text not null,
