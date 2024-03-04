@@ -6,7 +6,7 @@ export type Cause = Omit<
   Database['public']['Tables']['causes']['Row'],
   'cert_params'
 > & { cert_params: CertParams | null }
-export type FullCause = Cause & { projects: { stage: string }[] }
+export type FullCause = Cause & { projects: { stage: string; type: string }[] }
 export type MiniCause = { title: string; slug: string }
 export type SimpleCause = {
   title: string
@@ -31,6 +31,20 @@ export async function listFullCauses(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('causes')
     .select('*, projects(stage)')
+  if (error) {
+    throw error
+  }
+  return sortBy(data, 'sort') as FullCause[]
+}
+
+export async function getSomeFullCauses(
+  causeSlugs: string[],
+  supabase: SupabaseClient
+) {
+  const { data, error } = await supabase
+    .from('causes')
+    .select('*, projects(stage, type)')
+    .in('slug', causeSlugs)
   if (error) {
     throw error
   }

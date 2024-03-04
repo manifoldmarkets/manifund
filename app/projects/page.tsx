@@ -10,7 +10,7 @@ import Link from 'next/link'
 import clsx from 'clsx'
 import { CardlessProject } from '@/components/project-card'
 import { CardlessProfile } from '@/components/profile-card'
-import { listMiniCauses } from '@/db/cause'
+import { FullCause, getSomeFullCauses, listMiniCauses } from '@/db/cause'
 import { getRecentFullComments } from '@/db/comment'
 import { getRecentFullTxns } from '@/db/txn'
 import { FeedTabs } from './feed-tabs'
@@ -56,59 +56,21 @@ export default async function Projects(props: {
     getRecentFullBids(supabase, PAGE_SIZE, start),
     listMiniCauses(supabase),
   ])
-  const featuredRegrantors = featuredRegrantorIds.map((id) => {
-    return regrantors.find((regranter) => regranter.id === id)
-  })
-  const featuredProjects = featuredProjectSlugs.map((slug) => {
-    return projects.find((project) => project.slug === slug)
-  })
+  const featuredCauses = await getSomeFullCauses(
+    ['acx-grants-2024', 'manifold-community'],
+    supabase
+  )
   return (
     <Col className="gap-16 px-3 py-5 sm:px-6">
-      {user === null && (
-        <Col className="items-center justify-between gap-8">
-          {' '}
-          <LandingSection />
-          <div className="w-full">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-              Featured regrantors
-            </h1>
-            <ul className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {featuredRegrantors.map((regrantor, idx) => (
-                <li
-                  className={clsx(idx > 2 && 'sm:hidden')}
-                  key={regrantor?.id}
-                >
-                  <CardlessProfile profile={regrantor as Profile} />
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/rounds/regrants?tab=regrants"
-              className="flex items-center justify-end gap-2 text-sm font-semibold text-orange-600 hover:underline"
-            >
-              See all regrantors
-              <ArrowLongRightIcon className="h-5 w-5 stroke-2" />
-            </Link>
-          </div>
-          <div className="w-full">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-              Featured projects
-            </h1>
-            <Col className="w-full items-center">
-              <ul className="mt-5 max-w-2xl divide-y divide-gray-100">
-                {featuredProjects.map((project) => (
-                  <li key={project?.id} className="py-3">
-                    <CardlessProject
-                      project={project as FullProject}
-                      showFundingBar
-                    />
-                  </li>
-                ))}
-              </ul>
-            </Col>
-          </div>
-        </Col>
-      )}
+      {user === null && <LandingSection />}
+      <Col className="gap-3">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+          Current programs
+        </h1>
+        {featuredCauses.map((cause) => (
+          <CausePreview cause={cause} key={cause.slug} />
+        ))}
+      </Col>
       <FeedTabs
         recentComments={recentComments}
         recentDonations={recentDonations}
@@ -117,6 +79,51 @@ export default async function Projects(props: {
         causesList={causesList}
       />
     </Col>
+  )
+}
+
+function CausePreview(props: { cause: FullCause }) {
+  const { cause } = props
+  const visibleProjects = cause.projects.filter(
+    (project) => project.stage !== 'hidden' && project.stage !== 'draft'
+  )
+  const numGrants = visibleProjects.filter(
+    (project) => project.type === 'grant'
+  ).length
+  const numCerts = visibleProjects.filter(
+    (project) => project.type === 'cert'
+  ).length
+  return (
+    <Link
+      className="relative flex flex-col gap-4 rounded-lg bg-white p-4 shadow-md sm:flex-row"
+      href={`/causes/${cause.slug}`}
+    >
+      <Image
+        src={cause.header_image_url}
+        width={240}
+        height={120}
+        className="relative aspect-[3/1] w-full flex-shrink-0 rounded bg-white object-cover sm:aspect-[5/3] sm:max-w-60"
+        alt="round header image"
+      />
+      <Col className="w-full justify-between">
+        <Col className="mb-5 gap-2">
+          <p className="text-lg font-semibold leading-tight lg:text-xl">
+            {cause.title}
+          </p>
+          <span className="text-sm text-gray-600 sm:text-base">
+            {cause.subtitle}
+          </span>
+        </Col>
+        <Row className="justify-between">
+          <span className="text-xs text-gray-600 sm:text-sm">
+            {numGrants} grants
+          </span>
+          <span className="text-xs text-gray-600 sm:text-sm">
+            {numCerts} certs
+          </span>
+        </Row>
+      </Col>
+    </Link>
   )
 }
 

@@ -68,6 +68,7 @@ export type Database = {
           project_description_outline: string | null
           slug: string
           sort: number
+          subtitle: string | null
           title: string
         }
         Insert: {
@@ -80,6 +81,7 @@ export type Database = {
           project_description_outline?: string | null
           slug: string
           sort?: number
+          subtitle?: string | null
           title: string
         }
         Update: {
@@ -92,6 +94,7 @@ export type Database = {
           project_description_outline?: string | null
           slug?: string
           sort?: number
+          subtitle?: string | null
           title?: string
         }
         Relationships: [
