@@ -27,7 +27,7 @@ export default function ImpactCertsPage() {
           Accredited investors initially offer to fund the proposed project
           through an auction. At a predetermined date, the auction will resolve:
           if the total amount bid meets the minimum funding goal, the project
-          will be funded and top bidders by valuation will recieve shares in the
+          will be funded and top bidders by valuation will receive shares in the
           project in exchange for money. Otherwise, the project will not be
           funded.
         </li>
