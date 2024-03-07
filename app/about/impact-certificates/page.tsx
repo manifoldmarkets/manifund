@@ -114,16 +114,22 @@ export default function ImpactCertsPage() {
           by Scott Alexander
         </li>
         <li>
-          <a href="https://medium.com/ethereum-optimism/retroactive-public-goods-funding-33c9b7d00f0c">
-            Retroactive Public Goods Funding
+          <a href="https://www.brasstacks.blog/explain-im/">
+            Explaining Impact Markets
           </a>{' '}
-          by Vitalik Buterin
+          by Saul Munn
         </li>
         <li>
           <a href="https://impactpurchase.org/why-certificates/">
             Why Certificates?
           </a>{' '}
           by Paul Christiano and Katja Grace
+        </li>
+        <li>
+          <a href="https://medium.com/ethereum-optimism/retroactive-public-goods-funding-33c9b7d00f0c">
+            Retroactive Public Goods Funding
+          </a>{' '}
+          by Vitalik Buterin
         </li>
       </ul>
       <h1 className="relative top-5">Appendix: technical details</h1>
