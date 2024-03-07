@@ -7,14 +7,14 @@ import { Comment } from '@/db/comment'
 import { JSONContent } from '@tiptap/core'
 import { TIPTAP_EXTENSIONS } from '@/components/editor'
 import { getProjectFollowerIds } from '@/db/follows'
-import { createServerClient } from '@/db/supabase-server'
+import { createAdminClient } from './_db'
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const comment = req.body.record as Comment
-  const supabase = createServerClient()
+  const supabase = createAdminClient()
   const fullComment = await getFullCommentById(supabase, comment.id)
   const projectFollowerIds = await getProjectFollowerIds(
     supabase,
