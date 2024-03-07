@@ -217,7 +217,11 @@ export function ProjectDisplay(props: {
             <AssuranceBuyBox
               project={project}
               minValuation={valuation}
-              offerSizeDollars={minIncludingAmm - amountRaised}
+              offerSizePortion={
+                (activeAuction
+                  ? minIncludingAmm
+                  : minIncludingAmm - amountRaised) / valuation
+              }
               maxBuy={userSpendableFunds}
               activeAuction={activeAuction}
             />

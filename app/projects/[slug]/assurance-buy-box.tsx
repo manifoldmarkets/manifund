@@ -18,16 +18,16 @@ import { useState } from 'react'
 export function AssuranceBuyBox(props: {
   project: Project
   minValuation: number
-  offerSizeDollars: number
+  offerSizePortion: number
   maxBuy: number
   activeAuction?: boolean
 }) {
-  const { project, minValuation, offerSizeDollars, maxBuy, activeAuction } =
+  const { project, minValuation, offerSizePortion, maxBuy, activeAuction } =
     props
   const [amount, setAmount] = useState<number | undefined>(0)
   const [valuation, setValuation] = useState<number | undefined>(minValuation)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const offerSizePercent = valuation ? offerSizeDollars / valuation : 0
+  const offerSizeDollars = offerSizePortion * (valuation ?? minValuation)
   const router = useRouter()
   let errorMessage = null
   if (!amount) {
@@ -38,7 +38,7 @@ export function AssuranceBuyBox(props: {
     errorMessage = `You don't have enough funds to buy $${amount}. You can buy up to $${maxBuy} worth.`
   } else if (amount && amount > offerSizeDollars) {
     errorMessage = `You can't buy more than ${formatPercent(
-      offerSizePercent
+      offerSizePortion
     )} of the project.`
   }
 
@@ -114,19 +114,19 @@ export function AssuranceBuyBox(props: {
                 marks={[
                   { label: formatPercent(0), value: 0 },
                   {
-                    label: formatPercent(offerSizePercent / 4),
+                    label: formatPercent(offerSizePortion / 4),
                     value: offerSizeDollars / 4,
                   },
                   {
-                    label: formatPercent(offerSizePercent / 2),
+                    label: formatPercent(offerSizePortion / 2),
                     value: offerSizeDollars / 2,
                   },
                   {
-                    label: formatPercent((offerSizePercent / 4) * 3),
+                    label: formatPercent((offerSizePortion / 4) * 3),
                     value: (offerSizeDollars / 4) * 3,
                   },
                   {
-                    label: formatPercent(offerSizePercent),
+                    label: formatPercent(offerSizePortion),
                     value: offerSizeDollars,
                   },
                 ]}
