@@ -27,7 +27,7 @@ export default function ImpactCertsPage() {
           Accredited investors initially offer to fund the proposed project
           through an auction. At a predetermined date, the auction will resolve:
           if the total amount bid meets the minimum funding goal, the project
-          will be funded and top bidders by valuation will recieve shares in the
+          will be funded and top bidders by valuation will receive shares in the
           project in exchange for money. Otherwise, the project will not be
           funded.
         </li>
@@ -56,7 +56,7 @@ export default function ImpactCertsPage() {
           successfully funded at this higher valuation.
         </li>
         <li>
-          3 months later, the forecasting model proves to be effective in
+          Three months later, the forecasting model proves to be effective in
           predicting the trajectory of an upcoming pandemic and helping
           hospitals take action.
         </li>
@@ -65,9 +65,11 @@ export default function ImpactCertsPage() {
           to buy up all of the outstanding certs.
         </li>
         <li>
-          Ivan’s certs have tripled in value from $3,000 to $9,000; he sells
-          half to The Good Foundation for $4,500, and burns the other half to
-          claim charitable impact.
+          Since Ivan owns 50% of the project{"'"}s certs, his stake has tripled in
+          value from $3,000 to $9,000; he sells them for $9,000 to The Good
+          Foundation, netting a $6,000 profit. (Important note: for legal reasons,
+          profits on Manifund impact certificates can currently only be used to
+          donate to charity and can{"'"}t be cashed out in the normal way.)
         </li>
       </ol>
       <h3 id="-why-are-impact-certs-better-than-regular-grants-">
@@ -114,16 +116,22 @@ export default function ImpactCertsPage() {
           by Scott Alexander
         </li>
         <li>
-          <a href="https://medium.com/ethereum-optimism/retroactive-public-goods-funding-33c9b7d00f0c">
-            Retroactive Public Goods Funding
+          <a href="https://www.brasstacks.blog/explain-im/">
+            Explaining Impact Markets
           </a>{' '}
-          by Vitalik Buterin
+          by Saul Munn
         </li>
         <li>
           <a href="https://impactpurchase.org/why-certificates/">
             Why Certificates?
           </a>{' '}
           by Paul Christiano and Katja Grace
+        </li>
+        <li>
+          <a href="https://medium.com/ethereum-optimism/retroactive-public-goods-funding-33c9b7d00f0c">
+            Retroactive Public Goods Funding
+          </a>{' '}
+          by Vitalik Buterin
         </li>
       </ul>
       <h1 className="relative top-5">Appendix: technical details</h1>
