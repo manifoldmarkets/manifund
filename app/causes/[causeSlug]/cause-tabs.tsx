@@ -1,4 +1,6 @@
 'use client'
+import Link from "next/link"
+import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
 import { RichContent } from '@/components/editor'
 import { EmptyContent } from '@/components/empty-content'
 import { ProjectsDisplay } from '@/components/projects-display'
@@ -77,11 +79,19 @@ export function CauseTabs(props: {
               subtitle={'No projects here yet.'}
             />
           ) : (
-            <ProjectsDisplay
-              projects={certs}
-              causesList={causesList}
-              noFilter
-            />
+            <div>
+              <div className="mb-4 font-semibold text-orange-600 hover:underline">
+                <Link href="/about/impact-certificates">
+                  About impact certificates
+                  <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
+                </Link>
+              </div>
+              <ProjectsDisplay
+                projects={certs}
+                causesList={causesList}
+                noFilter
+              />
+            </div>
           )}
         </>
       ),
