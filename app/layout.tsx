@@ -71,6 +71,7 @@ export default async function RootLayout({
           src="https://analytics.umami.is/script.js"
           data-website-id="5bd676d9-a4fd-4b50-bed5-b15a561c7374"
         />
+        <SpeedInsights />
       </body>
     </html>
   )
