@@ -30,6 +30,26 @@ export function SignAgreement(props: {
             I, <strong>{project.profiles.full_name}</strong>, agree to the terms
             of this grant as laid out in the above document.
           </label>
+          {/* Show the signatures below, in the Caveat font */}
+          <div className="mt-3 font-caveat text-2xl">
+            <div className="flex justify-between">
+              <div className="w-1/3 border-b-2 border-black">
+                {project.profiles.full_name}
+              </div>
+              <div className="w-1/3 border-b-2 border-black">
+                {new Date().toLocaleDateString()}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-3 font-caveat text-2xl">
+            <div className="flex justify-between">
+              <div className="w-1/3 border-b-2 border-black">Austin Chen</div>
+              <div className="w-1/3 border-b-2 border-black">
+                {new Date().toLocaleDateString()}
+              </div>
+            </div>
+          </div>
         </div>
       </Row>
       {!project.signed_agreement && userIsOwner && (

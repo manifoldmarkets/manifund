@@ -5,7 +5,7 @@ import SupabaseProvider from '@/db/supabase-provider'
 import { createServerClient } from '@/db/supabase-server'
 import './globals.css'
 import Sidebar from './sidebar'
-import { Readex_Pro, Josefin_Slab } from 'next/font/google'
+import { Readex_Pro, Josefin_Slab, Caveat } from 'next/font/google'
 import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
 import { CompleteProfileBanner } from './banner'
@@ -17,7 +17,8 @@ const josefin = Josefin_Slab({
   subsets: ['latin'],
   variable: '--font-josefin-slab',
 })
-const fontVars = [readex.variable, josefin.variable].join(' ')
+const caveat = Caveat({ subsets: ['latin'], variable: '--font-caveat' })
+const fontVars = [readex.variable, josefin.variable, caveat.variable].join(' ')
 
 // Do not cache this layout
 export const revalidate = 0
