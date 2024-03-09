@@ -11,6 +11,7 @@ import Script from 'next/script'
 import { CompleteProfileBanner } from './banner'
 import { getProfileById } from '@/db/profile'
 import { Toaster } from 'react-hot-toast'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 const josefin = Josefin_Slab({
