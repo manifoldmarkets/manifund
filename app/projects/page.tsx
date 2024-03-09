@@ -31,6 +31,7 @@ export default async function Projects(props: {
     recentDonations,
     recentBids,
     causesList,
+    featuredCauses,
   ] = await Promise.all([
     timeit(getUser)(supabase),
     timeit(listProjects)(supabase),
@@ -38,11 +39,8 @@ export default async function Projects(props: {
     timeit(getRecentFullTxns)(supabase, PAGE_SIZE, start),
     timeit(getRecentFullBids)(supabase, PAGE_SIZE, start),
     timeit(listMiniCauses)(supabase),
+    getSomeFullCauses(['acx-grants-2024', 'manifold-community'], supabase),
   ])
-  const featuredCauses = await timeit(getSomeFullCauses)(
-    ['acx-grants-2024', 'manifold-community'],
-    supabase
-  )
   return (
     <Col className="gap-16 px-3 py-5 sm:px-6">
       {user === null && <LandingSection />}
