@@ -14,14 +14,16 @@ import { FeedTabs } from './feed-tabs'
 import { getRecentFullBids } from '@/db/bid'
 import { timeit } from '@/utils/perf'
 
-export const revalidate = 60
+// export const revalidate = 60
+export const dynamic = 'force-static'
 
 export default async function Projects(props: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  // searchParams: { [key: string]: string | string[] | undefined }
 }) {
   const PAGE_SIZE = 20
   // Extract `page` from ?p=X param as an 1-indexed integer
-  const page = parseInt(props.searchParams?.p as string) || 1
+  // const page = parseInt(props.searchParams?.p as string) || 1
+  const page = 1
   const start = (page - 1) * PAGE_SIZE
   const supabase = createServerClient()
   const [
@@ -41,6 +43,7 @@ export default async function Projects(props: {
     timeit(listMiniCauses)(supabase),
     getSomeFullCauses(['acx-grants-2024', 'manifold-community'], supabase),
   ])
+  console.log('projects.length', projects.length)
   return (
     <Col className="gap-16 px-3 py-5 sm:px-6">
       {user === null && <LandingSection />}

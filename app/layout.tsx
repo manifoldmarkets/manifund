@@ -20,8 +20,8 @@ const josefin = Josefin_Slab({
 })
 const fontVars = [readex.variable, josefin.variable].join(' ')
 
-// Do not cache this layout
-export const revalidate = 0
+// revalidate = 0 means that this root layout will be dynamically generated on every request?
+// export const revalidate = 0
 
 export const metadata = {
   title: {

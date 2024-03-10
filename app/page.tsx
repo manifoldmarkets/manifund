@@ -3,8 +3,12 @@ import Projects from './projects/page'
 export const revalidate = 60
 
 export default function Home(props: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  // searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  // @ts-expect-error Server Component
-  return <Projects searchParams={props.searchParams} />
+  return (
+    // @ts-expect-error Server Component
+    <Projects
+    // searchParams={props.searchParams}
+    />
+  )
 }
