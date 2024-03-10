@@ -74,7 +74,7 @@ export async function listProjects(supabase: SupabaseClient) {
     .neq('stage', 'hidden')
     .neq('stage', 'draft')
     .order('created_at', { ascending: false })
-    .limit(30)
+    // .limit(30)
     .throwOnError()
   // Scary type conversion!
   return data as unknown as FullProject[]
