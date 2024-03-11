@@ -85,9 +85,9 @@ export function ProjectsDisplay(props: {
 
   return (
     <Col className="gap-2">
-      <div className="flex flex-col justify-between sm:gap-2 lg:flex-row lg:items-center">
+      <div className="flex flex-col justify-between gap-2 lg:flex-row lg:items-center">
         <SearchBar search={search} setSearch={setSearch} className="w-full" />
-        <div className="relative lg:w-4/12">
+        <div className="lg:w-4/12">
           <Select
             options={sortOptions ?? DEFAULT_SORT_OPTIONS}
             selected={sortBy}

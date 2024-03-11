@@ -14,7 +14,7 @@ export const Select = (props: {
   return (
     <Listbox value={selected} onChange={onSelect}>
       {({ open }) => (
-        <div className="relative mt-2">
+        <div className="relative">
           <Listbox.Button className="relative w-full rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-sm text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-600 sm:text-base sm:leading-6">
             <span className="text-gray-500">{label} </span>
             <span>{selected}</span>
