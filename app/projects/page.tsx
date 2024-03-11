@@ -96,7 +96,9 @@ function CausePreview(props: { cause: FullCause }) {
   return (
     <Link
       className="relative flex flex-col gap-4 rounded-lg bg-white p-4 shadow-md sm:flex-row"
-      href={`/causes/${cause.slug}`}
+      href={`/causes/${cause.slug}?tab=${
+        numCerts > numGrants ? 'certs' : 'grants'
+      }`}
     >
       <Image
         src={cause.header_image_url}
