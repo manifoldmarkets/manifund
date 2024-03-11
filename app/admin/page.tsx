@@ -1,4 +1,4 @@
-import { Table } from '@/components/table'
+import { Table, TableRow } from '@/components/table'
 import { getUser, isAdmin } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { createAdminClient } from '@/pages/api/_db'
@@ -249,7 +249,7 @@ export default async function Admin({
         </h1>
       </div>
 
-      {/* <Tabs
+      <Tabs
         tabs={[
           {
             name: 'Pending approval',
@@ -289,7 +289,7 @@ export default async function Admin({
           },
         ]}
         currentTabId={currentTabId}
-      /> */}
+      />
     </div>
   )
 }
