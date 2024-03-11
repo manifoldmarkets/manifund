@@ -35,6 +35,7 @@ import { UserAvatarAndBadge } from '@/components/user-link'
 import { Tooltip } from '@/components/tooltip'
 import { EnvelopeIcon } from '@heroicons/react/20/solid'
 import { ViewerActionPanel } from './viewer-action-panel'
+import { FinancialDataBox } from './financial-data-box'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -180,13 +181,13 @@ export function ProjectDisplay(props: {
               />
             )}
           </Row>
-          {/* <ProjectData
+        </div>
+        {/* <ProjectData
             project={project}
             raised={amountRaised}
             valuation={valuation}
             minimum={minIncludingAmm}
-          /> */}
-        </div>
+          />
         {project.stage !== 'proposal' &&
           project.type === 'cert' &&
           !!project.amm_shares && (
@@ -267,7 +268,8 @@ export function ProjectDisplay(props: {
             buttonText="Sign in to contribute"
             className="mx-auto my-4"
           />
-        )}
+        )} */}
+        <FinancialDataBox project={project} />
         {project.description && (
           <RichContent content={project.description} className="px-3 text-sm" />
         )}

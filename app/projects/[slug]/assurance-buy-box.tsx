@@ -1,5 +1,5 @@
 import { Button } from '@/components/button'
-import { AmountInput, Input } from '@/components/input'
+import { AmountInput } from '@/components/input'
 import { Card } from '@/components/layout/card'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
