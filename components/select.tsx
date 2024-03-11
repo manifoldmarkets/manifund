@@ -1,3 +1,4 @@
+'use client'
 import clsx from 'clsx'
 
 export const Select = (props: JSX.IntrinsicElements['select']) => {
