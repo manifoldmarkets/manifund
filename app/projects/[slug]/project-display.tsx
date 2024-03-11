@@ -164,12 +164,28 @@ export function ProjectDisplay(props: {
               </span>
             )}
           </Row>
-          <ProjectData
+          <Row className="justify-between gap-2">
+            {userProfile && !isOwnProject && (
+              <ViewerActionPanel
+                projectId={project.id}
+                projectSlug={project.slug}
+                currentlyFollowing={userIsFollower}
+              />
+            )}
+            {(isOwnProject || userIsAdmin) && (
+              <CreatorActionPanel
+                project={project}
+                causesList={causesList}
+                prizeCause={prizeCause}
+              />
+            )}
+          </Row>
+          {/* <ProjectData
             project={project}
             raised={amountRaised}
             valuation={valuation}
             minimum={minIncludingAmm}
-          />
+          /> */}
         </div>
         {project.stage !== 'proposal' &&
           project.type === 'cert' &&
@@ -255,22 +271,6 @@ export function ProjectDisplay(props: {
         {project.description && (
           <RichContent content={project.description} className="px-3 text-sm" />
         )}
-        <Row className="justify-between">
-          {userProfile && !isOwnProject && (
-            <ViewerActionPanel
-              projectId={project.id}
-              projectSlug={project.slug}
-              currentlyFollowing={userIsFollower}
-            />
-          )}
-          {(isOwnProject || userIsAdmin) && (
-            <CreatorActionPanel
-              project={project}
-              causesList={causesList}
-              prizeCause={prizeCause}
-            />
-          )}
-        </Row>
         <div id="tabs">
           <ProjectTabs
             project={project}
