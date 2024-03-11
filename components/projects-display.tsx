@@ -2,7 +2,6 @@
 import { FullProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
-import { useRouter } from 'next/navigation'
 import { Fragment, useState } from 'react'
 import {
   getActiveValuation,
@@ -18,6 +17,7 @@ import { CauseTag } from './tags'
 import { Col } from './layout/col'
 import { SearchBar } from './input'
 import { searchInAny } from '@/utils/parse'
+import { Select } from './select'
 
 type SortOption =
   | 'votes'
@@ -70,8 +70,6 @@ export function ProjectsDisplay(props: {
       project.project_transfers?.[0]?.recipient_name ?? ''
     )
   })
-  const router = useRouter()
-
   const proposals = selectedProjects.filter(
     (project) => project.stage == 'proposal'
   )
@@ -89,22 +87,13 @@ export function ProjectsDisplay(props: {
     <Col className="gap-2">
       <div className="flex flex-col justify-between gap-2 lg:flex-row lg:items-center">
         <SearchBar search={search} setSearch={setSearch} className="w-full" />
-        <div className="relative lg:w-4/12">
-          <Listbox
-            value={sortBy}
-            onChange={(event) => {
-              setSortBy(event)
-              router.refresh()
-            }}
-          >
-            {({ open }) => (
-              <SortSelect
-                sortBy={sortBy}
-                open={open}
-                options={sortOptions ?? DEFAULT_SORT_OPTIONS}
-              />
-            )}
-          </Listbox>
+        <div className="lg:w-4/12">
+          <Select
+            options={sortOptions ?? DEFAULT_SORT_OPTIONS}
+            selected={sortBy}
+            onSelect={(event) => setSortBy(event as SortOption)}
+            label="Sort by"
+          />
         </div>
       </div>
       {!noFilter && (
@@ -227,77 +216,6 @@ function filterProjects(projects: FullProject[], includedCauses: Cause[]) {
       })
     })
   })
-}
-
-function SortSelect(props: {
-  sortBy: string
-  open: boolean
-  options: SortOption[]
-}) {
-  const { sortBy, open, options } = props
-  return (
-    <div>
-      <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-xs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:text-base sm:leading-6">
-        <div className="truncate">
-          <span className="text-gray-500">Sort by </span>
-          {sortBy}
-        </div>
-        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-          <ChevronUpDownIcon
-            className="h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
-        </span>
-      </Listbox.Button>
-
-      <Transition
-        show={open}
-        as={Fragment}
-        leave="transition ease-in duration-100"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-      >
-        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          {options.map((option) => (
-            <Listbox.Option
-              key={option}
-              className={({ active }) =>
-                clsx(
-                  active ? 'bg-orange-500 text-white' : 'text-gray-900',
-                  'relative cursor-pointer select-none py-2 pl-3 pr-9 text-xs sm:text-base'
-                )
-              }
-              value={option}
-            >
-              {({ selected, active }) => (
-                <>
-                  <span
-                    className={clsx(
-                      selected ? 'font-semibold' : 'font-normal',
-                      'block truncate text-xs sm:text-base'
-                    )}
-                  >
-                    {option}
-                  </span>
-
-                  {selected ? (
-                    <span
-                      className={clsx(
-                        active ? 'text-white' : 'text-orange-500',
-                        'absolute inset-y-0 right-0 flex items-center pr-4'
-                      )}
-                    >
-                      <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                  ) : null}
-                </>
-              )}
-            </Listbox.Option>
-          ))}
-        </Listbox.Options>
-      </Transition>
-    </div>
-  )
 }
 
 function CauseFilterSelect(props: {

@@ -1,5 +1,8 @@
+'use client'
 import clsx from 'clsx'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { Select } from './select'
 
 // TODO: Consider rewriting the tab navigation pattern to use Parallel Routes:
 // https://nextjs.org/docs/app/building-your-application/routing/parallel-routes#tab-groups
@@ -20,10 +23,24 @@ export function Tabs(props: { tabs: Tab[]; currentTabId?: string | null }) {
     currentTabId = tabs[0].id
   }
 
+  const router = useRouter()
+
   if (tabs.length === 0) return null
   return (
     <div>
-      <div className="block">
+      <div className="border-b border-gray-200 py-4 sm:hidden">
+        <Select
+          selected={
+            (tabs.find((tab) => tab.id === currentTabId) ?? tabs[0]).name
+          }
+          onSelect={(event) =>
+            router.push(`?tab=${tabs.find((tab) => tab.name === event)?.id}`)
+          }
+          options={tabs.map((tab) => tab.name)}
+          label="Tab:"
+        />
+      </div>
+      <div className="hidden sm:block">
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8" aria-label="Tabs">
             {tabs.map((tab) => (
