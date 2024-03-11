@@ -17,7 +17,7 @@ import { CauseTag } from './tags'
 import { Col } from './layout/col'
 import { SearchBar } from './input'
 import { searchInAny } from '@/utils/parse'
-import { Select, Option } from './select'
+import { Select } from './select'
 
 type SortOption =
   | 'votes'
@@ -89,13 +89,9 @@ export function ProjectsDisplay(props: {
         <SearchBar search={search} setSearch={setSearch} className="w-full" />
         <div className="relative lg:w-4/12">
           <Select
-            options={(sortOptions ?? DEFAULT_SORT_OPTIONS).map((sort) => {
-              return { name: sort, id: sort }
-            })}
-            selected={{ name: sortBy, id: sortBy }}
-            onSelect={(event) =>
-              setSortBy((event as Option).name as SortOption)
-            }
+            options={sortOptions ?? DEFAULT_SORT_OPTIONS}
+            selected={sortBy}
+            onSelect={(event) => setSortBy(event as SortOption)}
             label="Sort by"
           />
         </div>

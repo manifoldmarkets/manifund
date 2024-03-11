@@ -33,11 +33,13 @@ export function Tabs(props: { tabs: Tab[]; currentTabId?: string | null }) {
           id="tabs"
           name="tabs"
           className="block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-orange-500 focus:outline-none focus:ring-orange-500 sm:text-sm"
-          selected={tabs.find((tab) => tab.id === currentTabId) ?? tabs[0]}
-          onSelect={(event) =>
-            router.push(`?tab=${tabs.find((tab) => tab === event)?.id}`)
+          selected={
+            (tabs.find((tab) => tab.id === currentTabId) ?? tabs[0]).name
           }
-          options={tabs}
+          onSelect={(event) =>
+            router.push(`?tab=${tabs.find((tab) => tab.name === event)?.id}`)
+          }
+          options={tabs.map((tab) => tab.name)}
           label="Tab:"
         />
       </div>
