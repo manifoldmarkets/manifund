@@ -4,15 +4,13 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
 import { Fragment } from 'react'
 
-export const Select = (
-  props: JSX.IntrinsicElements['select'] & {
-    options: string[]
-    selected: string
-    onSelect: (option: string) => void
-    label?: string
-  }
-) => {
-  const { options, selected, onSelect, label, children, ...rest } = props
+export const Select = (props: {
+  options: string[]
+  selected: string
+  onSelect: (option: string) => void
+  label?: string
+}) => {
+  const { options, selected, onSelect, label } = props
   return (
     <Listbox value={selected} onChange={onSelect}>
       {({ open }) => (
