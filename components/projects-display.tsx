@@ -2,7 +2,6 @@
 import { FullProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
-import { useRouter } from 'next/navigation'
 import { Fragment, useState } from 'react'
 import {
   getActiveValuation,
@@ -71,8 +70,6 @@ export function ProjectsDisplay(props: {
       project.project_transfers?.[0]?.recipient_name ?? ''
     )
   })
-  const router = useRouter()
-
   const proposals = selectedProjects.filter(
     (project) => project.stage == 'proposal'
   )
@@ -88,7 +85,7 @@ export function ProjectsDisplay(props: {
 
   return (
     <Col className="gap-2">
-      <div className="flex flex-col justify-between gap-2 lg:flex-row lg:items-center">
+      <div className="flex flex-col justify-between sm:gap-2 lg:flex-row lg:items-center">
         <SearchBar search={search} setSearch={setSearch} className="w-full" />
         <div className="relative lg:w-4/12">
           <Select

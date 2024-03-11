@@ -27,7 +27,7 @@ export function Tabs(props: { tabs: Tab[]; currentTabId?: string | null }) {
   if (tabs.length === 0) return null
   return (
     <div>
-      <div className="sm:hidden">
+      <div className="border-b border-gray-200 py-4 sm:hidden">
         <Select
           id="tabs"
           name="tabs"

@@ -167,7 +167,7 @@ export function SearchBar(props: {
       </div>
       <input
         placeholder="Search"
-        className="block w-full rounded-md border-0 py-1.5 pl-7 text-sm text-gray-900 text-inherit shadow ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:pl-9 sm:text-base sm:leading-6"
+        className="w-full rounded-md border-0 py-1.5 pl-7 text-sm text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:pl-9 sm:text-base sm:leading-6"
         value={search}
         onChange={(event) => {
           setSearch(event.target.value)
