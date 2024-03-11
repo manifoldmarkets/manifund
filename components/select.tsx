@@ -49,7 +49,7 @@ export const Select = (props: {
                       <span
                         className={clsx(
                           selected ? 'font-semibold' : 'font-normal',
-                          'block truncate'
+                          'block truncate text-sm sm:text-base'
                         )}
                       >
                         {option}
