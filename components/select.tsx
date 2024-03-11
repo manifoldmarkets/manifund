@@ -16,8 +16,7 @@ export const Select = (
     label?: string
   }
 ) => {
-  const { options, selected, onSelect, label, className, children, ...rest } =
-    props
+  const { options, selected, onSelect, label, children, ...rest } = props
   return (
     <Listbox value={selected} onChange={onSelect}>
       {({ open }) => (
