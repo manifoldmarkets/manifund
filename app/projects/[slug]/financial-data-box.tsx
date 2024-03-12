@@ -28,6 +28,7 @@ import {
   getProposalValuation,
 } from '@/utils/math'
 import { PaperClipIcon } from '@heroicons/react/20/solid'
+import clsx from 'clsx'
 import { format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -122,23 +123,42 @@ export function FinancialDataBox(props: {
               fundingGoal={project.funding_goal}
             />
           )}
-          <Row className="mt-1 justify-between">
-            <Stat
-              value={formatMoneyPrecise(amountRaised)}
-              label="raised"
-              className="w-12"
-            />
-            <Stat
-              value={formatMoneyPrecise(minIncludingAmm)}
-              label="minimum funding"
-              className="w-24"
-            />
-            <Stat
-              value={formatMoneyPrecise(project.funding_goal)}
-              label="funding goal"
-              className="w-24"
-            />
-          </Row>
+          <div
+            className={clsx(
+              'mt-1',
+              (project.type === 'cert' && project.stage === 'active') ||
+                (project.type !== 'cert' && project.stage !== 'active')
+                ? 'flex justify-between'
+                : 'grid grid-cols-2 gap-y-5 lg:flex lg:justify-between'
+            )}
+          >
+            <Stat value={formatMoneyPrecise(amountRaised)} label="raised" />
+            {['draft', 'proposal'].includes(project.stage) && (
+              <Stat
+                value={formatMoneyPrecise(minIncludingAmm)}
+                label="minimum funding"
+                theme="gray"
+              />
+            )}
+            {['draft', 'proposal', 'active'].includes(project.stage) && (
+              <Stat
+                value={formatMoneyPrecise(project.funding_goal)}
+                label="funding goal"
+                theme="gray"
+              />
+            )}
+            {project.type === 'cert' && (
+              <Stat
+                value={formatMoneyPrecise(valuation)}
+                label={
+                  ['draft', 'proposal'].includes(project.stage)
+                    ? 'minimum valuation'
+                    : 'valuation'
+                }
+                theme="gray"
+              />
+            )}
+          </div>
         </div>
         <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
           <dt className="text-sm font-medium leading-6 text-gray-900">About</dt>
