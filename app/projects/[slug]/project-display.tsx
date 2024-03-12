@@ -269,7 +269,15 @@ export function ProjectDisplay(props: {
             className="mx-auto my-4"
           />
         )} */}
-        <FinancialDataBox project={project} />
+        <FinancialDataBox
+          project={project}
+          userTxns={userTxns}
+          userBids={userBids}
+          projectBids={projectBids}
+          projectTxns={projectTxns}
+          userProfile={userProfile}
+          prizeCause={prizeCause}
+        />
         {project.description && (
           <RichContent content={project.description} className="px-3 text-sm" />
         )}
