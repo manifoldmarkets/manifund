@@ -32,6 +32,7 @@ import clsx from 'clsx'
 import { format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { CertValuationChart } from './valuation-chart'
 
 export function FinancialDataBox(props: {
   project: FullProject
@@ -114,7 +115,7 @@ export function FinancialDataBox(props: {
             Impact certificate
           </dd>
         </div>
-        <div className="sm:col-span-2">
+        <div className="border-b border-gray-100 pb-6 sm:col-span-2">
           {(project.stage === 'proposal' ||
             (project.stage === 'active' && project.type === 'grant')) && (
             <ProgressBar
@@ -125,7 +126,7 @@ export function FinancialDataBox(props: {
           )}
           <div
             className={clsx(
-              'mt-1',
+              'mt-2',
               (project.type === 'cert' && project.stage === 'active') ||
                 (project.type !== 'cert' && project.stage !== 'active')
                 ? 'flex justify-between'
@@ -160,16 +161,18 @@ export function FinancialDataBox(props: {
             )}
           </div>
         </div>
-        <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
-          <dt className="text-sm font-medium leading-6 text-gray-900">About</dt>
-          <dd className="mt-1 text-sm leading-6 text-gray-700 sm:mt-2">
-            Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim
-            incididunt cillum culpa consequat. Excepteur qui ipsum aliquip
-            consequat sint. Sit id mollit nulla mollit nostrud in ea officia
-            proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit
-            deserunt qui eu.
-          </dd>
-        </div>
+        {!['draft', 'proposal'].includes(project.stage) &&
+          project.type === 'cert' &&
+          !!project.amm_shares && (
+            <CertValuationChart
+              tradePoints={tradePoints}
+              ammTxns={projectTxns.filter(
+                (txn) => txn.to_id === project.id || txn.from_id === project.id
+              )}
+              ammId={project.id}
+              size="lg"
+            />
+          )}
         <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
           <dt className="text-sm font-medium leading-6 text-gray-900">
             Attachments

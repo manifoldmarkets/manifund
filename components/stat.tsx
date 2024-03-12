@@ -15,7 +15,7 @@ export function Stat(props: {
     <Col>
       <span
         className={clsx(
-          'text-lg font-bold sm:text-xl',
+          'text-lg font-semibold sm:text-xl',
           theme === 'white'
             ? 'text-white'
             : theme === 'gray'
