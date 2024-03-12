@@ -5,6 +5,7 @@ import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
 import { Slider } from '@/components/slider'
+import { Stat } from '@/components/stat'
 import { Tooltip } from '@/components/tooltip'
 import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { Cause } from '@/db/cause'
@@ -121,6 +122,23 @@ export function FinancialDataBox(props: {
               fundingGoal={project.funding_goal}
             />
           )}
+          <Row className="mt-1 justify-between">
+            <Stat
+              value={formatMoneyPrecise(amountRaised)}
+              label="raised"
+              className="w-12"
+            />
+            <Stat
+              value={formatMoneyPrecise(minIncludingAmm)}
+              label="minimum funding"
+              className="w-24"
+            />
+            <Stat
+              value={formatMoneyPrecise(project.funding_goal)}
+              label="funding goal"
+              className="w-24"
+            />
+          </Row>
         </div>
         <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
           <dt className="text-sm font-medium leading-6 text-gray-900">About</dt>

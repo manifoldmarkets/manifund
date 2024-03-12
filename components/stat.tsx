@@ -25,7 +25,7 @@ export function Stat(props: {
       <span
         className={clsx(
           'relative bottom-0.5 text-xs sm:text-sm',
-          theme === 'white' ? 'text-gray-300' : 'text-gray-600'
+          theme === 'white' ? 'text-gray-300' : 'text-gray-500'
         )}
       >
         {label}
