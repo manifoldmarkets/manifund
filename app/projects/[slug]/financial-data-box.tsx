@@ -3,6 +3,7 @@ import { AmountInput } from '@/components/input'
 import { Card } from '@/components/layout/card'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
+import { ProgressBar } from '@/components/progress-bar'
 import { Slider } from '@/components/slider'
 import { Tooltip } from '@/components/tooltip'
 import { BidAndProfile, BidAndProject } from '@/db/bid'
@@ -111,21 +112,15 @@ export function FinancialDataBox(props: {
             Impact certificate
           </dd>
         </div>
-        <div className="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
-          <dt className="text-sm font-medium leading-6 text-gray-900">
-            Email address
-          </dt>
-          <dd className="mt-1 text-sm leading-6 text-gray-700 sm:mt-2">
-            margotfoster@example.com
-          </dd>
-        </div>
-        <div className="border-t border-gray-100 px-4 py-6 sm:col-span-1 sm:px-0">
-          <dt className="text-sm font-medium leading-6 text-gray-900">
-            Salary expectation
-          </dt>
-          <dd className="mt-1 text-sm leading-6 text-gray-700 sm:mt-2">
-            $120,000
-          </dd>
+        <div className="sm:col-span-2">
+          {(project.stage === 'proposal' ||
+            (project.stage === 'active' && project.type === 'grant')) && (
+            <ProgressBar
+              amountRaised={amountRaised}
+              minFunding={minIncludingAmm}
+              fundingGoal={project.funding_goal}
+            />
+          )}
         </div>
         <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
           <dt className="text-sm font-medium leading-6 text-gray-900">About</dt>
