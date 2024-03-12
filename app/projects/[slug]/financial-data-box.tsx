@@ -1,9 +1,11 @@
 import { Button } from '@/components/button'
+import { DonateBox } from '@/components/donate-box'
 import { AmountInput } from '@/components/input'
 import { Card } from '@/components/layout/card'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
+import { SignInButton } from '@/components/sign-in-button'
 import { Slider } from '@/components/slider'
 import { Stat } from '@/components/stat'
 import { Tooltip } from '@/components/tooltip'
@@ -32,6 +34,8 @@ import clsx from 'clsx'
 import { format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { AssuranceBuyBox } from './assurance-buy-box'
+import { Trade } from './trade'
 import { CertValuationChart } from './valuation-chart'
 
 export function FinancialDataBox(props: {
@@ -105,17 +109,17 @@ export function FinancialDataBox(props: {
       <dl className="grid grid-cols-1 sm:grid-cols-2">
         <div className="px-4 pb-6 sm:col-span-1 sm:px-0">
           <dt className="text-sm leading-6 text-gray-700">stage</dt>
-          <dd className="text-base font-medium leading-6 text-gray-900">
+          <dd className="text-sm font-medium leading-6 text-gray-900">
             Proposal
           </dd>
         </div>
         <div className="px-4 pb-6 sm:col-span-1 sm:px-0">
           <dt className="text-sm leading-6 text-gray-700">type</dt>
-          <dd className="text-base font-medium leading-6 text-gray-900">
+          <dd className="text-sm font-medium leading-6 text-gray-900">
             Impact certificate
           </dd>
         </div>
-        <div className="border-b border-gray-100 pb-6 sm:col-span-2">
+        <div className="border-b border-gray-200 pb-6 sm:col-span-2">
           {(project.stage === 'proposal' ||
             (project.stage === 'active' && project.type === 'grant')) && (
             <ProgressBar
@@ -161,73 +165,79 @@ export function FinancialDataBox(props: {
             )}
           </div>
         </div>
-        {!['draft', 'proposal'].includes(project.stage) &&
-          project.type === 'cert' &&
-          !!project.amm_shares && (
-            <CertValuationChart
-              tradePoints={tradePoints}
-              ammTxns={projectTxns.filter(
-                (txn) => txn.to_id === project.id || txn.from_id === project.id
-              )}
-              ammId={project.id}
-              size="lg"
+        <div className="py-6 sm:col-span-2">
+          {!['draft', 'proposal'].includes(project.stage) &&
+            project.type === 'cert' &&
+            !!project.amm_shares && (
+              <CertValuationChart
+                tradePoints={tradePoints}
+                ammTxns={projectTxns.filter(
+                  (txn) =>
+                    txn.to_id === project.id || txn.from_id === project.id
+                )}
+                ammId={project.id}
+                size="lg"
+              />
+            )}
+          {userProfile &&
+            project.type === 'cert' &&
+            project.stage === 'active' && (
+              <Trade
+                ammTxns={
+                  !!project.amm_shares
+                    ? projectTxns.filter(
+                        (txn) =>
+                          txn.to_id === project.id || txn.from_id === project.id
+                      )
+                    : undefined
+                }
+                projectId={project.id}
+                userSpendableFunds={userSpendableFunds}
+                userSellableShares={userSellableShares}
+              />
+            )}
+          {userProfile &&
+            userProfile.id !== project.creator &&
+            project.type === 'cert' &&
+            project.stage === 'proposal' && (
+              <AssuranceBuyBox
+                project={project}
+                minValuation={valuation}
+                offerSizePortion={
+                  (activeAuction
+                    ? minIncludingAmm
+                    : minIncludingAmm - amountRaised) / valuation
+                }
+                maxBuy={userSpendableFunds}
+                activeAuction={activeAuction}
+              />
+            )}
+          {userProfile &&
+            userProfile.id !== project.creator &&
+            project.type === 'grant' &&
+            pendingProjectTransfers.length === 0 &&
+            (project.stage === 'proposal' || project.stage === 'active') && (
+              <>
+                {amountRaised < project.funding_goal ? (
+                  <DonateBox
+                    project={project}
+                    profile={userProfile}
+                    maxDonation={userSpendableFunds}
+                    setCommentPrompt={setSpecialCommentPrompt}
+                  />
+                ) : (
+                  <span className="mx-auto mb-5 text-sm italic text-gray-500">
+                    Fully funded and not currently accepting donations.
+                  </span>
+                )}
+              </>
+            )}
+          {!userProfile && (
+            <SignInButton
+              buttonText="Sign in to contribute"
+              className="mx-auto my-4"
             />
           )}
-        <div className="border-t border-gray-100 px-4 py-6 sm:col-span-2 sm:px-0">
-          <dt className="text-sm font-medium leading-6 text-gray-900">
-            Attachments
-          </dt>
-          <dd className="mt-2 text-sm text-gray-900">
-            <ul
-              role="list"
-              className="divide-y divide-gray-100 rounded-md border border-gray-200"
-            >
-              <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                <div className="flex w-0 flex-1 items-center">
-                  <PaperClipIcon
-                    className="h-5 w-5 flex-shrink-0 text-gray-400"
-                    aria-hidden="true"
-                  />
-                  <div className="ml-4 flex min-w-0 flex-1 gap-2">
-                    <span className="truncate font-medium">
-                      resume_back_end_developer.pdf
-                    </span>
-                    <span className="flex-shrink-0 text-gray-400">2.4mb</span>
-                  </div>
-                </div>
-                <div className="ml-4 flex-shrink-0">
-                  <a
-                    href="#"
-                    className="font-medium text-orange-600 hover:text-orange-500"
-                  >
-                    Download
-                  </a>
-                </div>
-              </li>
-              <li className="flex items-center justify-between py-4 pl-4 pr-5 text-sm leading-6">
-                <div className="flex w-0 flex-1 items-center">
-                  <PaperClipIcon
-                    className="h-5 w-5 flex-shrink-0 text-gray-400"
-                    aria-hidden="true"
-                  />
-                  <div className="ml-4 flex min-w-0 flex-1 gap-2">
-                    <span className="truncate font-medium">
-                      coverletter_back_end_developer.pdf
-                    </span>
-                    <span className="flex-shrink-0 text-gray-400">4.5mb</span>
-                  </div>
-                </div>
-                <div className="ml-4 flex-shrink-0">
-                  <a
-                    href="#"
-                    className="font-medium text-orange-600 hover:text-orange-500"
-                  >
-                    Download
-                  </a>
-                </div>
-              </li>
-            </ul>
-          </dd>
         </div>
       </dl>
     </Card>
