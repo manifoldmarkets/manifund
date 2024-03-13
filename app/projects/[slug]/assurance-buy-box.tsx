@@ -50,11 +50,6 @@ export function AssuranceBuyBox(props: {
       offerSizePortion
     )} of the project.`
   }
-  // Close it on 23:59:59 in UTC -12 aka "Anywhere on Earth" time
-  const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
-  const now = new Date()
-  const daysLeft = differenceInDays(closeDate, now)
-  const hoursLeft = daysLeft < 1 ? differenceInHours(closeDate, now) : 0
 
   const placeBid = async () => {
     setIsSubmitting(true)
