@@ -151,7 +151,7 @@ export function FinancialDataBox(props: {
           )}
         </div>
       </div>
-      <Col className="gap-6 py-6 sm:col-span-2">
+      <Col className="gap-6 sm:col-span-2">
         {!['draft', 'proposal'].includes(project.stage) &&
           project.type === 'cert' &&
           !!project.amm_shares && (
@@ -215,12 +215,6 @@ export function FinancialDataBox(props: {
               )}
             </>
           )}
-        {!userProfile && (
-          <SignInButton
-            buttonText="Sign in to contribute"
-            className="mx-auto my-4"
-          />
-        )}
       </Col>
     </div>
   )
