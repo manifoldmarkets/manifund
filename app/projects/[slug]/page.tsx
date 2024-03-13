@@ -9,6 +9,7 @@ import { createAdminClient } from '@/pages/api/_db'
 import { ProjectDisplay } from './project-display'
 import { getPrizeCause, listSimpleCauses } from '@/db/cause'
 import { getBidsByUser } from '@/db/bid'
+import NotFound from '@/app/not-found'
 
 export const revalidate = 0
 
@@ -32,7 +33,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     getUser(supabase),
   ])
   if (!project) {
-    return <div>404: Project not found.</div>
+    return <NotFound />
   }
   const [
     userProfile,
