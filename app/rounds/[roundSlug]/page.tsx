@@ -5,7 +5,7 @@ import { RoundTabs } from './round-tabs'
 import { RoundData } from '@/components/round-data'
 import Image from 'next/image'
 import { getRegranters } from '@/db/profile'
-import { listMiniCauses } from '@/db/cause'
+import { listSimpleCauses } from '@/db/cause'
 
 export const revalidate = 60
 
@@ -29,7 +29,7 @@ export default async function RoundPage(props: {
   const [projects, regranters, causesList] = await Promise.all([
     getFullProjectsByRound(supabase, round.title),
     round.title === 'Regrants' ? getRegranters(supabase) : [],
-    listMiniCauses(supabase),
+    listSimpleCauses(supabase),
   ])
   const visibleProjects = projects.filter(
     (project) => project.stage !== 'hidden'
@@ -46,7 +46,7 @@ export default async function RoundPage(props: {
         />
       )}
       <h1 className="my-2 text-4xl font-bold">{round.title}</h1>
-      <div className="my-5 mx-5">
+      <div className="mx-5 my-5">
         {/* @ts-expect-error server component */}
         <RoundData round={round} projects={visibleProjects} />
       </div>
