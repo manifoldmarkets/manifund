@@ -41,19 +41,7 @@ export function RoundTabs(props: {
               subtitle={'Create one!'}
             />
           ) : (
-            <ProjectsDisplay
-              projects={projects}
-              causesList={causesList}
-              sortOptions={[
-                'votes',
-                'newest first',
-                'oldest first',
-                round.title === 'Regrants' ? 'funding goal' : 'valuation',
-                'percent funded',
-                'distance from minimum funding',
-                'number of comments',
-              ]}
-            />
+            <ProjectsDisplay projects={projects} causesList={causesList} />
           )}
         </>
       ),

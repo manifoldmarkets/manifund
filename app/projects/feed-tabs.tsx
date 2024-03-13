@@ -38,14 +38,6 @@ export function FeedTabs(props: {
       <ProjectsDisplay
         projects={projects}
         defaultSort={'newest first'}
-        sortOptions={[
-          'votes',
-          'newest first',
-          'oldest first',
-          'price',
-          'percent funded',
-          'number of comments',
-        ]}
         causesList={causesList}
       />
     </Col>

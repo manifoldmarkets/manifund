@@ -3,11 +3,7 @@ import { FullProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import {
-  getActiveValuation,
-  getAmountRaised,
-  getProposalValuation,
-} from '@/utils/math'
+import { getActiveValuation, getProposalValuation } from '@/utils/math'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
 import { compareDesc, compareAsc } from 'date-fns'
@@ -24,8 +20,6 @@ type SortOption =
   | 'funding goal'
   | 'valuation'
   | 'price'
-  | 'percent funded'
-  | 'distance from minimum funding'
   | 'number of comments'
   | 'newest first'
   | 'oldest first'
@@ -36,20 +30,17 @@ const DEFAULT_SORT_OPTIONS = [
   'oldest first',
   'funding goal',
   'price',
-  'percent funded',
-  'distance from minimum funding',
   'number of comments',
 ] as SortOption[]
 
 export function ProjectsDisplay(props: {
   projects: FullProject[]
   causesList: SimpleCause[]
-  sortOptions?: SortOption[]
   defaultSort?: SortOption
   hideRound?: boolean
   noFilter?: boolean
 }) {
-  const { projects, sortOptions, defaultSort, causesList, noFilter } = props
+  const { projects, defaultSort, causesList, noFilter } = props
   const prices = getPrices(projects)
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
   const [includedCauses, setIncludedCauses] = useState<Cause[]>([])
@@ -89,7 +80,7 @@ export function ProjectsDisplay(props: {
         <SearchBar search={search} setSearch={setSearch} className="w-full" />
         <div className="lg:w-4/12">
           <Select
-            options={sortOptions ?? DEFAULT_SORT_OPTIONS}
+            options={DEFAULT_SORT_OPTIONS}
             selected={sortBy}
             onSelect={(event) => setSortBy(event as SortOption)}
             label="Sort by"
@@ -174,14 +165,6 @@ function sortProjects(
       compareDesc(new Date(a.created_at), new Date(b.created_at))
     )
   }
-  if (sortType === 'percent funded') {
-    return projects.sort((a, b) =>
-      getAmountRaised(a, a.bids, a.txns) / a.funding_goal <
-      getAmountRaised(b, b.bids, b.txns) / b.funding_goal
-        ? 1
-        : -1
-    )
-  }
   if (sortType === 'number of comments') {
     return projects.sort((a, b) =>
       a.comments.length < b.comments.length ? 1 : -1
@@ -194,14 +177,6 @@ function sortProjects(
   ) {
     return projects.sort((a, b) =>
       prices[a.id] <= prices[b.id] || isNaN(prices[a.id]) ? 1 : -1
-    )
-  }
-  if (sortType === 'distance from minimum funding') {
-    return projects.sort((a, b) =>
-      a.min_funding - getAmountRaised(a, a.bids, a.txns) <
-      b.min_funding - getAmountRaised(b, b.bids, b.txns)
-        ? 1
-        : -1
     )
   }
   return projects
