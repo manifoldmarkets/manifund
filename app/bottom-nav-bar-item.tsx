@@ -1,6 +1,11 @@
 'use client'
 import { Transition, Dialog } from '@headlessui/react'
-import { PlusIcon, UserGroupIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import {
+  PlusIcon,
+  UserGroupIcon,
+  XMarkIcon,
+  InformationCircleIcon,
+} from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -23,8 +28,9 @@ function findIcon(name: string) {
       Home: HomeIcon,
       People: UserGroupIcon,
       Profile: UserCircleIcon,
-      Causes: GlobeAltIcon,
+      Categories: GlobeAltIcon,
       Create: PlusIcon,
+      About: InformationCircleIcon,
     }[name] ?? UserCircleIcon
   )
 }

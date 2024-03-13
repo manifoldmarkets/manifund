@@ -25,7 +25,7 @@ export async function BottomNavBar() {
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
     { name: 'People', href: '/people' },
-    { name: 'Causes', href: '/causes' },
+    { name: 'Categories', href: '/causes' },
     {
       name: user ? 'Profile' : 'Login',
       href: user ? `/${profile?.username}` : '/login',
