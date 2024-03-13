@@ -53,8 +53,10 @@ export default async function RootLayout({
           className={`mx-auto mb-20 w-full font-sans lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
         >
           <Toaster />
-          {/* @ts-expect-error Server Component */}
-          <Sidebar />
+          <Suspense fallback={null}>
+            {/* @ts-expect-error Server Component */}
+            <Sidebar />
+          </Suspense>
           <SupabaseListener serverAccessToken={session?.access_token} />
           <main className="flex flex-col lg:col-span-8">
             <Suspense fallback={null}>
@@ -63,8 +65,10 @@ export default async function RootLayout({
             </Suspense>
             {children}
           </main>
-          {/* @ts-expect-error Server Component */}
-          <BottomNavBar />
+          <Suspense fallback={null}>
+            {/* @ts-expect-error Server Component */}
+            <BottomNavBar />
+          </Suspense>
         </SupabaseProvider>
         <Script
           src="https://analytics.umami.is/script.js"
