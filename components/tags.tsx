@@ -165,29 +165,6 @@ export function StageIcon(props: {
   return <i.icon className={className} />
 }
 
-// export function StageTag(props: { projectStage: string }) {
-//   const { projectStage } = props
-
-//   switch (projectStage) {
-//     case 'draft':
-//       return <PencilIcon className="m-auto h-5 w-5 text-gray-500" />
-//     case 'proposal':
-//       return (
-//         <EllipsisHorizontalCircleIcon className="m-auto h-5 w-5 text-gray-500" />
-//       )
-//     case 'active':
-//       return <FireIcon className="m-auto h-5 w-5 text-orange-500" />
-//     case 'not funded':
-//       return <XCircleIcon className="m-auto h-5 w-5 text-gray-500" />
-//     case 'complete':
-//       return <CheckCircleIcon className="m-auto h-5 w-5 text-gray-500" />
-//     case 'hidden':
-//       return <EyeSlashIcon className="m-auto h-5 w-5 text-gray-500" />
-//     default:
-//       return null
-//   }
-// }
-
 export function AccreditedTag() {
   return (
     <Tooltip
