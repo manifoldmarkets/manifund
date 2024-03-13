@@ -1,14 +1,15 @@
 import { Col } from '@/components/layout/col'
 import { ProjectCard } from '@/components/project-card'
 import { listProjects } from '@/db/project'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerClientCached } from '@/db/supabase-server-cacheable'
 
 // export const revalidate = 60
 
 export default async function Home(props: {
   // searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const supabase = createServerClient()
+  // Hm, this uses cookies which maybe nukes the whole "static props" thing
+  const supabase = createServerClientCached()
   const projects = await listProjects(supabase)
 
   return (
