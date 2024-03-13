@@ -1,16 +1,16 @@
 'use client'
 import { Project } from '@/db/project'
 import Link from 'next/link'
-import { StageTag } from '@/components/tags'
+import { StageIcon, stageIcons, StageTag } from '@/components/tags'
 import { orderBy } from 'lodash'
 import { Table, TableRow } from '@/components/table'
-import { Row } from '@/components/layout/row'
-import { Col } from '@/components/layout/col'
+import { Tooltip } from '@/components/tooltip'
 
 // TODO: use full project and display amount raised, valuation, etc.
 export function Projects(props: { projects: Project[] }) {
   const { projects } = props
   const sortedProjects = orderBy(projects, 'created_at', 'desc')
+
   return (
     <div>
       <h1 className="mb-2 text-xl font-medium sm:text-2xl">Projects</h1>
@@ -24,7 +24,14 @@ export function Projects(props: { projects: Project[] }) {
               title={project.title}
               subtitle={<NextStep project={project} />}
               href={`/projects/${project.slug}`}
-              tag={<StageTag projectStage={project.stage} />}
+              tag={
+                <Tooltip text={project.stage}>
+                  <StageIcon
+                    stage={project.stage}
+                    className="h-5 w-5 text-gray-600"
+                  />
+                </Tooltip>
+              }
             />
           ))
         )}

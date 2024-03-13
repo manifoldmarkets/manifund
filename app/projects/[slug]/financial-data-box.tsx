@@ -107,12 +107,7 @@ export function FinancialDataBox(props: {
   >(undefined)
   return (
     <Card>
-      <dl className="grid grid-cols-1 sm:grid-cols-2">
-        <DescriptionPoint
-          label="stage"
-          answer={toSentenceCase(project.stage)}
-        />
-        <DescriptionPoint label="type" answer={typeToLabelMap[project.type]} />
+      <dl>
         <div className="border-b border-gray-200 pb-6 sm:col-span-2">
           {(project.stage === 'proposal' ||
             (project.stage === 'active' && project.type === 'grant')) && (
@@ -131,30 +126,30 @@ export function FinancialDataBox(props: {
                 : 'grid grid-cols-2 gap-y-5 lg:flex lg:justify-between'
             )}
           >
-            <Stat value={formatMoneyPrecise(amountRaised)} label="raised" />
+            <LargeDescriptionPoint
+              value={formatMoneyPrecise(amountRaised)}
+              label="raised"
+            />
             {['draft', 'proposal'].includes(project.stage) && (
-              <Stat
+              <LargeDescriptionPoint
                 value={formatMoneyPrecise(minIncludingAmm)}
                 label="minimum funding"
-                theme="gray"
               />
             )}
             {['draft', 'proposal', 'active'].includes(project.stage) && (
-              <Stat
+              <LargeDescriptionPoint
                 value={formatMoneyPrecise(project.funding_goal)}
                 label="funding goal"
-                theme="gray"
               />
             )}
             {project.type === 'cert' && (
-              <Stat
+              <LargeDescriptionPoint
                 value={formatMoneyPrecise(valuation)}
                 label={
                   ['draft', 'proposal'].includes(project.stage)
                     ? 'minimum valuation'
                     : 'valuation'
                 }
-                theme="gray"
               />
             )}
           </div>
@@ -238,14 +233,35 @@ export function FinancialDataBox(props: {
   )
 }
 
-function DescriptionPoint(props: { label: string; answer: string }) {
-  const { label, answer } = props
+export function ProjectTypeDisplay(props: {
+  type: Project['type']
+  stage: Project['stage']
+}) {
+  const { type, stage } = props
+  return (
+    <Row className="justify-between">
+      <SmallDescriptionPoint label="stage" value={toSentenceCase(stage)} />
+      <SmallDescriptionPoint label="type" value={typeToLabelMap[type]} />
+    </Row>
+  )
+}
+
+function SmallDescriptionPoint(props: { label: string; value: string }) {
+  const { label, value } = props
   return (
     <div className="px-4 pb-6 sm:px-0">
       <dt className="text-sm leading-6 text-gray-700">{label}</dt>
-      <dd className="text-sm font-semibold leading-6 text-gray-900">
-        {answer}
-      </dd>
+      <dd className="text-sm font-medium leading-6 text-gray-900">{value}</dd>
+    </div>
+  )
+}
+
+function LargeDescriptionPoint(props: { label: string; value: string }) {
+  const { label, value } = props
+  return (
+    <div className="px-4 pb-6 sm:px-0">
+      <dt className="text-sm leading-6 text-gray-700">{label}</dt>
+      <dd className="text-lg font-semibold leading-6 text-gray-900">{value}</dd>
     </div>
   )
 }

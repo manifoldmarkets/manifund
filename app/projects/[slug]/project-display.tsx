@@ -35,7 +35,7 @@ import { UserAvatarAndBadge } from '@/components/user-link'
 import { Tooltip } from '@/components/tooltip'
 import { EnvelopeIcon } from '@heroicons/react/20/solid'
 import { ViewerActionPanel } from './viewer-action-panel'
-import { FinancialDataBox } from './financial-data-box'
+import { FinancialDataBox, ProjectTypeDisplay } from './financial-data-box'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -123,6 +123,7 @@ export function ProjectDisplay(props: {
       )}
       <Col className="gap-2">
         <Col className="gap-1">
+          <ProjectTypeDisplay type={project.type} stage={project.stage} />
           <Row className="flex-2 items-center gap-3">
             <Vote
               projectId={project.id}
