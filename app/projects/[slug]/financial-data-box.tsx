@@ -106,130 +106,125 @@ export function FinancialDataBox(props: {
     undefined | string
   >(undefined)
   return (
-    <Card>
-      <dl>
-        <div className="border-b border-gray-200 pb-6 sm:col-span-2">
-          {(project.stage === 'proposal' ||
-            (project.stage === 'active' && project.type === 'grant')) && (
-            <ProgressBar
-              amountRaised={amountRaised}
-              minFunding={minIncludingAmm}
-              fundingGoal={project.funding_goal}
+    <div className="border-t border-gray-200 py-6">
+      <ProjectTypeDisplay type={project.type} stage={project.stage} />
+      <div className="pb-6 sm:col-span-2">
+        {(project.stage === 'proposal' ||
+          (project.stage === 'active' && project.type === 'grant')) && (
+          <ProgressBar
+            amountRaised={amountRaised}
+            minFunding={minIncludingAmm}
+            fundingGoal={project.funding_goal}
+          />
+        )}
+        <div
+          className={clsx(
+            'mt-2',
+            (project.type === 'cert' && project.stage === 'active') ||
+              (project.type !== 'cert' && project.stage !== 'active')
+              ? 'flex justify-between'
+              : 'grid grid-cols-2 gap-y-5 lg:flex lg:justify-between'
+          )}
+        >
+          <Stat value={formatMoneyPrecise(amountRaised)} label="raised" />
+          {['draft', 'proposal'].includes(project.stage) && (
+            <Stat
+              value={formatMoneyPrecise(minIncludingAmm)}
+              label="minimum funding"
             />
           )}
-          <div
-            className={clsx(
-              'mt-2',
-              (project.type === 'cert' && project.stage === 'active') ||
-                (project.type !== 'cert' && project.stage !== 'active')
-                ? 'flex justify-between'
-                : 'grid grid-cols-2 gap-y-5 lg:flex lg:justify-between'
-            )}
-          >
-            <LargeDescriptionPoint
-              value={formatMoneyPrecise(amountRaised)}
-              label="raised"
+          {['draft', 'proposal', 'active'].includes(project.stage) && (
+            <Stat
+              value={formatMoneyPrecise(project.funding_goal)}
+              label="funding goal"
             />
-            {['draft', 'proposal'].includes(project.stage) && (
-              <LargeDescriptionPoint
-                value={formatMoneyPrecise(minIncludingAmm)}
-                label="minimum funding"
-              />
-            )}
-            {['draft', 'proposal', 'active'].includes(project.stage) && (
-              <LargeDescriptionPoint
-                value={formatMoneyPrecise(project.funding_goal)}
-                label="funding goal"
-              />
-            )}
-            {project.type === 'cert' && (
-              <LargeDescriptionPoint
-                value={formatMoneyPrecise(valuation)}
-                label={
-                  ['draft', 'proposal'].includes(project.stage)
-                    ? 'minimum valuation'
-                    : 'valuation'
-                }
-              />
-            )}
-          </div>
-        </div>
-        <div className="py-6 sm:col-span-2">
-          {!['draft', 'proposal'].includes(project.stage) &&
-            project.type === 'cert' &&
-            !!project.amm_shares && (
-              <CertValuationChart
-                tradePoints={tradePoints}
-                ammTxns={projectTxns.filter(
-                  (txn) =>
-                    txn.to_id === project.id || txn.from_id === project.id
-                )}
-                ammId={project.id}
-                size="lg"
-              />
-            )}
-          {userProfile &&
-            project.type === 'cert' &&
-            project.stage === 'active' && (
-              <Trade
-                ammTxns={
-                  !!project.amm_shares
-                    ? projectTxns.filter(
-                        (txn) =>
-                          txn.to_id === project.id || txn.from_id === project.id
-                      )
-                    : undefined
-                }
-                projectId={project.id}
-                userSpendableFunds={userSpendableFunds}
-                userSellableShares={userSellableShares}
-              />
-            )}
-          {userProfile &&
-            userProfile.id !== project.creator &&
-            project.type === 'cert' &&
-            project.stage === 'proposal' && (
-              <AssuranceBuyBox
-                project={project}
-                minValuation={valuation}
-                offerSizePortion={
-                  (activeAuction
-                    ? minIncludingAmm
-                    : minIncludingAmm - amountRaised) / valuation
-                }
-                maxBuy={userSpendableFunds}
-                activeAuction={activeAuction}
-              />
-            )}
-          {userProfile &&
-            userProfile.id !== project.creator &&
-            project.type === 'grant' &&
-            pendingProjectTransfers.length === 0 &&
-            (project.stage === 'proposal' || project.stage === 'active') && (
-              <>
-                {amountRaised < project.funding_goal ? (
-                  <DonateBox
-                    project={project}
-                    profile={userProfile}
-                    maxDonation={userSpendableFunds}
-                    setCommentPrompt={setSpecialCommentPrompt}
-                  />
-                ) : (
-                  <span className="mx-auto mb-5 text-sm italic text-gray-500">
-                    Fully funded and not currently accepting donations.
-                  </span>
-                )}
-              </>
-            )}
-          {!userProfile && (
-            <SignInButton
-              buttonText="Sign in to contribute"
-              className="mx-auto my-4"
+          )}
+          {project.type === 'cert' && (
+            <Stat
+              value={formatMoneyPrecise(valuation)}
+              label={
+                ['draft', 'proposal'].includes(project.stage)
+                  ? 'minimum valuation'
+                  : 'valuation'
+              }
             />
           )}
         </div>
-      </dl>
-    </Card>
+      </div>
+      <div className="py-6 sm:col-span-2">
+        {!['draft', 'proposal'].includes(project.stage) &&
+          project.type === 'cert' &&
+          !!project.amm_shares && (
+            <CertValuationChart
+              tradePoints={tradePoints}
+              ammTxns={projectTxns.filter(
+                (txn) => txn.to_id === project.id || txn.from_id === project.id
+              )}
+              ammId={project.id}
+              size="lg"
+            />
+          )}
+        {userProfile &&
+          project.type === 'cert' &&
+          project.stage === 'active' && (
+            <Trade
+              ammTxns={
+                !!project.amm_shares
+                  ? projectTxns.filter(
+                      (txn) =>
+                        txn.to_id === project.id || txn.from_id === project.id
+                    )
+                  : undefined
+              }
+              projectId={project.id}
+              userSpendableFunds={userSpendableFunds}
+              userSellableShares={userSellableShares}
+            />
+          )}
+        {userProfile &&
+          userProfile.id !== project.creator &&
+          project.type === 'cert' &&
+          project.stage === 'proposal' && (
+            <AssuranceBuyBox
+              project={project}
+              minValuation={valuation}
+              offerSizePortion={
+                (activeAuction
+                  ? minIncludingAmm
+                  : minIncludingAmm - amountRaised) / valuation
+              }
+              maxBuy={userSpendableFunds}
+              activeAuction={activeAuction}
+            />
+          )}
+        {userProfile &&
+          userProfile.id !== project.creator &&
+          project.type === 'grant' &&
+          pendingProjectTransfers.length === 0 &&
+          (project.stage === 'proposal' || project.stage === 'active') && (
+            <>
+              {amountRaised < project.funding_goal ? (
+                <DonateBox
+                  project={project}
+                  profile={userProfile}
+                  maxDonation={userSpendableFunds}
+                  setCommentPrompt={setSpecialCommentPrompt}
+                />
+              ) : (
+                <span className="mx-auto mb-5 text-sm italic text-gray-500">
+                  Fully funded and not currently accepting donations.
+                </span>
+              )}
+            </>
+          )}
+        {!userProfile && (
+          <SignInButton
+            buttonText="Sign in to contribute"
+            className="mx-auto my-4"
+          />
+        )}
+      </div>
+    </div>
   )
 }
 

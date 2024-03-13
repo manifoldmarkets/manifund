@@ -68,7 +68,7 @@ export function DonateBox(props: {
     }
   }
   return (
-    <div className="flex flex-col gap-3">
+    <Card className="flex flex-col gap-3">
       <div>
         <h2 className="text-lg font-bold">
           {isBid ? 'Offer to donate' : 'Donate'}
@@ -106,6 +106,6 @@ export function DonateBox(props: {
           </Button>
         </Tooltip>
       </Row>
-    </div>
+    </Card>
   )
 }

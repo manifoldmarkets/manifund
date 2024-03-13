@@ -123,7 +123,6 @@ export function ProjectDisplay(props: {
       )}
       <Col className="gap-2">
         <Col className="gap-1">
-          <ProjectTypeDisplay type={project.type} stage={project.stage} />
           <Row className="flex-2 items-center gap-3">
             <Vote
               projectId={project.id}

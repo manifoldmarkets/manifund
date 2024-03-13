@@ -61,7 +61,7 @@ export function AssuranceBuyBox(props: {
     router.refresh()
   }
   return (
-    <div className="flex flex-col gap-3">
+    <Card className="flex flex-col gap-3">
       <div>
         <h2 className="text-lg font-bold">Place a buy offer</h2>
         <p className="text-sm text-gray-500">
@@ -153,6 +153,6 @@ export function AssuranceBuyBox(props: {
           </Button>
         </Tooltip>
       </Row>
-    </div>
+    </Card>
   )
 }
