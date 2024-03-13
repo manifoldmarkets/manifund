@@ -1,5 +1,8 @@
 'use client'
-import { scrollToComments } from '@/app/projects/[slug]/project-display'
+import {
+  scrollToComments,
+  TimeLeftDisplay,
+} from '@/app/projects/[slug]/project-display'
 import { Button } from '@/components/button'
 import { Card } from '@/components/layout/card'
 import { AmountInput } from '@/components/input'
@@ -9,11 +12,12 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
+import { SignInButton } from './sign-in-button'
 
 export function DonateBox(props: {
   charity?: Profile
   project?: Project
-  profile: Profile
+  profile?: Profile
   maxDonation: number
   setCommentPrompt?: (value: string) => void
 }) {
@@ -32,6 +36,9 @@ export function DonateBox(props: {
 
   const donate = async () => {
     setIsSubmitting(true)
+    if (!profile) {
+      return
+    }
     if (project && project.stage === 'proposal') {
       await fetch('/api/place-bid', {
         method: 'POST',
@@ -70,9 +77,12 @@ export function DonateBox(props: {
   return (
     <Card className="flex flex-col gap-3">
       <div>
-        <h2 className="text-lg font-bold">
-          {isBid ? 'Offer to donate' : 'Donate'}
-        </h2>
+        <Row className="justify-between">
+          <h2 className="text-lg font-bold">
+            {isBid ? 'Offer to donate' : 'Donate'}
+          </h2>
+          {isBid && <TimeLeftDisplay closeDate={project.auction_close ?? ''} />}
+        </Row>
         {isBid && (
           <p className="text-sm text-gray-500">
             You are offering to donate this amount to the project on the
@@ -87,25 +97,29 @@ export function DonateBox(props: {
           </p>
         )}
       </div>
-      <Row className="items-center justify-between gap-2">
-        <AmountInput
-          id="amount"
-          amount={amount}
-          placeholder="Amount (USD)"
-          onChangeAmount={setAmount}
-          className="w-48 max-w-full"
-        />
-        <Tooltip text={errorMessage ?? ''}>
-          <Button
-            onClick={donate}
-            className="font-semibold"
-            disabled={!amount || errorMessage !== null}
-            loading={isSubmitting}
-          >
-            Donate
-          </Button>
-        </Tooltip>
-      </Row>
+      {profile ? (
+        <Row className="items-center justify-between gap-2">
+          <AmountInput
+            id="amount"
+            amount={amount}
+            placeholder="Amount (USD)"
+            onChangeAmount={setAmount}
+            className="w-48 max-w-full"
+          />
+          <Tooltip text={errorMessage ?? ''}>
+            <Button
+              onClick={donate}
+              className="font-semibold"
+              disabled={!amount || errorMessage !== null}
+              loading={isSubmitting}
+            >
+              Donate
+            </Button>
+          </Tooltip>
+        </Row>
+      ) : (
+        <SignInButton buttonText="Sign in to donate" className="mx-auto my-4" />
+      )}
     </Card>
   )
 }

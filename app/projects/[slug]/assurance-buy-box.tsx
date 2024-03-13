@@ -3,6 +3,7 @@ import { AmountInput } from '@/components/input'
 import { Card } from '@/components/layout/card'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
+import { SignInButton } from '@/components/sign-in-button'
 import { Slider } from '@/components/slider'
 import { Tooltip } from '@/components/tooltip'
 import { Project } from '@/db/project'
@@ -11,9 +12,10 @@ import {
   formatMoneyPrecise,
   formatPercent,
 } from '@/utils/formatting'
-import { format } from 'date-fns'
+import { differenceInDays, differenceInHours, format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { TimeLeftDisplay } from './project-display'
 
 export function AssuranceBuyBox(props: {
   project: Project
@@ -21,9 +23,16 @@ export function AssuranceBuyBox(props: {
   offerSizePortion: number
   maxBuy: number
   activeAuction?: boolean
+  signedIn?: boolean
 }) {
-  const { project, minValuation, offerSizePortion, maxBuy, activeAuction } =
-    props
+  const {
+    project,
+    minValuation,
+    offerSizePortion,
+    maxBuy,
+    activeAuction,
+    signedIn,
+  } = props
   const [amount, setAmount] = useState<number | undefined>(0)
   const [valuation, setValuation] = useState<number | undefined>(minValuation)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -41,6 +50,11 @@ export function AssuranceBuyBox(props: {
       offerSizePortion
     )} of the project.`
   }
+  // Close it on 23:59:59 in UTC -12 aka "Anywhere on Earth" time
+  const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
+  const now = new Date()
+  const daysLeft = differenceInDays(closeDate, now)
+  const hoursLeft = daysLeft < 1 ? differenceInHours(closeDate, now) : 0
 
   const placeBid = async () => {
     setIsSubmitting(true)
@@ -63,7 +77,10 @@ export function AssuranceBuyBox(props: {
   return (
     <Card className="flex flex-col gap-3">
       <div>
-        <h2 className="text-lg font-bold">Place a buy offer</h2>
+        <Row className="justify-between">
+          <h2 className="text-lg font-bold">Place a buy offer</h2>
+          <TimeLeftDisplay closeDate={project.auction_close ?? ''} />
+        </Row>
         <p className="text-sm text-gray-500">
           Offer to buy equity directly from the founder at{' '}
           {activeAuction
@@ -78,81 +95,87 @@ export function AssuranceBuyBox(props: {
             : 'the founder has received enough buy offers to cover their minimum costs.'}
         </p>
       </div>
-      {maxBuy > 0 ? (
-        <Col className="gap-2">
-          {activeAuction && (
-            <Col>
-              <label className="font-medium">Valuation</label>
-              <Row className="items-center gap-2">
-                $
-                <AmountInput
-                  amount={valuation}
-                  onChangeAmount={setValuation}
-                  error={valuation ? valuation < minValuation : undefined}
-                  errorMessage={`Valuation must be at least $${minValuation}.`}
-                  placeholder={`${formatMoney(minValuation)}+`}
-                  className="w-32"
-                />
-              </Row>
+      {signedIn ? (
+        <>
+          {maxBuy > 0 ? (
+            <Col className="gap-2">
+              {activeAuction && (
+                <Col>
+                  <label className="font-medium">Valuation</label>
+                  <Row className="items-center gap-2">
+                    $
+                    <AmountInput
+                      amount={valuation}
+                      onChangeAmount={setValuation}
+                      error={valuation ? valuation < minValuation : undefined}
+                      errorMessage={`Valuation must be at least $${minValuation}.`}
+                      placeholder={`${formatMoney(minValuation)}+`}
+                      className="w-32"
+                    />
+                  </Row>
+                </Col>
+              )}
+              <Col>
+                <label className="font-medium">Amount</label>
+                <Row className="w-full items-center gap-2">
+                  $
+                  <AmountInput
+                    amount={amount}
+                    placeholder={'100'}
+                    onChangeAmount={setAmount}
+                    className="w-24 max-w-full"
+                  />
+                  <Slider
+                    amount={amount ?? 0}
+                    onChange={setAmount}
+                    min={0}
+                    max={offerSizeDollars}
+                    marks={[
+                      { label: formatPercent(0), value: 0 },
+                      {
+                        label: formatPercent(offerSizePortion / 4),
+                        value: offerSizeDollars / 4,
+                      },
+                      {
+                        label: formatPercent(offerSizePortion / 2),
+                        value: offerSizeDollars / 2,
+                      },
+                      {
+                        label: formatPercent((offerSizePortion / 4) * 3),
+                        value: (offerSizeDollars / 4) * 3,
+                      },
+                      {
+                        label: formatPercent(offerSizePortion),
+                        value: offerSizeDollars,
+                      },
+                    ]}
+                  />
+                </Row>
+              </Col>
             </Col>
+          ) : (
+            <span className="w-full text-center italic text-gray-600">
+              You have no spendable funds. Add money to your account through
+              your profile page.
+            </span>
           )}
-          <Col>
-            <label className="font-medium">Amount</label>
-            <Row className="w-full items-center gap-2">
-              $
-              <AmountInput
-                amount={amount}
-                placeholder={'100'}
-                onChangeAmount={setAmount}
-                className="w-24 max-w-full"
-              />
-              <Slider
-                amount={amount ?? 0}
-                onChange={setAmount}
-                min={0}
-                max={offerSizeDollars}
-                marks={[
-                  { label: formatPercent(0), value: 0 },
-                  {
-                    label: formatPercent(offerSizePortion / 4),
-                    value: offerSizeDollars / 4,
-                  },
-                  {
-                    label: formatPercent(offerSizePortion / 2),
-                    value: offerSizeDollars / 2,
-                  },
-                  {
-                    label: formatPercent((offerSizePortion / 4) * 3),
-                    value: (offerSizeDollars / 4) * 3,
-                  },
-                  {
-                    label: formatPercent(offerSizePortion),
-                    value: offerSizeDollars,
-                  },
-                ]}
-              />
-            </Row>
-          </Col>
-        </Col>
+          <Row className="justify-end gap-2">
+            <Tooltip text={errorMessage ?? ''}>
+              <Button
+                onClick={placeBid}
+                className="font-semibold"
+                disabled={!amount || errorMessage !== null}
+                loading={isSubmitting}
+              >
+                Buy {formatPercent(valuation ? (amount ?? 0) / valuation : 0)}{' '}
+                at {formatMoneyPrecise(valuation ?? 0)} valuation
+              </Button>
+            </Tooltip>
+          </Row>
+        </>
       ) : (
-        <span className="w-full text-center italic text-gray-600">
-          You have no spendable funds. Add money to your account through your
-          profile page.
-        </span>
+        <SignInButton buttonText="Sign in to bid" className="mx-auto my-4" />
       )}
-      <Row className="justify-end gap-2">
-        <Tooltip text={errorMessage ?? ''}>
-          <Button
-            onClick={placeBid}
-            className="font-semibold"
-            disabled={!amount || errorMessage !== null}
-            loading={isSubmitting}
-          >
-            Buy {formatPercent(valuation ? (amount ?? 0) / valuation : 0)} at{' '}
-            {formatMoneyPrecise(valuation ?? 0)} valuation
-          </Button>
-        </Tooltip>
-      </Row>
     </Card>
   )
 }
