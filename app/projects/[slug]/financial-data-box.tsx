@@ -151,7 +151,7 @@ export function FinancialDataBox(props: {
           )}
         </div>
       </div>
-      <div className="py-6 sm:col-span-2">
+      <Col className="gap-6 py-6 sm:col-span-2">
         {!['draft', 'proposal'].includes(project.stage) &&
           project.type === 'cert' &&
           !!project.amm_shares && (
@@ -164,25 +164,23 @@ export function FinancialDataBox(props: {
               size="lg"
             />
           )}
-        {userProfile &&
-          project.type === 'cert' &&
-          project.stage === 'active' && (
-            <Trade
-              ammTxns={
-                !!project.amm_shares
-                  ? projectTxns.filter(
-                      (txn) =>
-                        txn.to_id === project.id || txn.from_id === project.id
-                    )
-                  : undefined
-              }
-              projectId={project.id}
-              userSpendableFunds={userSpendableFunds}
-              userSellableShares={userSellableShares}
-            />
-          )}
-        {userProfile &&
-          userProfile.id !== project.creator &&
+        {project.type === 'cert' && project.stage === 'active' && (
+          <Trade
+            ammTxns={
+              !!project.amm_shares
+                ? projectTxns.filter(
+                    (txn) =>
+                      txn.to_id === project.id || txn.from_id === project.id
+                  )
+                : undefined
+            }
+            projectId={project.id}
+            userSpendableFunds={userSpendableFunds}
+            userSellableShares={userSellableShares}
+            signedIn={!!userProfile}
+          />
+        )}
+        {userProfile?.id !== project.creator &&
           project.type === 'cert' &&
           project.stage === 'proposal' && (
             <AssuranceBuyBox
@@ -195,10 +193,10 @@ export function FinancialDataBox(props: {
               }
               maxBuy={userSpendableFunds}
               activeAuction={activeAuction}
+              signedIn={!!userProfile}
             />
           )}
-        {userProfile &&
-          userProfile.id !== project.creator &&
+        {userProfile?.id !== project.creator &&
           project.type === 'grant' &&
           pendingProjectTransfers.length === 0 &&
           (project.stage === 'proposal' || project.stage === 'active') && (
@@ -223,7 +221,7 @@ export function FinancialDataBox(props: {
             className="mx-auto my-4"
           />
         )}
-      </div>
+      </Col>
     </div>
   )
 }
