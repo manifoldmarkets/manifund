@@ -26,6 +26,7 @@ import {
   getTradeErrorMessage,
 } from '@/utils/amm'
 import { useRouter } from 'next/navigation'
+import { SignInButton } from '@/components/sign-in-button'
 
 const MODES = [
   {
@@ -47,63 +48,74 @@ export function Trade(props: {
   projectId: string
   userSpendableFunds: number
   userSellableShares: number
+  signedIn?: boolean
 }) {
-  const { ammTxns, projectId, userSpendableFunds, userSellableShares } = props
+  const {
+    ammTxns,
+    projectId,
+    userSpendableFunds,
+    userSellableShares,
+    signedIn,
+  } = props
   const usingAmm = !!ammTxns
   const [modeId, setModeId] = useState<BinaryModeId>(null)
   const [isLimitOrder, setIsLimitOrder] = useState(false)
-  return (
-    <div>
-      <Row className="mb-3 w-full justify-between gap-3 font-semibold">
-        {usingAmm &&
-          MODES.map((mode) => {
-            return (
-              <Button
-                key={mode.id}
-                color={
-                  (modeId === mode.id && !isLimitOrder
-                    ? mode.buttonColor
-                    : `${mode.buttonColor}-outline`) as ColorType
-                }
-                className="w-full"
-                onClick={() => {
-                  setModeId(
-                    modeId === mode.id && !isLimitOrder ? null : mode.id
-                  )
-                  setIsLimitOrder(false)
-                }}
-              >
-                {mode.label}
-              </Button>
-            )
-          })}
-        <Button
-          color={isLimitOrder ? 'orange' : 'orange-outline'}
-          className={clsx(usingAmm ? 'w-32' : 'w-full')}
-          onClick={() => {
-            setIsLimitOrder(!isLimitOrder)
-            setModeId(null)
-          }}
-        >
-          {usingAmm ? (
-            <AdjustmentsHorizontalIcon className="h-5 w-5" />
-          ) : (
-            'Make a trade offer'
-          )}
-        </Button>
-      </Row>
-      {(modeId !== null || isLimitOrder) && (
-        <TradeInputsPanel
-          modeId={modeId}
-          setModeId={isLimitOrder ? setModeId : undefined}
-          ammTxns={ammTxns}
-          projectId={projectId}
-          userSpendableFunds={userSpendableFunds}
-          userSellableShares={userSellableShares}
-        />
-      )}
-    </div>
-  )
+  if (signedIn) {
+    return (
+      <>
+        <Row className="mb-3 w-full justify-between gap-3 font-semibold">
+          {usingAmm &&
+            MODES.map((mode) => {
+              return (
+                <Button
+                  key={mode.id}
+                  color={
+                    (modeId === mode.id && !isLimitOrder
+                      ? mode.buttonColor
+                      : `${mode.buttonColor}-outline`) as ColorType
+                  }
+                  className="w-full"
+                  onClick={() => {
+                    setModeId(
+                      modeId === mode.id && !isLimitOrder ? null : mode.id
+                    )
+                    setIsLimitOrder(false)
+                  }}
+                >
+                  {mode.label}
+                </Button>
+              )
+            })}
+          <Button
+            color={isLimitOrder ? 'orange' : 'orange-outline'}
+            className={clsx(usingAmm ? 'w-32' : 'w-full')}
+            onClick={() => {
+              setIsLimitOrder(!isLimitOrder)
+              setModeId(null)
+            }}
+          >
+            {usingAmm ? (
+              <AdjustmentsHorizontalIcon className="h-5 w-5" />
+            ) : (
+              'Make a trade offer'
+            )}
+          </Button>
+        </Row>
+        {(modeId !== null || isLimitOrder) && (
+          <TradeInputsPanel
+            modeId={modeId}
+            setModeId={isLimitOrder ? setModeId : undefined}
+            ammTxns={ammTxns}
+            projectId={projectId}
+            userSpendableFunds={userSpendableFunds}
+            userSellableShares={userSellableShares}
+          />
+        )}
+      </>
+    )
+  } else {
+    return <SignInButton buttonText="Sign in to trade" />
+  }
 }
 
 function TradeInputsPanel(props: {

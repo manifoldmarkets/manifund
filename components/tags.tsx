@@ -26,6 +26,7 @@ import { TbCrystalBall, TbWorldX } from 'react-icons/tb'
 import { PiBirdBold, PiVirusBold } from 'react-icons/pi'
 import { PiSpiralBold } from 'react-icons/pi'
 import { ArrowTrendingUpIcon, CheckBadgeIcon } from '@heroicons/react/20/solid'
+import { Project } from '@/db/project'
 
 const COLORS = [
   'bg-indigo-100',
@@ -146,49 +147,22 @@ export function CauseTag(props: {
   )
 }
 
-export function StageTag(props: { projectStage: string }) {
-  const { projectStage } = props
-
-  switch (projectStage) {
-    case 'draft':
-      return (
-        <Tooltip text="draft">
-          <PencilIcon className="m-auto h-5 w-5 text-gray-500" />
-        </Tooltip>
-      )
-    case 'proposal':
-      return (
-        <Tooltip text="proposal">
-          <EllipsisHorizontalCircleIcon className="m-auto h-5 w-5 text-gray-500" />
-        </Tooltip>
-      )
-    case 'active':
-      return (
-        <Tooltip text="active">
-          <FireIcon className="m-auto h-5 w-5 text-orange-500" />
-        </Tooltip>
-      )
-    case 'not funded':
-      return (
-        <Tooltip text="not funded">
-          <XCircleIcon className="m-auto h-5 w-5 text-gray-500" />
-        </Tooltip>
-      )
-    case 'complete':
-      return (
-        <Tooltip text="completed">
-          <CheckCircleIcon className="m-auto h-5 w-5 text-gray-500" />
-        </Tooltip>
-      )
-    case 'hidden':
-      return (
-        <Tooltip text="hidden">
-          <EyeSlashIcon className="m-auto h-5 w-5 text-gray-500" />
-        </Tooltip>
-      )
-    default:
-      return null
+export function StageIcon(props: {
+  stage: Project['stage']
+  className?: string
+}) {
+  const { stage, className } = props
+  const i = {
+    icon: {
+      draft: PencilIcon,
+      proposal: EllipsisHorizontalCircleIcon,
+      active: FireIcon,
+      'not funded': XCircleIcon,
+      complete: CheckCircleIcon,
+      hidden: EyeSlashIcon,
+    }[stage],
   }
+  return <i.icon className={className} />
 }
 
 export function AccreditedTag() {
