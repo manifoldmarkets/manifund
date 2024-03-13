@@ -19,6 +19,7 @@ import {
   formatMoney,
   formatMoneyPrecise,
   formatPercent,
+  toSentenceCase,
 } from '@/utils/formatting'
 import {
   calculateCashBalance,
@@ -107,18 +108,11 @@ export function FinancialDataBox(props: {
   return (
     <Card>
       <dl className="grid grid-cols-1 sm:grid-cols-2">
-        <div className="px-4 pb-6 sm:col-span-1 sm:px-0">
-          <dt className="text-sm leading-6 text-gray-700">stage</dt>
-          <dd className="text-sm font-medium leading-6 text-gray-900">
-            Proposal
-          </dd>
-        </div>
-        <div className="px-4 pb-6 sm:col-span-1 sm:px-0">
-          <dt className="text-sm leading-6 text-gray-700">type</dt>
-          <dd className="text-sm font-medium leading-6 text-gray-900">
-            Impact certificate
-          </dd>
-        </div>
+        <DescriptionPoint
+          label="stage"
+          answer={toSentenceCase(project.stage)}
+        />
+        <DescriptionPoint label="type" answer={typeToLabelMap[project.type]} />
         <div className="border-b border-gray-200 pb-6 sm:col-span-2">
           {(project.stage === 'proposal' ||
             (project.stage === 'active' && project.type === 'grant')) && (
@@ -242,4 +236,22 @@ export function FinancialDataBox(props: {
       </dl>
     </Card>
   )
+}
+
+function DescriptionPoint(props: { label: string; answer: string }) {
+  const { label, answer } = props
+  return (
+    <div className="px-4 pb-6 sm:px-0">
+      <dt className="text-sm leading-6 text-gray-700">{label}</dt>
+      <dd className="text-sm font-semibold leading-6 text-gray-900">
+        {answer}
+      </dd>
+    </div>
+  )
+}
+
+const typeToLabelMap = {
+  cert: 'Impact certificate',
+  grant: 'Grant',
+  dummy: 'Uninteractable stand in',
 }
