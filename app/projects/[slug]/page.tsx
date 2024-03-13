@@ -10,6 +10,7 @@ import { ProjectDisplay } from './project-display'
 import { getPrizeCause, listSimpleCauses } from '@/db/cause'
 import { getBidsByUser } from '@/db/bid'
 import NotFound from '@/app/not-found'
+import NoAccess from '@/app/no-access'
 
 export const revalidate = 0
 
@@ -66,7 +67,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
   return (
     <div className="p-4">
       {projectIsPrivate && !userIsOwner && !userIsAdmin ? (
-        <div>404: Project not found.</div>
+        <NoAccess />
       ) : (
         <ProjectDisplay
           project={project}

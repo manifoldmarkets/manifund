@@ -21,6 +21,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { CircleStackIcon } from '@heroicons/react/24/solid'
 import { Tabs } from '@/components/tabs'
+import NoAccess from '../no-access'
 
 export default async function Admin({
   searchParams,
@@ -30,7 +31,7 @@ export default async function Admin({
   const supabase = createServerClient()
   const user = await getUser(supabase)
   if (!user || !isAdmin(user)) {
-    return <div>Not AUTHORIZED</div>
+    return <NoAccess />
   }
 
   const supabaseAdmin = createAdminClient()
