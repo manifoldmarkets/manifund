@@ -310,7 +310,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </label>
           <p className="text-sm text-gray-600">
             After this deadline, if you have not reached your minimum funding
-            bar, your application will close and you will not recieve any money.
+            bar, your application will close and you will not receive any money.
             This date cannot be more than 6 weeks after posting.
           </p>
           <Input

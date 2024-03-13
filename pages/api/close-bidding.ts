@@ -234,10 +234,10 @@ function genAuctionResolutionText(
   const portionSold = totalFunding / resolution.valuation
   if (portionSold + founderPortion >= 0.999999999999) {
     return `This project was successfully funded. All shares were sold at a valuation of 
-        ${formatMoney(resolution.valuation)} and the project recieved
+        ${formatMoney(resolution.valuation)} and the project received
         ${formatMoney(totalFunding)} in funding.`
   } else if (totalFunding > 0) {
-    return `This project was successfully funded. It recieved ${formatMoney(
+    return `This project was successfully funded. It received ${formatMoney(
       totalFunding
     )} in
         funding. ${formatLargeNumber(portionSold * 100)}% of shares were sold at

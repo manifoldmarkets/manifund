@@ -272,7 +272,7 @@ export function PublishProjectForm(props: {
                 You will receive some amount of upfront funding between your
                 minimum and your goal listed above, or none at all. This option
                 maximizes your chances of getting upfront funding, but means you
-                will not recieve any prize money if your project is awarded by a
+                will not receive any prize money if your project is awarded by a
                 retroactive funder at the end of this round. That is, this will
                 work basically as a normal grant.
               </span>
@@ -319,7 +319,7 @@ export function PublishProjectForm(props: {
           </label>
           <p className="text-sm text-gray-600">
             After this deadline, if you have not reached your minimum funding
-            bar, your application will close and you will not recieve any money.
+            bar, your application will close and you will not receive any money.
             This date cannot be more than 6 weeks after posting.
           </p>
           <Input
