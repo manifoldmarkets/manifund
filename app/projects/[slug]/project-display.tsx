@@ -318,6 +318,11 @@ export function ProjectTypeDisplay(props: {
   stage: Project['stage']
 }) {
   const { type, stage } = props
+  const typeToLabelMap = {
+    cert: 'Impact certificate',
+    grant: 'Grant',
+    dummy: 'Uninteractable stand in',
+  }
   return (
     <Row className="justify-between">
       <SmallDescriptionPoint label="stage" value={toSentenceCase(stage)} />
@@ -334,10 +339,4 @@ function SmallDescriptionPoint(props: { label: string; value: string }) {
       <dd className="text-sm font-medium leading-6 text-gray-900">{value}</dd>
     </div>
   )
-}
-
-const typeToLabelMap = {
-  cert: 'Impact certificate',
-  grant: 'Grant',
-  dummy: 'Uninteractable stand in',
 }
