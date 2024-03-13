@@ -66,6 +66,7 @@ export async function getProjectsByUser(
 }
 
 export async function listProjects(supabase: SupabaseClient) {
+  // Is this response too large so as to bust the cache?
   const { data } = await supabase
     .from('projects')
     .select(
@@ -74,7 +75,7 @@ export async function listProjects(supabase: SupabaseClient) {
     .neq('stage', 'hidden')
     .neq('stage', 'draft')
     .order('created_at', { ascending: false })
-    // .limit(30)
+    .limit(30)
     .throwOnError()
   // Scary type conversion!
   return data as unknown as FullProject[]
