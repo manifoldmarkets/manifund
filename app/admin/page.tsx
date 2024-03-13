@@ -137,6 +137,7 @@ export default async function Admin({
       <Table>
         <thead>
           <tr>
+            <th className="p-2">DB</th>
             <th className="p-2">Email</th>
             <th className="p-2">Username</th>
             <th className="p-2">Id</th>
@@ -148,6 +149,16 @@ export default async function Admin({
         <tbody className="p-2">
           {userAndProfiles.map((user) => (
             <tr key={user.id}>
+              <td className="pr-2">
+                <Link
+                  href={`https://supabase.com/dashboard/project/fkousziwzbnkdkldjper/editor/27095?filter=id%3Aeq%3A${user.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  <CircleStackIcon className="inline h-3 w-3" />
+                </Link>
+              </td>
               <td>{user.email}</td>
               <td>{user.profile?.username}</td>
               <td>{user.id}</td>
