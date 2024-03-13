@@ -8,10 +8,11 @@ import Sidebar from './sidebar'
 import { Readex_Pro, Josefin_Slab } from 'next/font/google'
 import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
-import { CompleteProfileBanner } from './banner'
+import { CompleteProfileBanner } from '@/components/complete-profile-banner'
 import { getProfileById } from '@/db/profile'
 import { Toaster } from 'react-hot-toast'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Suspense } from 'react'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 const josefin = Josefin_Slab({
@@ -43,11 +44,6 @@ export default async function RootLayout({
   const {
     data: { session },
   } = await supabase.auth.getSession()
-  const user = session?.user
-  const userProfile = await getProfileById(supabase, user?.id)
-  const profileTodo =
-    userProfile &&
-    (userProfile.username === userProfile.id || !userProfile.full_name)
   return (
     <html lang="en" className={fontVars}>
       <head />
@@ -61,7 +57,10 @@ export default async function RootLayout({
           <Sidebar />
           <SupabaseListener serverAccessToken={session?.access_token} />
           <main className="flex flex-col lg:col-span-8">
-            {profileTodo && <CompleteProfileBanner />}
+            <Suspense fallback={null}>
+              {/* @ts-expect-error Server Component */}
+              <CompleteProfileBanner user={session?.user} />
+            </Suspense>
             {children}
           </main>
           {/* @ts-expect-error Server Component */}
