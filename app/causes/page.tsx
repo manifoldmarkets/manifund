@@ -14,7 +14,7 @@ export default async function CausesPage() {
         Prize rounds
       </h1>
       <span className="text-sm text-gray-600">
-        Funding rounds we've run through an impact market.
+        Funding rounds we&apos;ve run through an impact market.
       </span>
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
         {prizes.map((cause) => (
