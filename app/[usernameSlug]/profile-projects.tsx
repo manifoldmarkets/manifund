@@ -1,7 +1,7 @@
 'use client'
 import { Project } from '@/db/project'
 import Link from 'next/link'
-import { StageIcon, stageIcons, StageTag } from '@/components/tags'
+import { StageIcon } from '@/components/tags'
 import { orderBy } from 'lodash'
 import { Table, TableRow } from '@/components/table'
 import { Tooltip } from '@/components/tooltip'
