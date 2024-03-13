@@ -336,6 +336,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       <Col className="gap-1">
         <label>
           In what countries are you and anyone else working on this located?
+          <RequiredStar />
         </label>
         <p className="text-sm text-gray-600">
           This is for Manifund operations and will not be published.
@@ -437,6 +438,8 @@ export function getCreateProjectErrorMessage(
     !projectParams.verdictDate
   ) {
     return 'You need to set a decision deadline.'
+  } else if (!projectParams.location) {
+    return 'Please specify the location of your project.'
   } else {
     return null
   }
