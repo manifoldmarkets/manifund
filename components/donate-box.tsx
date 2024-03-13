@@ -85,15 +85,15 @@ export function DonateBox(props: {
         </Row>
         {isBid && (
           <p className="text-sm text-gray-500">
-            You are offering to donate this amount to the project on the
+            This is an offer to donate this amount to the project on the
             condition that it eventually becomes active. Otherwise, your funds
             will remain in your Manifund account.
           </p>
         )}
         {charity?.type === 'individual' && (
           <p className="text-sm text-gray-500">
-            You are donating to this user&apos;s regranting budget, which is not
-            withdrawable.
+            This is a donation to this user&apos;s regranting budget, which is
+            not withdrawable.
           </p>
         )}
       </div>
