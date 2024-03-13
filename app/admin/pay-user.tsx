@@ -17,8 +17,14 @@ export function PayUser(props: { userId: string }) {
 
   return (
     <div className="flex flex-row">
-      <AmountInput amount={amount} onChangeAmount={setAmount} allowNegative />
+      <AmountInput
+        className="text-sm"
+        amount={amount}
+        onChangeAmount={setAmount}
+        allowNegative
+      />
       <Button
+        size="sm"
         onClick={async () => {
           await payUser({ userId, amount: amount ?? 0 })
           router.refresh()
