@@ -5,9 +5,8 @@ import Image from 'next/image'
 import { Row } from '@/components/layout/row'
 import { ArrowLongRightIcon } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
-import { getRegranters } from '@/db/profile'
 import Link from 'next/link'
-import { FullCause, getSomeFullCauses, listMiniCauses } from '@/db/cause'
+import { FullCause, getSomeFullCauses, listSimpleCauses } from '@/db/cause'
 import { getRecentFullComments } from '@/db/comment'
 import { getRecentFullTxns } from '@/db/txn'
 import { FeedTabs } from './feed-tabs'
@@ -36,7 +35,7 @@ export default async function Projects(props: {
     getRecentFullComments(supabase, PAGE_SIZE, start),
     getRecentFullTxns(supabase, PAGE_SIZE, start),
     getRecentFullBids(supabase, PAGE_SIZE, start),
-    listMiniCauses(supabase),
+    listSimpleCauses(supabase),
   ])
   const featuredCauses = await getSomeFullCauses(
     ['acx-grants-2024', 'manifold-community'],

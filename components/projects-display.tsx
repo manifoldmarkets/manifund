@@ -12,7 +12,7 @@ import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
 import { compareDesc, compareAsc } from 'date-fns'
 import { Row } from './layout/row'
-import { MiniCause, Cause } from '@/db/cause'
+import { MiniCause, Cause, SimpleCause } from '@/db/cause'
 import { CauseTag } from './tags'
 import { Col } from './layout/col'
 import { SearchBar } from './input'
@@ -43,7 +43,7 @@ const DEFAULT_SORT_OPTIONS = [
 
 export function ProjectsDisplay(props: {
   projects: FullProject[]
-  causesList: MiniCause[]
+  causesList: SimpleCause[]
   sortOptions?: SortOption[]
   defaultSort?: SortOption
   hideRound?: boolean
@@ -104,7 +104,7 @@ export function ProjectsDisplay(props: {
                 includedCauses={includedCauses}
                 setIncludedCauses={setIncludedCauses}
                 open={open}
-                causes={causesList}
+                causes={causesList.filter((c) => !c.prize)}
               />
             )}
           </Listbox>

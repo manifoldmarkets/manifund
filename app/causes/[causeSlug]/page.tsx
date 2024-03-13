@@ -1,10 +1,10 @@
 import { createServerClient } from '@/db/supabase-server'
 import { getFullProjectsByCause } from '@/db/project'
 import Image from 'next/image'
-import { getCause, listMiniCauses } from '@/db/cause'
+import { getCause, listSimpleCauses } from '@/db/cause'
 import { CauseTabs } from './cause-tabs'
 import { CauseData } from './cause-data'
-import { getUser, Profile } from '@/db/profile'
+import { getUser } from '@/db/profile'
 import { calculateCharityBalance } from '@/utils/math'
 import {
   getIncomingTxnsByUserWithDonor,
@@ -32,7 +32,7 @@ export default async function CausePage(props: {
   const { causeSlug } = props.params
   const supabase = createServerClient()
   const cause = await getCause(supabase, causeSlug)
-  const causesList = await listMiniCauses(supabase)
+  const causesList = await listSimpleCauses(supabase)
   const projects = await getFullProjectsByCause(supabase, cause.slug)
   const user = await getUser(supabase)
   const fund = cause.fund_id
