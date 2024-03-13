@@ -1,15 +1,12 @@
 import { createServerClient } from '@/db/supabase-server'
-import { FullProject, listProjects } from '@/db/project'
-import { getUser, Profile } from '@/db/profile'
+import { listProjects } from '@/db/project'
+import { getUser } from '@/db/profile'
 import Image from 'next/image'
 import { Row } from '@/components/layout/row'
 import { ArrowLongRightIcon } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
 import { getRegranters } from '@/db/profile'
 import Link from 'next/link'
-import clsx from 'clsx'
-import { CardlessProject } from '@/components/project-card'
-import { CardlessProfile } from '@/components/profile-card'
 import { FullCause, getSomeFullCauses, listMiniCauses } from '@/db/cause'
 import { getRecentFullComments } from '@/db/comment'
 import { getRecentFullTxns } from '@/db/txn'
@@ -17,19 +14,6 @@ import { FeedTabs } from './feed-tabs'
 import { getRecentFullBids } from '@/db/bid'
 
 export const revalidate = 60
-
-const featuredRegrantorIds = [
-  'e2a30cdd-6797-4e2c-8823-f051195fc77a', // Ryan
-  '232dc139-961a-4f9a-9ca5-0118b90287c0', // Nuno
-  '647c9b3c-65ce-40cf-9464-ac02c741aacd', // Evan
-  'b11620f2-fdc7-414c-8a63-9ddee17ee669', // Marcus
-]
-
-const featuredProjectSlugs = [
-  'empirical-research-into-ai-consciousness-and-moral-patienthood',
-  'avoiding-incentives-for-performative-prediction-in-ai',
-  'support-riesgos-catastroficos-globales',
-]
 
 export default async function Projects(props: {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -42,7 +26,6 @@ export default async function Projects(props: {
   const [
     user,
     projects,
-    regrantors,
     recentComments,
     recentDonations,
     recentBids,
@@ -50,7 +33,6 @@ export default async function Projects(props: {
   ] = await Promise.all([
     getUser(supabase),
     listProjects(supabase),
-    getRegranters(supabase),
     getRecentFullComments(supabase, PAGE_SIZE, start),
     getRecentFullTxns(supabase, PAGE_SIZE, start),
     getRecentFullBids(supabase, PAGE_SIZE, start),
