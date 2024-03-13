@@ -276,7 +276,7 @@ function GenInvestmentExplanation(props: {
         </span>
         <span className="text-sm text-gray-600">
           If this offer is fully accepted by any combination of investors, then
-          your project will become active and you&apos;ll recieve ${minFunding}{' '}
+          your project will become active and you&apos;ll receive ${minFunding}{' '}
           which can be withdrawn and used for your project upfront.{' '}
           {ammPercent > 0 &&
             `The remaining ${formatMoneyPrecise(
