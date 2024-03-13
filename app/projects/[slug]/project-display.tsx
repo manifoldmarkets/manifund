@@ -36,6 +36,7 @@ import { EnvelopeIcon } from '@heroicons/react/20/solid'
 import { ViewerActionPanel } from './viewer-action-panel'
 import { differenceInDays, differenceInHours } from 'date-fns'
 import { toSentenceCase } from '@/utils/formatting'
+import Link from 'next/link'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -318,25 +319,29 @@ export function ProjectTypeDisplay(props: {
   stage: Project['stage']
 }) {
   const { type, stage } = props
-  const typeToLabelMap = {
-    cert: 'Impact certificate',
-    grant: 'Grant',
-    dummy: 'Uninteractable stand in',
-  }
   return (
     <Row className="justify-between">
-      <SmallDescriptionPoint label="stage" value={toSentenceCase(stage)} />
-      <SmallDescriptionPoint label="type" value={typeToLabelMap[type]} />
+      <div className="px-4 sm:px-0">
+        <span className="text-sm leading-6 text-gray-700">stage</span>
+        <span className="text-sm font-medium leading-6 text-gray-900">
+          {toSentenceCase(stage)}
+        </span>
+      </div>
+      <div className="px-4 sm:px-0">
+        <span className="text-sm leading-6 text-gray-700">{type}</span>
+        {type === 'cert' ? (
+          <Link
+            className="text-sm font-medium leading-6 text-gray-900"
+            href="/about/impact-certificates"
+          >
+            Impact certificate
+          </Link>
+        ) : (
+          <span className="text-sm font-medium leading-6 text-gray-900">
+            {toSentenceCase(type)}
+          </span>
+        )}
+      </div>
     </Row>
-  )
-}
-
-function SmallDescriptionPoint(props: { label: string; value: string }) {
-  const { label, value } = props
-  return (
-    <div className="px-4 sm:px-0">
-      <dt className="text-sm leading-6 text-gray-700">{label}</dt>
-      <dd className="text-sm font-medium leading-6 text-gray-900">{value}</dd>
-    </div>
   )
 }
