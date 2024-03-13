@@ -7,6 +7,7 @@ import { ProfileContent } from './profile-content'
 import { getBidsByUser } from '@/db/bid'
 import { getCommentsByUser } from '@/db/comment'
 import FundPage from '../funds/[fundSlug]/page'
+import NotFound from '../not-found'
 
 export const revalidate = 60
 
@@ -17,7 +18,7 @@ export default async function UserProfilePage(props: {
   const supabase = createServerClient()
   const profile = await getProfileByUsername(supabase, usernameSlug)
   if (!profile) {
-    return <div>User not found</div>
+    return <NotFound />
   } else if (profile.type === 'fund') {
     /* @ts-expect-error Server Component */
     return <FundPage params={{ fundSlug: usernameSlug }} />
