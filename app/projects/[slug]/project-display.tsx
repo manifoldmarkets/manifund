@@ -34,7 +34,6 @@ import { UserAvatarAndBadge } from '@/components/user-link'
 import { Tooltip } from '@/components/tooltip'
 import { EnvelopeIcon } from '@heroicons/react/20/solid'
 import { ViewerActionPanel } from './viewer-action-panel'
-import { differenceInDays, differenceInHours } from 'date-fns'
 import { toSentenceCase } from '@/utils/formatting'
 import Link from 'next/link'
 
@@ -287,33 +286,6 @@ export function ProjectDisplay(props: {
   )
 }
 
-export function TimeLeftDisplay(props: { closeDate: string }) {
-  // Close it on 23:59:59 in UTC -12 aka "Anywhere on Earth" time
-  const closeDate = new Date(`${props.closeDate}T23:59:59-12:00`)
-  const now = new Date()
-  const daysLeft = differenceInDays(closeDate, now)
-  const hoursLeft = daysLeft < 1 ? differenceInHours(closeDate, now) : 0
-  return (
-    <Row className="items-center gap-1 text-sm text-gray-900">
-      <span className="font-semibold">{`${Math.max(
-        hoursLeft ? hoursLeft : daysLeft,
-        0
-      )} ${hoursLeft ? 'hours' : 'days'}`}</span>
-      <span>left to contribute</span>
-    </Row>
-  )
-}
-
-export function scrollToComments(router: any) {
-  router.push('?tab=comments')
-  const tabsElement = document.getElementById('tabs')
-  tabsElement?.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start',
-    inline: 'start',
-  })
-}
-
 export function ProjectTypeDisplay(props: {
   type: Project['type']
   stage: Project['stage']
@@ -344,4 +316,14 @@ export function ProjectTypeDisplay(props: {
       </Col>
     </Row>
   )
+}
+
+export function scrollToComments(router: any) {
+  router.push('?tab=comments')
+  const tabsElement = document.getElementById('tabs')
+  tabsElement?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+    inline: 'start',
+  })
 }

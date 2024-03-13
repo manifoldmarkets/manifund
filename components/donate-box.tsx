@@ -1,8 +1,6 @@
 'use client'
-import {
-  scrollToComments,
-  TimeLeftDisplay,
-} from '@/app/projects/[slug]/project-display'
+import { TimeLeftDisplay } from '@/app/projects/[slug]/time-left-display'
+import { scrollToComments } from '@/app/projects/[slug]/project-display'
 import { Button } from '@/components/button'
 import { Card } from '@/components/layout/card'
 import { AmountInput } from '@/components/input'

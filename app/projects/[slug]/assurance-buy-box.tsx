@@ -15,7 +15,7 @@ import {
 import { differenceInDays, differenceInHours, format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { TimeLeftDisplay } from './project-display'
+import { TimeLeftDisplay } from './time-left-display'
 
 export function AssuranceBuyBox(props: {
   project: Project
