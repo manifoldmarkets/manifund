@@ -1,4 +1,4 @@
-import { Table, TableRow } from '@/components/table'
+import { Table } from '@/components/table'
 import { getUser, isAdmin } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { createAdminClient } from '@/pages/api/_db'
