@@ -321,14 +321,14 @@ export function ProjectTypeDisplay(props: {
   const { type, stage } = props
   return (
     <Row className="justify-between">
-      <div className="px-4 sm:px-0">
+      <Col className="px-4 sm:px-0">
         <span className="text-sm leading-6 text-gray-700">stage</span>
         <span className="text-sm font-medium leading-6 text-gray-900">
           {toSentenceCase(stage)}
         </span>
-      </div>
-      <div className="px-4 sm:px-0">
-        <span className="text-sm leading-6 text-gray-700">{type}</span>
+      </Col>
+      <Col className="px-4 sm:px-0">
+        <span className="text-sm leading-6 text-gray-700">type</span>
         {type === 'cert' ? (
           <Link
             className="text-sm font-medium leading-6 text-gray-900"
@@ -341,7 +341,7 @@ export function ProjectTypeDisplay(props: {
             {toSentenceCase(type)}
           </span>
         )}
-      </div>
+      </Col>
     </Row>
   )
 }
