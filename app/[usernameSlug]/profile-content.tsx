@@ -97,7 +97,7 @@ export function ProfileContent(props: {
     )
   return (
     <div className="flex flex-col gap-6">
-      {profile.regranter_status && !isOwnProfile && userProfile && (
+      {profile.regranter_status && !isOwnProfile && (
         <DonateBox
           charity={profile}
           profile={userProfile}
