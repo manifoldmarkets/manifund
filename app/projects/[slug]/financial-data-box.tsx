@@ -36,6 +36,7 @@ import { format } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { AssuranceBuyBox } from './assurance-buy-box'
+import { ProjectData } from './project-data'
 import { Trade } from './trade'
 import { CertValuationChart } from './valuation-chart'
 
@@ -117,39 +118,12 @@ export function FinancialDataBox(props: {
             fundingGoal={project.funding_goal}
           />
         )}
-        <div
-          className={clsx(
-            'mt-2',
-            (project.type === 'cert' && project.stage === 'active') ||
-              (project.type !== 'cert' && project.stage !== 'active')
-              ? 'flex justify-between'
-              : 'grid grid-cols-2 gap-y-5 lg:flex lg:justify-between'
-          )}
-        >
-          <Stat value={formatMoneyPrecise(amountRaised)} label="raised" />
-          {['draft', 'proposal'].includes(project.stage) && (
-            <Stat
-              value={formatMoneyPrecise(minIncludingAmm)}
-              label="minimum funding"
-            />
-          )}
-          {['draft', 'proposal', 'active'].includes(project.stage) && (
-            <Stat
-              value={formatMoneyPrecise(project.funding_goal)}
-              label="funding goal"
-            />
-          )}
-          {project.type === 'cert' && (
-            <Stat
-              value={formatMoneyPrecise(valuation)}
-              label={
-                ['draft', 'proposal'].includes(project.stage)
-                  ? 'minimum valuation'
-                  : 'valuation'
-              }
-            />
-          )}
-        </div>
+        <ProjectData
+          minimum={minIncludingAmm}
+          valuation={valuation}
+          project={project}
+          raised={amountRaised}
+        />
       </div>
       <Col className="gap-6 sm:col-span-2">
         {!['draft', 'proposal'].includes(project.stage) &&
