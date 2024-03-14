@@ -1,7 +1,6 @@
 import { Avatar } from '@/components/avatar'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
-import { createServerClient } from '@/db/supabase-server'
 import {
   ArrowPathIcon,
   ArrowTrendingUpIcon,
@@ -16,10 +15,11 @@ import {
 import clsx from 'clsx'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getAllProjectTxns } from '@/db/txn'
-import { Stats } from './stats'
 import { Card } from '@/components/layout/card'
 import { MegaphoneIcon } from '@heroicons/react/24/outline'
+import { Suspense } from 'react'
+import Loading from '../loading'
+import { StatsServerComponent } from './stats-sc'
 
 const APPROACH_FEATURES = [
   {
@@ -99,9 +99,7 @@ const TEAM_MEMBERS = [
   },
 ]
 
-export default async function AboutPage() {
-  const supabase = createServerClient()
-  const txns = await getAllProjectTxns(supabase)
+export default function AboutPage() {
   return (
     <>
       <Col className="w-full gap-10 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5 sm:p-10">
@@ -140,7 +138,10 @@ export default async function AboutPage() {
           <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
         </Link>
       </Col>
-      <Stats txns={txns} />
+      <Suspense fallback={<Loading />}>
+        {/* @ts-expect-error Server Components */}
+        <StatsServerComponent />
+      </Suspense>
       <Col className="w-full gap-10 px-5 py-5 sm:px-10">
         <h1 className="text-center text-3xl font-bold">How we fund projects</h1>
         {FUNDING_MECHANISMS.map((mechanism, index) => {
