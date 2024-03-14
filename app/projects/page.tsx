@@ -6,7 +6,6 @@ import { Row } from '@/components/layout/row'
 import { ArrowLongRightIcon } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
 import Link from 'next/link'
-import { FullCause, getSomeFullCauses, listMiniCauses } from '@/db/cause'
 import { FullCause, getSomeFullCauses, listSimpleCauses } from '@/db/cause'
 import { getRecentFullComments } from '@/db/comment'
 import { getRecentFullTxns } from '@/db/txn'
@@ -41,8 +40,9 @@ export default async function Projects(props: {
     getRecentFullTxns(supabase, PAGE_SIZE, start),
     getRecentFullBids(supabase, PAGE_SIZE, start),
     listSimpleCauses(supabase),
+    getSomeFullCauses(['acx-grants-2024', 'manifold-community'], supabase),
   ])
-  console.log('projects.length', projects.length)
+
   return (
     <Col className="gap-16 px-3 py-5 sm:px-6">
       {user === null && <LandingSection />}
