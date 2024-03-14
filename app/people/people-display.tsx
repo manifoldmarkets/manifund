@@ -16,6 +16,7 @@ import {
 import { getSponsoredAmount } from '@/utils/constants'
 import { SearchBar } from '@/components/input'
 import { searchInAny } from '@/utils/parse'
+import { LoadMoreUntilNotVisible } from '@/components/widgets/visibility-observer'
 
 export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
   const { profiles } = props
@@ -25,14 +26,18 @@ export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
       .filter((profile) => checkProfileComplete(profile))
   )
   const [search, setSearch] = useState('')
-  const selectedProfiles = eligibleProfiles.filter((profile) =>
-    searchInAny(
-      search,
-      profile.full_name,
-      profile.bio,
-      ...profile.projects?.map((project) => project.title)
+  const CLIENT_PAGE_SIZE = 50
+  const [numToShow, setNumToShow] = useState(CLIENT_PAGE_SIZE)
+  const selectedProfiles = eligibleProfiles
+    .filter((profile) =>
+      searchInAny(
+        search,
+        profile.full_name,
+        profile.bio,
+        ...profile.projects?.map((project) => project.title)
+      )
     )
-  )
+    .slice(0, numToShow)
   return (
     <Col className="w-80 justify-center gap-2 sm:w-[30rem] lg:w-[36rem]">
       <SearchBar search={search} setSearch={setSearch} className="mt-2" />
@@ -43,6 +48,12 @@ export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
           isCreator={profile.projects.length > 0}
         />
       ))}
+      <LoadMoreUntilNotVisible
+        loadMore={() => {
+          setNumToShow(numToShow + CLIENT_PAGE_SIZE)
+          return Promise.resolve(true)
+        }}
+      />
       {selectedProfiles.length === 0 && (
         <p className="my-10 w-full text-center italic text-gray-500">
           no profiles found

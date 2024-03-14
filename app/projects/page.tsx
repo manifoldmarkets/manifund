@@ -12,7 +12,9 @@ import { getRecentFullTxns } from '@/db/txn'
 import { FeedTabs } from './feed-tabs'
 import { getRecentFullBids } from '@/db/bid'
 
-export const revalidate = 60
+// Note: These options make /projects static, but not when accessed from Home
+export const runtime = 'nodejs'
+export const dynamic = 'force-static'
 
 export default async function Projects(props: {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -29,6 +31,7 @@ export default async function Projects(props: {
     recentDonations,
     recentBids,
     causesList,
+    featuredCauses,
   ] = await Promise.all([
     getUser(supabase),
     listProjects(supabase),
@@ -36,11 +39,9 @@ export default async function Projects(props: {
     getRecentFullTxns(supabase, PAGE_SIZE, start),
     getRecentFullBids(supabase, PAGE_SIZE, start),
     listSimpleCauses(supabase),
+    getSomeFullCauses(['acx-grants-2024', 'manifold-community'], supabase),
   ])
-  const featuredCauses = await getSomeFullCauses(
-    ['acx-grants-2024', 'manifold-community'],
-    supabase
-  )
+
   return (
     <Col className="gap-16 px-3 py-5 sm:px-6">
       {user === null && <LandingSection />}
@@ -85,7 +86,7 @@ function CausePreview(props: { cause: FullCause }) {
         src={cause.header_image_url}
         width={240}
         height={120}
-        className="relative aspect-[3/1] w-full flex-shrink-0 rounded bg-white object-cover sm:aspect-[5/3] sm:max-w-60"
+        className="sm:max-w-60 relative aspect-[3/1] w-full flex-shrink-0 rounded bg-white object-cover sm:aspect-[5/3]"
         alt="round header image"
       />
       <Col className="w-full justify-between">
