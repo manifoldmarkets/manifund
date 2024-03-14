@@ -24,10 +24,9 @@ import { pt } from 'date-fns/locale'
 
 export function ProjectCard(props: {
   project: FullProject
-  causes: MiniCause[]
   valuation?: number
 }) {
-  const { project, causes, valuation } = props
+  const { project, valuation } = props
   const amountRaised = getAmountRaised(project, project.bids, project.txns)
   const firstDonorId =
     project.stage === 'proposal'
@@ -71,7 +70,7 @@ export function ProjectCard(props: {
           <p className="text-xs text-gray-500 sm:text-sm">{project.blurb}</p>
         </Link>
         <Row className="mb-1 flex-wrap gap-1">
-          {causes?.map((cause) => (
+          {project.causes?.map((cause) => (
             <CauseTag
               key={cause.slug}
               causeTitle={cause.title}

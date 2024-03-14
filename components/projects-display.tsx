@@ -13,6 +13,7 @@ import { CauseTag } from './tags'
 import { Col } from './layout/col'
 import { SearchBar } from './input'
 import { searchInAny } from '@/utils/parse'
+import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
 import { Select } from './select'
 
 type SortOption =
@@ -51,16 +52,21 @@ export function ProjectsDisplay(props: {
     prices,
     sortBy
   )
-  const selectedProjects = sortedProjects.filter((project) => {
-    return searchInAny(
-      search,
-      project.title,
-      project.blurb ?? '',
-      project.profiles.full_name,
-      project.profiles.username,
-      project.project_transfers?.[0]?.recipient_name ?? ''
-    )
-  })
+  const CLIENT_PAGE_SIZE = 20
+  const [numToShow, setNumToShow] = useState<number>(CLIENT_PAGE_SIZE)
+  const selectedProjects = sortedProjects
+    .filter((project) => {
+      return searchInAny(
+        search,
+        project.title,
+        project.blurb ?? '',
+        project.profiles.full_name,
+        project.profiles.username,
+        project.project_transfers?.[0]?.recipient_name ?? ''
+      )
+    })
+    .slice(0, numToShow)
+
   const proposals = selectedProjects.filter(
     (project) => project.stage == 'proposal'
   )
@@ -135,6 +141,12 @@ export function ProjectsDisplay(props: {
           </div>
         )}
       </div>
+      <LoadMoreUntilNotVisible
+        loadMore={() => {
+          setNumToShow(numToShow + CLIENT_PAGE_SIZE)
+          return Promise.resolve(true)
+        }}
+      />
     </Col>
   )
 }

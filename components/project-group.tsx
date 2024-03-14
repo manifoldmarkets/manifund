@@ -14,7 +14,6 @@ export function ProjectGroup(props: {
           key={project.id}
           project={project}
           valuation={prices ? prices[project.id] : undefined}
-          causes={project.causes}
         />
       ))}
     </div>
