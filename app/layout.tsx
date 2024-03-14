@@ -9,7 +9,6 @@ import { Readex_Pro, Josefin_Slab } from 'next/font/google'
 import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
 import { CompleteProfileBanner } from '@/components/complete-profile-banner'
-import { getProfileById } from '@/db/profile'
 import { Toaster } from 'react-hot-toast'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Suspense } from 'react'
@@ -20,9 +19,6 @@ const josefin = Josefin_Slab({
   variable: '--font-josefin-slab',
 })
 const fontVars = [readex.variable, josefin.variable].join(' ')
-
-// revalidate = 0 means that this root layout will be dynamically generated on every request?
-// export const revalidate = 0
 
 export const runtime = 'edge'
 
