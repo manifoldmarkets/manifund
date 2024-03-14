@@ -24,8 +24,10 @@ import { LuBrainCircuit } from 'react-icons/lu'
 import { BiDonateHeart, BiHeart } from 'react-icons/bi'
 import { TbCrystalBall, TbWorldX } from 'react-icons/tb'
 import { PiBirdBold, PiVirusBold } from 'react-icons/pi'
+import { MdOutlineMedicalServices } from 'react-icons/md'
 import { PiSpiralBold } from 'react-icons/pi'
 import { ArrowTrendingUpIcon, CheckBadgeIcon } from '@heroicons/react/20/solid'
+import { Project } from '@/db/project'
 
 const COLORS = [
   'bg-indigo-100',
@@ -109,6 +111,7 @@ const CAUSE_ICONS = {
   ),
   'china-talk': <StarIcon className="h-3 w-3 stroke-2" />,
   'acx-grants-2024': <PiSpiralBold className="h-3 w-3" />,
+  medical: <MdOutlineMedicalServices className="h-3 w-3" />,
 } as { [key: string]: JSX.Element }
 
 export function CauseTag(props: {
@@ -146,49 +149,22 @@ export function CauseTag(props: {
   )
 }
 
-export function StageTag(props: { projectStage: string }) {
-  const { projectStage } = props
-
-  switch (projectStage) {
-    case 'draft':
-      return (
-        <Tooltip text="draft">
-          <PencilIcon className="m-auto h-5 w-5 text-gray-500" />
-        </Tooltip>
-      )
-    case 'proposal':
-      return (
-        <Tooltip text="proposal">
-          <EllipsisHorizontalCircleIcon className="m-auto h-5 w-5 text-gray-500" />
-        </Tooltip>
-      )
-    case 'active':
-      return (
-        <Tooltip text="active">
-          <FireIcon className="m-auto h-5 w-5 text-orange-500" />
-        </Tooltip>
-      )
-    case 'not funded':
-      return (
-        <Tooltip text="not funded">
-          <XCircleIcon className="m-auto h-5 w-5 text-gray-500" />
-        </Tooltip>
-      )
-    case 'complete':
-      return (
-        <Tooltip text="completed">
-          <CheckCircleIcon className="m-auto h-5 w-5 text-gray-500" />
-        </Tooltip>
-      )
-    case 'hidden':
-      return (
-        <Tooltip text="hidden">
-          <EyeSlashIcon className="m-auto h-5 w-5 text-gray-500" />
-        </Tooltip>
-      )
-    default:
-      return null
+export function StageIcon(props: {
+  stage: Project['stage']
+  className?: string
+}) {
+  const { stage, className } = props
+  const i = {
+    icon: {
+      draft: PencilIcon,
+      proposal: EllipsisHorizontalCircleIcon,
+      active: FireIcon,
+      'not funded': XCircleIcon,
+      complete: CheckCircleIcon,
+      hidden: EyeSlashIcon,
+    }[stage],
   }
+  return <i.icon className={className} />
 }
 
 export function AccreditedTag() {
@@ -210,7 +186,7 @@ export function AccreditedTag() {
 
 export function RegranterTag() {
   return (
-    <Tooltip text="Regranters can recieve donations from other users and give grants to the projects and organizations of their choice.">
+    <Tooltip text="Regranters can receive donations from other users and give grants to the projects and organizations of their choice.">
       <Row className="max-w-fit gap-0.5 rounded-full bg-orange-100 px-2  pt-1 text-center">
         <CheckBadgeIcon className="relative bottom-0.5 m-auto h-4 w-4 stroke-2 text-orange-500" />
         <div className="relative bottom-0.5 text-sm leading-tight text-orange-500">

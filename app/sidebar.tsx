@@ -61,7 +61,7 @@ export default async function Sidebar() {
           )}
           <SidebarItem item={{ name: 'About', href: '/about' }} />
           <SidebarItem item={{ name: 'People', href: '/people' }} />
-          <SidebarItem item={{ name: 'Causes', href: '/causes' }} />
+          <SidebarItem item={{ name: 'Categories', href: '/causes' }} />
           {user && (
             <Link
               href={isRegranter ? '/create-grant' : '/create'}

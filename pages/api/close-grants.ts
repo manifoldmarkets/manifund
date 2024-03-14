@@ -113,7 +113,7 @@ async function closeProject(
         project.min_funding
       }. ${
         reactivateEligible
-          ? "You can activate your project from your project page if you'd like your project to stay eligible for trading and retroactive funding, though you will still not recieve any upfront funding."
+          ? "You can activate your project from your project page if you'd like your project to stay eligible for trading and retroactive funding, though you will still not receive any upfront funding."
           : ''
       } Thank you for posting your project, and please let us know on our discord if you have any questions or feedback about the process.`,
       projectUrl: `https://manifund.org/projects/${project.slug}`,

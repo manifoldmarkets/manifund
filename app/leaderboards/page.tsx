@@ -49,8 +49,10 @@ export default async function Leaderboard() {
   return (
     <div className="p-4">
       <h1 className="py-4 text-3xl font-bold">Total donated</h1>
-      <p>(excludes regrantors)</p>
-      <table className="table-auto">
+      <p className="text-sm font-light text-gray-600">
+        Excludes regrantors and some large donations
+      </p>
+      <table className="mt-4 table-auto">
         <thead>
           <tr>
             <th className="px-4 py-2">User</th>

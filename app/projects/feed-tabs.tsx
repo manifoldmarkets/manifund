@@ -11,7 +11,7 @@ import { Pagination } from '@/components/pagination'
 import { useState } from 'react'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { FullProject } from '@/db/project'
-import { MiniCause } from '@/db/cause'
+import { SimpleCause } from '@/db/cause'
 import { Tag } from '@/components/tags'
 import { Card } from '@/components/layout/card'
 import { Bid } from './[slug]/bids'
@@ -22,7 +22,7 @@ export function FeedTabs(props: {
   recentDonations: FullTxn[]
   recentBids: FullBid[]
   projects: FullProject[]
-  causesList: MiniCause[]
+  causesList: SimpleCause[]
 }) {
   const { recentComments, recentDonations, recentBids, projects, causesList } =
     props
@@ -38,14 +38,6 @@ export function FeedTabs(props: {
       <ProjectsDisplay
         projects={projects}
         defaultSort={'newest first'}
-        sortOptions={[
-          'votes',
-          'newest first',
-          'oldest first',
-          'price',
-          'percent funded',
-          'number of comments',
-        ]}
         causesList={causesList}
       />
     </Col>

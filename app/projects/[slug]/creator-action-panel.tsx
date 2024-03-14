@@ -167,7 +167,7 @@ function CloseProject(props: { projectId: string }) {
             complete, prevents future donations, and means you will not be asked
             for further project updates in the future. Do this if you have
             completed the project as described in the initial proposal, have
-            spent all of the funds you recieved, and/or do not plan to work on
+            spent all of the funds you received, and/or do not plan to work on
             this project further.
           </p>
           <p className="mt-2 text-sm text-gray-600">

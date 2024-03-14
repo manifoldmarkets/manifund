@@ -1,4 +1,4 @@
-import { Table, TableRow } from '@/components/table'
+import { Table } from '@/components/table'
 import { getUser, isAdmin } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { createAdminClient } from '@/pages/api/_db'
@@ -21,6 +21,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { CircleStackIcon } from '@heroicons/react/24/solid'
 import { Tabs } from '@/components/tabs'
+import NoAccess from '../no-access'
 
 export default async function Admin({
   searchParams,
@@ -30,7 +31,7 @@ export default async function Admin({
   const supabase = createServerClient()
   const user = await getUser(supabase)
   if (!user || !isAdmin(user)) {
-    return <div>Not AUTHORIZED</div>
+    return <NoAccess />
   }
 
   const supabaseAdmin = createAdminClient()
@@ -137,6 +138,7 @@ export default async function Admin({
       <Table>
         <thead>
           <tr>
+            <th className="p-2">DB</th>
             <th className="p-2">Email</th>
             <th className="p-2">Username</th>
             <th className="p-2">Id</th>
@@ -148,6 +150,16 @@ export default async function Admin({
         <tbody className="p-2">
           {userAndProfiles.map((user) => (
             <tr key={user.id}>
+              <td className="pr-2">
+                <Link
+                  href={`https://supabase.com/dashboard/project/fkousziwzbnkdkldjper/editor/27095?filter=id%3Aeq%3A${user.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  <CircleStackIcon className="inline h-3 w-3" />
+                </Link>
+              </td>
               <td>{user.email}</td>
               <td>{user.profile?.username}</td>
               <td>{user.id}</td>

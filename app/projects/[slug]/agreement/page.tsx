@@ -13,7 +13,7 @@ export default async function GrantAgreementPage(props: {
   const supabase = createServerClient()
   const project = await getProjectAndProfileBySlug(supabase, slug)
   const user = await getUser(supabase)
-  if (!project || project.type !== 'grant' || project.approved === false) {
+  if (!project || project.approved === false) {
     return <div>404</div>
   }
   return (

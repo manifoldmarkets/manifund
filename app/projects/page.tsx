@@ -5,9 +5,9 @@ import Image from 'next/image'
 import { Row } from '@/components/layout/row'
 import { ArrowLongRightIcon } from '@heroicons/react/20/solid'
 import { Col } from '@/components/layout/col'
-import { getRegranters } from '@/db/profile'
 import Link from 'next/link'
 import { FullCause, getSomeFullCauses, listMiniCauses } from '@/db/cause'
+import { FullCause, getSomeFullCauses, listSimpleCauses } from '@/db/cause'
 import { getRecentFullComments } from '@/db/comment'
 import { getRecentFullTxns } from '@/db/txn'
 import { FeedTabs } from './feed-tabs'
@@ -35,13 +35,12 @@ export default async function Projects(props: {
     causesList,
     featuredCauses,
   ] = await Promise.all([
-    timeit(getUser)(supabase),
-    timeit(listProjects)(supabase),
-    timeit(getRecentFullComments)(supabase, PAGE_SIZE, start),
-    timeit(getRecentFullTxns)(supabase, PAGE_SIZE, start),
-    timeit(getRecentFullBids)(supabase, PAGE_SIZE, start),
-    timeit(listMiniCauses)(supabase),
-    getSomeFullCauses(['acx-grants-2024', 'manifold-community'], supabase),
+    getUser(supabase),
+    listProjects(supabase),
+    getRecentFullComments(supabase, PAGE_SIZE, start),
+    getRecentFullTxns(supabase, PAGE_SIZE, start),
+    getRecentFullBids(supabase, PAGE_SIZE, start),
+    listSimpleCauses(supabase),
   ])
   console.log('projects.length', projects.length)
   return (
@@ -80,7 +79,9 @@ function CausePreview(props: { cause: FullCause }) {
   return (
     <Link
       className="relative flex flex-col gap-4 rounded-lg bg-white p-4 shadow-md sm:flex-row"
-      href={`/causes/${cause.slug}`}
+      href={`/causes/${cause.slug}?tab=${
+        numCerts > numGrants ? 'certs' : 'grants'
+      }`}
     >
       <Image
         src={cause.header_image_url}

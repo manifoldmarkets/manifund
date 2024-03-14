@@ -14,6 +14,7 @@ export function VerifyInvestor(props: { userId: string; accredited: boolean }) {
 
   return (
     <Button
+      size="sm"
       onClick={async () => {
         await verifyInvestor({ userId, accredited: !props.accredited })
         router.refresh()

@@ -313,14 +313,14 @@ function ResultsText(props: {
     return (
       <div className="rounded-md  bg-emerald-100 p-3 text-center font-bold text-emerald-500 shadow-sm">
         Funding successful! All shares were sold at a valuation of{' '}
-        {formatMoney(resolution.valuation)} and the project recieved $
+        {formatMoney(resolution.valuation)} and the project received $
         {formatLargeNumber(totalFunding)} in funding.
       </div>
     )
   } else if (totalFunding > 0) {
     return (
       <div className="rounded-md  bg-emerald-100 p-3 text-center font-bold text-emerald-500 shadow-sm">
-        Funding successful! The project recieved {formatMoney(totalFunding)} in
+        Funding successful! The project received {formatMoney(totalFunding)} in
         funding. {formatLargeNumber(portionSold * 100)}% of shares were sold at
         a valuation of {formatMoney(resolution.valuation)}, the founder holds
         another {formatLargeNumber(founderPortion * 100)}%, and the remaining

@@ -19,7 +19,7 @@ import Image from 'next/image'
 import { getAllProjectTxns } from '@/db/txn'
 import { Stats } from './stats'
 import { Card } from '@/components/layout/card'
-import { SpeakerWaveIcon } from '@heroicons/react/24/outline'
+import { MegaphoneIcon } from '@heroicons/react/24/outline'
 
 const APPROACH_FEATURES = [
   {
@@ -32,19 +32,19 @@ const APPROACH_FEATURES = [
     title: 'Fast',
     icon: BoltIcon,
     description:
-      "We turn around grants in days instead of weeks, and automate flows with software, so money can move where it's needed - quickly.",
+      "We turn around grants in days instead of weeks, and automate flows with software, so money can move where it's needed — quickly.",
   },
   {
     title: 'Experimental',
     icon: BeakerIcon,
     description:
-      "We bet on unproven people, speculative projects, and weird funding mechanisms. Not everything works, but that's okay!",
+      "We bet on unproven people, speculative projects, and weird funding mechanisms. Not everything works, and that's okay!",
   },
   {
     title: 'Collaborative',
     icon: UserGroupIcon,
     description:
-      "We're good at building websites, but we don't know everything - so we ask domain experts (and people like you!) to help decide what to fund.",
+      "We're good at building websites, but we don't know everything — so we ask domain experts (and people like you!) to help decide what to fund.",
   },
 ]
 
@@ -56,22 +56,22 @@ const FUNDING_MECHANISMS = [
     title: 'Regranting',
     icon: <ArrowPathIcon className="h-6 w-6 stroke-2 text-white" />,
     description:
-      'We delegate grant budgets to regrantors who are experts in their fields, and let donors choose which ones best align with their interests.',
+      'We delegate grant budgets to regrantors who are experts in their fields, and let donors choose which regrantors best align with their interests.',
     href: '/about/regranting',
   },
   {
     title: 'Impact markets',
     icon: <ArrowTrendingUpIcon className="h-6 w-6 stroke-2 text-white" />,
     description:
-      'We run funding rounds where funders can invest in projects vying for charitable prizes - similar to a VC ecosystem.',
+      'We run funding rounds where funders can invest in projects vying for charitable prizes — similarly to a venture-capital ecosystem.',
     href: '/about/impact-certificates',
   },
   {
     title: 'Open call',
-    icon: <SpeakerWaveIcon className="h-6 w-6 stroke-2 text-white" />,
+    icon: <MegaphoneIcon className="h-6 w-6 stroke-2 text-white" />,
     description:
-      'We let anyone propose a charitable project, and look for funders on our site - acting as Kickstarter for non-profits.',
-    href: '/',
+      'We let anyone propose a charitable project and look for funders on our site, acting as Kickstarter for nonprofits.',
+    href: '/about/open-call',
   },
 ]
 
