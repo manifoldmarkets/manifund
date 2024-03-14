@@ -24,6 +24,8 @@ const fontVars = [readex.variable, josefin.variable].join(' ')
 // revalidate = 0 means that this root layout will be dynamically generated on every request?
 // export const revalidate = 0
 
+export const runtime = 'edge'
+
 export const metadata = {
   title: {
     default: 'Manifund',
