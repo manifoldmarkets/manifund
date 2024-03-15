@@ -6,7 +6,7 @@ export function RunScript() {
     <Button
       onClick={async () => {
         // Change script here
-        const response = await fetch('/api/acx-certs-email-script', {
+        const response = await fetch('/api/backfill-grant-agreements', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -14,7 +14,7 @@ export function RunScript() {
         })
       }}
     >
-      Transfer ACX certs
+      Backfill grant agreements
     </Button>
   )
 }
