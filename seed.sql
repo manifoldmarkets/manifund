@@ -475,3 +475,20 @@ AS PERMISSIVE FOR INSERT
 TO public
 
 WITH CHECK (auth.uid() = follower_id)
+
+-- Grant agreements
+CREATE TABLE public.profile_trust (
+  project_id uuid NOT NULL REFERENCES public.projects(id),
+  lobbying_clause_excluded boolean NOT NULL DEFAULT false,
+  signed_off_site boolean NOT NULL DEFAULT false,
+  signed_at timestamptz,
+  signatory_name text,
+  recipient_name text,
+  project_title text,
+  project_description jsonb,
+  approved_at timestamptz,
+  approved_by uuid REFERENCES public.profiles(id),
+  completed_at timestamptz,
+  version int2 DEFAULT 1,
+  PRIMARY KEY (project_id)
+);
