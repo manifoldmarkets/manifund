@@ -23,7 +23,7 @@ import { ProjectTabs } from './project-tabs'
 import { ProjectData } from './project-data'
 import { ProposalRequirements } from './proposal-requirements'
 import { Vote } from './vote'
-import { CauseTag } from '@/components/tags'
+import { CauseTag, StageIcon } from '@/components/tags'
 import { Trade } from './trade'
 import { AssuranceBuyBox } from './assurance-buy-box'
 import { calculateTradePoints } from '@/utils/amm'
@@ -36,6 +36,10 @@ import { EnvelopeIcon } from '@heroicons/react/20/solid'
 import { ViewerActionPanel } from './viewer-action-panel'
 import { toSentenceCase } from '@/utils/formatting'
 import Link from 'next/link'
+import {
+  ArrowTrendingUpIcon,
+  CircleStackIcon,
+} from '@heroicons/react/24/outline'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -292,28 +296,27 @@ export function ProjectTypeDisplay(props: {
 }) {
   const { type, stage } = props
   return (
-    <Row className="justify-between">
-      <Col className="px-4 sm:px-0">
-        <span className="text-sm leading-6 text-gray-700">stage</span>
-        <span className="text-sm font-medium leading-6 text-gray-900">
-          {toSentenceCase(stage)}
-        </span>
-      </Col>
-      <Col className="px-4 sm:px-0">
-        <span className="text-sm leading-6 text-gray-700">type</span>
+    <Row className="gap-1">
+      <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+        <StageIcon stage={stage} className="h-4 w-4" />
+        {toSentenceCase(stage)}
+      </span>
+      <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
         {type === 'cert' ? (
           <Link
-            className="text-sm font-medium leading-6 text-gray-900"
             href="/about/impact-certificates"
+            className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600"
           >
+            <ArrowTrendingUpIcon className="h-4 w-4" />
             Impact certificate
           </Link>
         ) : (
-          <span className="text-sm font-medium leading-6 text-gray-900">
-            {toSentenceCase(type)}
+          <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+            <CircleStackIcon className="h-4 w-4" />
+            Grant
           </span>
         )}
-      </Col>
+      </span>
     </Row>
   )
 }
