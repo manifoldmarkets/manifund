@@ -477,7 +477,7 @@ TO public
 WITH CHECK (auth.uid() = follower_id)
 
 -- Grant agreements
-CREATE TABLE public.profile_trust (
+CREATE TABLE public.grant_agreements (
   project_id uuid NOT NULL REFERENCES public.projects(id),
   lobbying_clause_excluded boolean NOT NULL DEFAULT false,
   signed_off_site boolean NOT NULL DEFAULT false,
