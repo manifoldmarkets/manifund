@@ -159,6 +159,66 @@ export type Database = {
           }
         ]
       }
+      grant_agreements: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          completed_at: string | null
+          lobbying_clause_excluded: boolean
+          project_description: Json | null
+          project_id: string
+          project_title: string | null
+          recipient_name: string | null
+          signatory_name: string | null
+          signed_at: string | null
+          signed_off_site: boolean
+          version: number | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          completed_at?: string | null
+          lobbying_clause_excluded?: boolean
+          project_description?: Json | null
+          project_id: string
+          project_title?: string | null
+          recipient_name?: string | null
+          signatory_name?: string | null
+          signed_at?: string | null
+          signed_off_site?: boolean
+          version?: number | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          completed_at?: string | null
+          lobbying_clause_excluded?: boolean
+          project_description?: Json | null
+          project_id?: string
+          project_title?: string | null
+          recipient_name?: string | null
+          signatory_name?: string | null
+          signed_at?: string | null
+          signed_off_site?: boolean
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grant_agreements_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grant_agreements_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       profile_trust: {
         Row: {
           created_at: string
