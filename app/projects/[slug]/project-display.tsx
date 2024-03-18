@@ -13,10 +13,9 @@ import {
   calculateCashBalance,
   calculateCharityBalance,
   calculateSellableShares,
-  getActiveValuation,
   getAmountRaised,
   getMinIncludingAmm,
-  getProposalValuation,
+  getProjectValuation,
 } from '@/utils/math'
 import { useState } from 'react'
 import { ProjectTabs } from './project-tabs'
@@ -88,16 +87,7 @@ export function ProjectDisplay(props: {
   const userSellableShares = userProfile
     ? calculateSellableShares(userTxns, userBids, project.id, userProfile.id)
     : 0
-  const valuation =
-    project.type === 'grant'
-      ? project.funding_goal
-      : project.stage === 'proposal'
-      ? getProposalValuation(project)
-      : getActiveValuation(
-          projectTxns,
-          project.id,
-          getProposalValuation(project)
-        )
+  const valuation = getProjectValuation(project)
   const isOwnProject = userProfile?.id === project.profiles.id
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred

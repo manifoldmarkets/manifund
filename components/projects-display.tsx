@@ -3,14 +3,9 @@ import { FullProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import {
-  getActiveValuation,
-  getAmountRaised,
-  getProposalValuation,
-} from '@/utils/math'
+import { getAmountRaised, getProjectValuation } from '@/utils/math'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
-import { compareDesc, compareAsc } from 'date-fns'
 import { Row } from './layout/row'
 import { MiniCause, Cause, SimpleCause } from '@/db/cause'
 import { CauseTag } from './tags'
@@ -23,22 +18,21 @@ import { sortBy } from 'lodash'
 
 type SortOption =
   | 'votes'
-  | 'funding goal'
+  | 'goal'
+  | 'funding'
   | 'valuation'
   | 'price'
-  | 'number of comments'
-  | 'newest first'
-  | 'oldest first'
+  | 'comments'
+  | 'newest'
+  | 'oldest'
   | 'hot'
 
 const DEFAULT_SORT_OPTIONS = [
   'hot',
+  'newest',
   'votes',
-  'newest first',
-  'oldest first',
-  'funding goal',
-  // 'price',
-  'number of comments',
+  'funding',
+  'comments',
 ] as SortOption[]
 
 export function ProjectsDisplay(props: {
@@ -73,6 +67,10 @@ export function ProjectsDisplay(props: {
       )
     })
     .slice(0, numToShow)
+  for (const project of selectedProjects) {
+    console.log(project.title, prices[project.id], project.type)
+    console.log(getProjectValuation(project))
+  }
 
   const proposals = selectedProjects.filter(
     (project) => project.stage == 'proposal'
@@ -171,27 +169,24 @@ function sortProjects(
   if (sortType === 'votes') {
     return sortBy(projects, countVotes).reverse()
   }
-  if (sortType === 'oldest first') {
+  if (sortType === 'oldest') {
     return sortBy(projects, (project) => new Date(project.created_at))
   }
-  if (sortType === 'newest first') {
+  if (sortType === 'newest') {
     return sortBy(projects, (project) => -new Date(project.created_at))
   }
-  if (sortType === 'number of comments') {
+  if (sortType === 'comments') {
     return sortBy(projects, (project) => -project.comments.length)
   }
-  if (
-    sortType === 'price' ||
-    sortType === 'funding goal' ||
-    sortType === 'valuation'
-  ) {
-    // TODO: Prices and funding goal seems kinda broken atm
-    return sortBy(projects, (project) => {
-      if (isNaN(prices[project.id])) {
-        return 0
-      }
-      return -prices[project.id]
-    })
+  if (sortType === 'price' || sortType === 'goal' || sortType === 'valuation') {
+    // TODO: Prices and goal seems kinda broken atm
+    return sortBy(projects, (project) => -prices[project.id])
+  }
+  if (sortType === 'funding') {
+    return sortBy(
+      projects,
+      (project) => -getAmountRaised(project, project.bids, project.txns)
+    )
   }
 
   if (sortType === 'hot') {
@@ -205,11 +200,9 @@ function hotScore(project: FullProject) {
   // Time in days since project was created
   let time = Date.now() - new Date(project.created_at).getTime()
   time = time / (1000 * 60 * 60 * 24)
-  // Number of upvotes
+
   const votes = countVotes(project)
-  // Number of comments
   const comments = project.comments.length
-  // Amount raised; take the log to make it less important
   const raised = getAmountRaised(project, project.bids, project.txns)
 
   const points = votes * 2 + comments + Math.log(raised + 1) * 3
@@ -328,20 +321,11 @@ function CauseFilterSelect(props: {
   )
 }
 
-// Price here means funding goal for grants and valuation for certs
+// Price here means goal for grants and valuation for certs
 function getPrices(projects: FullProject[]) {
   const prices = Object.fromEntries(projects.map((project) => [project.id, 0]))
   projects.forEach((project) => {
-    prices[project.id] =
-      project.type === 'grant'
-        ? project.funding_goal
-        : project.stage === 'proposal'
-        ? getProposalValuation(project)
-        : getActiveValuation(
-            project.txns,
-            project.id,
-            getProposalValuation(project)
-          )
+    prices[project.id] = getProjectValuation(project)
   })
   return prices
 }
