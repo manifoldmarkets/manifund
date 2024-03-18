@@ -1,5 +1,5 @@
 import { Bid, BidAndProject } from '@/db/bid'
-import { Project } from '@/db/project'
+import { FullProject, Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, Txn, TxnAndProject } from '@/db/txn'
 import { isBefore } from 'date-fns'
@@ -8,6 +8,18 @@ import { isCharitableDeposit } from './constants'
 import { calculateAMMPorfolio, calculateValuation } from './amm'
 
 const IGNORE_ACCREDITATION_DATE = new Date('2023-11-02')
+
+export function getProjectValuation(project: FullProject) {
+  return project.type === 'grant'
+    ? project.funding_goal
+    : project.stage === 'proposal'
+    ? getProposalValuation(project)
+    : getActiveValuation(
+        project.txns,
+        project.id,
+        getProposalValuation(project)
+      )
+}
 
 export function getProposalValuation(project: Project) {
   const { min_funding, amm_shares, founder_shares } = project
@@ -25,7 +37,7 @@ export function getMinIncludingAmm(project: Project) {
   )
 }
 
-export function getActiveValuation(
+function getActiveValuation(
   txns: Txn[],
   projectId: string,
   minValuation: number
