@@ -143,7 +143,7 @@ export async function ProfileSummary(props: { profile: Profile }) {
           <Col>
             <span className="text-sm">
               {formatMoney(
-                Math.max(charityBalance, 0) - Math.min(cashBalance, 0)
+                Math.max(charityBalance, 0) + Math.min(cashBalance, 0)
               )}
             </span>
           </Col>
