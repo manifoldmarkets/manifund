@@ -35,7 +35,7 @@ export default async function Projects(props: {
   ] = await Promise.all([
     getUser(supabase),
     listProjects(supabase),
-    getRecentFullComments(supabase, PAGE_SIZE, start),
+    getRecentFullComments(supabase, PAGE_SIZE, start), 
     getRecentFullTxns(supabase, PAGE_SIZE, start),
     getRecentFullBids(supabase, PAGE_SIZE, start),
     listSimpleCauses(supabase),
@@ -49,9 +49,11 @@ export default async function Projects(props: {
         <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
           Current programs
         </h1>
+        <Col className="gap-3 mt-2 sm:flex-row">
         {featuredCauses.map((cause) => (
           <CausePreview cause={cause} key={cause.slug} />
         ))}
+        </Col>
       </Col>
       <FeedTabs
         recentComments={recentComments}
@@ -77,7 +79,7 @@ function CausePreview(props: { cause: FullCause }) {
   ).length
   return (
     <Link
-      className="relative flex flex-col gap-4 rounded-lg bg-white p-4 shadow-md sm:flex-row"
+      className="relative flex flex-col gap-4 rounded-lg bg-white p-4 shadow-md"
       href={`/causes/${cause.slug}?tab=${
         numCerts > numGrants ? 'certs' : 'grants'
       }`}
