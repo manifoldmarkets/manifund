@@ -39,7 +39,7 @@ export default async function Projects(props: {
     getRecentFullTxns(supabase, PAGE_SIZE, start),
     getRecentFullBids(supabase, PAGE_SIZE, start),
     listSimpleCauses(supabase),
-    getSomeFullCauses(['acx-grants-2024', 'manifold-community'], supabase),
+    getSomeFullCauses(['acx-grants-2024'], supabase),
   ])
 
   return (
