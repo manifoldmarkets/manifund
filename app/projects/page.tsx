@@ -86,7 +86,7 @@ function CausePreview(props: { cause: FullCause }) {
         src={cause.header_image_url}
         width={240}
         height={120}
-        className="sm:max-w-60 relative aspect-[3/1] w-full flex-shrink-0 rounded bg-white object-cover sm:aspect-[5/3]"
+        className="relative aspect-[3/1] w-full flex-shrink-0 rounded bg-white object-cover sm:aspect-[5/3] sm:w-60"
         alt="round header image"
       />
       <Col className="w-full justify-between">
