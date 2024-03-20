@@ -67,10 +67,6 @@ export function ProjectsDisplay(props: {
       )
     })
     .slice(0, numToShow)
-  for (const project of selectedProjects) {
-    console.log(project.title, prices[project.id], project.type)
-    console.log(getProjectValuation(project))
-  }
 
   const proposals = selectedProjects.filter(
     (project) => project.stage == 'proposal'
