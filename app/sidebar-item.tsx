@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useState } from 'react'
 import clsx from 'clsx'
 import { usePathname } from 'next/navigation'
 import {
@@ -10,18 +11,22 @@ import {
   HomeIcon,
   UserGroupIcon,
   GlobeAltIcon,
+  ChevronRightIcon,
+  ChevronDownIcon
 } from '@heroicons/react/24/outline'
 import { SiteLink } from '@/components/site-link'
 
 export type Item = {
   name: string
-  href: string
+  href?: string
+  children?: Item[]
 }
 
 export function SidebarItem(props: { item: Item }) {
   const { item } = props
   const isCurrentPage = item.href === usePathname() && item.href != null
   const icon = findIcon(item.name, isCurrentPage)
+  const [isOpen, setIsOpen] = useState(false)
 
   const sidebarItem = (
     <div
@@ -29,19 +34,34 @@ export function SidebarItem(props: { item: Item }) {
         isCurrentPage
           ? 'bg-gray-200 text-gray-900'
           : 'text-gray-600 hover:bg-gray-100',
-        'group flex items-center rounded-md px-3 py-2 text-sm font-medium'
+        'group flex items-center rounded-md px-3 py-2 text-sm font-medium cursor-pointer'
       )}
       aria-current={item.href == usePathname() ? 'page' : undefined}
+      onClick={() => setIsOpen(!isOpen)}
     >
       {icon}
       <span className="truncate">{item.name}</span>
+      {item.children && (isOpen ? <ChevronDownIcon className="ml-auto h-5 w-5" /> : <ChevronRightIcon className="ml-auto h-5 w-5" />)}
     </div>
   )
 
   return (
-    <SiteLink href={item.href} key={item.name}>
-      {sidebarItem}
-    </SiteLink>
+    <div>
+      {item.children ? (
+        sidebarItem
+      ) : (
+        <SiteLink href={item.href} key={item.name}>
+          {sidebarItem}
+        </SiteLink>
+      )}
+      {isOpen && item.children && (
+        <div className="ml-4">
+          {item.children.map((subItem) => (
+            <SidebarItem key={subItem.name} item={subItem} />
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
