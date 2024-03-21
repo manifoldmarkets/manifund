@@ -14,8 +14,9 @@ type Profile = Database['public']['Tables']['profiles']['Row']
 export function ProfileHeader(props: {
   profile: Profile
   isOwnProfile: boolean
+  email: string
 }) {
-  const { profile, isOwnProfile } = props
+  const { profile, isOwnProfile, email } = props
   const website = addHttpToUrl(profile.website ?? '')
   return (
     <div className="flex flex-col gap-3">
@@ -57,7 +58,12 @@ export function ProfileHeader(props: {
                   <p>@{profile.username}</p>
                   {profile.accreditation_status && <AccreditedTag />}
                   {profile.regranter_status && <RegranterTag />}
-                </Row>
+                </Row >
+                {isOwnProfile && (
+                  <Row className="mt-1 flex-wrap items-center gap-2 text-gray-400">
+                    <p>{email}</p>
+                  </Row>
+                )}
               </Col>
             </Row>
           </Col>
