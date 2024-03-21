@@ -40,7 +40,11 @@ export default async function UserProfilePage(props: {
   const isOwnProfile = user?.id === profile?.id
   return (
     <div className="flex flex-col gap-8 p-3 sm:p-5">
-      <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} />
+      <ProfileHeader
+        profile={profile}
+        isOwnProfile={isOwnProfile}
+        email={isOwnProfile ? user.email : undefined}
+      />
       <ProfileContent
         profile={profile}
         projects={projects}
