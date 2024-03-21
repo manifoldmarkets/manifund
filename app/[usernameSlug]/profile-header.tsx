@@ -14,7 +14,7 @@ type Profile = Database['public']['Tables']['profiles']['Row']
 export function ProfileHeader(props: {
   profile: Profile
   isOwnProfile: boolean
-  email: string
+  email?: string
 }) {
   const { profile, isOwnProfile, email } = props
   const website = addHttpToUrl(profile.website ?? '')
