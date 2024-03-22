@@ -492,3 +492,17 @@ CREATE TABLE public.grant_agreements (
   version int2 DEFAULT 1,
   PRIMARY KEY (project_id)
 );
+
+-- Grant agreements RLS
+CREATE POLICY "Enable read access for all users" ON "public"."grant_agreements"
+AS PERMISSIVE FOR SELECT
+TO public
+USING (true)
+
+CREATE POLICY "Enable insert for authenticated users only" ON "public"."grant_agreements"
+AS PERMISSIVE FOR INSERT
+TO authenticated
+
+WITH CHECK (true)
+
+
