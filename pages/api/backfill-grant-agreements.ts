@@ -1,4 +1,4 @@
-import { FullProject, listProjects } from '@/db/project'
+import { FullProject } from '@/db/project'
 import { isBefore } from 'date-fns'
 import { createAdminClient } from './_db'
 import { sortBy } from 'lodash'
@@ -15,7 +15,9 @@ export const config = {
 
 export default async function handler() {
   const supabase = createAdminClient()
-  const projects = await listProjects(supabase)
+  const projects = await listProjectsForAgreements(supabase)
+  // const fewerProjects = projects.slice(0, 5)
+  // console.log(fewerProjects)
   const AUSTIN_PROFILE_ID = '10bd8a14-4002-47ff-af4a-92b227423a74'
   for (const project of projects) {
     console.log(project.title)
@@ -33,7 +35,11 @@ export default async function handler() {
       firstUSDTxn && project.stage !== 'proposal' && project.stage !== 'draft'
         ? firstUSDTxn.created_at
         : null
-
+    const signedDate = project.signed_agreement
+      ? project.stage === 'proposal'
+        ? '2024-03-22 12:00:00.000000+00'
+        : activationDate
+      : null
     const finalReport = project.comments.find(
       (c) => c.special_type === 'final report'
     )
@@ -46,7 +52,7 @@ export default async function handler() {
       .update({
         version,
         lobbying_clause_excluded: project.lobbying,
-        signed_at: project.signed_agreement ? activationDate : null,
+        signed_at: signedDate,
         signatory_name: project.signed_agreement
           ? project.profiles.full_name
           : null,
@@ -73,5 +79,5 @@ export async function listProjectsForAgreements(supabase: SupabaseClient) {
     .select('*, profiles!projects_creator_fkey(*), txns(*), comments(*))')
     .order('created_at', { ascending: false })
     .throwOnError()
-  return data
+  return data as unknown as FullProject[]
 }
