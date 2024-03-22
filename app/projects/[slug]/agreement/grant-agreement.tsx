@@ -12,6 +12,10 @@ export function GrantAgreement(props: {
   agreement: GrantAgreement
 }) {
   const { project, agreement } = props
+  const signed = !!agreement.signed_at
+  const excludeLobbyingClause = signed
+    ? agreement.lobbying_clause_excluded
+    : project.lobbying
   return (
     <div>
       <Row className="gap-3">
@@ -39,13 +43,19 @@ export function GrantAgreement(props: {
                 TX 78702, United States, a registered 501(c)3-nonprofit with EIN
                 88-3668801 (the “Charity”).
               </p>
-              <p>1.2 {project.profiles.full_name} (the “Recipient”)</p>
+              <p>
+                1.2{' '}
+                {signed ? agreement.recipient_name : project.profiles.full_name}{' '}
+                (the “Recipient”)
+              </p>
               <p>
                 1.3 Based on the information provided to Manifold for Charity,
                 this grant is to be used exclusively for the following purposes
                 in accordance with the terms and conditions of this letter,
                 unless otherwise approved in advance [in writing] by Manifold
-                for Charity: &quot;{project.title}&quot; (the “Project”).
+                for Charity: &quot;
+                {signed ? agreement.project_title : project.title}&quot; (the
+                “Project”).
               </p>
               <p>
                 1.4 The start date for this grant will be{' '}
@@ -67,7 +77,7 @@ export function GrantAgreement(props: {
             </td>
           </tr>
           <tr className="font-bold">
-            <td className="pr-10 pt-6 ">2</td>
+            <td className="pr-10 pt-6">2</td>
             <td className="pt-6 ">Purpose and Use of Grant</td>
           </tr>
           <tr>
@@ -104,19 +114,20 @@ export function GrantAgreement(props: {
                   scientific, literary, educational, or other purpose specified
                   in Section 170(c)(2)(B) of the Internal Revenue Code (“IRC”).
                 </p>
-                {!project.lobbying && (
+                {!excludeLobbyingClause && (
                   <p>
                     (b) To attempt to influence legislation, within the meaning
                     of Section 501(c)(3) of the IRC.
                   </p>
                 )}
                 <p>
-                  ({project.lobbying ? 'b' : 'c'}) To participate or intervene
-                  in any political campaign on behalf of or in opposition to any
-                  candidate for public office, to induce or encourage violations
-                  of law or public policy, to cause any private inurement or
-                  improper private benefit to occur, or to take any other action
-                  inconsistent with Section 501(c)(3) of the IRC.
+                  ({excludeLobbyingClause ? 'b' : 'c'}) To participate or
+                  intervene in any political campaign on behalf of or in
+                  opposition to any candidate for public office, to induce or
+                  encourage violations of law or public policy, to cause any
+                  private inurement or improper private benefit to occur, or to
+                  take any other action inconsistent with Section 501(c)(3) of
+                  the IRC.
                 </p>
               </Col>
             </td>
