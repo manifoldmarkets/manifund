@@ -1,13 +1,17 @@
 'use client'
 import { ProjectAndProfile } from '@/db/project'
+import { GrantAgreement } from '@/db/grant_agreement'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Tag } from '@/components/tags'
 import { format } from 'date-fns'
 import React from 'react'
 
-export function GrantAgreement(props: { project: ProjectAndProfile }) {
-  const { project } = props
+export function GrantAgreement(props: {
+  project: ProjectAndProfile
+  agreement: GrantAgreement
+}) {
+  const { project, agreement } = props
   return (
     <div>
       <Row className="gap-3">
