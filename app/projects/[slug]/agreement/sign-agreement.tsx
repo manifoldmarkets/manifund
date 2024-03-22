@@ -2,15 +2,17 @@
 import { Button } from '@/components/button'
 import { Checkbox } from '@/components/input'
 import { Row } from '@/components/layout/row'
+import { GrantAgreement } from '@/db/grant_agreement'
 import { ProjectAndProfile } from '@/db/project'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export function SignAgreement(props: {
   project: ProjectAndProfile
+  agreement: GrantAgreement
   userIsOwner: boolean
 }) {
-  const { project, userIsOwner } = props
+  const { project, agreement, userIsOwner } = props
   const [agreed, setAgreed] = useState(project.signed_agreement)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()

@@ -28,6 +28,7 @@ export default async function GrantAgreementPage(props: {
       <GrantAgreement project={project} agreement={agreement} />
       <SignAgreement
         project={project}
+        agreement={agreement}
         userIsOwner={user?.id === project.creator}
       />
     </Col>
