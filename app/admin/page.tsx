@@ -68,7 +68,7 @@ export default async function Admin({
     .from('txns')
     .select('*')
     .eq('token', 'USD')
-    .order('created_at')
+    .order('created_at', { ascending: false })
   const balances = userBalances(txns ?? [])
 
   const usersCSV =
