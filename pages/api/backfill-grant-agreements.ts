@@ -44,8 +44,16 @@ export default async function handler() {
       (c) => c.special_type === 'final report'
     )
     const completedDate =
-      finalReport && project.stage === 'complete'
-        ? finalReport.created_at
+      project.stage === 'complete'
+        ? finalReport
+          ? finalReport.created_at
+          : project.round === 'ACX Mini-Grants'
+          ? '2023-10-09 12:00:00.000000+00'
+          : project.round === 'OP AI Worldviews Contest'
+          ? '2023-09-29 12:00:00.000000+00'
+          : project.round === 'ChinaTalk Essay Contest'
+          ? '2024-02-12 12:00:00.000000+00'
+          : '2030-09-29 12:00:00.000000+00'
         : null
     const { error } = await supabase
       .from('grant_agreements')
