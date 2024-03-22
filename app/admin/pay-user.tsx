@@ -1,39 +1,49 @@
 'use client'
 
 import { Button } from '@/components/button'
-import { AmountInput } from '@/components/input'
+import { AmountInput, Checkbox } from '@/components/input'
+import { Row } from '@/components/layout/row'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export type PayUserProps = {
   userId: string
   amount: number
+  sendDonationReceipt?: boolean
 }
 
 export function PayUser(props: { userId: string }) {
   const { userId } = props
   const router = useRouter()
   const [amount, setAmount] = useState<number>()
+  const [sendDonationReceipt, setSendDonationReceipt] = useState(false)
 
   return (
-    <div className="flex flex-row">
+    <Row>
       <AmountInput
         className="text-sm"
         amount={amount}
         onChangeAmount={setAmount}
         allowNegative
       />
+      <Row>
+        <Checkbox
+          checked={sendDonationReceipt}
+          onChange={(event) => setSendDonationReceipt(event.target.checked)}
+        />
+        <span className="text-sm">Send donation receipt</span>
+      </Row>
       <Button
         size="sm"
         onClick={async () => {
-          await payUser({ userId, amount: amount ?? 0 })
+          await payUser({ userId, amount: amount ?? 0, sendDonationReceipt })
           router.refresh()
         }}
         disabled={!amount}
       >
         Add
       </Button>
-    </div>
+    </Row>
   )
 }
 
