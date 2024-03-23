@@ -26,6 +26,7 @@ type SortOption =
   | 'newest'
   | 'oldest'
   | 'hot'
+  | 'closing soon'
 
 const DEFAULT_SORT_OPTIONS = [
   'hot',
@@ -33,6 +34,7 @@ const DEFAULT_SORT_OPTIONS = [
   'votes',
   'funding',
   'comments',
+  'closing soon',
 ] as SortOption[]
 
 export function ProjectsDisplay(props: {
@@ -184,9 +186,17 @@ function sortProjects(
       (project) => -getAmountRaised(project, project.bids, project.txns)
     )
   }
-
   if (sortType === 'hot') {
     return sortBy(projects, hotScore)
+  }
+  if (sortType === 'closing soon') {
+    return sortBy(projects, (project) => {
+      if (project.auction_close) {
+        return new Date(`${project.auction_close}T23:59:59-12:00`).getTime()
+      } else {
+        return 0
+      }
+    })
   }
   return projects
 }
