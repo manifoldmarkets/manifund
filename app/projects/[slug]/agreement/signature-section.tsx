@@ -10,12 +10,12 @@ import { SignatureDisplay } from './signature-display'
 
 export function SignatureSection(props: {
   project: ProjectAndProfile
-  agreement: GrantAgreement
+  agreement?: GrantAgreement
   userIsOwner: boolean
 }) {
   const { project, agreement, userIsOwner } = props
   const [signedAt, setSignedAt] = useState(
-    agreement.signed_at ? new Date(agreement.signed_at) : undefined
+    agreement?.signed_at ? new Date(agreement.signed_at) : undefined
   )
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -26,7 +26,7 @@ export function SignatureSection(props: {
         signatoryTitle="Recipient"
         signedAt={signedAt}
       />
-      {!agreement.signed_at && userIsOwner && (
+      {!agreement?.signed_at && userIsOwner && (
         <Row>
           <Checkbox
             id="terms"
@@ -70,10 +70,10 @@ export function SignatureSection(props: {
         </Row>
       )}
       <SignatureDisplay
-        fullName={agreement.profiles?.full_name ?? ''}
+        fullName={agreement?.profiles?.full_name ?? ''}
         signatoryTitle="Manifund signatory"
         signedAt={
-          agreement.approved_at ? new Date(agreement.approved_at) : undefined
+          agreement?.approved_at ? new Date(agreement.approved_at) : undefined
         }
       />
     </>

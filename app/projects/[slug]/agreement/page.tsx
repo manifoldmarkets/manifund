@@ -16,10 +16,7 @@ export default async function GrantAgreementPage(props: {
   if (!project || project.approved === false) {
     return <div>404</div>
   }
-  const agreement = await getGrantAgreement(supabase, project.id)
-  if (!agreement) {
-    return <div>404</div>
-  }
+  const agreement = (await getGrantAgreement(supabase, project.id)) ?? undefined
   const user = await getUser(supabase)
 
   return (

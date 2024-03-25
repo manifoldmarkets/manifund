@@ -9,10 +9,10 @@ import React from 'react'
 
 export function GrantAgreement(props: {
   project: ProjectAndProfile
-  agreement: GrantAgreement
+  agreement?: GrantAgreement
 }) {
   const { project, agreement } = props
-  const signed = !!agreement.signed_at
+  const signed = agreement && !!agreement.signed_at
   const excludeLobbyingClause = signed
     ? agreement.lobbying_clause_excluded
     : project.lobbying
