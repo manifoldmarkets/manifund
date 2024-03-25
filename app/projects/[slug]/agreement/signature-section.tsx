@@ -27,7 +27,7 @@ export function SignatureSection(props: {
         signedAt={signedAt}
       />
       {!agreement.signed_at && userIsOwner && (
-        <Row className="mb-3">
+        <Row>
           <Checkbox
             id="terms"
             aria-describedby="terms-description"
@@ -46,7 +46,7 @@ export function SignatureSection(props: {
         </Row>
       )}
       {!project.signed_agreement && userIsOwner && (
-        <Row className="justify-center">
+        <Row className="mb-10 justify-center">
           <Button
             onClick={async () => {
               setIsSubmitting(true)
