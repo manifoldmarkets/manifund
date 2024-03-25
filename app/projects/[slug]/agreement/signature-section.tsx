@@ -69,6 +69,13 @@ export function SignatureSection(props: {
           </Button>
         </Row>
       )}
+      <SignatureDisplay
+        fullName={agreement.profiles?.full_name ?? ''}
+        signatoryTitle="Manifund signatory"
+        signedAt={
+          agreement.approved_at ? new Date(agreement.approved_at) : undefined
+        }
+      />
     </>
   )
 }
