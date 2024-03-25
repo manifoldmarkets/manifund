@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
 import { createAdminClient, createEdgeClient } from './_db'
 import { projectSlugify, toTitleCase } from '@/utils/formatting'
-import { ProjectParams } from '@/utils/upsert-project'
+import { createGrantAgreement, ProjectParams } from '@/utils/upsert-project'
 import { getPrizeCause, updateProjectCauses } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
 import { insertBid } from '@/db/bid'
@@ -75,6 +75,7 @@ export default async function handler(req: NextRequest) {
     lobbying,
   } as Project
   await supabase.from('projects').insert(project).throwOnError()
+  await createGrantAgreement(supabase, project.id)
   await upvoteOwnProject(supabase, projectId, user.id)
   await updateProjectCauses(supabase, causeSlugs, project.id)
   await giveCreatorShares(supabase, projectId, user.id)

@@ -37,6 +37,7 @@ export default async function handler(req: NextRequest) {
       recipient_name: project.profiles.full_name,
       project_description: project.description,
       project_title: project.title,
+      lobbying_clause_excluded: project.lobbying,
       version: CURRENT_AGREEMENT_VERSION,
     })
     .eq('project_id', projectId)

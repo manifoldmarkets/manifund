@@ -83,6 +83,12 @@ export function createUpdateFromParams(projectParams: ProjectParams) {
   }
 }
 
-export function createGrantAgreement(projectId: string, lobbying: boolean) {
-  // TODO
+export async function createGrantAgreement(
+  supabase: SupabaseClient,
+  projectId: string
+) {
+  await supabase
+    .from('grant_agreements')
+    .insert({ project_id: projectId })
+    .throwOnError()
 }
