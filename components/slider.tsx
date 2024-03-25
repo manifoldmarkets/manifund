@@ -37,6 +37,7 @@ export function Slider(props: {
   const [trackClass, inactiveMarkClass] = colors[trackColor]
 
   return (
+    // @ts-ignore
     <RxSlider.Root
       className={clsx(
         className,
@@ -82,9 +83,11 @@ const Track = (props: {
 }) => {
   const { rangeClass, trackClass, children } = props
   return (
+    // @ts-ignore
     <RxSlider.Track
       className={clsx('relative h-1 grow rounded-full', trackClass)}
     >
+      {/* @ts-ignore */}
       <RxSlider.Range
         className={clsx(rangeClass, 'absolute h-full rounded-full')}
       />
@@ -94,6 +97,7 @@ const Track = (props: {
 }
 
 const Thumb = (props: { className: string }) => (
+  // @ts-ignore
   <RxSlider.Thumb
     className={clsx(
       props.className,
