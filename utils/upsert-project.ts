@@ -82,3 +82,7 @@ export function createUpdateFromParams(projectParams: ProjectParams) {
     lobbying,
   }
 }
+
+export function createGrantAgreement(projectId: string, lobbying: boolean) {
+  // TODO
+}
