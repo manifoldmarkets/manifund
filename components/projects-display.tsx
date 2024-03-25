@@ -3,10 +3,9 @@ import { FullProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { getActiveValuation, getProposalValuation } from '@/utils/math'
+import { getAmountRaised, getProjectValuation } from '@/utils/math'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
-import { compareDesc, compareAsc } from 'date-fns'
 import { Row } from './layout/row'
 import { MiniCause, Cause, SimpleCause } from '@/db/cause'
 import { CauseTag } from './tags'
@@ -15,23 +14,27 @@ import { SearchBar } from './input'
 import { searchInAny } from '@/utils/parse'
 import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
 import { Select } from './select'
+import { sortBy } from 'lodash'
 
 type SortOption =
   | 'votes'
-  | 'funding goal'
+  | 'goal'
+  | 'funding'
   | 'valuation'
   | 'price'
-  | 'number of comments'
-  | 'newest first'
-  | 'oldest first'
+  | 'comments'
+  | 'newest'
+  | 'oldest'
+  | 'hot'
+  | 'closing soon'
 
 const DEFAULT_SORT_OPTIONS = [
+  'hot',
+  'newest',
   'votes',
-  'newest first',
-  'oldest first',
-  'funding goal',
-  'price',
-  'number of comments',
+  'funding',
+  'comments',
+  'closing soon',
 ] as SortOption[]
 
 export function ProjectsDisplay(props: {
@@ -150,6 +153,8 @@ export function ProjectsDisplay(props: {
     </Col>
   )
 }
+const countVotes = (project: FullProject) =>
+  project.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
 
 function sortProjects(
   projects: FullProject[],
@@ -160,38 +165,58 @@ function sortProjects(
     project.bids = project.bids.filter((bid) => bid.status == 'pending')
   })
   if (sortType === 'votes') {
-    return projects.sort((a, b) =>
-      a.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0) <
-      b.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
-        ? 1
-        : -1
+    return sortBy(projects, countVotes).reverse()
+  }
+  if (sortType === 'oldest') {
+    return sortBy(projects, (project) => new Date(project.created_at))
+  }
+  if (sortType === 'newest') {
+    return sortBy(projects, (project) => -new Date(project.created_at))
+  }
+  if (sortType === 'comments') {
+    return sortBy(projects, (project) => -project.comments.length)
+  }
+  if (sortType === 'price' || sortType === 'goal' || sortType === 'valuation') {
+    // TODO: Prices and goal seems kinda broken atm
+    return sortBy(projects, (project) => -prices[project.id])
+  }
+  if (sortType === 'funding') {
+    return sortBy(
+      projects,
+      (project) => -getAmountRaised(project, project.bids, project.txns)
     )
   }
-  if (sortType === 'oldest first') {
-    return projects.sort((a, b) =>
-      compareAsc(new Date(a.created_at), new Date(b.created_at))
-    )
+  if (sortType === 'hot') {
+    return sortBy(projects, hotScore)
   }
-  if (sortType === 'newest first') {
-    return projects.sort((a, b) =>
-      compareDesc(new Date(a.created_at), new Date(b.created_at))
-    )
-  }
-  if (sortType === 'number of comments') {
-    return projects.sort((a, b) =>
-      a.comments.length < b.comments.length ? 1 : -1
-    )
-  }
-  if (
-    sortType === 'price' ||
-    sortType === 'funding goal' ||
-    sortType === 'valuation'
-  ) {
-    return projects.sort((a, b) =>
-      prices[a.id] <= prices[b.id] || isNaN(prices[a.id]) ? 1 : -1
-    )
+  if (sortType === 'closing soon') {
+    return sortBy(projects, (project) => {
+      if (project.auction_close) {
+        return new Date(`${project.auction_close}T23:59:59-12:00`).getTime()
+      } else {
+        return 0
+      }
+    })
   }
   return projects
+}
+
+function hotScore(project: FullProject) {
+  // Factors:
+  // Time in days since project was created
+  let time = Date.now() - new Date(project.created_at).getTime()
+  time = time / (1000 * 60 * 60 * 24)
+
+  const votes = countVotes(project)
+  const comments = project.comments.length
+  const raised = getAmountRaised(project, project.bids, project.txns)
+
+  const points = votes * 2 + comments + Math.log(raised + 1) * 3
+  // Hacker News newness algorithm: https://medium.com/hacking-and-gonzo/how-hacker-news-ranking-algorithm-works-1d9b0cf2c08d
+  // Note that we use days instead of hours, and modify the constants a bit
+  const score = (points + 2) / time ** 1.8
+
+  return -score
 }
 
 function filterProjects(projects: FullProject[], includedCauses: Cause[]) {
@@ -302,20 +327,11 @@ function CauseFilterSelect(props: {
   )
 }
 
-// Price here means funding goal for grants and valuation for certs
+// Price here means goal for grants and valuation for certs
 function getPrices(projects: FullProject[]) {
   const prices = Object.fromEntries(projects.map((project) => [project.id, 0]))
   projects.forEach((project) => {
-    prices[project.id] =
-      project.type === 'grant'
-        ? project.funding_goal
-        : project.stage === 'proposal'
-        ? getProposalValuation(project)
-        : getActiveValuation(
-            project.txns,
-            project.id,
-            getProposalValuation(project)
-          )
+    prices[project.id] = getProjectValuation(project)
   })
   return prices
 }

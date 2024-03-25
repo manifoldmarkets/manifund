@@ -37,7 +37,7 @@ export function FeedTabs(props: {
       </p>
       <ProjectsDisplay
         projects={projects}
-        defaultSort={'newest first'}
+        defaultSort={'hot'}
         causesList={causesList}
       />
     </Col>
