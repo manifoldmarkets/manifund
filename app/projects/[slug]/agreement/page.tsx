@@ -4,7 +4,7 @@ import { getProjectAndProfileBySlug } from '@/db/project'
 import React from 'react'
 import { Col } from '@/components/layout/col'
 import { GrantAgreement } from './grant-agreement'
-import { SignAgreement } from './sign-agreement'
+import { SignatureSection } from './signature-section'
 import { getGrantAgreement } from '@/db/grant_agreement'
 
 export default async function GrantAgreementPage(props: {
@@ -16,7 +16,6 @@ export default async function GrantAgreementPage(props: {
   if (!project || project.approved === false) {
     return <div>404</div>
   }
-  console.log(project.id)
   const agreement = await getGrantAgreement(supabase, project.id)
   if (!agreement) {
     return <div>404</div>
@@ -26,10 +25,12 @@ export default async function GrantAgreementPage(props: {
   return (
     <Col className="gap-5 p-5">
       <GrantAgreement project={project} agreement={agreement} />
-      <SignAgreement
+      <SignatureSection
         project={project}
         agreement={agreement}
-        userIsOwner={user?.id === project.creator}
+        userIsOwner={true}
+        // TODO: revert this to actually checking
+        // userIsOwner={user?.id === project.creator}
       />
     </Col>
   )

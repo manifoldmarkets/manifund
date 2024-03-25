@@ -8,13 +8,15 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { SignatureDisplay } from './signature-display'
 
-export function SignAgreement(props: {
+export function SignatureSection(props: {
   project: ProjectAndProfile
   agreement: GrantAgreement
   userIsOwner: boolean
 }) {
   const { project, agreement, userIsOwner } = props
-  const [agreed, setAgreed] = useState(project.signed_agreement)
+  const [signedAt, setSignedAt] = useState(
+    agreement.signed_at ? new Date(agreement.signed_at) : undefined
+  )
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   return (
@@ -22,24 +24,27 @@ export function SignAgreement(props: {
       <SignatureDisplay
         fullName={project.profiles.full_name}
         signatoryTitle="Recipient"
-        signedAt={new Date()}
+        signedAt={signedAt}
       />
-      <Row className="mb-3">
-        <Checkbox
-          id="terms"
-          aria-describedby="terms-description"
-          name="terms"
-          disabled={agreed || !userIsOwner}
-          checked={agreed}
-          onChange={() => setAgreed(!agreed)}
-        />
-        <div className="ml-3 text-sm leading-6">
-          <label htmlFor="terms" className="font-medium text-gray-900">
-            I, <strong>{project.profiles.full_name}</strong>, agree to the terms
-            of this grant as laid out in the above document.
-          </label>
-        </div>
-      </Row>
+      {!agreement.signed_at && userIsOwner && (
+        <Row className="mb-3">
+          <Checkbox
+            id="terms"
+            aria-describedby="terms-description"
+            name="terms"
+            checked={!!signedAt}
+            onChange={(event) =>
+              setSignedAt(event.target.checked ? new Date() : undefined)
+            }
+          />
+          <div className="ml-3 text-sm leading-6">
+            <label htmlFor="terms" className="font-medium text-gray-900">
+              I, <strong>{project.profiles.full_name}</strong>, agree to the
+              terms of this grant as laid out in the above document.
+            </label>
+          </div>
+        </Row>
+      )}
       {!project.signed_agreement && userIsOwner && (
         <Row className="justify-center">
           <Button
@@ -58,9 +63,9 @@ export function SignAgreement(props: {
               router.push(`/projects/${project.slug}`)
             }}
             loading={isSubmitting}
-            disabled={!agreed}
+            disabled={!signedAt}
           >
-            Submit Agreement
+            Submit signature
           </Button>
         </Row>
       )}
