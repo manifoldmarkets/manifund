@@ -82,13 +82,3 @@ export function createUpdateFromParams(projectParams: ProjectParams) {
     lobbying,
   }
 }
-
-export async function createGrantAgreement(
-  supabase: SupabaseClient,
-  projectId: string
-) {
-  await supabase
-    .from('grant_agreements')
-    .insert({ project_id: projectId })
-    .throwOnError()
-}

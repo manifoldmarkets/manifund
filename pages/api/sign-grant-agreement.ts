@@ -32,15 +32,19 @@ export default async function handler(req: NextRequest) {
     .throwOnError()
   await supabase
     .from('grant_agreements')
-    .update({
-      signed_at: new Date().toISOString(),
-      recipient_name: project.profiles.full_name,
-      project_description: project.description,
-      project_title: project.title,
-      lobbying_clause_excluded: project.lobbying,
-      version: CURRENT_AGREEMENT_VERSION,
-    })
-    .eq('project_id', projectId)
+    .upsert(
+      {
+        project_id: projectId,
+        signed_at: new Date().toISOString(),
+        recipient_name: project.profiles.full_name,
+        project_description: project.description,
+        project_title: project.title,
+        lobbying_clause_excluded: project.lobbying,
+        version: CURRENT_AGREEMENT_VERSION,
+      },
+      { onConflict: 'project_id' }
+    )
+    .select()
     .throwOnError()
   await maybeActivateProject(supabase, projectId)
   await sendTemplateEmail(
