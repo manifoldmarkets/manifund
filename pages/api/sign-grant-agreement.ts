@@ -4,6 +4,7 @@ import { createEdgeClient } from './_db'
 import { maybeActivateProject } from '@/utils/activate-project'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { format } from 'date-fns'
+import { CURRENT_AGREEMENT_VERSION } from '@/utils/constants'
 
 export const config = {
   runtime: 'edge',
@@ -13,8 +14,6 @@ export const config = {
     '**/node_modules/lodash/_root.js', // Use a glob to allow anything in the function-bind 3rd party module
   ],
 }
-
-const CURRENT_AGREEMENT_VERSION = 3
 
 export default async function handler(req: NextRequest) {
   const { projectId } = await req.json()

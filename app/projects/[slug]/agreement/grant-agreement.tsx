@@ -6,6 +6,7 @@ import { Row } from '@/components/layout/row'
 import { Tag } from '@/components/tags'
 import { format } from 'date-fns'
 import React from 'react'
+import { CURRENT_AGREEMENT_VERSION } from '@/utils/constants'
 
 export function GrantAgreement(props: {
   project: ProjectAndProfile
@@ -16,6 +17,7 @@ export function GrantAgreement(props: {
   const excludeLobbyingClause = signed
     ? agreement.lobbying_clause_excluded
     : project.lobbying
+  const version = signed ? agreement?.version : CURRENT_AGREEMENT_VERSION
   return (
     <div>
       <Row className="gap-3">
