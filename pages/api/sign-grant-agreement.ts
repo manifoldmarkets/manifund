@@ -14,6 +14,8 @@ export const config = {
   ],
 }
 
+const CURRENT_AGREEMENT_VERSION = 3
+
 export default async function handler(req: NextRequest) {
   const { projectId } = await req.json()
   const supabase = createEdgeClient(req)
@@ -27,6 +29,17 @@ export default async function handler(req: NextRequest) {
     .from('projects')
     .update({ signed_agreement: true })
     .eq('id', projectId)
+    .throwOnError()
+  await supabase
+    .from('grant_agreements')
+    .update({
+      signed_at: new Date().toISOString(),
+      recipient_name: project.profiles.full_name,
+      project_description: project.description,
+      project_title: project.title,
+      version: CURRENT_AGREEMENT_VERSION,
+    })
+    .eq('project_id', projectId)
     .throwOnError()
   await maybeActivateProject(supabase, projectId)
   await sendTemplateEmail(
