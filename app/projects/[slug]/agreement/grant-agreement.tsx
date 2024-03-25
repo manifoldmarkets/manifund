@@ -135,7 +135,7 @@ export function GrantAgreement(props: {
             </td>
           </tr>
           <tr className="font-bold">
-            <td className="pr-10 pt-6 ">4</td>
+            <td className="pr-10 pt-6">4</td>
             <td className="pt-6 ">Monitoring and Reporting</td>
           </tr>
           <tr>
