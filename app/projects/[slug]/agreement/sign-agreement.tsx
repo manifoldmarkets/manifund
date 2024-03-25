@@ -34,6 +34,7 @@ export function SignAgreement(props: {
           </label>
         </div>
       </Row>
+      <span className="font-satisfy">{project.profiles.full_name}</span>
       {!project.signed_agreement && userIsOwner && (
         <Row className="justify-center">
           <Button

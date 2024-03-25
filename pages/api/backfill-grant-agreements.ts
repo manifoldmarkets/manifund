@@ -16,6 +16,11 @@ export const config = {
 export default async function handler() {
   const supabase = createAdminClient()
   const projects = await listProjectsForAgreements(supabase)
+  const thisProject = projects.find(
+    (p) =>
+      p.title === 'Support a thriving and talented community of Filipino EAs'
+  )
+  console.log('THIS PROJECT:', thisProject)
   // const fewerProjects = projects.slice(0, 5)
   // console.log(fewerProjects)
   const AUSTIN_PROFILE_ID = '10bd8a14-4002-47ff-af4a-92b227423a74'
@@ -57,23 +62,27 @@ export default async function handler() {
         : null
     const { error } = await supabase
       .from('grant_agreements')
-      .update({
-        version,
-        lobbying_clause_excluded: project.lobbying,
-        signed_at: signedDate,
-        signatory_name: project.signed_agreement
-          ? project.profiles.full_name
-          : null,
-        recipient_name: project.signed_agreement
-          ? project.profiles.full_name
-          : null,
-        project_description: project.description,
-        project_title: project.title,
-        approved_at: project.approved ? activationDate : null,
-        approved_by: project.signed_agreement ? AUSTIN_PROFILE_ID : null,
-        completed_at: completedDate,
-      })
-      .eq('project_id', project.id)
+      .upsert(
+        {
+          project_id: project.id,
+          version,
+          lobbying_clause_excluded: project.lobbying,
+          signed_at: signedDate,
+          signatory_name: project.signed_agreement
+            ? project.profiles.full_name
+            : null,
+          recipient_name: project.signed_agreement
+            ? project.profiles.full_name
+            : null,
+          project_description: project.description,
+          project_title: project.title,
+          approved_at: project.approved ? activationDate : null,
+          approved_by: project.signed_agreement ? AUSTIN_PROFILE_ID : null,
+          // completed_at: completedDate,
+        },
+        { onConflict: 'project_id' }
+      )
+      .select()
     if (error) {
       console.error(error)
       return NextResponse.error()
