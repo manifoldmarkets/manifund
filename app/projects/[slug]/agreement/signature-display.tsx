@@ -21,7 +21,7 @@ export function SignatureDisplay(props: {
           {signedAt ? fullName : ''}
         </span>
       </Col>
-      <Col className="gap-2">
+      <Col className="justify-between gap-2">
         <span className="font-medium">Date</span>
         <span className="h-6 w-52 border-b border-black">
           {signedAt ? format(signedAt, 'MMMM do, yyyy') : ''}
