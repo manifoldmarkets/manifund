@@ -6,6 +6,7 @@ import { GrantAgreement } from '@/db/grant_agreement'
 import { ProjectAndProfile } from '@/db/project'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { SignatureDisplay } from './signature-display'
 
 export function SignAgreement(props: {
   project: ProjectAndProfile
@@ -18,6 +19,11 @@ export function SignAgreement(props: {
   const router = useRouter()
   return (
     <>
+      <SignatureDisplay
+        fullName={project.profiles.full_name}
+        signatoryTitle="Recipient"
+        signedAt={new Date()}
+      />
       <Row className="mb-3">
         <Checkbox
           id="terms"
@@ -34,7 +40,6 @@ export function SignAgreement(props: {
           </label>
         </div>
       </Row>
-      <span className="font-satisfy">{project.profiles.full_name}</span>
       {!project.signed_agreement && userIsOwner && (
         <Row className="justify-center">
           <Button
