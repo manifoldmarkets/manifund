@@ -17,7 +17,8 @@ export function GrantAgreement(props: {
   const excludeLobbyingClause = signed
     ? agreement.lobbying_clause_excluded
     : project.lobbying
-  const version = signed ? agreement?.version : CURRENT_AGREEMENT_VERSION
+  const version =
+    signed && agreement?.version ? agreement.version : CURRENT_AGREEMENT_VERSION
   return (
     <div>
       <Row className="gap-3">
@@ -60,7 +61,8 @@ export function GrantAgreement(props: {
                 “Project”).
               </p>
               <p>
-                1.4 The start date for this grant will be{' '}
+                1.4 The start date for{' '}
+                {version < 3 ? 'your grant' : 'this grant'} will be{' '}
                 {format(new Date(project.created_at), 'MMMM do, yyyy')} (the
                 “Commencement Date”) and will run for the duration (the “Grant
                 Period”) until the Recipient marks the Project as complete (the
@@ -182,10 +184,10 @@ export function GrantAgreement(props: {
                   consistent with the good name and reputation of the Charity.
                 </p>
                 <p>
-                  (c) the Charity reasonably considers that the Recipient has
-                  not made satisfactory progress with the delivery of the
-                  Project, in which case any repayment shall be no greater than
-                  the unspent balance of the grant.
+                  (c){' '}
+                  {version === 1
+                    ? 'the Charity considers that the Recipient has not made satisfactory progress with the delivery of the Project'
+                    : 'the Charity reasonably considers that the Recipient has not made satisfactory progress with the delivery of the Project, in which case any repayment shall be no greater than the unspent balance of the grant.'}
                 </p>
                 <p>
                   (d) the Recipient provides the Charity with any materially
@@ -236,8 +238,33 @@ export function GrantAgreement(props: {
               </p>
             </td>
           </tr>
+          {version === 1 && (
+            <>
+              <tr className=" font-bold">
+                <td className="pr-10 pt-6 ">6</td>
+                <td className="pt-6 ">Communication</td>
+              </tr>
+              <tr>
+                <td />
+                <td className="flex flex-col gap-2">
+                  <p>
+                    6.1 The Recipient agrees not to make any press release,
+                    media announcement, any other major public relations
+                    activity in respect of the Grant or the relationship between
+                    the parties without the prior written consent of the
+                    Charity, such consent not to be unreasonably withheld.
+                  </p>
+                  <p>
+                    6.2 The Recipient may make general and non-detailed
+                    references to the Charity’s support of the Recipient during
+                    the course of the Project.
+                  </p>
+                </td>
+              </tr>
+            </>
+          )}
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 ">6</td>
+            <td className="pr-10 pt-6 ">{version === 1 ? '7' : '6'}</td>
             <td className="pt-6 ">Limitation of Liability</td>
           </tr>
           <tr>
@@ -258,7 +285,7 @@ export function GrantAgreement(props: {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 ">7</td>
+            <td className="pr-10 pt-6 ">{version === 1 ? '8' : '7'}</td>
             <td className="pt-6 ">Personal taxes</td>
           </tr>
           <tr>
@@ -275,7 +302,7 @@ export function GrantAgreement(props: {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 ">8</td>
+            <td className="pr-10 pt-6 ">{version === 1 ? '9' : '8'}</td>
             <td className="pt-6 ">Federal tax law compliance</td>
           </tr>
           <tr>
@@ -290,7 +317,9 @@ export function GrantAgreement(props: {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 text-gray-900">9</td>
+            <td className="pr-10 pt-6 text-gray-900">
+              {version === 1 ? '10' : '9'}
+            </td>
             <td className="pt-6 text-gray-900">No employment</td>
           </tr>
           <tr>
@@ -301,7 +330,9 @@ export function GrantAgreement(props: {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 text-gray-900">10</td>
+            <td className="pr-10 pt-6 text-gray-900">
+              {version === 1 ? '11' : '10'}
+            </td>
             <td className="pt-6 text-gray-900">Publications; License</td>
           </tr>
           <tr>
@@ -321,7 +352,9 @@ export function GrantAgreement(props: {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 text-gray-900">11</td>
+            <td className="pr-10 pt-6 text-gray-900">
+              {version === 1 ? '12' : '11'}
+            </td>
             <td className="pt-6 text-gray-900">No Agency</td>
           </tr>
           <tr>
@@ -336,7 +369,9 @@ export function GrantAgreement(props: {
             </td>
           </tr>
           <tr className="font-bold">
-            <td className="pr-10 pt-6 text-gray-900">12</td>
+            <td className="pr-10 pt-6 text-gray-900">
+              {version === 1 ? '13' : '12'}
+            </td>
             <td className="pt-6 text-gray-900">Terrorist Activity</td>
           </tr>
           <tr>
@@ -347,7 +382,9 @@ export function GrantAgreement(props: {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 text-gray-900">13</td>
+            <td className="pr-10 pt-6 text-gray-900">
+              {version === 1 ? '14' : '13'}
+            </td>
             <td className="pt-6 text-gray-900">Variations</td>
           </tr>
           <tr>
@@ -358,7 +395,9 @@ export function GrantAgreement(props: {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 text-gray-900">14</td>
+            <td className="pr-10 pt-6 text-gray-900">
+              {version === 1 ? '15' : '14'}
+            </td>
             <td className="pt-6 text-gray-900">Entire agreement</td>
           </tr>
           <tr>
@@ -370,7 +409,7 @@ export function GrantAgreement(props: {
             </td>
           </tr>
           <tr className=" font-bold">
-            <td className="pr-10 pt-6 ">15</td>
+            <td className="pr-10 pt-6 ">{version === 1 ? '16' : '15'}</td>
             <td className="pt-6 ">Governing Law</td>
           </tr>
           <tr>
