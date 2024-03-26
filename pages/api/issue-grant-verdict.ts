@@ -1,6 +1,6 @@
 import { JSONContent } from '@tiptap/react'
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from './_db'
+import { createAdminClient, createEdgeClient } from './_db'
 import { getUser, isAdmin } from '@/db/profile'
 import { getProjectById } from '@/db/project'
 import { getAdminName, getURL } from '@/utils/constants'
@@ -30,26 +30,29 @@ export default async function handler(req: NextRequest) {
   const supabase = createEdgeClient(req)
   const user = await getUser(supabase)
   if (!user || !isAdmin(user)) {
-    return Response.error()
+    return NextResponse.error()
   }
 
   const adminName = getAdminName(user.email ?? '')
   const project = await getProjectById(supabase, projectId)
   const creator = await getProfileById(supabase, project?.creator)
   if (!project || !creator || !adminName) {
-    return Response.error()
+    return NextResponse.error()
   }
 
-  await supabase
-    .rpc('execute_grant_verdict', {
-      approved: approved,
-      project_id: projectId,
-      project_creator: project.creator,
-      admin_id: user.id,
-      admin_comment_content: adminComment,
-      public_benefit: publicBenefit,
-    })
-    .throwOnError()
+  const supabaseAdmin = createAdminClient()
+  const { error } = await supabaseAdmin.rpc('execute_grant_verdict', {
+    approved: approved,
+    project_id: projectId,
+    project_creator: project.creator,
+    admin_id: user.id,
+    admin_comment_content: adminComment,
+    public_benefit: publicBenefit,
+  })
+  if (error) {
+    console.error(error)
+    return NextResponse.error()
+  }
 
   const recipientSubject = approved
     ? 'Manifund has approved your project for funding!'
