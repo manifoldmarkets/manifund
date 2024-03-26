@@ -47,18 +47,15 @@ export default async function Admin({
     }) ?? []
   const charities = profiles?.filter((profile) => profile.type === 'org')
   const projects = await listProjects(supabaseAdmin)
-  const projectsToApprove = projects
-    .filter(
-      (project) =>
-        project.stage === 'proposal' &&
-        project.approved === null &&
-        project.type === 'grant'
-    )
-    .filter(
-      (project) =>
-        project.bids.reduce((acc, bid) => acc + bid.amount, 0) >=
-        project.min_funding
-    )
+  const projectsToApprove = projects.filter(
+    (project) =>
+      project.stage === 'proposal' &&
+      project.approved === null &&
+      project.type === 'grant' &&
+      project.bids.reduce((acc, bid) => acc + bid.amount, 0) >=
+        project.min_funding &&
+      project.signed_agreement
+  )
   const usersById = new Map(userAndProfiles.map((user) => [user.id, user]))
   const getName = (userId: string | null) => {
     return usersById.get(userId ?? '')?.profile?.username

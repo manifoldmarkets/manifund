@@ -205,7 +205,7 @@ export function Tag(props: {
   const { text, color = 'orange', className } = props
   return (
     <div
-      className={`line-clamp-1 max-w-fit overflow-ellipsis rounded-sm px-2 py-1 text-xs font-semibold bg-${color}-100 text-${color}-700 ${className}`}
+      className={`line-clamp-1 flex max-w-fit items-center overflow-ellipsis rounded-sm px-2 py-1 text-xs font-semibold bg-${color}-100 text-${color}-700 ${className}`}
     >
       {text}
     </div>
