@@ -72,7 +72,7 @@ export function SignatureSection(props: {
       )}
       <SignatureDisplay
         fullName={agreement?.profiles?.full_name ?? ''}
-        signatoryTitle="Manifund signatory"
+        signatoryTitle="Charity signatory"
         signedAt={
           agreement?.approved_at ? new Date(agreement.approved_at) : undefined
         }
