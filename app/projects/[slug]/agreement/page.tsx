@@ -6,6 +6,8 @@ import { Col } from '@/components/layout/col'
 import { GrantAgreement } from './grant-agreement'
 import { SignatureSection } from './signature-section'
 import { getGrantAgreement } from '@/db/grant_agreement'
+import { Row } from '@/components/layout/row'
+import { Tag } from '@/components/tags'
 
 export default async function GrantAgreementPage(props: {
   params: { slug: string }
@@ -18,17 +20,39 @@ export default async function GrantAgreementPage(props: {
   }
   const agreement = (await getGrantAgreement(supabase, project.id)) ?? undefined
   const user = await getUser(supabase)
-
   return (
-    <Col className="gap-5 p-5">
-      <GrantAgreement project={project} agreement={agreement} />
-      <SignatureSection
-        project={project}
-        agreement={agreement}
-        userIsOwner={true}
-        // TODO: revert this to actually checking
-        // userIsOwner={user?.id === project.creator}
-      />
-    </Col>
+    <div className="p-5">
+      <Row className="gap-3">
+        <h1 className="text-xl font-semibold">Grant Agreement</h1>
+        <Tag
+          text={project.signed_agreement ? 'COMPLETE' : 'AWAITING SIGNATURE'}
+          color={project.signed_agreement ? 'orange' : 'rose'}
+        />
+      </Row>
+      <p className="mb-5 text-sm text-gray-500">
+        All grant recipients are required to agree to the terms and conditions
+        outlined here before receiving funds.
+      </p>
+      {agreement?.signed_off_site ? (
+        <div className="rounded-md bg-gray-200 p-4 text-gray-600">
+          This grant agreement was signed off-site. We have grantees sign
+          agreements elsewhere in cases where they need a modified version of
+          the agreement, when a signatory signs on behalf of a receiving
+          organization, or where they want to preserve their anonymity on
+          Manifund.
+        </div>
+      ) : (
+        <Col className="gap-5">
+          <GrantAgreement project={project} agreement={agreement} />
+          <SignatureSection
+            project={project}
+            agreement={agreement}
+            userIsOwner={true}
+            // TODO: revert this to actually checking
+            // userIsOwner={user?.id === project.creator}
+          />
+        </Col>
+      )}
+    </div>
   )
 }
