@@ -47,9 +47,7 @@ export default async function GrantAgreementPage(props: {
           <SignatureSection
             project={project}
             agreement={agreement}
-            userIsOwner={true}
-            // TODO: revert this to actually checking
-            // userIsOwner={user?.id === project.creator}
+            userIsOwner={user?.id === project.creator}
           />
         </Col>
       )}
