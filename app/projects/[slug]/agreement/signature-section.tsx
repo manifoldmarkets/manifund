@@ -1,6 +1,7 @@
 'use client'
 import { Button } from '@/components/button'
 import { Checkbox } from '@/components/input'
+import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { GrantAgreement } from '@/db/grant_agreement'
 import { ProjectAndProfile } from '@/db/project'
@@ -20,7 +21,7 @@ export function SignatureSection(props: {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   return (
-    <>
+    <Col className="gap-10">
       <SignatureDisplay
         fullName={project.profiles.full_name}
         signatoryTitle="Recipient"
@@ -76,6 +77,6 @@ export function SignatureSection(props: {
           agreement?.approved_at ? new Date(agreement.approved_at) : undefined
         }
       />
-    </>
+    </Col>
   )
 }

@@ -42,7 +42,7 @@ export default async function GrantAgreementPage(props: {
           Manifund.
         </div>
       ) : (
-        <Col className="gap-5">
+        <Col className="gap-16">
           <GrantAgreement project={project} agreement={agreement} />
           <SignatureSection
             project={project}
