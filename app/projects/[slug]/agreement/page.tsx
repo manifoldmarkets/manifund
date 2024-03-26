@@ -25,8 +25,16 @@ export default async function GrantAgreementPage(props: {
       <Row className="gap-3">
         <h1 className="text-xl font-semibold">Grant Agreement</h1>
         <Tag
-          text={project.signed_agreement ? 'COMPLETE' : 'AWAITING SIGNATURE'}
-          color={project.signed_agreement ? 'orange' : 'rose'}
+          text={
+            project.signed_agreement
+              ? project.approved
+                ? 'COMPLETE'
+                : 'AWAITING COUNTER SIGNATURE'
+              : 'AWAITING SIGNATURE'
+          }
+          color={
+            project.signed_agreement && project.approved ? 'orange' : 'rose'
+          }
         />
       </Row>
       <p className="mb-5 text-sm text-gray-500">
