@@ -1,7 +1,7 @@
 import { Txn } from '@/db/txn'
 import { bundleTxns } from '@/utils/math'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createAdminClient } from './_db'
 
 export const config = {

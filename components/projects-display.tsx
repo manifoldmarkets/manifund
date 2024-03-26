@@ -46,7 +46,7 @@ export function ProjectsDisplay(props: {
 }) {
   const { projects, defaultSort, causesList, noFilter } = props
   const prices = getPrices(projects)
-  const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
+  const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'hot')
   const [includedCauses, setIncludedCauses] = useState<Cause[]>([])
   const [search, setSearch] = useState<string>('')
   const filteredProjects = filterProjects(projects, includedCauses)
