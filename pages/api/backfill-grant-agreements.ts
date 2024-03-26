@@ -16,13 +16,6 @@ export const config = {
 export default async function handler() {
   const supabase = createAdminClient()
   const projects = await listProjectsForAgreements(supabase)
-  const thisProject = projects.find(
-    (p) =>
-      p.title === 'Support a thriving and talented community of Filipino EAs'
-  )
-  console.log('THIS PROJECT:', thisProject)
-  // const fewerProjects = projects.slice(0, 5)
-  // console.log(fewerProjects)
   const AUSTIN_PROFILE_ID = '10bd8a14-4002-47ff-af4a-92b227423a74'
   for (const project of projects) {
     console.log(project.title)
