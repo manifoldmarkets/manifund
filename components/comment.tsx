@@ -135,7 +135,7 @@ export function Comment(props: {
           </Row>
         </Card>
       </Row>
-      <AddRxn />
+      <AddRxn commentId={comment.id} />
     </Col>
   )
 }

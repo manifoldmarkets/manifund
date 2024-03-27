@@ -21,6 +21,7 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
+  // TODO: add txn for paid reactions
   const { error } = await supabase
     .from('comment_rxns')
     .insert({ comment_id: commentId, reaction, reactor_id: user.id })

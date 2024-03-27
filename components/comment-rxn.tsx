@@ -30,7 +30,19 @@ const AddRxnIcon = () => (
   </div>
 )
 
-export function AddRxn() {
+export function AddRxn(props: { commentId: string }) {
+  async function onFreeRxnClick(reaction: string) {
+    const response = await fetch(`/api/react-to-comment`, {
+      method: 'POST',
+      body: JSON.stringify({
+        commentId: props.commentId,
+        reaction,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  }
   return (
     <Popover className="relative">
       <Popover.Button className="text-gray-500 hover:text-gray-700 focus:outline-0">
@@ -41,7 +53,11 @@ export function AddRxn() {
         <h3 className="text-sm text-gray-700">Free reactions</h3>
         <div className="grid grid-cols-5 gap-2">
           {freeRxns.map((reaction) => (
-            <Popover.Button key={reaction} className="text-base">
+            <Popover.Button
+              key={reaction}
+              className="text-base"
+              onClick={() => onFreeRxnClick(reaction)}
+            >
               <div className="rounded px-1 py-0.5 text-base hover:bg-gray-200">
                 {reaction}
               </div>
