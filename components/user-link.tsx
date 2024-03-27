@@ -83,7 +83,7 @@ const microregrantors = [
   'NoaNabeshima',
   'danwahl',
   'guenael',
-  'jacyanthis',
+  'Jacy',
   'Chris-Lakin',
   'HarveyPowers',
   'aaronl',
