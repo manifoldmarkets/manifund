@@ -7,8 +7,9 @@ import { Comment } from '@/components/comment'
 export function ProfileComments(props: {
   comments: CommentAndProjectAndRxns[]
   profile: Profile
+  userId?: string
 }) {
-  const { comments, profile } = props
+  const { comments, profile, userId } = props
   const filteredComments = comments.filter(
     (comment) => comment.projects.stage !== 'hidden'
   )
@@ -23,6 +24,7 @@ export function ProfileComments(props: {
               key={comment.id}
               comment={comment}
               commenter={profile}
+              userId={userId}
               rxns={comment.comment_rxns}
               commentHref={`/projects/${comment.projects.slug}?tab=comments#${comment.id}`}
               projectTitle={comment.projects.title}

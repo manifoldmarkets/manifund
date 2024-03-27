@@ -59,6 +59,7 @@ export default async function Projects(props: {
         recentBids={recentBids}
         projects={projects}
         causesList={causesList}
+        userId={user?.id}
       />
     </Col>
   )

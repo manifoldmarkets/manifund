@@ -1,3 +1,4 @@
+import { CommentRxn } from '@/db/comment'
 import { Popover } from '@headlessui/react'
 import { FaceSmileIcon } from '@heroicons/react/24/outline'
 import { Row } from './layout/row'
@@ -79,5 +80,31 @@ export function AddRxn(props: { commentId: string }) {
         </Row>
       </Popover.Panel>
     </Popover>
+  )
+}
+
+export function ExistingRxnsDisplay(props: {
+  rxns: CommentRxn[]
+  userId?: string
+}) {
+  const { rxns, userId } = props
+  const rxnsWithCounts = Object.fromEntries(freeRxns.map((r) => [r, 0]))
+  rxns.forEach((rxn) => {
+    rxnsWithCounts[rxn.reaction]++
+  })
+  return (
+    <Row className="gap-1">
+      {freeRxns.map((reaction) => {
+        if (rxnsWithCounts[reaction] > 0) {
+          return (
+            <div key={reaction} className="text-base">
+              {reaction} {rxnsWithCounts[reaction]}
+            </div>
+          )
+        } else {
+          return null
+        }
+      })}
+    </Row>
   )
 }

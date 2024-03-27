@@ -67,6 +67,7 @@ export function Comments(props: {
               comment={thread.root}
               commenter={thread.root.profiles}
               rxns={thread.root.comment_rxns}
+              userId={userProfile?.id}
               commentHref={`/projects/${project.slug}?tab=comments#${thread.root.id}`}
               writtenByCreator={thread.root.commenter === project.creator}
               contributionText={commenterContributions[thread.root.commenter]}
@@ -82,6 +83,7 @@ export function Comments(props: {
                     comment={reply}
                     commenter={reply.profiles}
                     rxns={reply.comment_rxns}
+                    userId={userProfile?.id}
                     commentHref={`/projects/${project.slug}?tab=comments#${reply.id}`}
                     writtenByCreator={reply.commenter === project.creator}
                     contributionText={commenterContributions[reply.commenter]}

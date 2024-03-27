@@ -135,7 +135,11 @@ export function ProfileContent(props: {
         <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
       )}
       {comments.length > 0 && (
-        <ProfileComments comments={comments} profile={profile} />
+        <ProfileComments
+          comments={comments}
+          profile={profile}
+          userId={userProfile?.id}
+        />
       )}
     </div>
   )

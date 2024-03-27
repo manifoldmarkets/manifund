@@ -16,13 +16,14 @@ import { Tooltip } from './tooltip'
 import { getURL } from '@/utils/constants'
 import { useSafeLayoutEffect } from '@/hooks/use-safe-layout-effect'
 import { toSentenceCase } from '@/utils/formatting'
-import { AddRxn } from './comment-rxn'
+import { AddRxn, ExistingRxnsDisplay } from './comment-rxn'
 
 export function Comment(props: {
   comment: Comment
   commenter: Profile
   commentHref: string
   rxns: CommentRxn[]
+  userId?: string
   writtenByCreator?: boolean
   contributionText?: string
   projectTitle?: string
@@ -32,6 +33,7 @@ export function Comment(props: {
     comment,
     commenter,
     rxns,
+    userId,
     commentHref,
     writtenByCreator,
     contributionText,
@@ -135,11 +137,7 @@ export function Comment(props: {
             )}
             {children}
           </Row>
-          <Row className="gap-1">
-            {rxns.map((rxn) => {
-              return <span key={rxn.reaction}>{rxn.reaction}</span>
-            })}
-          </Row>
+          <ExistingRxnsDisplay rxns={rxns} userId={userId} />
         </Card>
       </Row>
       <AddRxn commentId={comment.id} />
