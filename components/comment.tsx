@@ -121,7 +121,7 @@ export function Comment(props: {
           >
             <RichContent content={comment.content} className="text-sm" />
           </div>
-          <Row className="absolute bottom-2 right-2 gap-2">{children}</Row>
+          <div className="absolute bottom-2 right-2 gap-2">{children}</div>
           {showExpandButton && (
             <button
               className="absolute bottom-2 left-3 text-xs text-gray-500 hover:underline"
