@@ -32,19 +32,20 @@ const AddRxnIcon = () => (
   </div>
 )
 
+async function onFreeRxnClick(reaction: string, commentId: string) {
+  const response = await fetch(`/api/react-to-comment`, {
+    method: 'POST',
+    body: JSON.stringify({
+      commentId,
+      reaction,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+}
+
 export function AddRxn(props: { commentId: string }) {
-  async function onFreeRxnClick(reaction: string) {
-    const response = await fetch(`/api/react-to-comment`, {
-      method: 'POST',
-      body: JSON.stringify({
-        commentId: props.commentId,
-        reaction,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-  }
   return (
     <Popover className="relative">
       <Popover.Button className="text-gray-500 hover:text-gray-700 focus:outline-0">
@@ -58,7 +59,7 @@ export function AddRxn(props: { commentId: string }) {
             <Popover.Button
               key={reaction}
               className="text-base"
-              onClick={() => onFreeRxnClick(reaction)}
+              onClick={() => onFreeRxnClick(reaction, props.commentId)}
             >
               <div className="rounded px-1 py-0.5 text-base hover:bg-gray-200">
                 {reaction}
@@ -86,9 +87,10 @@ export function AddRxn(props: { commentId: string }) {
 
 export function ExistingRxnsDisplay(props: {
   rxns: CommentRxn[]
+  commentId: string
   userId?: string
 }) {
-  const { rxns, userId } = props
+  const { rxns, commentId, userId } = props
   const rxnsWithCounts = Object.fromEntries(freeRxns.map((r) => [r, 0]))
   rxns.forEach((rxn) => {
     rxnsWithCounts[rxn.reaction]++
@@ -99,20 +101,26 @@ export function ExistingRxnsDisplay(props: {
         if (rxnsWithCounts[reaction] > 0) {
           const userDidReact = rxns.some((rxn) => rxn.reactor_id === userId)
           return (
-            <Row
+            <button
               key={reaction}
+              onClick={async () => {
+                if (userId) {
+                  await onFreeRxnClick(reaction, commentId)
+                }
+              }}
               className={clsx(
-                'items-center gap-1 rounded px-1 py-[0.5px]',
+                'flex items-center gap-1 rounded px-1 py-[0.5px]',
                 userDidReact
                   ? 'bg-orange-100 ring-2 ring-orange-600'
-                  : 'bg-gray-100'
+                  : 'bg-gray-100',
+                userId && 'cursor-pointer'
               )}
             >
               <span className="text-sm">{reaction}</span>
               <span className="text-xs text-gray-500">
                 {rxnsWithCounts[reaction]}
               </span>
-            </Row>
+            </button>
           )
         } else {
           return null
@@ -131,7 +139,7 @@ export function CommentRxnsPanel(props: {
   return (
     <Row className="items-center gap-2">
       <AddRxn commentId={commentId} />
-      <ExistingRxnsDisplay rxns={rxns} userId={userId} />
+      <ExistingRxnsDisplay rxns={rxns} commentId={commentId} userId={userId} />
     </Row>
   )
 }

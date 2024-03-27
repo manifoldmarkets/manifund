@@ -22,13 +22,30 @@ export default async function handler(req: NextRequest) {
   const user = resp.data.user
   if (!user) return NextResponse.error()
   // TODO: add txn for paid reactions
-  const { error } = await supabase
+  const newRxn = { comment_id: commentId, reactor_id: user.id, reaction }
+  const { data: existingRxn, error: error0 } = await supabase
     .from('comment_rxns')
-    .insert({ comment_id: commentId, reaction, reactor_id: user.id })
-  if (error) {
-    console.error(error)
+    .select('comment_id')
+    .match(newRxn)
+    .maybeSingle()
+  if (error0) {
+    console.error('0', error0)
     return NextResponse.error()
   }
+  if (!!existingRxn) {
+    const { error } = await supabase.from('comment_rxns').delete().match(newRxn)
+    if (error) {
+      console.error('1', error)
+      return NextResponse.error()
+    }
+  } else {
+    const { error } = await supabase.from('comment_rxns').insert(newRxn)
+    if (error) {
+      console.error('2', error)
+      return NextResponse.error()
+    }
+  }
+
   console.log(reaction)
   return NextResponse.json('success')
 }
