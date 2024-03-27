@@ -107,6 +107,49 @@ export type Database = {
           },
         ]
       }
+      comment_rxns: {
+        Row: {
+          comment_id: string
+          reaction: string
+          reactor_id: string
+          txn_id: string | null
+        }
+        Insert: {
+          comment_id: string
+          reaction: string
+          reactor_id: string
+          txn_id?: string | null
+        }
+        Update: {
+          comment_id?: string
+          reaction?: string
+          reactor_id?: string
+          txn_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_comment_rxns_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_comment_rxns_reactor_id_fkey"
+            columns: ["reactor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_comment_rxns_txn_id_fkey"
+            columns: ["txn_id"]
+            isOneToOne: false
+            referencedRelation: "txns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           commenter: string
