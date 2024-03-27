@@ -506,3 +506,32 @@ TO authenticated
 WITH CHECK (true)
 
 
+-- Comment rxns
+CREATE TABLE public.comment_rxns (
+  comment_id uuid NOT NULL REFERENCES public.comments(id),
+  reactor_id uuid REFERENCES public.profiles(id),
+  reaction text NOT NULL,
+  txn_id uuid REFERENCES public.txns(id),
+  PRIMARY KEY (comment_id, reactor_id, reaction)
+);
+
+
+-- Comment rxns RLS
+create policy "Enable read access for all users" on "public"."comment_rxns"
+as PERMISSIVE for SELECT to public
+using (true);
+
+create policy "Enable insert for authenticated users only" on "public"."comment_rxns"
+as PERMISSIVE for INSERT
+to authenticated
+with check (
+  true
+);
+
+create policy "Enable delete for users based on user_id" on "public"."comment_rxns"
+as PERMISSIVE for DELETE
+to public
+using (
+  auth.uid() = reactor_id
+);
+
