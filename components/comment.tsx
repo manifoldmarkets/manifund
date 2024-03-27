@@ -16,7 +16,7 @@ import { Tooltip } from './tooltip'
 import { getURL } from '@/utils/constants'
 import { useSafeLayoutEffect } from '@/hooks/use-safe-layout-effect'
 import { toSentenceCase } from '@/utils/formatting'
-import { AddRxn, ExistingRxnsDisplay } from './comment-rxn'
+import { AddRxn, CommentRxnsPanel, ExistingRxnsDisplay } from './comment-rxn'
 
 export function Comment(props: {
   comment: Comment
@@ -127,10 +127,11 @@ export function Comment(props: {
             <RichContent content={comment.content} className="text-sm" />
           </div>
           <Row className="mt-5 justify-between gap-2">
-            <Row className="items-center gap-2">
-              <AddRxn commentId={comment.id} />
-              <ExistingRxnsDisplay rxns={rxns} userId={userId} />
-            </Row>
+            <CommentRxnsPanel
+              commentId={comment.id}
+              userId={userId}
+              rxns={rxns}
+            />
             <Row className="gap-2">
               {showExpandButton && (
                 <button
