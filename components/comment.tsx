@@ -31,6 +31,7 @@ export function Comment(props: {
   const {
     comment,
     commenter,
+    rxns,
     commentHref,
     writtenByCreator,
     contributionText,
@@ -134,7 +135,11 @@ export function Comment(props: {
             )}
             {children}
           </Row>
-          <Row className="gap-1"></Row>
+          <Row className="gap-1">
+            {rxns.map((rxn) => {
+              return <span key={rxn.reaction}>{rxn.reaction}</span>
+            })}
+          </Row>
         </Card>
       </Row>
       <AddRxn commentId={comment.id} />

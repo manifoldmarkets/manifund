@@ -12,10 +12,10 @@ export type FullComment = Comment & { profiles: Profile } & {
 } & { comment_rxns: CommentRxn[] }
 export type CommentAndProject = Comment & { projects: Project }
 export type CommentAndProfileAndRxns = Comment & { profiles: Profile } & {
-  rxns: CommentRxn[]
+  comment_rxns: CommentRxn[]
 }
 export type CommentAndProjectAndRxns = Comment & { projects: Project } & {
-  rxns: CommentRxn[]
+  comment_rxns: CommentRxn[]
 }
 export type CommendAndProfileAndProject = Comment & { profiles: Profile } & {
   projects: Project
@@ -34,7 +34,7 @@ export async function getCommentsByProject(
   if (error) {
     throw error
   }
-  return data as CommentAndProfile[]
+  return data as CommentAndProfileAndRxns[]
 }
 
 export async function sendComment(

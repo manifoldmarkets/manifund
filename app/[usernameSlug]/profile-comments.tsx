@@ -23,7 +23,7 @@ export function ProfileComments(props: {
               key={comment.id}
               comment={comment}
               commenter={profile}
-              rxns={comment.rxns}
+              rxns={comment.comment_rxns}
               commentHref={`/projects/${comment.projects.slug}?tab=comments#${comment.id}`}
               projectTitle={comment.projects.title}
             />

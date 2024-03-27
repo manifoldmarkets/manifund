@@ -4,7 +4,7 @@ import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
 import { BidAndProfile, BidAndProject } from '@/db/bid'
-import { CommentAndProfile } from '@/db/comment'
+import { CommentAndProfileAndRxns } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import { FullProject, Project } from '@/db/project'
 import { Cause, SimpleCause } from '@/db/cause'
@@ -44,7 +44,7 @@ export function ProjectDisplay(props: {
   project: FullProject
   userTxns: TxnAndProject[]
   userBids: BidAndProject[]
-  comments: CommentAndProfile[]
+  comments: CommentAndProfileAndRxns[]
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]
   causesList: SimpleCause[]

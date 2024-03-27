@@ -63,6 +63,7 @@ export function FeedTabs(props: {
               key={comment.id}
               comment={comment}
               commenter={comment.profiles}
+              rxns={comment.comment_rxns}
               commentHref={`/projects/${comment.projects.slug}?tab=comments#${comment.id}`}
               projectTitle={comment.projects.title}
             />
