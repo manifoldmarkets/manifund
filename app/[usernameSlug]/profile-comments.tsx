@@ -1,11 +1,11 @@
 import { Col } from '@/components/layout/col'
-import { CommentAndProject } from '@/db/comment'
+import { CommentAndProjectAndRxns } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import { orderBy } from 'lodash'
 import { Comment } from '@/components/comment'
 
 export function ProfileComments(props: {
-  comments: CommentAndProject[]
+  comments: CommentAndProjectAndRxns[]
   profile: Profile
 }) {
   const { comments, profile } = props
@@ -23,6 +23,7 @@ export function ProfileComments(props: {
               key={comment.id}
               comment={comment}
               commenter={profile}
+              rxns={comment.rxns}
               commentHref={`/projects/${comment.projects.slug}?tab=comments#${comment.id}`}
               projectTitle={comment.projects.title}
             />

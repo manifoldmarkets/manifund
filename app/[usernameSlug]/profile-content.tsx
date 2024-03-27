@@ -12,7 +12,7 @@ import { FullTxn, TxnAndProject } from '@/db/txn'
 import { calculateCashBalance } from '@/utils/math'
 import { DonateBox } from '@/components/donate-box'
 import { OutgoingDonationsHistory } from './profile-donations'
-import { CommentAndProject } from '@/db/comment'
+import { CommentAndProjectAndRxns } from '@/db/comment'
 import { ProfileComments } from './profile-comments'
 import { RichContent } from '@/components/editor'
 import { Row } from '@/components/layout/row'
@@ -23,7 +23,7 @@ import { RightCarrotIcon } from '@/components/icons'
 export function ProfileContent(props: {
   profile: Profile
   projects: FullProject[]
-  comments: CommentAndProject[]
+  comments: CommentAndProjectAndRxns[]
   bids: BidAndProject[]
   txns: FullTxn[]
   userProfile?: Profile

@@ -4,7 +4,7 @@ import { RichContent } from '@/components/editor'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import { Tag } from '@/components/tags'
-import { Comment } from '@/db/comment'
+import { Comment, CommentRxn } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import Link from 'next/link'
 import clsx from 'clsx'
@@ -22,6 +22,7 @@ export function Comment(props: {
   comment: Comment
   commenter: Profile
   commentHref: string
+  rxns: CommentRxn[]
   writtenByCreator?: boolean
   contributionText?: string
   projectTitle?: string
@@ -133,6 +134,7 @@ export function Comment(props: {
             )}
             {children}
           </Row>
+          <Row className="gap-1"></Row>
         </Card>
       </Row>
       <AddRxn commentId={comment.id} />
