@@ -2,6 +2,7 @@ import { CommentRxn } from '@/db/comment'
 import { Popover } from '@headlessui/react'
 import { FaceSmileIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
+import { useRouter } from 'next/navigation'
 import { Row } from './layout/row'
 
 export const freeRxns = [
@@ -32,20 +33,8 @@ const AddRxnIcon = () => (
   </div>
 )
 
-async function onFreeRxnClick(reaction: string, commentId: string) {
-  const response = await fetch(`/api/react-to-comment`, {
-    method: 'POST',
-    body: JSON.stringify({
-      commentId,
-      reaction,
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-}
-
-export function AddRxn(props: { commentId: string }) {
+export function AddRxn(props: { postRxn: (reaction: string) => void }) {
+  const router = useRouter()
   return (
     <Popover className="relative">
       <Popover.Button className="text-gray-500 hover:text-gray-700 focus:outline-0">
@@ -59,7 +48,10 @@ export function AddRxn(props: { commentId: string }) {
             <Popover.Button
               key={reaction}
               className="text-base"
-              onClick={() => onFreeRxnClick(reaction, props.commentId)}
+              onClick={() => {
+                props.postRxn(reaction)
+                router.refresh()
+              }}
             >
               <div className="rounded px-1 py-0.5 text-base hover:bg-gray-200">
                 {reaction}
@@ -87,14 +79,15 @@ export function AddRxn(props: { commentId: string }) {
 
 export function ExistingRxnsDisplay(props: {
   rxns: CommentRxn[]
-  commentId: string
+  postRxn: (reaction: string) => void
   userId?: string
 }) {
-  const { rxns, commentId, userId } = props
+  const { rxns, postRxn, userId } = props
   const rxnsWithCounts = Object.fromEntries(freeRxns.map((r) => [r, 0]))
   rxns.forEach((rxn) => {
     rxnsWithCounts[rxn.reaction]++
   })
+  const router = useRouter()
   return (
     <Row className="gap-2">
       {freeRxns.map((reaction) => {
@@ -105,7 +98,8 @@ export function ExistingRxnsDisplay(props: {
               key={reaction}
               onClick={async () => {
                 if (userId) {
-                  await onFreeRxnClick(reaction, commentId)
+                  await postRxn(reaction)
+                  router.refresh()
                 }
               }}
               className={clsx(
@@ -136,10 +130,38 @@ export function CommentRxnsPanel(props: {
   userId?: string
 }) {
   const { commentId, rxns, userId } = props
+  const router = useRouter()
+  async function postRxn(reaction: string) {
+    const existingRxnIdx = rxns.findIndex(
+      (rxn) => rxn.reaction === reaction && rxn.reactor_id === userId
+    )
+    if (existingRxnIdx === -1) {
+      rxns.push({
+        comment_id: commentId,
+        reaction,
+        reactor_id: userId ?? '',
+        txn_id: null,
+      })
+    } else {
+      rxns.splice(existingRxnIdx, 1)
+    }
+    console.log(rxns)
+    await fetch(`/api/react-to-comment`, {
+      method: 'POST',
+      body: JSON.stringify({
+        commentId,
+        reaction,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    router.refresh()
+  }
   return (
     <Row className="items-center gap-2 overflow-visible">
-      <AddRxn commentId={commentId} />
-      <ExistingRxnsDisplay rxns={rxns} commentId={commentId} userId={userId} />
+      <AddRxn postRxn={postRxn} />
+      <ExistingRxnsDisplay rxns={rxns} userId={userId} postRxn={postRxn} />
     </Row>
   )
 }
