@@ -137,7 +137,7 @@ export function CommentRxnsPanel(props: {
 }) {
   const { commentId, rxns, userId } = props
   return (
-    <Row className="items-center gap-2">
+    <Row className="items-center gap-2 overflow-visible">
       <AddRxn commentId={commentId} />
       <ExistingRxnsDisplay rxns={rxns} commentId={commentId} userId={userId} />
     </Row>

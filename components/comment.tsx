@@ -16,7 +16,7 @@ import { Tooltip } from './tooltip'
 import { getURL } from '@/utils/constants'
 import { useSafeLayoutEffect } from '@/hooks/use-safe-layout-effect'
 import { toSentenceCase } from '@/utils/formatting'
-import { AddRxn, CommentRxnsPanel, ExistingRxnsDisplay } from './comment-rxn'
+import { CommentRxnsPanel } from './comment-rxn'
 
 export function Comment(props: {
   comment: Comment
@@ -81,7 +81,7 @@ export function Comment(props: {
         </Link>
         <Card
           className={clsx(
-            'relative w-full rounded-xl rounded-tl-sm px-4 py-2',
+            'relative w-full overflow-visible rounded-xl rounded-tl-sm px-4 py-2',
             highlighted ? '!bg-orange-100 ring-2 !ring-orange-600' : ''
           )}
         >
