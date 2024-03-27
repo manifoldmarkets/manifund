@@ -239,3 +239,21 @@ export function SponsoredTag(props: { text: string; className?: string }) {
 export function RequiredStar() {
   return <span className="relative bottom-1 mx-1 text-rose-500">*</span>
 }
+
+export const freeReactions = [
+  '➕',
+  '➖',
+  '🤔',
+  '😮',
+  '🥳',
+  '💡',
+  '❓',
+  '🔥',
+  '👏',
+]
+
+export const paidReactions = {
+  '🧡': 1,
+  '🏅': 10,
+  '🏆': 100,
+}
