@@ -14,7 +14,6 @@ import {
   BeakerIcon,
   StarIcon,
   EyeSlashIcon,
-  FaceSmileIcon,
 } from '@heroicons/react/24/outline'
 import { FireIcon } from '@heroicons/react/24/solid'
 import Image from 'next/image'
@@ -240,30 +239,3 @@ export function SponsoredTag(props: { text: string; className?: string }) {
 export function RequiredStar() {
   return <span className="relative bottom-1 mx-1 text-rose-500">*</span>
 }
-
-export const freeReactions = [
-  '➕',
-  '➖',
-  '🤔',
-  '😮',
-  '🥳',
-  '💡',
-  '❓',
-  '🔥',
-  '👏',
-]
-
-export const paidReactions = {
-  '🧡': 1,
-  '🏅': 10,
-  '🏆': 100,
-}
-
-export const AddReactionIcon = () => (
-  <div className="relative w-5 text-gray-500">
-    <FaceSmileIcon className="h-5 w-5" />
-    <div className="absolute right-0 top-0 rounded-full bg-white px-[0.5px] text-[10px] leading-[10px]">
-      +
-    </div>
-  </div>
-)

@@ -3,7 +3,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { RichContent } from '@/components/editor'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
-import { AddReactionIcon, Tag } from '@/components/tags'
+import { Tag } from '@/components/tags'
 import { Comment } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import Link from 'next/link'
@@ -16,6 +16,7 @@ import { Tooltip } from './tooltip'
 import { getURL } from '@/utils/constants'
 import { useSafeLayoutEffect } from '@/hooks/use-safe-layout-effect'
 import { toSentenceCase } from '@/utils/formatting'
+import { AddRxn } from './comment-rxn'
 
 export function Comment(props: {
   comment: Comment
@@ -121,7 +122,6 @@ export function Comment(props: {
           >
             <RichContent content={comment.content} className="text-sm" />
           </div>
-          <AddReactionIcon />
           <Row className="absolute bottom-2 right-2 gap-2">
             {showExpandButton && (
               <button
@@ -135,6 +135,7 @@ export function Comment(props: {
           </Row>
         </Card>
       </Row>
+      <AddRxn />
     </Col>
   )
 }
