@@ -1,6 +1,7 @@
 import { CommentRxn } from '@/db/comment'
 import { Popover } from '@headlessui/react'
 import { FaceSmileIcon } from '@heroicons/react/24/outline'
+import clsx from 'clsx'
 import { Row } from './layout/row'
 
 export const freeRxns = [
@@ -23,7 +24,7 @@ export const paidRxns = {
 } as { [key: string]: number }
 
 const AddRxnIcon = () => (
-  <div className="relative w-5">
+  <div className="relative mt-1 w-5">
     <FaceSmileIcon className="h-5 w-5" />
     <div className="absolute right-0 top-0 rounded-full bg-white px-[0.5px] text-[10px] leading-[10px]">
       +
@@ -93,13 +94,25 @@ export function ExistingRxnsDisplay(props: {
     rxnsWithCounts[rxn.reaction]++
   })
   return (
-    <Row className="gap-1">
+    <Row className="gap-2">
       {freeRxns.map((reaction) => {
         if (rxnsWithCounts[reaction] > 0) {
+          const userDidReact = rxns.some((rxn) => rxn.reactor_id === userId)
           return (
-            <div key={reaction} className="text-base">
-              {reaction} {rxnsWithCounts[reaction]}
-            </div>
+            <Row
+              key={reaction}
+              className={clsx(
+                'items-center gap-1 rounded px-1 py-[0.5px]',
+                userDidReact
+                  ? 'bg-orange-100 ring-2 ring-orange-600'
+                  : 'bg-gray-100'
+              )}
+            >
+              <span className="text-sm">{reaction}</span>
+              <span className="text-xs text-gray-500">
+                {rxnsWithCounts[reaction]}
+              </span>
+            </Row>
           )
         } else {
           return null

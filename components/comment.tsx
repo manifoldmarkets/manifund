@@ -81,7 +81,7 @@ export function Comment(props: {
         </Link>
         <Card
           className={clsx(
-            'relative w-full rounded-xl rounded-tl-sm px-6 pb-8 pt-2',
+            'relative w-full rounded-xl rounded-tl-sm px-4 py-2',
             highlighted ? '!bg-orange-100 ring-2 !ring-orange-600' : ''
           )}
         >
@@ -126,21 +126,25 @@ export function Comment(props: {
           >
             <RichContent content={comment.content} className="text-sm" />
           </div>
-          <Row className="absolute bottom-2 right-2 gap-2">
-            {showExpandButton && (
-              <button
-                className="text-xs text-gray-500 hover:underline"
-                onClick={() => setExpanded(!expanded)}
-              >
-                {expanded ? 'Show less' : 'Show more'}
-              </button>
-            )}
-            {children}
+          <Row className="mt-5 justify-between gap-2">
+            <Row className="items-center gap-2">
+              <AddRxn commentId={comment.id} />
+              <ExistingRxnsDisplay rxns={rxns} userId={userId} />
+            </Row>
+            <Row className="gap-2">
+              {showExpandButton && (
+                <button
+                  className="text-xs text-gray-500 hover:underline"
+                  onClick={() => setExpanded(!expanded)}
+                >
+                  {expanded ? 'Show less' : 'Show more'}
+                </button>
+              )}
+              <div className="mt-1.5">{children}</div>
+            </Row>
           </Row>
-          <ExistingRxnsDisplay rxns={rxns} userId={userId} />
         </Card>
       </Row>
-      <AddRxn commentId={comment.id} />
     </Col>
   )
 }
