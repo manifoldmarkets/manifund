@@ -32,10 +32,17 @@ module.exports = {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
+      animation: {
+        marquee: 'marquee 25s linear infinite',
+      },
       keyframes: {
         wiggle: {
           '0%, 100%': { transform: 'rotate(-4deg)' },
           '50%': { transform: 'rotate(4deg)' },
+        },
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-1000%)' },
         },
       },
       colors: {
