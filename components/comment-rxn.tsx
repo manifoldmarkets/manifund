@@ -19,7 +19,7 @@ export const paidReactions = {
   '🧡': 1,
   '🏅': 10,
   '🏆': 100,
-}
+} as { [key: string]: number }
 
 const AddReactionIcon = () => (
   <div className="relative w-5">
