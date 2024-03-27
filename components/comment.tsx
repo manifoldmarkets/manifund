@@ -93,6 +93,16 @@ export function Comment(props: {
                   addSuffix: true,
                 })}
               </p>
+              <Tooltip text="Copy link to comment" className="cursor-pointer">
+                <LinkIcon
+                  className="h-3 w-3 stroke-2 text-gray-500 hover:text-gray-700"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(
+                      `${getURL()}${commentHref}`
+                    )
+                  }}
+                />
+              </Tooltip>
             </Row>
             {comment.special_type && (
               <Tag
@@ -111,19 +121,7 @@ export function Comment(props: {
           >
             <RichContent content={comment.content} className="text-sm" />
           </div>
-          <Row className="absolute bottom-2 right-2 gap-2">
-            <Tooltip text="Copy link to comment" className="cursor-pointer">
-              <LinkIcon
-                className="h-4 w-4 stroke-2 text-gray-500 hover:text-gray-700"
-                onClick={async () => {
-                  await navigator.clipboard.writeText(
-                    `${getURL()}${commentHref}`
-                  )
-                }}
-              />
-            </Tooltip>
-            {children}
-          </Row>
+          <Row className="absolute bottom-2 right-2 gap-2">{children}</Row>
           {showExpandButton && (
             <button
               className="absolute bottom-2 left-3 text-xs text-gray-500 hover:underline"
