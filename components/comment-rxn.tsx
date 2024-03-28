@@ -80,7 +80,7 @@ export function AddRxn(props: {
               {Object.keys(tippedRxns).map((reaction) => {
                 const enabled = userCharityBalance >= tippedRxns[reaction]
                 return (
-                  <div className="px-1">
+                  <div className="px-1" key={reaction}>
                     <Tooltip text={enabled ? '' : 'Insufficient funds'}>
                       <button
                         key={reaction}
