@@ -68,7 +68,7 @@ export default async function Sidebar() {
           <SidebarItem item={{ name: 'People', href: '/people' }} />
           <SidebarItem item={{ name: 'Categories', href: '/causes' }} />
           <SidebarItem item={{ name: 'Articles', children: [
-            {name: 'Manifund\'s approach to thinking about charitable funding', href: '/approach'},
+            {name: 'Manifund\'s approach to thinking about charitable funding', href: '/articles/approach'},
           ]}} />
           {user && (
             <Link
