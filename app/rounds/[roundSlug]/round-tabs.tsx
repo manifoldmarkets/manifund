@@ -7,7 +7,7 @@ import { Tabs } from '@/components/tabs'
 import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
-import { MiniCause } from '@/db/cause'
+import { SimpleCause } from '@/db/cause'
 import { getSponsoredAmount } from '@/utils/constants'
 import { UserPlusIcon, WrenchIcon } from '@heroicons/react/20/solid'
 import { sortBy } from 'lodash'
@@ -17,7 +17,7 @@ import { EditRound } from './edit-round'
 export function RoundTabs(props: {
   round: Round
   projects: FullProject[]
-  causesList: MiniCause[]
+  causesList: SimpleCause[]
   regranters?: Profile[]
 }) {
   const { round, projects, causesList, regranters } = props
@@ -41,19 +41,7 @@ export function RoundTabs(props: {
               subtitle={'Create one!'}
             />
           ) : (
-            <ProjectsDisplay
-              projects={projects}
-              causesList={causesList}
-              sortOptions={[
-                'votes',
-                'newest first',
-                'oldest first',
-                round.title === 'Regrants' ? 'funding goal' : 'valuation',
-                'percent funded',
-                'distance from minimum funding',
-                'number of comments',
-              ]}
-            />
+            <ProjectsDisplay projects={projects} causesList={causesList} />
           )}
         </>
       ),

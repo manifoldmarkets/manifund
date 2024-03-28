@@ -54,7 +54,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       causes: {
@@ -104,7 +104,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       comments: {
@@ -156,7 +156,67 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "comments"
             referencedColumns: ["id"]
-          }
+          },
+        ]
+      }
+      grant_agreements: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          completed_at: string | null
+          lobbying_clause_excluded: boolean
+          project_description: Json | null
+          project_id: string
+          project_title: string | null
+          recipient_name: string | null
+          signatory_name: string | null
+          signed_at: string | null
+          signed_off_site: boolean
+          version: number | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          completed_at?: string | null
+          lobbying_clause_excluded?: boolean
+          project_description?: Json | null
+          project_id: string
+          project_title?: string | null
+          recipient_name?: string | null
+          signatory_name?: string | null
+          signed_at?: string | null
+          signed_off_site?: boolean
+          version?: number | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          completed_at?: string | null
+          lobbying_clause_excluded?: boolean
+          project_description?: Json | null
+          project_id?: string
+          project_title?: string | null
+          recipient_name?: string | null
+          signatory_name?: string | null
+          signed_at?: string | null
+          signed_off_site?: boolean
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grant_agreements_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grant_agreements_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profile_trust: {
@@ -192,7 +252,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       profiles: {
@@ -264,7 +324,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       project_evals: {
@@ -306,7 +366,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       project_follows: {
@@ -336,7 +396,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       project_transfers: {
@@ -371,7 +431,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       project_votes: {
@@ -407,7 +467,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       projects: {
@@ -497,7 +557,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "rounds"
             referencedColumns: ["title"]
-          }
+          },
         ]
       }
       rounds: {
@@ -582,7 +642,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "txns"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       txns: {
@@ -640,7 +700,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
     }
@@ -857,54 +917,56 @@ export type Database = {
     }
     CompositeTypes: {
       bid_row: {
-        project: string
-        amount: number
-        bidder: string
+        project: string | null
+        amount: number | null
+        bidder: string | null
       }
       comment_row: {
-        id: string
-        project: string
-        commenter: string
-        content: Json
+        id: string | null
+        project: string | null
+        commenter: string | null
+        content: Json | null
       }
       comment_row_txnless: {
-        id: string
-        project: string
-        commenter: string
-        content: Json
+        id: string | null
+        project: string | null
+        commenter: string | null
+        content: Json | null
       }
       project_row: {
-        id: string
-        creator: string
-        title: string
-        blurb: string
-        description: Json
-        min_funding: number
-        funding_goal: number
-        founder_shares: number
-        type: Database["public"]["Enums"]["project_type"]
-        stage: Database["public"]["Enums"]["project_stage"]
-        round: string
-        slug: string
-        location_description: string
+        id: string | null
+        creator: string | null
+        title: string | null
+        blurb: string | null
+        description: Json | null
+        min_funding: number | null
+        funding_goal: number | null
+        founder_shares: number | null
+        type: Database["public"]["Enums"]["project_type"] | null
+        stage: Database["public"]["Enums"]["project_stage"] | null
+        round: string | null
+        slug: string | null
+        location_description: string | null
       }
       transfer_row: {
-        recipient_email: string
-        recipient_name: string
-        project_id: string
+        recipient_email: string | null
+        recipient_name: string | null
+        project_id: string | null
       }
     }
   }
 }
 
+type PublicSchema = Database[Extract<keyof Database, "public">]
+
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (Database["public"]["Tables"] & Database["public"]["Views"])
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
         Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
       Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
@@ -912,67 +974,67 @@ export type Tables<
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
-      Database["public"]["Views"])
-  ? (Database["public"]["Tables"] &
-      Database["public"]["Views"])[PublicTableNameOrOptions] extends {
-      Row: infer R
-    }
-    ? R
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
     : never
-  : never
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
-      Insert: infer I
-    }
-    ? I
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
     : never
-  : never
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
-    | keyof Database["public"]["Tables"]
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
-    : never = never
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
-  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
-      Update: infer U
-    }
-    ? U
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
     : never
-  : never
 
 export type Enums<
   PublicEnumNameOrOptions extends
-    | keyof Database["public"]["Enums"]
+    | keyof PublicSchema["Enums"]
     | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
-    : never = never
+    : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof Database["public"]["Enums"]
-  ? Database["public"]["Enums"][PublicEnumNameOrOptions]
-  : never
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never

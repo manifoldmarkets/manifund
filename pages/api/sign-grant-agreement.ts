@@ -4,6 +4,7 @@ import { createEdgeClient } from './_db'
 import { maybeActivateProject } from '@/utils/activate-project'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { format } from 'date-fns'
+import { CURRENT_AGREEMENT_VERSION } from '@/utils/constants'
 
 export const config = {
   runtime: 'edge',
@@ -27,6 +28,22 @@ export default async function handler(req: NextRequest) {
     .from('projects')
     .update({ signed_agreement: true })
     .eq('id', projectId)
+    .throwOnError()
+  await supabase
+    .from('grant_agreements')
+    .upsert(
+      {
+        project_id: projectId,
+        signed_at: new Date().toISOString(),
+        recipient_name: project.profiles.full_name,
+        project_description: project.description,
+        project_title: project.title,
+        lobbying_clause_excluded: project.lobbying,
+        version: CURRENT_AGREEMENT_VERSION,
+      },
+      { onConflict: 'project_id' }
+    )
+    .select()
     .throwOnError()
   await maybeActivateProject(supabase, projectId)
   await sendTemplateEmail(

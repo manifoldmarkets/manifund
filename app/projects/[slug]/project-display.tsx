@@ -3,28 +3,26 @@ import { DonateBox } from '@/components/donate-box'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
-import { SignInButton } from '@/components/sign-in-button'
 import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { CommentAndProfile } from '@/db/comment'
 import { Profile } from '@/db/profile'
-import { FullProject } from '@/db/project'
+import { FullProject, Project } from '@/db/project'
 import { Cause, SimpleCause } from '@/db/cause'
 import { TxnAndProfiles, TxnAndProject } from '@/db/txn'
 import {
   calculateCashBalance,
   calculateCharityBalance,
   calculateSellableShares,
-  getActiveValuation,
   getAmountRaised,
   getMinIncludingAmm,
-  getProposalValuation,
+  getProjectValuation,
 } from '@/utils/math'
 import { useState } from 'react'
 import { ProjectTabs } from './project-tabs'
 import { ProjectData } from './project-data'
 import { ProposalRequirements } from './proposal-requirements'
 import { Vote } from './vote'
-import { CauseTag } from '@/components/tags'
+import { CauseTag, StageIcon } from '@/components/tags'
 import { Trade } from './trade'
 import { AssuranceBuyBox } from './assurance-buy-box'
 import { calculateTradePoints } from '@/utils/amm'
@@ -35,6 +33,12 @@ import { UserAvatarAndBadge } from '@/components/user-link'
 import { Tooltip } from '@/components/tooltip'
 import { EnvelopeIcon } from '@heroicons/react/20/solid'
 import { ViewerActionPanel } from './viewer-action-panel'
+import { toSentenceCase } from '@/utils/formatting'
+import Link from 'next/link'
+import {
+  ArrowTrendingUpIcon,
+  CircleStackIcon,
+} from '@heroicons/react/24/outline'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -83,16 +87,7 @@ export function ProjectDisplay(props: {
   const userSellableShares = userProfile
     ? calculateSellableShares(userTxns, userBids, project.id, userProfile.id)
     : 0
-  const valuation =
-    project.type === 'grant'
-      ? project.funding_goal
-      : project.stage === 'proposal'
-      ? getProposalValuation(project)
-      : getActiveValuation(
-          projectTxns,
-          project.id,
-          getProposalValuation(project)
-        )
+  const valuation = getProjectValuation(project)
   const isOwnProject = userProfile?.id === project.profiles.id
   const pendingProjectTransfers = project.project_transfers?.filter(
     (projectTransfer) => !projectTransfer.transferred
@@ -164,38 +159,55 @@ export function ProjectDisplay(props: {
               </span>
             )}
           </Row>
-          <ProjectData
-            project={project}
-            raised={amountRaised}
-            valuation={valuation}
-            minimum={minIncludingAmm}
-          />
+          <Row className="justify-between gap-2">
+            {userProfile && !isOwnProject && (
+              <ViewerActionPanel
+                projectId={project.id}
+                projectSlug={project.slug}
+                currentlyFollowing={userIsFollower}
+              />
+            )}
+            {(isOwnProject || userIsAdmin) && (
+              <CreatorActionPanel
+                project={project}
+                causesList={causesList}
+                prizeCause={prizeCause}
+              />
+            )}
+          </Row>
         </div>
-        {project.stage !== 'proposal' &&
-          project.type === 'cert' &&
-          !!project.amm_shares && (
-            <CertValuationChart
-              tradePoints={tradePoints}
-              ammTxns={projectTxns.filter(
-                (txn) => txn.to_id === project.id || txn.from_id === project.id
-              )}
-              ammId={project.id}
-              size="lg"
+        <Col className="mb-4 gap-6 border-y border-gray-200 py-6">
+          <ProjectTypeDisplay type={project.type} stage={project.stage} />
+          <div>
+            {(project.stage === 'proposal' ||
+              (project.stage === 'active' && project.type === 'grant')) && (
+              <ProgressBar
+                amountRaised={amountRaised}
+                minFunding={minIncludingAmm}
+                fundingGoal={project.funding_goal}
+              />
+            )}
+            <ProjectData
+              minimum={minIncludingAmm}
+              valuation={valuation}
+              project={project}
+              raised={amountRaised}
             />
-          )}
-        {(project.stage === 'proposal' ||
-          (project.stage === 'active' && project.type === 'grant')) && (
-          <ProgressBar
-            amountRaised={amountRaised}
-            minFunding={minIncludingAmm}
-            fundingGoal={
-              project.type === 'cert' ? minIncludingAmm : project.funding_goal
-            }
-          />
-        )}
-        {userProfile &&
-          project.type === 'cert' &&
-          project.stage === 'active' && (
+          </div>
+          {!['draft', 'proposal'].includes(project.stage) &&
+            project.type === 'cert' &&
+            !!project.amm_shares && (
+              <CertValuationChart
+                tradePoints={tradePoints}
+                ammTxns={projectTxns.filter(
+                  (txn) =>
+                    txn.to_id === project.id || txn.from_id === project.id
+                )}
+                ammId={project.id}
+                size="lg"
+              />
+            )}
+          {project.type === 'cert' && project.stage === 'active' && (
             <Trade
               ammTxns={
                 !!project.amm_shares
@@ -208,69 +220,48 @@ export function ProjectDisplay(props: {
               projectId={project.id}
               userSpendableFunds={userSpendableFunds}
               userSellableShares={userSellableShares}
+              signedIn={!!userProfile}
             />
           )}
-        {userProfile &&
-          userProfile.id !== project.creator &&
-          project.type === 'cert' &&
-          project.stage === 'proposal' && (
-            <AssuranceBuyBox
-              project={project}
-              minValuation={valuation}
-              offerSizePortion={
-                (activeAuction
-                  ? minIncludingAmm
-                  : minIncludingAmm - amountRaised) / valuation
-              }
-              maxBuy={userSpendableFunds}
-              activeAuction={activeAuction}
-            />
-          )}
-        {userProfile &&
-          userProfile.id !== project.creator &&
-          project.type === 'grant' &&
-          pendingProjectTransfers.length === 0 &&
-          (project.stage === 'proposal' || project.stage === 'active') && (
-            <>
-              {amountRaised < project.funding_goal ? (
-                <DonateBox
-                  project={project}
-                  profile={userProfile}
-                  maxDonation={userSpendableFunds}
-                  setCommentPrompt={setSpecialCommentPrompt}
-                />
-              ) : (
-                <span className="mx-auto mb-5 text-sm italic text-gray-500">
-                  Fully funded and not currently accepting donations.
-                </span>
-              )}
-            </>
-          )}
-        {!userProfile && (
-          <SignInButton
-            buttonText="Sign in to contribute"
-            className="mx-auto my-4"
-          />
-        )}
+          {userProfile?.id !== project.creator &&
+            project.type === 'cert' &&
+            project.stage === 'proposal' && (
+              <AssuranceBuyBox
+                project={project}
+                minValuation={valuation}
+                offerSizePortion={
+                  (activeAuction
+                    ? minIncludingAmm
+                    : minIncludingAmm - amountRaised) / valuation
+                }
+                maxBuy={userSpendableFunds}
+                activeAuction={activeAuction}
+                signedIn={!!userProfile}
+              />
+            )}
+          {userProfile?.id !== project.creator &&
+            project.type === 'grant' &&
+            pendingProjectTransfers.length === 0 &&
+            (project.stage === 'proposal' || project.stage === 'active') && (
+              <>
+                {amountRaised < project.funding_goal ? (
+                  <DonateBox
+                    project={project}
+                    profile={userProfile}
+                    maxDonation={userSpendableFunds}
+                    setCommentPrompt={setSpecialCommentPrompt}
+                  />
+                ) : (
+                  <span className="mx-auto mb-5 text-sm italic text-gray-500">
+                    Fully funded and not currently accepting donations.
+                  </span>
+                )}
+              </>
+            )}
+        </Col>
         {project.description && (
           <RichContent content={project.description} className="px-3 text-sm" />
         )}
-        <Row className="justify-between">
-          {userProfile && !isOwnProject && (
-            <ViewerActionPanel
-              projectId={project.id}
-              projectSlug={project.slug}
-              currentlyFollowing={userIsFollower}
-            />
-          )}
-          {(isOwnProject || userIsAdmin) && (
-            <CreatorActionPanel
-              project={project}
-              causesList={causesList}
-              prizeCause={prizeCause}
-            />
-          )}
-        </Row>
         <div id="tabs">
           <ProjectTabs
             project={project}
@@ -286,6 +277,37 @@ export function ProjectDisplay(props: {
         </div>
       </Col>
     </>
+  )
+}
+
+export function ProjectTypeDisplay(props: {
+  type: Project['type']
+  stage: Project['stage']
+}) {
+  const { type, stage } = props
+  return (
+    <Row className="gap-1">
+      <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+        <StageIcon stage={stage} className="h-4 w-4" />
+        {toSentenceCase(stage)}
+      </span>
+      <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+        {type === 'cert' ? (
+          <Link
+            href="/about/impact-certificates"
+            className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600"
+          >
+            <ArrowTrendingUpIcon className="h-4 w-4" />
+            Impact certificate
+          </Link>
+        ) : (
+          <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+            <CircleStackIcon className="h-4 w-4" />
+            Grant
+          </span>
+        )}
+      </span>
+    </Row>
   )
 }
 

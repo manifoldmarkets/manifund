@@ -33,7 +33,7 @@ export default async function CharityPage(props: {
     getUser(supabase),
   ])
   const [profile, txns, bids] = await Promise.all([
-    user ? getProfileById(supabase, user.id) : null,
+    user ? getProfileById(supabase, user.id) : undefined,
     user ? getTxnAndProjectsByUser(supabase, user.id) : [],
     user ? getBidsByUser(supabase, user.id) : [],
   ])
@@ -68,21 +68,19 @@ export default async function CharityPage(props: {
         </span>
       )}
       <p className="mb-10 mt-1 text-gray-600">{charity.bio}</p>
-      {profile && (
-        <Row className="justify-between">
-          <Col className="mx-5 my-3 justify-between">
-            <Stat label="raised" value={formatMoney(raised)} />
-            <Stat label="supporters" value={numSupporters.toString()} />
-          </Col>
-          <div className="mx-5">
-            <DonateBox
-              charity={charity}
-              profile={profile}
-              maxDonation={userCharityBalance}
-            />
-          </div>
-        </Row>
-      )}
+      <Row className="justify-between">
+        <Col className="mx-5 my-3 justify-between">
+          <Stat label="raised" value={formatMoney(raised)} />
+          <Stat label="supporters" value={numSupporters.toString()} />
+        </Col>
+        <div className="mx-5">
+          <DonateBox
+            charity={charity}
+            profile={profile}
+            maxDonation={userCharityBalance}
+          />
+        </div>
+      </Row>
       <div className="relative mt-10">
         <div className="absolute inset-0 flex items-center" aria-hidden="true">
           <div className="w-full border-t border-gray-300" />

@@ -59,9 +59,14 @@ export default async function Sidebar() {
               }}
             />
           )}
-          <SidebarItem item={{ name: 'About', href: '/about' }} />
+          <SidebarItem item={{ name: 'About', children: [
+            {name: 'About Manifund', href: '/about'},
+            {name: 'Regranting', href: '/about/regranting'},
+            {name: 'Impact markets', href: '/about/impact-certificates'},
+            {name: 'Applying for funding', href: '/about/open-call'},
+          ]}} />
           <SidebarItem item={{ name: 'People', href: '/people' }} />
-          <SidebarItem item={{ name: 'Causes', href: '/causes' }} />
+          <SidebarItem item={{ name: 'Categories', href: '/causes' }} />
           {user && (
             <Link
               href={isRegranter ? '/create-grant' : '/create'}
@@ -143,7 +148,7 @@ export async function ProfileSummary(props: { profile: Profile }) {
           <Col>
             <span className="text-sm">
               {formatMoney(
-                Math.max(charityBalance, 0) - Math.min(cashBalance, 0)
+                Math.max(charityBalance, 0) + Math.min(cashBalance, 0)
               )}
             </span>
           </Col>

@@ -310,7 +310,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </label>
           <p className="text-sm text-gray-600">
             After this deadline, if you have not reached your minimum funding
-            bar, your application will close and you will not recieve any money.
+            bar, your application will close and you will not receive any money.
             This date cannot be more than 6 weeks after posting.
           </p>
           <Input
@@ -336,6 +336,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       <Col className="gap-1">
         <label>
           In what countries are you and anyone else working on this located?
+          <RequiredStar />
         </label>
         <p className="text-sm text-gray-600">
           This is for Manifund operations and will not be published.
@@ -437,6 +438,8 @@ export function getCreateProjectErrorMessage(
     !projectParams.verdictDate
   ) {
     return 'You need to set a decision deadline.'
+  } else if (!projectParams.location) {
+    return 'Please specify the location of your project.'
   } else {
     return null
   }

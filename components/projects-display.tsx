@@ -2,56 +2,51 @@
 import { FullProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
-import { useRouter } from 'next/navigation'
 import { Fragment, useState } from 'react'
-import {
-  getActiveValuation,
-  getAmountRaised,
-  getProposalValuation,
-} from '@/utils/math'
+import { getAmountRaised, getProjectValuation } from '@/utils/math'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
-import { compareDesc, compareAsc } from 'date-fns'
 import { Row } from './layout/row'
-import { MiniCause, Cause } from '@/db/cause'
+import { MiniCause, Cause, SimpleCause } from '@/db/cause'
 import { CauseTag } from './tags'
 import { Col } from './layout/col'
 import { SearchBar } from './input'
 import { searchInAny } from '@/utils/parse'
+import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
+import { Select } from './select'
+import { sortBy } from 'lodash'
 
 type SortOption =
   | 'votes'
-  | 'funding goal'
+  | 'goal'
+  | 'funding'
   | 'valuation'
   | 'price'
-  | 'percent funded'
-  | 'distance from minimum funding'
-  | 'number of comments'
-  | 'newest first'
-  | 'oldest first'
+  | 'comments'
+  | 'newest'
+  | 'oldest'
+  | 'hot'
+  | 'closing soon'
 
 const DEFAULT_SORT_OPTIONS = [
+  'hot',
+  'newest',
   'votes',
-  'newest first',
-  'oldest first',
-  'funding goal',
-  'price',
-  'percent funded',
-  'distance from minimum funding',
-  'number of comments',
+  'funding',
+  'comments',
+  'closing soon',
 ] as SortOption[]
 
 export function ProjectsDisplay(props: {
   projects: FullProject[]
-  causesList: MiniCause[]
-  sortOptions?: SortOption[]
+  causesList: SimpleCause[]
   defaultSort?: SortOption
   hideRound?: boolean
   noFilter?: boolean
 }) {
-  const { projects, sortOptions, defaultSort, causesList, noFilter } = props
+  const { projects, defaultSort, causesList, noFilter } = props
   const prices = getPrices(projects)
-  const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'votes')
+  const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'hot')
   const [includedCauses, setIncludedCauses] = useState<Cause[]>([])
   const [search, setSearch] = useState<string>('')
   const filteredProjects = filterProjects(projects, includedCauses)
@@ -60,17 +55,20 @@ export function ProjectsDisplay(props: {
     prices,
     sortBy
   )
-  const selectedProjects = sortedProjects.filter((project) => {
-    return searchInAny(
-      search,
-      project.title,
-      project.blurb ?? '',
-      project.profiles.full_name,
-      project.profiles.username,
-      project.project_transfers?.[0]?.recipient_name ?? ''
-    )
-  })
-  const router = useRouter()
+  const CLIENT_PAGE_SIZE = 20
+  const [numToShow, setNumToShow] = useState<number>(CLIENT_PAGE_SIZE)
+  const selectedProjects = sortedProjects
+    .filter((project) => {
+      return searchInAny(
+        search,
+        project.title,
+        project.blurb ?? '',
+        project.profiles.full_name,
+        project.profiles.username,
+        project.project_transfers?.[0]?.recipient_name ?? ''
+      )
+    })
+    .slice(0, numToShow)
 
   const proposals = selectedProjects.filter(
     (project) => project.stage == 'proposal'
@@ -89,22 +87,13 @@ export function ProjectsDisplay(props: {
     <Col className="gap-2">
       <div className="flex flex-col justify-between gap-2 lg:flex-row lg:items-center">
         <SearchBar search={search} setSearch={setSearch} className="w-full" />
-        <div className="relative lg:w-4/12">
-          <Listbox
-            value={sortBy}
-            onChange={(event) => {
-              setSortBy(event)
-              router.refresh()
-            }}
-          >
-            {({ open }) => (
-              <SortSelect
-                sortBy={sortBy}
-                open={open}
-                options={sortOptions ?? DEFAULT_SORT_OPTIONS}
-              />
-            )}
-          </Listbox>
+        <div className="lg:w-4/12">
+          <Select
+            options={DEFAULT_SORT_OPTIONS}
+            selected={sortBy}
+            onSelect={(event) => setSortBy(event as SortOption)}
+            label="Sort by"
+          />
         </div>
       </div>
       {!noFilter && (
@@ -115,7 +104,7 @@ export function ProjectsDisplay(props: {
                 includedCauses={includedCauses}
                 setIncludedCauses={setIncludedCauses}
                 open={open}
-                causes={causesList}
+                causes={causesList.filter((c) => !c.prize)}
               />
             )}
           </Listbox>
@@ -155,9 +144,17 @@ export function ProjectsDisplay(props: {
           </div>
         )}
       </div>
+      <LoadMoreUntilNotVisible
+        loadMore={() => {
+          setNumToShow(numToShow + CLIENT_PAGE_SIZE)
+          return Promise.resolve(true)
+        }}
+      />
     </Col>
   )
 }
+const countVotes = (project: FullProject) =>
+  project.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
 
 function sortProjects(
   projects: FullProject[],
@@ -168,54 +165,58 @@ function sortProjects(
     project.bids = project.bids.filter((bid) => bid.status == 'pending')
   })
   if (sortType === 'votes') {
-    return projects.sort((a, b) =>
-      a.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0) <
-      b.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
-        ? 1
-        : -1
+    return sortBy(projects, countVotes).reverse()
+  }
+  if (sortType === 'oldest') {
+    return sortBy(projects, (project) => new Date(project.created_at))
+  }
+  if (sortType === 'newest') {
+    return sortBy(projects, (project) => -new Date(project.created_at))
+  }
+  if (sortType === 'comments') {
+    return sortBy(projects, (project) => -project.comments.length)
+  }
+  if (sortType === 'price' || sortType === 'goal' || sortType === 'valuation') {
+    // TODO: Prices and goal seems kinda broken atm
+    return sortBy(projects, (project) => -prices[project.id])
+  }
+  if (sortType === 'funding') {
+    return sortBy(
+      projects,
+      (project) => -getAmountRaised(project, project.bids, project.txns)
     )
   }
-  if (sortType === 'oldest first') {
-    return projects.sort((a, b) =>
-      compareAsc(new Date(a.created_at), new Date(b.created_at))
-    )
+  if (sortType === 'hot') {
+    return sortBy(projects, hotScore)
   }
-  if (sortType === 'newest first') {
-    return projects.sort((a, b) =>
-      compareDesc(new Date(a.created_at), new Date(b.created_at))
-    )
-  }
-  if (sortType === 'percent funded') {
-    return projects.sort((a, b) =>
-      getAmountRaised(a, a.bids, a.txns) / a.funding_goal <
-      getAmountRaised(b, b.bids, b.txns) / b.funding_goal
-        ? 1
-        : -1
-    )
-  }
-  if (sortType === 'number of comments') {
-    return projects.sort((a, b) =>
-      a.comments.length < b.comments.length ? 1 : -1
-    )
-  }
-  if (
-    sortType === 'price' ||
-    sortType === 'funding goal' ||
-    sortType === 'valuation'
-  ) {
-    return projects.sort((a, b) =>
-      prices[a.id] <= prices[b.id] || isNaN(prices[a.id]) ? 1 : -1
-    )
-  }
-  if (sortType === 'distance from minimum funding') {
-    return projects.sort((a, b) =>
-      a.min_funding - getAmountRaised(a, a.bids, a.txns) <
-      b.min_funding - getAmountRaised(b, b.bids, b.txns)
-        ? 1
-        : -1
-    )
+  if (sortType === 'closing soon') {
+    return sortBy(projects, (project) => {
+      if (project.auction_close) {
+        return new Date(`${project.auction_close}T23:59:59-12:00`).getTime()
+      } else {
+        return 0
+      }
+    })
   }
   return projects
+}
+
+function hotScore(project: FullProject) {
+  // Factors:
+  // Time in days since project was created
+  let time = Date.now() - new Date(project.created_at).getTime()
+  time = time / (1000 * 60 * 60 * 24)
+
+  const votes = countVotes(project)
+  const comments = project.comments.length
+  const raised = getAmountRaised(project, project.bids, project.txns)
+
+  const points = votes * 2 + comments + Math.log(raised + 1) * 3
+  // Hacker News newness algorithm: https://medium.com/hacking-and-gonzo/how-hacker-news-ranking-algorithm-works-1d9b0cf2c08d
+  // Note that we use days instead of hours, and modify the constants a bit
+  const score = (points + 2) / time ** 1.8
+
+  return -score
 }
 
 function filterProjects(projects: FullProject[], includedCauses: Cause[]) {
@@ -227,77 +228,6 @@ function filterProjects(projects: FullProject[], includedCauses: Cause[]) {
       })
     })
   })
-}
-
-function SortSelect(props: {
-  sortBy: string
-  open: boolean
-  options: SortOption[]
-}) {
-  const { sortBy, open, options } = props
-  return (
-    <div>
-      <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-xs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:text-base sm:leading-6">
-        <div className="truncate">
-          <span className="text-gray-500">Sort by </span>
-          {sortBy}
-        </div>
-        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-          <ChevronUpDownIcon
-            className="h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
-        </span>
-      </Listbox.Button>
-
-      <Transition
-        show={open}
-        as={Fragment}
-        leave="transition ease-in duration-100"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-      >
-        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          {options.map((option) => (
-            <Listbox.Option
-              key={option}
-              className={({ active }) =>
-                clsx(
-                  active ? 'bg-orange-500 text-white' : 'text-gray-900',
-                  'relative cursor-pointer select-none py-2 pl-3 pr-9 text-xs sm:text-base'
-                )
-              }
-              value={option}
-            >
-              {({ selected, active }) => (
-                <>
-                  <span
-                    className={clsx(
-                      selected ? 'font-semibold' : 'font-normal',
-                      'block truncate text-xs sm:text-base'
-                    )}
-                  >
-                    {option}
-                  </span>
-
-                  {selected ? (
-                    <span
-                      className={clsx(
-                        active ? 'text-white' : 'text-orange-500',
-                        'absolute inset-y-0 right-0 flex items-center pr-4'
-                      )}
-                    >
-                      <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                  ) : null}
-                </>
-              )}
-            </Listbox.Option>
-          ))}
-        </Listbox.Options>
-      </Transition>
-    </div>
-  )
 }
 
 function CauseFilterSelect(props: {
@@ -397,20 +327,11 @@ function CauseFilterSelect(props: {
   )
 }
 
-// Price here means funding goal for grants and valuation for certs
+// Price here means goal for grants and valuation for certs
 function getPrices(projects: FullProject[]) {
   const prices = Object.fromEntries(projects.map((project) => [project.id, 0]))
   projects.forEach((project) => {
-    prices[project.id] =
-      project.type === 'grant'
-        ? project.funding_goal
-        : project.stage === 'proposal'
-        ? getProposalValuation(project)
-        : getActiveValuation(
-            project.txns,
-            project.id,
-            getProposalValuation(project)
-          )
+    prices[project.id] = getProjectValuation(project)
   })
   return prices
 }

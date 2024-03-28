@@ -130,7 +130,7 @@ async function activateProject(project: Project, followerIds: string[]) {
     })
   )
   const creatorSubject = `Your project, "${project.title}" is active!`
-  const creatorMessage = `Your project, "${project.title}", has completed the seed funding process and become active! You can now withdraw any funds you've recieved for this project from your profile page.`
+  const creatorMessage = `Your project, "${project.title}", has completed the seed funding process and become active! You can now withdraw any funds you've received for this project from your profile page.`
   await sendTemplateEmail(
     TEMPLATE_IDS.VERDICT,
     {

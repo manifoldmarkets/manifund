@@ -19,6 +19,10 @@ module.exports = {
         sans: ['var(--font-readex-pro)', ...defaultTheme.fontFamily.sans],
         poiret: ['var(--font-poiret-one)', ...defaultTheme.fontFamily.sans],
         josefin: ['var(--font-josefin-slab)', ...defaultTheme.fontFamily.sans],
+        satisfy: [
+          'var(--font-satisfy-regular)',
+          ...defaultTheme.fontFamily.sans,
+        ],
       },
       textShadow: {
         sm: '0 1px 2px var(--tw-shadow-color)',

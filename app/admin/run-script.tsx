@@ -4,9 +4,10 @@ import { Button } from '@/components/button'
 export function RunScript() {
   return (
     <Button
+      disabled
       onClick={async () => {
         // Change script here
-        const response = await fetch('/api/acx-certs-email-script', {
+        const response = await fetch('/api/change-acx-close-dates', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -14,7 +15,7 @@ export function RunScript() {
         })
       }}
     >
-      Transfer ACX certs
+      Change ACX close dates
     </Button>
   )
 }

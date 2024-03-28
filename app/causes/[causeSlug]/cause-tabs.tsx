@@ -1,10 +1,12 @@
 'use client'
+import Link from 'next/link'
+import { ArrowLongRightIcon } from '@heroicons/react/24/solid'
 import { RichContent } from '@/components/editor'
 import { EmptyContent } from '@/components/empty-content'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { Tabs } from '@/components/tabs'
 import { FullProject } from '@/db/project'
-import { Cause, MiniCause } from '@/db/cause'
+import { Cause, SimpleCause } from '@/db/cause'
 import { WrenchIcon } from '@heroicons/react/20/solid'
 import { useSearchParams } from 'next/navigation'
 import { EditCause } from './edit-cause'
@@ -16,7 +18,7 @@ import { DividerWithHeader } from '@/components/divider-with-header'
 
 export function CauseTabs(props: {
   cause: Cause
-  causesList: MiniCause[]
+  causesList: SimpleCause[]
   projects: FullProject[]
   fund?: Profile
   fundTxns?: TxnAndProfiles[]
@@ -58,7 +60,7 @@ export function CauseTabs(props: {
             <ProjectsDisplay
               projects={grants}
               causesList={causesList}
-              noFilter
+              noFilter={!cause.prize}
             />
           )}
         </>
@@ -77,11 +79,19 @@ export function CauseTabs(props: {
               subtitle={'No projects here yet.'}
             />
           ) : (
-            <ProjectsDisplay
-              projects={certs}
-              causesList={causesList}
-              noFilter
-            />
+            <div>
+              <div className="mb-4 font-semibold text-orange-600 hover:underline">
+                <Link href="/about/impact-certificates">
+                  About impact certificates
+                  <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
+                </Link>
+              </div>
+              <ProjectsDisplay
+                projects={certs}
+                causesList={causesList}
+                noFilter={!cause.prize}
+              />
+            </div>
           )}
         </>
       ),

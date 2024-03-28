@@ -96,6 +96,7 @@ export function InvestmentStructurePanel(props: {
             </Row>
           )}
         </Row>
+        {/* @ts-ignore */}
         <RxSlider.Root
           className="relative mb-10 mt-5 flex h-5 touch-none select-none items-center"
           value={[founderPercent]}
@@ -110,7 +111,9 @@ export function InvestmentStructurePanel(props: {
           disabled={!editable}
           ref={sliderRef}
         >
+          {/* @ts-ignore */}
           <RxSlider.Track className="relative h-1 grow rounded-full bg-emerald-300">
+            {/* @ts-ignore */}
             <RxSlider.Range className="absolute h-full rounded-full bg-orange-300" />{' '}
             <div className="absolute left-2.5 right-2.5 h-full">
               {SLIDER_MARKS?.map(({ value, label }) => (
@@ -134,6 +137,7 @@ export function InvestmentStructurePanel(props: {
               ))}
             </div>
           </RxSlider.Track>
+          {/* @ts-ignore */}
           <RxSlider.Thumb
             className={clsx(
               editable
@@ -276,7 +280,7 @@ function GenInvestmentExplanation(props: {
         </span>
         <span className="text-sm text-gray-600">
           If this offer is fully accepted by any combination of investors, then
-          your project will become active and you&apos;ll recieve ${minFunding}{' '}
+          your project will become active and you&apos;ll receive ${minFunding}{' '}
           which can be withdrawn and used for your project upfront.{' '}
           {ammPercent > 0 &&
             `The remaining ${formatMoneyPrecise(
