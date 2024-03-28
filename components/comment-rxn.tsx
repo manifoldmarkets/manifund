@@ -40,10 +40,15 @@ const AddRxnIcon = () => (
 
 export function AddRxn(props: {
   postRxn: (reaction: string) => void
+  rxns: CommentRxn[]
+  userId?: string
   userCharityBalance?: number
 }) {
-  const { userCharityBalance, postRxn } = props
-  const includeTippedRxns = userCharityBalance !== undefined
+  const { postRxn, rxns, userId, userCharityBalance } = props
+  const userExists = userCharityBalance !== undefined && !!userId
+  const userRxns = userExists
+    ? rxns.filter((rxn) => rxn.reactor_id === userId)
+    : []
   const [selectedTippedRxn, setSelectedTippedRxn] = useState('')
   return (
     <Popover className="relative">
@@ -55,22 +60,32 @@ export function AddRxn(props: {
         <Col className="w-40">
           <h3 className="text-sm text-gray-700">Free reactions</h3>
           <div className="mx-auto grid w-fit grid-cols-5 gap-2">
-            {freeRxns.map((reaction) => (
-              <Popover.Button
-                key={reaction}
-                className="text-base"
-                onClick={async () => {
-                  await postRxn(reaction)
-                }}
-              >
-                <div className="rounded px-1 py-0.5 text-base hover:bg-gray-200">
-                  {reaction}
-                </div>
-              </Popover.Button>
-            ))}
+            {freeRxns.map((reaction) => {
+              const userDidReact = !!userRxns.find(
+                (rxn) => rxn.reaction === reaction
+              )
+              return (
+                <Popover.Button
+                  key={reaction}
+                  className="text-base"
+                  onClick={async () => {
+                    await postRxn(reaction)
+                  }}
+                >
+                  <div
+                    className={clsx(
+                      'rounded px-1 py-0.5 text-base hover:bg-gray-300',
+                      userDidReact && 'bg-gray-200'
+                    )}
+                  >
+                    {reaction}
+                  </div>
+                </Popover.Button>
+              )
+            })}
           </div>
         </Col>
-        {includeTippedRxns && (
+        {userExists && (
           <Col className="w-40">
             <h3 className="mt-4 text-sm text-gray-700">
               Tipped reactions{' '}
@@ -78,19 +93,38 @@ export function AddRxn(props: {
             </h3>
             <Row className="mx-auto justify-between divide-x divide-gray-300">
               {Object.keys(tippedRxns).map((reaction) => {
-                const enabled = userCharityBalance >= tippedRxns[reaction]
+                const userDidReact = !!userRxns.find(
+                  (rxn) => rxn.reaction === reaction
+                )
+                const sufficientFunds =
+                  userCharityBalance >= tippedRxns[reaction]
+                const enabled = sufficientFunds && !userDidReact
                 return (
                   <div className="px-1" key={reaction}>
-                    <Tooltip text={enabled ? '' : 'Insufficient funds'}>
+                    <Tooltip
+                      text={
+                        !sufficientFunds
+                          ? 'Insufficient funds'
+                          : userDidReact
+                          ? 'Already used'
+                          : ''
+                      }
+                    >
                       <button
                         key={reaction}
                         disabled={!enabled}
-                        onClick={() => setSelectedTippedRxn(reaction)}
+                        onClick={() =>
+                          setSelectedTippedRxn(
+                            selectedTippedRxn === reaction ? '' : reaction
+                          )
+                        }
                         className={clsx(
                           enabled
                             ? 'cursor-pointer hover:bg-gray-200'
                             : 'cursor-not-allowed',
-                          reaction === selectedTippedRxn && 'bg-gray-200',
+                          userDidReact && 'bg-gray-200',
+                          reaction === selectedTippedRxn &&
+                            'bg-gray-200 ring-2 ring-gray-300',
                           'flex items-center gap-0.5 rounded px-1 py-0.5'
                         )}
                       >
@@ -252,7 +286,12 @@ export function CommentRxnsPanel(props: {
   }
   return (
     <Row className="items-center gap-2">
-      <AddRxn postRxn={postRxn} userCharityBalance={userCharityBalance} />
+      <AddRxn
+        postRxn={postRxn}
+        rxns={localRxns}
+        userId={userId}
+        userCharityBalance={userCharityBalance}
+      />
       <ExistingFreeRxnsDisplay
         rxns={localRxns}
         userId={userId}
