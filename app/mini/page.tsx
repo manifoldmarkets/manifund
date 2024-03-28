@@ -21,7 +21,6 @@ type Donation = {
 }
 
 export default async function Minifund() {
-  // const projects = await
   const PAGE_SIZE = 20
   const start = 0
 
@@ -70,8 +69,8 @@ export default async function Minifund() {
   })
 
   return (
-    <div className="text-sm font-light lowercase">
-      <h1 className="my-4 text-center">hot projects</h1>
+    <div className="p-2 text-sm font-light lowercase">
+      <h1 className="my-4">minifund</h1>
       <ol className="list-none">
         {projectsToShow.map((project) => {
           return (
@@ -87,7 +86,7 @@ export default async function Minifund() {
         })}
       </ol>
 
-      <h1 className="my-4 text-center">new comments</h1>
+      <h1 className="my-4">new comments</h1>
       <ol className="list-none">
         {recentComments.map((comment) => {
           return (
@@ -103,7 +102,7 @@ export default async function Minifund() {
         })}
       </ol>
 
-      <h1 className="my-4 text-center">new donations</h1>
+      <h1 className="my-4">new donations</h1>
       <ol className="list-none">
         {donations.map((donation) => {
           return (

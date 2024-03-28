@@ -1,8 +1,5 @@
-import { getRecentFullBids } from '@/db/bid'
-import { getRecentFullComments } from '@/db/comment'
 import { listProjects } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
-import { getRecentFullTxns } from '@/db/txn'
 
 export default async function Maxifund() {
   const PAGE_SIZE = 20
@@ -12,18 +9,17 @@ export default async function Maxifund() {
   const [projects] = await Promise.all([listProjects(supabase)])
   const projectsToShow = projects.slice(0, 20)
 
-  // Create a grid of images, 3 across
   return (
     <div>
-      <div className="overflow-x-hidden">
-        <h1 className="animate-marquee whitespace-nowrap py-12 text-8xl">
+      <div className="overflow-x-hidden bg-gradient-to-r from-orange-500  to-rose-400">
+        <h1 className="animate-marquee whitespace-nowrap py-12 text-8xl text-white">
           {/* Repeat the word MAXIFUND 10 times */}
           {Array.from({ length: 30 }, (_, i) => (
             <span key={i}>MAXIFUND </span>
           ))}
         </h1>
       </div>
-      <div className="grid grid-cols-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3">
         {projectsToShow.map((project) => (
           <div
             className="group relative transition hover:z-10 hover:scale-[2]"
@@ -38,7 +34,7 @@ export default async function Maxifund() {
               <div className="pointer-events-none absolute inset-0 flex items-end">
                 <span className="h-24 w-full bg-gradient-to-t from-black to-transparent opacity-50" />
                 <div className="absolute inset-0 flex items-center px-2">
-                  <p className="text-center text-xl font-bold uppercase text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)]">
+                  <p className="text-center font-bold uppercase text-white drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] sm:text-xl">
                     {project.title}
                   </p>
                 </div>
