@@ -1,6 +1,6 @@
 import { CommentRxn } from '@/db/comment'
 import { Popover } from '@headlessui/react'
-import { FaceSmileIcon } from '@heroicons/react/24/outline'
+import { FaceSmileIcon, PaperAirplaneIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -139,14 +139,18 @@ export function AddRxn(props: {
               })}
             </Row>
             {!!selectedTippedRxn && (
-              <Row className="mt-3 justify-center">
+              <Row className="mt-3 justify-end">
                 <Popover.Button
                   onClick={async () => {
                     await postRxn(selectedTippedRxn)
                     setSelectedTippedRxn('')
                   }}
-                  className={buttonClass('2xs', 'light-orange')}
+                  className={clsx(
+                    buttonClass('2xs', 'light-orange'),
+                    'flex gap-1'
+                  )}
                 >
+                  <PaperAirplaneIcon className="h-4 w-4" />
                   Send ${tippedRxns[selectedTippedRxn]} tip
                 </Popover.Button>
               </Row>
