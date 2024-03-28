@@ -119,33 +119,41 @@ export function Comment(props: {
               />
             )}
           </Row>
-          <div
-            id="content"
-            ref={contentElement}
-            className={clsx(
-              expanded || !showExpandButton ? 'max-h-fit' : 'line-clamp-[12]'
-            )}
-          >
-            <RichContent content={comment.content} className="text-sm" />
-          </div>
-          <Row className="mt-5 justify-between gap-2">
-            <CommentRxnsPanel
-              commentId={comment.id}
-              userId={userId}
-              userCharityBalance={userCharityBalance}
-              rxns={rxns}
-            />
-            <Row className="gap-2">
-              {showExpandButton && (
+          <div className="relative">
+            <div
+              id="content"
+              ref={contentElement}
+              className={clsx(
+                expanded || !showExpandButton ? 'max-h-fit' : 'line-clamp-[12]'
+              )}
+            >
+              <RichContent content={comment.content} className="text-sm" />
+            </div>
+            {showExpandButton && (
+              <div
+                className={clsx(
+                  'absolute -bottom-5 left-0 z-10 flex h-32 w-full flex-col justify-end',
+                  !expanded &&
+                    'shadow-[inset_0px_-100px_50px_-50px_rgba(255,255,255,0.9)]'
+                )}
+              >
                 <button
                   className="text-xs text-gray-500 hover:underline"
                   onClick={() => setExpanded(!expanded)}
                 >
                   {expanded ? 'Show less' : 'Show more'}
                 </button>
-              )}
-              <div className="mt-1.5">{children}</div>
-            </Row>
+              </div>
+            )}
+          </div>
+          <Row className="mt-8 justify-between gap-2">
+            <CommentRxnsPanel
+              commentId={comment.id}
+              userId={userId}
+              userCharityBalance={userCharityBalance}
+              rxns={rxns}
+            />
+            <div className="mt-1.5">{children}</div>
           </Row>
         </Card>
       </Row>
