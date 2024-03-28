@@ -12,7 +12,8 @@ import {
   UserGroupIcon,
   GlobeAltIcon,
   ChevronRightIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  BookOpenIcon
 } from '@heroicons/react/24/outline'
 import { SiteLink } from '@/components/site-link'
 
@@ -83,6 +84,8 @@ function findIcon(name: string, isCurrentPage: boolean) {
       return <GlobeAltIcon className={styling} />
     case 'People':
       return <UserGroupIcon className={styling} />
+    case 'Articles':
+      return <BookOpenIcon className={styling} />
     default:
       return <UserCircleIcon className={styling} />
   }

@@ -29,7 +29,7 @@ export default async function Sidebar() {
       <div className="lg:col-span-3" />
       <nav
         aria-label="Sidebar"
-        className="fixed top-0 hidden h-[100vh] justify-between divide-gray-300 self-start pl-2 pr-2 pt-10 lg:col-span-3 lg:flex lg:flex-col"
+        className="fixed top-0 hidden h-[100vh] w-56 justify-between divide-gray-300 self-start pl-2 pr-2 pt-10 lg:col-span-3 lg:flex lg:flex-col"
       >
         <Col>
           <Link href="/">
@@ -63,10 +63,13 @@ export default async function Sidebar() {
             {name: 'About Manifund', href: '/about'},
             {name: 'Regranting', href: '/about/regranting'},
             {name: 'Impact markets', href: '/about/impact-certificates'},
-            {name: 'Applying for funding', href: '/about/open-call'},
+            {name: 'Apply for funding', href: '/about/open-call'},
           ]}} />
           <SidebarItem item={{ name: 'People', href: '/people' }} />
           <SidebarItem item={{ name: 'Categories', href: '/causes' }} />
+          <SidebarItem item={{ name: 'Articles', children: [
+            {name: 'Manifund\'s approach to thinking about charitable funding', href: '/approach'},
+          ]}} />
           {user && (
             <Link
               href={isRegranter ? '/create-grant' : '/create'}
