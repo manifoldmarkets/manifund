@@ -1,3 +1,4 @@
+import { Avatar } from '@/components/avatar'
 import { listProjects } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
 import { hotScore } from '@/utils/sort'
@@ -10,7 +11,7 @@ export default async function Maxifund() {
 
   return (
     <div>
-      <div className="overflow-x-hidden bg-gradient-to-r from-orange-500  to-rose-400">
+      <div className="overflow-x-hidden bg-gradient-to-r from-orange-500 to-rose-400">
         <h1 className="whitespace-nowrap py-12 text-8xl text-white hover:animate-marquee">
           {/* Repeat the word MAXIFUND 10 times */}
           {Array.from({ length: 30 }, (_, i) => (
@@ -39,6 +40,14 @@ export default async function Maxifund() {
                 </div>
               </div>
             </a>
+            {/* Show the creator avatar on the bottom right */}
+            <Avatar
+              username={project.profiles.username}
+              avatarUrl={project.profiles.avatar_url}
+              id={project.profiles.id}
+              size="sm"
+              className="absolute right-2 top-2"
+            />
           </div>
         ))}
       </div>
