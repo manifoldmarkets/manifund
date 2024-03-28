@@ -1,18 +1,17 @@
 import { listProjects } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
+import { hotScore } from '@/utils/sort'
+import { sortBy } from 'lodash'
 
 export default async function Maxifund() {
-  const PAGE_SIZE = 20
-  const start = 0
-
   const supabase = createServerClient()
   const [projects] = await Promise.all([listProjects(supabase)])
-  const projectsToShow = projects.slice(0, 20)
+  const projectsToShow = sortBy(projects, hotScore).slice(0, 18)
 
   return (
     <div>
       <div className="overflow-x-hidden bg-gradient-to-r from-orange-500  to-rose-400">
-        <h1 className="animate-marquee whitespace-nowrap py-12 text-8xl text-white">
+        <h1 className="whitespace-nowrap py-12 text-8xl text-white hover:animate-marquee">
           {/* Repeat the word MAXIFUND 10 times */}
           {Array.from({ length: 30 }, (_, i) => (
             <span key={i}>MAXIFUND </span>

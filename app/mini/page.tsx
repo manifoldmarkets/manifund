@@ -3,13 +3,12 @@ import { listProjects } from '@/db/project'
 import { createServerClient } from '@/db/supabase-server'
 import { getRecentFullTxns } from '@/db/txn'
 import { getRecentFullBids } from '@/db/bid'
-import { generateHTML, generateText, JSONContent } from '@tiptap/core'
-import { TIPTAP_EXTENSIONS } from '@/components/editor'
+import { generateText, JSONContent } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
-import { DisplayMention } from '@/components/user-mention/mention-extension'
 import Mention from '@tiptap/extension-mention'
 import { Link as ExtensionLink } from '@tiptap/extension-link'
-import Link from 'next/link'
+import { sortBy } from 'lodash'
+import { hotScore } from '@/utils/sort'
 
 type Donation = {
   id: string
@@ -32,8 +31,8 @@ export default async function Minifund() {
       getRecentFullTxns(supabase, PAGE_SIZE, start),
       getRecentFullBids(supabase, PAGE_SIZE, start),
     ])
-  // TODO: Actually sort by hot
-  const projectsToShow = projects.slice(0, 20)
+
+  const projectsToShow = sortBy(projects, hotScore).slice(0, 20)
 
   const donations = recentBids.map((bid) => {
     return {
