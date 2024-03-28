@@ -35,14 +35,13 @@ const AddRxnIcon = () => (
 )
 
 export function AddRxn(props: { postRxn: (reaction: string) => void }) {
-  const router = useRouter()
   return (
     <Popover className="relative">
       <Popover.Button className="text-gray-500 hover:text-gray-700 focus:outline-0">
         <AddRxnIcon />
       </Popover.Button>
 
-      <Popover.Panel className="absolute bottom-5 left-5 z-10 rounded-md rounded-bl-sm bg-white p-3 shadow-md">
+      <Popover.Panel className="absolute bottom-5 left-5 z-10 rounded-md rounded-bl-sm bg-gray-50 p-3 shadow-md">
         <h3 className="text-sm text-gray-700">Free reactions</h3>
         <div className="grid grid-cols-5 gap-2">
           {freeRxns.map((reaction) => (
@@ -51,7 +50,6 @@ export function AddRxn(props: { postRxn: (reaction: string) => void }) {
               className="text-base"
               onClick={() => {
                 props.postRxn(reaction)
-                // router.refresh()
               }}
             >
               <div className="rounded px-1 py-0.5 text-base hover:bg-gray-200">
