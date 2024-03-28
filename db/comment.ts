@@ -19,7 +19,7 @@ export async function getCommentsByProject(
 ) {
   const { data, error } = await supabase
     .from('comments')
-    .select('*, profiles(*)')
+    .select('*, profiles!comments_commenter_fkey(*)')
     .eq('project', project)
   if (error) {
     throw error
@@ -52,7 +52,7 @@ export async function sendComment(
 export async function getFullCommentById(supabase: SupabaseClient, id: string) {
   const { data, error } = await supabase
     .from('comments')
-    .select('*, profiles(*), projects(*)')
+    .select('*, profiles!comments_commenter_fkey(*), projects(*)')
     .eq('id', id)
   if (error) {
     throw error
@@ -92,7 +92,7 @@ export async function getRecentFullComments(
 ) {
   const { data } = await supabase
     .from('comments')
-    .select('*, profiles(*), projects!inner(*)')
+    .select('*, profiles!comments_commenter_fkey(*), projects!inner(*)')
     .neq('projects.stage', 'hidden')
     .order('created_at', { ascending: false })
     .range(start, start + size)
