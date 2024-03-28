@@ -150,8 +150,8 @@ export function ExistingFreeRxnsDisplay(props: {
                 }
               }}
               className={clsx(
-                'flex items-center gap-1 rounded bg-gray-100 px-1.5 py-[0.5px] ring-2',
-                userDidReact ? 'ring-gray-300' : 'ring-gray-100',
+                'flex items-center gap-1 rounded bg-gray-100 px-1.5 py-[0.5px] hover:bg-gray-200',
+                userDidReact && 'ring-2 ring-gray-300',
                 userId && 'cursor-pointer'
               )}
             >
@@ -189,20 +189,21 @@ export function ExistingTippedRxnsDisplay(props: {
             (rxn) => rxn.reactor_id === userId && rxn.reaction === reaction
           )
           return (
-            <div
-              key={reaction}
-              className={clsx(
-                'flex items-center gap-1 rounded bg-gradient-to-r from-orange-500 to-rose-500 px-1.5 py-[0.5px]',
-                userDidReact && 'ring-2 ring-orange-500'
-              )}
-            >
-              <span className="text-sm">{reaction}</span>
-              {rxnsWithCounts[reaction] > 1 && (
-                <span className="text-xs text-gray-500">
-                  {rxnsWithCounts[reaction]}
-                </span>
-              )}
-            </div>
+            <Tooltip text={`$${tippedRxns[reaction]}`} key={reaction}>
+              <div
+                className={clsx(
+                  'flex cursor-default items-center gap-1 rounded bg-gradient-to-r from-orange-500 to-rose-500 px-1.5 py-[0.5px]',
+                  userDidReact && 'ring-2 ring-orange-600'
+                )}
+              >
+                <span className="text-sm">{reaction}</span>
+                {rxnsWithCounts[reaction] > 1 && (
+                  <span className="text-xs text-gray-500">
+                    {rxnsWithCounts[reaction]}
+                  </span>
+                )}
+              </div>
+            </Tooltip>
           )
         } else {
           return null
