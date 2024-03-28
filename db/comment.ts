@@ -113,3 +113,16 @@ export async function getRecentFullComments(
     .throwOnError()
   return data as FullComment[]
 }
+
+export async function getCommenterIdFromCommentId(
+  supabase: SupabaseClient,
+  commentId: string
+) {
+  const { data } = await supabase
+    .from('comments')
+    .select('commenter')
+    .eq('id', commentId)
+    .maybeSingle()
+    .throwOnError()
+  return data?.commenter as string
+}

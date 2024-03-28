@@ -957,6 +957,7 @@ export type Database = {
         | "inject amm liquidity"
         | "mint cert"
         | "mana deposit"
+        | "tip"
     }
     CompositeTypes: {
       bid_row: {

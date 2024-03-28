@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
+import { getTxnAndProjectsByUser } from '@/db/txn'
+import { getPendingBidsByUser } from '@/db/bid'
+import { calculateCharityBalance } from '@/utils/math'
+import { getProfileById } from '@/db/profile'
+import { tippedRxns } from '@/components/comment-rxn'
 
 export const config = {
   runtime: 'edge',
@@ -21,7 +26,25 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
-  // TODO: add txn for paid reactions
+  const reactionPrice = tippedRxns[reaction] ?? 0
+  if (true) {
+    const profile = await getProfileById(supabase, user.id)
+    if (!profile) {
+      return NextResponse.error()
+    }
+    const txns = await getTxnAndProjectsByUser(supabase, user.id)
+    const bids = await getPendingBidsByUser(supabase, user.id)
+    const userSpendableFunds = calculateCharityBalance(
+      txns,
+      bids,
+      user.id,
+      profile.accreditation_status
+    )
+    if (userSpendableFunds < reactionPrice) {
+      console.error('not enough funds')
+      return NextResponse.error()
+    }
+  }
   const newRxn = { comment_id: commentId, reactor_id: user.id, reaction }
   const { data: existingRxn, error: error0 } = await supabase
     .from('comment_rxns')

@@ -23,7 +23,7 @@ export const freeRxns = [
   '🌈',
 ]
 
-export const paidRxns = {
+export const tippedRxns = {
   '🧡': 1,
   '🏅': 10,
   '🏆': 100,
@@ -77,8 +77,8 @@ export function AddRxn(props: {
               <InfoTooltip text="Send money from your charity balance to this commenter's charity balance as a thanks for their helpful comment." />
             </h3>
             <Row className="mx-auto justify-between divide-x divide-gray-300">
-              {Object.keys(paidRxns).map((reaction) => {
-                const enabled = userCharityBalance >= paidRxns[reaction]
+              {Object.keys(tippedRxns).map((reaction) => {
+                const enabled = userCharityBalance >= tippedRxns[reaction]
                 return (
                   <div className="px-1">
                     <Tooltip text={enabled ? '' : 'Insufficient funds'}>
@@ -95,7 +95,7 @@ export function AddRxn(props: {
                         )}
                       >
                         <span className="text-xs text-gray-700">
-                          ${paidRxns[reaction]}
+                          ${tippedRxns[reaction]}
                         </span>
                         <span className="text-base">{reaction}</span>
                       </button>
@@ -112,7 +112,7 @@ export function AddRxn(props: {
                   }}
                   className={buttonClass('2xs', 'light-orange')}
                 >
-                  Send ${paidRxns[selectedTippedRxn]} tip
+                  Send ${tippedRxns[selectedTippedRxn]} tip
                 </Popover.Button>
               </Row>
             )}
