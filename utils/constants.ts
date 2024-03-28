@@ -72,3 +72,5 @@ const CHARITABLE_DEPOSITS = [
 export function isCharitableDeposit(txnId: string) {
   return CHARITABLE_DEPOSITS.includes(txnId)
 }
+
+export const CURRENT_AGREEMENT_VERSION = 3

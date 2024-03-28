@@ -5,7 +5,7 @@ import SupabaseProvider from '@/db/supabase-provider'
 import { createServerClient } from '@/db/supabase-server'
 import './globals.css'
 import Sidebar from './sidebar'
-import { Readex_Pro, Josefin_Slab } from 'next/font/google'
+import { Readex_Pro, Josefin_Slab, Satisfy } from 'next/font/google'
 import { BottomNavBar } from './bottom-nav-bar'
 import Script from 'next/script'
 import { CompleteProfileBanner } from '@/components/complete-profile-banner'
@@ -18,7 +18,8 @@ const josefin = Josefin_Slab({
   subsets: ['latin'],
   variable: '--font-josefin-slab',
 })
-const fontVars = [readex.variable, josefin.variable].join(' ')
+const satisfy = Satisfy({subsets: ['latin'], variable: '--font-satisfy-regular', weight: "400"})
+const fontVars = [readex.variable, josefin.variable, satisfy.variable].join(' ')
 
 export const runtime = 'edge'
 

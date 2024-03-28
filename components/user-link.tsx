@@ -4,6 +4,7 @@ import { Tooltip } from './tooltip'
 import { Avatar } from './avatar'
 import { ShieldCheckIcon, WrenchIcon } from '@heroicons/react/20/solid'
 import { Profile } from '@/db/profile'
+import { CheckBadgeIcon } from '@heroicons/react/24/outline'
 
 export function shortenName(name: string) {
   const firstName = name.split(' ')[0]
@@ -77,11 +78,39 @@ export function UserLink(props: {
   )
 }
 
+const microregrantors = [
+  '42irrationalist',
+  'NoaNabeshima',
+  'danwahl',
+  'guenael',
+  'Jacy',
+  'Chris-Lakin',
+  'HarveyPowers',
+  'aaronl',
+  'Kunvar',
+  'agucova',
+  'toby',
+  'Tomohaire',
+  'Alyssa',
+  'rossry',
+  'tfburns',
+  'istinetz',
+  'casebash',
+  'liconstan',
+  'marktwse',
+  'Jason',
+  'pacosta',
+  'dominic',
+]
+
 export function UserBadge(props: { username: string }) {
   const { username } = props
 
-  if (['Austin', 'Rachel'].includes(username)) {
+  if (['Austin', 'Rachel', 'saulmunn', 'lily'].includes(username)) {
     return <CoreBadge />
+  }
+  if (microregrantors.includes(username)) {
+    return <MicroregrantorBadge />
   }
   return null
 }
@@ -91,6 +120,14 @@ function CoreBadge() {
   return (
     <Tooltip text="I work on Manifund!" placement="right">
       <ShieldCheckIcon className="h-4 w-4 text-orange-600" aria-hidden="true" />
+    </Tooltip>
+  )
+}
+
+function MicroregrantorBadge() {
+  return (
+    <Tooltip text="Micro-regrantor" placement="right">
+      <CheckBadgeIcon className="h-4 w-4 text-orange-600" aria-hidden="true" />
     </Tooltip>
   )
 }
