@@ -41,7 +41,7 @@ export function SidebarItem(props: { item: Item }) {
       onClick={() => setIsOpen(!isOpen)}
     >
       {icon}
-      <span className="truncate">{item.name}</span>
+      <span className="whitespace-normal">{item.name}</span>
       {item.children && (isOpen ? <ChevronDownIcon className="ml-auto h-5 w-5" /> : <ChevronRightIcon className="ml-auto h-5 w-5" />)}
     </div>
   )
@@ -87,6 +87,6 @@ function findIcon(name: string, isCurrentPage: boolean) {
     case 'Articles':
       return <BookOpenIcon className={styling} />
     default:
-      return <UserCircleIcon className={styling} />
+      return
   }
 }
