@@ -119,7 +119,7 @@ export function Comment(props: {
               />
             )}
           </Row>
-          <div className="relative">
+          <div className={clsx('relative', showExpandButton && 'pb-5')}>
             <div
               id="content"
               ref={contentElement}
@@ -132,7 +132,7 @@ export function Comment(props: {
             {showExpandButton && (
               <div
                 className={clsx(
-                  'absolute -bottom-5 left-0 z-10 flex h-32 w-full flex-col justify-end',
+                  'absolute bottom-0 left-0 z-10 flex h-32 w-full flex-col justify-end',
                   !expanded &&
                     'shadow-[inset_0px_-100px_50px_-50px_rgba(255,255,255,0.9)]'
                 )}
@@ -146,7 +146,7 @@ export function Comment(props: {
               </div>
             )}
           </div>
-          <Row className="mt-8 justify-between gap-2">
+          <Row className="mt-1 justify-between gap-2">
             <CommentRxnsPanel
               commentId={comment.id}
               userId={userId}
