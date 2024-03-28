@@ -3,6 +3,7 @@ import { Popover } from '@headlessui/react'
 import { FaceSmileIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { Row } from './layout/row'
 
 export const freeRxns = [
@@ -50,7 +51,7 @@ export function AddRxn(props: { postRxn: (reaction: string) => void }) {
               className="text-base"
               onClick={() => {
                 props.postRxn(reaction)
-                router.refresh()
+                // router.refresh()
               }}
             >
               <div className="rounded px-1 py-0.5 text-base hover:bg-gray-200">
@@ -87,7 +88,6 @@ export function ExistingRxnsDisplay(props: {
   rxns.forEach((rxn) => {
     rxnsWithCounts[rxn.reaction]++
   })
-  const router = useRouter()
   return (
     <Row className="gap-2">
       {freeRxns.map((reaction) => {
@@ -99,7 +99,6 @@ export function ExistingRxnsDisplay(props: {
               onClick={async () => {
                 if (userId) {
                   await postRxn(reaction)
-                  router.refresh()
                 }
               }}
               className={clsx(
@@ -131,6 +130,7 @@ export function CommentRxnsPanel(props: {
 }) {
   const { commentId, rxns, userId } = props
   const router = useRouter()
+  const [localRxns, setLocalRxns] = useState(rxns)
   async function postRxn(reaction: string) {
     const existingRxnIdx = rxns.findIndex(
       (rxn) => rxn.reaction === reaction && rxn.reactor_id === userId
@@ -142,10 +142,11 @@ export function CommentRxnsPanel(props: {
         reactor_id: userId ?? '',
         txn_id: null,
       })
+      setLocalRxns(rxns)
     } else {
       rxns.splice(existingRxnIdx, 1)
+      setLocalRxns(rxns)
     }
-    console.log(rxns)
     await fetch(`/api/react-to-comment`, {
       method: 'POST',
       body: JSON.stringify({
@@ -161,7 +162,7 @@ export function CommentRxnsPanel(props: {
   return (
     <Row className="items-center gap-2 overflow-visible">
       <AddRxn postRxn={postRxn} />
-      <ExistingRxnsDisplay rxns={rxns} userId={userId} postRxn={postRxn} />
+      <ExistingRxnsDisplay rxns={localRxns} userId={userId} postRxn={postRxn} />
     </Row>
   )
 }
