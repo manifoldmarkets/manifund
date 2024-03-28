@@ -5,8 +5,9 @@ import { getPendingBidsByUser } from '@/db/bid'
 import { calculateCharityBalance } from '@/utils/math'
 import { getProfileById } from '@/db/profile'
 import { tippedRxns } from '@/components/comment-rxn'
-import { getCommenterIdFromCommentId } from '@/db/comment'
+import { getMinimalCommentFromId } from '@/db/comment'
 import uuid from 'react-uuid'
+import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 
 export const config = {
   runtime: 'edge',
@@ -31,8 +32,8 @@ export default async function handler(req: NextRequest) {
   const reactionPrice = tippedRxns[reaction] ?? 0
   const txnId = uuid()
   if (reactionPrice > 0) {
-    const profile = await getProfileById(supabase, user.id)
-    if (!profile) {
+    const userProfile = await getProfileById(supabase, user.id)
+    if (!userProfile) {
       return NextResponse.error()
     }
     const txns = await getTxnAndProjectsByUser(supabase, user.id)
@@ -41,24 +42,34 @@ export default async function handler(req: NextRequest) {
       txns,
       bids,
       user.id,
-      profile.accreditation_status
+      userProfile.accreditation_status
     )
     if (userSpendableFunds < reactionPrice) {
       console.error('not enough funds')
       return NextResponse.error()
     } else {
-      const commenterId = await getCommenterIdFromCommentId(supabase, commentId)
-      if (!commenterId) {
+      const comment = await getMinimalCommentFromId(supabase, commentId)
+      if (!comment) {
         return NextResponse.error()
       }
       await supabase.from('txns').insert({
         id: txnId,
         from_id: user.id,
-        to_id: commenterId,
+        to_id: comment.commenter,
         amount: reactionPrice,
         token: 'USD',
         type: 'tip',
       })
+      await sendTemplateEmail(
+        TEMPLATE_IDS.GENERIC_NOTIF,
+        {
+          subject: `You received a $${reactionPrice} tip for your comment on Manifund`,
+          notifText: `${userProfile.full_name} tipped you $${reactionPrice} for a comment you made on Manifund, which you can now pass on to the charity or project of your choice. Thanks for your contribution to the discussion!`,
+          buttonUrl: `https://manifund.org/projects/${comment.projects.slug}?tab=comments#${commentId}`,
+          buttonText: 'View comment',
+        },
+        comment.commenter
+      )
     }
   }
   const newRxn =

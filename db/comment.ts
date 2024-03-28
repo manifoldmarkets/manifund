@@ -17,7 +17,7 @@ export type CommentAndProfileAndRxns = Comment & { profiles: Profile } & {
 export type CommentAndProjectAndRxns = Comment & { projects: Project } & {
   comment_rxns: CommentRxn[]
 }
-export type CommendAndProfileAndProject = Comment & { profiles: Profile } & {
+export type CommentAndProfileAndProject = Comment & { profiles: Profile } & {
   projects: Project
 }
 
@@ -67,7 +67,7 @@ export async function getCommentById(supabase: SupabaseClient, id: string) {
   if (error) {
     throw error
   }
-  return data[0] as CommendAndProfileAndProject
+  return data[0] as CommentAndProfileAndProject
 }
 
 export async function getReplies(supabase: SupabaseClient, rootId: string) {
@@ -114,15 +114,16 @@ export async function getRecentFullComments(
   return data as FullComment[]
 }
 
-export async function getCommenterIdFromCommentId(
+export async function getMinimalCommentFromId(
   supabase: SupabaseClient,
   commentId: string
 ) {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('comments')
-    .select('commenter')
+    .select('*, projects(slug)')
     .eq('id', commentId)
-    .maybeSingle()
-    .throwOnError()
-  return data?.commenter as string
+  if (error) {
+    throw error
+  }
+  return data[0] as CommentAndProject
 }

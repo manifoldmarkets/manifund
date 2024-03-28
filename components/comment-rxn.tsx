@@ -1,6 +1,7 @@
 import { CommentRxn } from '@/db/comment'
 import { Popover } from '@headlessui/react'
-import { FaceSmileIcon, PaperAirplaneIcon } from '@heroicons/react/20/solid'
+import { PaperAirplaneIcon } from '@heroicons/react/20/solid'
+import { FaceSmileIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
