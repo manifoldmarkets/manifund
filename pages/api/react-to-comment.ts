@@ -61,12 +61,19 @@ export default async function handler(req: NextRequest) {
       })
     }
   }
-  const newRxn = {
-    comment_id: commentId,
-    reactor_id: user.id,
-    reaction,
-    txn_id: reactionPrice > 0 ? txnId : null,
-  }
+  const newRxn =
+    reactionPrice > 0
+      ? {
+          comment_id: commentId,
+          reactor_id: user.id,
+          reaction,
+          txn_id: txnId,
+        }
+      : {
+          comment_id: commentId,
+          reactor_id: user.id,
+          reaction,
+        }
   const { data: existingRxn, error: error0 } = await supabase
     .from('comment_rxns')
     .select('comment_id')

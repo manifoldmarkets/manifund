@@ -138,7 +138,9 @@ export function ExistingFreeRxnsDisplay(props: {
     <Row className="gap-2">
       {freeRxns.map((reaction) => {
         if (rxnsWithCounts[reaction] > 0) {
-          const userDidReact = rxns.some((rxn) => rxn.reactor_id === userId)
+          const userDidReact = !!rxns.find(
+            (rxn) => rxn.reactor_id === userId && rxn.reaction === reaction
+          )
           return (
             <button
               key={reaction}
@@ -183,7 +185,9 @@ export function ExistingTippedRxnsDisplay(props: {
     <Row className="gap-2">
       {tippedRxnsArray.map((reaction) => {
         if (rxnsWithCounts[reaction] > 0) {
-          const userDidReact = rxns.some((rxn) => rxn.reactor_id === userId)
+          const userDidReact = !!rxns.find(
+            (rxn) => rxn.reactor_id === userId && rxn.reaction === reaction
+          )
           return (
             <div
               key={reaction}
