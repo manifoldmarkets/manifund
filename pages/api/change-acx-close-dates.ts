@@ -19,7 +19,6 @@ export default async function handler() {
     .match({
       round: 'ACX Grants 2024',
       type: 'cert',
-      auction_close: '2024-03-31',
     })
   if (error) {
     console.error(error)
