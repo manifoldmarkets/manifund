@@ -4,6 +4,7 @@ import { FaceSmileIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { buttonClass } from './button'
 import { InfoTooltip } from './info-tooltip'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
@@ -42,6 +43,7 @@ export function AddRxn(props: {
 }) {
   const { userCharityBalance, postRxn } = props
   const includeTippedRxns = userCharityBalance !== undefined
+  const [selectedTippedRxn, setSelectedTippedRxn] = useState('')
   return (
     <Popover className="relative">
       <Popover.Button className="text-gray-500 hover:text-gray-700 focus:outline-0">
@@ -77,12 +79,15 @@ export function AddRxn(props: {
                 return (
                   <div className="px-1">
                     <Tooltip text={enabled ? '' : 'Insufficient funds'}>
-                      <Popover.Button
+                      <button
                         key={reaction}
+                        disabled={!enabled}
+                        onClick={() => setSelectedTippedRxn(reaction)}
                         className={clsx(
                           enabled
                             ? 'cursor-pointer hover:bg-gray-200'
                             : 'cursor-not-allowed',
+                          reaction === selectedTippedRxn && 'bg-gray-200',
                           'flex items-center gap-0.5 rounded px-1 py-0.5'
                         )}
                       >
@@ -90,12 +95,24 @@ export function AddRxn(props: {
                           ${paidRxns[reaction]}
                         </span>
                         <span className="text-base">{reaction}</span>
-                      </Popover.Button>
+                      </button>
                     </Tooltip>
                   </div>
                 )
               })}
             </Row>
+            {!!selectedTippedRxn && (
+              <Row className="mt-3 justify-center">
+                <Popover.Button
+                  onClick={async () => {
+                    await postRxn(selectedTippedRxn)
+                  }}
+                  className={buttonClass('2xs', 'light-orange')}
+                >
+                  Send ${paidRxns[selectedTippedRxn]} tip
+                </Popover.Button>
+              </Row>
+            )}
           </>
         )}
       </Popover.Panel>
@@ -187,7 +204,7 @@ export function CommentRxnsPanel(props: {
   }
   return (
     <Row className="items-center gap-2 overflow-visible">
-      <AddRxn postRxn={postRxn} userCharityBalance={50} />
+      <AddRxn postRxn={postRxn} userCharityBalance={undefined} />
       <ExistingRxnsDisplay rxns={localRxns} userId={userId} postRxn={postRxn} />
     </Row>
   )
