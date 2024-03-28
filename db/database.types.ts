@@ -128,21 +128,21 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "public_comment_rxns_comment_id_fkey"
+            foreignKeyName: "comment_rxns_comment_id_fkey"
             columns: ["comment_id"]
             isOneToOne: false
             referencedRelation: "comments"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "public_comment_rxns_reactor_id_fkey"
+            foreignKeyName: "comment_rxns_reactor_id_fkey"
             columns: ["reactor_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "public_comment_rxns_txn_id_fkey"
+            foreignKeyName: "comment_rxns_txn_id_fkey"
             columns: ["txn_id"]
             isOneToOne: false
             referencedRelation: "txns"

@@ -509,7 +509,7 @@ WITH CHECK (true)
 -- Comment rxns
 CREATE TABLE public.comment_rxns (
   comment_id uuid NOT NULL REFERENCES public.comments(id),
-  reactor_id uuid REFERENCES public.profiles(id),
+  reactor_id uuid NOT NULL REFERENCES public.profiles(id),
   reaction text NOT NULL,
   txn_id uuid REFERENCES public.txns(id),
   PRIMARY KEY (comment_id, reactor_id, reaction)
