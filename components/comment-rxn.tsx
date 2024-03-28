@@ -4,7 +4,9 @@ import { FaceSmileIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { InfoTooltip } from './info-tooltip'
 import { Row } from './layout/row'
+import { Tooltip } from './tooltip'
 
 export const freeRxns = [
   '➕',
@@ -34,7 +36,12 @@ const AddRxnIcon = () => (
   </div>
 )
 
-export function AddRxn(props: { postRxn: (reaction: string) => void }) {
+export function AddRxn(props: {
+  postRxn: (reaction: string) => void
+  userCharityBalance?: number
+}) {
+  const { userCharityBalance, postRxn } = props
+  const includeTippedRxns = userCharityBalance !== undefined
   return (
     <Popover className="relative">
       <Popover.Button className="text-gray-500 hover:text-gray-700 focus:outline-0">
@@ -48,8 +55,8 @@ export function AddRxn(props: { postRxn: (reaction: string) => void }) {
             <Popover.Button
               key={reaction}
               className="text-base"
-              onClick={() => {
-                props.postRxn(reaction)
+              onClick={async () => {
+                await postRxn(reaction)
               }}
             >
               <div className="rounded px-1 py-0.5 text-base hover:bg-gray-200">
@@ -58,19 +65,39 @@ export function AddRxn(props: { postRxn: (reaction: string) => void }) {
             </Popover.Button>
           ))}
         </div>
-        <h3 className="mt-4 text-sm text-gray-700">Tipped reactions</h3>
-        <Row className="justify-between gap-2">
-          {Object.keys(paidRxns).map((reaction) => (
-            <Popover.Button key={reaction}>
-              <Row className="items-center gap-0.5 rounded px-1 py-0.5 hover:bg-gray-200">
-                <span className="text-sm text-gray-700">
-                  ${paidRxns[reaction]}:
-                </span>
-                <span className="text-base">{reaction}</span>
-              </Row>
-            </Popover.Button>
-          ))}
-        </Row>
+        {includeTippedRxns && (
+          <>
+            <h3 className="mt-4 text-sm text-gray-700">
+              Tipped reactions{' '}
+              <InfoTooltip text="Send money from your charity balance to this commenter's charity balance as a thanks for their helpful comment." />
+            </h3>
+            <Row className="justify-between divide-x divide-gray-300">
+              {Object.keys(paidRxns).map((reaction) => {
+                const enabled = userCharityBalance >= paidRxns[reaction]
+                return (
+                  <div className="px-1">
+                    <Tooltip text={enabled ? '' : 'Insufficient funds'}>
+                      <Popover.Button
+                        key={reaction}
+                        className={clsx(
+                          enabled
+                            ? 'cursor-pointer hover:bg-gray-200'
+                            : 'cursor-not-allowed',
+                          'flex items-center gap-0.5 rounded px-1 py-0.5'
+                        )}
+                      >
+                        <span className="text-xs text-gray-700">
+                          ${paidRxns[reaction]}
+                        </span>
+                        <span className="text-base">{reaction}</span>
+                      </Popover.Button>
+                    </Tooltip>
+                  </div>
+                )
+              })}
+            </Row>
+          </>
+        )}
       </Popover.Panel>
     </Popover>
   )
@@ -125,8 +152,9 @@ export function CommentRxnsPanel(props: {
   commentId: string
   rxns: CommentRxn[]
   userId?: string
+  userCharityBalance?: number
 }) {
-  const { commentId, rxns, userId } = props
+  const { commentId, rxns, userId, userCharityBalance } = props
   const router = useRouter()
   const [localRxns, setLocalRxns] = useState(rxns)
   async function postRxn(reaction: string) {
@@ -159,7 +187,7 @@ export function CommentRxnsPanel(props: {
   }
   return (
     <Row className="items-center gap-2 overflow-visible">
-      <AddRxn postRxn={postRxn} />
+      <AddRxn postRxn={postRxn} userCharityBalance={50} />
       <ExistingRxnsDisplay rxns={localRxns} userId={userId} postRxn={postRxn} />
     </Row>
   )

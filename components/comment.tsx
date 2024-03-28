@@ -24,6 +24,7 @@ export function Comment(props: {
   commentHref: string
   rxns: CommentRxn[]
   userId?: string
+  userCharityBalance?: number
   writtenByCreator?: boolean
   contributionText?: string
   projectTitle?: string
@@ -34,6 +35,7 @@ export function Comment(props: {
     commenter,
     rxns,
     userId,
+    userCharityBalance,
     commentHref,
     writtenByCreator,
     contributionText,
@@ -130,6 +132,7 @@ export function Comment(props: {
             <CommentRxnsPanel
               commentId={comment.id}
               userId={userId}
+              userCharityBalance={userCharityBalance}
               rxns={rxns}
             />
             <Row className="gap-2">

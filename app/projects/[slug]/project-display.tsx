@@ -66,6 +66,14 @@ export function ProjectDisplay(props: {
     prizeCause,
     userIsAdmin,
   } = props
+  const userCharityBalance = userProfile
+    ? calculateCharityBalance(
+        userTxns,
+        userBids,
+        userProfile.id,
+        userProfile.accreditation_status
+      )
+    : 0
   const userSpendableFunds = Math.max(
     userProfile
       ? project.type === 'cert' && userProfile.id === project.creator
@@ -75,12 +83,7 @@ export function ProjectDisplay(props: {
             userProfile.id,
             userProfile.accreditation_status
           )
-        : calculateCharityBalance(
-            userTxns,
-            userBids,
-            userProfile.id,
-            userProfile.accreditation_status
-          )
+        : userCharityBalance
       : 0,
     0
   )
@@ -269,6 +272,7 @@ export function ProjectDisplay(props: {
             comments={comments}
             bids={projectBids}
             txns={projectTxns}
+            userCharityBalance={userCharityBalance}
             userSpendableFunds={userSpendableFunds}
             userSellableShares={userSellableShares}
             specialCommentPrompt={specialCommentPrompt}

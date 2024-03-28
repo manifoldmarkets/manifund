@@ -23,6 +23,7 @@ export function Comments(props: {
   comments: CommentAndProfileAndRxns[]
   commenterContributions: Record<string, string>
   userProfile?: Profile
+  userCharityBalance?: number
   specialPrompt?: string
 }) {
   const {
@@ -30,6 +31,7 @@ export function Comments(props: {
     comments,
     commenterContributions,
     userProfile,
+    userCharityBalance,
     specialPrompt,
   } = props
   const [replyingTo, setReplyingTo] = useState<CommentAndProfile | null>(null)
@@ -68,6 +70,7 @@ export function Comments(props: {
               commenter={thread.root.profiles}
               rxns={thread.root.comment_rxns}
               userId={userProfile?.id}
+              userCharityBalance={userCharityBalance}
               commentHref={`/projects/${project.slug}?tab=comments#${thread.root.id}`}
               writtenByCreator={thread.root.commenter === project.creator}
               contributionText={commenterContributions[thread.root.commenter]}
@@ -84,6 +87,7 @@ export function Comments(props: {
                     commenter={reply.profiles}
                     rxns={reply.comment_rxns}
                     userId={userProfile?.id}
+                    userCharityBalance={userCharityBalance}
                     commentHref={`/projects/${project.slug}?tab=comments#${reply.id}`}
                     writtenByCreator={reply.commenter === project.creator}
                     contributionText={commenterContributions[reply.commenter]}

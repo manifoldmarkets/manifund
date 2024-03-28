@@ -138,6 +138,7 @@ export function ProfileContent(props: {
         <ProfileComments
           comments={comments}
           profile={profile}
+          userCharityBalance={userCharityBalance}
           userId={userProfile?.id}
         />
       )}

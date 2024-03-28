@@ -21,6 +21,7 @@ export function ProjectTabs(props: {
   comments: CommentAndProfileAndRxns[]
   bids: BidAndProfile[]
   txns: TxnAndProfiles[]
+  userCharityBalance: number
   userSpendableFunds: number
   userSellableShares: number
   userProfile?: Profile
@@ -32,6 +33,7 @@ export function ProjectTabs(props: {
     comments,
     bids,
     txns,
+    userCharityBalance,
     userSpendableFunds,
     userSellableShares,
     userProfile,
@@ -62,6 +64,7 @@ export function ProjectTabs(props: {
           project={project}
           comments={comments}
           userProfile={userProfile}
+          userCharityBalance={userCharityBalance}
           commenterContributions={commenterContributions}
           specialPrompt={specialCommentPrompt}
         />
