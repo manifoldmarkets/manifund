@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { buttonClass } from './button'
 import { InfoTooltip } from './info-tooltip'
+import { Col } from './layout/col'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 
@@ -51,29 +52,31 @@ export function AddRxn(props: {
       </Popover.Button>
 
       <Popover.Panel className="absolute bottom-5 left-5 z-10 rounded-md rounded-bl-sm bg-gray-50 p-3 shadow-md">
-        <h3 className="text-sm text-gray-700">Free reactions</h3>
-        <div className="grid grid-cols-5 gap-2">
-          {freeRxns.map((reaction) => (
-            <Popover.Button
-              key={reaction}
-              className="text-base"
-              onClick={async () => {
-                await postRxn(reaction)
-              }}
-            >
-              <div className="rounded px-1 py-0.5 text-base hover:bg-gray-200">
-                {reaction}
-              </div>
-            </Popover.Button>
-          ))}
-        </div>
+        <Col className="w-40">
+          <h3 className="text-sm text-gray-700">Free reactions</h3>
+          <div className="mx-auto grid w-fit grid-cols-5 gap-2">
+            {freeRxns.map((reaction) => (
+              <Popover.Button
+                key={reaction}
+                className="text-base"
+                onClick={async () => {
+                  await postRxn(reaction)
+                }}
+              >
+                <div className="rounded px-1 py-0.5 text-base hover:bg-gray-200">
+                  {reaction}
+                </div>
+              </Popover.Button>
+            ))}
+          </div>
+        </Col>
         {includeTippedRxns && (
-          <>
+          <Col className="w-40">
             <h3 className="mt-4 text-sm text-gray-700">
               Tipped reactions{' '}
               <InfoTooltip text="Send money from your charity balance to this commenter's charity balance as a thanks for their helpful comment." />
             </h3>
-            <Row className="justify-between divide-x divide-gray-300">
+            <Row className="mx-auto justify-between divide-x divide-gray-300">
               {Object.keys(paidRxns).map((reaction) => {
                 const enabled = userCharityBalance >= paidRxns[reaction]
                 return (
@@ -113,7 +116,7 @@ export function AddRxn(props: {
                 </Popover.Button>
               </Row>
             )}
-          </>
+          </Col>
         )}
       </Popover.Panel>
     </Popover>
@@ -203,8 +206,8 @@ export function CommentRxnsPanel(props: {
     router.refresh()
   }
   return (
-    <Row className="items-center gap-2 overflow-visible">
-      <AddRxn postRxn={postRxn} userCharityBalance={undefined} />
+    <Row className="items-center gap-2">
+      <AddRxn postRxn={postRxn} userCharityBalance={userCharityBalance} />
       <ExistingRxnsDisplay rxns={localRxns} userId={userId} postRxn={postRxn} />
     </Row>
   )
