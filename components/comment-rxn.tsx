@@ -109,6 +109,7 @@ export function AddRxn(props: {
                 <Popover.Button
                   onClick={async () => {
                     await postRxn(selectedTippedRxn)
+                    setSelectedTippedRxn('')
                   }}
                   className={buttonClass('2xs', 'light-orange')}
                 >
@@ -123,7 +124,7 @@ export function AddRxn(props: {
   )
 }
 
-export function ExistingRxnsDisplay(props: {
+export function ExistingFreeRxnsDisplay(props: {
   rxns: CommentRxn[]
   postRxn: (reaction: string) => void
   userId?: string
@@ -147,18 +148,57 @@ export function ExistingRxnsDisplay(props: {
                 }
               }}
               className={clsx(
-                'flex items-center gap-1 rounded px-1 py-[0.5px]',
-                userDidReact
-                  ? 'bg-orange-100 ring-2 ring-orange-600'
-                  : 'bg-gray-100',
+                'flex items-center gap-1 rounded bg-gray-100 px-1.5 py-[0.5px] ring-2',
+                userDidReact ? 'ring-gray-300' : 'ring-gray-100',
                 userId && 'cursor-pointer'
               )}
             >
               <span className="text-sm">{reaction}</span>
-              <span className="text-xs text-gray-500">
-                {rxnsWithCounts[reaction]}
-              </span>
+              {rxnsWithCounts[reaction] > 1 && (
+                <span className="text-xs text-gray-500">
+                  {rxnsWithCounts[reaction]}
+                </span>
+              )}
             </button>
+          )
+        } else {
+          return null
+        }
+      })}
+    </Row>
+  )
+}
+
+export function ExistingTippedRxnsDisplay(props: {
+  rxns: CommentRxn[]
+  userId?: string
+}) {
+  const { rxns, userId } = props
+  const tippedRxnsArray = Object.keys(tippedRxns)
+  const rxnsWithCounts = Object.fromEntries(tippedRxnsArray.map((r) => [r, 0]))
+  rxns.forEach((rxn) => {
+    rxnsWithCounts[rxn.reaction]++
+  })
+  return (
+    <Row className="gap-2">
+      {tippedRxnsArray.map((reaction) => {
+        if (rxnsWithCounts[reaction] > 0) {
+          const userDidReact = rxns.some((rxn) => rxn.reactor_id === userId)
+          return (
+            <div
+              key={reaction}
+              className={clsx(
+                'flex items-center gap-1 rounded bg-gradient-to-r from-orange-500 to-rose-500 px-1.5 py-[0.5px]',
+                userDidReact && 'ring-2 ring-orange-500'
+              )}
+            >
+              <span className="text-sm">{reaction}</span>
+              {rxnsWithCounts[reaction] > 1 && (
+                <span className="text-xs text-gray-500">
+                  {rxnsWithCounts[reaction]}
+                </span>
+              )}
+            </div>
           )
         } else {
           return null
@@ -208,7 +248,12 @@ export function CommentRxnsPanel(props: {
   return (
     <Row className="items-center gap-2">
       <AddRxn postRxn={postRxn} userCharityBalance={userCharityBalance} />
-      <ExistingRxnsDisplay rxns={localRxns} userId={userId} postRxn={postRxn} />
+      <ExistingFreeRxnsDisplay
+        rxns={localRxns}
+        userId={userId}
+        postRxn={postRxn}
+      />
+      <ExistingTippedRxnsDisplay rxns={localRxns} userId={userId} />
     </Row>
   )
 }

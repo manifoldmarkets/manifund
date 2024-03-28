@@ -5,6 +5,8 @@ import { getPendingBidsByUser } from '@/db/bid'
 import { calculateCharityBalance } from '@/utils/math'
 import { getProfileById } from '@/db/profile'
 import { tippedRxns } from '@/components/comment-rxn'
+import { getCommenterIdFromCommentId } from '@/db/comment'
+import uuid from 'react-uuid'
 
 export const config = {
   runtime: 'edge',
@@ -27,7 +29,8 @@ export default async function handler(req: NextRequest) {
   const user = resp.data.user
   if (!user) return NextResponse.error()
   const reactionPrice = tippedRxns[reaction] ?? 0
-  if (true) {
+  const txnId = uuid()
+  if (reactionPrice > 0) {
     const profile = await getProfileById(supabase, user.id)
     if (!profile) {
       return NextResponse.error()
@@ -43,9 +46,27 @@ export default async function handler(req: NextRequest) {
     if (userSpendableFunds < reactionPrice) {
       console.error('not enough funds')
       return NextResponse.error()
+    } else {
+      const commenterId = await getCommenterIdFromCommentId(supabase, commentId)
+      if (!commenterId) {
+        return NextResponse.error()
+      }
+      await supabase.from('txns').insert({
+        id: txnId,
+        from_id: user.id,
+        to_id: commenterId,
+        amount: reactionPrice,
+        token: 'USD',
+        type: 'tip',
+      })
     }
   }
-  const newRxn = { comment_id: commentId, reactor_id: user.id, reaction }
+  const newRxn = {
+    comment_id: commentId,
+    reactor_id: user.id,
+    reaction,
+    txn_id: reactionPrice > 0 ? txnId : null,
+  }
   const { data: existingRxn, error: error0 } = await supabase
     .from('comment_rxns')
     .select('comment_id')
