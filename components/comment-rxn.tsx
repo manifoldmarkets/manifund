@@ -39,17 +39,14 @@ const AddRxnIcon = () => (
   </div>
 )
 
-export function AddRxn(props: {
+export function AddRxnPopover(props: {
   postRxn: (reaction: string) => void
   rxns: CommentRxn[]
-  userId?: string
+  userId: string
   userCharityBalance?: number
 }) {
   const { postRxn, rxns, userId, userCharityBalance } = props
-  const userExists = userCharityBalance !== undefined && !!userId
-  const userRxns = userExists
-    ? rxns.filter((rxn) => rxn.reactor_id === userId)
-    : []
+  const userRxns = rxns.filter((rxn) => rxn.reactor_id === userId)
   const [selectedTippedRxn, setSelectedTippedRxn] = useState('')
   return (
     <Popover className="relative">
@@ -58,7 +55,7 @@ export function AddRxn(props: {
       </Popover.Button>
 
       <Popover.Panel className="absolute bottom-5 left-5 z-10 rounded-md rounded-bl-sm bg-gray-50 p-3 shadow-md">
-        <Col className="w-40">
+        <Col className="w-40 gap-1">
           <h3 className="text-sm text-gray-700">Free reactions</h3>
           <div className="mx-auto grid w-fit grid-cols-5 gap-2">
             {freeRxns.map((reaction) => {
@@ -86,8 +83,8 @@ export function AddRxn(props: {
             })}
           </div>
         </Col>
-        {userExists && (
-          <Col className="w-40">
+        {userCharityBalance !== undefined && (
+          <Col className="w-40 gap-1">
             <h3 className="mt-4 text-sm text-gray-700">
               Tipped reactions{' '}
               <InfoTooltip text="Send money from your charity balance to this commenter's charity balance as a thanks for their helpful comment." />
@@ -140,7 +137,7 @@ export function AddRxn(props: {
               })}
             </Row>
             {!!selectedTippedRxn && (
-              <Row className="mt-3 justify-end">
+              <Row className="mt-2 justify-end">
                 <Popover.Button
                   onClick={async () => {
                     await postRxn(selectedTippedRxn)
@@ -259,6 +256,7 @@ export function CommentRxnsPanel(props: {
   userCharityBalance?: number
 }) {
   const { commentId, rxns, userId, userCharityBalance } = props
+
   const router = useRouter()
   const [localRxns, setLocalRxns] = useState(rxns)
   async function postRxn(reaction: string) {
@@ -289,10 +287,11 @@ export function CommentRxnsPanel(props: {
     })
     router.refresh()
   }
+
   return (
     <Row className="items-center gap-2">
       {userId && (
-        <AddRxn
+        <AddRxnPopover
           postRxn={postRxn}
           rxns={localRxns}
           userId={userId}
