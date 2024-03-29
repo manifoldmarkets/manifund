@@ -21,13 +21,14 @@ export type Item = {
   name: string
   href?: string
   children?: Item[]
+  childrenDefaultOpen?: boolean
 }
 
 export function SidebarItem(props: { item: Item }) {
   const { item } = props
   const isCurrentPage = item.href === usePathname() && item.href != null
   const icon = findIcon(item.name, isCurrentPage)
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(item.childrenDefaultOpen)
 
   const sidebarItem = (
     <div
@@ -57,8 +58,8 @@ export function SidebarItem(props: { item: Item }) {
       )}
       {isOpen && item.children && (
         <div className="ml-4">
-          {item.children.map((subItem) => (
-            <SidebarItem key={subItem.name} item={subItem} />
+          {item.children.map((child) => (
+            <SidebarItem key={child.name} item={child} />
           ))}
         </div>
       )}
