@@ -212,13 +212,14 @@ export function getCommenterContributions(
       )
       const latestBid = sortedBids[0]
       if (latestBid) {
+        const offered = formatMoneyPrecise(
+          relevantBids.reduce((acc, bid) => acc + bid.amount, 0)
+        )
         contributions[commenterId] =
-          latestBid.type === 'donate'
-            ? `offered ${formatMoneyPrecise(
-                relevantBids.reduce((acc, bid) => acc + bid.amount, 0)
-              )}`
-            : latestBid.type === 'buy' || latestBid.type === 'assurance buy'
-            ? `buying at ${formatMoneyPrecise(latestBid.valuation)}`
+          latestBid.type === 'donate' ||
+          latestBid.type === 'buy' ||
+          latestBid.type === 'assurance buy'
+            ? `offering ${offered}`
             : `selling at ${formatMoneyPrecise(latestBid.valuation)}`
       }
     }
