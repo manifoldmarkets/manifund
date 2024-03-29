@@ -83,8 +83,6 @@ export default async function Sidebar() {
                   {name: '8', href: '/articles/approach/8'},
                   {name: '9', href: '/articles/approach/9'},
                   {name: '10', href: '/articles/approach/10'},
-                  {name: '11', href: '/articles/approach/11'},
-                  {name: '12', href: '/articles/approach/12'},
                 ]
               },
             ]}} />
