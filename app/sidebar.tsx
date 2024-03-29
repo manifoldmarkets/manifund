@@ -31,7 +31,7 @@ export default async function Sidebar() {
         aria-label="Sidebar"
         className="fixed top-0 hidden h-[100vh] w-56 justify-between divide-gray-300 self-start pl-2 pr-2 pt-10 lg:col-span-3 lg:flex lg:flex-col"
       >
-        <Col>
+        <Col className="h-full">
           <Link href="/">
             <div className="group flex flex-row items-center gap-1">
               <Image
@@ -50,44 +50,56 @@ export default async function Sidebar() {
           {/* @ts-expect-error Server Component */}
           {profile && <ProfileSummary profile={profile} />}
           {user === undefined && <div className="h-[56px]" />}
-          <SidebarItem item={{ name: 'Home', href: '/' }} />
-          {user === null && (
-            <SidebarItem
-              item={{
-                name: 'Login',
-                href: `/login`,
-              }}
-            />
-          )}
-          <SidebarItem item={{ name: 'About', children: [
-            {name: 'About Manifund', href: '/about'},
-            {name: 'Regranting', href: '/about/regranting'},
-            {name: 'Impact markets', href: '/about/impact-certificates'},
-            {name: 'Apply for funding', href: '/about/open-call'},
-          ]}} />
-          <SidebarItem item={{ name: 'People', href: '/people' }} />
-          <SidebarItem item={{ name: 'Categories', href: '/causes' }} />
-          <SidebarItem item={{ name: 'Articles', children: [
-            {
-              name: 'Manifund\'s approach to thinking about charitable funding',
-              childrenDefaultOpen: true,
-              children: [
-                {name: '1', href: '/articles/approach/1'},
-                {name: '2', href: '/articles/approach/2'}
-              ]
-            },
-          ]}} />
-          {user && (
-            <Link
-              href={isRegranter ? '/create-grant' : '/create'}
-              className={clsx(
-                buttonClass('xl', 'gradient'),
-                'mt-4 w-52 bg-gradient-to-r'
-              )}
-            >
-              {isRegranter ? 'Give a grant' : 'Create a project'}
-            </Link>
-          )}
+          <Col className="overflow-auto">
+            <SidebarItem item={{ name: 'Home', href: '/' }} />
+            {user === null && (
+              <SidebarItem
+                item={{
+                  name: 'Login',
+                  href: `/login`,
+                }}
+              />
+            )}
+            <SidebarItem item={{ name: 'About', children: [
+              {name: 'About Manifund', href: '/about'},
+              {name: 'Regranting', href: '/about/regranting'},
+              {name: 'Impact markets', href: '/about/impact-certificates'},
+              {name: 'Apply for funding', href: '/about/open-call'},
+            ]}} />
+            <SidebarItem item={{ name: 'People', href: '/people' }} />
+            <SidebarItem item={{ name: 'Categories', href: '/causes' }} />
+            <SidebarItem item={{ name: 'Articles', children: [
+              {
+                name: 'Manifund\'s approach to thinking about charitable funding',
+                childrenDefaultOpen: true,
+                children: [
+                  {name: '1', href: '/articles/approach/1'},
+                  {name: '2', href: '/articles/approach/2'},
+                  {name: '3', href: '/articles/approach/3'},
+                  {name: '4', href: '/articles/approach/4'},
+                  {name: '5', href: '/articles/approach/5'},
+                  {name: '6', href: '/articles/approach/6'},
+                  {name: '7', href: '/articles/approach/7'},
+                  {name: '8', href: '/articles/approach/8'},
+                  {name: '9', href: '/articles/approach/9'},
+                  {name: '10', href: '/articles/approach/10'},
+                  {name: '11', href: '/articles/approach/11'},
+                  {name: '12', href: '/articles/approach/12'},
+                ]
+              },
+            ]}} />
+            {user && (
+              <Link
+                href={isRegranter ? '/create-grant' : '/create'}
+                className={clsx(
+                  buttonClass('xl', 'gradient'),
+                  'mt-4 w-52 bg-gradient-to-r'
+                )}
+              >
+                {isRegranter ? 'Give a grant' : 'Create a project'}
+              </Link>
+            )}
+          </Col>
         </Col>
         <Row className="gap-5 px-3 py-10">
           <a
