@@ -29,6 +29,7 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
+
   const reactionPrice = tippedRxns[reaction] ?? 0
   const txnId = uuid()
   if (reactionPrice > 0) {
@@ -72,6 +73,7 @@ export default async function handler(req: NextRequest) {
       )
     }
   }
+
   const newRxn =
     reactionPrice > 0
       ? {
@@ -85,29 +87,17 @@ export default async function handler(req: NextRequest) {
           reactor_id: user.id,
           reaction,
         }
-  const { data: existingRxn, error: error0 } = await supabase
+  const { data: existingRxn } = await supabase
     .from('comment_rxns')
     .select('comment_id')
     .match(newRxn)
     .maybeSingle()
-  if (error0) {
-    console.error('0', error0)
-    return NextResponse.error()
-  }
+    .throwOnError()
   if (!!existingRxn) {
-    const { error } = await supabase.from('comment_rxns').delete().match(newRxn)
-    if (error) {
-      console.error('1', error)
-      return NextResponse.error()
-    }
+    await supabase.from('comment_rxns').delete().match(newRxn).throwOnError()
   } else {
-    const { error } = await supabase.from('comment_rxns').insert(newRxn)
-    if (error) {
-      console.error('2', error)
-      return NextResponse.error()
-    }
+    await supabase.from('comment_rxns').insert(newRxn).throwOnError()
   }
 
-  console.log(reaction)
   return NextResponse.json('success')
 }
