@@ -189,9 +189,9 @@ export function ExistingFreeRxnsDisplay(props: {
                 }
               }}
               className={clsx(
-                'flex items-center gap-1 rounded bg-gray-100 px-1.5 py-[0.5px] hover:bg-gray-200',
+                'flex items-center gap-1 rounded bg-gray-100 px-1.5 py-[0.5px]',
                 userDidReact && 'ring-2 ring-gray-300',
-                userId && 'cursor-pointer'
+                userId && 'cursor-pointer hover:bg-gray-200'
               )}
             >
               <span className="text-sm">{reaction}</span>
@@ -291,12 +291,14 @@ export function CommentRxnsPanel(props: {
   }
   return (
     <Row className="items-center gap-2">
-      <AddRxn
-        postRxn={postRxn}
-        rxns={localRxns}
-        userId={userId}
-        userCharityBalance={userCharityBalance}
-      />
+      {userId && (
+        <AddRxn
+          postRxn={postRxn}
+          rxns={localRxns}
+          userId={userId}
+          userCharityBalance={userCharityBalance}
+        />
+      )}
       <ExistingFreeRxnsDisplay
         rxns={localRxns}
         userId={userId}
