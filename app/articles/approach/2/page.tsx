@@ -1,12 +1,9 @@
+import ArticlePage from '@/components/article-page'
+import { Fragment } from 'react'
+
 export default function ApproachPage2() {
-  return (
-    <div className="prose mx-auto p-5 font-light">
-      <h1 className="relative top-5" id="impact-certificates">
-        A Framework for Funding Experiments
-      </h1>
-      <h2 id="-programs-manifund-has-run-">
-        <strong>Programs Manifund has run</strong>
-      </h2>
+  const content = (
+    <Fragment>
       <p>
         <h3>Regranting</h3>
         <h3>ACX grants</h3>
@@ -41,6 +38,13 @@ export default function ApproachPage2() {
         So we’ve come up with a first pass at a general framework for 
         thinking about the design of novel funding mechanisms.
       </p>
-    </div>
+    </Fragment>
   )
+  return <ArticlePage
+    articleTitle="A Framework for Funding Experiments"
+    pageTitle="Some Programs We've Run"
+    nextLink="/articles/approach/3"
+    nextLinkText="Next: The six steps of funding"
+    content={content}
+  />
 }

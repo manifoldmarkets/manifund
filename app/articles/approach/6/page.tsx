@@ -1,18 +1,15 @@
+import ArticlePage from '@/components/article-page'
+import { Fragment } from 'react'
+
 export default function ApproachPage6() {
-  return (
-    <div className="prose mx-auto p-5 font-light">
-      <h1 className="relative top-5" id="impact-certificates">
-        A Framework for Funding Experiments
-      </h1>
-      <h3 id="-psychological-benefits-">
-        <strong>Non-Financial Elements</strong>
-      </h3>
+  const content = (
+    <Fragment>
       <p>
-      Aside from all the financial considerations, there are a couple of social
-      and psychological levers entailed in grantmaking. One lesson Manifund has
-      gleaned from Manifold, our sister prediction-market company, is that you
-      can operate a finance-like system without any actual money involved,
-      because people also value:
+        Aside from all the financial considerations, there are a couple of social
+        and psychological levers entailed in grantmaking. One lesson Manifund has
+        gleaned from Manifold, our sister prediction-market company, is that you
+        can operate a finance-like system without any actual money involved,
+        because people also value:
       </p>
       <ol>
         <li>
@@ -35,6 +32,13 @@ export default function ApproachPage6() {
         and you can succeed in the sense that you did some actions on a website
         and now a real physical project is getting accomplished.
       </p>
-    </div>
+    </Fragment>
   )
+  return <ArticlePage
+    articleTitle="A Framework for Funding Experiments"
+    pageTitle="Non-Financial Elements"
+    nextLink="/articles/approach/7"
+    nextLinkText="Next: Effective iteration"
+    content={content}
+  />
 }

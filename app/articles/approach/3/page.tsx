@@ -1,13 +1,10 @@
+import ArticlePage from '@/components/article-page'
+import { Fragment } from 'react'
+
 export default function ApproachPage3() {
-  return (
-    <div className="prose mx-auto p-5 font-light">
-      <h1 className="relative top-5" id="impact-certificates">
-        A Framework for Funding Experiments
-      </h1>
-      <h2 id="-some-examples">
-        The Six Steps of Funding
-      </h2>
-      <h2>1. Predict</h2>
+  const content = (
+    <Fragment>
+            <h2>1. Predict</h2>
       <p>
         <strong>What does it entail?</strong> Make a good guess about which
         projects will be likely to achieve their aims, what impacts those
@@ -71,6 +68,13 @@ export default function ApproachPage3() {
         <strong>What are the desirables?</strong> Be helped by the project.
         Do not be harmed by the project.
       </p>
-    </div>
+    </Fragment>
   )
+  return <ArticlePage
+    articleTitle="A Framework for Funding Experiments"
+    pageTitle="The Six Steps of Funding"
+    nextLink="/articles/approach/4"
+    nextLinkText="Next: Some examples"
+    content={content}
+  />
 }

@@ -1,31 +1,26 @@
+import ArticlePage from '@/components/article-page'
+import { Fragment } from 'react'
+
+
 export default function ApproachPage1() {
-  return (
-    <div className="prose mx-auto p-5 font-light">
-      <h1 className="relative top-5" id="impact-certificates">
-        A Framework for Funding Experiments
-      </h1>
-      <p>
-        From 2023 retrospective: “Our initial thesis was that grant applications and screening largely can be done in public, and should be.”
-      </p>
-      <h2 id="-economic-experimentation-">
-        Economic Experimentation
-      </h2>
+  const content = (
+    <Fragment>
       <p> 
-          Manifund’s sister company, Manifold, runs experiments with
-          prediction markets. Because Manifold runs on play money, and because
-          users get to participate on the market-creation side as well as the
-          prediction side, it’s arguably the best playground in the world for
-          experimenting rapidly with financial mechanisms. Since official
-          currency isn’t involved, both Manifold and its users (and the two in
-          combination) can run experiments rapid-fire without jumping through
-          many hoops. For instance, Manifold has tried various types of
-          automatic market-making algorithms, mechanisms for multiple-choice
-          questions, short selling, limit orders, contests, leagues, even a
-          dating app spinoff. And users have made bots, non-question questions
-          like “___ stock (never resolves)”, markets that serve as bounties to
-          incentivize particular events to happen, questions with meta
-          resolution criteria like “Will the total volume of YES trading on
-          this question be more than x mana?”.
+        Manifund’s sister company, Manifold, runs experiments with
+        prediction markets. Because Manifold runs on play money, and because
+        users get to participate on the market-creation side as well as the
+        prediction side, it’s arguably the best playground in the world for
+        experimenting rapidly with financial mechanisms. Since official
+        currency isn’t involved, both Manifold and its users (and the two in
+        combination) can run experiments rapid-fire without jumping through
+        many hoops. For instance, Manifold has tried various types of
+        automatic market-making algorithms, mechanisms for multiple-choice
+        questions, short selling, limit orders, contests, leagues, even a
+        dating app spinoff. And users have made bots, non-question questions
+        like “___ stock (never resolves)”, markets that serve as bounties to
+        incentivize particular events to happen, questions with meta
+        resolution criteria like “Will the total volume of YES trading on
+        this question be more than x mana?”.
       </p>
       <p>
         Manifund is different, because lots of real money is moving through our
@@ -48,6 +43,13 @@ export default function ApproachPage1() {
           programs more effective?
         </li>
       </ol>
-    </div>
+    </Fragment>
   )
+  return <ArticlePage
+    articleTitle="A Framework for Funding Experiments"
+    pageTitle="Economic Experimentation"
+    nextLink="/articles/approach/2"
+    nextLinkText="Next: Some programs we've run"
+    content={content}
+  />
 }

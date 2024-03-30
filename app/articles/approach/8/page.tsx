@@ -1,15 +1,10 @@
-import Link from 'next/link'
-import { ArrowLongRightIcon } from '@heroicons/react/20/solid'
+import ArticlePage from '@/components/article-page'
+import { Fragment } from 'react'
+
 
 export default function ApproachPage8() {
-  return (
-    <div className="prose mx-auto p-5 font-light">
-      <h1 className="relative top-5" id="impact-certificates">
-        A Framework for Funding Experiments
-      </h1>
-      <h2 id="-caveat">
-        What About Different Value Systems?
-      </h2>
+  const content = (
+    <Fragment>
       <p>
         One limitation of this model is that it’s not obvious how well it applies
         to entities that don’t naturally fit into standard economic models because
@@ -57,13 +52,13 @@ export default function ApproachPage8() {
         up your mind as to what your goals are, market mechanisms become useful
         tools to help you get there.
       </p>
-      <Link
-          href="/articles/approach/9"
-          className="w-full text-right float-right text-md font-semibold text-orange-500"
-        >
-          Next: How you can get involved
-          <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
-        </Link>
-    </div>
+    </Fragment>
   )
+  return <ArticlePage
+    articleTitle="A Framework for Funding Experiments"
+    pageTitle="What About Different Value Systems?"
+    nextLink="/articles/approach/9"
+    nextLinkText="Next: How you can get involved"
+    content={content}
+  />
 }

@@ -1,12 +1,9 @@
+import ArticlePage from '@/components/article-page'
+import { Fragment } from 'react'
+
 export default function ApproachPage4() {
-  return (
-    <div className="prose mx-auto p-5 font-light">
-      <h1 className="relative top-5" id="impact-certificates">
-        A Framework for Funding Experiments
-      </h1>
-      <h2 id="-some-examples">
-        Some Examples
-      </h2>
+  const content = (
+    <Fragment>
       <h3>The startup model</h3>
       <p>
         <strong>Predict:</strong> investors
@@ -160,6 +157,13 @@ export default function ApproachPage4() {
       <p>
         <strong>Benefit:</strong> contributors
       </p>
-    </div>
+    </Fragment>
   )
+  return <ArticlePage
+    articleTitle="A Framework for Funding Experiments"
+    pageTitle="Some Examples"
+    nextLink="/articles/approach/5"
+    nextLinkText="Next: Observations about these examples"
+    content={content}
+  />
 }

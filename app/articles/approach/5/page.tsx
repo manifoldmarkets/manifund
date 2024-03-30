@@ -1,12 +1,9 @@
+import ArticlePage from '@/components/article-page'
+import { Fragment } from 'react'
+
 export default function ApproachPage5() {
-  return (
-    <div className="prose mx-auto p-5 font-light">
-      <h1 className="relative top-5" id="impact-certificates">
-        A Framework for Funding Experiments
-      </h1>
-      <h2 id="-observations">
-        Observations About These Examples
-      </h2>
+  const content = (
+    <Fragment>
       <p>
         There are a couple of things to notice here.
       </p>
@@ -137,6 +134,13 @@ export default function ApproachPage5() {
         principal-agent problems, as often happens in bureaucracy, and can be
         outweighed by economies of scale.
       </p>
-    </div>
+    </Fragment>
   )
+  return <ArticlePage
+    articleTitle="A Framework for Funding Experiments"
+    pageTitle="Observations About These Examples"
+    nextLink="/articles/approach/6"
+    nextLinkText="Next: Non-financial elements"
+    content={content}
+  />
 }
