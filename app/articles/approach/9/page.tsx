@@ -5,7 +5,7 @@ export default function ApproachPage4() {
         Manifund’s Approach to Thinking About Charitable Funding
       </h1>
       <h3 id="-effective-iteration-">
-        <strong>effective iteration</strong>
+        <strong>Effective Iteration</strong>
       </h3>
       <p>
         The examples of the internet, cultural evolution, and the stock market – not to mention prediction markets! – suggest that the most accurate information is produced at scale by a decentralized mass of actors with an incentive for the right answers to bubble to the top. First-principles speculation only goes so far – it just isn’t possible for one person or team to process as much information as a network can.      

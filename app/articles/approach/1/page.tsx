@@ -5,7 +5,7 @@ export default function ApproachPage1() {
         Manifund’s Approach to Thinking About Charitable Funding
       </h1>
       <p>
-        From 2023 retrospective: &quot;Our initial thesis was that grant applications and screening largely can be done in public, and should be.&quot;
+        From 2023 retrospective: “Our initial thesis was that grant applications and screening largely can be done in public, and should be.”
       </p>
       <h2 id="-economic-experimentation-">
         Economic Experimentation
@@ -29,8 +29,8 @@ export default function ApproachPage1() {
       </p>
       <p>
         Manifund is different, because lots of real money is moving through our
-        programs. But we’re still small and fast-moving ([example of grant
-        turnaround time]), and our ethos is similar: we aim to be an incubator
+        programs. But we’re still small and fast-moving,
+        and our ethos is similar: we aim to be an incubator
         for lots of small- and medium-scale experiments testing out funding
         mechanisms for charity and public goods.
       </p>

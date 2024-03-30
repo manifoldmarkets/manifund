@@ -1,164 +1,86 @@
-export default function ApproachPage4() {
+export default function ApproachPage6() {
   return (
     <div className="prose mx-auto p-5 font-light">
       <h1 className="relative top-5" id="impact-certificates">
         Manifund’s Approach to Thinking About Charitable Funding
       </h1>
-      <h2 id="-some-examples">
-        Some Examples
-      </h2>
-      <h3>The startup model</h3>
       <p>
-        <strong>Predict:</strong> investors
+        <br />
+        There are a couple of things to notice here.
+      </p>
+      <h3>
+        Some distinctions don’t always occur
+      </h3>
+      <p>
+        “Predict” and “evaluate” are often the same, as are “front” and “pay
+        out”. These are for cases where money is given out ahead of time, in a
+        way that’s – well, not no-strings-attached, the founders have to make a
+        reasonable attempt and not just grab the money and run off to hide out in
+        antarctica; but it’s not contingent on the project actually succeeding.
+        maybe the company goes bust, the idea doesn’t work, the nonprofit falls
+        apart, whatever. Or maybe the project does what it says it will, but it
+        turns out no one really likes or wants the result after all. But when
+        there’s not a separate evaluation step and payout step, then those
+        contingencies are beyond the purview of the funding mechanism to
+        influence. Trying to fund stuff that won’t fail is baked into the
+        prediction and fronting steps.
       </p>
       <p>
-        <strong>Front:</strong> investors
+        This is especially true for new endeavors. With well-established
+        charities and companies, the ability to secure future funding is an
+        indirect incentive to execute current projects well. But for new
+        organizations that have no track record at all (or sometimes, even
+        new projects started by existing organizations), you have to fall
+        back on looking at the track record of the people founding them, and
+        if the founders are relatively unknown, there’s not much of an
+        incentive to give them a chance as opposed to taking safe bets. Taking
+        big swings that you’ll usually miss on, but that will occasionally have
+        wildly outsized returns, is sometimes called “hits-based giving”; some
+        effective-altruist organizations explicitly try to use this strategy,
+        and the reason it’s even necessary for them to specify that – after
+        all, hits-based investing is how venture capital works be default – is
+        that the incentives for an individual employee of a typical
+        philanthropic foundation, like the incentives for an individual
+        bureaucrat, are to be risk-averse and lean toward safe bets rather
+        than innovation.
+      </p>
+      <h3>
+        Some mechanisms are “full-stack”; others exist at one or two layers
+      </h3>
+      <p>
+        Some mechanisms, like the examples mentioned above, offer an
+        implementation of the entire framework.
       </p>
       <p>
-        <strong>Execute:</strong> founder
+        But a large swath of mechanisms can be understood as innovations on
+        one or two of the steps. For example:
       </p>
-      <p>
-        <strong>Evaluate:</strong> consumers
+      <p>  
+        <strong>Challenge prizes:</strong> pay out.
       </p>
-      <p>
-        <strong>Pay out:</strong> consumers
+      <p>  
+        <strong>S-process:</strong> evaluate.
       </p>
-      <p>
-        <strong>Benefit:</strong> founder (as profit), investors (as profit), consumers (as consumer surplus)
+      <p>  
+        <strong>Advance market commitments </strong> pay out.
       </p>
-      <h3>The bootstrapping model</h3>
-      <p>
-        <strong>Predict:</strong> founder
+      <p>  
+        <strong>Income share agreements </strong> predict and front.
       </p>
-      <p>
-        <strong>Front:</strong> founder
+      <p>  
+        <strong>Schelling-point oracles: </strong> evaluate.
       </p>
-      <p>
-        <strong>Execute:</strong> founder
+      <p>  
+        <strong>Patronage: </strong> predict and front.
       </p>
-      <p>
-        <strong>Evaluate:</strong> consumers
+      <p>  
+        <strong>Crowdfunding: </strong> pay out.
       </p>
-      <p>
-        <strong>Pay out:</strong> consumers
+      <p>  
+        <strong>Regranting: </strong> predict.
       </p>
-      <p>
-        <strong>Benefit:</strong> founder (as profit), consumers (as consumer surplus)
-      </p>
-      <h3>The government model</h3>
-      <p>
-        <strong>Predict:</strong> elected officials or bureaucrats
-      </p>
-      <p>
-        <strong>Front:</strong> citizens (as taxpayers)
-      </p>
-      <p>
-        <strong>Execute:</strong> contractors
-      </p>
-      <p>
-        <strong>Evaluate:</strong> citizens (indirectly, as voters)
-      </p>
-      <p>
-        <strong>Pay out:</strong> citizens (as taxpayers)
-      </p>
-      <p>
-        <strong>Benefit:</strong> citizens, contractors (as profit), officials (as goodwill for
-        subsequent elections)
-      </p>
-      <h3>The wealthy philanthropist model</h3>
-      <p>
-        <strong>Predict:</strong> donor
-      </p>
-      <p>
-        <strong>Front:</strong> donor
-      </p>
-      <p>
-        <strong>Execute:</strong> donor
-      </p>
-      <p>
-        <strong>Evaluate:</strong> donor
-      </p>
-      <p>
-        <strong>Pay out:</strong> donor
-      </p>
-      <p>
-        <strong>Benefit:</strong> charity beneficiaries
-      </p>
-      <h3>The classical effective altruism model</h3>
-      <p>
-        <strong>Predict:</strong> donor, with an our world in data tab open
-      </p>
-      <p>
-        <strong>Front:</strong> donor
-      </p>
-      <p>
-        <strong>Execute:</strong> donor
-      </p>
-      <p>
-        <strong>Evaluate:</strong> donor
-      </p>
-      <p>
-        <strong>Pay out:</strong> donor
-      </p>
-      <p>
-        <strong>Benefit:</strong> charity beneficiaries
-      </p>
-      <h3>The charity evaluator model</h3>
-      <p>
-        <strong>Predict:</strong> charity evaluator
-      </p>
-      <p>
-        <strong>Front:</strong> donors
-      </p>
-      <p>
-        <strong>Execute:</strong> founders
-      </p>
-      <p>
-        <strong>Evaluate:</strong> charity evaluator
-      </p>
-      <p>
-        <strong>Pay out:</strong> donors
-      </p>
-      <p>
-        <strong>Benefit:</strong> charity beneficiaries
-      </p>
-      <h4>The impact certificate model</h4>
-      <p>
-        <strong>Predict:</strong> investors
-      </p>
-      <p>
-        <strong>Front:</strong> investors
-      </p>
-      <p>
-        <strong>Execute:</strong> founder
-      </p>
-      <p>
-        <strong>Evaluate:</strong> donor
-      </p>
-      <p>
-        <strong>Pay out:</strong> donor
-      </p>
-      <p>
-        <strong>Benefit:</strong> founder (as profit), investors (as profit), charity beneficiaries
-      </p>
-      <h3>The quadratic funding model</h3>
-      <p>
-        <strong>Predict:</strong> contributors
-      </p>
-      <p>
-        <strong>Front:</strong> contributors and matching-pool sponsors
-      </p>
-      <p>
-        <strong>Execute:</strong> founder
-      </p>
-      <p>
-        <strong>Evaluate:</strong> contributors
-      </p>
-      <p>
-        <strong>Pay out:</strong> contributors and matching-pool sponsors
-      </p>
-      <p>
-        <strong>Benefit:</strong> contributors
+      <p>  
+        <strong>Prediction markets: </strong> predict.
       </p>
     </div>
   )

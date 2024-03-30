@@ -73,10 +73,9 @@ export default async function Sidebar() {
                 name: 'Manifund\'s approach to thinking about charitable funding',
                 childrenDefaultOpen: true,
                 children: [
-                  {name: '1', href: '/articles/approach/1'},
-                  {name: '2', href: '/articles/approach/2'},
-                  {name: '3', href: '/articles/approach/3'},
-                  {name: '4', href: '/articles/approach/4'},
+                  {name: '1. Economic experimentation', href: '/articles/approach/1'},
+                  {name: '2. Programs we\'ve run', href: '/articles/approach/2'},
+                  {name: '3. The six steps of funding', href: '/articles/approach/4'},
                   {name: '5', href: '/articles/approach/5'},
                   {name: '6', href: '/articles/approach/6'},
                   {name: '7', href: '/articles/approach/7'},
