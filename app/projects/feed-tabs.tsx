@@ -23,9 +23,16 @@ export function FeedTabs(props: {
   recentBids: FullBid[]
   projects: FullProject[]
   causesList: SimpleCause[]
+  userId?: string
 }) {
-  const { recentComments, recentDonations, recentBids, projects, causesList } =
-    props
+  const {
+    recentComments,
+    recentDonations,
+    recentBids,
+    projects,
+    causesList,
+    userId,
+  } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
   const [page, setPage] = useState(1)
@@ -63,6 +70,8 @@ export function FeedTabs(props: {
               key={comment.id}
               comment={comment}
               commenter={comment.profiles}
+              userId={userId}
+              rxns={comment.comment_rxns}
               commentHref={`/projects/${comment.projects.slug}?tab=comments#${comment.id}`}
               projectTitle={comment.projects.title}
             />

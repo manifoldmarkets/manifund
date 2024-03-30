@@ -1,6 +1,6 @@
 'use client'
 import { Profile } from '@/db/profile'
-import { CommentAndProfile } from '@/db/comment'
+import { CommentAndProfile, CommentAndProfileAndRxns } from '@/db/comment'
 import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
 import { Project } from '@/db/project'
@@ -20,9 +20,10 @@ import { Comment } from '@/components/comment'
 
 export function Comments(props: {
   project: Project
-  comments: CommentAndProfile[]
+  comments: CommentAndProfileAndRxns[]
   commenterContributions: Record<string, string>
   userProfile?: Profile
+  userCharityBalance?: number
   specialPrompt?: string
 }) {
   const {
@@ -30,6 +31,7 @@ export function Comments(props: {
     comments,
     commenterContributions,
     userProfile,
+    userCharityBalance,
     specialPrompt,
   } = props
   const [replyingTo, setReplyingTo] = useState<CommentAndProfile | null>(null)
@@ -66,6 +68,9 @@ export function Comments(props: {
             <Comment
               comment={thread.root}
               commenter={thread.root.profiles}
+              rxns={thread.root.comment_rxns}
+              userId={userProfile?.id}
+              userCharityBalance={userCharityBalance}
               commentHref={`/projects/${project.slug}?tab=comments#${thread.root.id}`}
               writtenByCreator={thread.root.commenter === project.creator}
               contributionText={commenterContributions[thread.root.commenter]}
@@ -80,6 +85,9 @@ export function Comments(props: {
                   <Comment
                     comment={reply}
                     commenter={reply.profiles}
+                    rxns={reply.comment_rxns}
+                    userId={userProfile?.id}
+                    userCharityBalance={userCharityBalance}
                     commentHref={`/projects/${project.slug}?tab=comments#${reply.id}`}
                     writtenByCreator={reply.commenter === project.creator}
                     contributionText={commenterContributions[reply.commenter]}
@@ -123,12 +131,12 @@ export function Comments(props: {
 }
 
 type Thread = {
-  root: CommentAndProfile
-  replies: CommentAndProfile[]
+  root: CommentAndProfileAndRxns
+  replies: CommentAndProfileAndRxns[]
 }
 function genThreads(
-  rootComments: CommentAndProfile[],
-  replyComments: CommentAndProfile[]
+  rootComments: CommentAndProfileAndRxns[],
+  replyComments: CommentAndProfileAndRxns[]
 ) {
   const threads = Object.fromEntries(
     rootComments.map((comment) => [

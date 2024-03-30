@@ -269,7 +269,7 @@ export function getTxnCharityMultiplier(
   if (txn.type === 'project donation') {
     return isIncoming ? 0 : -1
   }
-  if (txn.type === 'profile donation') {
+  if (txn.type === 'profile donation' || txn.type === 'tip') {
     return isIncoming ? 1 : -1
   }
   if (txn.type === 'user to amm trade' || txn.type === 'user to user trade') {
@@ -297,7 +297,8 @@ export function getTxnCashMultiplier(
   if (
     txn.token !== 'USD' ||
     (txn.from_id !== userId && txn.to_id !== userId) ||
-    txn.type === 'profile donation'
+    txn.type === 'profile donation' ||
+    txn.type === 'tip'
   ) {
     return 0
   }

@@ -4,7 +4,7 @@ import { RichContent } from '@/components/editor'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import { Tag } from '@/components/tags'
-import { Comment } from '@/db/comment'
+import { Comment, CommentRxn } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import Link from 'next/link'
 import clsx from 'clsx'
@@ -16,11 +16,15 @@ import { Tooltip } from './tooltip'
 import { getURL } from '@/utils/constants'
 import { useSafeLayoutEffect } from '@/hooks/use-safe-layout-effect'
 import { toSentenceCase } from '@/utils/formatting'
+import { CommentRxnsPanel } from './comment-rxn'
 
 export function Comment(props: {
   comment: Comment
   commenter: Profile
   commentHref: string
+  rxns: CommentRxn[]
+  userId?: string
+  userCharityBalance?: number
   writtenByCreator?: boolean
   contributionText?: string
   projectTitle?: string
@@ -29,6 +33,9 @@ export function Comment(props: {
   const {
     comment,
     commenter,
+    rxns,
+    userId,
+    userCharityBalance,
     commentHref,
     writtenByCreator,
     contributionText,
@@ -76,7 +83,7 @@ export function Comment(props: {
         </Link>
         <Card
           className={clsx(
-            'relative w-full rounded-xl rounded-tl-sm px-6 pb-8 pt-2',
+            'relative w-full overflow-visible rounded-xl rounded-tl-sm px-4 py-2',
             highlighted ? '!bg-orange-100 ring-2 !ring-orange-600' : ''
           )}
         >
@@ -93,6 +100,16 @@ export function Comment(props: {
                   addSuffix: true,
                 })}
               </p>
+              <Tooltip text="Copy link to comment" className="cursor-pointer">
+                <LinkIcon
+                  className="h-3 w-3 stroke-2 text-gray-500 hover:text-gray-700"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(
+                      `${getURL()}${commentHref}`
+                    )
+                  }}
+                />
+              </Tooltip>
             </Row>
             {comment.special_type && (
               <Tag
@@ -102,36 +119,42 @@ export function Comment(props: {
               />
             )}
           </Row>
-          <div
-            id="content"
-            ref={contentElement}
-            className={clsx(
-              expanded || !showExpandButton ? 'max-h-fit' : 'line-clamp-[12]'
-            )}
-          >
-            <RichContent content={comment.content} className="text-sm" />
-          </div>
-          <Row className="absolute bottom-2 right-2 gap-2">
-            <Tooltip text="Copy link to comment" className="cursor-pointer">
-              <LinkIcon
-                className="h-4 w-4 stroke-2 text-gray-500 hover:text-gray-700"
-                onClick={async () => {
-                  await navigator.clipboard.writeText(
-                    `${getURL()}${commentHref}`
-                  )
-                }}
-              />
-            </Tooltip>
-            {children}
-          </Row>
-          {showExpandButton && (
-            <button
-              className="absolute bottom-2 left-3 text-xs text-gray-500 hover:underline"
-              onClick={() => setExpanded(!expanded)}
+          <div className={clsx('relative', showExpandButton && 'pb-5')}>
+            <div
+              id="content"
+              ref={contentElement}
+              className={clsx(
+                expanded || !showExpandButton ? 'max-h-fit' : 'line-clamp-[12]'
+              )}
             >
-              {expanded ? 'Show less' : 'Show more'}
-            </button>
-          )}
+              <RichContent content={comment.content} className="text-sm" />
+            </div>
+            {showExpandButton && (
+              <div
+                className={clsx(
+                  'absolute bottom-0 left-0 z-10 flex h-32 w-full flex-col justify-end',
+                  !expanded &&
+                    'shadow-[inset_0px_-100px_50px_-50px_rgba(255,255,255,0.9)]'
+                )}
+              >
+                <button
+                  className="text-xs text-gray-500 hover:underline"
+                  onClick={() => setExpanded(!expanded)}
+                >
+                  {expanded ? 'Show less' : 'Show more'}
+                </button>
+              </div>
+            )}
+          </div>
+          <Row className="mt-1 justify-between gap-2">
+            <CommentRxnsPanel
+              commentId={comment.id}
+              userId={userId}
+              userCharityBalance={userCharityBalance}
+              rxns={rxns}
+            />
+            <div className="mt-1.5">{children}</div>
+          </Row>
         </Card>
       </Row>
     </Col>
