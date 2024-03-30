@@ -5,71 +5,160 @@ export default function ApproachPage4() {
         Manifund’s Approach to Thinking About Charitable Funding
       </h1>
       <h2 id="-some-examples">
-        The Six Steps of Funding
+        Some Examples
       </h2>
-      <h2>1. Predict</h2>
+      <h3>The startup model</h3>
       <p>
-        <strong>What does it entail?</strong> Make a good guess about which
-        projects will be likely to achieve their aims, what impacts those
-        achievements will have, and which teams can achieve the best
-        results for the lowest cost.
+        <strong>Predict:</strong> investors
       </p>
       <p>
-        <strong>What are the desirables?</strong> Predict accurately and at
-        low cost.
-      </p>
-      <h2>2. Front</h2>
-      <p>
-        <strong>What does it entail?</strong> Supply the immediate
-        funding for the costs a team will incur in the process of
-        doing their project. 
+        <strong>Front:</strong> investors
       </p>
       <p>
-        <strong>What are the desirables?</strong> Predict accurately and at
-        low cost.
-      </p>
-      <h2>3. Execute</h2>
-      <p>
-        <strong>What does it entail?</strong> Carry out the project.
+        <strong>Execute:</strong> founder
       </p>
       <p>
-        <strong>What are the desirables?</strong> Do something people
-        actually want. Do it well. Do it inexpensively.  Don’t run off
-        with the money.
-      </p>
-      <h2>4. Evaluate</h2>
-      <p>
-        <strong>What does it entail?</strong> Determine how valuable the
-        project was.
+        <strong>Evaluate:</strong> consumers
       </p>
       <p>
-        <strong>What are the desirables?</strong> Align the measure with
-        the target – that is, [explain further]. Account for
-        externalities – for example, if the project was moderately beneficial
-        to the group that commissioned it, but also benefited lots of
-        other people as well, then we’d like that to be factored in.
-      </p>
-      <h2>5. Pay out</h2>
-      <p>
-        <strong>What does it entail?</strong> Allocate money as a function
-        of the evaluation of the project’s impact. In some cases, like
-        traditional grantmaking, the fronting is also the payout (although
-        to some extent this is a question of definitions; you could also
-        think of traditional grantmaking as just skipping the fronting
-        step).
+        <strong>Pay out:</strong> consumers
       </p>
       <p>
-        <strong>What are the desirables?</strong> Incentivize the execution
-        of projects with the most impact.
+        <strong>Benefit:</strong> founder (as profit), investors (as profit), consumers (as consumer surplus)
       </p>
-      <h2>6. Benefit</h2>
+      <h3>The bootstrapping model</h3>
       <p>
-        <strong>What does it entail?</strong> Enjoy the benefits
-        of whatever it was that got funded.
+        <strong>Predict:</strong> founder
       </p>
       <p>
-        <strong>What are the desirables?</strong> Be helped by the project.
-        Do not be harmed by the project.
+        <strong>Front:</strong> founder
+      </p>
+      <p>
+        <strong>Execute:</strong> founder
+      </p>
+      <p>
+        <strong>Evaluate:</strong> consumers
+      </p>
+      <p>
+        <strong>Pay out:</strong> consumers
+      </p>
+      <p>
+        <strong>Benefit:</strong> founder (as profit), consumers (as consumer surplus)
+      </p>
+      <h3>The government model</h3>
+      <p>
+        <strong>Predict:</strong> elected officials or bureaucrats
+      </p>
+      <p>
+        <strong>Front:</strong> citizens (as taxpayers)
+      </p>
+      <p>
+        <strong>Execute:</strong> contractors
+      </p>
+      <p>
+        <strong>Evaluate:</strong> citizens (indirectly, as voters)
+      </p>
+      <p>
+        <strong>Pay out:</strong> citizens (as taxpayers)
+      </p>
+      <p>
+        <strong>Benefit:</strong> citizens, contractors (as profit), officials (as goodwill for
+        subsequent elections)
+      </p>
+      <h3>The wealthy philanthropist model</h3>
+      <p>
+        <strong>Predict:</strong> donor
+      </p>
+      <p>
+        <strong>Front:</strong> donor
+      </p>
+      <p>
+        <strong>Execute:</strong> donor
+      </p>
+      <p>
+        <strong>Evaluate:</strong> donor
+      </p>
+      <p>
+        <strong>Pay out:</strong> donor
+      </p>
+      <p>
+        <strong>Benefit:</strong> charity beneficiaries
+      </p>
+      <h3>The classical effective altruism model</h3>
+      <p>
+        <strong>Predict:</strong> donor, with an Our World In Data tab open
+      </p>
+      <p>
+        <strong>Front:</strong> donor
+      </p>
+      <p>
+        <strong>Execute:</strong> donor
+      </p>
+      <p>
+        <strong>Evaluate:</strong> donor
+      </p>
+      <p>
+        <strong>Pay out:</strong> donor
+      </p>
+      <p>
+        <strong>Benefit:</strong> charity beneficiaries
+      </p>
+      <h3>The charity evaluator model</h3>
+      <p>
+        <strong>Predict:</strong> charity evaluator
+      </p>
+      <p>
+        <strong>Front:</strong> donors
+      </p>
+      <p>
+        <strong>Execute:</strong> founders
+      </p>
+      <p>
+        <strong>Evaluate:</strong> charity evaluator
+      </p>
+      <p>
+        <strong>Pay out:</strong> donors
+      </p>
+      <p>
+        <strong>Benefit:</strong> charity beneficiaries
+      </p>
+      <h4>The impact certificate model</h4>
+      <p>
+        <strong>Predict:</strong> investors
+      </p>
+      <p>
+        <strong>Front:</strong> investors
+      </p>
+      <p>
+        <strong>Execute:</strong> founder
+      </p>
+      <p>
+        <strong>Evaluate:</strong> donor
+      </p>
+      <p>
+        <strong>Pay out:</strong> donor
+      </p>
+      <p>
+        <strong>Benefit:</strong> founder (as profit), investors (as profit), charity beneficiaries
+      </p>
+      <h3>The quadratic funding model</h3>
+      <p>
+        <strong>Predict:</strong> contributors
+      </p>
+      <p>
+        <strong>Front:</strong> contributors and matching-pool sponsors
+      </p>
+      <p>
+        <strong>Execute:</strong> founder
+      </p>
+      <p>
+        <strong>Evaluate:</strong> contributors
+      </p>
+      <p>
+        <strong>Pay out:</strong> contributors and matching-pool sponsors
+      </p>
+      <p>
+        <strong>Benefit:</strong> contributors
       </p>
     </div>
   )

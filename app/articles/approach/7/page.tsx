@@ -4,58 +4,14 @@ export default function ApproachPage4() {
       <h1 className="relative top-5" id="impact-certificates">
         Manifund’s Approach to Thinking About Charitable Funding
       </h1>
-      <h3 id="-coupling-and-decoupling-">
-        <strong>
-          Coupling and decoupling are central tools of funding-mechanism design
-        </strong>
-      </h3>
+      <h2 id="-effective-iteration-">
+        <strong>Effective Iteration</strong>
+      </h2>
       <p>
-        No mechanism listed here has all its six steps carried out by different
-        actors. In other words, various subsets of the steps are coupled
-        together: for instance, quadratic funding is able to price demand for a
-        public good because potential beneficiaries put up some of their own
-        money, which ensures they’re credibly signaling their real preference
-        for the good. Or for a more obvious example, democracy is more
-        responsive to the needs of its populace than monarchy is because
-        elected officials have to predict which policies will be popular in
-        order to win re-election. That’s because coupling two steps aligns
-        their incentives: combining an information-gathering step with a
-        money-moving step ensures that decision-makers have skin in the game.
+        The examples of the internet, cultural evolution, and the stock market – not to mention prediction markets! – suggest that the most accurate information is produced at scale by a decentralized mass of actors with an incentive for the right answers to bubble to the top. First-principles speculation only goes so far – it just isn’t possible for one person or team to process as much information as a network can.      
       </p>
       <p>
-        But there’s a limit to the benefits of coupling. The ultimate fully
-        coupled funding system is “everyone builds everything for themselves
-        and pays for it themselves.” then the incentives are very aligned!
-        but on the other hand, it’s tremendously inefficient – no
-        specialization, no division of labor.
-      </p>
-      <p>
-        So decoupling turns the knob the other way. For example, in a market
-        for impact certificates, instead of donors doing all the work of
-        assessing applicants and allocating funds (by making grants in
-        advance based on who looks most promising), you split the process
-        into two layers: investors, who are purely speculators, and donors,
-        who only have to evaluate projects’ impact afterwards.
-      </p>
-      <p>
-        Another example is the design-bid-build system of construction
-        contracting. Instead of the government choosing a single bid for a
-        contractor to design and then carry out a construction project,
-        with design-bid-build they accept one contractor’s bid to create a
-        design, then put out a separate call for a (potentially) different
-        contractor to implement it; see Asterisk magazine’s 
-        <a href="https://asteriskmag.com/issues/05/all-aboard-the-bureaucracy-train"> interview </a>
-        with urbanist Alon Levy, who argues that this framework
-        is more cost-effective than the single-bid (”design-build”) system in
-        most places that run it.
-      </p>
-      <p>
-        In general, decoupling allows for improved competition and
-        specialization, which is especially useful in philanthropic cases,
-        where it’s hard to operate a single nonprofit as efficiently as a
-        corporation of the same size. But too much decoupling can cause
-        principal-agent problems, as often happens in bureaucracy, and can be
-        outweighed by economies of scale.
+        The way to use this principle to figure out which projects will work is to find ways to try lots of projects quickly: the higher the speed and greater the volume, the more effective the information-gathering. In 2023, Manifund’s first year of operations, the platform sent $2.06 million in funds to 88 projects. One of our explicit goals is to offer grantees turnaround times measured in weeks or even days instead of months. We hypothesize that timing is an underrated issue for projects that are smaller, newer, and/or run by individuals, as opposed to projects that are already ongoing or are part of existing organizations: it’s difficult to arrange your life so that you’ll be free in several months for an opportunity that might or might not materialize. In these cases, agility and speed fill a critical gap for applicants who would otherwise have been prohibitively inconvenienced by long turnaround times.
       </p>
     </div>
   )
