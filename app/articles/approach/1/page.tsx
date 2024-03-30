@@ -2,7 +2,7 @@ export default function ApproachPage1() {
   return (
     <div className="prose mx-auto p-5 font-light">
       <h1 className="relative top-5" id="impact-certificates">
-        Manifund’s Approach to Thinking About Charitable Funding
+        A Framework for Funding Experiments
       </h1>
       <p>
         From 2023 retrospective: “Our initial thesis was that grant applications and screening largely can be done in public, and should be.”

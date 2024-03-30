@@ -1,8 +1,8 @@
-export default function ApproachPage6() {
+export default function ApproachPage5() {
   return (
     <div className="prose mx-auto p-5 font-light">
       <h1 className="relative top-5" id="impact-certificates">
-        Manifund’s Approach to Thinking About Charitable Funding
+        A Framework for Funding Experiments
       </h1>
       <h2 id="-observations">
         Observations About These Examples

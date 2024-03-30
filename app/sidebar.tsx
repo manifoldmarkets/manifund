@@ -70,18 +70,18 @@ export default async function Sidebar() {
             <SidebarItem item={{ name: 'Categories', href: '/causes' }} />
             <SidebarItem item={{ name: 'Articles', children: [
               {
-                name: 'Manifund\'s approach to thinking about charitable funding',
+                name: 'A Framework for Funding Experiments',
                 childrenDefaultOpen: true,
                 children: [
                   {name: '1. Economic experimentation', href: '/articles/approach/1'},
-                  {name: '2. Programs we\'ve run', href: '/articles/approach/2'},
-                  {name: '3. The six steps of funding', href: '/articles/approach/4'},
-                  {name: '5', href: '/articles/approach/5'},
-                  {name: '6', href: '/articles/approach/6'},
-                  {name: '7', href: '/articles/approach/7'},
-                  {name: '8', href: '/articles/approach/8'},
-                  {name: '9', href: '/articles/approach/9'},
-                  {name: '10', href: '/articles/approach/10'},
+                  {name: '2. Some programs we\'ve run', href: '/articles/approach/2'},
+                  {name: '3. The six steps of funding', href: '/articles/approach/3'},
+                  {name: '4. Some examples', href: '/articles/approach/4'},
+                  {name: '5. Observations about these examples', href: '/articles/approach/5'},
+                  {name: '6. Non-financial elements', href: '/articles/approach/6'},
+                  {name: '7. Effective iteration', href: '/articles/approach/7'},
+                  {name: '8. What about different value systems?', href: '/articles/approach/8'},
+                  {name: '9. How you can get involved', href: '/articles/approach/9'},
                 ]
               },
             ]}} />

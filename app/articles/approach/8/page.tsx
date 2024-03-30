@@ -1,8 +1,11 @@
-export default function ApproachPage4() {
+import Link from 'next/link'
+import { ArrowLongRightIcon } from '@heroicons/react/20/solid'
+
+export default function ApproachPage8() {
   return (
     <div className="prose mx-auto p-5 font-light">
       <h1 className="relative top-5" id="impact-certificates">
-        Manifund’s Approach to Thinking About Charitable Funding
+        A Framework for Funding Experiments
       </h1>
       <h2 id="-caveat">
         What About Different Value Systems?
@@ -54,6 +57,13 @@ export default function ApproachPage4() {
         up your mind as to what your goals are, market mechanisms become useful
         tools to help you get there.
       </p>
+      <Link
+          href="/articles/approach/9"
+          className="w-full text-right float-right text-md font-semibold text-orange-500"
+        >
+          Next: How you can get involved
+          <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
+        </Link>
     </div>
   )
 }
