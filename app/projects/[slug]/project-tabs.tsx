@@ -10,7 +10,7 @@ import { Shareholders } from './shareholders'
 import { bundleTxns } from '@/utils/math'
 import { Tabs } from '@/components/tabs'
 import { DonationsHistory } from '@/components/donations-history'
-import { CommentAndProfile } from '@/db/comment'
+import { CommentAndProfileAndRxns, CommentAndProfile } from '@/db/comment'
 import { uniq } from 'lodash'
 import { compareDesc } from 'date-fns'
 import { formatMoneyPrecise, formatPercent } from '@/utils/formatting'
@@ -18,9 +18,10 @@ import { MarketTab } from '../market-tab'
 
 export function ProjectTabs(props: {
   project: FullProject
-  comments: CommentAndProfile[]
+  comments: CommentAndProfileAndRxns[]
   bids: BidAndProfile[]
   txns: TxnAndProfiles[]
+  userCharityBalance: number
   userSpendableFunds: number
   userSellableShares: number
   userProfile?: Profile
@@ -32,6 +33,7 @@ export function ProjectTabs(props: {
     comments,
     bids,
     txns,
+    userCharityBalance,
     userSpendableFunds,
     userSellableShares,
     userProfile,
@@ -62,6 +64,7 @@ export function ProjectTabs(props: {
           project={project}
           comments={comments}
           userProfile={userProfile}
+          userCharityBalance={userCharityBalance}
           commenterContributions={commenterContributions}
           specialPrompt={specialCommentPrompt}
         />

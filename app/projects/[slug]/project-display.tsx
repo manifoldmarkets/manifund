@@ -4,7 +4,7 @@ import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { ProgressBar } from '@/components/progress-bar'
 import { BidAndProfile, BidAndProject } from '@/db/bid'
-import { CommentAndProfile } from '@/db/comment'
+import { CommentAndProfileAndRxns } from '@/db/comment'
 import { Profile } from '@/db/profile'
 import { FullProject, Project } from '@/db/project'
 import { Cause, SimpleCause } from '@/db/cause'
@@ -44,7 +44,7 @@ export function ProjectDisplay(props: {
   project: FullProject
   userTxns: TxnAndProject[]
   userBids: BidAndProject[]
-  comments: CommentAndProfile[]
+  comments: CommentAndProfileAndRxns[]
   projectBids: BidAndProfile[]
   projectTxns: TxnAndProfiles[]
   causesList: SimpleCause[]
@@ -66,6 +66,14 @@ export function ProjectDisplay(props: {
     prizeCause,
     userIsAdmin,
   } = props
+  const userCharityBalance = userProfile
+    ? calculateCharityBalance(
+        userTxns,
+        userBids,
+        userProfile.id,
+        userProfile.accreditation_status
+      )
+    : 0
   const userSpendableFunds = Math.max(
     userProfile
       ? project.type === 'cert' && userProfile.id === project.creator
@@ -75,12 +83,7 @@ export function ProjectDisplay(props: {
             userProfile.id,
             userProfile.accreditation_status
           )
-        : calculateCharityBalance(
-            userTxns,
-            userBids,
-            userProfile.id,
-            userProfile.accreditation_status
-          )
+        : userCharityBalance
       : 0,
     0
   )
@@ -269,6 +272,7 @@ export function ProjectDisplay(props: {
             comments={comments}
             bids={projectBids}
             txns={projectTxns}
+            userCharityBalance={userCharityBalance}
             userSpendableFunds={userSpendableFunds}
             userSellableShares={userSellableShares}
             specialCommentPrompt={specialCommentPrompt}

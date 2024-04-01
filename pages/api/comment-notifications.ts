@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { generateHTML } from '@tiptap/html'
-import { getFullCommentById } from '@/db/comment'
+import { getCommentById } from '@/db/comment'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { parseMentions } from '@/utils/parse'
 import { Comment } from '@/db/comment'
@@ -15,7 +15,7 @@ export default async function handler(
 ) {
   const comment = req.body.record as Comment
   const supabase = createAdminClient()
-  const fullComment = await getFullCommentById(supabase, comment.id)
+  const fullComment = await getCommentById(supabase, comment.id)
   const projectFollowerIds = await getProjectFollowerIds(
     supabase,
     comment.project
@@ -100,10 +100,7 @@ export default async function handler(
 
   // Send parent commenter email
   if (comment.replying_to) {
-    const parentComment = await getFullCommentById(
-      supabase,
-      comment.replying_to
-    )
+    const parentComment = await getCommentById(supabase, comment.replying_to)
     if (
       parentComment.commenter !== fullComment.projects.creator &&
       !mentionedUserIds.includes(parentComment.commenter) &&

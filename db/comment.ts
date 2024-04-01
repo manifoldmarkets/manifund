@@ -3,15 +3,23 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { JSONContent } from '@tiptap/react'
 import { Project } from './project'
 import { Profile } from './profile'
-import uuid from 'react-uuid'
-import { BidAndProfile } from './bid'
 
 export type Comment = Database['public']['Tables']['comments']['Row']
+export type CommentRxn = Database['public']['Tables']['comment_rxns']['Row']
 export type CommentAndProfile = Comment & { profiles: Profile }
 export type FullComment = Comment & { profiles: Profile } & {
   projects: Project
-}
+} & { comment_rxns: CommentRxn[] }
 export type CommentAndProject = Comment & { projects: Project }
+export type CommentAndProfileAndRxns = Comment & { profiles: Profile } & {
+  comment_rxns: CommentRxn[]
+}
+export type CommentAndProjectAndRxns = Comment & { projects: Project } & {
+  comment_rxns: CommentRxn[]
+}
+export type CommentAndProfileAndProject = Comment & { profiles: Profile } & {
+  projects: Project
+}
 
 export async function getCommentsByProject(
   supabase: SupabaseClient,
@@ -19,12 +27,14 @@ export async function getCommentsByProject(
 ) {
   const { data, error } = await supabase
     .from('comments')
-    .select('*, profiles(*)')
+    .select(
+      '*, profiles!comments_commenter_fkey(*), comment_rxns(reactor_id, reaction)'
+    )
     .eq('project', project)
   if (error) {
     throw error
   }
-  return data as CommentAndProfile[]
+  return data as CommentAndProfileAndRxns[]
 }
 
 export async function sendComment(
@@ -49,15 +59,15 @@ export async function sendComment(
   }
 }
 
-export async function getFullCommentById(supabase: SupabaseClient, id: string) {
+export async function getCommentById(supabase: SupabaseClient, id: string) {
   const { data, error } = await supabase
     .from('comments')
-    .select('*, profiles(*), projects(*)')
+    .select('*, profiles!comments_commenter_fkey(*), projects(*)')
     .eq('id', id)
   if (error) {
     throw error
   }
-  return data[0] as FullComment
+  return data[0] as CommentAndProfileAndProject
 }
 
 export async function getReplies(supabase: SupabaseClient, rootId: string) {
@@ -77,12 +87,14 @@ export async function getCommentsByUser(
 ) {
   const { data, error } = await supabase
     .from('comments')
-    .select('*, projects(id, title, slug, stage)')
+    .select(
+      '*, projects(id, title, slug, stage), comment_rxns(reactor_id, reaction)'
+    )
     .eq('commenter', commenterId)
   if (error) {
     throw error
   }
-  return data as CommentAndProject[]
+  return data as CommentAndProjectAndRxns[]
 }
 
 export async function getRecentFullComments(
@@ -92,10 +104,26 @@ export async function getRecentFullComments(
 ) {
   const { data } = await supabase
     .from('comments')
-    .select('*, profiles(*), projects!inner(*)')
+    .select(
+      '*, profiles!comments_commenter_fkey(*), projects!inner(*), comment_rxns(reactor_id, reaction)'
+    )
     .neq('projects.stage', 'hidden')
     .order('created_at', { ascending: false })
     .range(start, start + size)
     .throwOnError()
   return data as FullComment[]
+}
+
+export async function getMinimalCommentFromId(
+  supabase: SupabaseClient,
+  commentId: string
+) {
+  const { data, error } = await supabase
+    .from('comments')
+    .select('*, projects(slug)')
+    .eq('id', commentId)
+  if (error) {
+    throw error
+  }
+  return data[0] as CommentAndProject
 }
