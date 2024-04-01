@@ -22,7 +22,7 @@ export default async function Maxifund() {
       <div className="grid grid-cols-2 sm:grid-cols-3">
         {projectsToShow.map((project) => (
           <div
-            className="group relative transition hover:z-10 hover:scale-[2]"
+            className="group relative bg-black transition hover:z-10 hover:scale-[2]"
             key={project.id}
           >
             <a href={`/projects/${project.slug}`}>
