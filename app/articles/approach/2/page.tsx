@@ -5,10 +5,24 @@ import Link from 'next/link'
 export default function ApproachPage2() {
   const content = (
     <Fragment>
+      In 2023, Manifund ran a few different granting programs.
+      <ul>
+        <li>
+          <strong><Link href="/about/regranting">Regranting</Link></strong>: Donors delegate grantmaking budgets to regrantors, who
+          allocate the funds to the most promising projects they come across.
+        </li>
+        <li>
+          <strong><Link href="/about/impact-certificates">Impact markets</Link></strong>: Donors offer retroactive prize funding to
+          successful and impactful projects, and project founders sell shares in these prizes to fund their projects.
+        </li>
+        <li>
+          <strong><Link href="/about/open-call">Open call with assurance-contract donations</Link></strong>: Manifund runs an open call for projects,
+          which operates like Kickstarter for charity: if a project receives donation offers totaling at least its minimum funding goal,
+          then the donations kick in and it receives funding.
+        </li>
+      </ul>
       <p>
-        <Link href="/about/regranting">Regranting</Link>
-        <Link href="/about/impact-certificates">Impact markets</Link>
-        <Link href="/causes/acx-grants-2024">ACX Grants</Link>
+        (You can read more about these programs in our <Link href="https://www.lesswrong.com/posts/cxjRjs5BWw5pBHZiA/manifund-2023-in-review#2023_Programs">2023 retrospective</Link>.)
       </p>
       <p>
         Is there anything general we can say about these kinds of experiments?
@@ -28,7 +42,7 @@ export default function ApproachPage2() {
         metrics.
       </p>
       <p>
-        But also, it seems a little contrived? Each individual step of this 
+        But also, it’s easy to feel like the mechanism just came out of nowhere. Each individual step of this 
         process is perfectly understandable if you understand the analogous 
         element of private markets. But altogether, it’s a lot of new moving 
         parts to conceptualize at once, and it’s not obvious how to come up 

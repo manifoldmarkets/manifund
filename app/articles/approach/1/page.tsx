@@ -17,7 +17,7 @@ export default function ApproachPage1() {
         automatic market-making algorithms, mechanisms for multiple-choice
         questions, short selling, limit orders, contests, leagues, even a
         dating app spinoff. And users have made bots, non-question questions
-        like “___ stock (never resolves)”, markets that serve as bounties to
+        like “[thing] stock (never resolves)”, markets that serve as bounties to
         incentivize particular events to happen, questions with meta
         resolution criteria like “Will the total volume of YES trading on
         this question be more than x mana?”.
@@ -25,9 +25,9 @@ export default function ApproachPage1() {
       <p>
         Manifund is different, because lots of real money is moving through our
         programs. But we’re still small and fast-moving,
-        and our ethos is similar: we aim to be an incubator
-        for lots of small- and medium-scale experiments testing out funding
-        mechanisms for charity and public goods.
+        and our ethos is similar: we aim to iterate quickly on
+        small- and medium-scale experiments testing out the best ways
+        to fund charity and public goods.
       </p>
       <p>
         Effective altruism originally asked the question, “What properties make

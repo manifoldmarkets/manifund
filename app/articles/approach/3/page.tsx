@@ -40,8 +40,10 @@ export default function ApproachPage3() {
         project was.
       </p>
       <p>
-        <strong>What are the desirables?</strong> Align the measure with
-        the target – that is, [explain further]. Account for
+        <strong>What are the desirables?</strong> Figure out both how successful
+        the project was and how much impact that success had. Make the targets clear
+        so founders know what to aim for, but avoid using measures that are too easy
+        to game. Account for
         externalities – for example, if the project was moderately beneficial
         to the group that commissioned it, but also benefited lots of
         other people as well, then we’d like that to be factored in.
