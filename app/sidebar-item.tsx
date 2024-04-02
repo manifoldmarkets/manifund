@@ -12,7 +12,7 @@ import {
   UserGroupIcon,
   GlobeAltIcon,
   ChevronRightIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
 } from '@heroicons/react/24/outline'
 import { SiteLink } from '@/components/site-link'
 
@@ -34,14 +34,19 @@ export function SidebarItem(props: { item: Item }) {
         isCurrentPage
           ? 'bg-gray-200 text-gray-900'
           : 'text-gray-600 hover:bg-gray-100',
-        'group flex items-center rounded-md px-3 py-2 text-sm font-medium cursor-pointer'
+        'group flex cursor-pointer items-center rounded-md px-3 py-2 text-sm font-medium'
       )}
       aria-current={item.href == usePathname() ? 'page' : undefined}
       onClick={() => setIsOpen(!isOpen)}
     >
       {icon}
       <span className="truncate">{item.name}</span>
-      {item.children && (isOpen ? <ChevronDownIcon className="ml-auto h-5 w-5" /> : <ChevronRightIcon className="ml-auto h-5 w-5" />)}
+      {item.children &&
+        (isOpen ? (
+          <ChevronDownIcon className="ml-auto h-5 w-5" />
+        ) : (
+          <ChevronRightIcon className="ml-auto h-5 w-5" />
+        ))}
     </div>
   )
 
@@ -84,6 +89,6 @@ function findIcon(name: string, isCurrentPage: boolean) {
     case 'People':
       return <UserGroupIcon className={styling} />
     default:
-      return <UserCircleIcon className={styling} />
+      return null
   }
 }
