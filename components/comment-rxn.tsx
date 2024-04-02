@@ -30,10 +30,15 @@ export const tippedRxns = {
   '🏆': 100,
 } as { [key: string]: number }
 
-const AddRxnIcon = () => (
+const AddRxnIcon = (props: { className?: string }) => (
   <div className="relative mt-1 w-5">
     <FaceSmileIcon className="h-5 w-5" />
-    <div className="absolute right-0 top-0 rounded-full bg-white px-[0.5px] text-[10px] leading-[10px]">
+    <div
+      className={clsx(
+        'absolute right-0 top-0 rounded-full px-[0.5px] text-[10px] leading-[10px]',
+        props.className
+      )}
+    >
       +
     </div>
   </div>
@@ -44,14 +49,15 @@ export function AddRxnPopover(props: {
   rxns: CommentRxn[]
   userId: string
   userCharityBalance?: number
+  orangeBg?: boolean
 }) {
-  const { postRxn, rxns, userId, userCharityBalance } = props
+  const { postRxn, rxns, userId, userCharityBalance, orangeBg } = props
   const userRxns = rxns.filter((rxn) => rxn.reactor_id === userId)
   const [selectedTippedRxn, setSelectedTippedRxn] = useState('')
   return (
     <Popover className="relative">
       <Popover.Button className="text-gray-500 hover:text-gray-700 focus:outline-0">
-        <AddRxnIcon />
+        <AddRxnIcon className={clsx(orangeBg ? 'bg-orange-100' : 'bg-white')} />
       </Popover.Button>
 
       <Popover.Panel className="absolute bottom-5 left-5 z-10 rounded-md rounded-bl-sm bg-gray-50 p-3 shadow-md">
@@ -254,8 +260,9 @@ export function CommentRxnsPanel(props: {
   rxns: CommentRxn[]
   userId?: string
   userCharityBalance?: number
+  orangeBg?: boolean
 }) {
-  const { commentId, rxns, userId, userCharityBalance } = props
+  const { commentId, rxns, userId, userCharityBalance, orangeBg } = props
 
   const router = useRouter()
   const [localRxns, setLocalRxns] = useState(rxns)
@@ -296,6 +303,7 @@ export function CommentRxnsPanel(props: {
           rxns={localRxns}
           userId={userId}
           userCharityBalance={userCharityBalance}
+          orangeBg={orangeBg}
         />
       )}
       <ExistingFreeRxnsDisplay
