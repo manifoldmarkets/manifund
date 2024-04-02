@@ -59,12 +59,21 @@ export default async function Sidebar() {
               }}
             />
           )}
-          <SidebarItem item={{ name: 'About', children: [
-            {name: 'About Manifund', href: '/about'},
-            {name: 'Regranting', href: '/about/regranting'},
-            {name: 'Impact markets', href: '/about/impact-certificates'},
-            {name: 'Applying for funding', href: '/about/open-call'},
-          ]}} />
+          <SidebarItem
+            item={{
+              name: 'About',
+              children: [
+                { name: 'About Manifund', href: '/about' },
+                { name: 'Regranting', href: '/about/regranting' },
+                { name: 'Impact markets', href: '/about/impact-certificates' },
+                { name: 'Applying for funding', href: '/about/open-call' },
+                {
+                  name: '2023 in review',
+                  href: 'https://manifund.substack.com/p/manifund-2023-in-review',
+                },
+              ],
+            }}
+          />
           <SidebarItem item={{ name: 'People', href: '/people' }} />
           <SidebarItem item={{ name: 'Categories', href: '/causes' }} />
           {user && (
