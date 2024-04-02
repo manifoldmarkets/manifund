@@ -210,22 +210,23 @@ export function ProjectDisplay(props: {
                 size="lg"
               />
             )}
-          {project.type === 'cert' && project.stage === 'active' && (
-            <Trade
-              ammTxns={
-                !!project.amm_shares
-                  ? projectTxns.filter(
-                      (txn) =>
-                        txn.to_id === project.id || txn.from_id === project.id
-                    )
-                  : undefined
-              }
-              projectId={project.id}
-              userSpendableFunds={userSpendableFunds}
-              userSellableShares={userSellableShares}
-              signedIn={!!userProfile}
-            />
-          )}
+          {project.type === 'cert' &&
+            (project.stage === 'active' || project.stage === 'complete') && (
+              <Trade
+                ammTxns={
+                  !!project.amm_shares
+                    ? projectTxns.filter(
+                        (txn) =>
+                          txn.to_id === project.id || txn.from_id === project.id
+                      )
+                    : undefined
+                }
+                projectId={project.id}
+                userSpendableFunds={userSpendableFunds}
+                userSellableShares={userSellableShares}
+                signedIn={!!userProfile}
+              />
+            )}
           {userProfile?.id !== project.creator &&
             project.type === 'cert' &&
             project.stage === 'proposal' && (

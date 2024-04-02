@@ -272,8 +272,8 @@ export function getTxnCharityMultiplier(
   if (txn.type === 'profile donation' || txn.type === 'tip') {
     return isIncoming ? 1 : -1
   }
+  const isOwnProject = txn.projects?.creator === userId
   if (txn.type === 'user to amm trade' || txn.type === 'user to user trade') {
-    const isOwnProject = txn.projects?.creator === userId
     if (isOwnProject || actuallyAccredited) {
       return 0
     } else {
@@ -281,7 +281,7 @@ export function getTxnCharityMultiplier(
     }
   }
   if (txn.type === 'inject amm liquidity') {
-    return isIncoming ? 1 : 0
+    return isOwnProject ? 0 : isIncoming ? 1 : -1
   }
   if (txn.type === 'deposit') {
     return actuallyAccredited && !isCharitableDeposit(txn.id) ? 0 : 1
@@ -314,8 +314,8 @@ export function getTxnCashMultiplier(
   if (txn.type === 'project donation') {
     return isIncoming ? 1 : 0
   }
+  const isOwnProject = txn.projects?.creator === userId
   if (txn.type === 'user to amm trade' || txn.type === 'user to user trade') {
-    const isOwnProject = txn.projects?.creator === userId
     if (isOwnProject || actuallyAccredited) {
       return isIncoming ? 1 : -1
     } else {
@@ -323,7 +323,7 @@ export function getTxnCashMultiplier(
     }
   }
   if (txn.type === 'inject amm liquidity') {
-    return isIncoming ? 0 : -1
+    return isOwnProject ? (isIncoming ? 1 : -1) : 0
   }
   if (txn.type === 'deposit') {
     return actuallyAccredited && !isCharitableDeposit(txn.id) ? 1 : 0
