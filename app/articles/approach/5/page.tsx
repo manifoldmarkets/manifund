@@ -55,31 +55,35 @@ export default function ApproachPage5() {
         one or two of the steps. For example:
       </p>
       <p>  
-        <strong>Challenge prizes:</strong> pay out.
+        <strong>Challenge prizes: pay out.</strong> A funder agrees in advance to pay for a certain achievement.
       </p>
       <p>  
-        <strong>S-process:</strong> evaluate.
+        <strong>S-process: evaluate.</strong> A funder enlists a group of recommenders to evaluate potential grants
+        according to a simulation process.
       </p>
       <p>  
-        <strong>Advance market commitments </strong> pay out.
+        <strong>Advance market commitments: pay out.</strong> A large service provider, like a government, agrees in advance
+        to buy a product meeting certain criteria.
       </p>
       <p>  
-        <strong>Income share agreements </strong> predict and front.
+        <strong>Income share agreements: predict and front.</strong> A funder gives cash upfront in exchange for equity
+        in the future salaries of people they predict will eventually have high incomes.
       </p>
       <p>  
-        <strong>Schelling-point oracles: </strong> evaluate.
+        <strong>Patronage: predict and front.</strong> A patron philanthropically funds the career of a person creating
+        public goods like art.
       </p>
       <p>  
-        <strong>Patronage: </strong> predict and front.
+        <strong>Crowdfunding: pay out.</strong> A group of people, often acting under a mutual assurance contract, collectively
+        fund a project.
       </p>
       <p>  
-        <strong>Crowdfunding: </strong> pay out.
+        <strong>Regranting: predict.</strong> A donor distributes funds across several regrantors, each of whom makes grants to
+        promising projects in their area of expertise.
       </p>
       <p>  
-        <strong>Regranting: </strong> predict.
-      </p>
-      <p>  
-        <strong>Prediction markets: </strong> predict.
+        <strong>Prediction markets: predict.</strong> People bet on how future events, such as the results of a project, will
+        turn out.
       </p>
       <h3 id="-coupling-and-decoupling-">
         <strong>
@@ -139,6 +143,7 @@ export default function ApproachPage5() {
   return <ArticlePage
     articleTitle="A Framework for Funding Experiments"
     pageTitle="Observations About These Examples"
+    prevLink="/articles/approach/4"
     nextLink="/articles/approach/6"
     nextLinkText="Next: Non-financial elements"
     content={content}

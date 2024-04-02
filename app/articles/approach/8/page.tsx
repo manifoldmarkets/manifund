@@ -57,6 +57,7 @@ export default function ApproachPage8() {
   return <ArticlePage
     articleTitle="A Framework for Funding Experiments"
     pageTitle="What About Different Value Systems?"
+    prevLink="/articles/approach/7"
     nextLink="/articles/approach/9"
     nextLinkText="Next: How you can get involved"
     content={content}

@@ -37,6 +37,7 @@ export default function ApproachPage6() {
   return <ArticlePage
     articleTitle="A Framework for Funding Experiments"
     pageTitle="Non-Financial Elements"
+    prevLink="/articles/approach/5"
     nextLink="/articles/approach/7"
     nextLinkText="Next: Effective iteration"
     content={content}

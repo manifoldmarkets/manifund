@@ -15,6 +15,7 @@ export default function ApproachPage7() {
   return <ArticlePage
     articleTitle="A Framework for Funding Experiments"
     pageTitle="Effective Iteration"
+    prevLink="/articles/approach/6"
     nextLink="/articles/approach/8"
     nextLinkText="Next: What about different value systems?"
     content={content}

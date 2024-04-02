@@ -73,6 +73,7 @@ export default function ApproachPage3() {
   return <ArticlePage
     articleTitle="A Framework for Funding Experiments"
     pageTitle="The Six Steps of Funding"
+    prevLink="/articles/approach/2"
     nextLink="/articles/approach/4"
     nextLinkText="Next: Some examples"
     content={content}

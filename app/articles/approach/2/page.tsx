@@ -1,14 +1,14 @@
 import ArticlePage from '@/components/article-page'
 import { Fragment } from 'react'
+import Link from 'next/link'
 
 export default function ApproachPage2() {
   const content = (
     <Fragment>
       <p>
-        <h3>Regranting</h3>
-        <h3>ACX grants</h3>
-        <h3>Impact certificates</h3>
-        <h3>Assurance contract auctions</h3>
+        <Link href="/about/regranting">Regranting</Link>
+        <Link href="/about/impact-certificates">Impact markets</Link>
+        <Link href="/causes/acx-grants-2024">ACX Grants</Link>
       </p>
       <p>
         Is there anything general we can say about these kinds of experiments?
@@ -43,6 +43,7 @@ export default function ApproachPage2() {
   return <ArticlePage
     articleTitle="A Framework for Funding Experiments"
     pageTitle="Some Programs We've Run"
+    prevLink="/articles/approach/1"
     nextLink="/articles/approach/3"
     nextLinkText="Next: The six steps of funding"
     content={content}
