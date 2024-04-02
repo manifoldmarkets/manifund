@@ -46,9 +46,6 @@ export default async function Projects(props: {
     <Col className="gap-16 px-3 py-5 sm:px-6">
       {user === null && <LandingSection />}
       <Col className="gap-3">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-          Current programs
-        </h1>
         {featuredCauses.map((cause) => (
           <CausePreview cause={cause} key={cause.slug} />
         ))}
