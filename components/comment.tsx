@@ -133,8 +133,11 @@ export function Comment(props: {
               <div
                 className={clsx(
                   'absolute bottom-0 left-0 z-10 flex h-32 w-full flex-col justify-end',
-                  !expanded &&
-                    'shadow-[inset_0px_-100px_50px_-50px_rgba(255,255,255,0.9)]'
+                  !expanded
+                    ? highlighted
+                      ? 'shadow-[inset_0px_-100px_50px_-50px_rgba(255,237,213,0.9)]'
+                      : 'shadow-[inset_0px_-100px_50px_-50px_rgba(255,255,255,0.9)]'
+                    : ''
                 )}
               >
                 <button
@@ -152,6 +155,7 @@ export function Comment(props: {
               userId={userId}
               userCharityBalance={userCharityBalance}
               rxns={rxns}
+              orangeBg={highlighted}
             />
             <div className="mt-1.5">{children}</div>
           </Row>
