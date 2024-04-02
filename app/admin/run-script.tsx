@@ -6,7 +6,7 @@ export function RunScript() {
     <Button
       onClick={async () => {
         // Change script here
-        const response = await fetch('/api/fix-txn-type-labels', {
+        const response = await fetch('/api/return-amm-assets', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -14,7 +14,7 @@ export function RunScript() {
         })
       }}
     >
-      Fix old txn type labels
+      Return amm assets
     </Button>
   )
 }

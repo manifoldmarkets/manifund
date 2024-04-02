@@ -40,62 +40,58 @@ export function Bids(props: {
         There are no bids on this project.
       </p>
     )
-  if (project.stage === 'active' || project.stage === 'proposal') {
-    const buyBids = bids.filter(
-      (bid) => bid.type === 'buy' || bid.type === 'assurance buy'
-    )
-    const sellBids = bids.filter((bid) => bid.type === 'sell')
-    const donateBids = bids.filter((bid) => bid.type === 'donate')
-    return (
-      <Row className="w-full justify-center">
-        <div className="flex w-full flex-col">
-          <Col>
-            {buyBids.length !== 0 && <h1 className="text-xl">Buy Offers</h1>}
-            {buyBids.map((bid) => (
-              <Bid
-                key={bid.id}
-                bid={bid}
-                project={project}
-                userProfile={userProfile}
-                showValuation={!activeAuction}
-                userSellableShares={userSellableShares}
-                userSpendableFunds={userSpendableFunds}
-              />
-            ))}
-          </Col>
-          <Col>
-            {sellBids.length !== 0 && <h1 className="text-xl">Sell Offers</h1>}
-            {sellBids.map((bid) => (
-              <Bid
-                key={bid.id}
-                bid={bid}
-                userProfile={userProfile}
-                project={project}
-                showValuation={true}
-                userSellableShares={userSellableShares}
-                userSpendableFunds={userSpendableFunds}
-              />
-            ))}
-          </Col>
-          <Col>
-            {donateBids.length !== 0 && (
-              <h1 className="text-xl">Donation Offers</h1>
-            )}
-            {donateBids.map((bid) => (
-              <Bid
-                key={bid.id}
-                bid={bid}
-                project={project}
-                showValuation={false}
-              />
-            ))}
-          </Col>
-        </div>
-      </Row>
-    )
-  } else {
-    return null
-  }
+  const buyBids = bids.filter(
+    (bid) => bid.type === 'buy' || bid.type === 'assurance buy'
+  )
+  const sellBids = bids.filter((bid) => bid.type === 'sell')
+  const donateBids = bids.filter((bid) => bid.type === 'donate')
+  return (
+    <Row className="w-full justify-center">
+      <div className="flex w-full flex-col">
+        <Col>
+          {buyBids.length !== 0 && <h1 className="text-xl">Buy Offers</h1>}
+          {buyBids.map((bid) => (
+            <Bid
+              key={bid.id}
+              bid={bid}
+              project={project}
+              userProfile={userProfile}
+              showValuation={!activeAuction}
+              userSellableShares={userSellableShares}
+              userSpendableFunds={userSpendableFunds}
+            />
+          ))}
+        </Col>
+        <Col>
+          {sellBids.length !== 0 && <h1 className="text-xl">Sell Offers</h1>}
+          {sellBids.map((bid) => (
+            <Bid
+              key={bid.id}
+              bid={bid}
+              userProfile={userProfile}
+              project={project}
+              showValuation={true}
+              userSellableShares={userSellableShares}
+              userSpendableFunds={userSpendableFunds}
+            />
+          ))}
+        </Col>
+        <Col>
+          {donateBids.length !== 0 && (
+            <h1 className="text-xl">Donation Offers</h1>
+          )}
+          {donateBids.map((bid) => (
+            <Bid
+              key={bid.id}
+              bid={bid}
+              project={project}
+              showValuation={false}
+            />
+          ))}
+        </Col>
+      </div>
+    </Row>
+  )
 }
 
 export function Bid(props: {
