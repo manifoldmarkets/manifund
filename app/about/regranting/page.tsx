@@ -17,21 +17,21 @@ export default async function RegrantingPage() {
       <div className="prose mx-auto font-light">
         <h1>Regranting</h1>
         <p>
-          Regranting is a method of giving money whereby a charitable donor
-          delegates a grantmaking budget to different individuals known as
-          “regrantors”. Regrantors are then empowered to make grant decisions
-          based on the objectives of the original donor.
+          For our regranting program, we work with donors to delegate a
+          grantmaking budget to individuals known as “regrantors”. Regrantors
+          independently make grant decisions, based on the goals of the original
+          donor, and their own expertise.
         </p>
-        <p>
+        {/* <p>
           This model was pioneered by the FTX Future Fund; among the grantmaking
           models they experimented with in 2022, they{' '}
           <a href="https://forum.effectivealtruism.org/posts/paMYXYFYbbjpdjgbt/future-fund-june-2022-update#Expectations_vs__reality">
             considered regranting to be the most promising.
           </a>
-        </p>
-        <h3 className="text-2xl font-bold">Our regrantors</h3>
+        </p> */}
       </div>
-      <div className="mx-auto mt-2 mb-5 grid max-w-2xl grid-cols-2 gap-4 px-5">
+      <h3 className="my-8 text-center text-2xl font-bold">Our regrantors</h3>
+      <div className="mx-auto mb-5 mt-2 grid max-w-4xl grid-cols-2 gap-4 px-5 sm:grid-cols-3">
         {sortedRegranters.map((regranter) => {
           return <ProfileCard key={regranter.id} profile={regranter} />
         })}
