@@ -88,6 +88,8 @@ function findIcon(name: string, isCurrentPage: boolean) {
       return <GlobeAltIcon className={styling} />
     case 'People':
       return <UserGroupIcon className={styling} />
+    case 'Login':
+      return <UserCircleIcon className={styling} />
     default:
       return null
   }
