@@ -150,8 +150,8 @@ export function resolveBids(
       // Current bid gets partially paid out
       resolution.amountsPaid[sortedBids[i].id] =
         sortedBids[i].amount + unsoldPortion * valuation
-      resolution.valuation = valuation
       // Early return resolution data
+      resolution.valuation = valuation
       return resolution
       // If all bids are exhausted but the project has enough funding, bids go through
     } else if (
@@ -161,8 +161,8 @@ export function resolveBids(
     ) {
       // Current bid gets fully paid out
       resolution.amountsPaid[sortedBids[i].id] = sortedBids[i].amount
-      resolution.valuation = valuation
       // Early return resolution data
+      resolution.valuation = valuation
       return resolution
     }
     // Haven't resolved yet; if project gets funded based on later bids, current bid will fully pay out
