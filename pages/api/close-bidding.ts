@@ -21,21 +21,19 @@ export const config = {
 type Bid = Database['public']['Tables']['bids']['Row']
 
 type ProjectProps = {
-  id: string
+  projectId: string
   minFunding: number
   founderShares: number
   creator: string
 }
 
 export default async function handler(req: NextRequest) {
-  const { id, minFunding, founderShares, creator } =
+  const { projectId, minFunding, founderShares, creator } =
     (await req.json()) as ProjectProps
   const supabase = createAdminClient()
-  const bids = (await getBidsForResolution(supabase, id)).filter(
-    (bid) => bid.status === 'pending'
-  )
+  const bids = await getBidsForResolution(supabase, projectId)
   let founderPortion = founderShares / TOTAL_SHARES
-  const project = await getProjectById(supabase, id)
+  const project = await getProjectById(supabase, projectId)
   const resolution = resolveBids(bids, minFunding, founderPortion)
   await sendAuctionCloseEmails(
     bids,
@@ -44,12 +42,12 @@ export default async function handler(req: NextRequest) {
     founderShares / TOTAL_SHARES
   )
   if (resolution.valuation === -1) {
-    await updateProjectStage(supabase, id, 'not funded')
+    await updateProjectStage(supabase, projectId, 'not funded')
     await updateBidsStatus(supabase, bids, resolution)
     return NextResponse.json('project not funded')
   } else {
-    await updateProjectStage(supabase, id, 'active')
-    await addTxns(supabase, id, bids, resolution, creator)
+    await updateProjectStage(supabase, projectId, 'active')
+    await addTxns(supabase, projectId, bids, resolution, creator)
     await updateBidsStatus(supabase, bids, resolution)
     return NextResponse.json('project funded!')
   }
