@@ -33,8 +33,8 @@ export default async function handler(req: NextRequest) {
   const supabase = createAdminClient()
   const bids = await getBidsForResolution(supabase, projectId)
   let founderPortion = founderShares / TOTAL_SHARES
-  const project = await getProjectById(supabase, projectId)
   const resolution = resolveBids(bids, minFunding, founderPortion)
+  const project = await getProjectById(supabase, projectId)
   await sendAuctionCloseEmails(
     bids,
     project,
