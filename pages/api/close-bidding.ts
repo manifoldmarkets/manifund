@@ -189,11 +189,13 @@ async function sendAuctionCloseEmails(
       bid.bidder
     )
   }
-  const claimFundsHTML = genClaimFundsHTML(resolution)
   const creatorPostmarkVars = {
     projectTitle: project.title,
     projectUrl,
-    claimFundsHTML,
+    claimFundsText:
+      resolution.valuation > 0
+        ? 'Withdraw your funds by going to your profile page, and clicking the [-] button where your cash balance is displayed.'
+        : '',
     auctionResolutionText,
   }
   await sendTemplateEmail(
