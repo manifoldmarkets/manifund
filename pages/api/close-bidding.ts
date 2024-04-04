@@ -2,7 +2,7 @@ import { Database } from '@/db/database.types'
 import { NextRequest, NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from './_db'
-import { Project, TOTAL_SHARES } from '@/db/project'
+import { Project, TOTAL_SHARES, updateProjectStage } from '@/db/project'
 import { getProjectById } from '@/db/project'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
@@ -88,20 +88,6 @@ async function addTxns(
         console.error('createTxn', error)
       }
     }
-  }
-}
-
-async function updateProjectStage(
-  supabase: SupabaseClient,
-  id: string,
-  stage: string
-) {
-  const { error } = await supabase
-    .from('projects')
-    .update({ stage: stage })
-    .eq('id', id)
-  if (error) {
-    console.error('updateProjectStage', error)
   }
 }
 
@@ -222,16 +208,16 @@ function genAuctionResolutionText(
   resolution: Resolution,
   founderPortion: number
 ) {
-  const totalFunding = bids.reduce(
-    (total, current) =>
-      resolution.amountsPaid[current.id] > 0
-        ? total + resolution.amountsPaid[current.id]
-        : total,
-    0
-  )
+  const totalFunding =
+    resolution.valuation > 0
+      ? bids.reduce(
+          (total, current) => total + resolution.amountsPaid[current.id],
+          0
+        )
+      : 0
   const portionSold = totalFunding / resolution.valuation
   if (portionSold + founderPortion >= 0.999999999999) {
-    return `This project was successfully funded. All shares were sold at a valuation of 
+    return `This project was successfully funded. Shares were sold at a valuation of 
         ${formatMoney(resolution.valuation)} and the project received
         ${formatMoney(totalFunding)} in funding.`
   } else if (totalFunding > 0) {
