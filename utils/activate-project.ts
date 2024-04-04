@@ -14,6 +14,7 @@ import uuid from 'react-uuid'
 import { getURL } from './constants'
 import { sendTemplateEmail, TEMPLATE_IDS } from './email'
 import { getProposalValuation } from './math'
+import { resolveAuction } from './resolve-auction'
 
 export async function maybeActivateProject(
   supabase: SupabaseClient,
@@ -27,11 +28,15 @@ export async function maybeActivateProject(
   const activeAuction =
     !!project.causes.find((c) => !!c.cert_params && c.cert_params.auction) &&
     project.type === 'cert'
-  if (!activeAuction && checkFundingReady(project)) {
-    await activateProject(
-      project,
-      project.project_follows.map((f) => f.follower_id)
-    )
+  if (checkFundingReady(project)) {
+    if (activeAuction) {
+      await resolveAuction(project)
+    } else {
+      await activateProject(
+        project,
+        project.project_follows.map((f) => f.follower_id)
+      )
+    }
   }
 }
 
