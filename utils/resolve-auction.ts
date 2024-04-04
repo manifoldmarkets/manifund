@@ -2,7 +2,6 @@ import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from '@/pages/api/_db'
 import { Project, TOTAL_SHARES, updateProjectStage } from '@/db/project'
-import { getProjectById } from '@/db/project'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
@@ -19,29 +18,18 @@ export const config = {
 
 type Bid = Database['public']['Tables']['bids']['Row']
 
-export default async function closeAuction(
-  projectId: string,
-  minFunding: number,
-  founderShares: number,
-  creator: string
-) {
+export async function resolveAuction(project: Project) {
   const supabase = createAdminClient()
-  const bids = await getBidsForResolution(supabase, projectId)
-  let founderPortion = founderShares / TOTAL_SHARES
-  const resolution = resolveBids(bids, minFunding, founderPortion)
-  const project = await getProjectById(supabase, projectId)
-  await sendAuctionCloseEmails(
-    bids,
-    project,
-    resolution,
-    founderShares / TOTAL_SHARES
-  )
+  const bids = await getBidsForResolution(supabase, project.id)
+  let founderPortion = project.founder_shares / TOTAL_SHARES
+  const resolution = resolveBids(bids, project.min_funding, founderPortion)
+  await sendAuctionCloseEmails(bids, project, resolution, founderPortion)
   if (resolution.valuation === -1) {
-    await updateProjectStage(supabase, projectId, 'not funded')
+    await updateProjectStage(supabase, project.id, 'not funded')
     await updateBidsStatus(supabase, bids, resolution)
   } else {
-    await updateProjectStage(supabase, projectId, 'active')
-    await addTxns(supabase, projectId, bids, resolution, creator)
+    await updateProjectStage(supabase, project.id, 'active')
+    await addTxns(supabase, project.id, bids, resolution, project.creator)
     await updateBidsStatus(supabase, bids, resolution)
   }
 }
