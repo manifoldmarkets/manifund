@@ -10,9 +10,8 @@ import {
 import { useEffect, useState } from 'react'
 import { orderBy } from 'lodash'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
-import { resolveBids } from '@/pages/api/close-bidding'
+import { resolveBids, Resolution } from '@/utils/resolve-auction'
 import { Bid } from '@/db/bid'
-import { Resolution } from '@/pages/api/close-bidding'
 import uuid from 'react-uuid'
 import { Card } from '@/components/layout/card'
 
