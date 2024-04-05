@@ -33,6 +33,13 @@ export async function resolveAuction(project: Project) {
   } else {
     await updateProjectStage(supabase, project.id, 'active')
     await addTxns(supabase, project.id, bids, resolution, project.creator)
+    await addFounderLeftoversOffer(
+      supabase,
+      resolution,
+      project.id,
+      project.creator,
+      founderPortion
+    )
   }
   await updateBidsStatus(supabase, bids, resolution, project.id)
 }
@@ -72,6 +79,36 @@ async function addTxns(
         console.error('createTxn', error)
       }
     }
+  }
+}
+
+async function addFounderLeftoversOffer(
+  supabase: SupabaseClient,
+  resolution: Resolution,
+  projectId: string,
+  creatorId: string,
+  founderPortion: number
+) {
+  const totalFunding =
+    resolution.valuation > 0
+      ? Object.keys(resolution.amountsPaid).reduce(
+          (total, current) => total + resolution.amountsPaid[current],
+          0
+        )
+      : 0
+  const portionSold = totalFunding / resolution.valuation
+  const offeredUnsoldPortion = 1 - -portionSold
+  if (offeredUnsoldPortion > 0) {
+    const founderLeftoversOffer = {
+      id: uuid(),
+      project: projectId,
+      bidder: creatorId,
+      amount: offeredUnsoldPortion * resolution.valuation,
+      valuation: resolution.valuation,
+      type: 'sell',
+      status: 'pending',
+    }
+    await supabase.from('bids').insert([founderLeftoversOffer])
   }
 }
 
