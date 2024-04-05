@@ -3,10 +3,8 @@
 import { useSupabase } from '@/db/supabase-provider'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa, Theme } from '@supabase/auth-ui-shared'
-import { Button } from '@/components/button'
 import { getURL } from '@/utils/constants'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Image from 'next/image'
 
 export default function ClientAuth(props: { profileComplete?: boolean }) {
   const { profileComplete } = props
