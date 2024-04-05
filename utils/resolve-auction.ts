@@ -30,12 +30,11 @@ export async function resolveAuction(project: Project) {
   await sendAuctionCloseEmails(bids, project, resolution, founderPortion)
   if (resolution.valuation === -1) {
     await updateProjectStage(supabase, project.id, 'not funded')
-    await updateBidsStatus(supabase, bids, resolution)
   } else {
     await updateProjectStage(supabase, project.id, 'active')
     await addTxns(supabase, project.id, bids, resolution, project.creator)
-    await updateBidsStatus(supabase, bids, resolution)
   }
+  await updateBidsStatus(supabase, bids, resolution, project.id)
 }
 
 async function addTxns(
@@ -79,19 +78,23 @@ async function addTxns(
 async function updateBidsStatus(
   supabase: SupabaseClient,
   bids: Bid[],
-  resolution: Resolution
+  resolution: Resolution,
+  projectId: string
 ) {
   for (const bid of bids) {
-    const { error } = await supabase
+    await supabase
       .from('bids')
       .update({
         status: resolution.amountsPaid[bid.id] > 0 ? 'accepted' : 'declined',
       })
       .eq('id', bid.id)
-    if (error) {
-      console.error('updateBidStatus', error)
-    }
+      .throwOnError()
   }
+  await supabase
+    .from('bids')
+    .update({ status: resolution.valuation > 0 ? 'accepted' : 'declined' })
+    .match({ project: projectId, type: 'assurance sell' })
+    .throwOnError()
 }
 
 export type Resolution = {
@@ -154,10 +157,21 @@ async function sendAuctionCloseEmails(
   founderPortion: number
 ) {
   const projectUrl = `https://manifund.org/projects/${project.slug}?tab=shareholders#tabs`
+  const totalFunding =
+    resolution.valuation > 0
+      ? bids.reduce(
+          (total, current) => total + resolution.amountsPaid[current.id],
+          0
+        )
+      : 0
+  const portionSold = totalFunding / resolution.valuation
+  const offeredUnsoldPortion = 1 - founderPortion - portionSold
   const auctionResolutionText = genAuctionResolutionText(
-    bids,
-    resolution,
-    founderPortion
+    totalFunding,
+    resolution.valuation,
+    founderPortion,
+    portionSold,
+    offeredUnsoldPortion
   )
   for (const bid of bids) {
     const bidResolutionText = genBidResolutionText(bid, resolution)
@@ -174,15 +188,6 @@ async function sendAuctionCloseEmails(
       bid.bidder
     )
   }
-  const totalFunding =
-    resolution.valuation > 0
-      ? bids.reduce(
-          (total, current) => total + resolution.amountsPaid[current.id],
-          0
-        )
-      : 0
-  const portionSold = totalFunding / resolution.valuation
-  const offeredUnsoldPortion = 1 - founderPortion - portionSold
   const creatorPostmarkVars = {
     projectTitle: project.title,
     projectUrl,
@@ -208,34 +213,28 @@ async function sendAuctionCloseEmails(
 }
 
 function genAuctionResolutionText(
-  bids: Bid[],
-  resolution: Resolution,
-  founderPortion: number
+  totalFunding: number,
+  valuation: number,
+  founderPortion: number,
+  portionSold: number,
+  offeredUnsoldPortion: number
 ) {
-  const totalFunding =
-    resolution.valuation > 0
-      ? bids.reduce(
-          (total, current) => total + resolution.amountsPaid[current.id],
-          0
-        )
-      : 0
-  const portionSold = totalFunding / resolution.valuation
   if (portionSold + founderPortion >= 0.999999999999) {
     return `This project was successfully funded. Shares were sold at a valuation of 
-        ${formatMoney(resolution.valuation)} and the project received
+        ${formatMoney(valuation)} and the project received
         ${formatMoney(totalFunding)} in funding.`
-  } else if (resolution.valuation > 0) {
+  } else if (valuation > 0) {
     return `This project was successfully funded. It received ${formatMoney(
       totalFunding
     )} in
         funding. ${formatPercent(portionSold)} of shares were sold at
         a valuation of ${formatMoney(
-          resolution.valuation
+          valuation
         )}. The founder currently holds the other ${formatPercent(
       1 - portionSold
-    )}, some of which has been offered for sale at a valuation of ${formatMoney(
-      resolution.valuation
-    )}.`
+    )}, and ${formatPercent(
+      offeredUnsoldPortion
+    )} has been offered for sale at a valuation of ${formatMoney(valuation)}.`
   } else {
     return `Funding unsuccessful. The project will not proceed.`
   }
