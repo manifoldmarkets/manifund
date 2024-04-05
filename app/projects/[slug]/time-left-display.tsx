@@ -7,7 +7,6 @@ export function TimeLeftDisplay(props: { closeDate: string }) {
   const now = new Date()
   const daysLeft = differenceInDays(closeDate, now)
   const hoursLeft = daysLeft < 1 ? differenceInHours(closeDate, now) : 0
-  console.log('difference in hours', differenceInHours(closeDate, now))
   return (
     <Row className="items-center gap-1 text-sm text-gray-900">
       <span className="font-semibold">{`${Math.max(
