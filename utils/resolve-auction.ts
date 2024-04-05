@@ -3,11 +3,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from '@/pages/api/_db'
 import { Project, TOTAL_SHARES, updateProjectStage } from '@/db/project'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
-import {
-  formatLargeNumber,
-  formatMoney,
-  formatPercent,
-} from '@/utils/formatting'
+import { formatMoney, formatPercent } from '@/utils/formatting'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import uuid from 'react-uuid'
 
@@ -282,8 +278,8 @@ function genBidResolutionText(bid: Bid, resolution: Resolution) {
     return `Your bid of ${formatMoney(bid.amount)} at ${formatMoney(
       bid.valuation
     )} was accepted! You paid
-        ${formatMoney(resolution.amountsPaid[bid.id])} for ${formatLargeNumber(
-      (resolution.amountsPaid[bid.id] / resolution.valuation) * 100
+        ${formatMoney(resolution.amountsPaid[bid.id])} for ${formatPercent(
+      resolution.amountsPaid[bid.id] / resolution.valuation
     )}% ownership of the impact certificate.`
   } else {
     return `Your bid of ${formatMoney(bid.amount)} at ${formatMoney(
