@@ -84,7 +84,7 @@ export function AssuranceBuyBox(props: {
           . This order will only go through once{' '}
           {activeAuction
             ? `the auction closes on ${format(
-                new Date(project.auction_close ?? 0),
+                new Date(`${project.auction_close}T12:00:00Z`),
                 'MM/dd/yyyy'
               )}, if at that time the founder has received enough buy offers to cover their minimum costs.`
             : 'the founder has received enough buy offers to cover their minimum costs.'}

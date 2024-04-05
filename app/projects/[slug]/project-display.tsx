@@ -111,6 +111,7 @@ export function ProjectDisplay(props: {
   >(undefined)
   return (
     <>
+      {/* TODO: remove this button */}
       <Button
         onClick={async () =>
           await fetch('/api/close-grants', {
