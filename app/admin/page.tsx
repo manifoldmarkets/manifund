@@ -51,7 +51,6 @@ export default async function Admin({
     (project) =>
       project.stage === 'proposal' &&
       project.approved === null &&
-      project.type === 'grant' &&
       project.bids.reduce((acc, bid) => acc + bid.amount, 0) >=
         project.min_funding &&
       project.signed_agreement
