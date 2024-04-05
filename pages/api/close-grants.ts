@@ -9,6 +9,7 @@ import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { isProd } from '@/db/env'
 import { Cause, getPrizeCause } from '@/db/cause'
 import { checkReactivateEligible } from '@/utils/activate-project'
+import { resolveAuction } from '@/utils/resolve-auction'
 import { uniq } from 'lodash'
 
 export const config = {
@@ -36,11 +37,12 @@ export default async function handler() {
   }
   const now = new Date()
   const proposalsPastDeadline = proposals?.filter((project) => {
-    const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
+    const closeDate = new Date(`${project.auction_close}T23:59:59-07:00`)
+    const timeSinceDeadline = differenceInDays(now, closeDate)
     return (
-      isBefore(closeDate, now) &&
+      timeSinceDeadline >= 0 &&
       // Only send notifs once per week
-      differenceInDays(closeDate, now) % 7 === 0
+      timeSinceDeadline % 7 === 0
     )
   })
   for (const project of proposalsPastDeadline ?? []) {
@@ -70,8 +72,10 @@ async function closeProject(
 ) {
   const amountRaised = getAmountRaised(project, bids)
   const minIncludingAmm = getMinIncludingAmm(project)
+  const activeAuction =
+    !!prizeCause?.cert_params?.auction && project.stage === 'proposal'
   if (amountRaised >= minIncludingAmm) {
-    if (project.type === 'grant' && !project.signed_agreement) {
+    if (!project.signed_agreement) {
       await sendTemplateEmail(
         TEMPLATE_IDS.GENERIC_NOTIF,
         {
@@ -83,7 +87,7 @@ async function closeProject(
         project.creator
       )
     }
-    if (project.type === 'grant' && !project.approved) {
+    if (!project.approved) {
       await sendTemplateEmail(
         TEMPLATE_IDS.GENERIC_NOTIF,
         {
@@ -96,51 +100,59 @@ async function closeProject(
         'rachel@manifund.org'
       )
     }
+    if (project.approved && project.signed_agreement && activeAuction) {
+      await resolveAuction(project)
+    }
   } else {
-    const { error } = await supabase.rpc('reject_proposal', {
-      project_id: project.id,
-    })
-    if (error) {
-      console.error(error)
-      return
-    }
-    const reactivateEligible = checkReactivateEligible(project, prizeCause)
-    const creatorPostmarkVars = {
-      recipientFullName: creatorName,
-      verdictMessage: `We regret to inform you that your project, "${
-        project.title
-      }," has not been funded. It received $${amountRaised} in funding offers but had a minimum funding goal of $${
-        project.min_funding
-      }. ${
-        reactivateEligible
-          ? "You can activate your project from your project page if you'd like your project to stay eligible for trading and retroactive funding, though you will still not receive any upfront funding."
-          : ''
-      } Thank you for posting your project, and please let us know on our discord if you have any questions or feedback about the process.`,
-      projectUrl: `https://manifund.org/projects/${project.slug}`,
-      subject: `Manifund project not funded: "${project.title}"`,
-      adminName: 'Rachel',
-    }
-    await sendTemplateEmail(
-      TEMPLATE_IDS.VERDICT,
-      creatorPostmarkVars,
-      project.creator
-    )
-    const bidders = bids.map((bid) => bid.bidder)
-    const uniqueBidders = uniq(bidders)
-    uniqueBidders.forEach(async (bidder) => {
-      const bidderPostmarkVars = {
-        projectTitle: project.title,
-        result: 'declined',
+    if (activeAuction) {
+      await resolveAuction(project)
+    } else {
+      const { error } = await supabase.rpc('reject_proposal', {
+        project_id: project.id,
+      })
+      if (error) {
+        console.error(error)
+        return
+      }
+      const reactivateEligible = checkReactivateEligible(project, prizeCause)
+      const creatorPostmarkVars = {
+        recipientFullName: creatorName,
+        verdictMessage: `We regret to inform you that your project, "${
+          project.title
+        }," has not been funded. It received $${amountRaised} in funding offers but had a minimum funding goal of $${
+          project.min_funding
+        }. ${
+          reactivateEligible
+            ? "You can activate your project from your project page if you'd like your project to stay eligible for trading and retroactive funding, though you will still not receive any upfront funding."
+            : ''
+        } Thank you for posting your project, and please let us know on our discord if you have any questions or feedback about the process.`,
         projectUrl: `https://manifund.org/projects/${project.slug}`,
-        auctionResolutionText: `This project was not funded, because it received only $${amountRaised} in funding, which is less than its' minimum funding goal of $${project.min_funding}.`,
-        bidResolutionText: `Your offer was declined.`,
+        subject: `Manifund project not funded: "${project.title}"`,
+        adminName: 'Rachel',
       }
       await sendTemplateEmail(
-        TEMPLATE_IDS.OFFER_RESOLVED,
-        bidderPostmarkVars,
-        bidder
+        TEMPLATE_IDS.VERDICT,
+        creatorPostmarkVars,
+        project.creator
       )
-    })
+      const bidders = bids.map((bid) => bid.bidder)
+      const uniqueBidders = uniq(bidders)
+      uniqueBidders.forEach(async (bidder) => {
+        const bidderPostmarkVars = {
+          projectTitle: project.title,
+          result: 'declined',
+          projectUrl: `https://manifund.org/projects/${project.slug}`,
+          auctionResolutionText: `This project was not funded, because it received only $${amountRaised} in funding, which is less than its minimum funding goal of $${project.min_funding}.`,
+          bidResolutionText: `Your offer was declined.`,
+        }
+        await sendTemplateEmail(
+          TEMPLATE_IDS.OFFER_RESOLVED,
+          bidderPostmarkVars,
+          bidder
+        )
+      })
+    }
+    // TODO: notify followers when project gets funded through auction
     const unnotifiedFollowers = followerIds.filter(
       (id) => id !== project.creator && !bids.find((bid) => bid.bidder === id)
     )

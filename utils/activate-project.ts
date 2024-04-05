@@ -9,11 +9,13 @@ import {
 import { getTxnsByProject } from '@/db/txn'
 import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { differenceInDays, isBefore } from 'date-fns'
 import { uniq } from 'lodash'
 import uuid from 'react-uuid'
 import { getURL } from './constants'
 import { sendTemplateEmail, TEMPLATE_IDS } from './email'
 import { getProposalValuation } from './math'
+import { resolveAuction } from './resolve-auction'
 
 export async function maybeActivateProject(
   supabase: SupabaseClient,
@@ -27,11 +29,19 @@ export async function maybeActivateProject(
   const activeAuction =
     !!project.causes.find((c) => !!c.cert_params && c.cert_params.auction) &&
     project.type === 'cert'
-  if (!activeAuction && checkFundingReady(project)) {
-    await activateProject(
-      project,
-      project.project_follows.map((f) => f.follower_id)
-    )
+  if (checkFundingReady(project)) {
+    if (activeAuction) {
+      const closeDate = new Date(`${project.auction_close}T23:59:59-07:00`)
+      const now = new Date()
+      if (isBefore(closeDate, now)) {
+        await resolveAuction(project)
+      }
+    } else {
+      await activateProject(
+        project,
+        project.project_follows.map((f) => f.follower_id)
+      )
+    }
   }
 }
 

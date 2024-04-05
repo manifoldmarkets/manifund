@@ -58,12 +58,14 @@ export async function getBidsByProject(
 
 export async function getBidsForResolution(
   supabase: SupabaseClient,
-  project: string
+  projectId: string
 ) {
   const { data, error } = await supabase
     .from('bids')
     .select('*, profiles(*)')
-    .eq('project', project)
+    .eq('project', projectId)
+    .eq('status', 'pending')
+    .eq('type', 'assurance buy')
     .order('valuation', { ascending: false })
   if (error) {
     throw error

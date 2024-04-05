@@ -105,6 +105,7 @@ export function ProjectTabs(props: {
           creator={creator}
           txns={txns}
           projectId={project.id}
+          usingAmm={!!project.amm_shares && project.amm_shares > 0}
         />
       ),
     })

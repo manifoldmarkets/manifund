@@ -22,8 +22,9 @@ export function Shareholders(props: {
   creator: Profile
   txns: TxnAndProfiles[]
   projectId: string
+  usingAmm: boolean
 }) {
-  const { shareholders, creator, txns, projectId } = props
+  const { shareholders, creator, txns, projectId, usingAmm } = props
   const nonAmmShareholders = shareholders.filter(
     (shareholder) => shareholder.profile.type !== 'amm'
   )
@@ -48,12 +49,14 @@ export function Shareholders(props: {
             {showPrecision((shareholder.numShares / TOTAL_SHARES) * 100, 4)}%
           </Row>
         ))}
-        <span className="my-5 text-sm text-gray-500">
-          The automated market maker currently holds{' '}
-          {formatPercent(ammShares / TOTAL_SHARES)} equity and{' '}
-          {formatMoneyPrecise(ammUSD)}. Those assets will be returned to the
-          founder when the project closes.
-        </span>
+        {usingAmm && (
+          <span className="my-5 text-sm text-gray-500">
+            The automated market maker currently holds{' '}
+            {formatPercent(ammShares / TOTAL_SHARES)} equity and{' '}
+            {formatMoneyPrecise(ammUSD)}. Those assets will be returned to the
+            founder when the project closes.
+          </span>
+        )}
         <TradeHistory txns={txns} creatorId={creator.id} />
       </Col>
     </Row>
