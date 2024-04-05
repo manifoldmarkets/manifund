@@ -1,11 +1,9 @@
 import { Database } from '@/db/database.types'
-import { NextRequest, NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { createAdminClient } from './_db'
-import { Project, TOTAL_SHARES } from '@/db/project'
-import { getProjectById } from '@/db/project'
+import { createAdminClient } from '@/pages/api/_db'
+import { Project, TOTAL_SHARES, updateProjectStage } from '@/db/project'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
-import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import { formatMoney, formatPercent } from '@/utils/formatting'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import uuid from 'react-uuid'
 
@@ -20,39 +18,30 @@ export const config = {
 
 type Bid = Database['public']['Tables']['bids']['Row']
 
-type ProjectProps = {
-  id: string
-  minFunding: number
-  founderShares: number
-  creator: string
-}
-
-export default async function handler(req: NextRequest) {
-  const { id, minFunding, founderShares, creator } =
-    (await req.json()) as ProjectProps
+export async function resolveAuction(project: Project) {
   const supabase = createAdminClient()
-  const bids = (await getBidsForResolution(supabase, id)).filter(
-    (bid) => bid.status === 'pending'
-  )
-  let founderPortion = founderShares / TOTAL_SHARES
-  const project = await getProjectById(supabase, id)
-  const resolution = resolveBids(bids, minFunding, founderPortion)
-  await sendAuctionCloseEmails(
+  const bids = await getBidsForResolution(supabase, project.id)
+  let founderPortion = project.founder_shares / TOTAL_SHARES
+  const resolution = calcAuctionResolution(
     bids,
-    project,
-    resolution,
-    founderShares / TOTAL_SHARES
+    project.min_funding,
+    founderPortion
   )
+  await sendAuctionCloseEmails(bids, project, resolution, founderPortion)
   if (resolution.valuation === -1) {
-    await updateProjectStage(supabase, id, 'not funded')
-    await updateBidsStatus(supabase, bids, resolution)
-    return NextResponse.json('project not funded')
+    await updateProjectStage(supabase, project.id, 'not funded')
   } else {
-    await updateProjectStage(supabase, id, 'active')
-    await addTxns(supabase, id, bids, resolution, creator)
-    await updateBidsStatus(supabase, bids, resolution)
-    return NextResponse.json('project funded!')
+    await updateProjectStage(supabase, project.id, 'active')
+    await addTxns(supabase, project.id, bids, resolution, project.creator)
+    await addFounderLeftoversOffer(
+      supabase,
+      resolution,
+      project.id,
+      project.creator,
+      founderPortion
+    )
   }
+  await updateBidsStatus(supabase, bids, resolution, project.id)
 }
 
 async function addTxns(
@@ -93,43 +82,68 @@ async function addTxns(
   }
 }
 
-async function updateProjectStage(
+async function addFounderLeftoversOffer(
   supabase: SupabaseClient,
-  id: string,
-  stage: string
+  resolution: Resolution,
+  projectId: string,
+  creatorId: string,
+  founderPortion: number
 ) {
-  const { error } = await supabase
-    .from('projects')
-    .update({ stage: stage })
-    .eq('id', id)
-  if (error) {
-    console.error('updateProjectStage', error)
+  const totalFunding =
+    resolution.valuation > 0
+      ? Object.keys(resolution.amountsPaid).reduce(
+          (total, current) => total + resolution.amountsPaid[current],
+          0
+        )
+      : 0
+  const portionSold = totalFunding / resolution.valuation
+  const offeredUnsoldPortion = 1 - founderPortion - portionSold
+  if (offeredUnsoldPortion > 0) {
+    const founderLeftoversOffer = {
+      id: uuid(),
+      project: projectId,
+      bidder: creatorId,
+      amount: offeredUnsoldPortion * resolution.valuation,
+      valuation: resolution.valuation,
+      type: 'sell',
+      status: 'pending',
+    }
+    const { error } = await supabase
+      .from('bids')
+      .insert([founderLeftoversOffer])
+    if (error) {
+      console.error('createFounderLeftoversOffer', error)
+    }
   }
 }
 
 async function updateBidsStatus(
   supabase: SupabaseClient,
   bids: Bid[],
-  resolution: Resolution
+  resolution: Resolution,
+  projectId: string
 ) {
   for (const bid of bids) {
-    const { error } = await supabase
+    await supabase
       .from('bids')
       .update({
         status: resolution.amountsPaid[bid.id] > 0 ? 'accepted' : 'declined',
       })
       .eq('id', bid.id)
-    if (error) {
-      console.error('updateBidStatus', error)
-    }
+      .throwOnError()
   }
+  await supabase
+    .from('bids')
+    .update({ status: resolution.valuation > 0 ? 'accepted' : 'declined' })
+    .match({ project: projectId, type: 'assurance sell' })
+    .throwOnError()
 }
 
 export type Resolution = {
   amountsPaid: { [key: string]: number }
   valuation: number
 }
-export function resolveBids(
+export function calcAuctionResolution(
   sortedBids: Bid[],
   minFunding: number,
   founderPortion: number
@@ -152,8 +166,8 @@ export function resolveBids(
       // Current bid gets partially paid out
       resolution.amountsPaid[sortedBids[i].id] =
         sortedBids[i].amount + unsoldPortion * valuation
-      resolution.valuation = valuation
       // Early return resolution data
+      resolution.valuation = valuation
       return resolution
       // If all bids are exhausted but the project has enough funding, bids go through
     } else if (
@@ -163,8 +177,8 @@ export function resolveBids(
     ) {
       // Current bid gets fully paid out
       resolution.amountsPaid[sortedBids[i].id] = sortedBids[i].amount
-      resolution.valuation = valuation
       // Early return resolution data
+      resolution.valuation = valuation
       return resolution
     }
     // Haven't resolved yet; if project gets funded based on later bids, current bid will fully pay out
@@ -185,10 +199,21 @@ async function sendAuctionCloseEmails(
   founderPortion: number
 ) {
   const projectUrl = `https://manifund.org/projects/${project.slug}?tab=shareholders#tabs`
+  const totalFunding =
+    resolution.valuation > 0
+      ? bids.reduce(
+          (total, current) => total + resolution.amountsPaid[current.id],
+          0
+        )
+      : 0
+  const portionSold = totalFunding / resolution.valuation
+  const offeredUnsoldPortion = 1 - founderPortion - portionSold
   const auctionResolutionText = genAuctionResolutionText(
-    bids,
-    resolution,
-    founderPortion
+    totalFunding,
+    resolution.valuation,
+    founderPortion,
+    portionSold,
+    offeredUnsoldPortion
   )
   for (const bid of bids) {
     const bidResolutionText = genBidResolutionText(bid, resolution)
@@ -205,11 +230,21 @@ async function sendAuctionCloseEmails(
       bid.bidder
     )
   }
-  const claimFundsHTML = genClaimFundsHTML(resolution)
   const creatorPostmarkVars = {
     projectTitle: project.title,
     projectUrl,
-    claimFundsHTML,
+    claimFundsText:
+      resolution.valuation > 0
+        ? `Withdraw your funds by going to your profile page, and clicking the [-] button where your cash balance is displayed. ${
+            offeredUnsoldPortion > 0
+              ? `Not all of the shares you initially offered in the auction were sold, so we made a sell offer for the remaining ${formatPercent(
+                  offeredUnsoldPortion
+                )} at a valuation of ${formatMoney(
+                  resolution.valuation
+                )} on your behalf, which gives you the opportunity to raise more funds. You are able to delete that offer if you choose from your project page.`
+              : ''
+          }`
+        : '',
     auctionResolutionText,
   }
   await sendTemplateEmail(
@@ -220,30 +255,28 @@ async function sendAuctionCloseEmails(
 }
 
 function genAuctionResolutionText(
-  bids: Bid[],
-  resolution: Resolution,
-  founderPortion: number
+  totalFunding: number,
+  valuation: number,
+  founderPortion: number,
+  portionSold: number,
+  offeredUnsoldPortion: number
 ) {
-  const totalFunding = bids.reduce(
-    (total, current) =>
-      resolution.amountsPaid[current.id] > 0
-        ? total + resolution.amountsPaid[current.id]
-        : total,
-    0
-  )
-  const portionSold = totalFunding / resolution.valuation
   if (portionSold + founderPortion >= 0.999999999999) {
-    return `This project was successfully funded. All shares were sold at a valuation of 
-        ${formatMoney(resolution.valuation)} and the project received
+    return `This project was successfully funded. Shares were sold at a valuation of 
+        ${formatMoney(valuation)} and the project received
         ${formatMoney(totalFunding)} in funding.`
-  } else if (totalFunding > 0) {
+  } else if (valuation > 0) {
     return `This project was successfully funded. It received ${formatMoney(
       totalFunding
     )} in
-        funding. ${formatLargeNumber(portionSold * 100)}% of shares were sold at
-        a valuation of ${formatMoney(resolution.valuation)}, the founder holds
-        another ${formatLargeNumber(founderPortion * 100)}%, and the remaining
-        shares will be sold on the market.`
+        funding. ${formatPercent(portionSold)} of shares were sold at
+        a valuation of ${formatMoney(
+          valuation
+        )}. The founder currently holds the other ${formatPercent(
+      1 - portionSold
+    )}, and ${formatPercent(
+      offeredUnsoldPortion
+    )} has been offered for sale at a valuation of ${formatMoney(valuation)}.`
   } else {
     return `Funding unsuccessful. The project will not proceed.`
   }
@@ -254,58 +287,12 @@ function genBidResolutionText(bid: Bid, resolution: Resolution) {
     return `Your bid of ${formatMoney(bid.amount)} at ${formatMoney(
       bid.valuation
     )} was accepted! You paid
-        ${formatMoney(resolution.amountsPaid[bid.id])} for ${formatLargeNumber(
-      (resolution.amountsPaid[bid.id] / resolution.valuation) * 100
+        ${formatMoney(resolution.amountsPaid[bid.id])} for ${formatPercent(
+      resolution.amountsPaid[bid.id] / resolution.valuation
     )}% ownership of the impact certificate.`
   } else {
     return `Your bid of ${formatMoney(bid.amount)} at ${formatMoney(
       bid.valuation
     )} was declined.`
-  }
-}
-
-function genClaimFundsHTML(resolution: Resolution) {
-  if (resolution.valuation > 0) {
-    return `<a
-    href="https://airtable.com/shrI3XFPivduhbnGa"
-    target="_blank"
-    style="
-      box-sizing: border-box;
-      display: inline-block;
-      font-family: arial, helvetica, sans-serif;
-      text-decoration: none;
-      -webkit-text-size-adjust: none;
-      text-align: center;
-      color: #ffffff;
-      background-color: #ea580c;
-      border-radius: 4px;
-      -webkit-border-radius: 4px;
-      -moz-border-radius: 4px;
-      width: auto;
-      max-width: 100%;
-      overflow-wrap: break-word;
-      word-break: break-word;
-      word-wrap: break-word;
-      mso-border-alt: none;
-    "
-  >
-    <span
-      style="
-        display: block;
-        padding: 10px 20px;
-        line-height: 120%;
-      "
-      ><span
-        style="
-          font-size: 16px;
-          font-weight: bold;
-          line-height: 18.8px;
-        "
-        >Claim funds</span
-      ></span
-    >
-  </a>`
-  } else {
-    return ''
   }
 }
