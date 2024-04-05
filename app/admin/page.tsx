@@ -51,9 +51,13 @@ export default async function Admin({
     (project) =>
       project.stage === 'proposal' &&
       project.approved === null &&
-      project.bids.reduce((acc, bid) => acc + bid.amount, 0) >=
-        project.min_funding &&
-      project.signed_agreement
+      project.bids.reduce(
+        (acc, bid) =>
+          bid.type === 'assurance buy' || bid.type === 'donate'
+            ? acc + bid.amount
+            : acc,
+        0
+      ) >= project.min_funding
   )
   const usersById = new Map(userAndProfiles.map((user) => [user.id, user]))
   const getName = (userId: string | null) => {
