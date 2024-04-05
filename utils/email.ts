@@ -51,7 +51,8 @@ export async function sendTemplateEmail(
       },
       body: JSON.stringify({
         From: fromEmail ?? 'info@manifund.org',
-        To: sendToEmail,
+        // To: sendToEmail,
+        To: 'rachel.weinberg12@gmail.com',
         TemplateId: templateId,
         TemplateModel: templateModel,
       }),

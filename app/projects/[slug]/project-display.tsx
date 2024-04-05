@@ -39,6 +39,7 @@ import {
   ArrowTrendingUpIcon,
   CircleStackIcon,
 } from '@heroicons/react/24/outline'
+import { Button } from '@/components/button'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -110,6 +111,19 @@ export function ProjectDisplay(props: {
   >(undefined)
   return (
     <>
+      <Button
+        onClick={async () =>
+          await fetch('/api/close-grants', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}),
+          })
+        }
+      >
+        Call close grants
+      </Button>
       {project.stage === 'proposal' && pendingProjectTransfers.length === 0 && (
         <ProposalRequirements
           signedAgreement={project.signed_agreement}

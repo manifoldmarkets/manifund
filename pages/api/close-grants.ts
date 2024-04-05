@@ -41,7 +41,9 @@ export default async function handler() {
     return (
       isBefore(closeDate, now) &&
       // Only send notifs once per week
-      differenceInDays(closeDate, now) % 7 === 0
+      differenceInDays(closeDate, now) % 7 === 0 &&
+      // TODO: remove
+      project.slug === 'scaling-legal-im'
     )
   })
   for (const project of proposalsPastDeadline ?? []) {
@@ -74,6 +76,7 @@ async function closeProject(
   const activeAuction =
     !!prizeCause?.cert_params?.auction && project.stage === 'proposal'
   if (amountRaised >= minIncludingAmm) {
+    console.log('project funded')
     if (!project.signed_agreement) {
       await sendTemplateEmail(
         TEMPLATE_IDS.GENERIC_NOTIF,
@@ -103,6 +106,7 @@ async function closeProject(
       await resolveAuction(project)
     }
   } else {
+    console.log('project not funded')
     if (activeAuction) {
       await resolveAuction(project)
     } else {
