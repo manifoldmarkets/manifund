@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from 'react'
 import { orderBy } from 'lodash'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
-import { resolveBids, Resolution } from '@/utils/resolve-auction'
+import { calcAuctionResolution, Resolution } from '@/utils/resolve-auction'
 import { Bid } from '@/db/bid'
 import uuid from 'react-uuid'
 import { Card } from '@/components/layout/card'
@@ -266,7 +266,11 @@ function resolvePlayBids(
       bid.amount = 0
     }
   })
-  const resolution = resolveBids(sortedBids, minFunding, founderPortion)
+  const resolution = calcAuctionResolution(
+    sortedBids,
+    minFunding,
+    founderPortion
+  )
   if (resolution.valuation === -1) {
     playBids.forEach((bid) => (resolution.amountsPaid[bid.id] = 0))
     resolution
