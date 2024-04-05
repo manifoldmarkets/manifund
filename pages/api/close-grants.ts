@@ -37,7 +37,7 @@ export default async function handler() {
   }
   const now = new Date()
   const proposalsPastDeadline = proposals?.filter((project) => {
-    const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
+    const closeDate = new Date(`${project.auction_close}T23:59:59-07:00`)
     return (
       isBefore(closeDate, now) &&
       // Only send notifs once per week
