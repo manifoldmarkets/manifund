@@ -45,7 +45,6 @@ export default async function handler() {
       timeSinceDeadline % 7 === 0
     )
   })
-  console.log('past deadline:', proposalsPastDeadline)
   for (const project of proposalsPastDeadline ?? []) {
     const prizeCause = await getPrizeCause(
       project.causes.map((c) => c.slug),
@@ -76,7 +75,6 @@ async function closeProject(
   const activeAuction =
     !!prizeCause?.cert_params?.auction && project.stage === 'proposal'
   if (amountRaised >= minIncludingAmm) {
-    console.log('project funded')
     if (!project.signed_agreement) {
       await sendTemplateEmail(
         TEMPLATE_IDS.GENERIC_NOTIF,
@@ -106,7 +104,6 @@ async function closeProject(
       await resolveAuction(project)
     }
   } else {
-    console.log('project not funded')
     if (activeAuction) {
       await resolveAuction(project)
     } else {
