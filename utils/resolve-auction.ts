@@ -3,7 +3,11 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from '@/pages/api/_db'
 import { Project, TOTAL_SHARES, updateProjectStage } from '@/db/project'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
-import { formatLargeNumber, formatMoney } from '@/utils/formatting'
+import {
+  formatLargeNumber,
+  formatMoney,
+  formatPercent,
+} from '@/utils/formatting'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import uuid from 'react-uuid'
 
@@ -170,12 +174,29 @@ async function sendAuctionCloseEmails(
       bid.bidder
     )
   }
+  const totalFunding =
+    resolution.valuation > 0
+      ? bids.reduce(
+          (total, current) => total + resolution.amountsPaid[current.id],
+          0
+        )
+      : 0
+  const portionSold = totalFunding / resolution.valuation
+  const offeredUnsoldPortion = 1 - founderPortion - portionSold
   const creatorPostmarkVars = {
     projectTitle: project.title,
     projectUrl,
     claimFundsText:
       resolution.valuation > 0
-        ? 'Withdraw your funds by going to your profile page, and clicking the [-] button where your cash balance is displayed.'
+        ? `Withdraw your funds by going to your profile page, and clicking the [-] button where your cash balance is displayed. ${
+            offeredUnsoldPortion > 0
+              ? `Not all of the shares you initially offered in the auction were sold, so we made a sell offer for the remaining ${formatPercent(
+                  offeredUnsoldPortion
+                )} at a valuation of ${
+                  resolution.valuation
+                } on your behalf, which gives you the opportunity to raise more funds. You are able to delete that offer if you choose from your project page.`
+              : ''
+          }`
         : '',
     auctionResolutionText,
   }
@@ -203,14 +224,18 @@ function genAuctionResolutionText(
     return `This project was successfully funded. Shares were sold at a valuation of 
         ${formatMoney(resolution.valuation)} and the project received
         ${formatMoney(totalFunding)} in funding.`
-  } else if (totalFunding > 0) {
+  } else if (resolution.valuation > 0) {
     return `This project was successfully funded. It received ${formatMoney(
       totalFunding
     )} in
-        funding. ${formatLargeNumber(portionSold * 100)}% of shares were sold at
-        a valuation of ${formatMoney(resolution.valuation)}, the founder holds
-        another ${formatLargeNumber(founderPortion * 100)}%, and the remaining
-        shares will be sold on the market.`
+        funding. ${formatPercent(portionSold)} of shares were sold at
+        a valuation of ${formatMoney(
+          resolution.valuation
+        )}. The founder currently holds the other ${formatPercent(
+      1 - portionSold
+    )}, some of which has been offered for sale at a valuation of ${formatMoney(
+      resolution.valuation
+    )}.`
   } else {
     return `Funding unsuccessful. The project will not proceed.`
   }
