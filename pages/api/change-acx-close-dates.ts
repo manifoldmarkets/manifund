@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAdminClient } from './_db'
 
 export const config = {
   runtime: 'edge',
