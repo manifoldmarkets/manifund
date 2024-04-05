@@ -97,7 +97,7 @@ async function addFounderLeftoversOffer(
         )
       : 0
   const portionSold = totalFunding / resolution.valuation
-  const offeredUnsoldPortion = 1 - -portionSold
+  const offeredUnsoldPortion = 1 - founderPortion - portionSold
   if (offeredUnsoldPortion > 0) {
     const founderLeftoversOffer = {
       id: uuid(),
@@ -108,7 +108,12 @@ async function addFounderLeftoversOffer(
       type: 'sell',
       status: 'pending',
     }
-    await supabase.from('bids').insert([founderLeftoversOffer])
+    const { error } = await supabase
+      .from('bids')
+      .insert([founderLeftoversOffer])
+    if (error) {
+      console.error('createFounderLeftoversOffer', error)
+    }
   }
 }
 
