@@ -22,7 +22,11 @@ export async function resolveAuction(project: Project) {
   const supabase = createAdminClient()
   const bids = await getBidsForResolution(supabase, project.id)
   let founderPortion = project.founder_shares / TOTAL_SHARES
-  const resolution = resolveBids(bids, project.min_funding, founderPortion)
+  const resolution = calcAuctionResolution(
+    bids,
+    project.min_funding,
+    founderPortion
+  )
   await sendAuctionCloseEmails(bids, project, resolution, founderPortion)
   if (resolution.valuation === -1) {
     await updateProjectStage(supabase, project.id, 'not funded')
@@ -134,7 +138,7 @@ export type Resolution = {
   amountsPaid: { [key: string]: number }
   valuation: number
 }
-export function resolveBids(
+export function calcAuctionResolution(
   sortedBids: Bid[],
   minFunding: number,
   founderPortion: number
