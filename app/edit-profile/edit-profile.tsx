@@ -62,7 +62,9 @@ export function EditProfileForm(props: { profile: Profile }) {
   }
 
   let errorMessage = null
-  if (!fullName) {
+  if (!username) {
+    errorMessage = 'Please enter a username.'
+  } else if (!fullName) {
     errorMessage = 'Please enter your full name.'
   } else if (profile.regranter_status) {
     if (!bio) {
