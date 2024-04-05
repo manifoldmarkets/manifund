@@ -9,6 +9,7 @@ import {
 import { getTxnsByProject } from '@/db/txn'
 import { createAdminClient } from '@/pages/api/_db'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { differenceInDays, isBefore } from 'date-fns'
 import { uniq } from 'lodash'
 import uuid from 'react-uuid'
 import { getURL } from './constants'
@@ -30,7 +31,11 @@ export async function maybeActivateProject(
     project.type === 'cert'
   if (checkFundingReady(project)) {
     if (activeAuction) {
-      await resolveAuction(project)
+      const closeDate = new Date(`${project.auction_close}T23:59:59-07:00`)
+      const now = new Date()
+      if (isBefore(closeDate, now)) {
+        await resolveAuction(project)
+      }
     } else {
       await activateProject(
         project,

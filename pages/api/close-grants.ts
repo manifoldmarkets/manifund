@@ -21,9 +21,9 @@ export const config = {
 }
 
 export default async function handler() {
-  if (!isProd()) {
-    return NextResponse.json('not prod')
-  }
+  // if (!isProd()) {
+  //   return NextResponse.json('not prod')
+  // }
   const supabase = createAdminClient()
   const { data: proposals, error } = await supabase
     .from('projects')
@@ -38,14 +38,20 @@ export default async function handler() {
   const now = new Date()
   const proposalsPastDeadline = proposals?.filter((project) => {
     const closeDate = new Date(`${project.auction_close}T23:59:59-07:00`)
+    const timeSinceDeadline = differenceInDays(now, closeDate)
+    if (project.slug === 'scaling-legal-im') {
+      console.log('time since deadline', timeSinceDeadline)
+    }
     return (
-      isBefore(closeDate, now) &&
+      // TODO: test to make sure this comes out > 0 & < 0 as expected
+      timeSinceDeadline >= 0 &&
       // Only send notifs once per week
-      differenceInDays(closeDate, now) % 7 === 0 &&
+      timeSinceDeadline % 7 === 0 &&
       // TODO: remove
       project.slug === 'scaling-legal-im'
     )
   })
+  console.log('past deadline:', proposalsPastDeadline)
   for (const project of proposalsPastDeadline ?? []) {
     const prizeCause = await getPrizeCause(
       project.causes.map((c) => c.slug),

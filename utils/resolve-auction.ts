@@ -234,9 +234,9 @@ async function sendAuctionCloseEmails(
             offeredUnsoldPortion > 0
               ? `Not all of the shares you initially offered in the auction were sold, so we made a sell offer for the remaining ${formatPercent(
                   offeredUnsoldPortion
-                )} at a valuation of ${
+                )} at a valuation of ${formatMoney(
                   resolution.valuation
-                } on your behalf, which gives you the opportunity to raise more funds. You are able to delete that offer if you choose from your project page.`
+                )} on your behalf, which gives you the opportunity to raise more funds. You are able to delete that offer if you choose from your project page.`
               : ''
           }`
         : '',
