@@ -45,9 +45,7 @@ export default function ClientAuth(props: { profileComplete?: boolean }) {
           supabaseClient={supabase}
           appearance={{ theme: manifundTheme }}
           providers={['google']}
-          redirectTo={`${getURL()}${
-            profileComplete ? redirect : `/login?redirectTo=${redirect}`
-          }`}
+          redirectTo={`${getURL()}/edit-profile?redirectTo=${redirect}`}
         />
       </div>
     )
