@@ -81,7 +81,7 @@ export function EditProfileForm(props: { profile: Profile }) {
   }
 
   const params = useSearchParams()
-  const redirect = params?.get('redirect')
+  const redirect = params?.get('redirectTo')
   const Save = async () => {
     setSubmitting(true)
     const formattedUsername = username
