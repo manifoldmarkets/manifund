@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { Avatar } from '@/components/avatar'
 import { Input } from '@/components/input'
 import { Button } from '@/components/button'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Profile } from '@/db/profile'
 import uuid from 'react-uuid'
 import Image from 'next/image'
@@ -62,7 +62,9 @@ export function EditProfileForm(props: { profile: Profile }) {
   }
 
   let errorMessage = null
-  if (!fullName) {
+  if (!username) {
+    errorMessage = 'Please enter a username.'
+  } else if (!fullName) {
     errorMessage = 'Please enter your full name.'
   } else if (profile.regranter_status) {
     if (!bio) {
@@ -76,6 +78,34 @@ export function EditProfileForm(props: { profile: Profile }) {
     }
   } else {
     errorMessage = null
+  }
+
+  const params = useSearchParams()
+  const redirect = params?.get('redirect')
+  const Save = async () => {
+    setSubmitting(true)
+    const formattedUsername = username
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, '')
+    const longDescription =
+      editor?.getJSON() && editor.getHTML() !== '<p></p>'
+        ? editor.getJSON()
+        : null
+    await saveProfile(
+      {
+        ...profile,
+        username: formattedUsername,
+        bio,
+        long_description: longDescription,
+        website,
+        full_name: fullName,
+      },
+      avatar,
+      supabase
+    )
+    setSubmitting(false)
+    router.push(redirect ?? `/${formattedUsername}`)
+    router.refresh()
   }
 
   return (
@@ -182,31 +212,7 @@ export function EditProfileForm(props: { profile: Profile }) {
         disabled={errorMessage !== null}
         loading={submitting}
         className="max-w-xs"
-        onClick={async () => {
-          setSubmitting(true)
-          const formattedUsername = username
-            .replace(/ /g, '-')
-            .replace(/[^\w-]+/g, '')
-          const longDescription =
-            editor?.getJSON() && editor.getHTML() !== '<p></p>'
-              ? editor.getJSON()
-              : null
-          await saveProfile(
-            {
-              ...profile,
-              username: formattedUsername,
-              bio,
-              long_description: longDescription,
-              website,
-              full_name: fullName,
-            },
-            avatar,
-            supabase
-          )
-          setSubmitting(false)
-          router.push(`/${formattedUsername}`)
-          router.refresh()
-        }}
+        onClick={async () => await Save()}
       >
         Save
       </Button>
