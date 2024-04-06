@@ -1,4 +1,4 @@
-import Auth from '@/components/auth-ui'
+import Auth from '@/app/login/auth-ui'
 import { getUser, getProfileById } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 
