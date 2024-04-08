@@ -35,35 +35,47 @@ export default async function handler(req: NextRequest) {
   if (!user) {
     return NextResponse.error()
   }
-  const [profile, txns, bids, oldBid] = await Promise.all([
+  const [userProfile, userTxns, userBids, oldBid] = await Promise.all([
     getProfileById(supabase, user.id),
     getTxnAndProjectsByUser(supabase, user.id),
     getBidsByUser(supabase, user.id),
     getBidById(oldBidId, supabase),
   ])
-  if (!profile) {
+  if (!userProfile) {
     return NextResponse.error()
   }
+  const [partnerTxns, partnerBids] = await Promise.all([
+    getTxnAndProjectsByUser(supabase, oldBid.bidder),
+    getBidsByUser(supabase, oldBid.bidder),
+  ])
   const numSharesInTrade = (numDollarsInTrade / oldBid.valuation) * TOTAL_SHARES
-  if (oldBid.type === 'sell') {
-    const balance =
-      profile?.id === oldBid.projects.creator
-        ? calculateCashBalance(txns, bids, profile.id, true)
-        : calculateCharityBalance(txns, bids, profile.id, false)
-    if (balance < numDollarsInTrade) {
-      return NextResponse.error()
-    }
-  } else if (oldBid.type === 'buy') {
-    const userShares = calculateSellableShares(
-      txns,
-      bids,
-      oldBid.project,
-      profile.id
-    )
-    if (userShares < numSharesInTrade) {
-      return NextResponse.error()
-    }
-  } else {
+  const buyerBalance =
+    oldBid.type === 'sell'
+      ? userProfile?.id === oldBid.projects.creator
+        ? calculateCashBalance(userTxns, userBids, userProfile.id, true)
+        : calculateCharityBalance(userTxns, userBids, userProfile.id, false)
+      : oldBid.bidder === oldBid.projects.creator
+      ? calculateCashBalance(userTxns, userBids, userProfile.id, true)
+      : calculateCharityBalance(userTxns, userBids, userProfile.id, false)
+  const sellerShares =
+    oldBid.type === 'sell'
+      ? calculateSellableShares(
+          partnerTxns,
+          partnerBids,
+          oldBid.project,
+          oldBid.bidder
+        )
+      : calculateSellableShares(
+          userTxns,
+          userBids,
+          oldBid.project,
+          userProfile.id
+        )
+  if (
+    buyerBalance < numDollarsInTrade ||
+    numDollarsInTrade > oldBid.amount ||
+    sellerShares < numSharesInTrade
+  ) {
     return NextResponse.error()
   }
   await makeTrade(
@@ -86,18 +98,14 @@ export default async function handler(req: NextRequest) {
     {
       tradeText: tradeText,
       recipientProfileUrl: `manifund.org/${oldBid.profiles.username}`,
-      bidType: oldBid.type === 'buy' ? 'buy' : 'sell',
+      bidType: oldBid.type,
       projectTitle: oldBid.projects.title,
     },
     oldBid.bidder
   )
-  const { error } = await supabase.rpc('follow_project', {
+  await supabase.rpc('follow_project', {
     project_id: oldBid.project,
     follower_id: user.id,
   })
-  if (error) {
-    console.error(error)
-    return NextResponse.error()
-  }
   return NextResponse.json('success')
 }
