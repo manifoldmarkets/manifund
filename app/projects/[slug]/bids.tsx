@@ -282,8 +282,8 @@ function Trade(props: {
                     {formatLargeNumber(
                       ((tradeAmount ?? 0) / bid.valuation) * 100
                     )}
-                    % of any prize money I win to Manifund, which will be
-                    distributed to the investor who holds these shares.
+                    % of any prize money this project wins to Manifund, which
+                    will be distributed to the investor who holds these shares.
                   </span>
                 </div>
               </div>
@@ -306,6 +306,7 @@ function Trade(props: {
             loading={isSubmitting}
             disabled={errorMessage !== null}
             onClick={async () => {
+              setIsSubmitting(true)
               const response = await fetch('/api/trade-with-limit', {
                 method: 'POST',
                 headers: {

@@ -195,6 +195,7 @@ function TradeInputsPanel(props: {
       }),
     })
     setAmount(0)
+    // TODO: Set modeId null so panel closes after submission
     setSubmitting(false)
     router.refresh()
   }
