@@ -39,6 +39,7 @@ import {
   ArrowTrendingUpIcon,
   CircleStackIcon,
 } from '@heroicons/react/24/outline'
+import { format } from 'date-fns'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -180,7 +181,11 @@ export function ProjectDisplay(props: {
           </Row>
         </div>
         <Col className="mb-4 gap-6 border-y border-gray-200 py-6">
-          <ProjectTypeDisplay type={project.type} stage={project.stage} />
+          <ProjectTypeDisplay
+            type={project.type}
+            stage={project.stage}
+            closeDate={project.auction_close ?? undefined}
+          />
           <div>
             {(project.stage === 'proposal' ||
               (project.stage === 'active' && project.type === 'grant')) && (
@@ -288,30 +293,42 @@ export function ProjectDisplay(props: {
 export function ProjectTypeDisplay(props: {
   type: Project['type']
   stage: Project['stage']
+  closeDate?: string
 }) {
-  const { type, stage } = props
+  const { type, stage, closeDate } = props
+  const formattedCloseDate = format(
+    new Date(`${closeDate}T12:00:00Z`),
+    'MMMM do, yyyy'
+  )
   return (
-    <Row className="gap-1">
-      <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
-        <StageIcon stage={stage} className="h-4 w-4" />
-        {toSentenceCase(stage)}
-      </span>
-      <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
-        {type === 'cert' ? (
-          <Link
-            href="/about/impact-certificates"
-            className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600"
-          >
-            <ArrowTrendingUpIcon className="h-4 w-4" />
-            Impact certificate
-          </Link>
-        ) : (
-          <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
-            <CircleStackIcon className="h-4 w-4" />
-            Grant
-          </span>
-        )}
-      </span>
+    <Row className="justify-between">
+      <Row className="gap-1">
+        <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+          <StageIcon stage={stage} className="h-4 w-4" />
+          {toSentenceCase(stage)}
+        </span>
+        <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+          {type === 'cert' ? (
+            <Link
+              href="/about/impact-certificates"
+              className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600"
+            >
+              <ArrowTrendingUpIcon className="h-4 w-4" />
+              Impact certificate
+            </Link>
+          ) : (
+            <span className="inline-flex items-center gap-x-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-600">
+              <CircleStackIcon className="h-4 w-4" />
+              Grant
+            </span>
+          )}
+        </span>
+      </Row>
+      {closeDate && stage === 'proposal' && (
+        <span className="text-xs text-gray-500">
+          Closes {formattedCloseDate}
+        </span>
+      )}
     </Row>
   )
 }
