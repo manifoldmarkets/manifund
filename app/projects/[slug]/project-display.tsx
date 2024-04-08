@@ -296,10 +296,9 @@ export function ProjectTypeDisplay(props: {
   closeDate?: string
 }) {
   const { type, stage, closeDate } = props
-  const formattedCloseDate = format(
-    new Date(`${closeDate}T12:00:00Z`),
-    'MMMM do, yyyy'
-  )
+  const formattedCloseDate = closeDate
+    ? format(new Date(`${closeDate}T12:00:00Z`), 'MMMM do, yyyy')
+    : ''
   return (
     <Row className="justify-between">
       <Row className="gap-1">
