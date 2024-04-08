@@ -19,8 +19,6 @@ import { Card } from './layout/card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { getSponsoredAmount } from '@/utils/constants'
-import { MiniCause } from '@/db/cause'
-import { pt } from 'date-fns/locale'
 
 export function ProjectCard(props: {
   project: FullProject
