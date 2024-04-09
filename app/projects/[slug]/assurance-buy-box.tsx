@@ -12,7 +12,7 @@ import {
   formatMoneyPrecise,
   formatPercent,
 } from '@/utils/formatting'
-import { format } from 'date-fns'
+import { format, isBefore } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { TimeLeftDisplay } from './time-left-display'
@@ -37,6 +37,9 @@ export function AssuranceBuyBox(props: {
   const [valuation, setValuation] = useState<number | undefined>(minValuation)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const offerSizeDollars = offerSizePortion * (valuation ?? minValuation)
+  const closeDate = new Date(`${project.auction_close}T23:59:59-07:00`)
+  const now = new Date()
+  const isOpen = isBefore(now, closeDate)
   const router = useRouter()
   let errorMessage = null
   if (!amount) {
@@ -90,7 +93,7 @@ export function AssuranceBuyBox(props: {
             : 'the founder has received enough buy offers to cover their minimum costs.'}
         </p>
       </div>
-      {signedIn ? (
+      {signedIn && isOpen && (
         <>
           {maxBuy > 0 ? (
             <Col className="gap-2">
@@ -168,8 +171,18 @@ export function AssuranceBuyBox(props: {
             </Tooltip>
           </Row>
         </>
-      ) : (
-        <SignInButton buttonText="Sign in to bid" className="mx-auto my-4" />
+      )}
+      {!signedIn && isOpen && (
+        <SignInButton
+          className="w-full"
+          buttonText="Sign in to place a buy offer"
+        />
+      )}
+      {!isOpen && (
+        <span className="w-full text-center italic text-gray-600">
+          This project has reached its deadline and is no longer accepting
+          offers while it completes its other funding requirements.
+        </span>
       )}
     </Card>
   )
