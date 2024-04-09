@@ -32,6 +32,16 @@ export default async function UserProfilePage(props: {
     getCommentsByUser(supabase, profile.id),
     getUser(supabase),
   ])
+  console.log(
+    txns.map((t) => [
+      t.id,
+      t.profiles?.full_name,
+      t.type,
+      t.amount,
+      t.created_at,
+      t.projects?.title,
+    ])
+  )
   const [userTxns, userProfile, userBids] = await Promise.all([
     user ? getTxnsByUser(supabase, user.id) : undefined,
     user ? getProfileById(supabase, user.id) : undefined,
