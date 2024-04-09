@@ -24,3 +24,13 @@ export default async function Projects(props: {
     </div>
   )
 }
+
+async function get2023Deposits(supabase: any) {
+  const { data: txns } = await supabase
+    .from('txns')
+    .select('*, projects(id, title), profiles!txns_to_id_fkey(id, full_name)')
+    .gte('created_at', '2023-01-01')
+    .lte('created_at', '2023-12-31')
+    .eq('type', 'deposit')
+  return txns
+}
