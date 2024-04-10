@@ -505,6 +505,15 @@ TO authenticated
 
 WITH CHECK (true)
 
+create policy "Enable update for authenticated users only"
+on "public"."grant_agreements"
+as PERMISSIVE
+for UPDATE
+to authenticated
+using (
+  true
+);
+
 
 -- Comment rxns
 CREATE TABLE public.comment_rxns (
