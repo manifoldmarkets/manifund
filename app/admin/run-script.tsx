@@ -6,7 +6,7 @@ export function RunScript() {
     <Button
       onClick={async () => {
         // Change script here
-        const response = await fetch('/api/return-amm-assets', {
+        const response = await fetch('/api/fix-unupdated-agreements', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -14,7 +14,7 @@ export function RunScript() {
         })
       }}
     >
-      Return amm assets
+      Fix agreements
     </Button>
   )
 }
