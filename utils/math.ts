@@ -16,7 +16,9 @@ export function getProjectValuation(project: FullProject) {
     ? getProposalValuation(project)
     : getActiveValuation(
         project.txns,
+        project.bids,
         project.id,
+        !!project.amm_shares,
         getProposalValuation(project)
       )
 }
@@ -39,19 +41,28 @@ export function getMinIncludingAmm(project: Project) {
 
 function getActiveValuation(
   txns: Txn[],
+  bids: Bid[],
   projectId: string,
+  activeAmm: boolean,
   minValuation: number
 ) {
   const ammTxns = txns.filter(
     (txn) =>
       txn.type === 'user to amm trade' || txn.type === 'inject amm liquidity'
   )
-  if (ammTxns.length === 0) {
+  if (ammTxns.length === 0 || !activeAmm) {
     const userTradeTxns = txns.filter(
       (txn) => txn.type === 'user to user trade'
     )
     if (userTradeTxns.length === 0) {
-      return minValuation
+      const pendingBids = bids.filter((bid) => bid.status === 'pending')
+      if (pendingBids.length > 0) {
+        const sortedBids = sortBy(pendingBids, (bid) => bid.created_at)
+        const latestBid = sortedBids[sortedBids.length - 1]
+        return latestBid.valuation
+      } else {
+        return minValuation
+      }
     } else {
       const bundles = bundleTxns(userTradeTxns)
       const sortedBundles = sortBy(bundles, (bundle) => bundle[0].created_at)
@@ -67,7 +78,6 @@ function getActiveValuation(
     return calculateValuation(ammShares, ammUSD)
   }
 }
-
 export function calculateUserBalance(txns: Txn[], userId: string) {
   let balance = 0
   txns.forEach((txn) => {
