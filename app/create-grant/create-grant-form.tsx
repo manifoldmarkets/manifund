@@ -78,7 +78,6 @@ export function CreateGrantForm(props: {
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   const [locationDescription, setLocationDescription] = useState('')
   const [lobbying, setLobbying] = useState(false)
-  const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   const reasoningEditor = useTextEditor(REASONING_OUTLINE, REASONING_KEY)
@@ -163,9 +162,6 @@ export function CreateGrantForm(props: {
     errorMessage = `You currently have $${maxDonation} to give. If you would like to give a larger grant, you can add money to your account or raise more funds from other users on Manifund.`
   } else if (!locationDescription) {
     errorMessage = 'Please enter the location description.'
-  } else if (!agreedToTerms) {
-    errorMessage =
-      'Please confirm that you understand and agree to the terms of giving this grant.'
   } else {
     errorMessage = null
   }
