@@ -95,11 +95,11 @@ export default async function handler(req: NextRequest) {
         donorName: donor.full_name,
         profileUrl: `${getURL()}/${regranterProfile.username}`,
       }
-      // await sendTemplateEmail(
-      //   TEMPLATE_IDS.REGRANTER_DONATION,
-      //   postmarkVars,
-      //   toId
-      // )
+      await sendTemplateEmail(
+        TEMPLATE_IDS.REGRANTER_DONATION,
+        postmarkVars,
+        toId
+      )
     }
   }
 
