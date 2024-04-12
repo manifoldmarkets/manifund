@@ -7,16 +7,14 @@ import { Row } from './layout/row'
 import { Col } from './layout/col'
 import { addHttpToUrl, formatMoney } from '@/utils/formatting'
 import { LinkIcon } from '@heroicons/react/20/solid'
-import {
-  getSponsoredAmount2023,
-  getSponsoredAmount2024,
-} from '@/utils/constants'
 import { SponsoredTag } from './tags'
 
-export function ProfileCard(props: { profile: Profile; className?: string }) {
-  const { profile, className } = props
-  const sponsoredAmount2023 = getSponsoredAmount2023(profile.id)
-  const sponsoredAmount2024 = getSponsoredAmount2024(profile.id)
+export function ProfileCard(props: {
+  profile: Profile
+  sponsoredAmount: number
+  className?: string
+}) {
+  const { profile, sponsoredAmount, className } = props
   return (
     <Card
       className={clsx(
@@ -24,6 +22,18 @@ export function ProfileCard(props: { profile: Profile; className?: string }) {
         className
       )}
     >
+      <Row className="items-center justify-between">
+        <SponsoredTag
+          text={`${formatMoney(sponsoredAmount)}`}
+          active
+          className="absolute left-3 top-3"
+        />
+        {profile.website && (
+          <Link href={addHttpToUrl(profile.website)}>
+            <LinkIcon className="h-5 w-5 rounded bg-gray-100 stroke-2 p-1 text-gray-600 hover:bg-gray-200" />
+          </Link>
+        )}
+      </Row>
       <Link href={`/${profile.username}`} className="flex h-full flex-col">
         <Row className="mb-3 mt-2 justify-center">
           <Avatar
@@ -45,28 +55,6 @@ export function ProfileCard(props: { profile: Profile; className?: string }) {
           </Col>
         </Col>
       </Link>
-      <Row className="items-center justify-between">
-        <Row className="gap-1">
-          {sponsoredAmount2024 > 0 && (
-            <SponsoredTag
-              text={`${formatMoney(sponsoredAmount2024)}`}
-              active
-              className="absolute left-3 top-3"
-            />
-          )}
-          {sponsoredAmount2023 > 0 && (
-            <SponsoredTag
-              text={`${formatMoney(sponsoredAmount2023)}`}
-              className="absolute left-3 top-3"
-            />
-          )}
-        </Row>
-        {profile.website && (
-          <Link href={addHttpToUrl(profile.website)}>
-            <LinkIcon className="h-5 w-5 rounded bg-gray-100 stroke-2 p-1 text-gray-600 hover:bg-gray-200" />
-          </Link>
-        )}
-      </Row>
     </Card>
   )
 }

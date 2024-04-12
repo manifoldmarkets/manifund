@@ -6,6 +6,7 @@ import {
   getSponsoredAmount2024,
 } from '@/utils/constants'
 import { sortBy } from 'lodash'
+import { RegrantorsDisplay } from './regrantors-display'
 
 export default async function RegrantingPage() {
   const supabase = createServerClient()
@@ -38,13 +39,8 @@ export default async function RegrantingPage() {
             considered regranting to be the most promising.
           </a>
         </p> */}
-        <h3>Our regrantors</h3>
       </div>
-      <div className="mx-auto mb-5 mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
-        {sortedRegranters.map((regranter) => {
-          return <ProfileCard key={regranter.id} profile={regranter} />
-        })}
-      </div>
+      <RegrantorsDisplay regrantors={sortedRegranters} />
       <div className="prose mx-auto max-w-none font-light">
         <h3>Why regranting?</h3>
         <ul>
