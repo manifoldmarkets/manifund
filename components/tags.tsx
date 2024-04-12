@@ -213,26 +213,13 @@ export function Tag(props: {
 }
 
 export function SponsoredTag(props: { text: string; className?: string }) {
-  const { text, className } = props
+  const { text } = props
   return (
-    <div className={clsx('rounded bg-orange-100 p-1', className)}>
-      <Tooltip text={`Sponsored by Manifund for ${text}`}>
-        <Row className="gap-0.5">
-          <Col className="justify-center text-sm font-medium text-orange-500">
-            <Image
-              className="h-4 w-4"
-              src="/SolidOrangeManifox.png"
-              alt="Manifox"
-              width={1000}
-              height={1000}
-            />
-          </Col>
-          <Col className="justify-center text-sm font-medium text-orange-500">
-            {text}
-          </Col>
-        </Row>
-      </Tooltip>
-    </div>
+    <Tooltip text={`Sponsored for ${text}`}>
+      <span className="inline-flex items-center gap-x-1.5 rounded-md bg-orange-100 px-1.5 py-0.5 text-xs font-medium text-orange-600">
+        {text}
+      </span>
+    </Tooltip>
   )
 }
 

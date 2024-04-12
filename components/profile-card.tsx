@@ -7,35 +7,34 @@ import { Row } from './layout/row'
 import { Col } from './layout/col'
 import { addHttpToUrl, formatMoney } from '@/utils/formatting'
 import { LinkIcon } from '@heroicons/react/20/solid'
-import { getSponsoredAmount } from '@/utils/constants'
 import { SponsoredTag } from './tags'
 
-export function ProfileCard(props: { profile: Profile; className?: string }) {
-  const { profile, className } = props
-  const sponsoredAmount = getSponsoredAmount(profile.id)
+export function ProfileCard(props: {
+  profile: Profile
+  sponsoredAmount: number
+  className?: string
+}) {
+  const { profile, sponsoredAmount, className } = props
   return (
     <Card
       className={clsx(
-        'relative flex h-full flex-col gap-4 border-none py-6',
+        'relative flex h-full flex-col gap-4 border-none py-3',
         className
       )}
     >
-      {profile.website && (
-        <Link
-          href={addHttpToUrl(profile.website)}
-          className="absolute top-3 right-3"
-        >
-          <LinkIcon className="h-5 w-5 rounded bg-gray-300 p-0.5 text-white" />
-        </Link>
-      )}
-      {sponsoredAmount !== 0 && (
+      <Row className="items-center justify-between">
         <SponsoredTag
           text={`${formatMoney(sponsoredAmount)}`}
-          className="absolute top-3 left-3"
+          className="absolute left-3 top-3"
         />
-      )}
+        {profile.website && (
+          <Link href={addHttpToUrl(profile.website)}>
+            <LinkIcon className="h-5 w-5 rounded bg-gray-100 stroke-2 p-1 text-gray-600 hover:bg-gray-200" />
+          </Link>
+        )}
+      </Row>
       <Link href={`/${profile.username}`} className="flex h-full flex-col">
-        <Row className="mt-5 mb-3 justify-center">
+        <Row className="mb-3 mt-2 justify-center">
           <Avatar
             avatarUrl={profile.avatar_url}
             username={profile.username}
@@ -49,7 +48,7 @@ export function ProfileCard(props: { profile: Profile; className?: string }) {
             {profile.full_name}
           </span>
           <Col className="h-full justify-center">
-            <span className="text-center text-sm font-light leading-tight text-gray-500 line-clamp-3">
+            <span className="line-clamp-3 text-center text-sm font-light leading-tight text-gray-500">
               {profile.bio}
             </span>
           </Col>
@@ -87,7 +86,7 @@ export function CardlessProfile(props: { profile: Profile }) {
           {profile.full_name}
         </h1>
         <Col className="h-full justify-center">
-          <span className="text-center text-sm font-normal leading-6 text-gray-600 line-clamp-3">
+          <span className="line-clamp-3 text-center text-sm font-normal leading-6 text-gray-600">
             {profile.bio}
           </span>
         </Col>
