@@ -212,20 +212,11 @@ export function Tag(props: {
   )
 }
 
-export function SponsoredTag(props: {
-  text: string
-  active?: boolean
-  className?: string
-}) {
-  const { text, active, className } = props
+export function SponsoredTag(props: { text: string; className?: string }) {
+  const { text } = props
   return (
     <Tooltip text={`Sponsored for ${text}`}>
-      <span
-        className={clsx(
-          'inline-flex items-center gap-x-1.5 rounded-md px-1.5 py-0.5 text-xs font-medium',
-          active ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'
-        )}
-      >
+      <span className="inline-flex items-center gap-x-1.5 rounded-md bg-orange-100 px-1.5 py-0.5 text-xs font-medium text-orange-600">
         {text}
       </span>
     </Tooltip>

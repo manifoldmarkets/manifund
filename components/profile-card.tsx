@@ -25,7 +25,6 @@ export function ProfileCard(props: {
       <Row className="items-center justify-between">
         <SponsoredTag
           text={`${formatMoney(sponsoredAmount)}`}
-          active
           className="absolute left-3 top-3"
         />
         {profile.website && (
