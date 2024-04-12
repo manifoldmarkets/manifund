@@ -18,6 +18,7 @@ import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Tooltip } from '@/components/tooltip'
 import { SelectCauses } from '@/components/select-causes'
 import { MiniCause } from '@/db/cause'
+import { isEmailValid } from '@/utils/parse'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -125,6 +126,8 @@ export function CreateGrantForm(props: {
     errorMessage = 'Please enter the name of the recipient.'
   } else if (!recipientOnManifund && !recipientEmail) {
     errorMessage = 'Please enter the email address of the recipient.'
+  } else if (!isEmailValid(recipientEmail)) {
+    errorMessage = 'Invalid recipient email address.'
   } else if (recipientOnManifund && recipient === null) {
     errorMessage = 'Please select the recipient.'
   } else if (!title) {
@@ -251,6 +254,8 @@ export function CreateGrantForm(props: {
             <Input
               type="text"
               id="recipientEmail"
+              error={!isEmailValid(recipientEmail) && recipientEmail !== ''}
+              errorMessage={'Invalid email'}
               value={recipientEmail}
               onChange={(event) => setRecipientEmail(event.target.value)}
             />
