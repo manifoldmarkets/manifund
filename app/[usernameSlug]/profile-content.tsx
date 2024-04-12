@@ -19,6 +19,9 @@ import { Row } from '@/components/layout/row'
 import { useState } from 'react'
 import clsx from 'clsx'
 import { RightCarrotIcon } from '@/components/icons'
+import { Button } from '@/components/button'
+import { Input } from '@/components/input'
+import { useRouter } from 'next/navigation'
 
 export function ProfileContent(props: {
   profile: Profile
@@ -95,6 +98,10 @@ export function ProfileContent(props: {
         (project.stage !== 'hidden' && project.stage !== 'draft') ||
         isOwnProfile
     )
+  const [balanceToClear, setBalanceToClear] = useState(0)
+  const [submitting, setSubmitting] = useState(false)
+  const router = useRouter()
+  console.log(balanceToClear, submitting)
   return (
     <div className="flex flex-col gap-6">
       {profile.regranter_status && !isOwnProfile && (
@@ -104,6 +111,29 @@ export function ProfileContent(props: {
           maxDonation={userCharityBalance}
         />
       )}
+      <Input
+        type="number"
+        onChange={(e) => setBalanceToClear(Number(e.target.value))}
+      />
+      <Button
+        disabled={balanceToClear <= 0 || submitting}
+        loading={submitting}
+        onClick={async () => {
+          setSubmitting(true)
+          await fetch('/api/transfer-money', {
+            method: 'POST',
+            body: JSON.stringify({
+              fromId: profile.id,
+              toId: process.env.NEXT_PUBLIC_PROD_BANK_ID,
+              amount: balanceToClear,
+            }),
+          })
+          router.refresh()
+          setSubmitting(false)
+        }}
+      >
+        Clear balance
+      </Button>
       <BalanceDisplay
         balance={balance}
         // Hack to get around old accounting system which means some cash balances are negative
