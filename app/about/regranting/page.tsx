@@ -1,7 +1,7 @@
 import { ProfileCard } from '@/components/profile-card'
 import { getRegranters, Profile } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
-import { getSponsoredAmount } from '@/utils/constants'
+import { getSponsoredAmount2023 } from '@/utils/constants'
 import { sortBy } from 'lodash'
 
 export default async function RegrantingPage() {
@@ -9,7 +9,7 @@ export default async function RegrantingPage() {
   const regrantors = await getRegranters(supabase)
   const sortedRegranters = sortBy(regrantors, [
     function (regranter: Profile) {
-      return -getSponsoredAmount(regranter.id)
+      return -getSponsoredAmount2023(regranter.id)
     },
   ])
   return (
@@ -19,8 +19,7 @@ export default async function RegrantingPage() {
         <p>
           For our regranting program, we work with donors to delegate a
           grantmaking budget to individuals known as “regrantors”. Regrantors
-          independently make grant decisions, based on the goals of the original
-          donor, and their own expertise.
+          independently make grant decisions, based on their own expertise.
         </p>
         {/* <p>
           This model was pioneered by the FTX Future Fund; among the grantmaking

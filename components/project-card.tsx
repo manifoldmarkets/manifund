@@ -18,9 +18,10 @@ import { UserAvatarAndBadge } from './user-link'
 import { Card } from './layout/card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
-import { getSponsoredAmount } from '@/utils/constants'
-import { MiniCause } from '@/db/cause'
-import { pt } from 'date-fns/locale'
+import {
+  getSponsoredAmount2023,
+  getSponsoredAmount2024,
+} from '@/utils/constants'
 
 export function ProjectCard(props: {
   project: FullProject
@@ -32,7 +33,9 @@ export function ProjectCard(props: {
     project.stage === 'proposal'
       ? orderBy(project.bids, 'created_at', 'asc')[0]?.bidder
       : orderBy(project.txns, 'created_at', 'asc')[0]?.from_id
-  const regrantorInitiated = getSponsoredAmount(firstDonorId ?? '') > 0
+  const regrantorInitiated =
+    getSponsoredAmount2023(firstDonorId ?? '') > 0 ||
+    getSponsoredAmount2024(firstDonorId ?? '') > 0
   const voteCount = project.project_votes.reduce(
     (acc, vote) => vote.magnitude + acc,
     0
