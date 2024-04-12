@@ -1,28 +1,10 @@
-import { ProfileCard } from '@/components/profile-card'
-import { getRegranters, Profile } from '@/db/profile'
+import { getRegranters } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
-import {
-  getSponsoredAmount2023,
-  getSponsoredAmount2024,
-} from '@/utils/constants'
-import { sortBy } from 'lodash'
 import { RegrantorsDisplay } from './regrantors-display'
 
 export default async function RegrantingPage() {
   const supabase = createServerClient()
   const regrantors = await getRegranters(supabase)
-  const sortedRegranters = sortBy(
-    sortBy(regrantors, [
-      function (regranter: Profile) {
-        return -getSponsoredAmount2023(regranter.id)
-      },
-    ]),
-    [
-      function (regranter: Profile) {
-        return -getSponsoredAmount2024(regranter.id)
-      },
-    ]
-  )
   return (
     <div className="mx-auto max-w-3xl p-5">
       <div className="prose mx-auto max-w-none font-light">
@@ -40,7 +22,7 @@ export default async function RegrantingPage() {
           </a>
         </p> */}
       </div>
-      <RegrantorsDisplay regrantors={sortedRegranters} />
+      <RegrantorsDisplay regrantors={regrantors} />
       <div className="prose mx-auto max-w-none font-light">
         <h3>Why regranting?</h3>
         <ul>
