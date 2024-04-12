@@ -8,7 +8,7 @@ import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
 import { Round } from '@/db/round'
 import { SimpleCause } from '@/db/cause'
-import { getSponsoredAmount } from '@/utils/constants'
+import { getSponsoredAmount2023 } from '@/utils/constants'
 import { UserPlusIcon, WrenchIcon } from '@heroicons/react/20/solid'
 import { sortBy } from 'lodash'
 import { useSearchParams } from 'next/navigation'
@@ -50,7 +50,7 @@ export function RoundTabs(props: {
   if (round.title === 'Regrants' && regranters) {
     const sortedRegranters = sortBy(regranters, [
       function (regranter: Profile) {
-        return -getSponsoredAmount(regranter.id)
+        return -getSponsoredAmount2023(regranter.id)
       },
     ])
     tabs.push({
@@ -68,7 +68,13 @@ export function RoundTabs(props: {
           ) : (
             <div className="mt-2 grid grid-cols-2 gap-4 lg:grid-cols-3">
               {sortedRegranters.map((regranter) => {
-                return <ProfileCard key={regranter.id} profile={regranter} />
+                return (
+                  <ProfileCard
+                    key={regranter.id}
+                    sponsoredAmount={getSponsoredAmount2023(regranter.id)}
+                    profile={regranter}
+                  />
+                )
               })}
             </div>
           )}

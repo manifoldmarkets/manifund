@@ -1,26 +1,18 @@
-import { ProfileCard } from '@/components/profile-card'
-import { getRegranters, Profile } from '@/db/profile'
+import { getRegranters } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
-import { getSponsoredAmount } from '@/utils/constants'
-import { sortBy } from 'lodash'
+import { RegrantorsDisplay } from './regrantors-display'
 
 export default async function RegrantingPage() {
   const supabase = createServerClient()
   const regrantors = await getRegranters(supabase)
-  const sortedRegranters = sortBy(regrantors, [
-    function (regranter: Profile) {
-      return -getSponsoredAmount(regranter.id)
-    },
-  ])
   return (
-    <div className="p-5">
-      <div className="prose mx-auto font-light">
+    <div className="mx-auto max-w-3xl p-5">
+      <div className="prose mx-auto max-w-none font-light">
         <h1>Regranting</h1>
         <p>
           For our regranting program, we work with donors to delegate a
           grantmaking budget to individuals known as “regrantors”. Regrantors
-          independently make grant decisions, based on the goals of the original
-          donor, and their own expertise.
+          independently make grant decisions based on their own expertise.
         </p>
         {/* <p>
           This model was pioneered by the FTX Future Fund; among the grantmaking
@@ -30,13 +22,8 @@ export default async function RegrantingPage() {
           </a>
         </p> */}
       </div>
-      <h3 className="my-8 text-center text-2xl font-bold">Our regrantors</h3>
-      <div className="mx-auto mb-5 mt-2 grid max-w-4xl grid-cols-2 gap-4 px-5 sm:grid-cols-3">
-        {sortedRegranters.map((regranter) => {
-          return <ProfileCard key={regranter.id} profile={regranter} />
-        })}
-      </div>
-      <div className="prose mx-auto font-light">
+      <RegrantorsDisplay regrantors={regrantors} />
+      <div className="prose mx-auto max-w-none font-light">
         <h3>Why regranting?</h3>
         <ul>
           <li>

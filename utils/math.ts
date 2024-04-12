@@ -279,7 +279,11 @@ export function getTxnCharityMultiplier(
   if (txn.type === 'project donation') {
     return isIncoming ? 0 : -1
   }
-  if (txn.type === 'profile donation' || txn.type === 'tip') {
+  if (
+    txn.type === 'profile donation' ||
+    txn.type === 'tip' ||
+    txn.type === 'return bank funds'
+  ) {
     return isIncoming ? 1 : -1
   }
   const isOwnProject = txn.projects?.creator === userId
@@ -308,7 +312,8 @@ export function getTxnCashMultiplier(
     txn.token !== 'USD' ||
     (txn.from_id !== userId && txn.to_id !== userId) ||
     txn.type === 'profile donation' ||
-    txn.type === 'tip'
+    txn.type === 'tip' ||
+    txn.type === 'return bank funds'
   ) {
     return 0
   }

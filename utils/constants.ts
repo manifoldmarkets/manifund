@@ -42,7 +42,7 @@ export function getRoundTheme(roundTitle: string) {
   }
 }
 
-export function getSponsoredAmount(regrantorId: string) {
+export function getSponsoredAmount2023(regrantorId: string) {
   const sponsoredRegrantors = {
     'e083e3b0-a131-4eaa-8a83-6a146a196432': 50_000, // Isaak
     '4de2634d-3802-4141-881e-9ce687f87485': 50_000, // Rachel
@@ -55,14 +55,37 @@ export function getSponsoredAmount(regrantorId: string) {
     'e2a30cdd-6797-4e2c-8823-f051195fc77a': 50_000, // Ryan
     '232dc139-961a-4f9a-9ca5-0118b90287c0': 50_000, // Nuno
     'b11620f2-fdc7-414c-8a63-9ddee17ee669': 100_000, // Marcus
-    '1398ed62-4213-4923-a84e-a9931ae19492': 650_000, // Adam
-    '94a0c7b8-39fd-4856-a7e6-1f9429dbb4ad': 650_000, // Dan Hendrycks
+    '1398ed62-4213-4923-a84e-a9931ae19492': 400_000, // Adam
+    '94a0c7b8-39fd-4856-a7e6-1f9429dbb4ad': 400_000, // Dan Hendrycks
     'c0319265-58b4-40e3-821c-5d32a76cd650': 400_000, // Tristan
-    '647c9b3c-65ce-40cf-9464-ac02c741aacd': 700_000, // Evan
-    '75420de8-7e37-4971-bb29-9bfada0c453b': 650_000, // Leopold
+    '647c9b3c-65ce-40cf-9464-ac02c741aacd': 450_000, // Evan
+    '75420de8-7e37-4971-bb29-9bfada0c453b': 400_000, // Leopold
+  } as { [key: string]: number }
+  return sponsoredRegrantors[regrantorId] ?? 0
+}
+
+export function getSponsoredAmount2024(regrantorId: string) {
+  const sponsoredRegrantors = {
+    '1398ed62-4213-4923-a84e-a9931ae19492': 250_000, // Adam
+    '94a0c7b8-39fd-4856-a7e6-1f9429dbb4ad': 250_000, // Dan Hendrycks
+    '647c9b3c-65ce-40cf-9464-ac02c741aacd': 250_000, // Evan
+    '75420de8-7e37-4971-bb29-9bfada0c453b': 250_000, // Leopold
+    'e2a30cdd-6797-4e2c-8823-f051195fc77a': 250_000, // Ryan
     'e9362a95-cbec-4685-b179-91b4c5ba4edc': 250_000, // Neel Nanda
   } as { [key: string]: number }
   return sponsoredRegrantors[regrantorId] ?? 0
+}
+
+export function getSponsoredAmount(regrantorId: string, year?: number) {
+  if (year === 2023) {
+    return getSponsoredAmount2023(regrantorId)
+  } else if (year === 2024) {
+    return getSponsoredAmount2024(regrantorId)
+  } else {
+    return (
+      getSponsoredAmount2023(regrantorId) + getSponsoredAmount2024(regrantorId)
+    )
+  }
 }
 
 // Needed for people who are both accredited investors and regrantors

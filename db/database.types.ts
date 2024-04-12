@@ -958,6 +958,7 @@ export type Database = {
         | "mint cert"
         | "mana deposit"
         | "tip"
+        | "return bank funds"
     }
     CompositeTypes: {
       bid_row: {
@@ -991,6 +992,7 @@ export type Database = {
         round: string | null
         slug: string | null
         location_description: string | null
+        lobbying: boolean | null
       }
       transfer_row: {
         recipient_email: string | null

@@ -17,7 +17,8 @@ import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Tooltip } from '@/components/tooltip'
 import { SelectCauses } from '@/components/select-causes'
-import { MiniCause } from '@/db/cause'
+import { MiniCause, SimpleCause } from '@/db/cause'
+import { isEmailValid } from '@/utils/parse'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -50,7 +51,7 @@ const REASONING_KEY = 'GrantReasoning'
 
 export function CreateGrantForm(props: {
   profiles: MiniProfile[]
-  causesList: MiniCause[]
+  causesList: SimpleCause[]
   maxDonation: number
 }) {
   const { profiles, maxDonation, causesList } = props
@@ -76,11 +77,15 @@ export function CreateGrantForm(props: {
   const [minFunding, setMinFunding] = useState<number>()
   const [selectedCauses, setSelectedCauses] = useState<MiniCause[]>([])
   const [locationDescription, setLocationDescription] = useState('')
-  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [lobbying, setLobbying] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   const reasoningEditor = useTextEditor(REASONING_OUTLINE, REASONING_KEY)
   const router = useRouter()
+
+  const selectableCauses = causesList.filter(
+    (cause) => cause.open && !cause.prize
+  )
 
   const fundingOptions = {
     fullyFund: 'be fully funded',
@@ -125,6 +130,8 @@ export function CreateGrantForm(props: {
     errorMessage = 'Please enter the name of the recipient.'
   } else if (!recipientOnManifund && !recipientEmail) {
     errorMessage = 'Please enter the email address of the recipient.'
+  } else if (!isEmailValid(recipientEmail)) {
+    errorMessage = 'Invalid recipient email address.'
   } else if (recipientOnManifund && recipient === null) {
     errorMessage = 'Please select the recipient.'
   } else if (!title) {
@@ -153,9 +160,8 @@ export function CreateGrantForm(props: {
       'The minimum funding must be greater than your contribution. Otherwise, indicate that the project does not need more funding.'
   } else if (maxDonation < donorContribution) {
     errorMessage = `You currently have $${maxDonation} to give. If you would like to give a larger grant, you can add money to your account or raise more funds from other users on Manifund.`
-  } else if (!agreedToTerms) {
-    errorMessage =
-      'Please confirm that you understand and agree to the terms of giving this grant.'
+  } else if (!locationDescription) {
+    errorMessage = 'Please enter the location description.'
   } else {
     errorMessage = null
   }
@@ -184,6 +190,7 @@ export function CreateGrantForm(props: {
           : undefined,
         causeSlugs: selectedCauses.map((cause) => cause.slug),
         locationDescription,
+        lobbying,
       }),
     })
     const newProject = await response.json()
@@ -251,6 +258,8 @@ export function CreateGrantForm(props: {
             <Input
               type="text"
               id="recipientEmail"
+              error={!isEmailValid(recipientEmail) && recipientEmail !== ''}
+              errorMessage={'Invalid email'}
               value={recipientEmail}
               onChange={(event) => setRecipientEmail(event.target.value)}
             />
@@ -478,17 +487,19 @@ export function CreateGrantForm(props: {
       <Col className="gap-1">
         <label>Cause areas</label>
         <SelectCauses
-          causesList={causesList}
+          causesList={selectableCauses}
           selectedCauses={selectedCauses}
           setSelectedCauses={setSelectedCauses}
         />
       </Col>
       <Col className="gap-1">
-        <label>International activities</label>
+        <label>
+          In what countries are the grantee and anyone else working on this
+          project located?
+          <RequiredStar />
+        </label>
         <p className="text-sm text-gray-600">
-          If any part of this project will happen outside of the US, or people
-          working on the project are not US residents, please describe what will
-          happen internationally and where. Only a sentence or two needed.
+          This is for Manifund operations and will not be published.
         </p>
         <Input
           type="text"
@@ -496,25 +507,29 @@ export function CreateGrantForm(props: {
           onChange={(event) => setLocationDescription(event.target.value)}
         />
       </Col>
-      <Row>
+      <Row className="items-start">
         <Checkbox
-          id="terms"
-          aria-describedby="terms-description"
-          name="terms"
-          checked={agreedToTerms}
-          onChange={() => setAgreedToTerms(!agreedToTerms)}
+          checked={lobbying}
+          onChange={(event) => setLobbying(event.target.checked)}
         />
-        <div className="ml-3 text-sm leading-6">
-          <label htmlFor="terms" className="font-medium text-gray-900">
-            Check this box to confirm:
-          </label>{' '}
-          <span id="terms-description" className="text-gray-500">
-            all information provided is true and accurate to the best of my
-            knowledge. This project is not part of a political campaign. I
-            understand that all of my answers here will be publicly accessible
-            on Manifund.
+        <span className="ml-3 mt-0.5 text-sm leading-tight">
+          <span className="font-bold">
+            This project will engage in{' '}
+            <a
+              href="https://www.irs.gov/charities-non-profits/lobbying"
+              className="text-orange-600 hover:underline"
+            >
+              lobbying
+            </a>
+            .
           </span>
-        </div>
+          <span>
+            {' '}
+            Check this box if this project will involve any lobbying activities,
+            in the US or internationally.
+          </span>
+          <RequiredStar />
+        </span>
       </Row>
       <Tooltip text={errorMessage}>
         <Button

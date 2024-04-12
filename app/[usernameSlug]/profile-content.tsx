@@ -19,7 +19,6 @@ import { Row } from '@/components/layout/row'
 import { useState } from 'react'
 import clsx from 'clsx'
 import { RightCarrotIcon } from '@/components/icons'
-
 export function ProfileContent(props: {
   profile: Profile
   projects: FullProject[]
