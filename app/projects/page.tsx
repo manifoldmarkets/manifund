@@ -46,6 +46,34 @@ export default async function Projects(props: {
     <Col className="gap-16 px-3 py-5 sm:px-6">
       {user === null && <LandingSection />}
       <Col className="gap-3">
+        <h3 className="text-2xl font-semibold">Active programs</h3>
+        <Link
+          className="relative flex flex-col gap-4 rounded-lg bg-white p-4 shadow-md sm:flex-row"
+          href="/about/regranting"
+        >
+          <Image
+            src={
+              'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/round-header-images/regrants/getty-images-a3BzdnbjSSM-unsplash.jpg'
+            }
+            width={240}
+            height={120}
+            className="relative aspect-[3/1] w-full flex-shrink-0 rounded bg-white object-cover sm:aspect-[5/3] sm:w-60"
+            alt="round header image"
+          />
+          <Col className="w-full justify-between">
+            <Col className="mb-5 gap-2">
+              <p className="text-lg font-semibold leading-tight lg:text-xl">
+                Regranting
+              </p>
+              <span className="text-sm text-gray-600 sm:text-base">
+                We delegate grantmaking budgets to regrantors who are experts in
+                their fields, who then recommend grants based on their
+                expertise. We ran one round of regranting in H2 2023, and are
+                renewing the program for 2024!
+              </span>
+            </Col>
+          </Col>
+        </Link>
         {featuredCauses.map((cause) => (
           <CausePreview cause={cause} key={cause.slug} />
         ))}
