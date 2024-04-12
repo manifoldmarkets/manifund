@@ -4,8 +4,9 @@ import { NavBarItem } from './bottom-nav-bar-item'
 import Link from 'next/link'
 import { Avatar } from '@/components/avatar'
 import { Col } from '@/components/layout/col'
-import { calculateUserBalance } from '@/utils/math'
+import { calculateCharityBalance, calculateUserBalance } from '@/utils/math'
 import { getTxnsByUser } from '@/db/txn'
+import { getPendingBidsByUser } from '@/db/bid'
 import { formatMoney } from '@/utils/formatting'
 
 export const BOTTOM_NAV_BAR_HEIGHT = 58
@@ -21,6 +22,7 @@ export async function BottomNavBar() {
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
   const txns = await getTxnsByUser(supabase, user?.id ?? '')
+  const bids = await getPendingBidsByUser(supabase, user?.id ?? '')
   const navigationOptions = [
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
@@ -54,7 +56,7 @@ export async function BottomNavBar() {
               />
             </div>
             <p className="text-center">
-              {formatMoney(calculateUserBalance(txns, profile.id))}{' '}
+              {formatMoney(calculateCharityBalance(txns, bids, profile.id))}{' '}
             </p>
           </Col>
         </Link>
