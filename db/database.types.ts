@@ -958,6 +958,7 @@ export type Database = {
         | "mint cert"
         | "mana deposit"
         | "tip"
+        | "return bank funds"
     }
     CompositeTypes: {
       bid_row: {
