@@ -12,7 +12,7 @@ export default async function RegrantingPage() {
         <p>
           For our regranting program, we work with donors to delegate a
           grantmaking budget to individuals known as “regrantors”. Regrantors
-          independently make grant decisions, based on their own expertise.
+          independently make grant decisions based on their own expertise.
         </p>
         {/* <p>
           This model was pioneered by the FTX Future Fund; among the grantmaking
