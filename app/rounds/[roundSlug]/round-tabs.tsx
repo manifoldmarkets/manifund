@@ -68,7 +68,13 @@ export function RoundTabs(props: {
           ) : (
             <div className="mt-2 grid grid-cols-2 gap-4 lg:grid-cols-3">
               {sortedRegranters.map((regranter) => {
-                return <ProfileCard key={regranter.id} profile={regranter} />
+                return (
+                  <ProfileCard
+                    key={regranter.id}
+                    sponsoredAmount={getSponsoredAmount2023(regranter.id)}
+                    profile={regranter}
+                  />
+                )
               })}
             </div>
           )}
