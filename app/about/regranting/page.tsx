@@ -13,8 +13,8 @@ export default async function RegrantingPage() {
     },
   ])
   return (
-    <div className="p-5">
-      <div className="prose mx-auto font-light">
+    <div className="mx-auto max-w-3xl p-5">
+      <div className="prose mx-auto max-w-none font-light">
         <h1>Regranting</h1>
         <p>
           For our regranting program, we work with donors to delegate a
@@ -29,14 +29,14 @@ export default async function RegrantingPage() {
             considered regranting to be the most promising.
           </a>
         </p> */}
+        <h3>Our regrantors</h3>
       </div>
-      <h3 className="my-8 text-center text-2xl font-bold">Our regrantors</h3>
-      <div className="mx-auto mb-5 mt-2 grid max-w-4xl grid-cols-2 gap-4 px-5 sm:grid-cols-3">
+      <div className="mx-auto mb-5 mt-2 grid grid-cols-2 gap-4 sm:grid-cols-3">
         {sortedRegranters.map((regranter) => {
           return <ProfileCard key={regranter.id} profile={regranter} />
         })}
       </div>
-      <div className="prose mx-auto font-light">
+      <div className="prose mx-auto max-w-none font-light">
         <h3>Why regranting?</h3>
         <ul>
           <li>
