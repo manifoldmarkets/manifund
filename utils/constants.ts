@@ -76,6 +76,18 @@ export function getSponsoredAmount2024(regrantorId: string) {
   return sponsoredRegrantors[regrantorId] ?? 0
 }
 
+export function getSponsoredAmount(regrantorId: string, year?: number) {
+  if (year === 2023) {
+    return getSponsoredAmount2023(regrantorId)
+  } else if (year === 2024) {
+    return getSponsoredAmount2024(regrantorId)
+  } else {
+    return (
+      getSponsoredAmount2023(regrantorId) + getSponsoredAmount2024(regrantorId)
+    )
+  }
+}
+
 // Needed for people who are both accredited investors and regrantors
 const CHARITABLE_DEPOSITS = [
   '1e17c09d-aa7f-432a-b523-89691531b304', // $50k from Manifund Bank to Zvi
