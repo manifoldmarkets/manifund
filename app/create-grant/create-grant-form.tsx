@@ -17,7 +17,7 @@ import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Tooltip } from '@/components/tooltip'
 import { SelectCauses } from '@/components/select-causes'
-import { MiniCause } from '@/db/cause'
+import { MiniCause, SimpleCause } from '@/db/cause'
 import { isEmailValid } from '@/utils/parse'
 
 const DESCRIPTION_OUTLINE = `
@@ -51,7 +51,7 @@ const REASONING_KEY = 'GrantReasoning'
 
 export function CreateGrantForm(props: {
   profiles: MiniProfile[]
-  causesList: MiniCause[]
+  causesList: SimpleCause[]
   maxDonation: number
 }) {
   const { profiles, maxDonation, causesList } = props
@@ -83,6 +83,10 @@ export function CreateGrantForm(props: {
   const descriptionEditor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   const reasoningEditor = useTextEditor(REASONING_OUTLINE, REASONING_KEY)
   const router = useRouter()
+
+  const selectableCauses = causesList.filter(
+    (cause) => cause.open && !cause.prize
+  )
 
   const fundingOptions = {
     fullyFund: 'be fully funded',
@@ -190,6 +194,7 @@ export function CreateGrantForm(props: {
           : undefined,
         causeSlugs: selectedCauses.map((cause) => cause.slug),
         locationDescription,
+        lobbying,
       }),
     })
     const newProject = await response.json()
@@ -486,7 +491,7 @@ export function CreateGrantForm(props: {
       <Col className="gap-1">
         <label>Cause areas</label>
         <SelectCauses
-          causesList={causesList}
+          causesList={selectableCauses}
           selectedCauses={selectedCauses}
           setSelectedCauses={setSelectedCauses}
         />
