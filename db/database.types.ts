@@ -992,6 +992,7 @@ export type Database = {
         round: string | null
         slug: string | null
         location_description: string | null
+        lobbying: boolean | null
       }
       transfer_row: {
         recipient_email: string | null
