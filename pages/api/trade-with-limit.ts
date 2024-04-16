@@ -33,6 +33,7 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) {
+    console.error('no user')
     return NextResponse.error()
   }
   const [userProfile, userTxns, userBids, oldBid] = await Promise.all([
@@ -42,6 +43,7 @@ export default async function handler(req: NextRequest) {
     getBidById(oldBidId, supabase),
   ])
   if (!userProfile) {
+    console.error('no user profile')
     return NextResponse.error()
   }
   const [partnerTxns, partnerBids] = await Promise.all([
@@ -55,8 +57,14 @@ export default async function handler(req: NextRequest) {
         ? calculateCashBalance(userTxns, userBids, userProfile.id, true)
         : calculateCharityBalance(userTxns, userBids, userProfile.id, false)
       : oldBid.bidder === oldBid.projects.creator
-      ? calculateCashBalance(userTxns, userBids, userProfile.id, true)
-      : calculateCharityBalance(userTxns, userBids, userProfile.id, false)
+      ? calculateCashBalance(partnerTxns, partnerBids, oldBid.bidder, true) +
+        oldBid.amount
+      : calculateCharityBalance(
+          partnerTxns,
+          partnerBids,
+          oldBid.bidder,
+          false
+        ) + oldBid.amount
   const sellerShares =
     oldBid.type === 'sell'
       ? calculateSellableShares(
@@ -64,7 +72,7 @@ export default async function handler(req: NextRequest) {
           partnerBids,
           oldBid.project,
           oldBid.bidder
-        )
+        ) + numSharesInTrade
       : calculateSellableShares(
           userTxns,
           userBids,
@@ -76,6 +84,7 @@ export default async function handler(req: NextRequest) {
     numDollarsInTrade > oldBid.amount ||
     sellerShares < numSharesInTrade
   ) {
+    console.error('invalid trade')
     return NextResponse.error()
   }
   await makeTrade(
