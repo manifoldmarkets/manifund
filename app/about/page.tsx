@@ -20,13 +20,34 @@ import { MegaphoneIcon } from '@heroicons/react/24/outline'
 import { Suspense } from 'react'
 import Loading from '../loading'
 import { StatsServerComponent } from './stats-sc'
+import { SiteLink } from '@/components/site-link'
 
 const APPROACH_FEATURES = [
   {
     title: 'Transparent',
     icon: EyeIcon,
-    description:
-      'Everything about Manifund is public: our grant proposals, evals, and finances. Even our source code and meeting notes!',
+    description: (
+      <p>
+        Everything about Manifund is public: our grant proposals, evals, and
+        finances. Even our{' '}
+        <SiteLink
+          followsLinkClass
+          className="font-semibold"
+          href="https://github.com/manifoldmarkets/manifund"
+        >
+          source code
+        </SiteLink>{' '}
+        and{' '}
+        <SiteLink
+          followsLinkClass
+          className="font-semibold"
+          href="https://manifoldmarkets.notion.site/c99d2ce9dfd3419090818122c0b4d540?v=d96610d8da914f46b6c42d2d2a4395d5&pvs=4"
+        >
+          meeting notes
+        </SiteLink>
+        !
+      </p>
+    ),
   },
   {
     title: 'Fast',
