@@ -19,6 +19,18 @@ import { Row } from '@/components/layout/row'
 import { useState } from 'react'
 import clsx from 'clsx'
 import { RightCarrotIcon } from '@/components/icons'
+import { formatDistanceToNow } from 'date-fns'
+import { sortBy } from 'lodash'
+import { Col } from '@/components/layout/col'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/table-catalyst'
+
 export function ProfileContent(props: {
   profile: Profile
   projects: FullProject[]
@@ -94,6 +106,7 @@ export function ProfileContent(props: {
         (project.stage !== 'hidden' && project.stage !== 'draft') ||
         isOwnProfile
     )
+  const sortedTxns = sortBy(txns, (txn) => -new Date(txn.created_at).getTime())
   return (
     <div className="flex flex-col gap-6">
       {profile.regranter_status && !isOwnProfile && (
@@ -141,7 +154,74 @@ export function ProfileContent(props: {
           userId={userProfile?.id}
         />
       )}
+      <Col className="gap-4">
+        <UserTxns
+          txns={sortedTxns.filter((t) => t.token === 'USD')}
+          profile={profile}
+        />
+      </Col>
     </div>
+  )
+}
+
+function UserTxns(props: { txns: FullTxn[]; profile: Profile }) {
+  const { txns, profile } = props
+
+  if (txns.length === 0) return null
+
+  const mappings = {
+    '758e68da-c37c-4a9d-a82b-f4aaedde31b9': 'Manifund Bank',
+  } as Record<string, string>
+  mappings[profile.id] = profile.full_name
+
+  function Row(props: { txn: FullTxn }) {
+    const { txn } = props
+    // TODO: replace <userid> with the
+    const from = mappings[txn.from_id ?? ''] ?? `<${txn.from_id}>`
+    const to = mappings[txn.to_id] ?? `<${txn.to_id}>`
+    const sign = txn.from_id === profile.id ? '' : '+'
+    const descriptor =
+      txn.projects?.title ?? (txn.from_id === profile.id ? to : from)
+
+    return (
+      <TableRow className="text-sm font-light">
+        <TableCell className="max-w-24 truncate">{descriptor}</TableCell>
+        <TableCell className="max-w-6 truncate">
+          {formatDistanceToNow(new Date(txn.created_at))} ago
+        </TableCell>
+        <TableCell className="max-w-6 truncate">{txn.type}</TableCell>
+        <TableCell
+          className={clsx(
+            'w-4 text-right font-bold',
+            sign ? 'text-green-600' : ''
+          )}
+        >
+          {sign}
+          {Math.round(txn.amount)}
+        </TableCell>
+      </TableRow>
+    )
+  }
+
+  return (
+    <>
+      <h1 className="mb-2 text-xl font-medium sm:text-2xl">Transactions</h1>
+      <Table dense>
+        <TableHead>
+          <TableRow>
+            <TableHeader>For</TableHeader>
+            <TableHeader>Date</TableHeader>
+            <TableHeader>Type</TableHeader>
+            <TableHeader>Amount</TableHeader>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {txns.map((txn) => (
+            <Row key={txn.id} txn={txn} />
+          ))}
+        </TableBody>
+      </Table>
+    </>
   )
 }
 
