@@ -21,6 +21,8 @@ import { Suspense } from 'react'
 import Loading from '../loading'
 import { StatsServerComponent } from './stats-sc'
 import { SiteLink } from '@/components/site-link'
+import Testimonials from './testimonials'
+import Partners from './partners'
 
 const APPROACH_FEATURES = [
   {
@@ -174,7 +176,10 @@ export default function AboutPage() {
             />
           )
         })}
-        <Image
+
+        <Testimonials />
+        <Partners />
+        {/* <Image
           src="/ManifundProcessHorizontal.png"
           alt="Manifund funding process diagram"
           className="mx-auto hidden sm:block"
@@ -187,7 +192,7 @@ export default function AboutPage() {
           className="mx-auto sm:hidden"
           height={1000}
           width={1000}
-        />
+        /> */}
       </Col>
       <Col className="w-full gap-5 p-5 sm:p-10">
         <h1 className="text-center text-3xl font-bold">Our team</h1>

@@ -23,6 +23,11 @@ export default async function handler(req: NextRequest) {
   const account = await stripe.accounts.create({
     type: 'express',
     email: user.email,
+    // Set recipient agreement type to support cross-border payouts
+    // See: https://docs.stripe.com/connect/service-agreement-types
+    tos_acceptance: {
+      service_agreement: 'recipient',
+    },
   })
   await supabase
     .from('profiles')
