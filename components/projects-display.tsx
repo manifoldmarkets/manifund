@@ -71,11 +71,8 @@ export function ProjectsDisplay(props: {
     })
     .slice(0, numToShow)
 
-  const proposals = selectedProjects.filter(
-    (project) => project.stage == 'proposal'
-  )
-  const activeProjects = selectedProjects.filter(
-    (project) => project.stage == 'active'
+  const fundableProjects = selectedProjects.filter(
+    (project) => project.stage == 'proposal' || project.stage == 'active'
   )
   const completeProjects = selectedProjects.filter(
     (project) => project.stage == 'complete'
@@ -112,20 +109,12 @@ export function ProjectsDisplay(props: {
         </div>
       )}
       <div className="mt-2 flex flex-col gap-5 sm:mt-5 sm:gap-10">
-        {proposals.length > 0 && (
+        {fundableProjects.length > 0 && (
           <div>
             <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">
-              Proposals
+              Seeking funding
             </h1>
-            <ProjectGroup projects={proposals} prices={prices} />
-          </div>
-        )}
-        {activeProjects.length > 0 && (
-          <div>
-            <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">
-              Active Projects
-            </h1>
-            <ProjectGroup projects={activeProjects} prices={prices} />
+            <ProjectGroup projects={fundableProjects} prices={prices} />
           </div>
         )}
         {completeProjects.length > 0 && (
