@@ -31,7 +31,7 @@ export default async function Projects(props: {
     recentDonations,
     recentBids,
     causesList,
-    featuredCauses,
+    // featuredCauses,
   ] = await Promise.all([
     getUser(supabase),
     listProjects(supabase),
@@ -39,7 +39,7 @@ export default async function Projects(props: {
     getRecentFullTxns(supabase, PAGE_SIZE, start),
     getRecentFullBids(supabase, PAGE_SIZE, start),
     listSimpleCauses(supabase),
-    getSomeFullCauses(['acx-grants-2024'], supabase),
+    // getSomeFullCauses(['acx-grants-2024'], supabase),
   ])
 
   return (
@@ -63,20 +63,20 @@ export default async function Projects(props: {
           <Col className="w-full justify-between">
             <Col className="mb-5 gap-2">
               <p className="text-lg font-semibold leading-tight lg:text-xl">
-                Regranting
+                AI Safety Regranting
               </p>
               <span className="text-sm text-gray-600 sm:text-base">
-                We delegate grantmaking budgets to regrantors who are experts in
-                their fields, who then recommend grants based on their
-                expertise. We ran one round of regranting in H2 2023, and are
-                renewing the program for 2024!
+                {/* TODO write better copy */}
+                We&apos;ve delegated $1.5m to experts in AI safety, who can
+                independently recommend grants based on their knowledge of the
+                field.
               </span>
             </Col>
           </Col>
         </Link>
-        {featuredCauses.map((cause) => (
+        {/* {featuredCauses.map((cause) => (
           <CausePreview cause={cause} key={cause.slug} />
-        ))}
+        ))} */}
       </Col>
       <FeedTabs
         recentComments={recentComments}
