@@ -20,10 +20,26 @@ const DEFAULT_REJECT_MESSAGES = [
   'custom',
 ]
 
+const DEFAULT_PUBLIC_BENEFITS = [
+  'AI safety (technical/scientific research)',
+  'AI safety (policy research and advocacy)',
+  'AI safety (education, outreach, and acceleration)',
+  'Biosecurity (technical/scientific research)',
+  'Biosecurity (policy research and advocacy)',
+  'Animal welfare',
+  'Poverty alleviation',
+  'Medical research',
+  'Public scientific research',
+  'Charity education & advocacy',
+  'An established 501c3 charity',
+  'Other',
+]
+
 export function GrantVerdict(props: { projectId: string; lobbying: boolean }) {
   const { projectId, lobbying } = props
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [approveGrant, setApproveGrant] = useState(true)
+  const [publicBenefitIdx, setPublicBenefitIdx] = useState<number>(0)
   const [publicBenefit, setPublicBenefit] = useState<string>('')
   const [defaultMessage, setDefaultMessage] = useState<string | null>('custom')
   const [open, setOpen] = useState(false)
@@ -79,7 +95,7 @@ export function GrantVerdict(props: { projectId: string; lobbying: boolean }) {
                                 }</p>`
                               )
                             }}
-                          ></input>
+                          />
                           <label>{message}</label>
                         </Row>
                       ))}
@@ -90,10 +106,37 @@ export function GrantVerdict(props: { projectId: string; lobbying: boolean }) {
               <TextEditor editor={editor} />
               {approveGrant && (
                 <>
-                  <p>How does this grant benefit the public?</p>
-                  <Input
-                    onChange={(event) => setPublicBenefit(event.target.value)}
-                  />
+                  <p>This grant benefits the public by funding:</p>
+                  <div className="mt-1 space-y-4">
+                    {DEFAULT_PUBLIC_BENEFITS.map((benefit) => (
+                      <Row className="gap-2" key={benefit}>
+                        <input
+                          type="radio"
+                          id={benefit}
+                          value={benefit}
+                          checked={
+                            DEFAULT_PUBLIC_BENEFITS[publicBenefitIdx] ===
+                            benefit
+                          }
+                          className="relative top-1 h-4 w-4 border-gray-300 text-orange-600 focus:ring-orange-600"
+                          onChange={() => {
+                            setPublicBenefitIdx(
+                              DEFAULT_PUBLIC_BENEFITS.indexOf(benefit)
+                            )
+                            setPublicBenefit(benefit === 'Other' ? '' : benefit)
+                          }}
+                        />
+                        <label htmlFor={benefit}>{benefit}</label>
+                      </Row>
+                    ))}
+                  </div>
+                  {DEFAULT_PUBLIC_BENEFITS[publicBenefitIdx] === 'Other' && (
+                    <Input
+                      placeholder="Other public benefit"
+                      className="mt-4 w-full"
+                      onChange={(event) => setPublicBenefit(event.target.value)}
+                    />
+                  )}
                 </>
               )}
             </div>
