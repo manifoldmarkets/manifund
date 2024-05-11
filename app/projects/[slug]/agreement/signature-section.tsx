@@ -79,7 +79,7 @@ export function SignatureSection(props: {
       />
       <div>
         <span className="font-medium">
-          How this grant benefits the public:{' '}
+          This grant benefits the public by funding:{' '}
         </span>
         {project.public_benefit}
       </div>
