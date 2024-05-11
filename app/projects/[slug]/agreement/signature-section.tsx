@@ -77,6 +77,12 @@ export function SignatureSection(props: {
           agreement?.approved_at ? new Date(agreement.approved_at) : undefined
         }
       />
+      <div>
+        <span className="font-medium">
+          How this grant benefits the public:{' '}
+        </span>
+        {project.public_benefit}
+      </div>
     </Col>
   )
 }
