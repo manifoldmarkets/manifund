@@ -30,6 +30,7 @@ const DEFAULT_PUBLIC_BENEFITS = [
   'Poverty alleviation',
   'Medical research',
   'Public scientific research',
+  'Education',
   'Charity education & advocacy',
   'An established 501c3 charity',
   'Other',
