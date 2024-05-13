@@ -23,6 +23,9 @@ import { HorizontalRadioGroup } from '@/components/radio-group'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { ProjectParams } from '@/utils/upsert-project'
+import questionsData from '../questions/questions.json';
+
+
 
 var DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -39,18 +42,12 @@ var DESCRIPTION_OUTLINE = `
 </br>
 `
 
-const LTFF_QUESTIONS = `
-<h2>LTFF QUESTIONS</h2>
-</br>
-<h3>How will you solve x-risk?</h3>
-</br>
-`
-const EAIF_QUESTIONS = `
-  <h2> EAIF QUESTIONS</h2>
-</br>
-  <h3>How will you solve EA community building?</h3>
-</br>
-`
+interface QuestionsData {
+  [key: string]: string[];
+}
+
+const questions = questionsData as QuestionsData;
+
 
 const DESCRIPTION_KEY = 'ProjectDescription'
 
@@ -96,13 +93,11 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       let descriptionOutline = projectParams.selectedPrize?.project_description_outline ??
         DESCRIPTION_OUTLINE;
       if (isLTFFSelected) {
-        descriptionOutline += LTFF_QUESTIONS;
+        descriptionOutline += questions.ltff.map((question: string) => `<h3>${question}</h3></br>`).join('');
       }
       if (isEAIFSelected) {
-        descriptionOutline += EAIF_QUESTIONS;
+        descriptionOutline += questions.eaif.map((question: string) => `<h3>${question}</h3></br>`).join('');
       }
-      // Check for other causes and add their custom questions
-      // ...
       editor?.commands.setContent(descriptionOutline);
       setMadeChanges(false);
     }
