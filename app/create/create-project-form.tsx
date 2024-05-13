@@ -23,7 +23,17 @@ import { HorizontalRadioGroup } from '@/components/radio-group'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { ProjectParams } from '@/utils/upsert-project'
-import questionsData from '../questions/questions.json';
+import questionBank from '../questions/questionBank.json';
+import questionChoicesData from '../questions/questionChoices.json';
+
+interface QuestionsData {
+  id: string;
+  question: string;
+  description: string;
+}
+
+const questions = questionBank as QuestionsData[];
+const questionChoices = questionChoicesData as { [key: string]: string[] };
 
 
 
@@ -42,11 +52,27 @@ var DESCRIPTION_OUTLINE = `
 </br>
 `
 
-interface QuestionsData {
-  [key: string]: string[];
-}
+const addQuestionsToDescription = (selectedCauses: string[], descriptionOutline: string) => {
+  const addedQuestions = selectedCauses.reduce((set, cause) => {
+    const causeQuestionIds = questionChoices[cause] || [];
+    causeQuestionIds.forEach((questionId) => set.add(questionId));
+    return set;
+  }, new Set<string>());
 
-const questions = questionsData as QuestionsData;
+  addedQuestions.forEach((questionId) => {
+    const question = questions.find((q) => q.id === questionId);
+    if (question) {
+      const formattedDescription = question.description.replace(/\n/g, '<br>');
+      descriptionOutline += `
+        <h3>${question.question}</h3>
+        <p>${formattedDescription}</p>
+        </br>
+      `;
+    }
+  });
+
+  return descriptionOutline;
+};
 
 
 const DESCRIPTION_KEY = 'ProjectDescription'
@@ -92,16 +118,16 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     if (!madeChanges) {
       let descriptionOutline = projectParams.selectedPrize?.project_description_outline ??
         DESCRIPTION_OUTLINE;
-      if (isLTFFSelected) {
-        descriptionOutline += questions.ltff.map((question: string) => `<h3>${question}</h3></br>`).join('');
-      }
-      if (isEAIFSelected) {
-        descriptionOutline += questions.eaif.map((question: string) => `<h3>${question}</h3></br>`).join('');
-      }
+
+      descriptionOutline = addQuestionsToDescription(
+        projectParams.selectedCauses.map((cause) => cause.slug),
+        descriptionOutline
+      );
+
       editor?.commands.setContent(descriptionOutline);
       setMadeChanges(false);
     }
-  }, [projectParams.selectedPrize, isLTFFSelected, isEAIFSelected]); // Add other cause selection state variables as dependencies
+  }, [projectParams.selectedPrize, projectParams.selectedCauses]);
 
 
   const selectablePrizeCauses = causesList.filter(
