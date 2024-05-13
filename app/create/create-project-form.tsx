@@ -24,7 +24,7 @@ import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { ProjectParams } from '@/utils/upsert-project'
 
-const DESCRIPTION_OUTLINE = `
+var DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
 </br>
 <h3>What are this project's goals and how will you achieve them?</h3>
@@ -38,7 +38,22 @@ const DESCRIPTION_OUTLINE = `
 <h3>What other funding are you or your project getting?</h3>
 </br>
 `
+
+const LTFF_QUESTIONS = `
+<h2>LTFF QUESTIONS</h2>
+</br>
+<h3>How will you solve x-risk?</h3>
+</br>
+`
+const EAIF_QUESTIONS = `
+  <h2> EAIF QUESTIONS</h2>
+</br>
+  <h3>How will you solve EA community building?</h3>
+</br>
+`
+
 const DESCRIPTION_KEY = 'ProjectDescription'
+
 
 export function CreateProjectForm(props: { causesList: Cause[] }) {
   const { causesList } = props
@@ -56,6 +71,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     }
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [isLTFFSelected, setIsLTFFSelected] = useState(false);
+  const [isEAIFSelected, setIsEAIFSelected] = useState(false);
 
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   const [madeChanges, setMadeChanges] = useState<boolean>(false)
@@ -72,17 +89,26 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         (1 -
           (projectParams.selectedPrize?.cert_params?.defaultInvestorShares ??
             0) /
-            TOTAL_SHARES) *
+          TOTAL_SHARES) *
         100,
-    })
+    });
     if (!madeChanges) {
-      editor?.commands.setContent(
-        projectParams.selectedPrize?.project_description_outline ??
-          DESCRIPTION_OUTLINE
-      )
-      setMadeChanges(false)
+      let descriptionOutline = projectParams.selectedPrize?.project_description_outline ??
+        DESCRIPTION_OUTLINE;
+      if (isLTFFSelected) {
+        descriptionOutline += LTFF_QUESTIONS;
+      }
+      if (isEAIFSelected) {
+        descriptionOutline += EAIF_QUESTIONS;
+      }
+      // Check for other causes and add their custom questions
+      // ...
+      editor?.commands.setContent(descriptionOutline);
+      setMadeChanges(false);
     }
-  }, [projectParams.selectedPrize])
+  }, [projectParams.selectedPrize, isLTFFSelected, isEAIFSelected]); // Add other cause selection state variables as dependencies
+
+
   const selectablePrizeCauses = causesList.filter(
     (cause) => cause.open && cause.prize
   )
@@ -110,7 +136,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       body: JSON.stringify({ ...projectParams, description: finalDescription }),
     })
     const newProject = await response.json()
-    router.push(`/projects/${newProject.slug}`)
+    router.push(`/ projects / ${newProject.slug} `)
     clearLocalStorageItem(DESCRIPTION_KEY)
     setIsSubmitting(false)
   }
@@ -149,9 +175,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               selectedPrize:
                 value === 'grant'
                   ? null
-                  : selectablePrizeCauses.find(
-                      (cause) => cause.slug === value
-                    ) ?? null,
+                  : selectablePrizeCauses.find((cause) => cause.slug === value) ?? null,
             })
           }
           options={{
@@ -161,6 +185,57 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             ),
           }}
         />
+
+
+        <Row className="items-start">
+          <Checkbox
+            checked={projectParams.selectedCauses.some((cause) => cause.slug === 'ltff')}
+            onChange={(event) => {
+              const { checked } = event.target;
+              const ltffCause = causesList.find((cause) => cause.slug === 'ltff');
+              updateProjectParams({
+                selectedCauses: checked
+                  ? [...projectParams.selectedCauses, ltffCause]
+                  : projectParams.selectedCauses.filter((cause) => cause.slug !== 'ltff'),
+              });
+              setIsLTFFSelected(checked);
+            }}
+          />
+          <span className="ml-3 mt-0.5 text-sm leading-tight">
+            <span className="font-bold">LTFF Grant</span>
+          </span>
+        </Row>
+        <Row className="items-start">
+          <Checkbox
+            checked={projectParams.selectedCauses.some((cause) => cause.slug === 'eaif')}
+            onChange={(event) => {
+              const { checked } = event.target;
+              const eaifCause = causesList.find((cause) => cause.slug === 'eaif');
+              updateProjectParams({
+                selectedCauses: checked
+                  ? [...projectParams.selectedCauses, eaifCause]
+                  : projectParams.selectedCauses.filter((cause) => cause.slug !== 'eaif'),
+              });
+              setIsEAIFSelected(checked);
+            }}
+          />
+          <span className="ml-3 mt-0.5 text-sm leading-tight">
+            <span className="font-bold">EAIF Grant</span>
+          </span>
+        </Row>
+
+
+
+        <div>
+          <h3>Selected Causes:</h3>
+          <ul>
+            {projectParams.selectedCauses.map((cause) => (
+              <li key={cause.title}>{cause.title}</li>
+            ))}
+          </ul>
+        </div>
+
+
       </Col>
       <Col className="gap-1">
         <label htmlFor="title">
