@@ -368,6 +368,7 @@ CREATE TABLE public.project_causes (
   id int8 NOT NULL,
   project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
   tag_slug text NOT NULL REFERENCES public.causes(slug) ON DELETE CASCADE,
+  application_stage project_stage DEFAULT null,
   PRIMARY KEY (id)
 );
 

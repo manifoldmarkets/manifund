@@ -1,6 +1,6 @@
 'use client'
 import { Comments } from './comments'
-import { FullProject, TOTAL_SHARES } from '@/db/project'
+import { FullProject, ProjectStage, TOTAL_SHARES } from '@/db/project'
 import { Profile } from '@/db/profile'
 import { useSearchParams } from 'next/navigation'
 import { Bids } from './bids'
@@ -15,6 +15,8 @@ import { uniq } from 'lodash'
 import { compareDesc } from 'date-fns'
 import { formatMoneyPrecise, formatPercent } from '@/utils/formatting'
 import { MarketTab } from '../market-tab'
+import clsx from 'clsx'
+import { Col } from '@/components/layout/col'
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -110,6 +112,40 @@ export function ProjectTabs(props: {
       ),
     })
   }
+  tabs.push({
+    name: 'App status',
+    id: 'app-status',
+    count: 0,
+    display: (
+      <Col className="gap-4 p-4">
+        <h2 className="text-xl font-bold">Application status</h2>
+        <p className="font-light">App status across various funders</p>
+        <Col className="gap-2">
+          <div>
+            Manifund <StageBadge stage={project.stage} />
+          </div>
+          <div>
+            EAIF{' '}
+            <StageBadge
+              stage={
+                project.project_causes.find((c) => c.cause_slug === 'eaif')
+                  ?.application_stage ?? null
+              }
+            />
+          </div>
+          <div>
+            LTFF{' '}
+            <StageBadge
+              stage={
+                project.project_causes.find((c) => c.cause_slug === 'ltff')
+                  ?.application_stage ?? null
+              }
+            />
+          </div>
+        </Col>
+      </Col>
+    ),
+  })
 
   if (
     (project.stage === 'active' || project.stage === 'complete') &&
@@ -166,6 +202,29 @@ export function getShareholders(txns: TxnAndProfiles[]) {
     shareholder.numShares = Math.round(shareholder.numShares)
   })
   return shareholdersArray.filter((shareholder) => !!shareholder.profile)
+}
+
+export function StageBadge(props: { stage: ProjectStage | null }) {
+  const { stage } = props
+  const colors = {
+    proposal: 'bg-blue-50 text-blue-700 ring-blue-700/10',
+    active: 'bg-green-50 text-green-700 ring-green-600/20',
+    complete: 'bg-purple-50 text-purple-700 ring-purple-700/10',
+    'not funded': 'bg-red-50 text-red-700 ring-red-600/10',
+    hidden: 'bg-gray-50 text-gray-700 ring-gray-600/10',
+    draft: 'bg-gray-50 text-gray-700 ring-gray-600/10',
+  }
+  const color = colors[stage ?? 'hidden']
+  return (
+    <span
+      className={clsx(
+        'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset',
+        color
+      )}
+    >
+      {stage ?? 'not applying'}
+    </span>
+  )
 }
 
 export function getCommenterContributions(

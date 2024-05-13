@@ -25,9 +25,11 @@ export type FullProject = Project & { profiles: Profile } & {
   project_transfers: ProjectTransfer[]
 } & { project_votes: ProjectVote[] } & { causes: MiniCause[] } & {
   project_follows: ProjectFollow[]
-}
+} & { project_causes: ProjectCause[] }
 export type MiniProject = Project & { profiles: Profile } & { txns: Txn[] }
 export const TOTAL_SHARES = 10_000_000
+export type ProjectStage = Database['public']['Enums']['project_stage']
+export type ProjectCause = Database['public']['Tables']['project_causes']['Row']
 
 export async function getProjectBySlug(supabase: SupabaseClient, slug: string) {
   const { data, error } = await supabase
@@ -101,7 +103,7 @@ export async function getFullProjectBySlug(
   const { data } = await supabase
     .from('projects')
     .select(
-      '*, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), project_follows(follower_id), causes(title, slug)'
+      '*, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), project_follows(follower_id), causes(title, slug), project_causes(*)'
     )
     .eq('slug', slug)
     .throwOnError()

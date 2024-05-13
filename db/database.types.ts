@@ -342,14 +342,21 @@ export type Database = {
       }
       project_causes: {
         Row: {
+          application_stage: Database["public"]["Enums"]["project_stage"] | null
           cause_slug: string
           project_id: string
         }
         Insert: {
+          application_stage?:
+            | Database["public"]["Enums"]["project_stage"]
+            | null
           cause_slug: string
           project_id: string
         }
         Update: {
+          application_stage?:
+            | Database["public"]["Enums"]["project_stage"]
+            | null
           cause_slug?: string
           project_id?: string
         }
