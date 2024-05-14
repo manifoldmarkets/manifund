@@ -23,19 +23,17 @@ import { HorizontalRadioGroup } from '@/components/radio-group'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { ProjectParams } from '@/utils/upsert-project'
-import questionBank from '../questions/questionBank.json';
-import questionChoicesData from '../questions/questionChoices.json';
+import questionBank from '../questions/questionBank.json'
+import questionChoicesData from '../questions/questionChoices.json'
 
 interface QuestionsData {
-  id: string;
-  question: string;
-  description: string;
+  id: string
+  question: string
+  description: string
 }
 
-const questions = questionBank as QuestionsData[];
-const questionChoices = questionChoicesData as { [key: string]: string[] };
-
-
+const questions = questionBank as QuestionsData[]
+const questionChoices = questionChoicesData as { [key: string]: string[] }
 
 var DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -52,31 +50,32 @@ var DESCRIPTION_OUTLINE = `
 </br>
 `
 
-const addQuestionsToDescription = (selectedCauses: string[], descriptionOutline: string) => {
+const addQuestionsToDescription = (
+  selectedCauses: string[],
+  descriptionOutline: string
+) => {
   const addedQuestions = selectedCauses.reduce((set, cause) => {
-    const causeQuestionIds = questionChoices[cause] || [];
-    causeQuestionIds.forEach((questionId) => set.add(questionId));
-    return set;
-  }, new Set<string>());
+    const causeQuestionIds = questionChoices[cause] || []
+    causeQuestionIds.forEach((questionId) => set.add(questionId))
+    return set
+  }, new Set<string>())
 
   addedQuestions.forEach((questionId) => {
-    const question = questions.find((q) => q.id === questionId);
+    const question = questions.find((q) => q.id === questionId)
     if (question) {
-      const formattedDescription = question.description.replace(/\n/g, '<br>');
+      const formattedDescription = question.description.replace(/\n/g, '<br>')
       descriptionOutline += `
         <h3>${question.question}</h3>
         <p>${formattedDescription}</p>
         </br>
-      `;
+      `
     }
-  });
+  })
 
-  return descriptionOutline;
-};
-
+  return descriptionOutline
+}
 
 const DESCRIPTION_KEY = 'ProjectDescription'
-
 
 export function CreateProjectForm(props: { causesList: Cause[] }) {
   const { causesList } = props
@@ -94,8 +93,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     }
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [isLTFFSelected, setIsLTFFSelected] = useState(false);
-  const [isEAIFSelected, setIsEAIFSelected] = useState(false);
+  const [isLTFFSelected, setIsLTFFSelected] = useState(false)
+  const [isEAIFSelected, setIsEAIFSelected] = useState(false)
 
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   const [madeChanges, setMadeChanges] = useState<boolean>(false)
@@ -112,23 +111,23 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         (1 -
           (projectParams.selectedPrize?.cert_params?.defaultInvestorShares ??
             0) /
-          TOTAL_SHARES) *
+            TOTAL_SHARES) *
         100,
-    });
+    })
     if (!madeChanges) {
-      let descriptionOutline = projectParams.selectedPrize?.project_description_outline ??
-        DESCRIPTION_OUTLINE;
+      let descriptionOutline =
+        projectParams.selectedPrize?.project_description_outline ??
+        DESCRIPTION_OUTLINE
 
       descriptionOutline = addQuestionsToDescription(
         projectParams.selectedCauses.map((cause) => cause.slug),
         descriptionOutline
-      );
+      )
 
-      editor?.commands.setContent(descriptionOutline);
-      setMadeChanges(false);
+      editor?.commands.setContent(descriptionOutline)
+      setMadeChanges(false)
     }
-  }, [projectParams.selectedPrize, projectParams.selectedCauses]);
-
+  }, [projectParams.selectedPrize, projectParams.selectedCauses])
 
   const selectablePrizeCauses = causesList.filter(
     (cause) => cause.open && cause.prize
@@ -157,7 +156,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       body: JSON.stringify({ ...projectParams, description: finalDescription }),
     })
     const newProject = await response.json()
-    router.push(`/ projects / ${newProject.slug} `)
+    router.push(`/projects/${newProject.slug} `)
     clearLocalStorageItem(DESCRIPTION_KEY)
     setIsSubmitting(false)
   }
@@ -196,7 +195,9 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               selectedPrize:
                 value === 'grant'
                   ? null
-                  : selectablePrizeCauses.find((cause) => cause.slug === value) ?? null,
+                  : selectablePrizeCauses.find(
+                      (cause) => cause.slug === value
+                    ) ?? null,
             })
           }
           options={{
@@ -207,19 +208,24 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           }}
         />
 
-
         <Row className="items-start">
           <Checkbox
-            checked={projectParams.selectedCauses.some((cause) => cause.slug === 'ltff')}
+            checked={projectParams.selectedCauses.some(
+              (cause) => cause.slug === 'ltff'
+            )}
             onChange={(event) => {
-              const { checked } = event.target;
-              const ltffCause = causesList.find((cause) => cause.slug === 'ltff');
+              const { checked } = event.target
+              const ltffCause = causesList.find(
+                (cause) => cause.slug === 'ltff'
+              )
               updateProjectParams({
                 selectedCauses: checked
                   ? [...projectParams.selectedCauses, ltffCause]
-                  : projectParams.selectedCauses.filter((cause) => cause.slug !== 'ltff'),
-              });
-              setIsLTFFSelected(checked);
+                  : projectParams.selectedCauses.filter(
+                      (cause) => cause.slug !== 'ltff'
+                    ),
+              })
+              setIsLTFFSelected(checked)
             }}
           />
           <span className="ml-3 mt-0.5 text-sm leading-tight">
@@ -228,24 +234,28 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         </Row>
         <Row className="items-start">
           <Checkbox
-            checked={projectParams.selectedCauses.some((cause) => cause.slug === 'eaif')}
+            checked={projectParams.selectedCauses.some(
+              (cause) => cause.slug === 'eaif'
+            )}
             onChange={(event) => {
-              const { checked } = event.target;
-              const eaifCause = causesList.find((cause) => cause.slug === 'eaif');
+              const { checked } = event.target
+              const eaifCause = causesList.find(
+                (cause) => cause.slug === 'eaif'
+              )
               updateProjectParams({
                 selectedCauses: checked
                   ? [...projectParams.selectedCauses, eaifCause]
-                  : projectParams.selectedCauses.filter((cause) => cause.slug !== 'eaif'),
-              });
-              setIsEAIFSelected(checked);
+                  : projectParams.selectedCauses.filter(
+                      (cause) => cause.slug !== 'eaif'
+                    ),
+              })
+              setIsEAIFSelected(checked)
             }}
           />
           <span className="ml-3 mt-0.5 text-sm leading-tight">
             <span className="font-bold">EAIF Grant</span>
           </span>
         </Row>
-
-
 
         <div>
           <h3>Selected Causes:</h3>
@@ -255,8 +265,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             ))}
           </ul>
         </div>
-
-
       </Col>
       <Col className="gap-1">
         <label htmlFor="title">
