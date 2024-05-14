@@ -156,7 +156,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       body: JSON.stringify({ ...projectParams, description: finalDescription }),
     })
     const newProject = await response.json()
-    router.push(`/projects/${newProject.slug} `)
+    router.push(`/projects/${newProject.slug}`)
     clearLocalStorageItem(DESCRIPTION_KEY)
     setIsSubmitting(false)
   }
