@@ -23,7 +23,6 @@ type judgeAppProps = {
 export default async function handler(req: NextRequest) {
   const { projectId, causeSlug, decision, funding } =
     (await req.json()) as judgeAppProps
-  console.log('judgeAppProps', projectId, causeSlug, decision, funding)
   const supabase = createEdgeClient(req)
 
   // Turn off auth checks for hackathon
@@ -40,7 +39,6 @@ export default async function handler(req: NextRequest) {
     })
     .eq('project_id', projectId)
     .eq('cause_slug', causeSlug)
-  console.log('done', data, error)
 
   return NextResponse.json('success')
 }
