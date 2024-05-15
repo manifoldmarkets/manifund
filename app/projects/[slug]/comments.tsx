@@ -7,7 +7,7 @@ import { Project } from '@/db/project'
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 import { Row } from '@/components/layout/row'
-import { IconButton } from '@/components/button'
+import { Button, IconButton } from '@/components/button'
 import { useEffect, useState } from 'react'
 import { orderBy, sortBy } from 'lodash'
 import { Tooltip } from '@/components/tooltip'
@@ -17,6 +17,8 @@ import { JSONContent } from '@tiptap/react'
 import clsx from 'clsx'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Comment } from '@/components/comment'
+import { Select } from '@/components/select'
+import { JudgeApp } from './approve-app'
 
 export function Comments(props: {
   project: Project
@@ -123,6 +125,7 @@ export function Comments(props: {
             commenter={userProfile}
             specialPrompt={specialPrompt}
           />
+          <JudgeApp project={project} />
         </div>
       )}
       {commentsDisplay}
