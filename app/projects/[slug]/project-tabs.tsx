@@ -17,6 +17,7 @@ import { formatMoneyPrecise, formatPercent } from '@/utils/formatting'
 import { MarketTab } from '../market-tab'
 import clsx from 'clsx'
 import { Col } from '@/components/layout/col'
+import { JudgeApp } from './approve-app'
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -142,6 +143,7 @@ export function ProjectTabs(props: {
               }
             />
           </div>
+          <JudgeApp project={project} />
         </Col>
       </Col>
     ),

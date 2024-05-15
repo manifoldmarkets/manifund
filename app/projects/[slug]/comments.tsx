@@ -18,7 +18,6 @@ import clsx from 'clsx'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Comment } from '@/components/comment'
 import { Select } from '@/components/select'
-import { JudgeApp } from './approve-app'
 
 export function Comments(props: {
   project: Project
@@ -125,7 +124,6 @@ export function Comments(props: {
             commenter={userProfile}
             specialPrompt={specialPrompt}
           />
-          <JudgeApp project={project} />
         </div>
       )}
       {commentsDisplay}
