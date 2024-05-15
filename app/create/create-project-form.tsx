@@ -25,6 +25,7 @@ import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { ProjectParams } from '@/utils/upsert-project'
 import questionBank from '../questions/questionBank.json'
 import questionChoicesData from '../questions/questionChoices.json'
+import { CheckCircleIcon } from '@heroicons/react/24/solid'
 
 interface QuestionsData {
   id: string
@@ -49,6 +50,7 @@ var DESCRIPTION_OUTLINE = `
 <h3>What other funding are you or your project getting?</h3>
 </br>
 `
+const FUNDERS = ['ltff', 'eaif']
 
 const addQuestionsToDescription = (
   selectedCauses: string[],
@@ -133,8 +135,12 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     (cause) => cause.open && cause.prize
   )
   const selectableCauses = causesList.filter(
-    (cause) => cause.open && !cause.prize
+    (cause) => cause.open && !cause.prize && !FUNDERS.includes(cause.slug)
   )
+  const funderCauses = causesList.filter((cause) =>
+    FUNDERS.includes(cause.slug)
+  )
+
   const minMinFunding = projectParams.selectedPrize?.cert_params
     ? projectParams.selectedPrize.cert_params.minMinFunding
     : 500
@@ -176,10 +182,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   return (
     <Col className="gap-4 p-5">
       <div className="flex flex-col md:flex-row md:justify-between">
-        <h1 className="text-3xl font-bold">Add a project</h1>
+        <h1 className="text-3xl font-bold">Propose a project</h1>
       </div>
       <Col className="gap-1">
-        <label>I am applying for...</label>
+        {/* <label>I am applying for...</label>
         <p className="text-sm text-gray-600">
           Select &quot;a regular grant&quot; by default. The other options are
           specific prizes that you can learn more about{' '}
@@ -206,65 +212,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
             ),
           }}
-        />
-
-        <Row className="items-start">
-          <Checkbox
-            checked={projectParams.selectedCauses.some(
-              (cause) => cause.slug === 'ltff'
-            )}
-            onChange={(event) => {
-              const { checked } = event.target
-              const ltffCause = causesList.find(
-                (cause) => cause.slug === 'ltff'
-              )
-              updateProjectParams({
-                selectedCauses: checked
-                  ? [...projectParams.selectedCauses, ltffCause]
-                  : projectParams.selectedCauses.filter(
-                      (cause) => cause.slug !== 'ltff'
-                    ),
-              })
-              setIsLTFFSelected(checked)
-            }}
-          />
-          <span className="ml-3 mt-0.5 text-sm leading-tight">
-            <span className="font-bold">LTFF Grant</span>
-          </span>
-        </Row>
-        <Row className="items-start">
-          <Checkbox
-            checked={projectParams.selectedCauses.some(
-              (cause) => cause.slug === 'eaif'
-            )}
-            onChange={(event) => {
-              const { checked } = event.target
-              const eaifCause = causesList.find(
-                (cause) => cause.slug === 'eaif'
-              )
-              updateProjectParams({
-                selectedCauses: checked
-                  ? [...projectParams.selectedCauses, eaifCause]
-                  : projectParams.selectedCauses.filter(
-                      (cause) => cause.slug !== 'eaif'
-                    ),
-              })
-              setIsEAIFSelected(checked)
-            }}
-          />
-          <span className="ml-3 mt-0.5 text-sm leading-tight">
-            <span className="font-bold">EAIF Grant</span>
-          </span>
-        </Row>
-
-        <div>
-          <h3>Selected Causes:</h3>
-          <ul>
-            {projectParams.selectedCauses.map((cause) => (
-              <li key={cause.title}>{cause.title}</li>
-            ))}
-          </ul>
-        </div>
+        /> */}
       </Col>
       <Col className="gap-1">
         <label htmlFor="title">
@@ -287,6 +235,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </span>
         </Col>
       </Col>
+
       <Col className="gap-1">
         <label htmlFor="subtitle">Subtitle</label>
         <Col>
@@ -305,6 +254,62 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </span>
         </Col>
       </Col>
+
+      <Col className="gap-2">
+        <label>Common app funders</label>
+        <p className="text-sm text-gray-500">
+          Choose additional funders to review your project. Funders may ask
+          supplemental questions.
+        </p>
+
+        <SelectCauses
+          causesList={funderCauses}
+          selectedCauses={projectParams.selectedCauses}
+          setSelectedCauses={(newCauses: MiniCause[]) =>
+            updateProjectParams({ selectedCauses: newCauses })
+          }
+        />
+        {projectParams.selectedCauses.map((c) => c.slug).includes('ltff') && (
+          <div className="mb-4 mt-2">
+            <h2 className="text-lg">
+              <CheckCircleIcon className="mr-2 inline-block h-6 w-6 text-orange-500" />
+              Applying to{' '}
+              <SiteLink
+                followsLinkClass
+                className="text-orange-500"
+                href="https://funds.effectivealtruism.org/funds/far-future"
+              >
+                Long-Term Future Fund
+              </SiteLink>
+            </h2>
+            <p className="text-sm text-gray-800">
+              Funds people or projects that aim to improve the long-term future,
+              such as by reducing risks from artificial intelligence and
+              engineered pandemics
+            </p>
+          </div>
+        )}
+        {projectParams.selectedCauses.map((c) => c.slug).includes('eaif') && (
+          <div className="mb-4 mt-2">
+            <h2 className="text-lg">
+              <CheckCircleIcon className="mr-2 inline-block h-6 w-6 text-orange-500" />
+              Applying to{' '}
+              <SiteLink
+                followsLinkClass
+                className="text-orange-500"
+                href="https://funds.effectivealtruism.org/funds/ea-community"
+              >
+                EA Infrastructure Fund
+              </SiteLink>
+            </h2>
+            <p className="text-sm text-gray-800">
+              Funds organizations or people that aim to grow or improve the
+              effective altruism community
+            </p>
+          </div>
+        )}
+      </Col>
+
       <Col className="gap-1">
         <Row className="items-center justify-between">
           <label>
@@ -321,14 +326,15 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           />
         </Row>
         <p className="text-sm text-gray-500">
-          Note that the editor offers formatting shortcuts{' '}
-          <Link
-            className="hover:underline"
+          Rich text supported, with formatting{' '}
+          <SiteLink
+            followsLinkClass
+            className="text-orange-500"
             href="https://www.notion.so/help/keyboard-shortcuts#markdown-style"
           >
             like Notion
-          </Link>{' '}
-          for hyperlinks, bullet points, headers, and more.
+          </SiteLink>{' '}
+          for links, bullet points, headings, images and more.
         </p>
         <TextEditor editor={editor} />
       </Col>
