@@ -98,3 +98,5 @@ export function isCharitableDeposit(txnId: string) {
 }
 
 export const CURRENT_AGREEMENT_VERSION = 3
+
+export const FUNDER_SLUGS = ['ltff', 'eaif']

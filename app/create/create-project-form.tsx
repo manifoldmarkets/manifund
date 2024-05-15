@@ -26,6 +26,7 @@ import { ProjectParams } from '@/utils/upsert-project'
 import questionBank from '../questions/questionBank.json'
 import questionChoicesData from '../questions/questionChoices.json'
 import { CheckCircleIcon } from '@heroicons/react/24/solid'
+import { FUNDER_SLUGS } from '@/utils/constants'
 
 interface QuestionsData {
   id: string
@@ -50,7 +51,6 @@ var DESCRIPTION_OUTLINE = `
 <h3>What other funding are you or your project getting?</h3>
 </br>
 `
-const FUNDERS = ['ltff', 'eaif']
 
 const addQuestionsToDescription = (
   selectedCauses: string[],
@@ -135,10 +135,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     (cause) => cause.open && cause.prize
   )
   const selectableCauses = causesList.filter(
-    (cause) => cause.open && !cause.prize && !FUNDERS.includes(cause.slug)
+    (cause) => cause.open && !cause.prize && !FUNDER_SLUGS.includes(cause.slug)
   )
   const funderCauses = causesList.filter((cause) =>
-    FUNDERS.includes(cause.slug)
+    FUNDER_SLUGS.includes(cause.slug)
   )
 
   const minMinFunding = projectParams.selectedPrize?.cert_params
