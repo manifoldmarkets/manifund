@@ -188,25 +188,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </SiteLink>
           .
         </p>
-        <HorizontalRadioGroup
-          value={projectParams.selectedPrize?.slug ?? 'grant'}
-          onChange={(value) =>
-            updateProjectParams({
-              selectedPrize:
-                value === 'grant'
-                  ? null
-                  : selectablePrizeCauses.find(
-                      (cause) => cause.slug === value
-                    ) ?? null,
-            })
-          }
-          options={{
-            grant: 'A regular grant',
-            ...Object.fromEntries(
-              selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
-            ),
-          }}
-        />
 
         <Row className="items-start">
           <Checkbox
@@ -431,9 +412,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         <SelectCauses
           causesList={selectableCauses}
           selectedCauses={projectParams.selectedCauses}
-          setSelectedCauses={(newCauses: MiniCause[]) =>
-            updateProjectParams({ selectedCauses: newCauses })
-          }
+          setSelectedCauses={(newCauses: (MiniCause | undefined)[]) =>
+            updateProjectParams({
+              selectedCauses: newCauses.filter(
+                (cause): cause is MiniCause => !!cause
+              ),
+            })
+          } //added a type assertion to filter out any undefined values from the newCauses array before updating the selectedCauses property.
         />
       </Col>
 

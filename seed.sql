@@ -14,6 +14,7 @@ create table public.profiles (
   long_description jsonb,
   regranter_status boolean not null,
   stripe_connect_id text,
+  managed_causes jsonb,
   primary key (id)
 );
 
@@ -96,6 +97,7 @@ create table if not exists public.projects (
   approved boolean,
   signed_agreement boolean not null default false,
   markets jsonb,
+  private bool,
   primary key (id)
 );
 
@@ -110,7 +112,7 @@ UPDATE
 
 CREATE POLICY "Enable read access for all users" ON "public"."projects" AS PERMISSIVE FOR
 SELECT
-  TO public USING (true);
+  TO public USING (private = false);
 
 CREATE POLICY "Enable update for austin based on email" ON "public"."projects" AS PERMISSIVE FOR
 UPDATE
@@ -153,6 +155,24 @@ INSERT
     bucket_id = 'avatars'
     AND auth.uid() :: text = (storage.foldername(name)) [1]
   );
+
+CREATE POLICY "Allow user to see own private records"
+ON "public"."projects"
+TO authenticated
+USING ((( SELECT auth.uid() AS uid) = creator)
+);
+
+CREATE policy "Allow cause managers to see cause grants"
+ON "public"."projects"
+TO public
+USING (
+  ((private = false) OR (id IN ( SELECT projects.id
+  FROM project_causes
+  WHERE (project_causes.cause_slug IN ( SELECT jsonb_array_elements_text(profiles.managed_causes) AS jsonb_array_elements_text
+  FROM profiles
+  WHERE (profiles.id = auth.uid()))))))
+);
+
 
 --
 --
