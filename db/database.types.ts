@@ -527,6 +527,7 @@ export type Database = {
           funding_goal: number
           id: string
           lobbying: boolean
+          is_private: boolean
           location_description: string | null
           markets: Json | null
           min_funding: number

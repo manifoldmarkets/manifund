@@ -90,6 +90,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       founderPercent: 50,
       agreedToTerms: false,
       lobbying: false,
+      is_private: false,
     }
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
@@ -188,6 +189,25 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </SiteLink>
           .
         </p>
+        <HorizontalRadioGroup
+          value={projectParams.selectedPrize?.slug ?? 'grant'}
+          onChange={(value) =>
+            updateProjectParams({
+              selectedPrize:
+                value === 'grant'
+                  ? null
+                  : selectablePrizeCauses.find(
+                      (cause) => cause.slug === value
+                    ) ?? null,
+            })
+          }
+          options={{
+            grant: 'A regular grant',
+            ...Object.fromEntries(
+              selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
+            ),
+          }}
+        />
 
         <Row className="items-start">
           <Checkbox
@@ -238,8 +258,29 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </span>
         </Row>
 
+        {/* privacy options */}
+        <Row className="items-start">
+          <Checkbox
+            checked={projectParams.is_private}
+            onChange={(event) => {
+              const { checked } = event.target
+              updateProjectParams({
+                is_private: checked,
+              })
+            }}
+          />
+          <span className="ml-3 mt-0.5 text-sm leading-tight">
+            <span className="font-bold">Private Grant</span>
+            <span>
+              {' '}
+              - Grant is only viewable by selected funds during application
+              process
+            </span>
+          </span>
+        </Row>
+
         <div>
-          <h3>Selected Causes:</h3>
+          <h3>Selected Funds:</h3>
           <ul>
             {projectParams.selectedCauses.map((cause) => (
               <li key={cause.title}>{cause.title}</li>

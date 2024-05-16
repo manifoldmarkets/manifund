@@ -17,6 +17,7 @@ export type ProjectParams = {
   founderPercent: number
   agreedToTerms: boolean
   lobbying: boolean
+  is_private: boolean
 }
 
 export async function giveCreatorShares(
