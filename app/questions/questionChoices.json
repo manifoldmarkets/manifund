@@ -1,12 +1,31 @@
 {
     "ltff": [
-        "trackRecord",
-        "projectGoals",
-        "destroyXRisk"
+      "shortDescription",
+      "projectSummary",
+      "projectGoals",
+      "trackRecord",
+      "fundingBreakdown"
     ],
     "eaif": [
-        "trackRecord",
+        "shortDescription",
+        "projectSummary",
         "projectGoals",
-        "10xEAMovement"
+        "trackRecord",
+        "fundingBreakdown"
+      ],
+    "tempManifund": [
+      "shortDescription",
+      "projectSummary",
+      "projectGoals",
+      "trackRecord",
+      "preMortem",
+      "fundingBreakdown"
+    ],
+    "foresight": [
+      "shortDescription",
+      "successCriteria",
+      "risks",
+      "trackRecord",
+      "fundingBreakdown"
     ]
-}
+  }

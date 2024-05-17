@@ -35,20 +35,20 @@ interface QuestionsData {
 const questions = questionBank as QuestionsData[]
 const questionChoices = questionChoicesData as { [key: string]: string[] }
 
-var DESCRIPTION_OUTLINE = `
-<h3>Project summary</h3>
-</br>
-<h3>What are this project's goals and how will you achieve them?</h3>
-</br>
-<h3>How will this funding be used?</h3>
-</br>
-<h3>Who is on your team and what's your track record on similar projects?</h3>
-</br>
-<h3>What are the most likely causes and outcomes if this project fails? (premortem)</h3>
-</br>
-<h3>What other funding are you or your project getting?</h3>
-</br>
-`
+var DESCRIPTION_OUTLINE = ``
+// <h3>Project summary</h3>
+// </br>
+// <h3>What are this project's goals and how will you achieve them?</h3>
+// </br>
+// <h3>How will this funding be used?</h3>
+// </br>
+// <h3>Who is on your team and what's your track record on similar projects?</h3>
+// </br>
+// <h3>What are the most likely causes and outcomes if this project fails? (premortem)</h3>
+// </br>
+// <h3>What other funding are you or your project getting?</h3>
+// </br>
+// `
 
 const addQuestionsToDescription = (
   selectedCauses: string[],
@@ -96,6 +96,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [isLTFFSelected, setIsLTFFSelected] = useState(false)
   const [isEAIFSelected, setIsEAIFSelected] = useState(false)
+  const [isManifundSelected, setIsManifundSelected] = useState(true)
+  const [IsForesightSelected, setIsForesightSelected] = useState(false)
 
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   const [madeChanges, setMadeChanges] = useState<boolean>(false)
@@ -208,6 +210,29 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             ),
           }}
         />
+        <Row className="items-start">
+          <Checkbox
+            checked={isManifundSelected}
+            onChange={(event) => {
+              const { checked } = event.target
+              const manifundCause = causesList.find(
+                (cause) => cause.slug === 'tempManifund'
+              )
+              updateProjectParams({
+                selectedCauses: checked
+                  ? [...projectParams.selectedCauses, manifundCause]
+                  : projectParams.selectedCauses.filter(
+                      (cause) => cause.slug !== 'tempManifund'
+                    ),
+                is_private: checked ? false : projectParams.is_private,
+              })
+              setIsManifundSelected(checked)
+            }}
+          />
+          <span className="ml-3 mt-0.5 text-sm leading-tight">
+            <span className="font-bold">manifund Grant</span>
+          </span>
+        </Row>
 
         <Row className="items-start">
           <Checkbox
@@ -257,11 +282,39 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             <span className="font-bold">EAIF Grant</span>
           </span>
         </Row>
+        <Row className="items-start">
+          <Checkbox
+            checked={projectParams.selectedCauses.some(
+              (cause) => cause.slug === 'foresight'
+            )}
+            onChange={(event) => {
+              const { checked } = event.target
+              const foresightCause = causesList.find(
+                (cause) => cause.slug === 'foresight'
+              )
+              updateProjectParams({
+                selectedCauses: checked
+                  ? [...projectParams.selectedCauses, foresightCause]
+                  : projectParams.selectedCauses.filter(
+                      (cause) => cause.slug !== 'foresight'
+                    ),
+              })
+              setIsForesightSelected(checked)
+            }}
+          />
+          <span className="ml-3 mt-0.5 text-sm leading-tight">
+            <span className="font-bold">
+              Foresight Institute - AI Safety: Neuro/Security/Cryptography/
+              Multipolar Approaches
+            </span>
+          </span>
+        </Row>
 
-        {/* privacy options */}
+        {/* privacy option */}
         <Row className="items-start">
           <Checkbox
             checked={projectParams.is_private}
+            disabled={isManifundSelected}
             onChange={(event) => {
               const { checked } = event.target
               updateProjectParams({
@@ -269,7 +322,11 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               })
             }}
           />
-          <span className="ml-3 mt-0.5 text-sm leading-tight">
+          <span
+            className={`ml-3 mt-0.5 text-sm leading-tight ${
+              isManifundSelected ? 'text-gray-400' : ''
+            }`}
+          >
             <span className="font-bold">Private Grant</span>
             <span>
               {' '}

@@ -1,22 +1,42 @@
 [
     {
-        "id": "trackRecord",
-        "question": "Track record",
-        "description": "What is your track record for running projects of this kind?\n\nPlease give us an outline of previous successes and failures that would help us understand your (or your organization's) ability to execute this specific project. For example, campaigns you've implemented, products you've built, research you've published, or relevant professional and volunteering experience.\n\nAlternatively, what other kind of evidence do you have that the organization or project will succeed? If you are applying for a project that is related to a previous EA Funds grant, please elaborate on how your previous grant/project went."
+      "id": "shortDescription",
+      "question": "Short Description",
+      "description": "How would you describe your project in one-two sentences (max. 160 characters)? \n\n Please be as concrete as possible; e.g., ‘6-month salary to set up a new org providing career advice for social impact to uni students through online content’ rather than ‘Working towards a future where more people pursue careers for the greater good’."
     },
     {
-        "id": "projectGoals",
-        "question": "Project goals",
-        "description": "What specific actions or steps might your project involve? What impact will this have on the world? What is your project's goal, how will you know if you've achieved it, and what is the path to impact? How does this relate to the goals of the fund(s) you are applying to?"
+      "id": "projectSummary",
+      "question": "Project Summary",
+      "description": "Please provide a brief summary of your project (max. 1000 characters). \n\n Some funders may use this summary to pre-screen your application, so please make sure to include the key reasons in favor of your project here."
     },
     {
-        "id": "destroyXRisk",
-        "question": "How are you going to destroy all x-risk",
-        "description": "joke answers only"
+      "id": "projectGoals",
+      "question": "Project Goals",
+      "description": "What specific actions or steps might your project involve? What impact will this have on the world? What is your project’s goal, how will you know if you’ve achieved it, and what is the path to impact? How does this relate to the goals of the fund(s) you are applying to?"
     },
     {
-        "id": "10xEAMovement",
-        "question": "How are you going to 10x the ea movement",
-        "description": "cryptocurrency exchange?"
+      "id": "successCriteria",
+      "question": "Success Criteria",
+      "description": "What does success look like? What is a concrete benefit that could be enabled by your work?"
+    },
+    {
+      "id": "risks",
+      "question": "Risks",
+      "description": "Are there any risks? If so, is it possible to differentially advance safety-enhancing aspects of the technology first?"
+    },
+    {
+      "id": "trackRecord",
+      "question": "Track record",
+      "description": "Who is on your team and what's your team's track record on similar projects? \n\n Please give us an outline of previous successes and failures that would help us understand your (or your organization’s) ability to execute this specific project. For example, campaigns you’ve implemented, products you’ve built, research you’ve published, or relevant professional and volunteering experience. \n\n Alternatively, what other kind of evidence do you have that the organization or project will succeed? If you are applying for a project that is related to a previous grant funded by one or more of the orgs you're applying for, please elaborate on how your previous grant/project went."
+    },
+    {
+      "id": "preMortem",
+      "question": "Premortem",
+      "description": "What are the most likely causes and outcomes if this project fails?"
+    },
+    {
+      "id": "fundingBreakdown",
+      "question": "Funding Amount and Breakdown",
+      "description": "How much funding are you requesting, and how do you intend to spend it? \n We suggest applying for a range of amounts, from the minimal amount necessary to successfully implement your project, to the largest amount such that no extra money would buy any additional happiness or productivity. Please ignore the fund's current balance: if a request exceeds our available funding, we will suggest a lower grant amount or fundraise from additional donors, rather than rejecting your application.\n\nWe also suggest that you build a buffer into your budget (e.g. 10-20% of the total budget). We find that applicants systematically underestimate the real costs of their project.\n\nPlease use USD where possible.\n\n Please also provide a breakdown of your budget (e.g., '45% on salary for me for 6 months, 35% for payroll insurance/tax, 10% for a contractor, 10% on software and other expenses'). Please also provide the total budget size of your project and, if applicable, your organization.\n\nIf you would like to provide this information in a Google Sheet, please make sure that it is publicly accessible."
     }
-]
+  ]
