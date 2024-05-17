@@ -17,7 +17,7 @@ export function PayUser(props: { userId: string }) {
   const router = useRouter()
   const [amount, setAmount] = useState<number>()
   const [sendDonationReceipt, setSendDonationReceipt] = useState(false)
-
+  const [loading, setLoading] = useState(false)
   return (
     <Row>
       <AmountInput
@@ -36,10 +36,13 @@ export function PayUser(props: { userId: string }) {
       <Button
         size="sm"
         onClick={async () => {
+          setLoading(true)
           await payUser({ userId, amount: amount ?? 0, sendDonationReceipt })
+          setLoading(false)
           router.refresh()
         }}
         disabled={!amount}
+        loading={loading}
       >
         Add
       </Button>
