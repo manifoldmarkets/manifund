@@ -228,7 +228,7 @@ function ManaTab() {
   const [apiKey, setApiKey] = useState('')
   const [manifoldUser, setManifoldUser] = useState<ManifoldUser | null>(null)
   const [transferAmount, setTransferAmount] = useState<number | undefined>(10)
-  const manaToDeposit = (transferAmount ?? 0) * 100
+  const manaToDeposit = (transferAmount ?? 0) * 1000
   const [transferring, setTransferring] = useState(false)
 
   // Check balance every time the API key changes

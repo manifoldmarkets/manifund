@@ -50,7 +50,7 @@ export default async function handler(req: NextRequest) {
     .insert({
       from_id: process.env.NEXT_PUBLIC_PROD_BANK_ID ?? '',
       to_id: user.id,
-      amount: manaToDeposit / 100,
+      amount: manaToDeposit / 1000,
       token: 'USD',
       project: null,
       type: 'mana deposit',
