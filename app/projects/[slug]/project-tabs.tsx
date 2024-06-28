@@ -124,13 +124,14 @@ export function ProjectTabs(props: {
     })
   }
 
-  const markets = project.markets as string[]
-  tabs.push({
-    name: 'Predictions',
-    id: 'predictions',
-    display: <MarketTab project={project} userProfile={userProfile} />,
-    count: markets?.length ?? 0,
-  })
+  // Disable predictions tab for now, as it's not getting any usage
+  // const markets = project.markets as string[]
+  // tabs.push({
+  //   name: 'Predictions',
+  //   id: 'predictions',
+  //   display: <MarketTab project={project} userProfile={userProfile} />,
+  //   count: markets?.length ?? 0,
+  // })
 
   return <Tabs tabs={tabs} currentTabId={currentTabId} />
 }
