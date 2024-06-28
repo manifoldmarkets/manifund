@@ -2,15 +2,29 @@ import { createServerClient } from '@/db/supabase-server'
 import { FullCause, listFullCauses } from '@/db/cause'
 import Image from 'next/image'
 import Link from 'next/link'
+import { FUNDER_SLUGS } from '@/utils/constants'
 
 export default async function CausesPage() {
   const supabase = createServerClient()
   const causesList = await listFullCauses(supabase)
+  const funders = causesList.filter((c) => FUNDER_SLUGS.includes(c.slug))
   const prizes = causesList.filter((c) => c.prize)
-  const regularCauses = causesList.filter((c) => !c.prize)
+  const regularCauses = causesList.filter(
+    (c) => !c.prize && !FUNDER_SLUGS.includes(c.slug)
+  )
   return (
     <div className="p-5">
-      <h1 className="text-lg font-bold text-gray-900 sm:text-2xl">
+      <h1 className="text-lg font-bold text-gray-900 sm:text-2xl">Funders</h1>
+      <span className="text-sm text-gray-600">
+        Other funders who partner with Manifund&apos;s common app
+      </span>
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+        {funders.map((cause) => (
+          <CauseCard key={cause.slug} cause={cause} />
+        ))}
+      </div>
+
+      <h1 className="mt-10 text-lg font-bold text-gray-900 sm:text-2xl">
         Prize rounds
       </h1>
       <span className="text-sm text-gray-600">
@@ -21,6 +35,7 @@ export default async function CausesPage() {
           <CauseCard key={cause.slug} cause={cause} />
         ))}
       </div>
+
       <h1 className="mt-10 text-lg font-bold text-gray-900 sm:text-2xl">
         Causes
       </h1>

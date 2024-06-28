@@ -23,8 +23,21 @@ import { HorizontalRadioGroup } from '@/components/radio-group'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { ProjectParams } from '@/utils/upsert-project'
+import questionBank from '../questions/questionBank.json'
+import questionChoicesData from '../questions/questionChoices.json'
+import { CheckCircleIcon } from '@heroicons/react/24/solid'
+import { FUNDER_SLUGS } from '@/utils/constants'
 
-const DESCRIPTION_OUTLINE = `
+interface QuestionsData {
+  id: string
+  question: string
+  description: string
+}
+
+const questions = questionBank as QuestionsData[]
+const questionChoices = questionChoicesData as { [key: string]: string[] }
+
+var DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
 </br>
 <h3>What are this project's goals and how will you achieve them?</h3>
@@ -38,6 +51,32 @@ const DESCRIPTION_OUTLINE = `
 <h3>What other funding are you or your project getting?</h3>
 </br>
 `
+
+const addQuestionsToDescription = (
+  selectedCauses: string[],
+  descriptionOutline: string
+) => {
+  const addedQuestions = selectedCauses.reduce((set, cause) => {
+    const causeQuestionIds = questionChoices[cause] || []
+    causeQuestionIds.forEach((questionId) => set.add(questionId))
+    return set
+  }, new Set<string>())
+
+  addedQuestions.forEach((questionId) => {
+    const question = questions.find((q) => q.id === questionId)
+    if (question) {
+      const formattedDescription = question.description.replace(/\n/g, '<br>')
+      descriptionOutline += `
+        <h3>${question.question}</h3>
+        <p>${formattedDescription}</p>
+        </br>
+      `
+    }
+  })
+
+  return descriptionOutline
+}
+
 const DESCRIPTION_KEY = 'ProjectDescription'
 
 export function CreateProjectForm(props: { causesList: Cause[] }) {
@@ -56,6 +95,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     }
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [isLTFFSelected, setIsLTFFSelected] = useState(false)
+  const [isEAIFSelected, setIsEAIFSelected] = useState(false)
 
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   const [madeChanges, setMadeChanges] = useState<boolean>(false)
@@ -76,19 +117,30 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         100,
     })
     if (!madeChanges) {
-      editor?.commands.setContent(
+      let descriptionOutline =
         projectParams.selectedPrize?.project_description_outline ??
-          DESCRIPTION_OUTLINE
+        DESCRIPTION_OUTLINE
+
+      descriptionOutline = addQuestionsToDescription(
+        projectParams.selectedCauses.map((cause) => cause.slug),
+        descriptionOutline
       )
+
+      editor?.commands.setContent(descriptionOutline)
       setMadeChanges(false)
     }
-  }, [projectParams.selectedPrize])
+  }, [projectParams.selectedPrize, projectParams.selectedCauses])
+
   const selectablePrizeCauses = causesList.filter(
     (cause) => cause.open && cause.prize
   )
   const selectableCauses = causesList.filter(
-    (cause) => cause.open && !cause.prize
+    (cause) => cause.open && !cause.prize && !FUNDER_SLUGS.includes(cause.slug)
   )
+  const funderCauses = causesList.filter((cause) =>
+    FUNDER_SLUGS.includes(cause.slug)
+  )
+
   const minMinFunding = projectParams.selectedPrize?.cert_params
     ? projectParams.selectedPrize.cert_params.minMinFunding
     : 500
@@ -130,10 +182,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   return (
     <Col className="gap-4 p-5">
       <div className="flex flex-col md:flex-row md:justify-between">
-        <h1 className="text-3xl font-bold">Add a project</h1>
+        <h1 className="text-3xl font-bold">Propose a project</h1>
       </div>
       <Col className="gap-1">
-        <label>I am applying for...</label>
+        {/* <label>I am applying for...</label>
         <p className="text-sm text-gray-600">
           Select &quot;a regular grant&quot; by default. The other options are
           specific prizes that you can learn more about{' '}
@@ -160,7 +212,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
             ),
           }}
-        />
+        /> */}
       </Col>
       <Col className="gap-1">
         <label htmlFor="title">
@@ -183,6 +235,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </span>
         </Col>
       </Col>
+
       <Col className="gap-1">
         <label htmlFor="subtitle">Subtitle</label>
         <Col>
@@ -201,6 +254,62 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </span>
         </Col>
       </Col>
+
+      <Col className="gap-2">
+        <label>Common app funders</label>
+        <p className="text-sm text-gray-500">
+          Choose additional funders to review your project. Funders may ask
+          supplemental questions.
+        </p>
+
+        <SelectCauses
+          causesList={funderCauses}
+          selectedCauses={projectParams.selectedCauses}
+          setSelectedCauses={(newCauses: MiniCause[]) =>
+            updateProjectParams({ selectedCauses: newCauses })
+          }
+        />
+        {projectParams.selectedCauses.map((c) => c.slug).includes('ltff') && (
+          <div className="mb-4 mt-2">
+            <h2 className="text-lg">
+              <CheckCircleIcon className="mr-2 inline-block h-6 w-6 text-orange-500" />
+              Applying to{' '}
+              <SiteLink
+                followsLinkClass
+                className="text-orange-500"
+                href="https://funds.effectivealtruism.org/funds/far-future"
+              >
+                Long-Term Future Fund
+              </SiteLink>
+            </h2>
+            <p className="text-sm text-gray-800">
+              Funds people or projects that aim to improve the long-term future,
+              such as by reducing risks from artificial intelligence and
+              engineered pandemics
+            </p>
+          </div>
+        )}
+        {projectParams.selectedCauses.map((c) => c.slug).includes('eaif') && (
+          <div className="mb-4 mt-2">
+            <h2 className="text-lg">
+              <CheckCircleIcon className="mr-2 inline-block h-6 w-6 text-orange-500" />
+              Applying to{' '}
+              <SiteLink
+                followsLinkClass
+                className="text-orange-500"
+                href="https://funds.effectivealtruism.org/funds/ea-community"
+              >
+                EA Infrastructure Fund
+              </SiteLink>
+            </h2>
+            <p className="text-sm text-gray-800">
+              Funds organizations or people that aim to grow or improve the
+              effective altruism community
+            </p>
+          </div>
+        )}
+      </Col>
+
       <Col className="gap-1">
         <Row className="items-center justify-between">
           <label>
@@ -217,14 +326,15 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           />
         </Row>
         <p className="text-sm text-gray-500">
-          Note that the editor offers formatting shortcuts{' '}
-          <Link
-            className="hover:underline"
+          Rich text supported, with formatting{' '}
+          <SiteLink
+            followsLinkClass
+            className="text-orange-500"
             href="https://www.notion.so/help/keyboard-shortcuts#markdown-style"
           >
             like Notion
-          </Link>{' '}
-          for hyperlinks, bullet points, headers, and more.
+          </SiteLink>{' '}
+          for links, bullet points, headings, images and more.
         </p>
         <TextEditor editor={editor} />
       </Col>
@@ -327,9 +437,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         <SelectCauses
           causesList={selectableCauses}
           selectedCauses={projectParams.selectedCauses}
-          setSelectedCauses={(newCauses: MiniCause[]) =>
-            updateProjectParams({ selectedCauses: newCauses })
-          }
+          setSelectedCauses={(newCauses: (MiniCause | undefined)[]) =>
+            updateProjectParams({
+              selectedCauses: newCauses.filter(
+                (cause): cause is MiniCause => !!cause
+              ),
+            })
+          } //added a type assertion to filter out any undefined values from the newCauses array before updating the selectedCauses property.
         />
       </Col>
 

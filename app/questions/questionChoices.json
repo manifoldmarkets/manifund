@@ -1,0 +1,12 @@
+{
+    "ltff": [
+        "trackRecord",
+        "projectGoals",
+        "destroyXRisk"
+    ],
+    "eaif": [
+        "trackRecord",
+        "projectGoals",
+        "10xEAMovement"
+    ]
+}
