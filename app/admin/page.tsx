@@ -190,6 +190,9 @@ export default async function Admin({
     </>
   )
 
+  const txnsNewestFirst = txns?.sort(
+    (a, b) => -a.created_at.localeCompare(b.created_at)
+  )
   const TxnsTab = (
     <>
       <h3 className="text-lg">Create transaction</h3>
@@ -205,7 +208,7 @@ export default async function Admin({
           </tr>
         </thead>
         <tbody>
-          {(txns ?? []).map((txn) => (
+          {(txnsNewestFirst ?? []).map((txn) => (
             <tr key={txn.id}>
               <td>{getName(txn.from_id)}</td>
               <td>{getName(txn.to_id)}</td>
