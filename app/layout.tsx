@@ -18,7 +18,11 @@ const josefin = Josefin_Slab({
   subsets: ['latin'],
   variable: '--font-josefin-slab',
 })
-const satisfy = Satisfy({subsets: ['latin'], variable: '--font-satisfy-regular', weight: "400"})
+const satisfy = Satisfy({
+  subsets: ['latin'],
+  variable: '--font-satisfy-regular',
+  weight: '400',
+})
 const fontVars = [readex.variable, josefin.variable, satisfy.variable].join(' ')
 
 export const runtime = 'edge'
@@ -31,6 +35,11 @@ export const metadata = {
   description: 'A platform for funding impactful projects',
   icons: {
     icon: '/favicon.ico',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
   },
 }
 
