@@ -319,7 +319,7 @@ export default async function Admin({
   )
 }
 
-function userBalances(txns: Txn[]) {
+export function userBalances(txns: Txn[]) {
   const balances = new Map<string, number>()
   txns.forEach((txn) => {
     if (txn.from_id) {
