@@ -63,8 +63,11 @@ export default function UsersGrid({ users }: { users: User[] }) {
 
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-2xl font-bold">Finances</h1>
-      <FinancesGrid userBalances={usersTotal} />
+      <h1 className="mb-4 text-2xl font-bold">Manifund balance sheet</h1>
+      <div className="text-right text-sm text-gray-500">
+        Last updated: 2024-07-15
+      </div>
+      <BalanceSheet />
       <h1 className="my-4 text-2xl font-bold">User balances</h1>
       <div className="text-right text-sm text-gray-500">
         Total:{' '}
@@ -86,13 +89,13 @@ export default function UsersGrid({ users }: { users: User[] }) {
   )
 }
 
-export function FinancesGrid(props: { userBalances: number }) {
+export function BalanceSheet() {
   const $ = {
     // Stripe Opal + Payments balance
     stripe: 1293119 + 9754,
     mercury: 280560,
     coinbase: 313703,
-    users: -props.userBalances,
+    users: -1797779,
     // Pending: withdrawals on Airtable, Austin investment, Manifest
     pending: -14100 + 20000 + 8000,
     // Donations for Manifold for Charity
@@ -110,7 +113,7 @@ export function FinancesGrid(props: { userBalances: number }) {
     { name: 'Total liabilities', balance: $.users + $.pending + $.charity },
     {},
     {
-      name: 'Net (as of 2024-07-15)',
+      name: 'Net',
       balance:
         $.stripe + $.mercury + $.coinbase + $.users + $.pending + $.charity,
     },
