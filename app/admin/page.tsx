@@ -37,9 +37,9 @@ export default async function Admin({
 }) {
   const supabase = createServerClient()
   const user = await getUser(supabase)
-  // if (!user || !isAdmin(user)) {
-  //   return <NoAccess />
-  // }
+  if (!user || !isAdmin(user)) {
+    return <NoAccess />
+  }
 
   const supabaseAdmin = createAdminClient()
   const { data: users } = await supabaseAdmin.from('users').select('*')
