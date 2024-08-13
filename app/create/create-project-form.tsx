@@ -23,6 +23,7 @@ import { HorizontalRadioGroup } from '@/components/radio-group'
 import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { ProjectParams } from '@/utils/upsert-project'
+import { useSearchParams } from 'next/navigation'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -115,6 +116,18 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     setIsSubmitting(false)
   }
 
+  // If ?prize=... param is set, then choose that prize by default
+  const searchParams = useSearchParams()
+  const prizeSlug = searchParams?.get('prize')
+  const selectedPrize = selectablePrizeCauses.find(
+    (cause) => cause.slug === prizeSlug
+  )
+  useEffect(() => {
+    if (selectedPrize) {
+      updateProjectParams({ selectedPrize })
+    }
+  }, [selectedPrize])
+
   const { session } = useSupabase()
   const user = session?.user
   if (!user) {
@@ -127,6 +140,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       </div>
     )
   }
+
   return (
     <Col className="gap-4 p-5">
       <div className="flex flex-col md:flex-row md:justify-between">
