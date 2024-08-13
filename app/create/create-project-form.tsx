@@ -134,14 +134,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       </div>
       <Col className="gap-1">
         <label>I am applying for...</label>
-        <p className="text-sm text-gray-600">
-          Select &quot;a regular grant&quot; by default. The other options are
-          specific prizes that you can learn more about{' '}
-          <SiteLink followsLinkClass href="/causes">
-            here
-          </SiteLink>
-          .
-        </p>
         <HorizontalRadioGroup
           value={projectParams.selectedPrize?.slug ?? 'grant'}
           onChange={(value) =>
@@ -161,6 +153,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             ),
           }}
         />
+        <p className="text-sm text-gray-500">
+          Learn more about different funding rounds{' '}
+          <SiteLink className="text-orange-500" followsLinkClass href="/causes">
+            here
+          </SiteLink>
+          .
+        </p>
       </Col>
       <Col className="gap-1">
         <label htmlFor="title">
@@ -217,14 +216,14 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           />
         </Row>
         <p className="text-sm text-gray-500">
-          Note that the editor offers formatting shortcuts{' '}
+          Use bullet points, headings, hyperlinks and more. Use{' '}
           <Link
             className="hover:underline"
             href="https://www.notion.so/help/keyboard-shortcuts#markdown-style"
           >
-            like Notion
+            Notion shortcuts
           </Link>{' '}
-          for hyperlinks, bullet points, headers, and more.
+          or paste from Google Docs.
         </p>
         <TextEditor editor={editor} />
       </Col>
