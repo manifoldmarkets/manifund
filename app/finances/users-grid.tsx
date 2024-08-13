@@ -99,7 +99,8 @@ export function BalanceSheet() {
     // Pending: withdrawals on Airtable, Austin investment, Manifest
     pending: -14100 + 20000 + 8000,
     // Donations for Manifold for Charity
-    charity: -156046,
+    // 500k initial - donated - David MCF - AmmonLam
+    charity: 500000 - 315832 - 186747,
   }
   const financeRows = [
     { name: 'Stripe Bank', balance: $.stripe },
