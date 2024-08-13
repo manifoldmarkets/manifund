@@ -27,13 +27,13 @@ import { ProjectParams } from '@/utils/upsert-project'
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
 </br>
-<h3>What are this project's goals and how will you achieve them?</h3>
+<h3>What are this project's goals? How will you achieve them?</h3>
 </br>
 <h3>How will this funding be used?</h3>
 </br>
-<h3>Who is on your team and what's your track record on similar projects?</h3>
+<h3>Who is on your team? What's your track record on similar projects?</h3>
 </br>
-<h3>What are the most likely causes and outcomes if this project fails? (premortem)</h3>
+<h3>What are the most likely causes and outcomes if this project fails?</h3>
 </br>
 <h3>What other funding are you or your project getting?</h3>
 </br>
