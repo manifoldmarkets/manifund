@@ -38,48 +38,64 @@ export default async function handler(req: NextRequest) {
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
   if (!user) return NextResponse.error()
-  const causeSlugs = selectedCauses.map((cause) => cause.slug)
-  if (!!selectedPrize) {
-    causeSlugs.push(selectedPrize.slug)
-  }
-  const seedingAmm =
-    selectedPrize?.cert_params?.ammShares &&
-    (agreedToTerms || selectedPrize?.cert_params?.adjustableInvestmentStructure)
-  const startingStage =
-    selectedPrize && !selectedPrize.cert_params?.proposalPhase
-      ? 'active'
-      : 'proposal'
-  const type = !!selectedPrize ? 'cert' : 'grant'
+
   const slug = await projectSlugify(title, supabase)
   const projectId = uuid()
-  const project = {
+  const defaultProject = {
     id: projectId,
     title,
     blurb: subtitle,
     description,
     min_funding: minFunding ?? 0,
     funding_goal: fundingGoal ?? minFunding ?? 0,
-    founder_shares: !!selectedPrize
-      ? (founderPercent / 100) * TOTAL_SHARES
-      : TOTAL_SHARES,
-    amm_shares: seedingAmm ? selectedPrize?.cert_params?.ammShares : null,
+    founder_shares: TOTAL_SHARES,
+    amm_shares: null,
     creator: user.id,
     slug,
-    round: !!selectedPrize ? toTitleCase(selectedPrize.title) : 'Regrants',
+    round: 'Regrants',
     auction_close: verdictDate,
-    stage: startingStage,
-    type,
+    stage: 'proposal',
+    type: 'grant',
     location_description: location,
     approved: null,
     signed_agreement: false,
     lobbying,
   } as Project
+
+  const causeSlugs = selectedCauses.map((cause) => cause.slug)
+  if (!!selectedPrize) {
+    causeSlugs.push(selectedPrize.slug)
+  }
+
+  let project = defaultProject
+  if (selectedPrize?.slug === 'ea-community-choice') {
+    project = {
+      ...defaultProject,
+      round: 'EA Community Choice',
+    }
+  } else if (selectedPrize) {
+    const seedingAmm =
+      selectedPrize?.cert_params?.ammShares &&
+      (agreedToTerms ||
+        selectedPrize?.cert_params?.adjustableInvestmentStructure)
+    project = {
+      ...defaultProject,
+      founder_shares: (founderPercent / 100) * TOTAL_SHARES,
+      amm_shares: seedingAmm
+        ? selectedPrize.cert_params?.ammShares ?? null
+        : null,
+      round: toTitleCase(selectedPrize.title),
+      stage: selectedPrize.cert_params?.proposalPhase ? 'proposal' : 'active',
+      type: 'cert',
+    }
+  }
+
   await supabase.from('projects').insert(project).throwOnError()
   await upvoteOwnProject(supabase, projectId, user.id)
   await updateProjectCauses(supabase, causeSlugs, project.id)
   await giveCreatorShares(supabase, projectId, user.id)
   const prizeCause = await getPrizeCause(causeSlugs, supabase)
-  if (type === 'cert' && prizeCause) {
+  if (project.type === 'cert' && prizeCause) {
     const certParams = prizeCause.cert_params
     if (certParams?.proposalPhase) {
       await insertBid(supabase, {
@@ -87,7 +103,7 @@ export default async function handler(req: NextRequest) {
         bidder: user.id,
         amount: getMinIncludingAmm(project),
         valuation: getProposalValuation(project),
-        type: startingStage === 'proposal' ? 'assurance sell' : 'sell',
+        type: project.stage === 'proposal' ? 'assurance sell' : 'sell',
       })
     } else if (certParams?.ammDollars && project.amm_shares) {
       const supabaseAdmin = createAdminClient()
