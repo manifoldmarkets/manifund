@@ -19,7 +19,9 @@ export function SelectCauses(props: {
           <button
             onClick={() => {
               if (causeIncluded) {
-                setSelectedCauses(selectedCauses.filter((t) => t !== cause))
+                setSelectedCauses(
+                  selectedCauses.filter((t) => t.slug !== cause.slug)
+                )
               } else {
                 setSelectedCauses([...selectedCauses, cause])
               }
