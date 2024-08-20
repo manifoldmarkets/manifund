@@ -46,7 +46,7 @@ export default async function handler(req: NextRequest) {
     title,
     blurb: subtitle,
     description,
-    min_funding: minFunding ?? 0,
+    min_funding: minFunding ?? 500,
     funding_goal: fundingGoal ?? minFunding ?? 0,
     founder_shares: TOTAL_SHARES,
     amm_shares: null,
