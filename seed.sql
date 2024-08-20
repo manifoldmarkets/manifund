@@ -544,3 +544,30 @@ using (
   auth.uid() = reactor_id
 );
 
+-- Profile roles
+CREATE TABLE public.profile_roles (
+  id uuid PRIMARY KEY REFERENCES public.profiles(id),
+  donor boolean NOT NULL DEFAULT false,
+  organizer text,
+  scholar text,
+  volunteer text,
+  worker text,
+  senior text,
+  insider boolean NOT NULL DEFAULT false
+);
+
+-- Add RLS policies
+ALTER TABLE public.profile_roles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can read their own profile roles" 
+ON public.profile_roles FOR SELECT 
+USING (auth.uid() = id);
+
+CREATE POLICY "Users can insert their own profile roles" 
+ON public.profile_roles FOR INSERT 
+WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can update their own profile roles" 
+ON public.profile_roles FOR UPDATE 
+USING (auth.uid() = id);
+
