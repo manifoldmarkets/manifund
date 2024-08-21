@@ -1,3 +1,4 @@
+import { CommunityChoiceBanner } from '@/app/banner'
 import { getProfileById, getUser } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { SiteLink } from './site-link'
@@ -10,7 +11,9 @@ export async function CompleteProfileBanner() {
   const profileTodo =
     userProfile &&
     (userProfile.username === userProfile.id || !userProfile.full_name)
-  if (!profileTodo) return null
+  if (!profileTodo) {
+    return <CommunityChoiceBanner />
+  }
 
   return (
     <div className="relative isolate -mx-2 mb-3 flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1">
