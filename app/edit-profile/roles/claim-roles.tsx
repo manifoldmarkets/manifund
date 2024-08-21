@@ -36,7 +36,7 @@ function RoleInput(props: {
           />
           <div>
             <span className="font-bold">{toTitleCase(name)}</span>
-            <p>{label}</p>
+            <p className="text-gray-600">{label}</p>
           </div>
         </label>
       </div>
@@ -115,9 +115,7 @@ export function ClaimRoles(props: {
 
   return (
     <form onSubmit={handleSubmit} className="m-6 space-y-8">
-      <h1 className="mb-6 text-2xl font-bold">
-        Select your EA community roles
-      </h1>
+      <h1 className="mb-6 text-2xl font-bold">EA Community Roles</h1>
       <div className="prose">
         Thanks for participating in{' '}
         <Link href="https://manifund.substack.com/p/announcing-the-200k-ea-community">
@@ -211,7 +209,7 @@ export function ClaimRoles(props: {
         <div className="mt-4 text-red-500">{message}</div>
       )}
       {profileRoles ? (
-        <div className="mt-4 text-green-600">
+        <div className="mt-4 italic text-orange-600">
           You&apos;ve claimed ${totalGrant}. Now browse the{' '}
           <Link className="underline" href="/causes/ea-community-choice">
             EA Community Choice projects
