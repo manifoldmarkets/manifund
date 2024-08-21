@@ -4,6 +4,7 @@ import { createServerClient } from '@/db/supabase-server'
 import { EvalsForm } from './evals-form'
 import { getProfileTrusts, getUserEvals } from '@/db/eval'
 import { sortBy } from 'lodash'
+import Auth from '@/app/login/auth-ui'
 
 export default async function EvalsPage() {
   const supabase = createServerClient()
@@ -13,7 +14,7 @@ export default async function EvalsPage() {
     listProfilesAndEvals(supabase),
   ])
   if (!user) {
-    return <div>Not logged in</div>
+    return <Auth />
   }
   const [evals, profileTrusts] = await Promise.all([
     getUserEvals(user.id, supabase),
@@ -47,13 +48,15 @@ export default async function EvalsPage() {
         more info on how the scoring calculations work.{' '}
         <strong>Note that your evaluations are public.</strong>
       </p>
-      {username && <EvalsForm
-        projects={sortedProjects}
-        evals={evals}
-        profiles={profiles}
-        profileTrusts={profileTrusts}
-        username={username}
-      />}
+      {username && (
+        <EvalsForm
+          projects={sortedProjects}
+          evals={evals}
+          profiles={profiles}
+          profileTrusts={profileTrusts}
+          username={username}
+        />
+      )}
     </div>
   )
 }
