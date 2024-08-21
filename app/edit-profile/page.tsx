@@ -1,13 +1,14 @@
 import { createServerClient } from '@/db/supabase-server'
 import { getUser, getProfileById } from '@/db/profile'
 import { EditProfileForm } from './edit-profile'
+import Auth from '@/app/login/auth-ui'
 
 export const revalidate = 60
 export default async function Page() {
   const supabase = createServerClient()
   const user = await getUser(supabase)
   if (!user) {
-    return <div>You are not logged in.</div>
+    return <Auth />
   }
   const profile = await getProfileById(supabase, user?.id)
   if (!profile) {

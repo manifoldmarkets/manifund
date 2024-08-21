@@ -18,7 +18,7 @@ export default function ClientAuth(props: { profileComplete?: boolean }) {
     router.push(
       profileComplete
         ? redirect ?? '/projects'
-        : `/edit-profile?redirectTo=${redirect}`
+        : `/edit-profile` + (redirect ? `?redirectTo=${redirect}` : '')
     )
   }
   if (user) {
