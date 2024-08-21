@@ -82,10 +82,9 @@ export function DonateBox(props: {
           {isBid && <TimeLeftDisplay closeDate={project.auction_close ?? ''} />}
         </Row>
         {isBid && (
-          <p className="text-sm text-gray-500">
-            This is an offer to donate this amount to the project on the
-            condition that it eventually becomes active. Otherwise, your funds
-            will remain in your Manifund account.
+          <p className="text-sm font-light text-gray-500">
+            You&apos;re pledging to donate if the project hits its minimum goal
+            and gets approved. If not, your funds will be returned.
           </p>
         )}
         {charity?.type === 'individual' && (
