@@ -10,6 +10,7 @@ export type ProfileAndProjectTitles = Profile & {
   projects: { title: string }[]
 }
 export type ProfileAndEvals = Profile & { project_evals: ProjectEval[] }
+export type ProfileRoles = Database['public']['Tables']['profile_roles']['Row']
 
 export function isAdmin(user: User | null) {
   const ADMINS = [
@@ -163,4 +164,14 @@ export async function getFundByUsername(
     throw error
   }
   return data
+}
+
+export async function getProfileRoles(supabase: SupabaseClient, id: string) {
+  const { data } = await supabase
+    .from('profile_roles')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle()
+    .throwOnError()
+  return data as ProfileRoles | undefined
 }
