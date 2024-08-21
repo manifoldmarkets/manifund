@@ -23,7 +23,6 @@ function RoleInput(props: {
       <div className="flex flex-col">
         <label className="flex flex-row">
           <Checkbox
-            id={`checkbox-${name}`}
             checked={value !== undefined}
             onChange={(e) =>
               onChange(name, e.target.checked ? DEFAULT_CHECK : undefined)
@@ -53,6 +52,8 @@ function RoleInput(props: {
 }
 
 export default function EditProfileRoles() {
+  type SubmitState = 'idle' | 'submitting' | 'success' | 'error'
+
   const [roles, setRoles] = useState({
     donor: undefined,
     organizer: undefined,
@@ -62,19 +63,43 @@ export default function EditProfileRoles() {
     senior: undefined,
     insider: undefined,
   })
+  const [submitState, setSubmitState] = useState<SubmitState>('idle')
+  const [message, setMessage] = useState<string>('')
 
   const handleChange = (name: string, value: boolean | string | undefined) => {
     setRoles((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Form submitted:', roles)
-    // Handle form submission here
+    setSubmitState('submitting')
+
+    try {
+      const response = await fetch('/api/submit-role', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(roles),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to submit roles')
+      }
+
+      const data = await response.json()
+      setSubmitState('success')
+      setMessage(data.message)
+      console.log('Form submitted successfully:', data)
+    } catch (error) {
+      setSubmitState('error')
+      console.error('Error submitting form:', error)
+      setMessage(error instanceof Error ? error.message : 'An error occurred')
+    }
   }
 
+  const formUnfilled = Object.values(roles).some((role) => role === '')
   // Base is $100, +$100 for each role
-  const CLAIM_AMOUNT = (Object.values(roles).filter(Boolean).length + 1) * 100
+  const totalGrant = (Object.values(roles).filter(Boolean).length + 1) * 100
 
   return (
     <form onSubmit={handleSubmit} className="m-6 space-y-8">
@@ -159,12 +184,22 @@ export default function EditProfileRoles() {
         onChange={handleChange}
         type="checkbox"
       />
+      {submitState === 'error' && (
+        <div className="mt-4 text-red-500">{message}</div>
+      )}
+      {submitState === 'success' && (
+        <div className="mt-4 text-green-500">
+          Roles submitted successfully! You can now use your funds to donate.
+        </div>
+      )}
       <Button
         type="submit"
-        disabled={Object.values(roles).some((role) => role === '')}
+        disabled={formUnfilled || submitState === 'submitting'}
         className="w-full"
       >
-        {`Claim $${CLAIM_AMOUNT}`}
+        {submitState === 'submitting'
+          ? 'Submitting...'
+          : `Claim $${totalGrant}`}
       </Button>
     </form>
   )
