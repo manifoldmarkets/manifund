@@ -224,6 +224,8 @@ export function ClaimRoles(props: {
         >
           {submitState === 'submitting'
             ? 'Submitting...'
+            : formUnfilled
+            ? 'Fill in all fields'
             : `Claim $${totalGrant}`}
         </Button>
       )}
