@@ -116,7 +116,7 @@ export function ClaimRoles(props: {
   return (
     <form onSubmit={handleSubmit} className="m-6 space-y-8">
       <h1 className="mb-6 text-2xl font-bold">EA Community Roles</h1>
-      <div className="prose">
+      <div className="prose rounded-lg bg-gray-200 p-4">
         Thanks for participating in{' '}
         <Link href="https://manifund.substack.com/p/announcing-the-200k-ea-community">
           EA Community Choice
@@ -226,7 +226,7 @@ export function ClaimRoles(props: {
             ? 'Submitting...'
             : formUnfilled
             ? 'Fill in all fields'
-            : `Claim $${totalGrant}`}
+            : `Claim $${totalGrant} to donate`}
         </Button>
       )}
     </form>

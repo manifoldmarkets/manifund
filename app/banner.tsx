@@ -2,10 +2,13 @@
 import { IconButton } from '@/components/button'
 import { SiteLink } from '@/components/site-link'
 import { XMarkIcon } from '@heroicons/react/20/solid'
-import { useState } from 'react'
+import useLocalStorage from '@/hooks/use-local-storage'
 
-export function ACXFundBanner() {
-  const [show, setShow] = useState(true)
+export function CommunityChoiceBanner() {
+  const { value: show, setValue: setShow } = useLocalStorage(
+    true,
+    'showCommunityChoiceBanner'
+  )
   if (!show) return null
   return (
     <div className="relative isolate -mx-2 mb-3 flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1">
@@ -42,8 +45,8 @@ export function ACXFundBanner() {
         <use href="#a906133b-f855-4023-a54c-38d70c72fe9c" />
       </svg>
       <p className="w-full text-center text-sm leading-6 text-gray-900">
-        <SiteLink href="/funds/acx-grants-2024" onClick={() => setShow(false)}>
-          Donate to the ACX Grants 2024 Fund &nbsp;
+        <SiteLink href="/edit-profile/roles" onClick={() => setShow(false)}>
+          Claim $100 - $800 for EA Community Choice &nbsp;
           <span aria-hidden="true">&rarr;</span>
         </SiteLink>
       </p>
