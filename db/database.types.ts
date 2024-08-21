@@ -262,6 +262,47 @@ export type Database = {
           },
         ]
       }
+      profile_roles: {
+        Row: {
+          donor: boolean
+          id: string
+          insider: boolean
+          organizer: string | null
+          scholar: string | null
+          senior: string | null
+          volunteer: string | null
+          worker: string | null
+        }
+        Insert: {
+          donor?: boolean
+          id: string
+          insider?: boolean
+          organizer?: string | null
+          scholar?: string | null
+          senior?: string | null
+          volunteer?: string | null
+          worker?: string | null
+        }
+        Update: {
+          donor?: boolean
+          id?: string
+          insider?: boolean
+          organizer?: string | null
+          scholar?: string | null
+          senior?: string | null
+          volunteer?: string | null
+          worker?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_roles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profile_trust: {
         Row: {
           created_at: string
@@ -342,14 +383,21 @@ export type Database = {
       }
       project_causes: {
         Row: {
+          application_stage: Database["public"]["Enums"]["project_stage"] | null
           cause_slug: string
           project_id: string
         }
         Insert: {
+          application_stage?:
+            | Database["public"]["Enums"]["project_stage"]
+            | null
           cause_slug: string
           project_id: string
         }
         Update: {
+          application_stage?:
+            | Database["public"]["Enums"]["project_stage"]
+            | null
           cause_slug?: string
           project_id?: string
         }
