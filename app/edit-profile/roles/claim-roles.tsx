@@ -7,26 +7,30 @@ import { toTitleCase } from '@/utils/formatting'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { ProfileRoles } from '@/db/profile'
+import { useRouter } from 'next/navigation'
 
 function RoleInput(props: {
   label: string
   name: string
-  // Value is null if the checkbox is unchecked; true or string if checked.
-  value?: boolean | string | null
-  onChange: (name: string, value: boolean | string | null) => void
+  handleChange: (name: string, value: boolean | string | undefined) => void
+  // Value is undefined if the checkbox is unchecked; true or string if checked.
+  value?: boolean | string | undefined
   type: 'checkbox' | 'textarea'
   placeholder?: string
+  disabled?: boolean
 }) {
-  const { label, name, value, onChange, type, placeholder } = props
+  const { label, name, handleChange, value, type, placeholder, disabled } =
+    props
   const DEFAULT_CHECK = type === 'checkbox' ? true : ''
   return (
     <div className="mb-4">
       <div className="flex flex-col">
         <label className="flex flex-row">
           <Checkbox
-            checked={value !== null}
+            checked={value !== undefined}
+            disabled={disabled}
             onChange={(e) =>
-              onChange(name, e.target.checked ? DEFAULT_CHECK : null)
+              handleChange(name, e.target.checked ? DEFAULT_CHECK : undefined)
             }
             className="mr-2"
           />
@@ -37,10 +41,11 @@ function RoleInput(props: {
         </label>
       </div>
 
-      {type === 'textarea' && value !== null && (
+      {type === 'textarea' && value !== undefined && (
         <Input
           value={value as string}
-          onChange={(e) => onChange(name, e.target.value)}
+          onChange={(e) => handleChange(name, e.target.value)}
+          disabled={disabled}
           className={clsx(
             'mt-1 w-full rounded border p-2',
             value === '' && 'border-2 border-red-500'
@@ -52,23 +57,32 @@ function RoleInput(props: {
   )
 }
 
-export function ClaimRoles(props: { profileRoles?: ProfileRoles }) {
+export function ClaimRoles(props: {
+  // If provided, indicates that the user already claimed roles
+  profileRoles?: ProfileRoles
+}) {
   const { profileRoles } = props
-  console.log('profileRoles', profileRoles)
   const [roles, setRoles] = useState({
-    donor: profileRoles?.donor,
-    organizer: profileRoles?.organizer,
-    scholar: profileRoles?.scholar,
-    volunteer: profileRoles?.volunteer,
-    worker: profileRoles?.worker,
-    senior: profileRoles?.senior,
-    insider: profileRoles?.insider,
+    donor: profileRoles?.donor || undefined,
+    organizer: profileRoles?.organizer || undefined,
+    scholar: profileRoles?.scholar || undefined,
+    volunteer: profileRoles?.volunteer || undefined,
+    worker: profileRoles?.worker || undefined,
+    senior: profileRoles?.senior || undefined,
+    insider: profileRoles?.insider || undefined,
   })
+
+  const formUnfilled = Object.values(roles).some((role) => role === '')
+  // Base is $100, +$100 for each role
+  const totalGrant = (Object.values(roles).filter(Boolean).length + 1) * 100
+
   type SubmitState = 'idle' | 'submitting' | 'success' | 'error'
   const [submitState, setSubmitState] = useState<SubmitState>('idle')
   const [message, setMessage] = useState<string>('')
 
-  const handleChange = (name: string, value: boolean | string | null) => {
+  const router = useRouter()
+
+  const handleChange = (name: string, value: boolean | string | undefined) => {
     setRoles((prev) => ({ ...prev, [name]: value }))
   }
 
@@ -91,17 +105,13 @@ export function ClaimRoles(props: { profileRoles?: ProfileRoles }) {
       const data = await response.json()
       setSubmitState('success')
       setMessage(data.message)
-      console.log('Form submitted successfully:', data)
+      // Refresh the page
+      router.refresh()
     } catch (error) {
       setSubmitState('error')
-      console.error('Error submitting form:', error)
       setMessage(error instanceof Error ? error.message : 'An error occurred')
     }
   }
-
-  const formUnfilled = Object.values(roles).some((role) => role === '')
-  // Base is $100, +$100 for each role
-  const totalGrant = (Object.values(roles).filter(Boolean).length + 1) * 100
 
   return (
     <form onSubmit={handleSubmit} className="m-6 space-y-8">
@@ -125,10 +135,14 @@ export function ClaimRoles(props: { profileRoles?: ProfileRoles }) {
           </li>
           <li>You can&apos;t update your responses once you submit</li>
           <li>
-            Share EA Community Choice with other EAs!
+            Please share EA Community Choice with other EAs!
             <ul>
               <li>(But please don&apos;t game the quadratic funding match)</li>
             </ul>
+          </li>
+          <li>
+            Other questions? Ask us on{' '}
+            <Link href="https://discord.gg/ZGsDMWSA5Q">Discord</Link>!
           </li>
         </ul>
       </div>
@@ -136,67 +150,74 @@ export function ClaimRoles(props: { profileRoles?: ProfileRoles }) {
         label="I have taken the GWWC 🔸10% Pledge"
         name="donor"
         value={roles.donor}
-        onChange={handleChange}
         type="checkbox"
+        handleChange={handleChange}
+        disabled={!!profileRoles}
       />
       <RoleInput
         label="I have organized an EA group"
         name="organizer"
         value={roles.organizer}
-        onChange={handleChange}
         type="textarea"
+        handleChange={handleChange}
+        disabled={!!profileRoles}
         placeholder="Which group?"
       />
       <RoleInput
         label="I have 100 or more karma on the EA Forum"
         name="scholar"
         value={roles.scholar}
-        onChange={handleChange}
         type="textarea"
-        placeholder="Link to your EA Forum profile"
+        handleChange={handleChange}
+        disabled={!!profileRoles}
+        placeholder="Link to your EA Forum profile eg https://forum.effectivealtruism.org/users/..."
       />
       <RoleInput
         label="I have volunteered at an event for EAs like EAG(x), Future Forum, or Manifest"
         name="volunteer"
         value={roles.volunteer}
-        onChange={handleChange}
         type="textarea"
+        handleChange={handleChange}
+        disabled={!!profileRoles}
         placeholder="Which event?"
       />
       <RoleInput
         label="I've worked fulltime at an EA org or on an EA grant"
         name="worker"
         value={roles.worker}
-        onChange={handleChange}
         type="textarea"
+        handleChange={handleChange}
+        disabled={!!profileRoles}
         placeholder="What org or grant?"
       />
       <RoleInput
         label="I have done any of the above prior to 2022"
         name="senior"
         value={roles.senior}
-        onChange={handleChange}
         type="textarea"
+        handleChange={handleChange}
+        disabled={!!profileRoles}
         placeholder="Which role(s) above?"
       />
       <RoleInput
         label="I had a Manifund account before August 2024"
         name="insider"
         value={roles.insider}
-        onChange={handleChange}
         type="checkbox"
+        handleChange={handleChange}
+        disabled={!!profileRoles}
       />
       {submitState === 'error' && (
         <div className="mt-4 text-red-500">{message}</div>
       )}
-      {submitState === 'success' && (
-        <div className="mt-4 text-green-500">
-          Roles submitted successfully! You can now use your funds to donate.
-        </div>
-      )}
-      {/* Show submit button if profileRoles is undefined aka not already claimed */}
       {profileRoles ? (
-        <div>You&apos;ve claimed ${totalGrant} to donate!</div>
+        <div className="mt-4 text-green-600">
+          You&apos;ve claimed ${totalGrant}. Now browse the{' '}
+          <Link className="underline" href="/causes/ea-community-choice">
+            EA Community Choice projects
+          </Link>{' '}
+          and start donating!
+        </div>
       ) : (
         <Button
           type="submit"
