@@ -12,6 +12,10 @@ export type ProfileAndProjectTitles = Profile & {
 export type ProfileAndEvals = Profile & { project_evals: ProjectEval[] }
 export type ProfileRoles = Database['public']['Tables']['profile_roles']['Row']
 
+export type ProfileWithRoles = Profile & {
+  roles: ProfileRoles
+}
+
 export function isAdmin(user: User | null) {
   const ADMINS = [
     'rachel.weinberg12@gmail.com',
@@ -174,4 +178,21 @@ export async function getProfileRoles(supabase: SupabaseClient, id: string) {
     .maybeSingle()
     .throwOnError()
   return data as ProfileRoles | undefined
+}
+
+export async function fetchProfilesWithRoles(
+  supabase: SupabaseClient
+): Promise<ProfileWithRoles[]> {
+  const { data } = await supabase
+    .from('profile_roles')
+    .select(`*, profiles (*)`)
+    .throwOnError()
+
+  return (data ?? []).map(
+    (item) =>
+      ({
+        ...item.profiles,
+        roles: { ...item, profiles: undefined },
+      } as ProfileWithRoles)
+  )
 }
