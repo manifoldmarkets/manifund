@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { getCause, listSimpleCauses } from '@/db/cause'
 import { CauseTabs } from './cause-tabs'
 import { CauseData } from './cause-data'
-import { getUser } from '@/db/profile'
+import { getUser, fetchProfilesWithRoles } from '@/db/profile'
 import { calculateCharityBalance } from '@/utils/math'
 import {
   getIncomingTxnsByUserWithDonor,
@@ -29,6 +29,7 @@ export async function generateMetadata(props: {
 export default async function CausePage(props: {
   params: { causeSlug: string }
 }) {
+  // TODO: Maybe batch with Promise.all for fewer roundtrips
   const { causeSlug } = props.params
   const supabase = createServerClient()
   const cause = await getCause(supabase, causeSlug)
@@ -44,6 +45,7 @@ export default async function CausePage(props: {
   const userTxns = user ? await getTxnAndProjectsByUser(supabase, user.id) : []
   const userBids = user ? await getPendingBidsByUser(supabase, user.id) : []
   const userProfile = user ? await getProfileById(supabase, user.id) : null
+  const profiles = await fetchProfilesWithRoles(supabase)
   const charityBalance = userProfile
     ? calculateCharityBalance(
         userTxns,
@@ -52,6 +54,7 @@ export default async function CausePage(props: {
         userProfile.accreditation_status
       )
     : 0
+
   return (
     <div className="bg-dark-200 mx-auto max-w-4xl p-6">
       {cause.header_image_url && (
@@ -75,6 +78,7 @@ export default async function CausePage(props: {
         fundTxns={fundTxns}
         userId={user?.id}
         charityBalance={charityBalance}
+        profiles={profiles}
       />
     </div>
   )

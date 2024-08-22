@@ -10,11 +10,12 @@ import { Cause, SimpleCause } from '@/db/cause'
 import { WrenchIcon } from '@heroicons/react/20/solid'
 import { useSearchParams } from 'next/navigation'
 import { EditCause } from './edit-cause'
-import { Profile } from '@/db/profile'
+import { Profile, ProfileWithRoles } from '@/db/profile'
 import { TxnAndProfiles } from '@/db/txn'
 import { DonateSection } from './donate-section'
 import { DonationsHistory } from '@/components/donations-history'
 import { DividerWithHeader } from '@/components/divider-with-header'
+import { Donors } from './donors'
 
 export function CauseTabs(props: {
   cause: Cause
@@ -24,6 +25,7 @@ export function CauseTabs(props: {
   fundTxns?: TxnAndProfiles[]
   userId?: string
   charityBalance: number
+  profiles: ProfileWithRoles[]
 }) {
   const {
     cause,
@@ -33,6 +35,7 @@ export function CauseTabs(props: {
     fundTxns,
     userId,
     charityBalance,
+    profiles,
   } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
@@ -66,37 +69,32 @@ export function CauseTabs(props: {
         </>
       ),
     },
-    {
+  ]
+  if (certs.length > 0) {
+    tabs.push({
       name: 'Impact certificates',
       id: 'certs',
       count: certs.length,
       display: (
         <>
-          {certs.length === 0 ? (
-            <EmptyContent
-              icon={<WrenchIcon className="h-10 w-10 text-gray-400" />}
-              title={'Coming soon!'}
-              subtitle={'No projects here yet.'}
-            />
-          ) : (
-            <div>
-              <div className="mb-4 font-semibold text-orange-600 hover:underline">
-                <Link href="/about/impact-certificates">
-                  About impact certificates
-                  <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
-                </Link>
-              </div>
-              <ProjectsDisplay
-                projects={certs}
-                causesList={causesList}
-                noFilter={!cause.prize}
-              />
+          <div>
+            <div className="mb-4 font-semibold text-orange-600 hover:underline">
+              <Link href="/about/impact-certificates">
+                About impact certificates
+                <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
+              </Link>
             </div>
-          )}
+            <ProjectsDisplay
+              projects={certs}
+              causesList={causesList}
+              noFilter={!cause.prize}
+            />
+          </div>
         </>
       ),
-    },
-  ]
+    })
+  }
+
   if (cause.description) {
     tabs.push({
       name: 'About',
@@ -108,6 +106,14 @@ export function CauseTabs(props: {
           <EditCause cause={cause} />
         </>
       ),
+    })
+  }
+  if (cause.slug === 'ea-community-choice') {
+    tabs.push({
+      name: 'Participants',
+      id: 'participants',
+      count: 0,
+      display: <Donors donors={profiles} />,
     })
   }
   if (fund && fundTxns) {
