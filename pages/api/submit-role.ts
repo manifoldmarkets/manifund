@@ -7,6 +7,9 @@ export const config = {
 }
 
 export default async function handler(req: NextRequest) {
+  // For now, always return an error
+  return NextResponse.json({ error: 'Funds paused' }, { status: 400 })
+
   const roles = await req.json()
   const supabase = createEdgeClient(req)
   const {
