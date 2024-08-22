@@ -31,7 +31,7 @@ export default async function Projects(props: {
     recentDonations,
     recentBids,
     causesList,
-    // featuredCauses,
+    featuredCauses,
   ] = await Promise.all([
     getUser(supabase),
     listProjects(supabase),
@@ -39,7 +39,7 @@ export default async function Projects(props: {
     getRecentFullTxns(supabase, PAGE_SIZE, start),
     getRecentFullBids(supabase, PAGE_SIZE, start),
     listSimpleCauses(supabase),
-    // getSomeFullCauses(['acx-grants-2024'], supabase),
+    getSomeFullCauses(['ea-community-choice'], supabase),
   ])
 
   return (
@@ -47,7 +47,7 @@ export default async function Projects(props: {
       {user === null && <LandingSection />}
       <Col className="gap-3">
         <h3 className="text-2xl font-semibold">Active programs</h3>
-        <Link
+        {/* <Link
           className="relative flex flex-col gap-4 rounded-lg bg-white p-4 shadow-md sm:flex-row"
           href="/about/regranting"
         >
@@ -66,17 +66,17 @@ export default async function Projects(props: {
                 AI Safety Regranting
               </p>
               <span className="text-sm text-gray-600 sm:text-base">
-                {/* TODO write better copy */}
                 We&apos;ve delegated $1.5m to experts in AI safety, who can
                 independently recommend grants based on their knowledge of the
                 field.
               </span>
             </Col>
           </Col>
-        </Link>
-        {/* {featuredCauses.map((cause) => (
+        </Link> */}
+
+        {featuredCauses.map((cause) => (
           <CausePreview cause={cause} key={cause.slug} />
-        ))} */}
+        ))}
       </Col>
       <FeedTabs
         recentComments={recentComments}
