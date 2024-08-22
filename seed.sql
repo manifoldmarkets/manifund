@@ -559,9 +559,9 @@ CREATE TABLE public.profile_roles (
 -- Add RLS policies
 ALTER TABLE public.profile_roles ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can read their own profile roles" 
+CREATE POLICY "Anyone can read any profile role" 
 ON public.profile_roles FOR SELECT 
-USING (auth.uid() = id);
+USING (true);
 
 CREATE POLICY "Users can insert their own profile roles" 
 ON public.profile_roles FOR INSERT 
