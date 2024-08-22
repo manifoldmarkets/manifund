@@ -21,7 +21,7 @@ export default async function handler(req: NextRequest) {
   const { data: existingRole } = await supabase
     .from('profile_roles')
     .select()
-    .eq('id', user.id)
+    .eq('id', user?.id ?? '')
     .single()
   if (existingRole)
     return NextResponse.json(
@@ -31,7 +31,7 @@ export default async function handler(req: NextRequest) {
 
   // Create profile_roles
   const newRoles = {
-    id: user.id,
+    id: user?.id ?? '',
     donor: !!roles.donor,
     organizer: roles.organizer || null,
     scholar: roles.scholar || null,
@@ -48,7 +48,7 @@ export default async function handler(req: NextRequest) {
   const supabaseAdmin = createAdminClient()
   await supabaseAdmin.from('txns').insert({
     from_id: process.env.NEXT_PUBLIC_PROD_BANK_ID,
-    to_id: user.id,
+    to_id: user?.id ?? '',
     amount: totalAmount,
     token: 'USD',
     type: 'deposit',
