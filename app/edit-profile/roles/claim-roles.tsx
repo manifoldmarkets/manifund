@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { ProfileRoles } from '@/db/profile'
 import { useRouter } from 'next/navigation'
+import AlertBox from '@/components/alert-box'
 
 function RoleInput(props: {
   label: string
@@ -117,6 +118,22 @@ export function ClaimRoles(props: {
     <form onSubmit={handleSubmit} className="m-6 space-y-8">
       <h1 className="mb-6 text-2xl font-bold">EA Community Roles</h1>
       <div className="prose rounded-lg bg-gray-200 p-4">
+        <AlertBox title="Update 2024-08-21, 17:00 PT: Funds paused">
+          We&apos;ve sent out the initial $100k in funds! We&apos;re happy
+          there&apos;s so much interest, but are now pausing new claims while
+          trying to fundraise for more.
+          <br />
+          <br />
+          Join{' '}
+          <Link href="https://airtable.com/appucH86FmSMha33p/pag9fHXZoBXj61ZIN/form">
+            the waitlist
+          </Link>{' '}
+          to be notified if & when we receive more funding, or email{' '}
+          <a href="mailto:austin@manifund.org">austin@manifund.org</a> if you
+          know someone might contribute!
+        </AlertBox>
+        <br />
+        <br />
         Thanks for participating in{' '}
         <Link href="https://manifund.substack.com/p/announcing-the-200k-ea-community">
           EA Community Choice
@@ -219,7 +236,8 @@ export function ClaimRoles(props: {
       ) : (
         <Button
           type="submit"
-          disabled={formUnfilled || submitState === 'submitting'}
+          // disabled={formUnfilled || submitState === 'submitting'}
+          disabled={true}
           className="w-full"
         >
           {submitState === 'submitting'
