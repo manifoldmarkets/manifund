@@ -142,7 +142,7 @@ function LandingSection() {
     <div className="rounded-lg bg-gradient-to-r from-orange-500 to-rose-500 px-4 py-10 sm:px-8">
       <div className="relative mx-auto mb-5 w-fit rounded-full px-3 py-1 text-xs leading-6 ring-1 ring-white ring-opacity-20 hover:bg-white hover:bg-opacity-20">
         <span className="text-white text-opacity-50">
-          We&apos;re fundraising.{' '}
+          Support our mission.{' '}
         </span>
         <a href="/about/donate" className="font-semibold text-white">
           Read more <ArrowLongRightIcon className="inline h-4 w-4 stroke-2" />
@@ -150,15 +150,16 @@ function LandingSection() {
       </div>
       <Row className="flex-2">
         <div>
-          <p className="text-3xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
-            Impactful giving,
+          <p className="text-center text-3xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
+            markets x grants
           </p>
-          <p className="text-right text-3xl font-medium text-white shadow-orange-500 text-shadow-lg sm:text-4xl">
-            efficient funding.
-          </p>
+          {/* <p className="text-right text-3xl font-medium text-white shadow-orange-500 text-shadow-lg sm:text-4xl">
+            meet Markets.
+          </p> */}
           <p className="mb-8 mt-4 text-center text-xs text-white sm:mt-5 sm:text-sm">
-            Manifund offers charitable funding infrastructure designed to
-            improve incentives, efficiency, and transparency.
+            Manifund is the marketplace for awesome new charities. Find
+            impactful projects, buy impact certs, and weigh in on what gets
+            funded.
           </p>
           <Row className="justify-center gap-3 text-sm">
             <Link
@@ -169,15 +170,15 @@ function LandingSection() {
                 Get started
               </span>
             </Link>
-            <Link
+            {/* <Link
               className="group flex w-fit items-center gap-1 rounded-lg p-2 text-white ring-2 ring-white hover:bg-white"
-              href="/login"
+              href="/about/regranting"
             >
               <span className="from-orange-500 to-rose-600 bg-clip-text text-sm font-semibold group-hover:bg-gradient-to-r group-hover:text-transparent">
                 About regranting
               </span>
               <ArrowLongRightIcon className="h-4 w-4 stroke-2 text-white group-hover:text-rose-500" />
-            </Link>
+            </Link> */}
           </Row>
         </div>
         <Image
