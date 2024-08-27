@@ -31,7 +31,7 @@ export default async function handler(
     projectUrl: `https://manifund.org/projects/${fullComment.projects.slug}`,
     commenterUsername: fullComment.profiles.username,
     commenterAvatarUrl: fullComment.profiles.avatar_url,
-    htmlContent: JSON.stringify(htmlContent),
+    htmlContent: htmlContent,
   }
 
   // Send creator email
