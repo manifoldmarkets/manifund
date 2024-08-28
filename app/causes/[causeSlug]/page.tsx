@@ -4,13 +4,14 @@ import Image from 'next/image'
 import { getCause, listSimpleCauses } from '@/db/cause'
 import { CauseTabs } from './cause-tabs'
 import { CauseData } from './cause-data'
-import { getUser, fetchProfilesWithRoles } from '@/db/profile'
+import { getUser, getProfilesWithRoles } from '@/db/profile'
 import { calculateCharityBalance } from '@/utils/math'
 import {
   getIncomingTxnsByUserWithDonor,
+  getMatchTxns,
   getTxnAndProjectsByUser,
 } from '@/db/txn'
-import { getPendingBidsByUser } from '@/db/bid'
+import { getMatchBids, getPendingBidsByUser } from '@/db/bid'
 import { getProfileById } from '@/db/profile'
 
 export const revalidate = 60
@@ -45,7 +46,15 @@ export default async function CausePage(props: {
   const userTxns = user ? await getTxnAndProjectsByUser(supabase, user.id) : []
   const userBids = user ? await getPendingBidsByUser(supabase, user.id) : []
   const userProfile = user ? await getProfileById(supabase, user.id) : null
-  const profiles = await fetchProfilesWithRoles(supabase)
+
+  const [profiles, matchTxns, matchBids] =
+    causeSlug === 'ea-community-choice'
+      ? await Promise.all([
+          getProfilesWithRoles(supabase),
+          getMatchTxns(supabase, causeSlug),
+          getMatchBids(supabase, causeSlug),
+        ])
+      : []
   const charityBalance = userProfile
     ? calculateCharityBalance(
         userTxns,
@@ -79,6 +88,8 @@ export default async function CausePage(props: {
         userId={user?.id}
         charityBalance={charityBalance}
         profiles={profiles}
+        matchTxns={matchTxns}
+        matchBids={matchBids}
       />
     </div>
   )

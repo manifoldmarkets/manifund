@@ -116,3 +116,27 @@ export async function insertBid(supabase: SupabaseClient, bid: BidInsert) {
     console.error(error)
   }
 }
+
+// Return all bids on projects with this cause slug
+export async function getMatchBids(
+  supabase: SupabaseClient,
+  causeSlug: string
+) {
+  const { data } = await supabase
+    .from('bids')
+    .select(
+      `
+      *,
+      projects!inner(
+        project_causes!inner(cause_slug)
+      ),
+      profiles!inner(*)
+    `
+    )
+    .eq('projects.project_causes.cause_slug', causeSlug)
+    .order('created_at', { ascending: false })
+    .limit(1000)
+    .throwOnError()
+
+  return data as BidAndProfile[]
+}

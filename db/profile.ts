@@ -180,7 +180,7 @@ export async function getProfileRoles(supabase: SupabaseClient, id: string) {
   return data as ProfileRoles | undefined
 }
 
-export async function fetchProfilesWithRoles(
+export async function getProfilesWithRoles(
   supabase: SupabaseClient
 ): Promise<ProfileWithRoles[]> {
   const { data } = await supabase

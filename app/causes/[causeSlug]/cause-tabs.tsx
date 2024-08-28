@@ -16,6 +16,8 @@ import { DonateSection } from './donate-section'
 import { DonationsHistory } from '@/components/donations-history'
 import { DividerWithHeader } from '@/components/divider-with-header'
 import { Donors } from './donors'
+import QuadraticMatch from './qf'
+import { BidAndProfile } from '@/db/bid'
 
 export function CauseTabs(props: {
   cause: Cause
@@ -25,7 +27,9 @@ export function CauseTabs(props: {
   fundTxns?: TxnAndProfiles[]
   userId?: string
   charityBalance: number
-  profiles: ProfileWithRoles[]
+  profiles?: ProfileWithRoles[]
+  matchTxns?: TxnAndProfiles[]
+  matchBids?: BidAndProfile[]
 }) {
   const {
     cause,
@@ -36,6 +40,8 @@ export function CauseTabs(props: {
     userId,
     charityBalance,
     profiles,
+    matchTxns,
+    matchBids,
   } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
@@ -109,12 +115,28 @@ export function CauseTabs(props: {
     })
   }
   if (cause.slug === 'ea-community-choice') {
-    tabs.push({
-      name: 'Participants',
-      id: 'participants',
-      count: 0,
-      display: <Donors donors={profiles} />,
-    })
+    if (profiles) {
+      tabs.push({
+        name: 'Participants',
+        id: 'participants',
+        count: 0,
+        display: <Donors donors={profiles} />,
+      })
+    }
+    if (matchTxns && matchBids) {
+      tabs.push({
+        name: 'Matching',
+        id: 'match',
+        count: 0,
+        display: (
+          <QuadraticMatch
+            projects={projects}
+            matchTxns={matchTxns}
+            matchBids={matchBids}
+          />
+        ),
+      })
+    }
   }
   if (fund && fundTxns) {
     tabs.push({
