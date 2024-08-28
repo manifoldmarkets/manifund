@@ -119,3 +119,28 @@ export async function getRecentFullTxns(
     .throwOnError()
   return data as FullTxn[]
 }
+
+// Return all txns to projects related to this cause
+export async function getMatchTxns(
+  supabase: SupabaseClient,
+  causeSlug: string
+) {
+  const { data } = await supabase
+    .from('txns')
+    .select(
+      `
+      *,
+      profiles!txns_from_id_fkey(*),
+      projects!inner(
+        project_causes!inner(cause_slug)
+      )
+    `
+    )
+    .eq('projects.project_causes.cause_slug', causeSlug)
+    .eq('token', 'USD')
+    .order('created_at', { ascending: false })
+    .limit(1000)
+    .throwOnError()
+
+  return data as TxnAndProfiles[]
+}
