@@ -45,6 +45,7 @@ export default function ClientAuth(props: { profileComplete?: boolean }) {
           supabaseClient={supabase}
           appearance={{ theme: manifundTheme }}
           providers={['google']}
+          // Note: This can cause redirectTo to be empty string
           redirectTo={`${getURL()}/edit-profile?redirectTo=${redirect}`}
         />
       </div>
