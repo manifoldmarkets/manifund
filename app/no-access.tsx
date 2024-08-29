@@ -23,9 +23,9 @@ export default function NoAccess() {
         If you weren’t expecting this, you can email{' '}
         <a
           className="font-semibold text-orange-600 hover:underline"
-          href="mailto:rachel@manifund.org"
+          href="mailto:austin@manifund.org"
         >
-          rachel@manifund.org
+          austin@manifund.org
         </a>{' '}
         or send us a message on{' '}
         <a
