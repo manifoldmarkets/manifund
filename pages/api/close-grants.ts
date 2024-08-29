@@ -97,7 +97,7 @@ async function closeProject(
           subject: 'Manifund: Reminder to approve project',
         },
         undefined,
-        'rachel@manifund.org'
+        'austin@manifund.org'
       )
     }
     if (project.approved && project.signed_agreement && activeAuction) {
