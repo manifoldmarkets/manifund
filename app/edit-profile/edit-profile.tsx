@@ -104,7 +104,7 @@ export function EditProfileForm(props: { profile: Profile }) {
       supabase
     )
     setSubmitting(false)
-    router.push(redirect ?? `/${formattedUsername}`)
+    router.push(redirect ? redirect : `/${formattedUsername}`)
     router.refresh()
   }
 
