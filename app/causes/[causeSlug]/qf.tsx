@@ -28,7 +28,7 @@ type VoteMap = {
 function eligibleTime(createdAt: string) {
   // createdAt is in the format 2024-08-01T00:00:00Z
   const date = new Date(createdAt)
-  return new Date('2024-08-01') <= date && date < new Date('2024-09-01')
+  return new Date('2024-08-01') <= date && date < new Date('2024-09-05')
 }
 
 export default function QuadraticMatch(props: {
