@@ -80,9 +80,14 @@ export default function QuadraticMatch(props: {
     const sqrtVotes = sum(Object.values(votes).map((v) => Math.sqrt(v)))
     return Math.round(sqrtVotes * sqrtVotes)
   }
-
+  function total(votes: Record<string, number>) {
+    return sum(Object.values(votes))
+  }
   const totalRawMatch = sum(Object.values(voteMap).map(rawMatch))
   const POOL_SIZE = 100_000
+  function match(votes: Record<string, number>) {
+    return (rawMatch(votes) / totalRawMatch) * POOL_SIZE
+  }
 
   return (
     <div>
@@ -118,28 +123,30 @@ export default function QuadraticMatch(props: {
             </TableCell>
           </TableRow>
 
-          {/* TODO: Sort table by total amount */}
-          {/* Then create one row per project */}
-          {Object.entries(voteMap).map(([projectId, votes]) => (
-            <TableRow key={projectId}>
-              <TableCell>
-                <Link href={`/projects/${projectMap[projectId].slug}`}>
-                  {projectMap[projectId].title.slice(0, 60)}
-                </Link>
-              </TableCell>
-              <TableCell>{Object.keys(votes).length}</TableCell>
-              <TableCell>{sum(Object.values(votes)).toFixed(0)}</TableCell>
-              <TableCell>
-                {((rawMatch(votes) / totalRawMatch) * POOL_SIZE).toFixed(0)}
-              </TableCell>
-              <TableCell>
-                {(
-                  sum(Object.values(votes)) +
-                  (rawMatch(votes) / totalRawMatch) * POOL_SIZE
-                ).toFixed(0)}
-              </TableCell>
-            </TableRow>
-          ))}
+          {/* Sort table by total donated, thencreate one row per project */}
+          {Object.entries(voteMap)
+            .sort(
+              ([idA, votesA], [idB, votesB]) =>
+                total(votesB) + match(votesB) - (total(votesA) + match(votesA))
+            )
+            .map(([projectId, votes]) => (
+              <TableRow key={projectId}>
+                <TableCell>
+                  <Link
+                    href={`/projects/${projectMap[projectId].slug}`}
+                    className="hover:underline"
+                  >
+                    {projectMap[projectId].title.slice(0, 60)}
+                  </Link>
+                </TableCell>
+                <TableCell>{Object.keys(votes).length}</TableCell>
+                <TableCell>{total(votes).toFixed(0)}</TableCell>
+                <TableCell>{match(votes).toFixed(0)}</TableCell>
+                <TableCell>
+                  {(total(votes) + match(votes)).toFixed(0)}
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </div>
