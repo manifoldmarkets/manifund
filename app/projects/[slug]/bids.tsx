@@ -115,14 +115,7 @@ export function Bid(props: {
   return (
     <div className="grid w-full grid-cols-3 items-center gap-3 rounded p-3 text-sm hover:bg-gray-200">
       <Row className="justify-start">
-        <UserAvatarAndBadge profile={bid.profiles} className="hidden sm:flex" />
-        <Avatar
-          size="xs"
-          username={bid.profiles.username}
-          avatarUrl={bid.profiles.avatar_url}
-          id={bid.bidder}
-          className="sm:hidden"
-        />
+        <UserAvatarAndBadge profile={bid.profiles} />
       </Row>
       <Row className="items-center justify-end">
         {showValuation ? (
