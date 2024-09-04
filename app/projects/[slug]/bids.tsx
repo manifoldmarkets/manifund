@@ -85,6 +85,7 @@ export function Bids(props: {
               key={bid.id}
               bid={bid}
               project={project}
+              userProfile={userProfile}
               showValuation={false}
             />
           ))}
@@ -111,7 +112,10 @@ export function Bid(props: {
     userSellableShares,
   } = props
   const showTrade =
-    userProfile && bid.bidder !== userProfile.id && bid.type !== 'assurance buy'
+    userProfile &&
+    bid.bidder !== userProfile.id &&
+    bid.type !== 'assurance buy' &&
+    bid.type !== 'donate'
   return (
     <div className="grid w-full grid-cols-3 items-center gap-3 rounded p-3 text-sm hover:bg-gray-200">
       <Row className="justify-start">
