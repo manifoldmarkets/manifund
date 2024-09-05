@@ -24,11 +24,13 @@ type VoteMap = {
   }
 }
 
-// Txns & offers in Aug 2024 are eligible for EA Community Choice
+// Txns & offers in 08-12 to 09-05 are eligible for EA Community Choice
 function eligibleTime(createdAt: string) {
-  // createdAt is in the format 2024-08-01T00:00:00Z
   const date = new Date(createdAt)
-  return new Date('2024-08-01') <= date && date < new Date('2024-09-05')
+  return (
+    new Date('2024-08-12') <= date &&
+    date < new Date('2024-09-05T11:59:59.999Z')
+  )
 }
 
 export default function QuadraticMatch(props: {
