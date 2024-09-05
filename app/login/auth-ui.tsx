@@ -14,12 +14,10 @@ export default function ClientAuth(props: { profileComplete?: boolean }) {
   const params = useSearchParams()
   const recommendedEmail = params?.get('email')
   const redirect = params?.get('redirect')
+  const editProfileRedirect =
+    `/edit-profile` + (redirect ? `?redirectTo=${redirect}` : '')
   if (user) {
-    router.push(
-      profileComplete
-        ? redirect ?? '/projects'
-        : `/edit-profile` + (redirect ? `?redirectTo=${redirect}` : '')
-    )
+    router.push(profileComplete ? redirect ?? '/projects' : editProfileRedirect)
   }
   if (user) {
     return (
@@ -45,8 +43,7 @@ export default function ClientAuth(props: { profileComplete?: boolean }) {
           supabaseClient={supabase}
           appearance={{ theme: manifundTheme }}
           providers={['google']}
-          // Note: This can cause redirectTo to be empty string
-          redirectTo={`${getURL()}/edit-profile?redirectTo=${redirect}`}
+          redirectTo={`${getURL()}${editProfileRedirect.slice(1)}`}
         />
       </div>
     )
