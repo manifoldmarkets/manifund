@@ -18,8 +18,16 @@ export async function generateMetadata(props: { params: { slug: string } }) {
   const { slug } = props.params
   const supabase = createServerClient()
   const project = await getProjectBySlug(supabase, slug)
+  const description = project.blurb ?? 'A project on Manifund'
   return {
     title: project.title,
+    description: description,
+    openGraph: {
+      title: project.title,
+      description: description,
+      type: 'website',
+      url: `https://manifund.org/projects/${project.slug}`,
+    },
     robots: {
       index: project.stage !== 'hidden' && project.stage !== 'draft',
     },
