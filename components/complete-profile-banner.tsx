@@ -12,7 +12,7 @@ export async function CompleteProfileBanner() {
     userProfile &&
     (userProfile.username === userProfile.id || !userProfile.full_name)
   if (!profileTodo) {
-    return <CommunityChoiceBanner />
+    return null
   }
 
   return (
