@@ -111,13 +111,6 @@ const TEAM_MEMBERS = [
       'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/4de2634d-3802-4141-881e-9ce687f87485/8271a711-1159-0a97-6620-bd082b6ebc3b',
     username: 'Rachel',
   },
-  {
-    name: 'Saul Munn',
-    title: 'Strategy & Ops',
-    avatarUrl:
-      'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/afc2bd64-9df3-4706-b5d8-752c5681283e/bcd39763-0107-14de-68ca-a79b0bf0f54a',
-    username: 'saulmunn',
-  },
 ]
 
 export default function AboutPage() {
