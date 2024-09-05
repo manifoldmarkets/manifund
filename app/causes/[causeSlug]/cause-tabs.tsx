@@ -119,7 +119,7 @@ export function CauseTabs(props: {
       tabs.push({
         name: 'Participants',
         id: 'participants',
-        count: 0,
+        count: profiles.length,
         display: <Donors donors={profiles} />,
       })
     }
