@@ -36,7 +36,7 @@ const DESCRIPTION_OUTLINE = `
 </br>
 <h3>What are the most likely causes and outcomes if this project fails?</h3>
 </br>
-<h3>What other funding are you or your project getting?</h3>
+<h3>How much money have you raised in the last 12 months, and from where?</h3>
 </br>
 `
 const DESCRIPTION_KEY = 'ProjectDescription'
