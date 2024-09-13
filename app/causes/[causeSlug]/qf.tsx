@@ -10,6 +10,7 @@ import { Project } from '@/db/project'
 import { TxnAndProfiles } from '@/db/txn'
 import { keyBy, sum } from 'lodash'
 import Link from 'next/link'
+import { QuadraticMatchDonateButton } from '@/app/causes/[causeSlug]/qf-donate'
 
 // A single donation or offer, used for calculating quadratic funding match
 type Vote = {
