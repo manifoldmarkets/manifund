@@ -61,9 +61,9 @@ export function DepositButton(props: {
                 display: <DonateTab userId={userId} setOpen={setOpen} />,
               },
               {
-                name: 'Transfer mana',
-                id: 'mana',
-                display: <ManaTab />,
+                name: 'Wire, crypto, DAF',
+                id: 'wire',
+                display: <WireTab />,
               },
             ]}
             currentTabId={currentTabId}
@@ -71,6 +71,45 @@ export function DepositButton(props: {
         )}
       </Modal>
     </>
+  )
+}
+
+function WireTab() {
+  return (
+    <div className="flex flex-col gap-4">
+      <h3 className="text-base font-semibold leading-6 text-gray-900">
+        Large transfers
+      </h3>
+      <p className="text-sm text-gray-500">
+        For large donations ($10k+), we accept transfers via wire/ACH, crypto,
+        or a donor advised fund.
+      </p>
+      <ol className="list-inside list-decimal space-y-2 text-sm text-gray-600">
+        <li>
+          Fill out{' '}
+          <SiteLink
+            href="https://airtable.com/appOfJtzt8yUTBFcD/pagKKSjAXCUkwUikk/form"
+            className="text-blue-600 hover:underline"
+          >
+            this form
+          </SiteLink>{' '}
+          to register your donation
+        </li>
+        <li>
+          Follow payment instructions on{' '}
+          <SiteLink
+            href="https://manifoldmarkets.notion.site/Manifund-Deposit-via-DAF-ACH-wire-or-crypto-02aee92e884a47e49efd4d93242e2080"
+            className="text-blue-600 hover:underline"
+          >
+            this page
+          </SiteLink>
+        </li>
+        <li>
+          We&apos;ll update your Manifund balance upon receiving your donation
+          (typically 5-10 days)
+        </li>
+      </ol>
+    </div>
   )
 }
 
@@ -86,6 +125,9 @@ function DonateTab(props: {
   let errorMessage = null
   if (!amount || amount < 10) {
     errorMessage = 'Minimum deposit is $10.'
+  }
+  if (amount && amount > 50000) {
+    errorMessage = 'Credit card donations are capped at $50,000.'
   }
 
   return (
