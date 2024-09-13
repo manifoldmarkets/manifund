@@ -77,19 +77,57 @@ export default function QuadraticMatch(props: {
     voteMap[projectId][donorId] = (voteMap[projectId][donorId] || 0) + amount
   })
 
+  // Calculate T, table representing coordination between very pair of voters
+  // T[i][j] is the sum over each project p, of sqrt(voteMap[p][i] * voteMap[p][j])
+  const T: { [key: string]: { [key: string]: number } } = {}
+  Object.entries(voteMap).forEach(([projectId, votes]) => {
+    Object.entries(votes).forEach(([i, amountA]) => {
+      Object.entries(votes).forEach(([j, amountB]) => {
+        if (!T[i]) T[i] = {}
+        T[i][j] = (T[i][j] || 0) + Math.sqrt(amountA * amountB)
+      })
+    })
+  })
+
+  // Weighted for pairwise quadratic funding: https://ethresear.ch/t/pairwise-coordination-subsidies-a-new-quadratic-funding-design/5553
+  const M = 7
+  function pairwiseMatch(votes: Record<string, number>) {
+    let match = 0
+    // Iterate over all pairs of voters
+    Object.entries(votes).forEach(([i, amountA]) => {
+      Object.entries(votes).forEach(([j, amountB]) => {
+        const kIJ = M / (M + T[i][j])
+        match += kIJ * Math.sqrt(amountA * amountB)
+      })
+    })
+    return match
+  }
+
   // Calculate quadratic match: square of sum of square roots of vote amounts
   function rawMatch(votes: Record<string, number>) {
-    const sqrtVotes = sum(Object.values(votes).map((v) => Math.sqrt(v)))
-    return Math.round(sqrtVotes * sqrtVotes)
+    const exponent = 2
+    const sqrtVotes = sum(Object.values(votes).map((v) => v ** (1 / exponent)))
+    return Math.round(sqrtVotes ** exponent)
+  }
+  function e15rawMatch(votes: Record<string, number>) {
+    const exponent = 1.5
+    const sqrtVotes = sum(Object.values(votes).map((v) => v ** (1 / exponent)))
+    return Math.round(sqrtVotes ** exponent)
   }
   function total(votes: Record<string, number>) {
     return sum(Object.values(votes))
   }
   const totalRawMatch = sum(Object.values(voteMap).map(rawMatch))
+  const totalE15Match = sum(Object.values(voteMap).map(e15rawMatch))
   const POOL_SIZE = 100_000
   function match(votes: Record<string, number>) {
     return (rawMatch(votes) / totalRawMatch) * POOL_SIZE
   }
+  function e15Match(votes: Record<string, number>) {
+    return (e15rawMatch(votes) / totalE15Match) * POOL_SIZE
+  }
+
+  console.log('subsidy ratio', totalRawMatch / POOL_SIZE)
 
   return (
     <div>
@@ -106,7 +144,10 @@ export default function QuadraticMatch(props: {
           <TableHeader>Project</TableHeader>
           <TableHeader># Donors</TableHeader>
           <TableHeader>Donated</TableHeader>
-          <TableHeader>Matched</TableHeader>
+          <TableHeader>Quadratic</TableHeader>
+          <TableHeader>1.5</TableHeader>
+          <TableHeader>Pairwise</TableHeader>
+          {/* <TableHeader>p - m</TableHeader> */}
           <TableHeader>Total</TableHeader>
         </TableRow>
         <TableBody>
@@ -120,12 +161,21 @@ export default function QuadraticMatch(props: {
               {sum(votes.map((vote) => vote.amount)).toFixed(0)}
             </TableCell>
             <TableCell>{POOL_SIZE}</TableCell>
+            <TableCell>{POOL_SIZE}</TableCell>
+            <TableCell>
+              {sum(
+                Object.entries(voteMap).map(([projectId, votes]) =>
+                  pairwiseMatch(votes)
+                )
+              ).toFixed(0)}
+            </TableCell>
+            {/* <TableCell>TODO</TableCell> */}
             <TableCell>
               {(POOL_SIZE + sum(votes.map((vote) => vote.amount))).toFixed(0)}
             </TableCell>
           </TableRow>
 
-          {/* Sort table by total donated, thencreate one row per project */}
+          {/* Sort table by total donated, then create one row per project */}
           {Object.entries(voteMap)
             .sort(
               ([idA, votesA], [idB, votesB]) =>
@@ -138,12 +188,17 @@ export default function QuadraticMatch(props: {
                     href={`/projects/${projectMap[projectId].slug}`}
                     className="hover:underline"
                   >
-                    {projectMap[projectId].title.slice(0, 60)}
+                    {projectMap[projectId].title.slice(0, 40)}
                   </Link>
                 </TableCell>
                 <TableCell>{Object.keys(votes).length}</TableCell>
                 <TableCell>{total(votes).toFixed(0)}</TableCell>
                 <TableCell>{match(votes).toFixed(0)}</TableCell>
+                <TableCell>{e15Match(votes).toFixed(0)}</TableCell>
+                <TableCell>{pairwiseMatch(votes).toFixed(0)}</TableCell>
+                {/* <TableCell>
+                  {(pairwiseMatch(votes) - match(votes)).toFixed(0)}
+                </TableCell> */}
                 <TableCell>
                   {(total(votes) + match(votes)).toFixed(0)}
                 </TableCell>
