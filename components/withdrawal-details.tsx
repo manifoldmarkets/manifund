@@ -35,7 +35,7 @@ export function WithdrawalDetails(props: {
         </p>
         <div className="mt-5 flex w-full flex-col gap-4 sm:flex-row">
           <button
-            className="text-left"
+            className="h-full flex-1 text-left"
             onClick={async () => {
               if (!loginUrl) {
                 const response = await fetch('/api/create-connect-account', {
@@ -56,8 +56,8 @@ export function WithdrawalDetails(props: {
           >
             <FeatureCard
               icon={<div className="mx-1 text-xl">🇺🇸</div>}
-              title="Small & domestic"
-              description="Set up your Stripe connect account to enable automatic payouts. Funds will be sent to your bank account within 2 business days. Only available in the United States and for withdrawals up to $10,000."
+              title="Small & US"
+              description="Set up your Stripe connect account to withdraw funds on demand. Funds will be sent to your bank account within 2 business days. (Only available in the United States, for withdrawals up to $10,000.)"
               url={loginUrl}
               linkText={
                 accountStatus === 'nonexistent'
@@ -66,13 +66,15 @@ export function WithdrawalDetails(props: {
               }
             />
           </button>
-          <FeatureCard
-            icon={<div className="mx-1 text-xl">🌍</div>}
-            title="Large or international"
-            description="Fill out our manual withdraw form with your PayPal or Bank account details and we will manually send you money within 10 business days."
-            url="https://airtable.com/shrI3XFPivduhbnGa"
-            linkText={'Go to form'}
-          />
+          <div className="h-full flex-1">
+            <FeatureCard
+              icon={<div className="mx-1 text-xl">🌍</div>}
+              title="Large or international"
+              description="Fill out our manual withdraw form with your bank account details and we will manually send you money within 10 business days."
+              url="https://airtable.com/shrI3XFPivduhbnGa"
+              linkText={'Go to form'}
+            />
+          </div>
         </div>
       </>
     )
@@ -162,7 +164,7 @@ export function WithdrawalDetails(props: {
               </dd>
             </Row>
           </dl>
-          <div className="mt-6 border-t border-gray-900/5 px-3 pt-5 pb-2">
+          <div className="mt-6 border-t border-gray-900/5 px-3 pb-2 pt-5">
             <a
               href={`${loginUrl}#settings`}
               className="text-sm font-semibold leading-6 text-gray-900"
