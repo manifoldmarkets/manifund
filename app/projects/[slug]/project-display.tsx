@@ -248,9 +248,8 @@ export function ProjectDisplay(props: {
                 signedIn={!!userProfile}
               />
             )}
-          {/* During EA Community Choice, permit donations to projects you own */}
-          {/* {userProfile?.id !== project.creator && */}
-          {project.type === 'grant' &&
+          {userProfile?.id !== project.creator &&
+            project.type === 'grant' &&
             pendingProjectTransfers.length === 0 &&
             (project.stage === 'proposal' || project.stage === 'active') && (
               <>
