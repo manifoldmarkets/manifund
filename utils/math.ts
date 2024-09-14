@@ -268,13 +268,15 @@ export function getTxnCharityMultiplier(
     return 0
   }
   const isIncoming = txn.to_id === userId
+  const isOwnProject = txn.projects?.creator === userId
   const actuallyAccredited =
     isBefore(new Date(txn.created_at), IGNORE_ACCREDITATION_DATE) && accredited
   if (txn.type === 'cash to charity transfer' || txn.type === 'mana deposit') {
     return 1
   }
   if (isIncoming && txn.from_id === userId) {
-    return 0
+    // Donations to own project should decrement charity balance
+    return isOwnProject ? -1 : 0
   }
   if (txn.type === 'project donation') {
     return isIncoming ? 0 : -1
@@ -286,7 +288,6 @@ export function getTxnCharityMultiplier(
   ) {
     return isIncoming ? 1 : -1
   }
-  const isOwnProject = txn.projects?.creator === userId
   if (txn.type === 'user to amm trade' || txn.type === 'user to user trade') {
     if (isOwnProject || actuallyAccredited) {
       return 0
@@ -318,18 +319,19 @@ export function getTxnCashMultiplier(
     return 0
   }
   const isIncoming = txn.to_id === userId
+  const isOwnProject = txn.projects?.creator === userId
   const actuallyAccredited =
     isBefore(new Date(txn.created_at), new Date('2023-11-02')) && accredited
   if (txn.type === 'cash to charity transfer') {
     return -1
   }
   if (isIncoming && txn.from_id === userId) {
-    return 0
+    // Donations to own project should increment cash balance
+    return isOwnProject ? 1 : 0
   }
   if (txn.type === 'project donation') {
     return isIncoming ? 1 : 0
   }
-  const isOwnProject = txn.projects?.creator === userId
   if (txn.type === 'user to amm trade' || txn.type === 'user to user trade') {
     if (isOwnProject || actuallyAccredited) {
       return isIncoming ? 1 : -1
