@@ -34,7 +34,7 @@ export function FeedTabs(props: {
     userId,
   } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
-  const currentTabId = searchParams.get('tab')
+  const currentTabId = searchParams.get('tab') ?? 'projects'
   const [page, setPage] = useState(1)
 
   const ProjectsTab = (
@@ -128,7 +128,7 @@ export function FeedTabs(props: {
         ]}
         currentTabId={currentTabId}
       />
-      {PaginationWrapper}
+      {currentTabId !== 'projects' && PaginationWrapper}
     </div>
   )
 }
