@@ -132,7 +132,8 @@ export function Comment(props: {
             {showExpandButton && (
               <div
                 className={clsx(
-                  'absolute bottom-0 left-0 z-10 flex h-32 w-full flex-col justify-end',
+                  'absolute bottom-0 left-0 flex w-full flex-col justify-end',
+                  expanded ? 'h-2' : 'h-32',
                   !expanded
                     ? highlighted
                       ? 'shadow-[inset_0px_-100px_50px_-50px_rgba(255,237,213,0.9)]'
