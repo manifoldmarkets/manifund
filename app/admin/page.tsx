@@ -179,7 +179,9 @@ export default async function Admin({
                   accredited={user.profile?.accreditation_status as boolean}
                 />
               </TableCell>
-              <TableCell>{balances.get(user.id ?? '') ?? 0}</TableCell>
+              <TableCell>
+                {Number((balances.get(user.id ?? '') ?? 0).toFixed(2))}
+              </TableCell>
               <TableCell>
                 <PayUser userId={user.id ?? ''} />
               </TableCell>
