@@ -13,6 +13,7 @@ import {
   GlobeAltIcon,
   ChevronRightIcon,
   ChevronDownIcon,
+  NewspaperIcon,
 } from '@heroicons/react/24/outline'
 import { SiteLink } from '@/components/site-link'
 
@@ -90,6 +91,8 @@ function findIcon(name: string, isCurrentPage: boolean) {
       return <UserGroupIcon className={styling} />
     case 'Login':
       return <UserCircleIcon className={styling} />
+    case 'Newsletter':
+      return <NewspaperIcon className={styling} />
     default:
       return null
   }
