@@ -51,7 +51,7 @@ export default async function handler(req: NextRequest) {
     fromId,
     profile?.accreditation_status
   )
-  if (userSpendableFunds < amount) {
+  if (userSpendableFunds < amount || amount < 0) {
     console.error('not enough funds')
     return NextResponse.error()
   }
