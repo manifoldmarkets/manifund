@@ -65,7 +65,7 @@ export default function UsersGrid({ users }: { users: User[] }) {
     <div className="p-4">
       <h1 className="mb-4 text-2xl font-bold">Manifund balance sheet</h1>
       <div className="text-right text-sm text-gray-500">
-        Last updated: 2024-09-22
+        Last updated: 2024-11-19
       </div>
       <BalanceSheet />
       <h1 className="my-4 text-2xl font-bold">User balances</h1>
@@ -92,12 +92,12 @@ export default function UsersGrid({ users }: { users: User[] }) {
 export function BalanceSheet() {
   const $ = {
     // Stripe Opal + Payments balance
-    stripe: 797754 + 53732,
-    mercury: 343559,
-    coinbase: 501849,
-    users: -1823540,
-    // Pending: -withdrawals on Airtable, +Austin investment, +Manifest
-    pending: -15165 + 70000 + 8000,
+    stripe: 896281 + 42106,
+    mercury: 234361,
+    coinbase: 555587,
+    users: -1860931,
+    // Pending: -withdrawals on Airtable, +Austin SPV, +Manifest, +Jesse?, +SFF, +Eric deposit
+    pending: -1600 + 20000 + 8000 + 60000 + 30000 + 25000,
     // Donations for Manifold for Charity
     // 500k initial - donated - David MCF - AmmonLam
     charity: 500000 - 315832 - 186747,
