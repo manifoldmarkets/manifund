@@ -28,11 +28,34 @@ const APPROACH_FEATURES = [
     icon: EyeIcon,
     description: (
       <p>
-        Everything about Manifund is public: our grant proposals, evals, and
-        finances. Even our{' '}
+        Everything about Manifund is public: our{' '}
+        <SiteLink
+          href="/"
+          followsLinkClass
+          className="text-orange-500 underline decoration-orange-500 decoration-dotted underline-offset-2"
+        >
+          grant proposals
+        </SiteLink>
+        ,{' '}
+        <SiteLink
+          href="/?tab=comments"
+          followsLinkClass
+          className="text-orange-500 underline decoration-orange-500 decoration-dotted underline-offset-2"
+        >
+          evals
+        </SiteLink>
+        , and{' '}
+        <SiteLink
+          href="/finances"
+          followsLinkClass
+          className="text-orange-500 underline decoration-orange-500 decoration-dotted underline-offset-2"
+        >
+          finances
+        </SiteLink>
+        . Even our{' '}
         <SiteLink
           followsLinkClass
-          className="font-semibold"
+          className="text-orange-500 underline decoration-orange-500 decoration-dotted underline-offset-2"
           href="https://github.com/manifoldmarkets/manifund"
         >
           source code
@@ -40,7 +63,7 @@ const APPROACH_FEATURES = [
         and{' '}
         <SiteLink
           followsLinkClass
-          className="font-semibold"
+          className="text-orange-500 underline decoration-orange-500 decoration-dotted underline-offset-2"
           href="https://manifoldmarkets.notion.site/c99d2ce9dfd3419090818122c0b4d540?v=d96610d8da914f46b6c42d2d2a4395d5&pvs=4"
         >
           meeting notes
@@ -118,7 +141,7 @@ export default function AboutPage() {
     <>
       <Col className="w-full gap-10 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-5 sm:p-10">
         <h1 className="text-center font-semibold text-white">
-          We write code and run programs to fund impactful projects.
+          Our open platform helps charity founders find aligned donors.
         </h1>
         <h2 className="text-center text-4xl font-bold text-white">
           Our approach is...
