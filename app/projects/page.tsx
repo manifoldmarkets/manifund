@@ -157,7 +157,7 @@ function LandingSection() {
       <Row className="flex-2">
         <div>
           <p className="text-center text-3xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
-            markets x grants
+            the market for grants
           </p>
           {/* <p className="text-right text-3xl font-medium text-white shadow-orange-500 text-shadow-lg sm:text-4xl">
             meet Markets.
