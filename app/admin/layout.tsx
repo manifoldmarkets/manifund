@@ -38,6 +38,8 @@ async function ProjectCount() {
   const { count } = await supabase
     .from('projects')
     .select('*', { count: 'exact', head: true })
+    .neq('stage', 'hidden')
+    .neq('stage', 'draft')
 
   return (
     <span className="ml-2 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
