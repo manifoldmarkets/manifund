@@ -41,7 +41,7 @@ export function FeedTabs(props: {
   const ProjectsTab = (
     <Col className="gap-3">
       <p className="text-sm text-gray-600">
-        Including projects in all stages and from all rounds.
+        Including {projects.length} projects in all stages and from all rounds.
       </p>
       <ProjectsDisplay
         projects={projects}
@@ -123,7 +123,6 @@ export function FeedTabs(props: {
             name: 'All projects',
             id: 'projects',
             display: ProjectsTab,
-            count: projects.length,
           },
           {
             name: 'Comments',
