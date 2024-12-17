@@ -22,10 +22,13 @@ export default async function Projects(props: {
 
   return (
     <Col className="gap-16 px-3 py-5 sm:px-6">
-      {user === null && <LandingSection />}
-
-      <CausesSection />
-      {/* Or use <CausesWithFeatured /> to include active rounds */}
+      {user === null && (
+        <>
+          <LandingSection />
+          <CausesSection />
+          {/* Or use <CausesWithFeatured /> to include active rounds */}
+        </>
+      )}
 
       {/* Use nested suspense to load the full feed after the fast feed */}
       <Suspense
