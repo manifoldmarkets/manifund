@@ -89,8 +89,11 @@ export function FeedTabs(props: {
       {PaginationWrapper}
       <Col className="gap-8">
         {[
-          ...recentDonations.map((txn) => ({ type: 'donation', item: txn })),
-          ...recentBids.map((bid) => ({ type: 'bid', item: bid })),
+          ...recentDonations.map((txn) => ({
+            type: 'donation' as const,
+            item: txn,
+          })),
+          ...recentBids.map((bid) => ({ type: 'bid' as const, item: bid })),
         ]
           .sort((a, b) => {
             return (
@@ -150,7 +153,7 @@ function DonationItem(props: {
   return (
     <div className="grid w-full grid-cols-3 items-center gap-3 rounded p-3 text-sm">
       <Row className="justify-start">
-        <UserAvatarAndBadge profile={item.profiles} />
+        {item.profiles && <UserAvatarAndBadge profile={item.profiles} />}
       </Row>
       <Row className="items-center justify-end">
         <div className={type === 'bid' ? 'text-gray-500' : ''}>
