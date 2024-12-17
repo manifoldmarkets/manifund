@@ -60,7 +60,46 @@ export default async function UsersPage() {
         dense
         className="[--gutter:theme(spacing.0)] sm:[--gutter:theme(spacing.0)]"
       >
-        {/* ... rest of the users table JSX ... */}
+        <TableHead>
+          <TableRow>
+            <TableHeader className="p-2">DB</TableHeader>
+            <TableHeader className="p-2">Email</TableHeader>
+            <TableHeader className="p-2">Username</TableHeader>
+            <TableHeader className="p-2">Accredited</TableHeader>
+            <TableHeader className="p-2">Balance</TableHeader>
+            <TableHeader className="p-2">Pay user</TableHeader>
+          </TableRow>
+        </TableHead>
+        <TableBody className="p-2 text-sm">
+          {userAndProfiles.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell className="pr-2">
+                <Link
+                  href={`https://supabase.com/dashboard/project/fkousziwzbnkdkldjper/editor/27095?filter=id%3Aeq%3A${user.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  <CircleStackIcon className="inline h-3 w-3" />
+                </Link>
+              </TableCell>
+              <TableCell>{user.email}</TableCell>
+              <TableCell>{user.profile?.username}</TableCell>
+              <TableCell>
+                <VerifyInvestor
+                  userId={user.id ?? ''}
+                  accredited={user.profile?.accreditation_status as boolean}
+                />
+              </TableCell>
+              <TableCell>
+                {Number((balances.get(user.id ?? '') ?? 0).toFixed(2))}
+              </TableCell>
+              <TableCell>
+                <PayUser userId={user.id ?? ''} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
       </Table>
     </>
   )

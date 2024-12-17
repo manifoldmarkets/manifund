@@ -15,8 +15,8 @@ export default async function AdminLayout({
   }
 
   const tabs = [
-    { name: 'Users', path: '/admin' },
     { name: 'Pending Approval', path: '/admin/approvals' },
+    { name: 'Users', path: '/admin/users' },
     { name: 'Transactions', path: '/admin/transactions' },
     { name: 'Projects', path: '/admin/projects' },
     { name: 'Tools', path: '/admin/tools' },
