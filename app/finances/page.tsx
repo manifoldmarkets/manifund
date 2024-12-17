@@ -1,5 +1,5 @@
 import { createAdminClient } from '@/pages/api/_db'
-import { userBalances } from '../admin/page'
+import { userBalances } from '../admin/utils'
 import UsersGrid from './users-grid'
 
 export default async function FinancesPage() {
