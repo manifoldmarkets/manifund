@@ -20,7 +20,6 @@ export default async function UserProfilePage(props: {
   if (!profile) {
     return <NotFound />
   } else if (profile.type === 'fund') {
-    /* @ts-expect-error Server Component */
     return <FundPage params={{ fundSlug: usernameSlug }} />
   } else if (profile.type !== 'individual') {
     return <div>Profile type not supported</div>

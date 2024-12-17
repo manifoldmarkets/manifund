@@ -57,19 +57,16 @@ export default async function RootLayout({
         >
           <Toaster />
           <Suspense fallback={null}>
-            {/* @ts-expect-error Server Component */}
             <Sidebar />
           </Suspense>
           <SupabaseListener serverAccessToken={session?.access_token} />
           <main className="flex flex-col lg:col-span-8">
             <Suspense fallback={null}>
-              {/* @ts-expect-error Server Component */}
-              <CompleteProfileBanner user={session?.user} />
+              <CompleteProfileBanner />
             </Suspense>
             {children}
           </main>
           <Suspense fallback={null}>
-            {/* @ts-expect-error Server Component */}
             <BottomNavBar />
           </Suspense>
         </SupabaseProvider>

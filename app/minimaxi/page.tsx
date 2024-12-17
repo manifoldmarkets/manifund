@@ -18,9 +18,7 @@ export default function MiniMaxi() {
 
       <ReactCompareSlider
         onlyHandleDraggable
-        // @ts-expect-error Server Component
         itemOne={<Minifund />}
-        // @ts-expect-error Server Component
         itemTwo={<Maxifund />}
       />
     </div>
