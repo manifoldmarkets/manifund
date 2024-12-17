@@ -1,6 +1,5 @@
 'use client'
 import { Comment } from '@/components/comment'
-import { Donation } from '@/components/donations-history'
 import { Col } from '@/components/layout/col'
 import { Tabs } from '@/components/tabs'
 import { FullTxn } from '@/db/txn'
@@ -14,8 +13,10 @@ import { FullProject } from '@/db/project'
 import { SimpleCause } from '@/db/cause'
 import { Tag } from '@/components/tags'
 import { Card } from '@/components/layout/card'
-import { Bid } from './[slug]/bids'
 import { FullBid } from '@/db/bid'
+import { Row } from '@/components/layout/row'
+import { UserAvatarAndBadge } from '@/components/user-link'
+import { formatDistanceToNow } from 'date-fns'
 
 export function FeedTabs(props: {
   recentComments: FullComment[]
@@ -80,26 +81,40 @@ export function FeedTabs(props: {
       </Col>
     </>
   )
+
+  // Aggregate donations and bids into a single tab for easier reading
+  // Note: sorting/pagination is a bit screwed up (page 2 items don't strictly follow page 1)
   const DonationsTab = (
     <>
       {PaginationWrapper}
       <Col className="gap-8">
-        {recentDonations.map((txn) => {
-          return <FullDonation txn={txn} key={txn.id} />
-        })}
+        {[
+          ...recentDonations.map((txn) => ({ type: 'donation', item: txn })),
+          ...recentBids.map((bid) => ({ type: 'bid', item: bid })),
+        ]
+          .sort((a, b) => {
+            return (
+              new Date(b.item.created_at).getTime() -
+              new Date(a.item.created_at).getTime()
+            )
+          })
+          .map(({ type, item }) => (
+            <Col key={`${type}-${item.id}`}>
+              <Link href={`/projects/${item.projects?.slug}`} className="w-fit">
+                <Tag
+                  text={item.projects?.title ?? ''}
+                  className="hover:bg-orange-200"
+                />
+              </Link>
+              <Card className="rounded-tl-sm !p-1">
+                <DonationItem type={type} item={item} />
+              </Card>
+            </Col>
+          ))}
       </Col>
     </>
   )
-  const OffersTab = (
-    <>
-      {PaginationWrapper}
-      <Col className="gap-8">
-        {recentBids.map((bid) => {
-          return <FullOffer bid={bid} key={bid.id} />
-        })}
-      </Col>
-    </>
-  )
+
   return (
     <div>
       <Tabs
@@ -120,11 +135,6 @@ export function FeedTabs(props: {
             id: 'donations',
             display: DonationsTab,
           },
-          {
-            name: 'Offers',
-            id: 'offers',
-            display: OffersTab,
-          },
         ]}
         currentTabId={currentTabId}
       />
@@ -133,44 +143,30 @@ export function FeedTabs(props: {
   )
 }
 
-function FullDonation(props: { txn: FullTxn }) {
-  const { txn } = props
-  // Ignore donations not associated with projects
-  if (!txn.projects || !txn.profiles || txn.token !== 'USD') {
-    return null
-  }
+function DonationItem(props: {
+  type: 'donation' | 'bid'
+  item: FullTxn | FullBid
+}) {
+  const { type, item } = props
   return (
-    <Col>
-      <Link
-        href={`/projects/${txn.projects.slug}?tab=${
-          txn.projects.type === 'grant' ? 'donations' : 'shareholders'
-        }`}
-        className="w-fit"
-      >
-        <Tag text={txn.projects.title} className="hover:bg-orange-200" />
-      </Link>
-      <Card className="rounded-tl-sm !p-1">
-        <Donation txn={txn} key={txn.id} />
-      </Card>
-    </Col>
-  )
-}
-
-function FullOffer(props: { bid: FullBid }) {
-  const { bid } = props
-  return (
-    <Col>
-      <Link
-        href={`/projects/${bid.projects.slug}?tab=${
-          bid.projects.type === 'grant' ? 'donations' : 'shareholders'
-        }`}
-        className="w-fit"
-      >
-        <Tag text={bid.projects.title} className="hover:bg-orange-200" />
-      </Link>
-      <Card className="rounded-tl-sm !p-1">
-        <Bid bid={bid} showValuation={false} />
-      </Card>
-    </Col>
+    <div className="grid w-full grid-cols-3 items-center gap-3 rounded p-3 text-sm">
+      <Row className="justify-start">
+        <UserAvatarAndBadge profile={item.profiles} />
+      </Row>
+      <Row className="items-center justify-end">
+        <div className={type === 'bid' ? 'text-gray-500' : ''}>
+          <span title={type === 'bid' ? 'pending donation' : undefined}>
+            ${Math.round(item.amount)}
+          </span>
+        </div>
+      </Row>
+      <Row className="items-center justify-end gap-2">
+        <span className="hidden text-right text-gray-500 sm:block">
+          {formatDistanceToNow(new Date(item.created_at), {
+            addSuffix: true,
+          })}
+        </span>
+      </Row>
+    </div>
   )
 }
