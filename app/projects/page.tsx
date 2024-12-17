@@ -64,9 +64,7 @@ async function AsyncFeedTabs({
   const tab = searchParams?.tab as string
   // Hack for faster loading: don't load projects on other tabs
   // Ideally, we'd structure NextJS routing to only load the needed data`
-  const limit = ['comments', 'donations', 'offers'].includes(tab)
-    ? 0
-    : projectLimit
+  const limit = tab && tab !== 'projects' ? 0 : projectLimit
   const start = (page - 1) * PAGE_SIZE
 
   const supabase = createServerClient()
