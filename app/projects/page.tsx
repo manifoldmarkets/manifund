@@ -29,7 +29,11 @@ export default async function Projects(props: {
 
       {/* Wrap feed tabs in Suspense to allow streaming */}
       <Suspense fallback={<FeedTabsSkeleton />}>
-        <AsyncFeedTabs searchParams={props.searchParams} userId={user?.id} />
+        <AsyncFeedTabs
+          searchParams={props.searchParams}
+          userId={user?.id}
+          projectLimit={50}
+        />
       </Suspense>
     </Col>
   )
@@ -39,9 +43,11 @@ export default async function Projects(props: {
 async function AsyncFeedTabs({
   searchParams,
   userId,
+  projectLimit,
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
   userId?: string
+  projectLimit?: number
 }) {
   const PAGE_SIZE = 20
   const page = parseInt(searchParams?.p as string) || 1
@@ -50,7 +56,7 @@ async function AsyncFeedTabs({
   const supabase = createServerClient()
   const [projects, recentComments, recentDonations, recentBids, causesList] =
     await Promise.all([
-      listProjects(supabase),
+      listProjects(supabase, projectLimit),
       getRecentFullComments(supabase, PAGE_SIZE, start),
       getRecentFullTxns(supabase, PAGE_SIZE, start),
       getRecentFullBids(supabase, PAGE_SIZE, start),
