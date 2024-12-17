@@ -176,7 +176,6 @@ export default function AboutPage() {
         </Link>
       </Col>
       <Suspense fallback={<Loading />}>
-        {/* @ts-expect-error Server Components */}
         <StatsServerComponent />
       </Suspense>
       <Col className="w-full gap-10 px-5 py-5 sm:px-10">
