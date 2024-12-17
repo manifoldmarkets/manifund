@@ -2,6 +2,58 @@ import { getUser, isAdmin } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import NoAccess from '../no-access'
 import Link from 'next/link'
+import { Suspense } from 'react'
+import { createAdminClient } from '@/pages/api/_db'
+
+// Separate components for each count to allow parallel loading
+async function UserCount() {
+  const supabase = createAdminClient()
+  const { count } = await supabase
+    .from('users')
+    .select('*', { count: 'exact', head: true })
+
+  return (
+    <span className="ml-2 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+      {count}
+    </span>
+  )
+}
+
+async function TransactionCount() {
+  const supabase = createAdminClient()
+  const { count } = await supabase
+    .from('txns')
+    .select('*', { count: 'exact', head: true })
+    .eq('token', 'USD')
+
+  return (
+    <span className="ml-2 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+      {count}
+    </span>
+  )
+}
+
+async function ProjectCount() {
+  const supabase = createAdminClient()
+  const { count } = await supabase
+    .from('projects')
+    .select('*', { count: 'exact', head: true })
+
+  return (
+    <span className="ml-2 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+      {count}
+    </span>
+  )
+}
+
+// Loading fallback for counts
+function CountLoading() {
+  return (
+    <span className="ml-2 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+      ...
+    </span>
+  )
+}
 
 export default async function AdminLayout({
   children,
@@ -15,10 +67,37 @@ export default async function AdminLayout({
   }
 
   const tabs = [
-    { name: 'Pending Approval', path: '/admin/approvals' },
-    { name: 'Users', path: '/admin/users' },
-    { name: 'Transactions', path: '/admin/transactions' },
-    { name: 'Projects', path: '/admin/projects' },
+    {
+      name: 'Pending Approval',
+      path: '/admin/approvals',
+    },
+    {
+      name: 'Users',
+      path: '/admin/users',
+      count: (
+        <Suspense fallback={<CountLoading />}>
+          <UserCount />
+        </Suspense>
+      ),
+    },
+    {
+      name: 'Transactions',
+      path: '/admin/transactions',
+      count: (
+        <Suspense fallback={<CountLoading />}>
+          <TransactionCount />
+        </Suspense>
+      ),
+    },
+    {
+      name: 'Projects',
+      path: '/admin/projects',
+      count: (
+        <Suspense fallback={<CountLoading />}>
+          <ProjectCount />
+        </Suspense>
+      ),
+    },
     { name: 'Tools', path: '/admin/tools' },
   ]
 
@@ -39,6 +118,7 @@ export default async function AdminLayout({
               className="border-b-2 border-transparent px-3 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
             >
               {tab.name}
+              {tab.count}
             </Link>
           ))}
         </div>
