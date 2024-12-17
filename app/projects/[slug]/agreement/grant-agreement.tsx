@@ -1,6 +1,6 @@
 'use client'
-import { ProjectAndProfile } from '@/db/project'
-import { GrantAgreement } from '@/db/grant_agreement'
+import { type ProjectAndProfile } from '@/db/project'
+import { type GrantAgreement } from '@/db/grant_agreement'
 import { Col } from '@/components/layout/col'
 import { format } from 'date-fns'
 import React from 'react'
