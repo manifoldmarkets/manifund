@@ -16,18 +16,19 @@ export default async function ApprovalsPage() {
     .order('created_at', { ascending: false })
     .throwOnError()
 
-  const projectsToApprove = projects?.filter(
-    (project) =>
-      project.stage === 'proposal' &&
-      project.approved === null &&
-      project.bids.reduce(
-        (acc, bid) =>
-          bid.type === 'assurance buy' || bid.type === 'donate'
-            ? acc + bid.amount
-            : acc,
-        0
-      ) >= project.min_funding
-  )
+  const projectsToApprove =
+    projects?.filter(
+      (project) =>
+        project.stage === 'proposal' &&
+        project.approved === null &&
+        project.bids.reduce(
+          (acc, bid) =>
+            bid.type === 'assurance buy' || bid.type === 'donate'
+              ? acc + bid.amount
+              : acc,
+          0
+        ) >= project.min_funding
+    ) ?? []
 
   return (
     <Table>
@@ -42,8 +43,8 @@ export default async function ApprovalsPage() {
         {projectsToApprove.map((project) => (
           <tr key={project.id}>
             <td>
-              <Link href={`/${project.profiles.username}`}>
-                {project.profiles.full_name}
+              <Link href={`/${project.profiles?.username}`}>
+                {project.profiles?.full_name}
               </Link>
             </td>
             <td>
