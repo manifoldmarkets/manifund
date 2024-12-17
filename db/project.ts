@@ -65,7 +65,7 @@ export async function getProjectsByUser(
   return data as FullProject[]
 }
 
-export async function listProjects(supabase: SupabaseClient) {
+export async function listProjects(supabase: SupabaseClient, limit?: number) {
   const { data } = await supabase
     .from('projects')
     .select(
@@ -74,6 +74,7 @@ export async function listProjects(supabase: SupabaseClient) {
     .neq('stage', 'hidden')
     .neq('stage', 'draft')
     .order('created_at', { ascending: false })
+    .limit(limit ?? 2000)
     .throwOnError()
   // Scary type conversion!
   return data as unknown as FullProject[]
