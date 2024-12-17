@@ -27,12 +27,22 @@ export default async function Projects(props: {
       <CausesSection />
       {/* Or use <CausesWithFeatured /> to include active rounds */}
 
-      {/* Wrap feed tabs in Suspense to allow streaming */}
-      <Suspense fallback={<FeedTabsSkeleton />}>
+      {/* Use nested suspense to load the full feed after the fast feed */}
+      <Suspense
+        fallback={
+          <Suspense fallback={<FeedTabsSkeleton />}>
+            <AsyncFeedTabs
+              searchParams={props.searchParams}
+              userId={user?.id}
+              projectLimit={20}
+            />
+          </Suspense>
+        }
+      >
         <AsyncFeedTabs
           searchParams={props.searchParams}
           userId={user?.id}
-          projectLimit={50}
+          projectLimit={2000}
         />
       </Suspense>
     </Col>
@@ -51,12 +61,18 @@ async function AsyncFeedTabs({
 }) {
   const PAGE_SIZE = 20
   const page = parseInt(searchParams?.p as string) || 1
+  const tab = searchParams?.tab as string
+  // Hack for faster loading: don't load projects on other tabs
+  // Ideally, we'd structure NextJS routing to only load the needed data`
+  const limit = ['comments', 'donations', 'offers'].includes(tab)
+    ? 0
+    : projectLimit
   const start = (page - 1) * PAGE_SIZE
 
   const supabase = createServerClient()
   const [projects, recentComments, recentDonations, recentBids, causesList] =
     await Promise.all([
-      listProjects(supabase, projectLimit),
+      listProjects(supabase, limit),
       getRecentFullComments(supabase, PAGE_SIZE, start),
       getRecentFullTxns(supabase, PAGE_SIZE, start),
       getRecentFullBids(supabase, PAGE_SIZE, start),
