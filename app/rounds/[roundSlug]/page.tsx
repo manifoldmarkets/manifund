@@ -47,7 +47,6 @@ export default async function RoundPage(props: {
       )}
       <h1 className="my-2 text-4xl font-bold">{round.title}</h1>
       <div className="mx-5 my-5">
-        {/* @ts-expect-error server component */}
         <RoundData round={round} projects={visibleProjects} />
       </div>
       <RoundTabs

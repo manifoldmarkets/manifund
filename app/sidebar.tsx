@@ -47,7 +47,6 @@ export default async function Sidebar() {
             </div>
           </Link>
           <div className="h-6" />
-          {/* @ts-expect-error Server Component */}
           {profile && <ProfileSummary profile={profile} />}
           {user === undefined && <div className="h-[56px]" />}
           <SidebarItem item={{ name: 'Home', href: '/' }} />
