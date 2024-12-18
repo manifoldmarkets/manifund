@@ -189,20 +189,6 @@ export default function AboutPage() {
             />
           )
         })}
-        <Image
-          src="/ManifundProcessHorizontal.png"
-          alt="Manifund funding process diagram"
-          className="mx-auto hidden sm:block"
-          height={1000}
-          width={1000}
-        />
-        <Image
-          src="/ManifundProcessVertical.png"
-          alt="Manifund funding process diagram"
-          className="mx-auto sm:hidden"
-          height={1000}
-          width={1000}
-        />
       </Col>
       <Col className="w-full gap-5 p-5 sm:p-10">
         <h1 className="text-center text-3xl font-bold">Our team</h1>
