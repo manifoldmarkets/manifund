@@ -64,9 +64,6 @@ export default function UsersGrid({ users }: { users: User[] }) {
   return (
     <div className="p-4">
       <h1 className="mb-4 text-2xl font-bold">Manifund balance sheet</h1>
-      <div className="text-right text-sm text-gray-500">
-        Last updated: 2024-11-19
-      </div>
       <BalanceSheet />
       <h1 className="my-4 text-2xl font-bold">User balances</h1>
       <div className="text-right text-sm text-gray-500">
@@ -90,14 +87,15 @@ export default function UsersGrid({ users }: { users: User[] }) {
 }
 
 export function BalanceSheet() {
+  const lastUpdated = '2024-12-18'
   const $ = {
     // Stripe Opal + Payments balance
-    stripe: 896281 + 42106,
-    mercury: 234361,
-    coinbase: 555587,
-    users: -1860931,
-    // Pending: -withdrawals on Airtable, +Austin SPV, +Manifest, +Jesse?, +SFF, +Eric deposit
-    pending: -1600 + 20000 + 8000 + 60000 + 30000 + 25000,
+    stripe: 747609 + 43734,
+    mercury: 143741,
+    coinbase: 840281,
+    users: -1834568,
+    // Pending: -withdrawals on Airtable, +Austin SPV, +Manifest 2024, +Anton EACC
+    pending: -1600 + 20000 + 6000 + 23976,
     // Donations for Manifold for Charity
     // 500k initial - donated - David MCF - AmmonLam
     charity: 500000 - 315832 - 186747,
@@ -121,14 +119,19 @@ export function BalanceSheet() {
   ]
   // Using a grid to display the finances
   return (
-    <DataSheetGrid
-      height={800}
-      value={financeRows}
-      columns={[
-        keyColumn('name', textColumn),
-        keyColumn('balance', floatColumn),
-      ]}
-      lockRows
-    />
+    <>
+      <div className="text-right text-sm text-gray-500">
+        Last updated: {lastUpdated}
+      </div>
+      <DataSheetGrid
+        height={800}
+        value={financeRows}
+        columns={[
+          keyColumn('name', textColumn),
+          keyColumn('balance', floatColumn),
+        ]}
+        lockRows
+      />
+    </>
   )
 }
