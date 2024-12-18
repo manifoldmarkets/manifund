@@ -14,6 +14,7 @@ import {
   Legend,
   LineChart,
   Line,
+  Tooltip,
 } from 'recharts'
 
 export function Stats(props: { txns: FullTxn[] }) {
@@ -66,41 +67,19 @@ export function Stats(props: { txns: FullTxn[] }) {
   })
   const grantSizes = Object.values(grantsToAmounts) as number[]
   const certSizes = Object.values(certsToAmounts) as number[]
-  const data = [
-    {
-      bucket: '<$5K',
-      'number of grants': grantSizes.filter((grantSize) => grantSize < 5000)
-        .length,
-      'number of certs': certSizes.filter((certSize) => certSize < 5000).length,
-    },
-    {
-      bucket: '<$25K',
-      'number of grants': grantSizes.filter(
-        (grantSize) => grantSize >= 5000 && grantSize < 25000
+  const BUCKETS = [5000, 25000, 100000, 500000]
+  const data = BUCKETS.map((threshold, i) => {
+    const prevThreshold = i > 0 ? BUCKETS[i - 1] : 0
+    return {
+      bucket: `<$${threshold >= 1000 ? threshold / 1000 + 'K' : threshold}`,
+      grants: grantSizes.filter(
+        (size) => size >= prevThreshold && size < threshold
       ).length,
-      'number of certs': certSizes.filter(
-        (certSize) => certSize >= 5000 && certSize < 25000
+      certs: certSizes.filter(
+        (size) => size >= prevThreshold && size < threshold
       ).length,
-    },
-    {
-      bucket: '<$100K',
-      'number of grants': grantSizes.filter(
-        (grantSize) => grantSize >= 25000 && grantSize < 100000
-      ).length,
-      'number of certs': certSizes.filter(
-        (certSize) => certSize >= 25000 && certSize < 100000
-      ).length,
-    },
-    {
-      bucket: '<$500K',
-      'number of grants': grantSizes.filter(
-        (grantSize) => grantSize >= 100000 && grantSize < 500000
-      ).length,
-      'number of certs': certSizes.filter(
-        (certSize) => certSize >= 100000 && certSize < 400000
-      ).length,
-    },
-  ]
+    }
+  })
 
   const monthlyData = txns
     .filter((txn) => txn.type === 'project donation')
@@ -147,16 +126,15 @@ export function Stats(props: { txns: FullTxn[] }) {
               <XAxis dataKey="bucket" className="text-xs" />
               <YAxis />
               <Legend iconType="circle" />
-              <Bar
-                dataKey="number of grants"
-                fill="#ea580c"
-                radius={[5, 5, 0, 0]}
+              <Tooltip
+                formatter={(value: number, name: string) => [
+                  `${value} ${name.replace(/s$/, 's')}`,
+                ]}
+                labelFormatter={(label) => `Projects ${label}`}
+                cursor={{ fill: 'transparent' }}
               />
-              <Bar
-                dataKey="number of certs"
-                fill="#fdba74"
-                radius={[5, 5, 0, 0]}
-              />
+              <Bar dataKey="grants" fill="#ea580c" radius={[5, 5, 0, 0]} />
+              <Bar dataKey="certs" fill="#fdba74" radius={[5, 5, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -190,6 +168,19 @@ export function Stats(props: { txns: FullTxn[] }) {
                 name="donations by month"
                 stroke="#ea580c"
                 strokeWidth={2}
+              />
+              <Tooltip
+                formatter={(value: number) => [
+                  `$${(value / 1000).toFixed(1)}K`,
+                ]}
+                labelFormatter={(month) => {
+                  const [year, monthNum] = month.split('-')
+                  const date = new Date(parseInt(year), parseInt(monthNum) - 1)
+                  return date.toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric',
+                  })
+                }}
               />
             </LineChart>
           </ResponsiveContainer>
