@@ -133,25 +133,7 @@ export function Stats(props: { txns: FullTxn[] }) {
 
       <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
         <div className="h-96 w-full lg:w-1/2">
-          <ResponsiveContainer width="100%" height="75%">
-            <BarChart width={500} height={300} data={data}>
-              <XAxis dataKey="bucket" className="text-xs" />
-              <YAxis />
-              <Legend iconType="circle" />
-              <Tooltip
-                formatter={(value: number, name: string) => [
-                  `${value} ${name.replace(/s$/, 's')}`,
-                ]}
-                labelFormatter={(label) => `Projects ${label}`}
-                cursor={{ fill: 'transparent' }}
-              />
-              <Bar dataKey="grants" fill="#ea580c" radius={[5, 5, 0, 0]} />
-              <Bar dataKey="certs" fill="#fdba74" radius={[5, 5, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        <div className="h-96 w-full lg:w-1/2">
+          <h3 className="mb-4 text-center text-gray-700">Monthly donations</h3>
           <ResponsiveContainer width="100%" height="75%">
             <LineChart data={monthlyChartData}>
               <XAxis
@@ -214,6 +196,26 @@ export function Stats(props: { txns: FullTxn[] }) {
                 }}
               />
             </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="h-96 w-full lg:w-1/2">
+          <h3 className="mb-4 text-center text-gray-700">Grant sizes</h3>
+          <ResponsiveContainer width="100%" height="75%">
+            <BarChart width={500} height={300} data={data}>
+              <XAxis dataKey="bucket" className="text-xs" />
+              <YAxis />
+              <Legend iconType="circle" />
+              <Tooltip
+                formatter={(value: number, name: string) => [
+                  `${value} ${name.replace(/s$/, 's')}`,
+                ]}
+                labelFormatter={(label) => `Projects ${label}`}
+                cursor={{ fill: 'transparent' }}
+              />
+              <Bar dataKey="grants" fill="#ea580c" radius={[5, 5, 0, 0]} />
+              <Bar dataKey="certs" fill="#fdba74" radius={[5, 5, 0, 0]} />
+            </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
