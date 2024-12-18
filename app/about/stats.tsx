@@ -83,20 +83,32 @@ export function Stats(props: { txns: FullTxn[] }) {
 
   const monthlyData = txns
     .filter((txn) => txn.type === 'project donation')
-    .reduce((acc: { [key: string]: number }, txn) => {
-      const date = new Date(txn.created_at)
-      const monthKey = `${date.getFullYear()}-${String(
-        date.getMonth() + 1
-      ).padStart(2, '0')}`
-      acc[monthKey] = (acc[monthKey] || 0) + txn.amount
-      return acc
-    }, {})
+    .reduce(
+      (
+        acc: { [key: string]: { amount: number; projects: Set<string> } },
+        txn
+      ) => {
+        const date = new Date(txn.created_at)
+        const monthKey = `${date.getFullYear()}-${String(
+          date.getMonth() + 1
+        ).padStart(2, '0')}`
+
+        if (!acc[monthKey]) {
+          acc[monthKey] = { amount: 0, projects: new Set() }
+        }
+        acc[monthKey].amount += txn.amount
+        acc[monthKey].projects.add(txn.project)
+        return acc
+      },
+      {}
+    )
 
   const monthlyChartData = Object.entries(monthlyData)
     .sort()
-    .map(([month, amount]) => ({
+    .map(([month, data]) => ({
       month,
-      donations: amount,
+      donations: data.amount,
+      projectCount: data.projects.size,
     }))
 
   return (
@@ -147,32 +159,51 @@ export function Stats(props: { txns: FullTxn[] }) {
                 className="text-xs"
                 interval={2}
                 tickFormatter={(value) => {
-                  // Show: "Jan 2024", "Apr", "Jul", "Oct"...
                   const [year, month] = value.split('-')
                   const monthNames = ['Jan', 'Apr', 'Jul', 'Oct']
                   const monthNum = parseInt(month)
                   if (monthNum % 3 === 1) {
                     const monthName = monthNames[Math.floor((monthNum - 1) / 3)]
-                    return monthNum === 1 ? `${monthName} ${year}` : monthName
+                    return monthNum === 1
+                      ? `${monthName} '${year.slice(2)}`
+                      : monthName
                   }
                   return ''
                 }}
               />
               <YAxis
+                yAxisId="left"
                 tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+              />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                tickFormatter={(value) => Math.round(value)}
               />
               <Legend />
               <Line
+                yAxisId="left"
                 type="monotone"
                 dataKey="donations"
-                name="donations by month"
+                name="donations"
                 stroke="#ea580c"
                 strokeWidth={2}
               />
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="projectCount"
+                name="projects funded"
+                stroke="#fdba74"
+                strokeWidth={2}
+              />
               <Tooltip
-                formatter={(value: number) => [
-                  `$${(value / 1000).toFixed(1)}K`,
-                ]}
+                formatter={(value: number, name: string) => {
+                  if (name === 'donations') {
+                    return [`$${(value / 1000).toFixed(1)}K donated`]
+                  }
+                  return [`${value} projects funded`]
+                }}
                 labelFormatter={(month) => {
                   const [year, monthNum] = month.split('-')
                   const date = new Date(parseInt(year), parseInt(monthNum) - 1)
