@@ -12,6 +12,8 @@ import {
   YAxis,
   ResponsiveContainer,
   Legend,
+  LineChart,
+  Line,
 } from 'recharts'
 
 export function Stats(props: { txns: FullTxn[] }) {
@@ -99,6 +101,25 @@ export function Stats(props: { txns: FullTxn[] }) {
       ).length,
     },
   ]
+
+  const monthlyData = txns
+    .filter((txn) => txn.type === 'project donation')
+    .reduce((acc: { [key: string]: number }, txn) => {
+      const date = new Date(txn.created_at)
+      const monthKey = `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, '0')}`
+      acc[monthKey] = (acc[monthKey] || 0) + txn.amount
+      return acc
+    }, {})
+
+  const monthlyChartData = Object.entries(monthlyData)
+    .sort()
+    .map(([month, amount]) => ({
+      month,
+      donations: amount,
+    }))
+
   return (
     <div>
       <Row className="justify-between gap-5 px-5 py-10">
@@ -118,24 +139,61 @@ export function Stats(props: { txns: FullTxn[] }) {
           value={formatMoney(dollarsThroughRegrantors)}
         />
       </Row>
-      <div className="mx-auto h-96 w-full max-w-xl">
-        <ResponsiveContainer width="100%" height="75%">
-          <BarChart width={500} height={300} data={data}>
-            <XAxis dataKey="bucket" className="text-xs" />
-            <YAxis />
-            <Legend iconType="circle" />
-            <Bar
-              dataKey="number of grants"
-              fill="#ea580c"
-              radius={[5, 5, 0, 0]}
-            />
-            <Bar
-              dataKey="number of certs"
-              fill="#fdba74"
-              radius={[5, 5, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+
+      <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
+        <div className="h-96 w-full lg:w-1/2">
+          <ResponsiveContainer width="100%" height="75%">
+            <BarChart width={500} height={300} data={data}>
+              <XAxis dataKey="bucket" className="text-xs" />
+              <YAxis />
+              <Legend iconType="circle" />
+              <Bar
+                dataKey="number of grants"
+                fill="#ea580c"
+                radius={[5, 5, 0, 0]}
+              />
+              <Bar
+                dataKey="number of certs"
+                fill="#fdba74"
+                radius={[5, 5, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="h-96 w-full lg:w-1/2">
+          <ResponsiveContainer width="100%" height="75%">
+            <LineChart data={monthlyChartData}>
+              <XAxis
+                dataKey="month"
+                className="text-xs"
+                interval={2}
+                tickFormatter={(value) => {
+                  // Show: "Jan 2024", "Apr", "Jul", "Oct"...
+                  const [year, month] = value.split('-')
+                  const monthNames = ['Jan', 'Apr', 'Jul', 'Oct']
+                  const monthNum = parseInt(month)
+                  if (monthNum % 3 === 1) {
+                    const monthName = monthNames[Math.floor((monthNum - 1) / 3)]
+                    return monthNum === 1 ? `${monthName} ${year}` : monthName
+                  }
+                  return ''
+                }}
+              />
+              <YAxis
+                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+              />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="donations"
+                name="donations by month"
+                stroke="#ea580c"
+                strokeWidth={2}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   )
