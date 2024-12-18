@@ -97,7 +97,7 @@ export function Stats(props: { txns: FullTxn[] }) {
           acc[monthKey] = { amount: 0, projects: new Set() }
         }
         acc[monthKey].amount += txn.amount
-        acc[monthKey].projects.add(txn.project)
+        acc[monthKey].projects.add(txn.project as string)
         return acc
       },
       {}
@@ -160,7 +160,7 @@ export function Stats(props: { txns: FullTxn[] }) {
               <YAxis
                 yAxisId="right"
                 orientation="right"
-                tickFormatter={(value) => Math.round(value)}
+                tickFormatter={(value) => Math.round(value).toString()}
               />
               <Legend />
               <Line
