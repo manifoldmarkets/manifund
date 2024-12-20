@@ -12,7 +12,7 @@ export default async function RegrantingPage() {
         <p>
           For our regranting program, we work with donors to delegate a
           grantmaking budget to individuals known as “regrantors”. Regrantors
-          independently make grant decisions based on their own expertise.
+          independently make grant recommendations based on their own expertise.
         </p>
         {/* <p>
           This model was pioneered by the FTX Future Fund; among the grantmaking
@@ -91,7 +91,8 @@ export default async function RegrantingPage() {
         <br />
         <p>
           We have no official cause-area restrictions on grants, though most of
-          our regrantors are focused on mitigating global catastrophic risk.
+          our regrantors are focused on mitigating global catastrophic risk,
+          specifically on AI safety.
         </p>
         <p>
           We support regrants to registered charities and individuals.
@@ -100,19 +101,19 @@ export default async function RegrantingPage() {
           campaigns.
         </p>
         <p>
-          We will look over all grants before fulfilling withdrawal requests to
-          make sure they meet these requirements. We reserve the right to veto
-          grants for any reason, though will strongly defer to regrantors’
+          We look over all grants before fulfilling withdrawal requests to make
+          sure they meet these requirements. We reserve the right to veto grants
+          for any reason, though we expect to often defer to our regrantors’
           judgement.
         </p>
         <strong>Can regrantors send money to themselves?</strong>
         <br />
         <p>
-          Regrantors are allowed to donate to their own projects, though we’ll
-          evaluate these projects with more scrutiny before fulfilling
-          withdrawal requests.
+          In certain circumstances, we permit regrantors to donate to their own
+          projects, though we’ll evaluate these projects with a more rigorous
+          bar before fulfilling withdrawal requests.
         </p>
-        <strong>How do I become a regrantor?</strong>
+        {/* <strong>How do I become a regrantor?</strong>
         <p>
           Apply{' '}
           <a
@@ -122,7 +123,7 @@ export default async function RegrantingPage() {
             here
           </a>
           !
-        </p>
+        </p> */}
       </div>
     </div>
   )
