@@ -8,11 +8,12 @@ export default async function RegrantingPage() {
   return (
     <div className="mx-auto max-w-3xl p-5">
       <div className="prose mx-auto max-w-none font-light">
-        <h1>Regranting</h1>
+        <h1>AI Safety Regranting</h1>
         <p>
-          For our regranting program, we work with donors to delegate a
-          grantmaking budget to individuals known as “regrantors”. Regrantors
-          independently make grant recommendations based on their own expertise.
+          We partner with regrantors: experts in the field of AI safety who we
+          give independent budgets. These regrantors recommend grants based on
+          their personal expertise; Manifund reviews these recommendations and
+          distributes the funds.
         </p>
         {/* <p>
           This model was pioneered by the FTX Future Fund; among the grantmaking
@@ -27,29 +28,46 @@ export default async function RegrantingPage() {
         <h3>Why regranting?</h3>
         <ul>
           <li>
-            Regranting surfaces opportunities that donors and large grantmaking
-            organizations might otherwise miss, as regrantors can tap into their
-            personal networks and fields of expertise.
+            <strong>Hidden opportunities:</strong> Regrantors can tap into their
+            personal networks, giving to places that donors and grantmaking
+            organizations might miss. Rather than wait for an application,
+            regrantors can reach out to grantees and initiate new projects.
           </li>
           <li>
-            The regranting model requires less overhead than traditional
-            grantmaking, as one person is responsible for the budget rather than
-            a committee. This allows for faster grant turnaround times, solving
-            a key pain point for grantees.
+            <strong>Fast:</strong> The regrantor is responsible for the budget,
+            rather than a committee. The regranting model requires less overhead
+            than traditional grantmaking, so we can make grants in days, not
+            months.
           </li>
           <li>
-            Certain cause areas like longtermism can be speculative, opaque, and
-            nascent, making it harder for donors to know where to direct their
-            money. Regranting allows donors to outsource these decisions to
-            trustworthy individuals.
+            <strong>Flexible:</strong> Regrantors can give to projects that are
+            not yet registered as charities, or to individuals; Manifund acts as
+            the fiscal sponsor, complying with 501c3 requirements and allowing
+            tax benefits for donors.
+          </li>
+          <li>
+            <strong>Trust-based:</strong> Newer fields like AI safety can be
+            speculative, opaque, and nascent, making it harder for donors to
+            know where to direct their money. Regranting helps donors to
+            outsource these decisions to individuals with deep expertise.
           </li>
         </ul>
+        <p>
+          Our regranting program is inspired by the success of programs like{' '}
+          <a href="https://forum.effectivealtruism.org/posts/paMYXYFYbbjpdjgbt/future-fund-june-2022-update#Expectations_vs__reality">
+            the Future Fund&apos;s regrants
+          </a>
+          ,{' '}
+          <a href="https://survivalandflourishing.fund/speculation-grants.html">
+            SFF&apos;s speculation grants
+          </a>
+          , and <a href="https://fastgrants.org/">Fast Grants</a>.
+        </p>
         <h3>How does regranting on Manifund work?</h3>
-        <p>Our website makes the regranting process simple and transparent:</p>
         <ol>
           <li>
-            A donor contributes money to Manifold for Charity, a registered
-            501c3 nonprofit, when they add money to their Manifund account.
+            A donor adds money to their Manifund account (which constitutes a
+            tax-deductible donation to our 501c3 nonprofit).
           </li>
           <li>
             The donor can then allocate the money between regrantors of their
@@ -62,8 +80,8 @@ export default async function RegrantingPage() {
             each grant made.
           </li>
           <li>
-            Manifold for Charity reviews the grant to make sure it is
-            legitimate, legal, and aligned with our mission.
+            We review the grant to make sure it is legitimate, legal, and
+            aligned with our mission.
           </li>
           <li>
             If we approve the grant, the money will be transferred to the
@@ -110,8 +128,8 @@ export default async function RegrantingPage() {
         <br />
         <p>
           In certain circumstances, we permit regrantors to donate to their own
-          projects, though we’ll evaluate these projects with a more rigorous
-          bar before fulfilling withdrawal requests.
+          projects, though we evaluate these projects with a more rigorous bar
+          before fulfilling withdrawal requests.
         </p>
         {/* <strong>How do I become a regrantor?</strong>
         <p>
