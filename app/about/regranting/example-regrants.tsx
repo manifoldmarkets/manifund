@@ -89,8 +89,8 @@ export function ExampleRegrants({ regrantors }: { regrantors: Profile[] }) {
                     </div>
                   </Row>
                 </Row>
-                <blockquote className="whitespace-pre-line text-sm font-light text-gray-700">
-                  {grant.explanation}
+                <blockquote className="relative whitespace-pre-line text-sm font-light text-gray-700">
+                  &ldquo;{grant.explanation}&rdquo;
                 </blockquote>
               </Card>
             </Row>
