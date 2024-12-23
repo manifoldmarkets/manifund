@@ -3,6 +3,17 @@ import { createServerClient } from '@/db/supabase-server'
 import { RegrantorsDisplay } from './regrantors-display'
 import { ExampleRegrants } from './example-regrants'
 
+const DonationCTA = () => (
+  <div className="my-8 text-center">
+    <a
+      href="mailto:austin@manifund.org"
+      className="inline-block rounded-lg bg-orange-600 px-6 py-3 text-white hover:bg-orange-700"
+    >
+      Donate to AI Safety Regranting
+    </a>
+  </div>
+)
+
 export default async function RegrantingPage() {
   const supabase = createServerClient()
   const regrantors = await getRegranters(supabase)
@@ -24,6 +35,7 @@ export default async function RegrantingPage() {
           </a>
         </p> */}
       </div>
+      <DonationCTA />
       <RegrantorsDisplay regrantors={regrantors} />
 
       <div className="prose mx-auto max-w-none font-light">
@@ -150,7 +162,14 @@ export default async function RegrantingPage() {
           </a>
           !
         </p> */}
+        <strong>Can I contribute funds to the regrantor budgets?</strong>
+        <p>
+          Yes! We&apos;re looking for contributions to our AI Safety regrantor
+          budgets. Get in touch with Austin (austin@manifund.org) if you&apos;re
+          interested in contributing.
+        </p>
       </div>
+      <DonationCTA />
     </div>
   )
 }
