@@ -103,14 +103,26 @@ const microregrantors = [
   'dominic',
 ]
 
+const regrantors = [
+  'LeopoldAschenbrenner',
+  'NeelNanda',
+  'AdamGleave',
+  'evhub',
+  'hendrycks',
+  'RyanKidd',
+]
+
 export function UserBadge(props: { username: string }) {
   const { username } = props
 
   if (['Austin', 'Rachel', 'saulmunn', 'lily'].includes(username)) {
     return <CoreBadge />
   }
-  if (microregrantors.includes(username)) {
-    return <MicroregrantorBadge />
+  // if (microregrantors.includes(username)) {
+  //   return <MicroregrantorBadge />
+  // }
+  if (regrantors.includes(username)) {
+    return <RegrantorBadge />
   }
   return null
 }
@@ -127,6 +139,14 @@ function CoreBadge() {
 function MicroregrantorBadge() {
   return (
     <Tooltip text="Micro-regrantor" placement="right">
+      <CheckBadgeIcon className="h-4 w-4 text-orange-600" aria-hidden="true" />
+    </Tooltip>
+  )
+}
+
+function RegrantorBadge() {
+  return (
+    <Tooltip text="Regrantor" placement="right">
       <CheckBadgeIcon className="h-4 w-4 text-orange-600" aria-hidden="true" />
     </Tooltip>
   )
