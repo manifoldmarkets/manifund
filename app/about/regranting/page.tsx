@@ -1,6 +1,7 @@
 import { getRegranters } from '@/db/profile'
 import { createServerClient } from '@/db/supabase-server'
 import { RegrantorsDisplay } from './regrantors-display'
+import { ExampleRegrants } from './example-regrants'
 
 export default async function RegrantingPage() {
   const supabase = createServerClient()
@@ -10,8 +11,8 @@ export default async function RegrantingPage() {
       <div className="prose mx-auto max-w-none font-light">
         <h1>AI Safety Regranting</h1>
         <p>
-          We partner with regrantors: experts in the field of AI safety who we
-          give independent budgets. These regrantors recommend grants based on
+          We partner with <i>regrantors:</i> experts in the field of AI safety,
+          each given an independent budget. Regrantors recommend grants based on
           their personal expertise; Manifund reviews these recommendations and
           distributes the funds.
         </p>
@@ -24,6 +25,7 @@ export default async function RegrantingPage() {
         </p> */}
       </div>
       <RegrantorsDisplay regrantors={regrantors} />
+
       <div className="prose mx-auto max-w-none font-light">
         <h3>Why regranting?</h3>
         <ul>
@@ -31,7 +33,7 @@ export default async function RegrantingPage() {
             <strong>Hidden opportunities:</strong> Regrantors can tap into their
             personal networks, giving to places that donors and grantmaking
             organizations might miss. Rather than wait for an application,
-            regrantors can reach out to grantees and initiate new projects.
+            regrantors can reach out to grantees to initiate new projects.
           </li>
           <li>
             <strong>Fast:</strong> The regrantor is responsible for the budget,
@@ -63,6 +65,12 @@ export default async function RegrantingPage() {
           </a>
           , and <a href="https://fastgrants.org/">Fast Grants</a>.
         </p>
+
+        <h3>Example regrants</h3>
+      </div>
+      <ExampleRegrants regrantors={regrantors} />
+
+      <div className="prose mx-auto max-w-none font-light">
         <h3>How does regranting on Manifund work?</h3>
         <ol>
           <li>
