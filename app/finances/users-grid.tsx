@@ -67,7 +67,7 @@ export default function UsersGrid({ users }: { users: User[] }) {
       <BalanceSheet />
       <h1 className="my-4 text-2xl font-bold">User balances</h1>
       <div className="text-right text-sm text-gray-500">
-        Total:{' '}
+        Total as of now:{' '}
         {usersTotal.toLocaleString('en-US', {
           style: 'currency',
           currency: 'USD',
