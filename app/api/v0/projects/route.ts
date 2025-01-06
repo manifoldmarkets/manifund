@@ -3,7 +3,7 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
 
-export async function listProjectsPaginated(
+async function listProjectsPaginated(
   supabase: SupabaseClient,
   before?: string | null
 ) {
