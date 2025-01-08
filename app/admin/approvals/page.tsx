@@ -4,6 +4,8 @@ import Link from 'next/link'
 import clsx from 'clsx'
 import { Table } from '@/components/table-catalyst'
 
+export const revalidate = 300
+
 export default async function ApprovalsPage() {
   const supabaseAdmin = createAdminClient()
   // Instead of using listProjects, only fetch the fields out of the projects that we need

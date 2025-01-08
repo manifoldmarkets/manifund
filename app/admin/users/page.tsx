@@ -14,6 +14,8 @@ import {
   TableRow,
 } from '@/components/table-catalyst'
 
+export const revalidate = 300
+
 export default async function UsersPage() {
   const supabaseAdmin = createAdminClient()
   const [{ data: users }, { data: profiles }, { data: txns }] =
