@@ -2,6 +2,7 @@ import { createAdminClient } from '@/pages/api/_db'
 import { CreateTxn } from '../create-txn'
 import { Table } from '@/components/table-catalyst'
 
+export const revalidate = 300
 export default async function TransactionsPage() {
   const supabaseAdmin = createAdminClient()
   const { data: txns } = await supabaseAdmin

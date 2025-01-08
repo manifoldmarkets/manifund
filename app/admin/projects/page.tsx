@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { CircleStackIcon } from '@heroicons/react/24/solid'
 import { Table } from '@/components/table-catalyst'
 
+export const revalidate = 300
+
 export default async function ProjectsPage() {
   const supabaseAdmin = createAdminClient()
   const projects = await listProjects(supabaseAdmin)
