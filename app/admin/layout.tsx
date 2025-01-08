@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { createAdminClient } from '@/pages/api/_db'
 
+// Revalidate every 5 minutes
+export const revalidate = 300
+
 // Separate components for each count to allow parallel loading
 async function UserCount() {
   const supabase = createAdminClient()
