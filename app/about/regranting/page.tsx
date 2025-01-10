@@ -135,8 +135,8 @@ export default async function RegrantingPage() {
         <p>
           We support regrants to registered charities and individuals.
           For-profit organizations may also be eligible, pending due diligence.
-          As a US-registered 501c3, we do not permit donations to political
-          campaigns.
+          As a US-registered 501c3, we do not generally permit donations to
+          political campaigns or lobbying.
         </p>
         <p>
           We look over all grants before fulfilling withdrawal requests to make
@@ -144,12 +144,13 @@ export default async function RegrantingPage() {
           for any reason, though we expect to often defer to our regrantors’
           judgement.
         </p>
-        <strong>Can regrantors send money to themselves?</strong>
+        <strong>Can regrantors send money to their own projects?</strong>
         <br />
         <p>
-          In certain circumstances, we permit regrantors to donate to their own
-          projects, though we evaluate these projects with a more rigorous bar
-          before fulfilling withdrawal requests.
+          In certain circumstances, we allow regrantors to give to projects they
+          advise, or are otherwise involved with; we evaluate these projects
+          with a more rigorous bar before fulfilling withdrawal requests. We
+          generally do not permit regrantors to pay for their own salaries.
         </p>
         {/* <strong>How do I become a regrantor?</strong>
         <p>
@@ -165,8 +166,14 @@ export default async function RegrantingPage() {
         <strong>Can I contribute funds to the regrantor budgets?</strong>
         <p>
           Yes! We&apos;re looking for contributions to our AI Safety regrantor
-          budgets. Get in touch with Austin (austin@manifund.org) if you&apos;re
-          interested in contributing.
+          budgets. If you&apos;re donating a substantial amount (eg $50k+), we
+          can also work with you to nominate specific regrantors who share your
+          values and interests. We do ask large donors to cover a 5% fiscal
+          sponsorship fee, which offsets our operational costs & salaries.
+        </p>
+        <p>
+          Get in touch with Austin (austin@manifund.org) if you&apos;re
+          interested in donating!
         </p>
       </div>
       <DonationCTA />
