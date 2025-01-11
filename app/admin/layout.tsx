@@ -4,6 +4,7 @@ import NoAccess from '../no-access'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { createAdminClient } from '@/pages/api/_db'
+import { HomeIcon } from '@heroicons/react/24/outline'
 
 // Revalidate every 5 minutes
 export const revalidate = 300
@@ -107,11 +108,16 @@ export default async function AdminLayout({
   ]
 
   return (
-    <div>
-      <div className="rounded-bl-lg rounded-br-lg bg-gradient-to-r from-orange-500 to-rose-500 px-0 py-4 hover:shadow-lg sm:px-8">
-        <h1 className="text-center text-3xl font-semibold text-white">
-          Admin Panel
-        </h1>
+    <div className="fixed inset-0 flex h-screen w-screen flex-col overflow-auto bg-gray-50">
+      <div className="bg-gradient-to-r from-orange-500 to-rose-500 p-2">
+        <div className="flex items-center">
+          <Link href="/" className="p-2 text-white hover:text-gray-200">
+            <HomeIcon className="h-5 w-5" />
+          </Link>
+          <h1 className="flex-1 text-center text-lg text-white">
+            Manifund admin ({user.email})
+          </h1>
+        </div>
       </div>
 
       <nav className="border-b border-gray-200">
@@ -129,7 +135,7 @@ export default async function AdminLayout({
         </div>
       </nav>
 
-      <div className="p-4">{children}</div>
+      <div className="flex-1 overflow-auto p-4">{children}</div>
     </div>
   )
 }
