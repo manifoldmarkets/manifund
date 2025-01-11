@@ -95,7 +95,10 @@ export function Comment(props: {
                 creatorBadge={writtenByCreator}
                 className="text-sm font-semibold"
               />
-              <p className="min-w-fit text-xs text-gray-500">
+              <p
+                className="min-w-fit text-xs text-gray-500"
+                title={new Date(comment.created_at).toLocaleString()}
+              >
                 {formatDistanceToNow(new Date(comment.created_at), {
                   addSuffix: true,
                 })}
