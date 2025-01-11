@@ -55,11 +55,11 @@ export default async function handler(req: NextRequest) {
   }
 
   const recipientSubject = approved
-    ? 'Manifund has approved your project for funding!'
-    : 'Manifund has declined to fund your project.'
+    ? 'Manifund has approved your project!'
+    : 'Manifund has declined your project.'
   const recipientMessage = approved
-    ? `We've decided to fund your project, "${project.title}"! Once you've reached your minimum funding, signed your grant agreement, and (if applicable) reached your auction close date, you'll be able to withdraw your funds via your profile page.`
-    : `We regret to inform you that we've decided not to fund your project, "${project.title}." We've left a comment on your project with a short explanation as to why. Please let us know on our discord or by replying to that comments if you have any questions or feedback about the process.`
+    ? `We've approved your project, "${project.title}"! Once you've reached your minimum funding goals and signed your grant agreement, you'll be able to withdraw your funds via your profile page.`
+    : `We regret to inform you that we've decided not to approve your project, "${project.title}." We've left a comment on your project with a short explanation as to why. Please let us know on our discord or by replying to that comments if you have any questions or feedback about the process.`
   const recipientPostmarkVars = {
     recipientFullName: creator.full_name,
     verdictMessage: recipientMessage,
