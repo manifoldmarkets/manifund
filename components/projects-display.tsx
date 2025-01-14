@@ -32,10 +32,9 @@ type SortOption =
 const DEFAULT_SORT_OPTIONS = [
   'hot',
   'newest',
+  'closing soon',
   'votes',
   'funding',
-  'comments',
-  'closing soon',
 ] as SortOption[]
 
 export function ProjectsDisplay(props: {
@@ -178,11 +177,15 @@ function sortProjects(
   }
   if (sortType === 'closing soon') {
     return sortBy(projects, (project) => {
-      if (project.auction_close) {
-        return new Date(`${project.auction_close}T23:59:59-12:00`).getTime()
-      } else {
-        return 0
+      // Show proposals with a close date of today or later
+      if (project.stage === 'proposal' && project.auction_close) {
+        console.log(project.auction_close)
+        const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
+        if (closeDate >= new Date()) {
+          return closeDate.getTime()
+        }
       }
+      return Infinity
     })
   }
   return projects
