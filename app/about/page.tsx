@@ -97,25 +97,25 @@ const APPROACH_FEATURES = [
 
 const FUNDING_MECHANISMS = [
   {
+    title: 'Open fundraising',
+    icon: <MegaphoneIcon className="h-6 w-6 stroke-2 text-white" />,
+    description:
+      'We host public proposals for new charitable projects, acting as a Kickstarter for nonprofits. Donors can fund projects directly, or chat with their founders.',
+    href: '/about/open-call',
+  },
+  {
     title: 'Regranting',
     icon: <ArrowPathIcon className="h-6 w-6 stroke-2 text-white" />,
     description:
-      'We delegate grant budgets to regrantors who are experts in their fields, and let donors choose which regrantors best align with their interests.',
+      'We delegate grant budgets to regrantors who are experts in their fields, and let donors choose the regrantors who best represent their interests.',
     href: '/about/regranting',
   },
   {
     title: 'Impact markets',
     icon: <ArrowTrendingUpIcon className="h-6 w-6 stroke-2 text-white" />,
     description:
-      'We run funding rounds where funders can invest in projects vying for charitable prizes — similarly to a venture-capital ecosystem.',
+      'We run funding rounds where funders can invest in projects vying for charitable prizes — similarly to a venture capital ecosystem.',
     href: '/about/impact-certificates',
-  },
-  {
-    title: 'Open call',
-    icon: <MegaphoneIcon className="h-6 w-6 stroke-2 text-white" />,
-    description:
-      'We let anyone propose a charitable project and look for funders on our site, acting as Kickstarter for nonprofits.',
-    href: '/about/open-call',
   },
 ]
 
@@ -178,17 +178,13 @@ export default function AboutPage() {
       <Suspense fallback={<Loading />}>
         <StatsServerComponent />
       </Suspense>
-      <Col className="w-full gap-10 px-5 py-5 sm:px-10">
+      <Col className="gap-10">
         <h1 className="text-center text-3xl font-bold">How we fund projects</h1>
-        {FUNDING_MECHANISMS.map((mechanism, index) => {
-          return (
-            <FundingMechanism
-              key={mechanism.title}
-              {...mechanism}
-              leftAligned={index === 1}
-            />
-          )
-        })}
+        <div className="mx-auto flex w-full max-w-2xl flex-col gap-12 p-4">
+          {FUNDING_MECHANISMS.map((mechanism, index) => {
+            return <FundingMechanism key={mechanism.title} {...mechanism} />
+          })}
+        </div>
       </Col>
       <Col className="w-full gap-5 p-5 sm:p-10">
         <h1 className="text-center text-3xl font-bold">Our team</h1>
@@ -230,25 +226,19 @@ function FundingMechanism(props: {
   description: string
   href: string
   icon: JSX.Element
-  leftAligned?: boolean
 }) {
-  const { title, description, href, icon, leftAligned } = props
+  const { title, description, href, icon } = props
   return (
-    <Link className="group" href={href}>
-      <Row
-        className={clsx(
-          'mb-2 justify-between',
-          leftAligned && 'flex-row-reverse'
-        )}
-      >
-        <h1 className="text-2xl font-bold">{title}</h1>
+    <Link className="group flex-1" href={href}>
+      <Row className="mb-2 items-center gap-4">
         <div className="rounded-lg bg-orange-600 p-2">{icon}</div>
+        <h1 className="text-xl font-bold">{title}</h1>
+        <div className="mt-4 w-full flex-1 text-right font-semibold text-orange-600 group-hover:underline">
+          Learn more
+          <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
+        </div>
       </Row>
       <p className="text-gray-600">{description}</p>
-      <div className="w-full text-right font-semibold text-orange-600 group-hover:underline">
-        Learn more
-        <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
-      </div>
     </Link>
   )
 }
