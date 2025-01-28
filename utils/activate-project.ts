@@ -133,7 +133,7 @@ async function activateProject(project: Project, followerIds: string[]) {
           verdictMessage: donorMessage,
           projectUrl: `${siteUrl}/projects/${project.slug}`,
           subject: donorSubject,
-          adminName: 'Rachel from Manifund',
+          adminName: 'The Manifund team',
         },
         donor?.id ?? ''
       )
@@ -148,7 +148,7 @@ async function activateProject(project: Project, followerIds: string[]) {
       verdictMessage: creatorMessage,
       projectUrl: `${getURL()}/projects/${project.slug}`,
       subject: creatorSubject,
-      adminName: 'Rachel from Manifund',
+      adminName: 'The Manifund team',
     },
     project.creator
   )
