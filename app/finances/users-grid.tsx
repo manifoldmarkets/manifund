@@ -87,15 +87,15 @@ export default function UsersGrid({ users }: { users: User[] }) {
 }
 
 export function BalanceSheet() {
-  const lastUpdated = '2024-12-18'
+  const lastUpdated = '2025-01-28'
   const $ = {
     // Stripe Opal + Payments balance
-    stripe: 747609 + 43734,
-    mercury: 143741,
-    coinbase: 840281,
-    users: -1834568,
-    // Pending: -withdrawals on Airtable, +Austin SPV, +Manifest 2024, +Anton EACC
-    pending: -1600 + 20000 + 6000 + 23976,
+    stripe: 762902 + 39170,
+    mercury: 328208,
+    coinbase: 843140,
+    users: -2170609,
+    // Pending: +pending AISTOF
+    pending: 210000,
     // Donations for Manifold for Charity
     // 500k initial - donated - David MCF - AmmonLam
     charity: 500000 - 315832 - 186747,
@@ -107,7 +107,7 @@ export function BalanceSheet() {
     { name: 'Total assets', balance: $.stripe + $.mercury + $.coinbase },
     {},
     { name: 'User balances', balance: $.users },
-    { name: 'Pending: withdraws, investment, Manifest', balance: $.pending },
+    { name: 'Pending transfers', balance: $.pending },
     { name: 'Pending: Manifold for Charity donations', balance: $.charity },
     { name: 'Total liabilities', balance: $.users + $.pending + $.charity },
     {},
