@@ -87,18 +87,21 @@ export default function UsersGrid({ users }: { users: User[] }) {
 }
 
 export function BalanceSheet() {
-  const lastUpdated = '2025-01-28'
+  const lastUpdated = '2025-03-05'
   const $ = {
     // Stripe Opal + Payments balance
-    stripe: 762902 + 39170,
-    mercury: 328208,
-    coinbase: 843140,
-    users: -2170609,
-    // Pending: +pending AISTOF
-    pending: 210000,
+    stripe: 179_560 + 52_934,
+    mercury: 1_988_104,
+    coinbase: 865_732,
+    // Current users, plus regranting
+    users: -1_525_853 - 1_500_000,
+    // Pending: saferAI withdraw
+    pending: -100_000,
     // Donations for Manifold for Charity
     // 500k initial - donated - David MCF - AmmonLam
     charity: 500000 - 315832 - 186747,
+    // Mox: Mercury + Stripe pending
+    mox: 67_725 + 3_949,
   }
   const financeRows = [
     { name: 'Stripe Bank', balance: $.stripe },
@@ -112,10 +115,12 @@ export function BalanceSheet() {
     { name: 'Total liabilities', balance: $.users + $.pending + $.charity },
     {},
     {
-      name: 'Net',
+      name: 'Manifund Net',
       balance:
         $.stripe + $.mercury + $.coinbase + $.users + $.pending + $.charity,
     },
+    {},
+    { name: 'Mox Net', balance: $.mox },
   ]
   // Using a grid to display the finances
   return (
