@@ -115,7 +115,7 @@ const regrantors = [
 export function UserBadge(props: { username: string }) {
   const { username } = props
 
-  if (['Austin', 'Rachel', 'saulmunn', 'lily'].includes(username)) {
+  if (['Austin'].includes(username)) {
     return <CoreBadge />
   }
   // if (microregrantors.includes(username)) {
