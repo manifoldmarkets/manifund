@@ -87,21 +87,23 @@ export default function UsersGrid({ users }: { users: User[] }) {
 }
 
 export function BalanceSheet() {
-  const lastUpdated = '2025-03-05'
+  const lastUpdated = '2025-04-04'
   const $ = {
     // Stripe Opal + Payments balance
-    stripe: 179_560 + 52_934,
-    mercury: 1_988_104,
-    coinbase: 865_732,
-    // Current users, plus regranting
-    users: -1_525_853 - 1_500_000,
-    // Pending: saferAI withdraw
-    pending: -100_000,
+    stripe: 936_835 + 66_082,
+    // Mercury Manifund Grants account
+    mercury: 1_642_197,
+    coinbase: 869_722,
+    // Current users, plus regranting. We've put down Neel's budget already.
+    users: -1_727_776 - 2_000_000,
+    pending: 0,
     // Donations for Manifold for Charity
     // 500k initial - donated - David MCF - AmmonLam
     charity: 500000 - 315832 - 186747,
+    // Manifest balance
+    manifest: 92_000,
     // Mox: Mercury + Stripe pending
-    mox: 67_725 + 3_949,
+    mox: 84_288 + 2_390,
   }
   const financeRows = [
     { name: 'Stripe Bank', balance: $.stripe },
@@ -109,18 +111,30 @@ export function BalanceSheet() {
     { name: 'Coinbase (USDC)', balance: $.coinbase },
     { name: 'Total assets', balance: $.stripe + $.mercury + $.coinbase },
     {},
-    { name: 'User balances', balance: $.users },
+    { name: 'User balances + $2m regranting', balance: $.users },
     { name: 'Pending transfers', balance: $.pending },
     { name: 'Pending: Manifold for Charity donations', balance: $.charity },
     { name: 'Total liabilities', balance: $.users + $.pending + $.charity },
     {},
     {
-      name: 'Manifund Net',
+      name: 'Grants net balance',
       balance:
         $.stripe + $.mercury + $.coinbase + $.users + $.pending + $.charity,
     },
-    {},
-    { name: 'Mox Net', balance: $.mox },
+    { name: 'Manifest balance', balance: $.manifest },
+    { name: 'Mox balance', balance: $.mox },
+    {
+      name: 'Total net assets',
+      balance:
+        $.stripe +
+        $.mercury +
+        $.coinbase +
+        $.users +
+        $.pending +
+        $.charity +
+        $.manifest +
+        $.mox,
+    },
   ]
   // Using a grid to display the finances
   return (
