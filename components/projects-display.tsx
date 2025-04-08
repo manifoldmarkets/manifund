@@ -110,9 +110,6 @@ export function ProjectsDisplay(props: {
       <div className="mt-2 flex flex-col gap-5 sm:mt-5 sm:gap-10">
         {fundableProjects.length > 0 && (
           <div>
-            <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">
-              Seeking funding
-            </h1>
             <ProjectGroup projects={fundableProjects} prices={prices} />
           </div>
         )}

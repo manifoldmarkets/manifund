@@ -25,7 +25,7 @@ export default async function Projects(props: {
       {user === null && (
         <>
           <LandingSection />
-          <CausesSection />
+          {/* <CausesSection /> */}
           {/* Or use <CausesWithFeatured /> to include active rounds */}
         </>
       )}
