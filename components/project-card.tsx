@@ -125,10 +125,9 @@ function ProjectCardData(props: {
       </Row>
       <Row className="justify-end">
         <Tooltip text="Total raised" className="flex items-center gap-0.5">
-          <CircleStackIcon className="h-4 w-4 stroke-2" />
           <span>
             {formatMoney(amountRaised)}
-            {fundingGoal && `/${formatMoney(fundingGoal)}`}
+            {fundingGoal ? ` / ${formatMoney(fundingGoal)}` : ' raised'}
           </span>
         </Tooltip>
       </Row>
