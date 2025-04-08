@@ -17,11 +17,11 @@ export function LandingSection() {
       <Row className="flex-2">
         <div>
           <p className="text-center text-3xl font-medium text-white shadow-rose-500 text-shadow-lg sm:text-4xl">
-            the market for grants
+            The market for grants
           </p>
           <p className="mb-8 mt-4 text-center text-xs text-white sm:mt-5 sm:text-sm">
-            Manifund is the marketplace for awesome new charities. Find
-            impactful projects, buy impact certs, and weigh in on what gets
+            Manifund helps great charities get the funding they need. Discover
+            amazing projects, buy impact certs, and weigh in on what gets
             funded.
           </p>
           <Row className="justify-center gap-3 text-sm">
