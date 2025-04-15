@@ -8,11 +8,11 @@ import clsx from 'clsx'
 import { sortBy } from 'lodash'
 import { useState } from 'react'
 
-const YEARS = [2023, 2024]
+const YEARS = [2023, 2024, 2025]
 
 export function RegrantorsDisplay(props: { regrantors: Profile[] }) {
   const { regrantors } = props
-  const [selectedYear, setSelectedYear] = useState(2024)
+  const [selectedYear, setSelectedYear] = useState(2025)
   const regrantorsToShow = regrantors.filter(
     (regrantor) => getSponsoredAmount(regrantor.id, selectedYear) !== 0
   )
