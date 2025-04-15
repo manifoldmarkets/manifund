@@ -76,14 +76,26 @@ export function getSponsoredAmount2024(regrantorId: string) {
   return sponsoredRegrantors[regrantorId] ?? 0
 }
 
+export function getSponsoredAmount2025(regrantorId: string) {
+  const sponsoredRegrantors = {
+    'e9362a95-cbec-4685-b179-91b4c5ba4edc': 250_000, // Neel Nanda
+    '4988c7d8-e1a6-4f2b-b9d9-f80cd02f1732': 100_000, // Lisa
+  } as { [key: string]: number }
+  return sponsoredRegrantors[regrantorId] ?? 0
+}
+
 export function getSponsoredAmount(regrantorId: string, year?: number) {
   if (year === 2023) {
     return getSponsoredAmount2023(regrantorId)
   } else if (year === 2024) {
     return getSponsoredAmount2024(regrantorId)
+  } else if (year === 2025) {
+    return getSponsoredAmount2025(regrantorId)
   } else {
     return (
-      getSponsoredAmount2023(regrantorId) + getSponsoredAmount2024(regrantorId)
+      getSponsoredAmount2023(regrantorId) +
+      getSponsoredAmount2024(regrantorId) +
+      getSponsoredAmount2025(regrantorId)
     )
   }
 }
