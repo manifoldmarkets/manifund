@@ -13,7 +13,7 @@ import {
   CurrencyDollarIcon,
   WrenchIcon,
 } from '@heroicons/react/20/solid'
-import { getSponsoredAmount2024 } from '@/utils/constants'
+import { getSponsoredAmount2025 } from '@/utils/constants'
 import { SearchBar } from '@/components/input'
 import { searchInAny } from '@/utils/parse'
 import { LoadMoreUntilNotVisible } from '@/components/widgets/visibility-observer'
@@ -110,7 +110,7 @@ function ProfileRow(props: { profile: Profile; isCreator?: boolean }) {
 
 function sortProfiles(profiles: ProfileAndProjectTitles[]) {
   const sortedProfiles = sortBy(profiles, (profile) => {
-    if (profile.regranter_status) return -getSponsoredAmount2024(profile.id)
+    if (profile.regranter_status) return -getSponsoredAmount2025(profile.id)
     else if (profile.projects.length > 0) return 1
     else if (profile.bio) return 2
     else if (profile.accreditation_status) return 3
