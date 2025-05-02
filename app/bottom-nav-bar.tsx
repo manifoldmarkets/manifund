@@ -73,7 +73,7 @@ export async function BottomNavBar() {
     }
   })
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 flex select-none items-center justify-between border-t-2 bg-white text-xs text-gray-700 lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-20 flex select-none items-center justify-between border-t-2 bg-white text-xs text-gray-700 lg:hidden print:hidden">
       {navOptionsDisplay}
     </nav>
   )
