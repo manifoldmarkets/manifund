@@ -3,7 +3,7 @@ import { Profile } from '@/db/profile'
 import { TxnAndProfiles } from '@/db/txn'
 import { formatMoney } from '@/utils/formatting'
 import clsx from 'clsx'
-import { formatDistanceToNow } from 'date-fns'
+import { format } from 'date-fns'
 import { orderBy, uniq } from 'lodash'
 import { useState } from 'react'
 import { Avatar } from './avatar'
@@ -86,9 +86,7 @@ export function Donation(props: { txn: TxnAndProfiles }) {
       </Row>
       <Row className="items-center">
         <span className="text-sm text-gray-500">
-          {formatDistanceToNow(new Date(txn.created_at), {
-            addSuffix: true,
-          })}
+          {format(new Date(txn.created_at), 'yyyy-MM-dd')}
         </span>
       </Row>
     </Row>
