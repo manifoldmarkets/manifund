@@ -26,11 +26,13 @@ export function ProjectCard(props: {
 }) {
   const { project, valuation } = props
   const amountRaised = getAmountRaised(project, project.bids, project.txns)
-  const firstDonorId =
-    project.stage === 'proposal'
-      ? orderBy(project.bids, 'created_at', 'asc')[0]?.bidder
-      : orderBy(project.txns, 'created_at', 'asc')[0]?.from_id
-  const regrantorInitiated = getSponsoredAmount(firstDonorId ?? '') > 0
+  // const firstDonorId =
+  //   project.stage === 'proposal'
+  //     ? orderBy(project.bids, 'created_at', 'asc')[0]?.bidder
+  //     : orderBy(project.txns, 'created_at', 'asc')[0]?.from_id
+  const regrantorFunded = project.txns.some(
+    (txn) => txn.from_id && getSponsoredAmount(txn.from_id) > 0
+  )
   const voteCount = project.project_votes.reduce(
     (acc, vote) => vote.magnitude + acc,
     0
@@ -49,7 +51,7 @@ export function ProjectCard(props: {
           projectType={project.type}
           creator={project.profiles}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
-          regrantorInitiated={regrantorInitiated}
+          regrantorFunded={regrantorFunded}
           projectRecipient={
             incompleteProjectTransfers.length > 0
               ? incompleteProjectTransfers[0].recipient_name
@@ -140,15 +142,10 @@ export function ProjectCardHeader(props: {
   projectType: Project['type']
   projectRecipient?: string
   valuation?: number
-  regrantorInitiated?: boolean
+  regrantorFunded?: boolean
 }) {
-  const {
-    creator,
-    valuation,
-    projectRecipient,
-    projectType,
-    regrantorInitiated,
-  } = props
+  const { creator, valuation, projectRecipient, projectType, regrantorFunded } =
+    props
   return (
     <Row className="mt-1 items-start justify-between">
       <div>
@@ -168,8 +165,8 @@ export function ProjectCardHeader(props: {
           </p>
         </Tooltip>
       ) : null}
-      {projectType === 'grant' && regrantorInitiated && (
-        <Tooltip text="Regrantor initiated">
+      {projectType === 'grant' && regrantorFunded && (
+        <Tooltip text="Regrantor funded">
           <CheckBadgeIcon className="relative h-6 w-6 text-orange-500" />
         </Tooltip>
       )}
