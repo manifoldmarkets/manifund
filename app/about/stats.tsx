@@ -17,6 +17,18 @@ import {
   Tooltip,
 } from 'recharts'
 
+function monthTickFormatter(value: string) {
+  const [year, month] = value.split('-')
+  const monthNum = parseInt(month)
+  if (monthNum === 1) {
+    return year
+  }
+  if (monthNum === 4 || monthNum === 7 || monthNum === 10) {
+    return ' '
+  }
+  return ''
+}
+
 export function Stats(props: { txns: FullTxn[] }) {
   const { txns } = props
   const grantDonations = txns.filter(
@@ -111,6 +123,22 @@ export function Stats(props: { txns: FullTxn[] }) {
       projectCount: data.projects.size,
     }))
 
+  // Calculate unique donations per month
+  const monthlyUniqueDonations = txns
+    .filter((txn) => txn.type === 'project donation')
+    .reduce((acc: { [key: string]: Set<string> }, txn) => {
+      const date = new Date(txn.created_at)
+      const monthKey = `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, '0')}`
+      if (!acc[monthKey]) acc[monthKey] = new Set()
+      if (typeof txn.from_id === 'string') acc[monthKey].add(txn.from_id)
+      return acc
+    }, {})
+  const monthlyUniqueDonationsData = Object.entries(monthlyUniqueDonations)
+    .sort()
+    .map(([month, donors]) => ({ month, uniqueDonations: donors.size }))
+
   return (
     <div>
       <Row className="justify-between gap-5 px-5 py-10">
@@ -131,8 +159,9 @@ export function Stats(props: { txns: FullTxn[] }) {
         />
       </Row>
 
-      <div className="flex flex-col gap-4 lg:flex-row lg:gap-8">
-        <div className="h-96 w-full lg:w-1/2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
+        {/* Monthly donations */}
+        <div className="h-96 w-full">
           <h3 className="mb-4 text-center text-gray-700">Monthly donations</h3>
           <ResponsiveContainer width="100%" height="75%">
             <LineChart data={monthlyChartData}>
@@ -140,52 +169,23 @@ export function Stats(props: { txns: FullTxn[] }) {
                 dataKey="month"
                 className="text-xs"
                 interval={2}
-                tickFormatter={(value) => {
-                  const [year, month] = value.split('-')
-                  const monthNames = ['Jan', 'Apr', 'Jul', 'Oct']
-                  const monthNum = parseInt(month)
-                  if (monthNum % 3 === 1) {
-                    const monthName = monthNames[Math.floor((monthNum - 1) / 3)]
-                    return monthNum === 1
-                      ? `${monthName} '${year.slice(2)}`
-                      : monthName
-                  }
-                  return ''
-                }}
+                tickFormatter={monthTickFormatter}
               />
               <YAxis
-                yAxisId="left"
-                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
-              />
-              <YAxis
-                yAxisId="right"
-                orientation="right"
-                tickFormatter={(value) => Math.round(value).toString()}
+                tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`}
               />
               <Legend />
               <Line
-                yAxisId="left"
                 type="monotone"
                 dataKey="donations"
                 name="donations"
                 stroke="#ea580c"
                 strokeWidth={2}
               />
-              <Line
-                yAxisId="right"
-                type="monotone"
-                dataKey="projectCount"
-                name="projects funded"
-                stroke="#fdba74"
-                strokeWidth={2}
-              />
               <Tooltip
-                formatter={(value: number, name: string) => {
-                  if (name === 'donations') {
-                    return [`$${(value / 1000).toFixed(1)}K donated`]
-                  }
-                  return [`${value} projects funded`]
-                }}
+                formatter={(value: number) => [
+                  `$${(value / 1000).toFixed(1)}K donated`,
+                ]}
                 labelFormatter={(month) => {
                   const [year, monthNum] = month.split('-')
                   const date = new Date(parseInt(year), parseInt(monthNum) - 1)
@@ -199,7 +199,82 @@ export function Stats(props: { txns: FullTxn[] }) {
           </ResponsiveContainer>
         </div>
 
-        <div className="h-96 w-full lg:w-1/2">
+        {/* Projects funded per month */}
+        <div className="h-96 w-full">
+          <h3 className="mb-4 text-center text-gray-700">
+            Projects funded per month
+          </h3>
+          <ResponsiveContainer width="100%" height="75%">
+            <LineChart data={monthlyChartData}>
+              <XAxis
+                dataKey="month"
+                className="text-xs"
+                interval={2}
+                tickFormatter={monthTickFormatter}
+              />
+              <YAxis tickFormatter={(value) => Math.round(value).toString()} />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="projectCount"
+                name="projects funded"
+                stroke="#fdba74"
+                strokeWidth={2}
+              />
+              <Tooltip
+                formatter={(value: number) => [`${value} projects funded`]}
+                labelFormatter={(month) => {
+                  const [year, monthNum] = month.split('-')
+                  const date = new Date(parseInt(year), parseInt(monthNum) - 1)
+                  return date.toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric',
+                  })
+                }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Unique donations per month */}
+        <div className="h-96 w-full">
+          <h3 className="mb-4 text-center text-gray-700">
+            Unique donations per month
+          </h3>
+          <ResponsiveContainer width="100%" height="75%">
+            <LineChart data={monthlyUniqueDonationsData}>
+              <XAxis
+                dataKey="month"
+                className="text-xs"
+                interval={2}
+                tickFormatter={monthTickFormatter}
+              />
+              <YAxis tickFormatter={(value) => Math.round(value).toString()} />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="uniqueDonations"
+                name="unique donations"
+                stroke="#a3e635"
+                strokeWidth={2}
+              />
+              <Tooltip
+                formatter={(value: number) => [`${value} unique donations`]}
+                labelFormatter={(month) => {
+                  const [year, monthNum] = month.split('-')
+                  const date = new Date(parseInt(year), parseInt(monthNum) - 1)
+                  return date.toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric',
+                  })
+                }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Grant sizes */}
+        <div className="h-96 w-full">
           <h3 className="mb-4 text-center text-gray-700">Grant sizes</h3>
           <ResponsiveContainer width="100%" height="75%">
             <BarChart width={500} height={300} data={data}>
