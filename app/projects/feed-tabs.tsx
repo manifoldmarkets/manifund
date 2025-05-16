@@ -123,7 +123,7 @@ export function FeedTabs(props: {
       <Tabs
         tabs={[
           {
-            name: 'All projects',
+            name: 'Projects',
             id: 'projects',
             display: ProjectsTab,
           },
