@@ -18,6 +18,11 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   const { amount } = (await req.json()) as { amount: number }
+  if (amount < 1) {
+    // This also prevents negative withdraws
+    console.error('amount must be $1 or greater')
+    return NextResponse.error()
+  }
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
