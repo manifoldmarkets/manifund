@@ -1,5 +1,24 @@
 ## Getting Started
 
+### Prerequisites
+
+1. Install [Bun](https://bun.sh/) by running:
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+2. Install project dependencies:
+```bash
+bun install
+```
+
+3. Install cross-env (required for running the dev scripts):
+```bash
+bun add -d cross-env
+```
+
+### Running the server
+
 To spin up a server against the prod database:
 
 ```bash
@@ -20,40 +39,6 @@ bunx vercel link
 bunx vercel env pull
 ```
 
-## Updating the dev database
-
-You'll want to do this if we've changed the prod database schema (eg through the Supabase web UI).
-
-0. Authenticate to snaplet with `npx snaplet auth setup`
-1. Go to https://app.snaplet.dev/ and create a new snapshot.
-2. Run `bun run snap:restore` (or `bun run snap:restore-empty`, which is less likely to miss a table)
-
-   - You might need to add a `.snaplet/config.json` file with eg
-
-   ```json
-   {
-     "projectId": "clej64eho0387lyqivt8o85zx",
-     "targetDatabaseUrl": "postgres://postgres:[password]@db.oucjhqqretizqonyfyqu.supabase.co:6543/postgres"
-   }
-   ```
-
-3. Run the following SQL code on the dev db (`Regrant permissions`):
-
-   ```sql
-   grant usage on schema public to postgres, anon, authenticated, service_role;
-
-   grant all privileges on all tables in schema public to postgres, anon, authenticated, service_role, supabase_admin;
-   grant all privileges on all functions in schema public to postgres, anon, authenticated, service_role, supabase_admin;
-   grant all privileges on all sequences in schema public to postgres, anon, authenticated, service_role, supabase_admin;
-
-   alter default privileges in schema public grant all on tables to postgres, anon, authenticated, service_role;
-   alter default privileges in schema public grant all on functions to postgres, anon, authenticated, service_role;
-   alter default privileges in schema public grant all on sequences to postgres, anon, authenticated, service_role;
-
-   ```
-
-4. Restart the database on eg https://app.supabase.com/project/oucjhqqretizqonyfyqu/settings/general to clear the cache
-
 ## Testing the Stripe payments flow locally
 
 To test the Stripe webhook integration, you'll need to install the Stripe CLI, then run
@@ -63,9 +48,15 @@ stripe listen --forward-to localhost:3000/api/stripe-endpoints
 ```
 
 ## Pulling types from the database
-
+First, log in to the Supabase CLI:
+```bash
+bunx supabase login
 ```
-npx supabase gen types typescript --project-id fkousziwzbnkdkldjper --schema public > db/database.types.ts
-```
+This will open a browser window where you can authenticate.
 
-Note that bun/bunx has some problems with the `supabase` cli, so just use npx here.
+Then, to sync `db/database.types.ts` with what's in Supabase:
+- Dev Supabase: `bun run gen-dev-types`
+- Prod Supabase: `bun run gen-types`
+```bash
+bun run gen-types
+```
