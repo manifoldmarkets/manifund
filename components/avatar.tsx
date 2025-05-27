@@ -44,7 +44,10 @@ export function Avatar(props: {
       alt={`${username ?? 'Unknown user'} avatar`}
     />
   ) : (
-    <div onClick={onClick} className={clsx(className, 'rounded-full', !noLink && 'cursor-pointer')}>
+    <div
+      onClick={onClick}
+      className={clsx(className, 'rounded-full', !noLink && 'cursor-pointer')}
+    >
       <GeneratedAvatar seed={id} size={s} aria-hidden="true" />
     </div>
   )
@@ -101,12 +104,12 @@ export function GeneratedAvatar(props: { seed: string; size?: number }) {
     size < 8
       ? 'text-xs'
       : size < 12
-        ? 'text-lg'
-        : size < 16
-          ? 'text-xl'
-          : size < 24
-            ? 'text-3xl'
-            : 'text-5xl'
+      ? 'text-lg'
+      : size < 16
+      ? 'text-xl'
+      : size < 24
+      ? 'text-3xl'
+      : 'text-5xl'
 
   return (
     <div

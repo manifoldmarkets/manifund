@@ -175,29 +175,30 @@ export function WriteComment(props: {
   const showCancelButton = !!setReplyingTo
   const startingText: JSONContent | string = !!replyingTo
     ? {
-      type: 'doc',
-      content: [
-        {
-          type: 'paragraph',
-          content: [
-            {
-              type: 'mention',
-              attrs: {
-                id: replyingTo.commenter,
-                label: replyingTo.profiles.username,
+        type: 'doc',
+        content: [
+          {
+            type: 'paragraph',
+            content: [
+              {
+                type: 'mention',
+                attrs: {
+                  id: replyingTo.commenter,
+                  label: replyingTo.profiles.username,
+                },
               },
-            },
-            {
-              text: ' ',
-              type: 'text',
-            },
-          ],
-        },
-      ],
-    }
+              {
+                text: ' ',
+                type: 'text',
+              },
+            ],
+          },
+        ],
+      }
     : ''
-  const storageKey = `CommentOn${project.id}${replyingTo ? `ReplyingTo${replyingTo.id}` : ''
-    }`
+  const storageKey = `CommentOn${project.id}${
+    replyingTo ? `ReplyingTo${replyingTo.id}` : ''
+  }`
   const editor = useTextEditor(
     startingText,
     storageKey,

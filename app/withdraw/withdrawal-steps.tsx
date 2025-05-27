@@ -257,7 +257,7 @@ function ConfirmWithdrawal(props: {
           </div>
           <div className="border-t border-gray-100">
             <dl className="divide-y divide-gray-100">
-              <div className="grid grid-cols-2 gap-4 py-6 px-6">
+              <div className="grid grid-cols-2 gap-4 px-6 py-6">
                 <dt className=" text-sm font-medium text-gray-900">
                   {isBank ? 'Bank name' : 'Card brand name'}
                 </dt>
@@ -267,7 +267,7 @@ function ConfirmWithdrawal(props: {
                     : (withdrawalMethod as Stripe.Card).brand}
                 </dd>
               </div>
-              <div className="grid grid-cols-2 gap-4 py-6 px-6">
+              <div className="grid grid-cols-2 gap-4 px-6 py-6">
                 <dt className=" text-sm font-medium text-gray-900">
                   {isBank
                     ? 'last 4 digits of routing number'
@@ -278,7 +278,7 @@ function ConfirmWithdrawal(props: {
                   {withdrawalMethod.last4}
                 </dd>
               </div>
-              <div className="grid grid-cols-2 gap-4 py-6 px-6">
+              <div className="grid grid-cols-2 gap-4 px-6 py-6">
                 <dt className=" text-sm font-medium text-gray-900">
                   Amount to withdraw
                 </dt>
@@ -287,7 +287,7 @@ function ConfirmWithdrawal(props: {
                 </dd>
               </div>
               {!complete && (
-                <Row className="justify-center py-6 px-6">
+                <Row className="justify-center px-6 py-6">
                   <Tooltip
                     text={
                       isSubmitting

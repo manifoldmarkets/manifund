@@ -89,11 +89,11 @@ export function ProfileContent(props: {
   const userCharityBalance =
     userTxns && userBids && userProfile
       ? calculateCharityBalance(
-        userTxns,
-        userBids,
-        userProfile?.id,
-        userProfile?.accreditation_status
-      )
+          userTxns,
+          userBids,
+          userProfile?.id,
+          userProfile?.accreditation_status
+        )
       : 0
   const relevantProjects = projects
     .filter(

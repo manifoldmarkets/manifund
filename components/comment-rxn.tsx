@@ -112,8 +112,8 @@ export function AddRxnPopover(props: {
                         !sufficientFunds
                           ? 'Insufficient funds'
                           : userDidReact
-                            ? 'Already used'
-                            : ''
+                          ? 'Already used'
+                          : ''
                       }
                     >
                       <button
@@ -130,7 +130,7 @@ export function AddRxnPopover(props: {
                             : 'cursor-not-allowed',
                           userDidReact && 'bg-gray-200',
                           reaction === selectedTippedRxn &&
-                          'bg-gray-200 ring-2 ring-gray-300',
+                            'bg-gray-200 ring-2 ring-gray-300',
                           'flex items-center gap-0.5 rounded px-1 py-0.5'
                         )}
                       >
@@ -190,12 +190,12 @@ export function ExistingFreeRxnsDisplay(props: {
           const tooltip = (
             <div
               className={clsx(
-                "grid gap-1",
-                numColumns === 1 && "grid-cols-1",
-                numColumns === 2 && "grid-cols-2",
-                numColumns === 3 && "grid-cols-3",
-                numColumns === 4 && "grid-cols-4",
-                numColumns === 5 && "grid-cols-5"
+                'grid gap-1',
+                numColumns === 1 && 'grid-cols-1',
+                numColumns === 2 && 'grid-cols-2',
+                numColumns === 3 && 'grid-cols-3',
+                numColumns === 4 && 'grid-cols-4',
+                numColumns === 5 && 'grid-cols-5'
               )}
             >
               {reactors.map((r) => (
@@ -206,7 +206,9 @@ export function ExistingFreeRxnsDisplay(props: {
                     id={r.profiles.id}
                     size="xxs"
                   />
-                  <span className="text-xs">{r.profiles.full_name || r.profiles.username}</span>
+                  <span className="text-xs">
+                    {r.profiles.full_name || r.profiles.username}
+                  </span>
                 </Row>
               ))}
             </div>
@@ -263,15 +265,17 @@ export function ExistingTippedRxnsDisplay(props: {
           const numColumns = Math.min(5, Math.ceil(reactors.length / 10))
           const tooltip = (
             <Col className="gap-1.5">
-              <div className="text-xs font-medium">${tippedRxns[reaction]} tip</div>
+              <div className="text-xs font-medium">
+                ${tippedRxns[reaction]} tip
+              </div>
               <div
                 className={clsx(
-                  "grid gap-1",
-                  numColumns === 1 && "grid-cols-1",
-                  numColumns === 2 && "grid-cols-2",
-                  numColumns === 3 && "grid-cols-3",
-                  numColumns === 4 && "grid-cols-4",
-                  numColumns === 5 && "grid-cols-5"
+                  'grid gap-1',
+                  numColumns === 1 && 'grid-cols-1',
+                  numColumns === 2 && 'grid-cols-2',
+                  numColumns === 3 && 'grid-cols-3',
+                  numColumns === 4 && 'grid-cols-4',
+                  numColumns === 5 && 'grid-cols-5'
                 )}
               >
                 {reactors.map((r) => (
@@ -282,18 +286,16 @@ export function ExistingTippedRxnsDisplay(props: {
                       id={r.profiles.id}
                       size="xxs"
                     />
-                    <span className="text-xs">{r.profiles.full_name || r.profiles.username}</span>
+                    <span className="text-xs">
+                      {r.profiles.full_name || r.profiles.username}
+                    </span>
                   </Row>
                 ))}
               </div>
             </Col>
           )
           return (
-            <Tooltip
-              text={tooltip}
-              key={reaction}
-              hasSafePolygon
-            >
+            <Tooltip text={tooltip} key={reaction} hasSafePolygon>
               <div
                 className={clsx(
                   'flex cursor-default items-center gap-1 rounded bg-gradient-to-r from-orange-500 to-rose-500 px-1.5 py-[0.5px]',
@@ -325,7 +327,8 @@ export function CommentRxnsPanel(props: {
   orangeBg?: boolean
   userProfile?: Profile
 }) {
-  const { commentId, rxns, userId, userCharityBalance, orangeBg, userProfile } = props
+  const { commentId, rxns, userId, userCharityBalance, orangeBg, userProfile } =
+    props
 
   const router = useRouter()
   const [localRxns, setLocalRxns] = useState(rxns)
