@@ -9,8 +9,9 @@ export function ProfileComments(props: {
   profile: Profile
   userId?: string
   userCharityBalance?: number
+  userProfile?: Profile
 }) {
-  const { comments, profile, userId, userCharityBalance } = props
+  const { comments, profile, userId, userCharityBalance, userProfile } = props
   const filteredComments = comments.filter(
     (comment) => comment.projects.stage !== 'hidden'
   )
@@ -30,6 +31,7 @@ export function ProfileComments(props: {
               rxns={comment.comment_rxns}
               commentHref={`/projects/${comment.projects.slug}?tab=comments#${comment.id}`}
               projectTitle={comment.projects.title}
+              userProfile={userProfile}
             />
           )
         })}

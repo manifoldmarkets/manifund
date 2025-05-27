@@ -16,6 +16,7 @@
 4. Run server using local supabase: `bun run dev:local`
 
 ### If you intend on making database changes:
+
 5. Make your schema changes
    - Option A: Via Supabase Studio (http://localhost:54323)
    - Option B: Write SQL migrations manually
@@ -23,28 +24,33 @@
    - From Studio changes: `npx supabase db diff --schema public --file your_migration_name`
    - Manual: `npx supabase migration new your_migration_name` then edit the file
 7. Apply migration locally:
-  ```
-    npx supabase migration up
-  ```
+
+```
+  npx supabase migration up
+```
+
 8. Update local typescript types
-  ```
-    bun run gen-types:local
-  ```
+
+```
+  bun run gen-types:local
+```
+
 9. Test your changes
 10. Apply migrations to remote supabase projects when ready
-  ```
-    # Link to target environment
-    npx supabase link --project-ref PROJECT_ID  # fkousziwzbnkdkldjper for prod, oucjhqqretizqonyfyqu for dev
 
-    # Check what migrations will be applied
-    npx supabase migration list --linked
+```
+  # Link to target environment
+  npx supabase link --project-ref PROJECT_ID  # fkousziwzbnkdkldjper for prod, oucjhqqretizqonyfyqu for dev
 
-    # Dry run to see what would happen and confirm its safety
-    npx supabase migration up --linked --dry-run
+  # Check what migrations will be applied
+  npx supabase migration list --linked
 
-    # Apply migrations
-    npx supabase migration up --linked
-  ```
+  # Dry run to see what would happen and confirm its safety
+  npx supabase migration up --linked --dry-run
+
+  # Apply migrations
+  npx supabase migration up --linked
+```
 
 ### Google OAuth
 
@@ -56,9 +62,9 @@ If you want Google Oauth to work locally, you should provide these values to you
 ```
 
 Setup for this requires:
+
 1. Creating a google cloud project and (enabling oauth)[https://console.cloud.google.com/apis/credentials]
 2. Creating Oauth2.0 credentials with `http://127.0.0.1:54321/auth/v1/callback` as an authorized reidrect URI
-
 
 ## Development against remote supabase
 
@@ -71,7 +77,6 @@ bunx vercel env pull
 bun run dev      # Production database
 bun run dev:dev  # Development database
 ```
-
 
 ### Typescript type Generation
 
