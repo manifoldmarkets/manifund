@@ -74,6 +74,7 @@ export function Comments(props: {
               commentHref={`/projects/${project.slug}?tab=comments#${thread.root.id}`}
               writtenByCreator={thread.root.commenter === project.creator}
               contributionText={commenterContributions[thread.root.commenter]}
+              userProfile={userProfile}
             >
               {userProfile && replyButton(thread.root)}
             </Comment>
@@ -91,6 +92,7 @@ export function Comments(props: {
                     commentHref={`/projects/${project.slug}?tab=comments#${reply.id}`}
                     writtenByCreator={reply.commenter === project.creator}
                     contributionText={commenterContributions[reply.commenter]}
+                    userProfile={userProfile}
                   >
                     {userProfile && replyButton(reply)}
                   </Comment>

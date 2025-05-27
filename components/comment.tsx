@@ -4,7 +4,7 @@ import { RichContent } from '@/components/editor'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import { Tag } from '@/components/tags'
-import { type Comment, type CommentRxn } from '@/db/comment'
+import { type Comment, type CommentRxnWithProfile } from '@/db/comment'
 import { type Profile } from '@/db/profile'
 import Link from 'next/link'
 import clsx from 'clsx'
@@ -22,13 +22,14 @@ export function Comment(props: {
   comment: Comment
   commenter: Profile
   commentHref: string
-  rxns: CommentRxn[]
+  rxns: CommentRxnWithProfile[]
   userId?: string
   userCharityBalance?: number
   writtenByCreator?: boolean
   contributionText?: string
   projectTitle?: string
   children?: React.ReactNode
+  userProfile?: Profile
 }) {
   const {
     comment,
@@ -41,6 +42,7 @@ export function Comment(props: {
     contributionText,
     projectTitle,
     children,
+    userProfile,
   } = props
   const [expanded, setExpanded] = useState(false)
   const [showExpandButton, setShowExpandButton] = useState(false)
@@ -160,6 +162,7 @@ export function Comment(props: {
               userCharityBalance={userCharityBalance}
               rxns={rxns}
               orangeBg={highlighted}
+              userProfile={userProfile}
             />
             <div className="mt-1.5">{children}</div>
           </Row>

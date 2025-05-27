@@ -9,7 +9,6 @@
     "supabase:local": "dotenv -e .env.development.local -- bunx supabase start",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
     "gen-types": "bunx supabase gen types typescript --project-id fkousziwzbnkdkldjper --schema public > db/database.types.ts",
     "gen-dev:dev": "bunx supabase gen types typescript --project-id oucjhqqretizqonyfyqu --schema public > db/database.types.ts",
     "gen-types:local": "bunx supabase gen types typescript --local --schema public > db/database.types.ts",

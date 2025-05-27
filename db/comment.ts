@@ -6,16 +6,17 @@ import { Profile } from './profile'
 
 export type Comment = Database['public']['Tables']['comments']['Row']
 export type CommentRxn = Database['public']['Tables']['comment_rxns']['Row']
+export type CommentRxnWithProfile = CommentRxn & { profiles: Profile }
 export type CommentAndProfile = Comment & { profiles: Profile }
 export type FullComment = Comment & { profiles: Profile } & {
   projects: Project
-} & { comment_rxns: CommentRxn[] }
+} & { comment_rxns: CommentRxnWithProfile[] }
 export type CommentAndProject = Comment & { projects: Project }
 export type CommentAndProfileAndRxns = Comment & { profiles: Profile } & {
-  comment_rxns: CommentRxn[]
+  comment_rxns: CommentRxnWithProfile[]
 }
 export type CommentAndProjectAndRxns = Comment & { projects: Project } & {
-  comment_rxns: CommentRxn[]
+  comment_rxns: CommentRxnWithProfile[]
 }
 export type CommentAndProfileAndProject = Comment & { profiles: Profile } & {
   projects: Project
@@ -28,7 +29,7 @@ export async function getCommentsByProject(
   const { data, error } = await supabase
     .from('comments')
     .select(
-      '*, profiles!comments_commenter_fkey(*), comment_rxns(reactor_id, reaction)'
+      '*, profiles!comments_commenter_fkey(*), comment_rxns(reactor_id, reaction, profiles!comment_rxns_reactor_id_fkey(id, username, avatar_url, full_name))'
     )
     .eq('project', project)
   if (error) {
@@ -88,7 +89,7 @@ export async function getCommentsByUser(
   const { data, error } = await supabase
     .from('comments')
     .select(
-      '*, projects(id, title, slug, stage), comment_rxns(reactor_id, reaction)'
+      '*, projects(id, title, slug, stage), comment_rxns(reactor_id, reaction, profiles!comment_rxns_reactor_id_fkey(id, username, avatar_url, full_name))'
     )
     .eq('commenter', commenterId)
   if (error) {
@@ -105,7 +106,7 @@ export async function getRecentFullComments(
   const { data } = await supabase
     .from('comments')
     .select(
-      '*, profiles!comments_commenter_fkey(*), projects!inner(*), comment_rxns(reactor_id, reaction)'
+      '*, profiles!comments_commenter_fkey(*), projects!inner(*), comment_rxns(reactor_id, reaction, profiles!comment_rxns_reactor_id_fkey(id, username, avatar_url, full_name))'
     )
     .neq('projects.stage', 'hidden')
     .order('created_at', { ascending: false })

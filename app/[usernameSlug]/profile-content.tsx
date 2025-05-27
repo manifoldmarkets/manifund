@@ -152,6 +152,7 @@ export function ProfileContent(props: {
           profile={profile}
           userCharityBalance={userCharityBalance}
           userId={userProfile?.id}
+          userProfile={userProfile}
         />
       )}
       <Col className="gap-4">

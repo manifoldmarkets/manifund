@@ -65,11 +65,12 @@ export default function ImpactCertsPage() {
           to buy up all of the outstanding certs.
         </li>
         <li>
-          Since Ivan owns 50% of the project{"'"}s certs, his stake has tripled in
-          value from $3,000 to $9,000; he sells them for $9,000 to The Good
-          Foundation, netting a $6,000 profit. (Important note: for legal reasons,
-          profits on Manifund impact certificates can currently only be used to
-          donate to charity and can{"'"}t be cashed out in the normal way.)
+          Since Ivan owns 50% of the project{"'"}s certs, his stake has tripled
+          in value from $3,000 to $9,000; he sells them for $9,000 to The Good
+          Foundation, netting a $6,000 profit. (Important note: for legal
+          reasons, profits on Manifund impact certificates can currently only be
+          used to donate to charity and can{"'"}t be cashed out in the normal
+          way.)
         </li>
       </ol>
       <h3 id="-why-are-impact-certs-better-than-regular-grants-">

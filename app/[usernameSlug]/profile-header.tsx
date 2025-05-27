@@ -39,7 +39,7 @@ export function ProfileHeader(props: {
             className="sm:hidden"
           />
           {isOwnProfile && (
-            <div className="relative top-8 right-4 h-5 w-5 rounded-full bg-orange-500 hover:bg-orange-600 sm:top-14 sm:right-6 sm:h-10 sm:w-10">
+            <div className="relative right-4 top-8 h-5 w-5 rounded-full bg-orange-500 hover:bg-orange-600 sm:right-6 sm:top-14 sm:h-10 sm:w-10">
               <Link href="/edit-profile">
                 <PencilIcon
                   className="h-5 w-5 p-1 text-white sm:h-10 sm:w-10 sm:p-2"
@@ -58,7 +58,7 @@ export function ProfileHeader(props: {
                   <p>@{profile.username}</p>
                   {profile.accreditation_status && <AccreditedTag />}
                   {profile.regranter_status && <RegranterTag />}
-                </Row >
+                </Row>
                 {isOwnProfile && (
                   <Row className="mt-1 flex-wrap items-center gap-2 text-gray-400">
                     <p>{email}</p>

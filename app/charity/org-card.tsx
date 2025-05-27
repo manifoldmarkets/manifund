@@ -28,9 +28,9 @@ export function OrgCard(props: { charity: ProfileAndTxns }) {
               )}
             </figure>
           </div>
-          <Col className="h-full justify-center py-5 px-3">
+          <Col className="h-full justify-center px-3 py-5">
             <div className="mb-2 text-xl font-bold">{charity.full_name}</div>
-            <div className="text-sm text-gray-600 line-clamp-4">
+            <div className="line-clamp-4 text-sm text-gray-600">
               {charity.bio}
             </div>
             {raised > 0 && (

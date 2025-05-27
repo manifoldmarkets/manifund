@@ -44,7 +44,10 @@ export function Avatar(props: {
       alt={`${username ?? 'Unknown user'} avatar`}
     />
   ) : (
-    <div onClick={onClick} className={clsx(className, 'rounded-full')}>
+    <div
+      onClick={onClick}
+      className={clsx(className, 'rounded-full', !noLink && 'cursor-pointer')}
+    >
       <GeneratedAvatar seed={id} size={s} aria-hidden="true" />
     </div>
   )
