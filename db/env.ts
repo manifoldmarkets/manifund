@@ -13,7 +13,8 @@ export const SUPABASE_SERVICE_ROLE_KEY =
     ? process.env.SUPABASE_SERVICE_ROLE_KEY
     : process.env.SUPABASE_SERVICE_ROLE_KEY_DEV
 
-export const SUPABASE_BUCKET_URL = 'https://fkousziwzbnkdkldjper.supabase.co'
+export const SUPABASE_BUCKET_URL =
+  process.env.SUPABASE_BUCKET_URL ?? 'https://fkousziwzbnkdkldjper.supabase.co'
 
 export const NEXT_PUBLIC_STRIPE_KEY =
   SUPABASE_ENV === 'PROD'
