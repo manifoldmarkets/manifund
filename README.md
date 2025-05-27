@@ -3,38 +3,35 @@
 ## Prerequisites
 
 1. Install [Bun](https://bun.sh/): `curl -fsSL https://bun.sh/install | bash`
-2. Install dependencies: `bun install`
+2. Install docker: [Orbstack.dev](https://orbstack.dev/) or [Docker desktop](https://docs.docker.com/desktop/setup/install/mac-install/)
+3. Install dependencies: `bun install`
 
 ## Development against local supabase (Recommended)
 
-```bash
-# Start local Supabase
-npx supabase start
+### Typical Workflow
 
-# Configure environment
-./setup/setup-local-env.sh
-
-# Optional: Import production data
-./setup/sync-data-from-prod.sh
-
-# Run server using local supabase
-bun run dev:local
-```
-
-
-### Running the server
+1. Start local supabase: `npx supabase start`
+2. Update .env.development.local with local supabase details: `./setup/setup-local-env.sh`
+3. Import data (Optional): `./setup/sync-data-from-prod.sh`. This requires additional keys.
+4. Run server using local supabase: `bun run dev:local`
 
 ### If you intend on making database changes:
-5. **Make database changes**:
+5. Make your schema changes
    - Option A: Via Supabase Studio (http://localhost:54323)
    - Option B: Write SQL migrations manually
-6. **Generate migration**:
+6. Generate a migration
    - From Studio changes: `npx supabase db diff --schema public --file your_migration_name`
    - Manual: `npx supabase migration new your_migration_name` then edit the file
-7. **Apply migration locally**: `npx supabase migration up`
-8. **Update local typescript types**: `bun run gen-types:local`
-9. **Test your changes**
-10. **Apply migrations to remote supabase projects when ready**:
+7. Apply migration locally:
+  ```
+    npx supabase migration up
+  ```
+8. Update local typescript types
+  ```
+    bun run gen-types:local
+  ```
+9. Test your changes
+10. Apply migrations to remote supabase projects when ready
   ```
     # Link to target environment
     npx supabase link --project-ref PROJECT_ID  # fkousziwzbnkdkldjper for prod, oucjhqqretizqonyfyqu for dev
