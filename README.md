@@ -46,6 +46,19 @@
     npx supabase migration up --linked
   ```
 
+### Google OAuth
+
+If you want Google Oauth to work locally, you should provide these values to your `.env.development.local`
+
+```
+  SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID=your-client-id
+  SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET=your-secret
+```
+
+Setup for this requires:
+1. Creating a google cloud project and (enabling oauth)[https://console.cloud.google.com/apis/credentials]
+2. Creating Oauth2.0 credentials with `http://127.0.0.1:54321/auth/v1/callback` as an authorized reidrect URI
+
 
 ## Development against remote supabase
 
