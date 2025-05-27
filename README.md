@@ -1,57 +1,78 @@
-## Getting Started
+# Manifund Development Guide
 
-### Prerequisites
+## Prerequisites
 
-1. Install [Bun](https://bun.sh/) by running:
+1. Install [Bun](https://bun.sh/): `curl -fsSL https://bun.sh/install | bash`
+2. Install dependencies: `bun install`
+
+## Development against local supabase (Recommended)
+
 ```bash
-curl -fsSL https://bun.sh/install | bash
+# Start local Supabase
+npx supabase start
+
+# Configure environment
+./setup/setup-local-env.sh
+
+# Optional: Import production data
+./setup/sync-data-from-prod.sh
+
+# Run server using local supabase
+bun run dev:local
 ```
 
-2. Install project dependencies:
-```bash
-bun install
-```
 
 ### Running the server
 
-To spin up a server against the prod database:
+### If you intend on making database changes:
+5. **Make database changes**:
+   - Option A: Via Supabase Studio (http://localhost:54323)
+   - Option B: Write SQL migrations manually
+6. **Generate migration**:
+   - From Studio changes: `npx supabase db diff --schema public --file your_migration_name`
+   - Manual: `npx supabase migration new your_migration_name` then edit the file
+7. **Apply migration locally**: `npx supabase migration up`
+8. **Update local typescript types**: `bun run gen-types:local`
+9. **Test your changes**
+10. **Apply migrations to remote supabase projects when ready**:
+  ```
+    # Link to target environment
+    npx supabase link --project-ref PROJECT_ID  # fkousziwzbnkdkldjper for prod, oucjhqqretizqonyfyqu for dev
+
+    # Check what migrations will be applied
+    npx supabase migration list --linked
+
+    # Dry run to see what would happen and confirm its safety
+    npx supabase migration up --linked --dry-run
+
+    # Apply migrations
+    npx supabase migration up --linked
+  ```
+
+
+## Development against remote supabase
 
 ```bash
-bun run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-Or run `bun run dev:dev` to connect to the dev database.
-
-## Getting .env variables
-
-You'll need the supabase client and admin keys. After you've been added to the
-Vercel project, get them with:
-
-```bash
+# Get environment variables
 bunx vercel link
 bunx vercel env pull
+
+# Run against remote
+bun run dev      # Production database
+bun run dev:dev  # Development database
 ```
 
-## Testing the Stripe payments flow locally
 
-To test the Stripe webhook integration, you'll need to install the Stripe CLI, then run
+### Typescript type Generation
 
-```
-stripe listen --forward-to localhost:3000/api/stripe-endpoints
-```
-
-## Pulling types from the database
-First, log in to the Supabase CLI:
 ```bash
 bunx supabase login
+bun run gen-types        # From prod
+bun run gen-types:dev    # From dev
 ```
-This will open a browser window where you can authenticate.
 
-Then, to sync `db/database.types.ts` with what's in Supabase:
-- Dev Supabase: `bun run gen-dev-types`
-- Prod Supabase: `bun run gen-types`
+## Testing Stripe Webhooks
+
 ```bash
-bun run gen-types
+stripe listen --forward-to localhost:3000/api/stripe-endpoints
 ```
