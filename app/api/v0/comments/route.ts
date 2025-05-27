@@ -1,9 +1,5 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { Database } from '@/db/database.types'
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/db/env'
 import { generateHTML } from '@tiptap/html'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
@@ -11,6 +7,7 @@ import Image from '@tiptap/extension-image'
 import Mention from '@tiptap/extension-mention'
 import { NodeHtmlMarkdown } from 'node-html-markdown'
 import { JSONContent } from '@tiptap/core'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 
 async function listCommentsPaginated(
   supabase: SupabaseClient,
@@ -58,29 +55,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const before = searchParams.get('before')
 
-  const cookieStore = await cookies()
-  const supabase = createServerClient<Database>(
-    SUPABASE_URL!,
-    SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-      },
-    }
-  )
+  const supabase = await createServerSupabaseClient()
   const comments = await listCommentsPaginated(supabase, before)
 
   comments?.map((comment) => {
