@@ -186,19 +186,30 @@ export function ExistingFreeRxnsDisplay(props: {
             (rxn) => rxn.reactor_id === userId && rxn.reaction === reaction
           )
           const reactors = rxns.filter((r) => r.reaction === reaction)
+          const numColumns = Math.min(5, Math.ceil(reactors.length / 10))
           const tooltip = (
-            <Row className="gap-1">
+            <div
+              className={clsx(
+                "grid gap-1",
+                numColumns === 1 && "grid-cols-1",
+                numColumns === 2 && "grid-cols-2",
+                numColumns === 3 && "grid-cols-3",
+                numColumns === 4 && "grid-cols-4",
+                numColumns === 5 && "grid-cols-5"
+              )}
+            >
               {reactors.map((r) => (
-                <Tooltip key={r.reactor_id} text={r.profiles.full_name} hasSafePolygon>
+                <Row key={r.reactor_id} className="items-center gap-1.5">
                   <Avatar
                     username={r.profiles.username}
                     avatarUrl={r.profiles.avatar_url}
                     id={r.profiles.id}
                     size="xxs"
                   />
-                </Tooltip>
+                  <span className="text-xs">{r.profiles.full_name || r.profiles.username}</span>
+                </Row>
               ))}
-            </Row>
+            </div>
           )
           return (
             <Tooltip text={tooltip} key={reaction} hasSafePolygon>
@@ -249,28 +260,37 @@ export function ExistingTippedRxnsDisplay(props: {
             (rxn) => rxn.reactor_id === userId && rxn.reaction === reaction
           )
           const reactors = rxns.filter((r) => r.reaction === reaction)
+          const numColumns = Math.min(5, Math.ceil(reactors.length / 10))
           const tooltip = (
-            <Row className="gap-1">
-              {reactors.map((r) => (
-                <Tooltip key={r.reactor_id} text={r.profiles.full_name || r.profiles.username} hasSafePolygon>
-                  <Avatar
-                    username={r.profiles.username}
-                    avatarUrl={r.profiles.avatar_url}
-                    id={r.profiles.id}
-                    size="xxs"
-                  />
-                </Tooltip>
-              ))}
-            </Row>
+            <Col className="gap-1.5">
+              <div className="text-xs font-medium">${tippedRxns[reaction]} tip</div>
+              <div
+                className={clsx(
+                  "grid gap-1",
+                  numColumns === 1 && "grid-cols-1",
+                  numColumns === 2 && "grid-cols-2",
+                  numColumns === 3 && "grid-cols-3",
+                  numColumns === 4 && "grid-cols-4",
+                  numColumns === 5 && "grid-cols-5"
+                )}
+              >
+                {reactors.map((r) => (
+                  <Row key={r.reactor_id} className="items-center gap-1.5">
+                    <Avatar
+                      username={r.profiles.username}
+                      avatarUrl={r.profiles.avatar_url}
+                      id={r.profiles.id}
+                      size="xxs"
+                    />
+                    <span className="text-xs">{r.profiles.full_name || r.profiles.username}</span>
+                  </Row>
+                ))}
+              </div>
+            </Col>
           )
           return (
             <Tooltip
-              text={
-                <>
-                  {`$${tippedRxns[reaction]}`}
-                  {tooltip}
-                </>
-              }
+              text={tooltip}
               key={reaction}
               hasSafePolygon
             >
