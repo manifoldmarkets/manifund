@@ -1,5 +1,5 @@
 import { getUser, isAdmin } from '@/db/profile'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import NoAccess from '../no-access'
 import Link from 'next/link'
 import { Suspense } from 'react'
@@ -66,7 +66,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
   if (!user || !isAdmin(user)) {
     return <NoAccess />

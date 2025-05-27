@@ -1,5 +1,5 @@
 import { getProfileById, getUser } from '@/db/profile'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { NavBarItem } from './bottom-nav-bar-item'
 import Link from 'next/link'
 import { Avatar } from '@/components/avatar'
@@ -18,7 +18,7 @@ export type Item = {
 }
 
 export async function BottomNavBar() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
   const profile = await getProfileById(supabase, user?.id)
   const txns = await getTxnsByUser(supabase, user?.id ?? '')

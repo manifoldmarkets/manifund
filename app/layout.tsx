@@ -2,7 +2,7 @@ import 'server-only'
 
 import SupabaseListener from '@/db/supabase-listener'
 import SupabaseProvider from '@/db/supabase-provider'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import './globals.css'
 import Sidebar from './sidebar'
 import { Readex_Pro, Josefin_Slab, Satisfy } from 'next/font/google'
@@ -43,7 +43,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const {
     data: { session },
   } = await supabase.auth.getSession()

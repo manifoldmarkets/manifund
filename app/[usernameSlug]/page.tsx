@@ -1,5 +1,5 @@
 import { getProfileById, getProfileByUsername, getUser } from '@/db/profile'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { getFullTxnsByUser, getTxnsByUser } from '@/db/txn'
 import { getProjectsByUser } from '@/db/project'
@@ -15,7 +15,7 @@ export default async function UserProfilePage(props: {
   params: { usernameSlug: string }
 }) {
   const { usernameSlug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const profile = await getProfileByUsername(supabase, usernameSlug)
   if (!profile) {
     return <NotFound />

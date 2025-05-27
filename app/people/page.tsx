@@ -1,10 +1,10 @@
 import { Row } from '@/components/layout/row'
 import { listProfiles } from '@/db/profile'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { PeopleDisplay } from './people-display'
 
 export default async function PeoplePage() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const profiles = await listProfiles(supabase)
 
   return (

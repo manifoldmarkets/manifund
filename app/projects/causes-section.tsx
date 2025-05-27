@@ -1,4 +1,4 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { FullCause, getSomeFullCauses } from '@/db/cause'
 import { Col } from '@/components/layout/col'
 import { CausePreview } from './cause-preview'
@@ -21,7 +21,7 @@ export function CausesSection(props: { causes?: FullCause[] }) {
 
 // Use this version if you want to show featured causes
 export async function CausesWithFeatured() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const featuredCauses = await getSomeFullCauses([], supabase)
   return <CausesSection causes={featuredCauses} />
 }

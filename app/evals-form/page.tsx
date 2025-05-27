@@ -1,13 +1,13 @@
 import { listProfilesAndEvals, getUser } from '@/db/profile'
 import { listProjectsForEvals } from '@/db/project'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { EvalsForm } from './evals-form'
 import { getProfileTrusts, getUserEvals } from '@/db/eval'
 import { sortBy } from 'lodash'
 import Auth from '@/app/login/auth-ui'
 
 export default async function EvalsPage() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const [user, projects, profiles] = await Promise.all([
     getUser(supabase),
     listProjectsForEvals(supabase),

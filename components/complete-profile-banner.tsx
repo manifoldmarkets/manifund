@@ -1,11 +1,11 @@
 import { CommunityChoiceBanner } from '@/app/banner'
 import { getProfileById, getUser } from '@/db/profile'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { SiteLink } from './site-link'
 
 // Separated from banner.tsx to be a server component
 export async function CompleteProfileBanner() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
   const userProfile = await getProfileById(supabase, user?.id)
   const profileTodo =

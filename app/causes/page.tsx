@@ -1,10 +1,10 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { FullCause, listFullCauses } from '@/db/cause'
 import Image from 'next/image'
 import Link from 'next/link'
 
 export default async function CausesPage() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const causesList = await listFullCauses(supabase)
   const prizes = causesList.filter((c) => c.prize)
   const regularCauses = causesList.filter((c) => !c.prize)

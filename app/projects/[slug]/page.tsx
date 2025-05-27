@@ -1,4 +1,4 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getUser, isAdmin, getProfileAndBidsById } from '@/db/profile'
 import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
@@ -16,7 +16,7 @@ export const revalidate = 0
 
 export async function generateMetadata(props: { params: { slug: string } }) {
   const { slug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const project = await getProjectBySlug(supabase, slug)
   const description = project.blurb ?? 'A project on Manifund'
   return {
@@ -36,7 +36,7 @@ export async function generateMetadata(props: { params: { slug: string } }) {
 
 export default async function ProjectPage(props: { params: { slug: string } }) {
   const { slug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const [project, user] = await Promise.all([
     getFullProjectBySlug(supabase, slug),
     getUser(supabase),

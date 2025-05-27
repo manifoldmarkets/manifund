@@ -2,7 +2,7 @@ import { Col } from '@/components/layout/col'
 import Image from 'next/image'
 import { AdjustmentsHorizontalIcon, PhoneIcon } from '@heroicons/react/20/solid'
 import Link from 'next/link'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getUser } from '@/db/profile'
 import { Row } from '@/components/layout/row'
 import { CardlessProject } from '@/components/project-card'
@@ -23,7 +23,7 @@ const FEATURED_PROJECT_SLUGS = [
 const GENERAL_REGRANTING_ID = '4e3f9301-c6b9-4c2b-a03f-0bec77ad01f2'
 
 export default async function DonatePage() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
   const featuredProjects = await getFeaturedProjects(supabase)
   const sortedFeaturedProjects = FEATURED_PROJECT_SLUGS.map((slug) =>
@@ -31,7 +31,7 @@ export default async function DonatePage() {
   ).filter((project) => !!project) as FullProject[]
   const regrantorIds = (featuredProjects ?? [])
     .flatMap((project) => project.txns?.map((txn) => txn.from_id) ?? [])
-    .filter((id) => !!id)
+    .filter((id): id is string => !!id)
   const { data: regrantorProfiles } = await supabase
     .from('profiles')
     .select('*')

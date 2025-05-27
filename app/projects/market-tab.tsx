@@ -8,7 +8,7 @@ import { Row } from '@/components/layout/row'
 import { Profile } from '@/db/profile'
 import { FullProject } from '@/db/project'
 import { FolderPlusIcon } from '@heroicons/react/24/outline'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/db/supabase-browser'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -46,7 +46,7 @@ export function MarketTab(props: {
 }
 
 async function updateMarkets(projectId: string, markets: string[]) {
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
   await supabase.from('projects').update({ markets }).eq('id', projectId)
 }
 

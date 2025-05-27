@@ -1,4 +1,4 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getProfileByUsername, getProfileById, getUser } from '@/db/profile'
 import {
   getTxnAndProjectsByUser,
@@ -23,7 +23,7 @@ export default async function CharityPage(props: {
   params: { charitySlug: string }
 }) {
   const { charitySlug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const charity = await getProfileByUsername(supabase, charitySlug)
   if (!charity) {
     return <div>Charity not found.</div>

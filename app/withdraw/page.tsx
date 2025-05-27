@@ -1,4 +1,4 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { WithdrawalSteps } from './withdrawal-steps'
 import { getProfileById, getUser } from '@/db/profile'
 import { STRIPE_SECRET_KEY } from '@/db/env'
@@ -16,7 +16,7 @@ const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
 export const revalidate = 60
 
 export default async function WithdrawPage() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
   if (!user) {
     return <Auth />
