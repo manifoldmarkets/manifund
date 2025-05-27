@@ -12,11 +12,6 @@ curl -fsSL https://bun.sh/install | bash
 bun install
 ```
 
-3. Install cross-env (required for running the dev scripts):
-```bash
-bun add -d cross-env
-```
-
 ### Running the server
 
 To spin up a server against the prod database:
