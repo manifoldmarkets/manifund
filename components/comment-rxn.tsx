@@ -1,4 +1,4 @@
-import { CommentRxn } from '@/db/comment'
+import { CommentRxnWithProfile } from '@/db/comment'
 import { Popover } from '@headlessui/react'
 import { PaperAirplaneIcon } from '@heroicons/react/20/solid'
 import { FaceSmileIcon } from '@heroicons/react/24/outline'
@@ -10,6 +10,8 @@ import { InfoTooltip } from './info-tooltip'
 import { Col } from './layout/col'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
+import { Avatar } from './avatar'
+import { Profile } from '@/db/profile'
 
 export const freeRxns = [
   '➕',
@@ -46,7 +48,7 @@ const AddRxnIcon = (props: { className?: string }) => (
 
 export function AddRxnPopover(props: {
   postRxn: (reaction: string) => void
-  rxns: CommentRxn[]
+  rxns: CommentRxnWithProfile[]
   userId: string
   userCharityBalance?: number
   orangeBg?: boolean
@@ -110,8 +112,8 @@ export function AddRxnPopover(props: {
                         !sufficientFunds
                           ? 'Insufficient funds'
                           : userDidReact
-                          ? 'Already used'
-                          : ''
+                            ? 'Already used'
+                            : ''
                       }
                     >
                       <button
@@ -128,7 +130,7 @@ export function AddRxnPopover(props: {
                             : 'cursor-not-allowed',
                           userDidReact && 'bg-gray-200',
                           reaction === selectedTippedRxn &&
-                            'bg-gray-200 ring-2 ring-gray-300',
+                          'bg-gray-200 ring-2 ring-gray-300',
                           'flex items-center gap-0.5 rounded px-1 py-0.5'
                         )}
                       >
@@ -167,7 +169,7 @@ export function AddRxnPopover(props: {
 }
 
 export function ExistingFreeRxnsDisplay(props: {
-  rxns: CommentRxn[]
+  rxns: CommentRxnWithProfile[]
   postRxn: (reaction: string) => void
   userId?: string
 }) {
@@ -183,27 +185,43 @@ export function ExistingFreeRxnsDisplay(props: {
           const userDidReact = !!rxns.find(
             (rxn) => rxn.reactor_id === userId && rxn.reaction === reaction
           )
+          const reactors = rxns.filter((r) => r.reaction === reaction)
+          const tooltip = (
+            <Row className="gap-1">
+              {reactors.map((r) => (
+                <Tooltip key={r.reactor_id} text={r.profiles.full_name} hasSafePolygon>
+                  <Avatar
+                    username={r.profiles.username}
+                    avatarUrl={r.profiles.avatar_url}
+                    id={r.profiles.id}
+                    size="xxs"
+                  />
+                </Tooltip>
+              ))}
+            </Row>
+          )
           return (
-            <button
-              key={reaction}
-              onClick={async () => {
-                if (userId) {
-                  await postRxn(reaction)
-                }
-              }}
-              className={clsx(
-                'flex items-center gap-1 rounded bg-gray-100 px-1.5 py-[0.5px]',
-                userDidReact && 'ring-2 ring-gray-300',
-                userId && 'cursor-pointer hover:bg-gray-200'
-              )}
-            >
-              <span className="text-sm">{reaction}</span>
-              {rxnsWithCounts[reaction] > 1 && (
-                <span className="text-xs text-gray-500">
-                  {rxnsWithCounts[reaction]}
-                </span>
-              )}
-            </button>
+            <Tooltip text={tooltip} key={reaction} hasSafePolygon>
+              <button
+                onClick={async () => {
+                  if (userId) {
+                    await postRxn(reaction)
+                  }
+                }}
+                className={clsx(
+                  'flex items-center gap-1 rounded bg-gray-100 px-1.5 py-[0.5px]',
+                  userDidReact && 'ring-2 ring-gray-300',
+                  userId && 'cursor-pointer hover:bg-gray-200'
+                )}
+              >
+                <span className="text-sm">{reaction}</span>
+                {rxnsWithCounts[reaction] > 1 && (
+                  <span className="text-xs text-gray-500">
+                    {rxnsWithCounts[reaction]}
+                  </span>
+                )}
+              </button>
+            </Tooltip>
           )
         } else {
           return null
@@ -214,7 +232,7 @@ export function ExistingFreeRxnsDisplay(props: {
 }
 
 export function ExistingTippedRxnsDisplay(props: {
-  rxns: CommentRxn[]
+  rxns: CommentRxnWithProfile[]
   userId?: string
 }) {
   const { rxns, userId } = props
@@ -230,8 +248,32 @@ export function ExistingTippedRxnsDisplay(props: {
           const userDidReact = !!rxns.find(
             (rxn) => rxn.reactor_id === userId && rxn.reaction === reaction
           )
+          const reactors = rxns.filter((r) => r.reaction === reaction)
+          const tooltip = (
+            <Row className="gap-1">
+              {reactors.map((r) => (
+                <Tooltip key={r.reactor_id} text={r.profiles.full_name || r.profiles.username} hasSafePolygon>
+                  <Avatar
+                    username={r.profiles.username}
+                    avatarUrl={r.profiles.avatar_url}
+                    id={r.profiles.id}
+                    size="xxs"
+                  />
+                </Tooltip>
+              ))}
+            </Row>
+          )
           return (
-            <Tooltip text={`$${tippedRxns[reaction]}`} key={reaction}>
+            <Tooltip
+              text={
+                <>
+                  {`$${tippedRxns[reaction]}`}
+                  {tooltip}
+                </>
+              }
+              key={reaction}
+              hasSafePolygon
+            >
               <div
                 className={clsx(
                   'flex cursor-default items-center gap-1 rounded bg-gradient-to-r from-orange-500 to-rose-500 px-1.5 py-[0.5px]',
@@ -257,12 +299,13 @@ export function ExistingTippedRxnsDisplay(props: {
 
 export function CommentRxnsPanel(props: {
   commentId: string
-  rxns: CommentRxn[]
+  rxns: CommentRxnWithProfile[]
   userId?: string
   userCharityBalance?: number
   orangeBg?: boolean
+  userProfile?: Profile
 }) {
-  const { commentId, rxns, userId, userCharityBalance, orangeBg } = props
+  const { commentId, rxns, userId, userCharityBalance, orangeBg, userProfile } = props
 
   const router = useRouter()
   const [localRxns, setLocalRxns] = useState(rxns)
@@ -276,6 +319,19 @@ export function CommentRxnsPanel(props: {
         reaction,
         reactor_id: userId ?? '',
         txn_id: null,
+        profiles: userProfile ?? {
+          id: userId ?? '',
+          username: '',
+          avatar_url: '',
+          full_name: '',
+          accreditation_status: false,
+          bio: '',
+          long_description: {},
+          regranter_status: false,
+          stripe_connect_id: null,
+          type: 'individual',
+          website: null,
+        },
       })
       setLocalRxns(rxns)
     } else {

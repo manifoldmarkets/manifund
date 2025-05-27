@@ -74,6 +74,7 @@ export function Comments(props: {
               commentHref={`/projects/${project.slug}?tab=comments#${thread.root.id}`}
               writtenByCreator={thread.root.commenter === project.creator}
               contributionText={commenterContributions[thread.root.commenter]}
+              userProfile={userProfile}
             >
               {userProfile && replyButton(thread.root)}
             </Comment>
@@ -91,6 +92,7 @@ export function Comments(props: {
                     commentHref={`/projects/${project.slug}?tab=comments#${reply.id}`}
                     writtenByCreator={reply.commenter === project.creator}
                     contributionText={commenterContributions[reply.commenter]}
+                    userProfile={userProfile}
                   >
                     {userProfile && replyButton(reply)}
                   </Comment>
@@ -173,30 +175,29 @@ export function WriteComment(props: {
   const showCancelButton = !!setReplyingTo
   const startingText: JSONContent | string = !!replyingTo
     ? {
-        type: 'doc',
-        content: [
-          {
-            type: 'paragraph',
-            content: [
-              {
-                type: 'mention',
-                attrs: {
-                  id: replyingTo.commenter,
-                  label: replyingTo.profiles.username,
-                },
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            {
+              type: 'mention',
+              attrs: {
+                id: replyingTo.commenter,
+                label: replyingTo.profiles.username,
               },
-              {
-                text: ' ',
-                type: 'text',
-              },
-            ],
-          },
-        ],
-      }
+            },
+            {
+              text: ' ',
+              type: 'text',
+            },
+          ],
+        },
+      ],
+    }
     : ''
-  const storageKey = `CommentOn${project.id}${
-    replyingTo ? `ReplyingTo${replyingTo.id}` : ''
-  }`
+  const storageKey = `CommentOn${project.id}${replyingTo ? `ReplyingTo${replyingTo.id}` : ''
+    }`
   const editor = useTextEditor(
     startingText,
     storageKey,
