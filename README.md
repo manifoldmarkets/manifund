@@ -10,7 +10,7 @@
 
 ### Typical Workflow
 
-1. Start local supabase: `npx supabase start`
+1. Start local supabase: `bun run supabase:local`
 2. Update .env.development.local with local supabase details: `bun run setup-local-env`
 3. Import data (Optional): `bun run sync-data-from-prod`. This requires additional keys.
 4. Run server using local supabase: `bun run dev:local`
