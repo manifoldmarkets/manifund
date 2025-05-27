@@ -2,10 +2,17 @@ import 'server-only'
 
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
+import { NextRequest, NextResponse } from 'next/server'
 
 import type { Database } from './database.types'
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from './env'
+import {
+  SUPABASE_ANON_KEY,
+  SUPABASE_URL,
+  SUPABASE_SERVICE_ROLE_KEY,
+} from './env'
 
+// For Server Components, API Routes, and general server-side usage
 export const createServerSupabaseClient = async () => {
   const cookieStore = await cookies()
 
@@ -27,4 +34,31 @@ export const createServerSupabaseClient = async () => {
       },
     },
   })
+}
+
+// For Middleware and Edge API routes that have access to NextRequest/NextResponse
+export function createMiddlewareSupabaseClient(
+  req: NextRequest,
+  res?: NextResponse
+) {
+  return createServerClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
+    cookies: {
+      getAll() {
+        return req.cookies.getAll()
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          req.cookies.set(name, value)
+          if (res) {
+            res.cookies.set(name, value, options)
+          }
+        })
+      },
+    },
+  })
+}
+
+// For admin operations that need elevated privileges
+export function createAdminSupabaseClient() {
+  return createClient<Database>(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
 }
