@@ -1,4 +1,4 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getUser, isAdmin } from '@/db/profile'
 import { getProjectWithCausesBySlug } from '@/db/project'
 import { getPrizeCause, listSimpleCauses } from '@/db/cause'
@@ -9,7 +9,7 @@ export default async function PublishProjectPage(props: {
   params: { slug: string }
 }) {
   const { slug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const project = await getProjectWithCausesBySlug(supabase, slug)
   const user = await getUser(supabase)
   if (

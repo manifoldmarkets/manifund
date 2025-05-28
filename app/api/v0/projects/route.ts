@@ -1,5 +1,4 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
 
@@ -69,7 +68,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const before = searchParams.get('before')
 
-  const supabase = createRouteHandlerClient({ cookies })
+  const supabase = await createServerSupabaseClient()
   const projects = await listProjectsPaginated(supabase, before)
 
   projects?.map((project) => {

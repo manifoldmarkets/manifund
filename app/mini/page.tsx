@@ -1,6 +1,6 @@
 import { FullComment, getRecentFullComments } from '@/db/comment'
 import { listProjects } from '@/db/project'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getRecentFullTxns } from '@/db/txn'
 import { getRecentFullBids } from '@/db/bid'
 import { generateText, JSONContent } from '@tiptap/core'
@@ -23,7 +23,7 @@ export default async function Minifund() {
   const PAGE_SIZE = 20
   const start = 0
 
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const [projects, recentComments, recentDonations, recentBids] =
     await Promise.all([
       listProjects(supabase),

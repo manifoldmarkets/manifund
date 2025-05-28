@@ -1,4 +1,4 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
@@ -20,7 +20,7 @@ import { getPendingBidsByUser } from '@/db/bid'
 
 export const revalidate = 30
 export default async function Sidebar() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
   const profile = user ? await getProfileById(supabase, user.id) : null
   const isRegranter = profile?.regranter_status
@@ -129,7 +129,7 @@ export default async function Sidebar() {
 
 export async function ProfileSummary(props: { profile: Profile }) {
   const { profile } = props
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const txns = await getTxnAndProjectsByUser(supabase, profile.id)
   const bids = await getPendingBidsByUser(supabase, profile.id)
   const cashBalance = calculateCashBalance(

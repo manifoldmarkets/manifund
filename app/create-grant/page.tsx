@@ -1,6 +1,6 @@
 import { getAllMiniProfiles } from '@/db/profile'
 import { CreateGrantForm } from './create-grant-form'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getUser } from '@/db/profile'
 import { getProfileById } from '@/db/profile'
 import { getTxnAndProjectsByUser } from '@/db/txn'
@@ -11,7 +11,7 @@ import { listSimpleCauses } from '@/db/cause'
 
 export const revalidate = 60
 export default async function CreateGrantPage() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const profiles = (await getAllMiniProfiles(supabase)).filter(
     (profile) => profile.type === 'individual' && profile.full_name.length > 0
   )

@@ -1,4 +1,4 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getProfileByUsername, getUser } from '@/db/profile'
 import { Project, getSelectProjects } from '@/db/project'
 import Link from 'next/link'
@@ -21,7 +21,7 @@ export default async function ResultsPage(props: {
   params: { usernameSlug: string }
 }) {
   const { usernameSlug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const evaluator = await getProfileByUsername(supabase, usernameSlug)
   if (!evaluator) {
     return <div>User not found</div>

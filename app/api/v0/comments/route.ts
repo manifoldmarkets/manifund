@@ -1,5 +1,3 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { generateHTML } from '@tiptap/html'
@@ -9,6 +7,7 @@ import Image from '@tiptap/extension-image'
 import Mention from '@tiptap/extension-mention'
 import { NodeHtmlMarkdown } from 'node-html-markdown'
 import { JSONContent } from '@tiptap/core'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 
 async function listCommentsPaginated(
   supabase: SupabaseClient,
@@ -56,7 +55,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const before = searchParams.get('before')
 
-  const supabase = createRouteHandlerClient({ cookies })
+  const supabase = await createServerSupabaseClient()
   const comments = await listCommentsPaginated(supabase, before)
 
   comments?.map((comment) => {

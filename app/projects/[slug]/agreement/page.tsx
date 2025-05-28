@@ -1,4 +1,4 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getUser } from '@/db/profile'
 import { getProjectAndProfileBySlug } from '@/db/project'
 import React from 'react'
@@ -13,7 +13,7 @@ export default async function GrantAgreementPage(props: {
   params: { slug: string }
 }) {
   const { slug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const project = await getProjectAndProfileBySlug(supabase, slug)
   if (!project || project.approved === false) {
     return <div>404</div>

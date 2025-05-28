@@ -1,4 +1,4 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getFullProjectsByCause } from '@/db/project'
 import Image from 'next/image'
 import { getCause, listSimpleCauses } from '@/db/cause'
@@ -20,7 +20,7 @@ export async function generateMetadata(props: {
   params: { causeSlug: string }
 }) {
   const { causeSlug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const cause = await getCause(supabase, causeSlug)
   return {
     title: cause.title,
@@ -32,7 +32,7 @@ export default async function CausePage(props: {
 }) {
   // TODO: Maybe batch with Promise.all for fewer roundtrips
   const { causeSlug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const cause = await getCause(supabase, causeSlug)
   const causesList = await listSimpleCauses(supabase)
   const projects = await getFullProjectsByCause(supabase, cause.slug)

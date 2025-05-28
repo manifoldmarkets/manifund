@@ -5,7 +5,7 @@ import {
   Profile,
   getProfileById,
 } from '@/db/profile'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import {
   getTxnAndProjectsByUser,
   getIncomingTxnsByUserWithDonor,
@@ -24,7 +24,7 @@ export default async function FundPage(props: {
   params: { fundSlug: string }
 }) {
   const { fundSlug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
   const fund = await getFundByUsername(supabase, fundSlug)
   if (!fund) {

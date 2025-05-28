@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { listProjects } from '@/db/project'
 import { getUser } from '@/db/profile'
 import { Col } from '@/components/layout/col'
@@ -17,7 +17,7 @@ export const revalidate = 86400 // 24 hours
 export default async function Projects(props: {
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
 
   return (
@@ -70,7 +70,7 @@ async function AsyncFeedTabs({
   const limit = tab && tab !== 'projects' ? 0 : projectLimit
   const start = (page - 1) * PAGE_SIZE
 
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const [projects, recentComments, recentDonations, recentBids, causesList] =
     await Promise.all([
       listProjects(supabase, limit),
