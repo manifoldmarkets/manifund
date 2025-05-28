@@ -1,5 +1,5 @@
 import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
@@ -15,7 +15,7 @@ export const contentType = 'image/png'
 
 // Image generation
 export default async function Image({ params }: { params: { slug: string } }) {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const project = await getFullProjectBySlug(supabase, params.slug)
   if (!project) {
     return new Response('Not found', { status: 404 })

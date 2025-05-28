@@ -1,5 +1,5 @@
 import { getRegranters } from '@/db/profile'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { RegrantorsDisplay } from './regrantors-display'
 import { ExampleRegrants } from './example-regrants'
 
@@ -15,7 +15,7 @@ const DonationCTA = () => (
 )
 
 export default async function RegrantingPage() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const regrantors = await getRegranters(supabase)
   return (
     <div className="mx-auto max-w-3xl p-5">

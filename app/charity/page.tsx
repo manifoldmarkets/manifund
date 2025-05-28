@@ -1,4 +1,4 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { listOrgs } from '@/db/profile'
 import { OrgsDisplay } from './orgs-display'
 import { SiteLink } from '@/components/site-link'
@@ -6,7 +6,7 @@ import { SiteLink } from '@/components/site-link'
 export const revalidate = 60
 
 export default async function AllCharitiesPage() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const orgs = await listOrgs(supabase)
   return (
     <div className="p-4">

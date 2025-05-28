@@ -1,10 +1,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { listCauses } from '@/db/cause'
 
 export default async function OpenCallPage() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const causesList = await listCauses(supabase)
   const nonPrizeCauses = causesList.filter(
     (cause) => cause.open && !cause.prize

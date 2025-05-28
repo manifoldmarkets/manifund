@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { Database } from '@/db/database.types'
 import {
   SUPABASE_ANON_KEY,
@@ -10,16 +10,19 @@ import {
 
 export function createEdgeClient(req: NextRequest) {
   const res = NextResponse.next()
-  return createMiddlewareClient<Database>(
-    {
-      req,
-      res,
+  return createServerClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
+    cookies: {
+      getAll() {
+        return req.cookies.getAll()
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          req.cookies.set(name, value)
+          res.cookies.set(name, value, options)
+        })
+      },
     },
-    {
-      supabaseUrl: SUPABASE_URL,
-      supabaseKey: SUPABASE_ANON_KEY,
-    }
-  )
+  })
 }
 
 export function createAdminClient() {

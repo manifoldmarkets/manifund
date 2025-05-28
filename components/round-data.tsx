@@ -1,7 +1,7 @@
 import { getRegranters, Profile } from '@/db/profile'
 import { Project } from '@/db/project'
 import { Round } from '@/db/round'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getRoundTheme } from '@/utils/constants'
 import { formatMoney, showPrecision } from '@/utils/formatting'
 import { differenceInDays } from 'date-fns'
@@ -26,7 +26,7 @@ export async function RoundData(props: { round: Round; projects: Project[] }) {
     proposalDueDate.getTime()
   )
   const daysTilEvals = differenceInDays(now.getTime(), evalDate.getTime())
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const regranters =
     round.title === 'Regrants' ? await getRegranters(supabase) : []
   return (

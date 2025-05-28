@@ -1,4 +1,4 @@
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getRoundBySlug } from '@/db/round'
 import { getFullProjectsByRound } from '@/db/project'
 import { RoundTabs } from './round-tabs'
@@ -13,7 +13,7 @@ export async function generateMetadata(props: {
   params: { roundSlug: string }
 }) {
   const { roundSlug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const round = await getRoundBySlug(supabase, roundSlug)
   return {
     title: round.title,
@@ -24,7 +24,7 @@ export default async function RoundPage(props: {
   params: { roundSlug: string }
 }) {
   const { roundSlug } = props.params
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const round = await getRoundBySlug(supabase, roundSlug)
   const [projects, regranters, causesList] = await Promise.all([
     getFullProjectsByRound(supabase, round.title),

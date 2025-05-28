@@ -1,7 +1,7 @@
 import { Avatar } from '@/components/avatar'
 import { UserLink } from '@/components/user-link'
 import { Profile } from '@/db/profile'
-import { createServerClient } from '@/db/supabase-server'
+import { createServerSupabaseClient } from '@/db/supabase-server'
 
 function AvatarAndLink(props: { profile: Profile }) {
   const { profile } = props
@@ -22,7 +22,7 @@ function AvatarAndLink(props: { profile: Profile }) {
 }
 
 export default async function Leaderboard() {
-  const supabase = createServerClient()
+  const supabase = await createServerSupabaseClient()
   const { data: users } = await supabase.from('users').select('*')
   const { data: profiles } = await supabase.from('profiles').select('*')
   const { data: txns } = await supabase
