@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 
 export const config = {
   runtime: 'edge',
@@ -11,7 +11,7 @@ export const config = {
 }
 
 export default async function handler() {
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   await supabaseAdmin
     .from('txns')
     .update({ type: 'deposit' })

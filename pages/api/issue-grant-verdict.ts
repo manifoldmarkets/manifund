@@ -1,6 +1,7 @@
 import { JSONContent } from '@tiptap/react'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
+import { createEdgeClient } from './_db'
 import { getUser, isAdmin } from '@/db/profile'
 import { getProjectById } from '@/db/project'
 import { getAdminName, getURL } from '@/utils/constants'
@@ -40,7 +41,7 @@ export default async function handler(req: NextRequest) {
     return NextResponse.error()
   }
 
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   const { error } = await supabaseAdmin.rpc('execute_grant_verdict', {
     approved: approved,
     project_id: projectId,

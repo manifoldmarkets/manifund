@@ -1,6 +1,7 @@
 import { getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
+import { createEdgeClient } from './_db'
 import { getProfileById } from '@/db/profile'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getPendingBidsByUser } from '@/db/bid'
@@ -55,7 +56,7 @@ export default async function handler(req: NextRequest) {
     console.error('not enough funds')
     return NextResponse.error()
   }
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   const { error } = await supabaseAdmin.from('txns').insert({
     from_id: fromId,
     to_id: toId,

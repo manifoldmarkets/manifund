@@ -9,7 +9,7 @@ import { Bid } from '@/db/bid'
 import { getShareholders } from '@/app/projects/[slug]/project-tabs'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { getTxnsByProject } from '@/db/txn'
 import { getProfileById } from '@/db/profile'
 import { makeTrade, updateBidFromTrade } from '@/utils/trade'
@@ -19,7 +19,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const bid = req.body.record as Bid
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const project = await getProjectAndProfileById(supabase, bid.project)
   if (!project) {
     return res.status(404).json({ error: 'Project not found' })

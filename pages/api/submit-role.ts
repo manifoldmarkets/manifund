@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient, createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
+import { createEdgeClient } from './_db'
 
 export const config = {
   runtime: 'edge',
@@ -45,7 +46,7 @@ export default async function handler(req: NextRequest) {
   // Grant funds
   const totalAmount = (Object.values(roles).filter(Boolean).length + 1) * 100
 
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   await supabaseAdmin.from('txns').insert({
     from_id: process.env.NEXT_PUBLIC_PROD_BANK_ID,
     to_id: user?.id ?? '',

@@ -1,10 +1,10 @@
 'use client'
 import { Button } from '@/components/button'
-import { createAdminClient } from '@/pages/api/_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { SupabaseClient } from '@supabase/supabase-js'
 
-export function FixAvatars() {
-  const supabaseAdmin = createAdminClient()
+export async function FixAvatars() {
+  const supabaseAdmin = await createAuthorizedAdminClient()
   return (
     <Button
       onClick={async () => {

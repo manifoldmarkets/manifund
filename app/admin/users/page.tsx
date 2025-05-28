@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { PayUser } from '../pay-user'
 import { VerifyInvestor } from '../verify-investor'
 import { DownloadTextButton } from '../download-text-button'
@@ -17,7 +17,7 @@ import {
 export const revalidate = 300
 
 export default async function UsersPage() {
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   const [{ data: users }, { data: profiles }, { data: txns }] =
     await Promise.all([
       supabaseAdmin.from('users').select('*'),

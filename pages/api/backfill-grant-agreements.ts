@@ -1,6 +1,6 @@
 import { FullProject } from '@/db/project'
 import { isBefore } from 'date-fns'
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { sortBy } from 'lodash'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
@@ -14,7 +14,7 @@ export const config = {
 }
 
 export default async function handler() {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const projects = await listProjectsForAgreements(supabase)
   const AUSTIN_PROFILE_ID = '10bd8a14-4002-47ff-af4a-92b227423a74'
   for (const project of projects) {

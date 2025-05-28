@@ -5,7 +5,7 @@ import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
 import { getTxnsByProject, getTxnAndProjectsByUser } from '@/db/txn'
 import { getUserEmail } from '@/utils/email'
-import { createAdminClient } from '@/pages/api/_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { ProjectDisplay } from './project-display'
 import { getPrizeCause, listSimpleCauses } from '@/db/cause'
 import { getBidsByUser } from '@/db/bid'
@@ -66,7 +66,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     supabase
   )
   const creatorEmail = userProfile?.regranter_status
-    ? await getUserEmail(createAdminClient(), project.creator)
+    ? await getUserEmail(await createAuthorizedAdminClient(), project.creator)
     : undefined
   const userIsAdmin = user ? isAdmin(user) : false
   const userIsOwner = user?.id === project.creator

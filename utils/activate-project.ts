@@ -7,7 +7,7 @@ import {
   TOTAL_SHARES,
 } from '@/db/project'
 import { getTxnsByProject } from '@/db/txn'
-import { createAdminClient } from '@/pages/api/_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { differenceInDays, isBefore } from 'date-fns'
 import { uniq } from 'lodash'
@@ -84,7 +84,7 @@ export function checkReactivateEligible(project: Project, prizeCause?: Cause) {
 }
 
 async function activateProject(project: Project, followerIds: string[]) {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const creatorProfile = await getProfileById(supabase, project?.creator)
   if (!project || !creatorProfile) {
     console.error('project', project, 'creatorProfile', creatorProfile)

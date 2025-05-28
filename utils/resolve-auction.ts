@@ -1,6 +1,6 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { createAdminClient } from '@/pages/api/_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { Project, TOTAL_SHARES, updateProjectStage } from '@/db/project'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
 import { formatMoney, formatPercent } from '@/utils/formatting'
@@ -13,7 +13,7 @@ export const preferredRegion = ['sfo1']
 type Bid = Database['public']['Tables']['bids']['Row']
 
 export async function resolveAuction(project: Project) {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const bids = await getBidsForResolution(supabase, project.id)
   let founderPortion = project.founder_shares / TOTAL_SHARES
   const resolution = calcAuctionResolution(

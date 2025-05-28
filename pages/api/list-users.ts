@@ -1,6 +1,7 @@
 import { getUser, isAdmin } from '@/db/profile'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
+import { createEdgeClient } from './_db'
 
 export const config = {
   runtime: 'edge',
@@ -12,7 +13,7 @@ export default async function handler(req: NextRequest) {
   const user = await getUser(supabaseEdge)
   if (!user || !isAdmin(user)) return Response.error()
 
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   const { data: users, error } = await supabaseAdmin.from('users').select('*')
   if (error) return Response.error()
 
