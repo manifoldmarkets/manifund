@@ -1,5 +1,5 @@
 import { Database } from '@/db/database.types'
-import { SupabaseClient, User } from '@supabase/supabase-js'
+import { SupabaseClient } from '@supabase/supabase-js'
 import { Profile } from './profile'
 import { Project } from './project'
 
@@ -8,11 +8,6 @@ export type TxnAndProject = Txn & { projects?: Project }
 export type FullTxn = Txn & { projects?: Project } & { profiles?: Profile }
 export type TxnAndProfiles = Txn & { profiles?: Profile }
 export type TxnType = Database['public']['Tables']['txns']['Row']['type']
-
-export function isAdmin(user: User | null) {
-  const ADMINS = ['rachel.weinberg12@gmail.com', 'akrolsmir@gmail.com']
-  return ADMINS.includes(user?.email ?? '')
-}
 
 export async function getFullTxnsByUser(
   supabase: SupabaseClient,

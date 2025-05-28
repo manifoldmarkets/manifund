@@ -3,7 +3,7 @@ import { createServerSupabaseClient } from '@/db/supabase-server'
 import NoAccess from '../no-access'
 import Link from 'next/link'
 import { Suspense } from 'react'
-import { createAdminClient } from '@/pages/api/_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { HomeIcon } from '@heroicons/react/24/outline'
 
 // Revalidate every 5 minutes
@@ -11,7 +11,7 @@ export const revalidate = 300
 
 // Separate components for each count to allow parallel loading
 async function UserCount() {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const { count } = await supabase
     .from('users')
     .select('*', { count: 'exact', head: true })
@@ -24,7 +24,7 @@ async function UserCount() {
 }
 
 async function TransactionCount() {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const { count } = await supabase
     .from('txns')
     .select('*', { count: 'exact', head: true })
@@ -38,7 +38,7 @@ async function TransactionCount() {
 }
 
 async function ProjectCount() {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const { count } = await supabase
     .from('projects')
     .select('*', { count: 'exact', head: true })

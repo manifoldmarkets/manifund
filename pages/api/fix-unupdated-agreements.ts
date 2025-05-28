@@ -1,5 +1,5 @@
 import { ProjectAndProfile } from '@/db/project'
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { GrantAgreement } from '@/db/grant_agreement'
@@ -13,7 +13,7 @@ export const config = {
 }
 
 export default async function handler() {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   // Fix projects where they were signed but not recorded in the agreements table
   const projects = await listMismatchedProjects(supabase)
   console.log(projects?.length)

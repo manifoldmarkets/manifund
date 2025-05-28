@@ -1,10 +1,10 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { RunScript } from '../run-script'
 import { Donations } from '../donations'
 import { RoundBidAmounts } from '../round-bid-amounts'
 
 export default async function ToolsPage() {
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   const { data: profiles } = await supabaseAdmin
     .from('profiles')
     .select('*')

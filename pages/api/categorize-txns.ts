@@ -2,7 +2,7 @@ import { Txn } from '@/db/txn'
 import { bundleTxns } from '@/utils/math'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 
 export const config = {
   runtime: 'edge',
@@ -15,7 +15,7 @@ export const config = {
 
 // Used to add txn type column to txns table
 export default async function handler() {
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   const { data: txns } = await supabaseAdmin.from('txns').select('*')
   await dbCategorizeTxns(txns ?? [], supabaseAdmin)
   return NextResponse.json('success')

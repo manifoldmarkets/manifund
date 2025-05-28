@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { updateProjectCauses } from '@/db/cause'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
+import { createEdgeClient } from './_db'
 import { ProjectUpdate, updateProject } from '@/db/project'
 import { isAdmin } from '@/db/txn'
 
@@ -22,7 +23,9 @@ export default async function handler(req: NextRequest) {
   const supabaseEdge = createEdgeClient(req)
   const resp = await supabaseEdge.auth.getUser()
   const user = resp.data.user
-  const supabase = isAdmin(user) ? createAdminClient() : supabaseEdge
+  const supabase = isAdmin(user)
+    ? await createAuthorizedAdminClient()
+    : supabaseEdge
   if (!user) return NextResponse.error()
   await updateProject(supabase, projectId, projectUpdate)
   console.log(causeSlugs)

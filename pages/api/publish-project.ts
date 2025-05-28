@@ -1,6 +1,7 @@
 import { updateProject, getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
+import { createEdgeClient } from './_db'
 import { createUpdateFromParams, ProjectParams } from '@/utils/upsert-project'
 import { getPrizeCause } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
@@ -50,7 +51,7 @@ export default async function handler(req: NextRequest) {
         type: startingStage === 'proposal' ? 'assurance sell' : 'sell',
       })
     } else if (certParams?.ammDollars && updatedProject.amm_shares) {
-      const supabaseAdmin = createAdminClient()
+      const supabaseAdmin = await createAuthorizedAdminClient()
       const { error } = await supabaseAdmin.from('txns').insert({
         from_id: process.env.NEXT_PUBLIC_PROD_BANK_ID,
         to_id: user.id,

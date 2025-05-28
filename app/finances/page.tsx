@@ -1,9 +1,9 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { userBalances } from '../admin/utils'
 import UsersGrid from './users-grid'
 
 export default async function FinancesPage() {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const [{ data: users }, { data: profiles }, { data: txns }] =
     await Promise.all([
       supabase.from('users').select('*'),

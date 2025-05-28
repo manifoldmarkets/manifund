@@ -3,7 +3,8 @@ import { getProfileById, getUser, isAdmin } from '@/db/profile'
 import { getUserEmail, sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
+import { createEdgeClient } from './_db'
 
 export const config = {
   runtime: 'edge',
@@ -24,7 +25,7 @@ export default async function handler(req: NextRequest) {
   const to_id =
     amount > 0 ? userId : (process.env.NEXT_PUBLIC_PROD_BANK_ID as string)
 
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   // Create a new txn paying this user
   const txnId = uuid()
   const { data: txn } = await supabaseAdmin

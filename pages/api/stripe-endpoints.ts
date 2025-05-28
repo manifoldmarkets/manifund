@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 import { STRIPE_SECRET_KEY } from '@/db/env'
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Readable } from 'node:stream'
@@ -54,7 +54,7 @@ export default async function handler(
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
-    const supabase = createAdminClient()
+    const supabase = await createAuthorizedAdminClient()
     const txnId = uuid()
     await issueMoneys(session, txnId, supabase)
     await sendTemplateEmail(

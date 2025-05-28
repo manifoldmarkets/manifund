@@ -1,11 +1,11 @@
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { NextApiRequest } from 'next'
 import { User } from '@supabase/supabase-js'
 import { getTransfersByEmail } from '@/db/project-transfer'
 
 export default async function handler(req: NextApiRequest) {
   const user = req.body.record as User
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   const projectTransfers = await getTransfersByEmail(
     supabaseAdmin,
     user.email ?? ''

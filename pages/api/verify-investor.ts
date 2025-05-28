@@ -1,7 +1,8 @@
 import { VerifyInvestorProps } from '@/app/admin/verify-investor'
 import { getUser, isAdmin } from '@/db/profile'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
+import { createEdgeClient } from './_db'
 
 export const config = {
   runtime: 'edge',
@@ -15,7 +16,7 @@ export default async function handler(req: NextRequest) {
 
   const { userId, accredited } = (await req.json()) as VerifyInvestorProps
 
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   // Create a new txn paying this user
   const { data: txn, error } = await supabaseAdmin
     .from('profiles')

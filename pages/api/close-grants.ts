@@ -1,6 +1,6 @@
-import { differenceInDays, isBefore } from 'date-fns'
+import { differenceInDays } from 'date-fns'
 import { NextResponse } from 'next/server'
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
 import { Project } from '@/db/project'
 import { Bid } from '@/db/bid'
@@ -24,7 +24,7 @@ export default async function handler() {
   if (!isProd()) {
     return NextResponse.json('not prod')
   }
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const { data: proposals, error } = await supabase
     .from('projects')
     .select(

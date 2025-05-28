@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { SupabaseClient } from '@supabase/supabase-js'
 
 export const TEMPLATE_IDS = {
@@ -27,7 +27,7 @@ export async function sendTemplateEmail(
   toEmail?: string,
   fromEmail?: string
 ) {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   if (!toEmail && !toId) {
     console.log('No email or user id provided')
     return

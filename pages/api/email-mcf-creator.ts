@@ -1,4 +1,4 @@
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { getIncompleteTransfers } from '@/db/project-transfer'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
@@ -14,7 +14,7 @@ export const config = {
 }
 
 export default async function handler() {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const { data: mcfProjects } = await supabase
     .from('projects')
     .select('creator, title, slug, stage')

@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { listProjects } from '@/db/project'
 import { AddTags } from '../add-tags'
 import { ActivateProject } from '../activate-project'
@@ -9,7 +9,7 @@ import { Table } from '@/components/table-catalyst'
 export const revalidate = 300
 
 export default async function ProjectsPage() {
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   const projects = await listProjects(supabaseAdmin)
 
   return (

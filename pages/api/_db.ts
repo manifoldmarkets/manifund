@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { Database } from '@/db/database.types'
-import {
-  SUPABASE_ANON_KEY,
-  SUPABASE_SERVICE_ROLE_KEY,
-  SUPABASE_URL,
-} from '@/db/env'
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/db/env'
 
 export function createEdgeClient(req: NextRequest) {
   const res = NextResponse.next()
@@ -23,11 +18,4 @@ export function createEdgeClient(req: NextRequest) {
       },
     },
   })
-}
-
-export function createAdminClient() {
-  return createClient<Database>(
-    SUPABASE_URL ?? '',
-    SUPABASE_SERVICE_ROLE_KEY ?? ''
-  )
 }

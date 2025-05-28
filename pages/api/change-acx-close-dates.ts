@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 
 export const config = {
   runtime: 'edge',
@@ -12,7 +12,7 @@ export const config = {
 
 // Used to add txn type column to txns table
 export default async function handler() {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const { error } = await supabase
     .from('projects')
     .update({ auction_close: '2024-04-05' })

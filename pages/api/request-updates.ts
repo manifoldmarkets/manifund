@@ -1,6 +1,6 @@
 import { differenceInMonths } from 'date-fns'
 import { NextResponse } from 'next/server'
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { isProd } from '@/db/env'
 import { orderBy } from 'lodash'
@@ -17,7 +17,7 @@ export default async function handler() {
   if (!isProd()) {
     return NextResponse.json('not prod')
   }
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const { data: activeProjects, error } = await supabase
     .from('projects')
     .select(

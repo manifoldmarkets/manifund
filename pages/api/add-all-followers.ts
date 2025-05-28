@@ -1,6 +1,6 @@
 import { listProjects } from '@/db/project'
 import { uniq } from 'lodash'
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 
 export const config = {
   runtime: 'edge',
@@ -11,7 +11,7 @@ export const config = {
 }
 
 export default async function handler() {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   const projects = await listProjects(supabase)
   for (const project of projects) {
     const followerIds = []

@@ -1,7 +1,7 @@
 import { Txn, TxnType } from '@/db/txn'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 import { Project } from '@/db/project'
 import { calculateAMMPorfolio } from '@/utils/amm'
 import uuid from 'react-uuid'
@@ -17,7 +17,7 @@ export const config = {
 
 // Used to add txn type column to txns table
 export default async function handler() {
-  const supabaseAdmin = createAdminClient()
+  const supabaseAdmin = await createAuthorizedAdminClient()
   const projects = await getProjectsByRound(
     supabaseAdmin,
     'Manifold Community Fund'

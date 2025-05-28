@@ -1,4 +1,4 @@
-import { createAdminClient } from './_db'
+import { createAuthorizedAdminClient } from '@/db/supabase-server-admin'
 
 export const config = {
   runtime: 'edge',
@@ -9,7 +9,7 @@ export const config = {
 }
 
 export default async function handler() {
-  const supabase = createAdminClient()
+  const supabase = await createAuthorizedAdminClient()
   await supabase
     .from('projects')
     .update({ stage: 'complete' })
