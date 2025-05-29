@@ -57,12 +57,9 @@ export default function AuthModal({
   }, [])
 
   // Debug effect to track state changes
-  useEffect(() => {
-    console.log('AuthModal state:', { mode, message, isOpen })
-  }, [mode, message, isOpen])
+  useEffect(() => {}, [mode, message, isOpen])
 
   const handleSubmit = (formData: FormData) => {
-    console.log('Form submitted for mode:', mode)
     startTransition(async () => {
       setMessage(null)
 
@@ -81,7 +78,6 @@ export default function AuthModal({
           result = await resetPassword(formData)
         }
 
-        console.log('Auth result:', result)
         if (result) {
           setMessage(result)
           if (
@@ -92,7 +88,6 @@ export default function AuthModal({
           }
         }
       } catch (error) {
-        console.error('Auth error:', error)
         setMessage({ type: 'error', text: 'An unexpected error occurred' })
       }
     })
