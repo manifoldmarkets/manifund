@@ -43,7 +43,7 @@ export default async function Page({
       if (value) params.set(key, value)
     })
 
-    params.set('next', '/edit-profile')
+    params.set('next', '/edit-profile/reset-password')
     redirect(`/password-reset?${params.toString()}`)
   }
 

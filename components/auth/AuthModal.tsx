@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import {
   signInWithGoogle,
-  signInWithEmail,
-  signUpWithEmail,
+  signInOrSignUp,
   resetPassword,
   AuthResult,
 } from '@/lib/auth-actions'
@@ -13,24 +12,48 @@ interface AuthError {
   error: string
   errorCode?: string
   errorDescription?: string
+  recommendedEmail?: string
 }
 
 interface AuthModalProps {
   isOpen: boolean
   onClose?: () => void
   authError?: AuthError
+  recommendedEmail?: string
 }
 
-type AuthMode = 'signin' | 'signup' | 'forgot-password'
+type AuthMode = 'signin' | 'forgot-password'
+
+const RETURNING_USER_KEY = 'returning_user'
+
+const markUserAsReturning = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(RETURNING_USER_KEY, 'true')
+  }
+}
+
+const isReturningUser = () => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem(RETURNING_USER_KEY) === 'true'
+  }
+  return false
+}
 
 export default function AuthModal({
   isOpen,
   onClose,
   authError,
+  recommendedEmail,
 }: AuthModalProps) {
   const [mode, setMode] = useState<AuthMode>('signin')
   const [isPending, startTransition] = useTransition()
   const [message, setMessage] = useState<AuthResult | null>(null)
+  const [isReturning, setIsReturning] = useState(false)
+
+  // Check if user is returning when component mounts
+  useEffect(() => {
+    setIsReturning(isReturningUser())
+  }, [])
 
   const handleSubmit = (formData: FormData) => {
     startTransition(async () => {
@@ -39,17 +62,22 @@ export default function AuthModal({
       try {
         let result
         if (mode === 'signin') {
-          result = await signInWithEmail(formData)
-        } else if (mode === 'signup') {
-          result = await signUpWithEmail(formData)
+          result = await signInOrSignUp(formData)
+          // If no result is returned, it means the sign in was successful and redirected
+          if (!result) {
+            markUserAsReturning()
+            onClose?.()
+          }
         } else {
           result = await resetPassword(formData)
         }
 
         if (result) {
           setMessage(result)
-        } else if (mode === 'signin') {
-          onClose?.()
+          // If it's a successful signup, also mark as returning for future visits
+          if (result.type === 'success' && mode === 'signin') {
+            markUserAsReturning()
+          }
         }
       } catch (error) {
         setMessage({ type: 'error', text: 'An unexpected error occurred' })
@@ -59,6 +87,8 @@ export default function AuthModal({
 
   const handleGoogleSignIn = () => {
     startTransition(async () => {
+      // Mark as returning user before the redirect happens
+      markUserAsReturning()
       const result = await signInWithGoogle()
       if (result) {
         setMessage(result)
@@ -142,9 +172,7 @@ export default function AuthModal({
         {isPending
           ? 'Loading...'
           : mode === 'signin'
-          ? 'Sign in'
-          : mode === 'signup'
-          ? 'Create account'
+          ? 'Sign in or Create Account'
           : 'Send reset link'}
       </button>
     </form>
@@ -153,14 +181,24 @@ export default function AuthModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">
-            {mode === 'signin'
-              ? 'Welcome back'
-              : mode === 'signup'
-              ? 'Create account'
-              : 'Reset password'}
-          </h2>
+        <div className="mb-6 flex flex-col items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {mode === 'signin'
+                ? isReturning
+                  ? 'Welcome back'
+                  : 'Welcome'
+                : 'Reset password'}
+            </h2>
+          </div>
+          {mode === 'signin' && recommendedEmail && (
+            <div className="mt-2 text-center text-sm text-gray-600">
+              Make sure to create an account with the same email that your grant
+              notification was sent to (
+              <span className="font-bold text-black">{recommendedEmail}</span>
+              ).
+            </div>
+          )}
           {onClose && (
             <button
               onClick={onClose}
@@ -234,27 +272,6 @@ export default function AuthModal({
                 className="text-sm font-medium text-orange-600 hover:text-orange-700"
               >
                 Forgot your password?
-              </button>
-              <div className="text-sm text-gray-600">
-                Don&apos;t have an account?{' '}
-                <button
-                  type="button"
-                  onClick={() => setMode('signup')}
-                  className="font-medium text-orange-600 hover:text-orange-700"
-                >
-                  Sign up
-                </button>
-              </div>
-            </div>
-          ) : mode === 'signup' ? (
-            <div className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <button
-                type="button"
-                onClick={() => setMode('signin')}
-                className="font-medium text-orange-600 hover:text-orange-700"
-              >
-                Sign in
               </button>
             </div>
           ) : (

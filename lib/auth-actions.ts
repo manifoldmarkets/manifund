@@ -10,7 +10,7 @@ export type AuthResult = {
   text: string
 }
 
-export async function signInWithEmail(formData: FormData): Promise<AuthResult> {
+export async function signInOrSignUp(formData: FormData): Promise<AuthResult> {
   const supabase = await createServerSupabaseClient()
 
   const data = {
@@ -18,36 +18,37 @@ export async function signInWithEmail(formData: FormData): Promise<AuthResult> {
     password: formData.get('password') as string,
   }
 
-  const { error } = await supabase.auth.signInWithPassword(data)
+  // First, try to sign in
+  const { error: signInError } = await supabase.auth.signInWithPassword(data)
 
-  if (error) {
-    return { type: 'error', text: error.message }
+  if (!signInError) {
+    // Sign in successful
+    revalidatePath('/', 'layout')
+    redirect('/')
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/')
-}
+  console.log('Sign in error:', signInError)
+  if (signInError.name == 'email_exists') {
+    const { error: signUpError } = await supabase.auth.signUp({
+      ...data,
+      options: {
+        emailRedirectTo: `${getURL()}auth/callback?next=/edit-profile`,
+      },
+    })
 
-export async function signUpWithEmail(formData: FormData): Promise<AuthResult> {
-  const supabase = await createServerSupabaseClient()
+    if (signUpError) {
+      // If sign up also fails, return the sign up error
+      return { type: 'error', text: signUpError.message }
+    }
 
-  const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
+    return {
+      type: 'success',
+      text: 'Account created! Check your email to continue signing up',
+    }
   }
 
-  const { error } = await supabase.auth.signUp({
-    ...data,
-    options: {
-      emailRedirectTo: `${getURL()}auth/callback?next=/edit-profile`,
-    },
-  })
-
-  if (error) {
-    return { type: 'error', text: error.message }
-  }
-
-  return { type: 'success', text: 'Check your email to continue signing up' }
+  // For other sign in errors, return the original error
+  return { type: 'error', text: signInError.message }
 }
 
 export async function resetPassword(formData: FormData): Promise<AuthResult> {
@@ -79,15 +80,11 @@ export async function signInWithGoogle(): Promise<AuthResult> {
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: {
-      redirectTo: `${getURL()}auth/callback`,
-    },
   })
 
   if (error) {
     return { type: 'error', text: error.message }
   }
-
   redirect(data.url)
 }
 
@@ -101,5 +98,10 @@ export async function signOut(): Promise<AuthResult> {
   }
 
   revalidatePath('/', 'layout')
-  redirect('/login')
+  redirect('/')
+}
+
+//@ eslint-disable-next-line @typescript-eslint/require-await
+export async function revalidateAfterAuth() {
+  revalidatePath('/', 'layout')
 }

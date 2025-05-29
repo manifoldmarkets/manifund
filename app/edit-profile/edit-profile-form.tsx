@@ -16,7 +16,7 @@ import { useTextEditor } from '@/hooks/use-text-editor'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
-import { PasswordResetSection } from '@/app/edit-profile/update-password-form'
+import { UpdatePasswordForm } from '@/app/edit-profile/update-password-form'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
@@ -31,22 +31,8 @@ export function EditProfileForm(props: { profile: Profile }) {
   const [avatar, setAvatar] = useState<File | null>(null)
   const [submitting, setSubmitting] = useState<boolean>(false)
   const params = useSearchParams()
-  const isRecoveryFromUrl = params?.get('recovery') === 'true'
-  const [isRecoveryMode, setIsRecoveryMode] = useState(isRecoveryFromUrl)
   const router = useRouter()
   const redirect = params?.get('redirectTo')
-
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY' && !isRecoveryFromUrl) {
-        setIsRecoveryMode(true)
-      }
-    })
-
-    return () => subscription.unsubscribe()
-  }, [supabase, isRecoveryFromUrl])
 
   const user = session?.user
   const isNewUser = username === user?.id
@@ -127,14 +113,6 @@ export function EditProfileForm(props: { profile: Profile }) {
     setSubmitting(false)
     router.push(redirect ? redirect : `/${formattedUsername}`)
     router.refresh()
-  }
-  if (isRecoveryMode) {
-    return (
-      <PasswordResetSection
-        isRecoveryMode={true}
-        onPasswordResetSuccess={() => router.push('/')}
-      />
-    )
   }
 
   // Regular profile editing form
@@ -237,12 +215,7 @@ export function EditProfileForm(props: { profile: Profile }) {
         }}
       ></input>
 
-      {isEmailPasswordUser && (
-        <PasswordResetSection
-          isRecoveryMode={false}
-          onPasswordResetSuccess={() => console.log('Updated password')}
-        />
-      )}
+      {isEmailPasswordUser && <UpdatePasswordForm />}
 
       <p className="text-center text-rose-500">{errorMessage}</p>
       <Button

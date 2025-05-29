@@ -9,6 +9,7 @@ export default function LoginPage({
     error?: string
     error_code?: string
     error_description?: string
+    email?: string
   }
 }) {
   const authError = searchParams.error
@@ -19,9 +20,15 @@ export default function LoginPage({
       }
     : undefined
 
+  const recommendedEmail = searchParams.email || undefined
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <AuthModal isOpen={true} authError={authError} />
+      <AuthModal
+        isOpen={true}
+        authError={authError}
+        recommendedEmail={recommendedEmail}
+      />
     </div>
   )
 }
