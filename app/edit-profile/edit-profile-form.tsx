@@ -2,7 +2,7 @@
 
 import { useSupabase } from '@/db/supabase-provider'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Avatar } from '@/components/avatar'
 import { Input } from '@/components/input'
 import { Button } from '@/components/button'
@@ -16,6 +16,7 @@ import { useTextEditor } from '@/hooks/use-text-editor'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
+import { PasswordResetSection } from '@/app/edit-profile/update-password-form'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
@@ -29,11 +30,33 @@ export function EditProfileForm(props: { profile: Profile }) {
   const editor = useTextEditor(profile.long_description ?? '')
   const [avatar, setAvatar] = useState<File | null>(null)
   const [submitting, setSubmitting] = useState<boolean>(false)
-
+  const params = useSearchParams()
+  const isRecoveryFromUrl = params?.get('recovery') === 'true'
+  const [isRecoveryMode, setIsRecoveryMode] = useState(isRecoveryFromUrl)
   const router = useRouter()
+  const redirect = params?.get('redirectTo')
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' && !isRecoveryFromUrl) {
+        setIsRecoveryMode(true)
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase, isRecoveryFromUrl])
 
   const user = session?.user
   const isNewUser = username === user?.id
+
+  // Check if user is email-password based (not OAuth)
+  const isEmailPasswordUser =
+    user?.app_metadata?.providers?.includes('email') ||
+    (user?.identities?.length === 1 &&
+      user?.identities[0]?.provider === 'email')
+
   // Grab fullname from Google signups
   if (isNewUser && user?.user_metadata.full_name) {
     const googleFullname = user.user_metadata.full_name
@@ -80,8 +103,6 @@ export function EditProfileForm(props: { profile: Profile }) {
     errorMessage = null
   }
 
-  const params = useSearchParams()
-  const redirect = params?.get('redirectTo')
   const Save = async () => {
     setSubmitting(true)
     const formattedUsername = username
@@ -107,7 +128,16 @@ export function EditProfileForm(props: { profile: Profile }) {
     router.push(redirect ? redirect : `/${formattedUsername}`)
     router.refresh()
   }
+  if (isRecoveryMode) {
+    return (
+      <PasswordResetSection
+        isRecoveryMode={true}
+        onPasswordResetSuccess={() => router.push('/')}
+      />
+    )
+  }
 
+  // Regular profile editing form
   return (
     <Col className="gap-4 p-4">
       <Col className="gap-1">
@@ -206,6 +236,14 @@ export function EditProfileForm(props: { profile: Profile }) {
           setAvatar(event.target.files ? event.target.files[0] : null)
         }}
       ></input>
+
+      {isEmailPasswordUser && (
+        <PasswordResetSection
+          isRecoveryMode={false}
+          onPasswordResetSuccess={() => console.log('Updated password')}
+        />
+      )}
+
       <p className="text-center text-rose-500">{errorMessage}</p>
       <Button
         type="submit"
