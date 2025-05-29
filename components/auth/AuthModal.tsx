@@ -3,7 +3,8 @@
 import { useState, useTransition, useEffect } from 'react'
 import {
   signInWithGoogle,
-  signInOrSignUp,
+  signIn,
+  signUp,
   resetPassword,
   AuthResult,
 } from '@/lib/auth-actions'
@@ -22,7 +23,7 @@ interface AuthModalProps {
   recommendedEmail?: string
 }
 
-type AuthMode = 'signin' | 'forgot-password'
+type AuthMode = 'signin' | 'signup' | 'forgot-password'
 
 const RETURNING_USER_KEY = 'returning_user'
 
@@ -55,31 +56,43 @@ export default function AuthModal({
     setIsReturning(isReturningUser())
   }, [])
 
+  // Debug effect to track state changes
+  useEffect(() => {
+    console.log('AuthModal state:', { mode, message, isOpen })
+  }, [mode, message, isOpen])
+
   const handleSubmit = (formData: FormData) => {
+    console.log('Form submitted for mode:', mode)
     startTransition(async () => {
       setMessage(null)
 
       try {
         let result
         if (mode === 'signin') {
-          result = await signInOrSignUp(formData)
+          result = await signIn(formData)
           // If no result is returned, it means the sign in was successful and redirected
           if (!result) {
             markUserAsReturning()
             onClose?.()
           }
+        } else if (mode === 'signup') {
+          result = await signUp(formData)
         } else {
           result = await resetPassword(formData)
         }
 
+        console.log('Auth result:', result)
         if (result) {
           setMessage(result)
-          // If it's a successful signup, also mark as returning for future visits
-          if (result.type === 'success' && mode === 'signin') {
+          if (
+            result.type === 'success' &&
+            ['signin', 'signup'].includes(mode)
+          ) {
             markUserAsReturning()
           }
         }
       } catch (error) {
+        console.error('Auth error:', error)
         setMessage({ type: 'error', text: 'An unexpected error occurred' })
       }
     })
@@ -127,7 +140,14 @@ export default function AuthModal({
   )
 
   const emailPwLoginForm = (
-    <form action={handleSubmit} className="space-y-4">
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        const formData = new FormData(e.currentTarget)
+        handleSubmit(formData)
+      }}
+      className="space-y-4"
+    >
       <div>
         <label
           htmlFor="email"
@@ -172,7 +192,9 @@ export default function AuthModal({
         {isPending
           ? 'Loading...'
           : mode === 'signin'
-          ? 'Sign in or Create Account'
+          ? 'Sign in'
+          : mode === 'signup'
+          ? 'Create account'
           : 'Send reset link'}
       </button>
     </form>
@@ -188,6 +210,8 @@ export default function AuthModal({
                 ? isReturning
                   ? 'Welcome back'
                   : 'Welcome'
+                : mode === 'signup'
+                ? 'Create your account'
                 : 'Reset password'}
             </h2>
           </div>
@@ -236,13 +260,6 @@ export default function AuthModal({
                   ? 'The email link you clicked has expired. Please request a new password reset email.'
                   : `Error: ${authError.error}`)}
             </div>
-            <button
-              type="button"
-              onClick={() => setMode('forgot-password')}
-              className="text-sm font-medium text-orange-600 underline hover:text-orange-700"
-            >
-              Request new password reset email
-            </button>
           </div>
         )}
 
@@ -266,12 +283,37 @@ export default function AuthModal({
         <div className="mt-6 space-y-2 text-center">
           {mode === 'signin' ? (
             <div className="space-y-2">
+              <div>
+                <span className="text-sm text-gray-600">
+                  Don&apos;t have an account?{' '}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setMode('signup')}
+                  className="text-sm font-medium text-orange-600 hover:text-orange-700"
+                >
+                  Sign up
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={() => setMode('forgot-password')}
                 className="text-sm font-medium text-orange-600 hover:text-orange-700"
               >
                 Forgot your password?
+              </button>
+            </div>
+          ) : mode === 'signup' ? (
+            <div>
+              <span className="text-sm text-gray-600">
+                Already have an account?{' '}
+              </span>
+              <button
+                type="button"
+                onClick={() => setMode('signin')}
+                className="text-sm font-medium text-orange-600 hover:text-orange-700"
+              >
+                Sign in
               </button>
             </div>
           ) : (
