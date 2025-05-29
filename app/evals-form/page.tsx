@@ -4,7 +4,7 @@ import { createServerSupabaseClient } from '@/db/supabase-server'
 import { EvalsForm } from './evals-form'
 import { getProfileTrusts, getUserEvals } from '@/db/eval'
 import { sortBy } from 'lodash'
-import Auth from '@/app/login/auth-ui'
+import AuthModal from '@/components/auth/AuthModal'
 
 export default async function EvalsPage() {
   const supabase = await createServerSupabaseClient()
@@ -14,7 +14,7 @@ export default async function EvalsPage() {
     listProfilesAndEvals(supabase),
   ])
   if (!user) {
-    return <Auth />
+    return <AuthModal isOpen={true} />
   }
   const [evals, profileTrusts] = await Promise.all([
     getUserEvals(user.id, supabase),
