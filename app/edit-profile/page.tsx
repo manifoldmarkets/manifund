@@ -37,7 +37,7 @@ export default async function Page({
   }
 
   // successful password reset redirect
-  if (searchParams.code) {
+  if (searchParams.recovery === 'true') {
     const params = new URLSearchParams()
     Object.entries(searchParams).forEach(([key, value]) => {
       if (value) params.set(key, value)
