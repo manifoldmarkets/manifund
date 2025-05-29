@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { UpdatePasswordForm } from '../update-password-form'
+import { Col } from '@/components/layout/col'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
@@ -17,7 +18,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-8">
+    <div className="mt-10 flex justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow">
         {isSuccess ? (
           <div className="text-center">
