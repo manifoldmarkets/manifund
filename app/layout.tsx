@@ -12,6 +12,7 @@ import { CompleteProfileBanner } from '@/components/complete-profile-banner'
 import { Toaster } from 'react-hot-toast'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Suspense } from 'react'
+import { OAuthCodeHandler } from '@/components/oauth-code-handler'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 const josefin = Josefin_Slab({
@@ -69,6 +70,7 @@ export default async function RootLayout({
           <Suspense fallback={null}>
             <BottomNavBar />
           </Suspense>
+          <OAuthCodeHandler />
         </SupabaseProvider>
         <Script
           src="https://analytics.umami.is/script.js"
