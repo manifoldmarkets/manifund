@@ -6,7 +6,7 @@ import { calculateCashBalance } from '@/utils/math'
 import Stripe from 'stripe'
 import { getFullTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
-import Auth from '@/app/login/auth-ui'
+import AuthModal from '@/components/auth/AuthModal'
 
 const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
   apiVersion: '2022-11-15',
@@ -19,7 +19,7 @@ export default async function WithdrawPage() {
   const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
   if (!user) {
-    return <Auth />
+    return <AuthModal isOpen={true} />
   }
   const [profile, txns, bids] = await Promise.all([
     getProfileById(supabase, user.id),

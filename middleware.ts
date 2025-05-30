@@ -33,7 +33,6 @@ async function migrateSessionIfNeeded(
     } = await newSupabase.auth.getSession()
 
     if (!newError && newSession) {
-      console.debug('New session found')
       return newSession
     }
 
@@ -44,10 +43,6 @@ async function migrateSessionIfNeeded(
     } = await oldSupabase.auth.getSession()
 
     if (oldError || !(oldSession?.access_token && oldSession?.refresh_token)) {
-      if (oldError) {
-        console.debug('Failed to get session:', oldError.message)
-      }
-      console.debug('No valid old session to migrate')
       return null
     }
 
