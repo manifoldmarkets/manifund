@@ -15,6 +15,7 @@ import { uniq } from 'lodash'
 import { compareDesc } from 'date-fns'
 import { formatMoneyPrecise, formatPercent } from '@/utils/formatting'
 import { MarketTab } from '../market-tab'
+import { SimilarProjects, SimilarProject } from './similar-projects'
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -27,6 +28,7 @@ export function ProjectTabs(props: {
   userProfile?: Profile
   specialCommentPrompt?: string
   activeAuction?: boolean
+  similarProjects?: SimilarProject[]
 }) {
   const {
     project,
@@ -39,6 +41,7 @@ export function ProjectTabs(props: {
     userProfile,
     specialCommentPrompt,
     activeAuction,
+    similarProjects,
   } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
@@ -71,6 +74,15 @@ export function ProjectTabs(props: {
       ),
     },
   ]
+
+  if (similarProjects && similarProjects.length > 0) {
+    tabs.push({
+      name: 'Similar Projects',
+      id: 'similar',
+      count: similarProjects.length,
+      display: <SimilarProjects similarProjects={similarProjects} />,
+    })
+  }
 
   if (
     ((project.stage === 'active' || project.stage === 'complete') &&

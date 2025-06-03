@@ -414,3 +414,21 @@ export async function updateProject(
     console.error(error)
   }
 }
+
+export async function getSimilarProjects(
+  supabase: SupabaseClient,
+  projectId: string,
+  count: number = 3
+) {
+  const { data, error } = await supabase.rpc('find_similar_projects', {
+    project_id: projectId,
+    match_count: count,
+  })
+
+  if (error) {
+    console.error('Error fetching similar projects:', error)
+    return []
+  }
+
+  return data || []
+}

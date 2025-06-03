@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { toMarkdown } from '@/utils/tiptap-parsing'
 
 async function listProjectsPaginated(
   supabase: SupabaseClient,
@@ -39,29 +40,6 @@ async function listProjectsPaginated(
 
   const { data } = await query.throwOnError()
   return data
-}
-
-// TODO: Could maybe replace all this with static-renderer, once that's more stable
-// https://github.com/ueberdosis/tiptap/pull/5528
-import { generateHTML } from '@tiptap/html'
-import StarterKit from '@tiptap/starter-kit'
-import Link from '@tiptap/extension-link'
-import Image from '@tiptap/extension-image'
-import Mention from '@tiptap/extension-mention'
-import { NodeHtmlMarkdown } from 'node-html-markdown'
-import { JSONContent } from '@tiptap/core'
-
-const extensions = [StarterKit, Link, Image, Mention]
-
-function toMarkdown(content: JSONContent) {
-  try {
-    const html = generateHTML(content, extensions)
-    const nhm = new NodeHtmlMarkdown()
-    return nhm.translate(html)
-  } catch (e) {
-    console.error(e)
-    return content
-  }
 }
 
 export async function GET(request: Request) {
