@@ -75,7 +75,6 @@ export function ProjectTabs(props: {
     },
   ]
 
-  // Add Similar Projects tab if we have similar projects data
   if (similarProjects && similarProjects.length > 0) {
     tabs.push({
       name: 'Similar Projects',
