@@ -3,6 +3,7 @@ import { updateProjectCauses } from '@/db/cause'
 import { createAdminClient, createEdgeClient } from './_db'
 import { ProjectUpdate, updateProject } from '@/db/project'
 import { isAdmin } from '@/db/txn'
+import { updateProjectEmbedding } from '@/app/utils/embeddings'
 
 export const config = {
   runtime: 'edge',
@@ -27,5 +28,10 @@ export default async function handler(req: NextRequest) {
   await updateProject(supabase, projectId, projectUpdate)
   console.log(causeSlugs)
   await updateProjectCauses(supabase, causeSlugs, projectId)
+
+  updateProjectEmbedding(projectId).catch((error) => {
+    console.error('Failed to regenerate embeddings for updated project:', error)
+  })
+
   return NextResponse.json('success')
 }

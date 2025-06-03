@@ -309,3 +309,23 @@ export async function updateProject(
     console.error(error)
   }
 }
+
+export async function getSimilarProjects(
+  supabase: SupabaseClient,
+  projectId: string,
+  count: number = 3
+) {
+  // Note: The database function automatically excludes hidden projects
+  // (useful for filtering out duplicates or particularly bad projects)
+  const { data, error } = await supabase.rpc('find_similar_projects', {
+    project_id: projectId,
+    match_count: count,
+  })
+
+  if (error) {
+    console.error('Error fetching similar projects:', error)
+    return []
+  }
+
+  return data || []
+}

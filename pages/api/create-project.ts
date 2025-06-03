@@ -9,6 +9,7 @@ import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
 import { insertBid } from '@/db/bid'
 import { seedAmm } from '@/utils/activate-project'
 import { upvoteOwnProject, giveCreatorShares } from '@/utils/upsert-project'
+import { updateProjectEmbedding } from '@/app/utils/embeddings'
 
 export const config = {
   runtime: 'edge',
@@ -118,5 +119,10 @@ export default async function handler(req: NextRequest) {
       await seedAmm(project, supabaseAdmin, certParams.ammDollars)
     }
   }
+
+  updateProjectEmbedding(projectId).catch((error) => {
+    console.error('Failed to generate embeddings for new project:', error)
+  })
+
   return NextResponse.json(project)
 }

@@ -14,7 +14,9 @@ import { CommentAndProfileAndRxns, CommentAndProfile } from '@/db/comment'
 import { uniq } from 'lodash'
 import { compareDesc } from 'date-fns'
 import { formatMoneyPrecise, formatPercent } from '@/utils/formatting'
-import { MarketTab } from '../market-tab'
+import { SimilarProjects, SimilarProject } from './similar-projects'
+
+const SIMILARITY_THRESHOLD = 0.6
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -27,6 +29,7 @@ export function ProjectTabs(props: {
   userProfile?: Profile
   specialCommentPrompt?: string
   activeAuction?: boolean
+  similarProjects?: SimilarProject[]
 }) {
   const {
     project,
@@ -39,6 +42,7 @@ export function ProjectTabs(props: {
     userProfile,
     specialCommentPrompt,
     activeAuction,
+    similarProjects,
   } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
@@ -71,6 +75,21 @@ export function ProjectTabs(props: {
       ),
     },
   ]
+
+  const similarEnoughSimilarProjects = similarProjects?.filter(
+    (project) => project.similarity > SIMILARITY_THRESHOLD
+  )
+
+  if (similarEnoughSimilarProjects) {
+    tabs.push({
+      name: 'Similar Projects',
+      id: 'similar',
+      count: similarEnoughSimilarProjects.length,
+      display: (
+        <SimilarProjects similarProjects={similarEnoughSimilarProjects} />
+      ),
+    })
+  }
 
   if (
     ((project.stage === 'active' || project.stage === 'complete') &&

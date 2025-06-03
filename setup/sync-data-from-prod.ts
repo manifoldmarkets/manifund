@@ -21,6 +21,7 @@ function question(query: string): Promise<string> {
 
 async function main() {
   let prodDbUrl = ''
+  console.log('Syncing data from production...')
 
   // Load environment variables from .env.local if it exists
   if (existsSync('.env.local')) {
@@ -36,7 +37,7 @@ async function main() {
     process.exit(1)
   }
 
-  const localDbStatus = (await $`npx supabase status`.text()).split('\n')
+  const localDbStatus = (await $`bunx supabase status`.text()).split('\n')
   const localDbUrl = localDbStatus
     .find((line: string) => line.includes('DB URL:'))
     ?.replace(/.*DB URL: */, '')

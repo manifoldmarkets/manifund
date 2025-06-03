@@ -40,6 +40,7 @@ import {
   CircleStackIcon,
 } from '@heroicons/react/24/outline'
 import { format } from 'date-fns'
+import { SimilarProject } from './similar-projects'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -53,6 +54,7 @@ export function ProjectDisplay(props: {
   userProfile?: Profile
   creatorEmail?: string
   userIsAdmin?: boolean
+  similarProjects?: SimilarProject[]
 }) {
   const {
     project,
@@ -66,6 +68,7 @@ export function ProjectDisplay(props: {
     causesList,
     prizeCause,
     userIsAdmin,
+    similarProjects,
   } = props
   const userCharityBalance = userProfile
     ? calculateCharityBalance(
@@ -284,6 +287,7 @@ export function ProjectDisplay(props: {
             userSellableShares={userSellableShares}
             specialCommentPrompt={specialCommentPrompt}
             activeAuction={activeAuction}
+            similarProjects={similarProjects}
           />
         </div>
       </Col>

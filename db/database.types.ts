@@ -159,6 +159,7 @@ export type Database = {
           project: string
           replying_to: string | null
           special_type: Database['public']['Enums']['comment_type'] | null
+          txn_id: string | null
         }
         Insert: {
           commenter: string
@@ -168,6 +169,7 @@ export type Database = {
           project: string
           replying_to?: string | null
           special_type?: Database['public']['Enums']['comment_type'] | null
+          txn_id?: string | null
         }
         Update: {
           commenter?: string
@@ -177,6 +179,7 @@ export type Database = {
           project?: string
           replying_to?: string | null
           special_type?: Database['public']['Enums']['comment_type'] | null
+          txn_id?: string | null
         }
         Relationships: [
           {
@@ -198,6 +201,13 @@ export type Database = {
             columns: ['replying_to']
             isOneToOne: false
             referencedRelation: 'comments'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'comments_txn_id_fkey'
+            columns: ['txn_id']
+            isOneToOne: false
+            referencedRelation: 'txns'
             referencedColumns: ['id']
           }
         ]
@@ -418,6 +428,38 @@ export type Database = {
           }
         ]
       }
+      project_embeddings: {
+        Row: {
+          created_at: string | null
+          embedding: string
+          id: string
+          project_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          embedding: string
+          id?: string
+          project_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          embedding?: string
+          id?: string
+          project_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'project_embeddings_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: true
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          }
+        ]
+      }
       project_evals: {
         Row: {
           confidence: number
@@ -466,7 +508,7 @@ export type Database = {
           project_id: string
         }
         Insert: {
-          follower_id?: string
+          follower_id: string
           project_id: string
         }
         Update: {
@@ -714,13 +756,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'stripe_txns_customer_id_fkey'
-            columns: ['customer_id']
-            isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
-          },
-          {
             foreignKeyName: 'stripe_txns_txn_id_fkey'
             columns: ['txn_id']
             isOneToOne: false
@@ -736,6 +771,7 @@ export type Database = {
           created_at: string
           from_id: string | null
           id: string
+          notes: Json | null
           project: string | null
           to_id: string
           token: string
@@ -747,6 +783,7 @@ export type Database = {
           created_at?: string
           from_id?: string | null
           id?: string
+          notes?: Json | null
           project?: string | null
           to_id: string
           token: string
@@ -758,6 +795,7 @@ export type Database = {
           created_at?: string
           from_id?: string | null
           id?: string
+          notes?: Json | null
           project?: string | null
           to_id?: string
           token?: string
@@ -789,21 +827,7 @@ export type Database = {
       }
     }
     Views: {
-      users: {
-        Row: {
-          email: string | null
-          id: string | null
-        }
-        Insert: {
-          email?: string | null
-          id?: string | null
-        }
-        Update: {
-          email?: string | null
-          id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       _transfer_project: {
@@ -843,6 +867,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      binary_quantize: {
+        Args: { '': string } | { '': unknown }
+        Returns: unknown
+      }
       create_transfer_grant: {
         Args: {
           project: Database['public']['CompositeTypes']['project_row']
@@ -871,6 +899,16 @@ export type Database = {
             }
         Returns: undefined
       }
+      find_similar_projects: {
+        Args: { project_id: string; match_count?: number }
+        Returns: {
+          id: string
+          slug: string
+          title: string
+          blurb: string
+          similarity: number
+        }[]
+      }
       follow_project: {
         Args: { project_id: string; follower_id: string }
         Returns: undefined
@@ -891,6 +929,58 @@ export type Database = {
         }
         Returns: undefined
       }
+      halfvec_avg: {
+        Args: { '': number[] }
+        Returns: unknown
+      }
+      halfvec_out: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      halfvec_send: {
+        Args: { '': unknown }
+        Returns: string
+      }
+      halfvec_typmod_in: {
+        Args: { '': unknown[] }
+        Returns: number
+      }
+      hnsw_bit_support: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      hnsw_halfvec_support: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      hnsw_sparsevec_support: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      hnswhandler: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      ivfflat_bit_support: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      ivfflat_halfvec_support: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      ivfflathandler: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      l2_norm: {
+        Args: { '': unknown } | { '': unknown }
+        Returns: number
+      }
+      l2_normalize: {
+        Args: { '': string } | { '': unknown } | { '': unknown }
+        Returns: unknown
+      }
       reject_grant: {
         Args: { project_id: string }
         Returns: undefined
@@ -898,6 +988,18 @@ export type Database = {
       reject_proposal: {
         Args: { project_id: string }
         Returns: undefined
+      }
+      sparsevec_out: {
+        Args: { '': unknown }
+        Returns: unknown
+      }
+      sparsevec_send: {
+        Args: { '': unknown }
+        Returns: string
+      }
+      sparsevec_typmod_in: {
+        Args: { '': unknown[] }
+        Returns: number
       }
       toggle_follow: {
         Args: { project_id: string; follower_id: string }
@@ -934,6 +1036,30 @@ export type Database = {
       unfollow_project: {
         Args: { project_id: string; follower_id: string }
         Returns: undefined
+      }
+      vector_avg: {
+        Args: { '': number[] }
+        Returns: string
+      }
+      vector_dims: {
+        Args: { '': string } | { '': unknown }
+        Returns: number
+      }
+      vector_norm: {
+        Args: { '': string }
+        Returns: number
+      }
+      vector_out: {
+        Args: { '': string }
+        Returns: unknown
+      }
+      vector_send: {
+        Args: { '': string }
+        Returns: string
+      }
+      vector_typmod_in: {
+        Args: { '': unknown[] }
+        Returns: number
       }
     }
     Enums: {

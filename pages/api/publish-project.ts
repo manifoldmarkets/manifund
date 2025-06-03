@@ -6,6 +6,7 @@ import { getPrizeCause } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
 import { seedAmm } from '@/utils/activate-project'
 import { insertBid } from '@/db/bid'
+import { updateProjectEmbedding } from '@/app/utils/embeddings'
 
 export const config = {
   runtime: 'edge',
@@ -66,5 +67,13 @@ export default async function handler(req: NextRequest) {
       await seedAmm(updatedProject, supabaseAdmin, certParams.ammDollars)
     }
   }
+
+  updateProjectEmbedding(projectId).catch((error) => {
+    console.error(
+      'Failed to regenerate embeddings for published project:',
+      error
+    )
+  })
+
   return NextResponse.json('success')
 }
