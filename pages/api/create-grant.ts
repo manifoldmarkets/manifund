@@ -13,6 +13,7 @@ import { getTxnAndProjectsByUser } from '@/db/txn'
 import { invalidateProjectsCache } from '@/db/project-cached'
 import { getBidsByUser } from '@/db/bid'
 import { updateProjectCauses } from '@/db/cause'
+import { updateProjectEmbedding } from '@/app/utils/embeddings'
 
 export const config = {
   runtime: 'edge',
@@ -178,6 +179,9 @@ export default async function handler(req: NextRequest) {
   await updateProjectCauses(supabase, causeSlugs, project.id)
 
   invalidateProjectsCache()
+  updateProjectEmbedding(project.id).catch((error) => {
+    console.error('Failed to generate embeddings for new grant project:', error)
+  })
 
   return NextResponse.json(project)
 }

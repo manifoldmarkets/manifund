@@ -420,6 +420,8 @@ export async function getSimilarProjects(
   projectId: string,
   count: number = 3
 ) {
+  // Note: The database function automatically excludes hidden projects
+  // (useful for filtering out duplicates or particularly bad projects)
   const { data, error } = await supabase.rpc('find_similar_projects', {
     project_id: projectId,
     match_count: count,
