@@ -1,16 +1,14 @@
 import { Suspense } from 'react'
 import { createServerSupabaseClient } from '@/db/supabase-server'
-import { listProjects } from '@/db/project'
-import { listProjectsCached } from '@/db/project-cached'
 import { getUser } from '@/db/profile'
 import { Col } from '@/components/layout/col'
 import { FeedTabs } from './feed-tabs'
 import { getRecentFullComments } from '@/db/comment'
 import { getRecentFullTxns } from '@/db/txn'
 import { getRecentFullBids } from '@/db/bid'
-import { listSimpleCauses, getSomeFullCauses } from '@/db/cause'
+import { listSimpleCauses } from '@/db/cause'
+import { listProjects } from '@/db/project'
 import { LandingSection } from './landing-section'
-import { CausesSection } from './causes-section'
 
 // Page is dynamic due to cookies(), but listProjects is cached for 30s
 
@@ -73,7 +71,7 @@ async function AsyncFeedTabs({
   const supabase = await createServerSupabaseClient()
   const [projects, recentComments, recentDonations, recentBids, causesList] =
     await Promise.all([
-      shouldLoadProjects ? listProjectsCached() : Promise.resolve([]),
+      shouldLoadProjects ? listProjects(supabase) : Promise.resolve([]),
       getRecentFullComments(supabase, PAGE_SIZE, start),
       getRecentFullTxns(supabase, PAGE_SIZE, start),
       getRecentFullBids(supabase, PAGE_SIZE, start),
