@@ -44,16 +44,9 @@ export function SimilarProjects({
                   </h3>
                   <ArrowTopRightOnSquareIcon className="h-4 w-4 flex-shrink-0 text-gray-400" />
                 </div>
-
                 <p className="line-clamp-3 text-sm text-gray-600">
                   {project.blurb}
                 </p>
-
-                <Row className="items-center gap-2 text-xs">
-                  <span className="inline-flex items-center rounded-full bg-orange-50 px-2 py-1 font-medium text-orange-700">
-                    {formatPercent(project.similarity)} match
-                  </span>
-                </Row>
               </Col>
             </Card>
           </Link>
