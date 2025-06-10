@@ -5,10 +5,8 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { Avatar } from '@/components/avatar'
 
 // copied from https://tiptap.dev/api/nodes/mention#usage
-export const MentionList = forwardRef(
-  (props: SuggestionProps<MiniProfile>, ref) => {
-    const { items: profiles, command } = props
-
+export const MentionList = forwardRef<any, SuggestionProps<MiniProfile>>(
+  ({ items: profiles, command }, ref) => {
     const [selectedIndex, setSelectedIndex] = useState(0)
     useEffect(() => setSelectedIndex(0), [profiles])
 

@@ -1,11 +1,10 @@
 import clsx from 'clsx'
 import React from 'react'
 
-export const Card = React.forwardRef(function Col(
-  props: JSX.IntrinsicElements['div'],
-  ref: React.Ref<HTMLDivElement>
-) {
-  const { children, className, ...rest } = props
+export const Card = React.forwardRef<
+  HTMLDivElement,
+  JSX.IntrinsicElements['div']
+>(function Card({ children, className, ...rest }, ref) {
   return (
     <div
       className={clsx(
