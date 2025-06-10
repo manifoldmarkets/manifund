@@ -26,6 +26,7 @@ export type FullProject = Project & { profiles: Profile } & {
 } & { project_votes: ProjectVote[] } & { causes: MiniCause[] } & {
   project_follows: ProjectFollow[]
 }
+export type FullProjectWithSimilarity = FullProject & { similarity: number }
 export type MiniProject = Project & { profiles: Profile } & { txns: Txn[] }
 export const TOTAL_SHARES = 10_000_000
 
@@ -415,22 +416,50 @@ export async function updateProject(
   }
 }
 
-export async function getSimilarProjects(
+export async function getFullSimilarProjects(
   supabase: SupabaseClient,
   projectId: string,
   count: number = 3
-) {
-  // Note: The database function automatically excludes hidden projects
-  // (useful for filtering out duplicates or particularly bad projects)
-  const { data, error } = await supabase.rpc('find_similar_projects', {
-    project_id: projectId,
-    match_count: count,
-  })
+): Promise<FullProjectWithSimilarity[]> {
+  const { data: similarProjects, error: initialError } = await supabase.rpc(
+    'find_similar_projects',
+    {
+      project_id: projectId,
+      match_count: count,
+    }
+  )
 
-  if (error) {
-    console.error('Error fetching similar projects:', error)
+  if (initialError) {
+    console.error('Error fetching similar projects:', initialError)
     return []
   }
 
-  return data || []
+  if (similarProjects.length === 0) {
+    return []
+  }
+
+  const projectIds = similarProjects.map((p: any) => p.id)
+
+  const { data, error } = await supabase
+    .from('projects')
+    .select(
+      '*, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), project_follows(follower_id), causes(title, slug)'
+    )
+    .in('id', projectIds)
+    .neq('stage', 'hidden')
+    .neq('stage', 'draft')
+
+  if (error || !data) {
+    console.error('Error fetching full similar projects:', error)
+    return []
+  }
+
+  const projectsWithSimilarity = data.map((project) => {
+    const similarity =
+      similarProjects.find((p: any) => p.id === project.id)?.similarity || 0
+    return { ...project, similarity }
+  })
+  return projectsWithSimilarity.sort(
+    (a, b) => b.similarity - a.similarity
+  ) as FullProjectWithSimilarity[]
 }

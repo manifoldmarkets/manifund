@@ -6,7 +6,7 @@ import { ProgressBar } from '@/components/progress-bar'
 import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { CommentAndProfileAndRxns } from '@/db/comment'
 import { Profile } from '@/db/profile'
-import { FullProject, Project } from '@/db/project'
+import { FullProject, FullProjectWithSimilarity, Project } from '@/db/project'
 import { Cause, SimpleCause } from '@/db/cause'
 import { TxnAndProfiles, TxnAndProject } from '@/db/txn'
 import {
@@ -40,7 +40,6 @@ import {
   CircleStackIcon,
 } from '@heroicons/react/24/outline'
 import { format } from 'date-fns'
-import { SimilarProject } from './similar-projects'
 
 export function ProjectDisplay(props: {
   project: FullProject
@@ -54,7 +53,7 @@ export function ProjectDisplay(props: {
   userProfile?: Profile
   creatorEmail?: string
   userIsAdmin?: boolean
-  similarProjects?: SimilarProject[]
+  similarProjects?: FullProjectWithSimilarity[]
 }) {
   const {
     project,

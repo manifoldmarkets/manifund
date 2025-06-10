@@ -1,6 +1,10 @@
 'use client'
 import { Comments } from './comments'
-import { FullProject, TOTAL_SHARES } from '@/db/project'
+import {
+  FullProject,
+  FullProjectWithSimilarity,
+  TOTAL_SHARES,
+} from '@/db/project'
 import { Profile } from '@/db/profile'
 import { useSearchParams } from 'next/navigation'
 import { Bids } from './bids'
@@ -14,7 +18,7 @@ import { CommentAndProfileAndRxns, CommentAndProfile } from '@/db/comment'
 import { uniq } from 'lodash'
 import { compareDesc } from 'date-fns'
 import { formatMoneyPrecise, formatPercent } from '@/utils/formatting'
-import { SimilarProjects, SimilarProject } from './similar-projects'
+import { SimilarProjects } from './similar-projects'
 
 const SIMILARITY_THRESHOLD = 0.6
 
@@ -29,7 +33,7 @@ export function ProjectTabs(props: {
   userProfile?: Profile
   specialCommentPrompt?: string
   activeAuction?: boolean
-  similarProjects?: SimilarProject[]
+  similarProjects?: FullProjectWithSimilarity[]
 }) {
   const {
     project,
@@ -80,7 +84,7 @@ export function ProjectTabs(props: {
     (project) => project.similarity > SIMILARITY_THRESHOLD
   )
 
-  if (similarEnoughSimilarProjects) {
+  if (similarEnoughSimilarProjects?.length) {
     tabs.push({
       name: 'Similar Projects',
       id: 'similar',

@@ -2,8 +2,8 @@ import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getUser, isAdmin, getProfileAndBidsById } from '@/db/profile'
 import {
   getFullProjectBySlug,
+  getFullSimilarProjects,
   getProjectBySlug,
-  getSimilarProjects,
 } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
@@ -65,7 +65,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     getBidsByProject(supabase, project.id),
     getTxnsByProject(supabase, project.id),
     listSimpleCauses(supabase),
-    getSimilarProjects(supabase, project.id, 3),
+    getFullSimilarProjects(supabase, project.id, 3),
   ])
   const prizeCause = await getPrizeCause(
     project.causes.map((c) => c.slug),
