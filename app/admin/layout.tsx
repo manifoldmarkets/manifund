@@ -12,8 +12,7 @@ export const revalidate = 300
 // Separate components for each count to allow parallel loading
 async function UserCount() {
   const supabase = createAdminClient()
-  // auth.users table exists through supabase auth but isn't in generated types, so need to cast as any
-  const { count } = await (supabase as any)
+  const { count } = await supabase
     .from('users')
     .select('*', { count: 'exact', head: true })
 
