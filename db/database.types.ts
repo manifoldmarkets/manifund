@@ -16,8 +16,8 @@ export type Database = {
           created_at: string
           id: string
           project: string
-          status: Database["public"]["Enums"]["bid_status"]
-          type: Database["public"]["Enums"]["bid_type"]
+          status: Database['public']['Enums']['bid_status']
+          type: Database['public']['Enums']['bid_type']
           valuation: number
         }
         Insert: {
@@ -26,8 +26,8 @@ export type Database = {
           created_at?: string
           id?: string
           project: string
-          status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"]
+          status?: Database['public']['Enums']['bid_status']
+          type?: Database['public']['Enums']['bid_type']
           valuation: number
         }
         Update: {
@@ -36,25 +36,25 @@ export type Database = {
           created_at?: string
           id?: string
           project?: string
-          status?: Database["public"]["Enums"]["bid_status"]
-          type?: Database["public"]["Enums"]["bid_type"]
+          status?: Database['public']['Enums']['bid_status']
+          type?: Database['public']['Enums']['bid_type']
           valuation?: number
         }
         Relationships: [
           {
-            foreignKeyName: "bids_bidder_fkey"
-            columns: ["bidder"]
+            foreignKeyName: 'bids_bidder_fkey'
+            columns: ['bidder']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "bids_project_fkey"
-            columns: ["project"]
+            foreignKeyName: 'bids_project_fkey'
+            columns: ['project']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          }
         ]
       }
       causes: {
@@ -99,12 +99,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "causes_fund_id_fkey"
-            columns: ["fund_id"]
+            foreignKeyName: 'causes_fund_id_fkey'
+            columns: ['fund_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
         ]
       }
       comment_rxns: {
@@ -128,26 +128,26 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "comment_rxns_comment_id_fkey"
-            columns: ["comment_id"]
+            foreignKeyName: 'comment_rxns_comment_id_fkey'
+            columns: ['comment_id']
             isOneToOne: false
-            referencedRelation: "comments"
-            referencedColumns: ["id"]
+            referencedRelation: 'comments'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "comment_rxns_reactor_id_fkey"
-            columns: ["reactor_id"]
+            foreignKeyName: 'comment_rxns_reactor_id_fkey'
+            columns: ['reactor_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "comment_rxns_txn_id_fkey"
-            columns: ["txn_id"]
+            foreignKeyName: 'comment_rxns_txn_id_fkey'
+            columns: ['txn_id']
             isOneToOne: false
-            referencedRelation: "txns"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'txns'
+            referencedColumns: ['id']
+          }
         ]
       }
       comments: {
@@ -158,7 +158,7 @@ export type Database = {
           id: string
           project: string
           replying_to: string | null
-          special_type: Database["public"]["Enums"]["comment_type"] | null
+          special_type: Database['public']['Enums']['comment_type'] | null
         }
         Insert: {
           commenter: string
@@ -167,7 +167,7 @@ export type Database = {
           id?: string
           project: string
           replying_to?: string | null
-          special_type?: Database["public"]["Enums"]["comment_type"] | null
+          special_type?: Database['public']['Enums']['comment_type'] | null
         }
         Update: {
           commenter?: string
@@ -176,30 +176,30 @@ export type Database = {
           id?: string
           project?: string
           replying_to?: string | null
-          special_type?: Database["public"]["Enums"]["comment_type"] | null
+          special_type?: Database['public']['Enums']['comment_type'] | null
         }
         Relationships: [
           {
-            foreignKeyName: "comments_commenter_fkey"
-            columns: ["commenter"]
+            foreignKeyName: 'comments_commenter_fkey'
+            columns: ['commenter']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "comments_project_fkey"
-            columns: ["project"]
+            foreignKeyName: 'comments_project_fkey'
+            columns: ['project']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "comments_replying_to_fkey"
-            columns: ["replying_to"]
+            foreignKeyName: 'comments_replying_to_fkey'
+            columns: ['replying_to']
             isOneToOne: false
-            referencedRelation: "comments"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'comments'
+            referencedColumns: ['id']
+          }
         ]
       }
       grant_agreements: {
@@ -247,19 +247,19 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "grant_agreements_approved_by_fkey"
-            columns: ["approved_by"]
+            foreignKeyName: 'grant_agreements_approved_by_fkey'
+            columns: ['approved_by']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "grant_agreements_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'grant_agreements_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: true
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          }
         ]
       }
       profile_roles: {
@@ -295,12 +295,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "profile_roles_id_fkey"
-            columns: ["id"]
+            foreignKeyName: 'profile_roles_id_fkey'
+            columns: ['id']
             isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
         ]
       }
       profile_trust: {
@@ -324,19 +324,19 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "profile_trust_trusted_id_fkey"
-            columns: ["trusted_id"]
+            foreignKeyName: 'profile_trust_trusted_id_fkey'
+            columns: ['trusted_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "profile_trust_truster_id_fkey"
-            columns: ["truster_id"]
+            foreignKeyName: 'profile_trust_truster_id_fkey'
+            columns: ['truster_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
         ]
       }
       profiles: {
@@ -349,7 +349,7 @@ export type Database = {
           long_description: Json | null
           regranter_status: boolean
           stripe_connect_id: string | null
-          type: Database["public"]["Enums"]["profile_type"]
+          type: Database['public']['Enums']['profile_type']
           username: string
           website: string | null
         }
@@ -362,7 +362,7 @@ export type Database = {
           long_description?: Json | null
           regranter_status?: boolean
           stripe_connect_id?: string | null
-          type?: Database["public"]["Enums"]["profile_type"]
+          type?: Database['public']['Enums']['profile_type']
           username: string
           website?: string | null
         }
@@ -375,7 +375,7 @@ export type Database = {
           long_description?: Json | null
           regranter_status?: boolean
           stripe_connect_id?: string | null
-          type?: Database["public"]["Enums"]["profile_type"]
+          type?: Database['public']['Enums']['profile_type']
           username?: string
           website?: string | null
         }
@@ -383,39 +383,39 @@ export type Database = {
       }
       project_causes: {
         Row: {
-          application_stage: Database["public"]["Enums"]["project_stage"] | null
+          application_stage: Database['public']['Enums']['project_stage'] | null
           cause_slug: string
           project_id: string
         }
         Insert: {
           application_stage?:
-            | Database["public"]["Enums"]["project_stage"]
+            | Database['public']['Enums']['project_stage']
             | null
           cause_slug: string
           project_id: string
         }
         Update: {
           application_stage?:
-            | Database["public"]["Enums"]["project_stage"]
+            | Database['public']['Enums']['project_stage']
             | null
           cause_slug?: string
           project_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "project_causes_cause_slug_fkey"
-            columns: ["cause_slug"]
+            foreignKeyName: 'project_causes_cause_slug_fkey'
+            columns: ['cause_slug']
             isOneToOne: false
-            referencedRelation: "causes"
-            referencedColumns: ["slug"]
+            referencedRelation: 'causes'
+            referencedColumns: ['slug']
           },
           {
-            foreignKeyName: "project_causes_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_causes_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          }
         ]
       }
       project_embeddings: {
@@ -448,12 +448,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "project_embeddings_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_embeddings_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: true
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          }
         ]
       }
       project_evals: {
@@ -483,19 +483,19 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "project_evals_evaluator_id_fkey"
-            columns: ["evaluator_id"]
+            foreignKeyName: 'project_evals_evaluator_id_fkey'
+            columns: ['evaluator_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "project_evals_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_evals_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          }
         ]
       }
       project_follows: {
@@ -513,19 +513,19 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "project_follows_follower_id_fkey"
-            columns: ["follower_id"]
+            foreignKeyName: 'project_follows_follower_id_fkey'
+            columns: ['follower_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "project_follows_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_follows_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          }
         ]
       }
       project_transfers: {
@@ -555,12 +555,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "project_transfers_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_transfers_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          }
         ]
       }
       project_votes: {
@@ -584,19 +584,19 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "project_votes_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: 'project_votes_project_id_fkey'
+            columns: ['project_id']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "project_votes_voter_id_fkey"
-            columns: ["voter_id"]
+            foreignKeyName: 'project_votes_voter_id_fkey'
+            columns: ['voter_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
         ]
       }
       projects: {
@@ -620,9 +620,9 @@ export type Database = {
           round: string
           signed_agreement: boolean
           slug: string
-          stage: Database["public"]["Enums"]["project_stage"]
+          stage: Database['public']['Enums']['project_stage']
           title: string
-          type: Database["public"]["Enums"]["project_type"]
+          type: Database['public']['Enums']['project_type']
         }
         Insert: {
           amm_shares?: number | null
@@ -644,9 +644,9 @@ export type Database = {
           round: string
           signed_agreement?: boolean
           slug?: string
-          stage?: Database["public"]["Enums"]["project_stage"]
+          stage?: Database['public']['Enums']['project_stage']
           title?: string
-          type?: Database["public"]["Enums"]["project_type"]
+          type?: Database['public']['Enums']['project_type']
         }
         Update: {
           amm_shares?: number | null
@@ -668,25 +668,25 @@ export type Database = {
           round?: string
           signed_agreement?: boolean
           slug?: string
-          stage?: Database["public"]["Enums"]["project_stage"]
+          stage?: Database['public']['Enums']['project_stage']
           title?: string
-          type?: Database["public"]["Enums"]["project_type"]
+          type?: Database['public']['Enums']['project_type']
         }
         Relationships: [
           {
-            foreignKeyName: "projects_creator_fkey"
-            columns: ["creator"]
+            foreignKeyName: 'projects_creator_fkey'
+            columns: ['creator']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "projects_round_fkey"
-            columns: ["round"]
+            foreignKeyName: 'projects_round_fkey'
+            columns: ['round']
             isOneToOne: false
-            referencedRelation: "rounds"
-            referencedColumns: ["title"]
-          },
+            referencedRelation: 'rounds'
+            referencedColumns: ['title']
+          }
         ]
       }
       rounds: {
@@ -752,19 +752,19 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "stripe_txns_customer_id_fkey"
-            columns: ["customer_id"]
+            foreignKeyName: 'stripe_txns_customer_id_fkey'
+            columns: ['customer_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "stripe_txns_txn_id_fkey"
-            columns: ["txn_id"]
+            foreignKeyName: 'stripe_txns_txn_id_fkey'
+            columns: ['txn_id']
             isOneToOne: false
-            referencedRelation: "txns"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'txns'
+            referencedColumns: ['id']
+          }
         ]
       }
       txns: {
@@ -777,7 +777,7 @@ export type Database = {
           project: string | null
           to_id: string
           token: string
-          type: Database["public"]["Enums"]["txn_type"] | null
+          type: Database['public']['Enums']['txn_type'] | null
         }
         Insert: {
           amount: number
@@ -788,7 +788,7 @@ export type Database = {
           project?: string | null
           to_id: string
           token: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type?: Database['public']['Enums']['txn_type'] | null
         }
         Update: {
           amount?: number
@@ -799,30 +799,30 @@ export type Database = {
           project?: string | null
           to_id?: string
           token?: string
-          type?: Database["public"]["Enums"]["txn_type"] | null
+          type?: Database['public']['Enums']['txn_type'] | null
         }
         Relationships: [
           {
-            foreignKeyName: "txns_from_id_fkey"
-            columns: ["from_id"]
+            foreignKeyName: 'txns_from_id_fkey'
+            columns: ['from_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "txns_project_fkey"
-            columns: ["project"]
+            foreignKeyName: 'txns_project_fkey'
+            columns: ['project']
             isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "txns_to_id_fkey"
-            columns: ["to_id"]
+            foreignKeyName: 'txns_to_id_fkey'
+            columns: ['to_id']
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
         ]
       }
     }
@@ -883,9 +883,9 @@ export type Database = {
       }
       create_transfer_grant: {
         Args: {
-          project: Database["public"]["CompositeTypes"]["project_row"]
-          donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
-          project_transfer: Database["public"]["CompositeTypes"]["transfer_row"]
+          project: Database['public']['CompositeTypes']['project_row']
+          donor_comment: Database['public']['CompositeTypes']['comment_row']
+          project_transfer: Database['public']['CompositeTypes']['transfer_row']
           grant_amount: number
         }
         Returns: undefined
@@ -933,14 +933,14 @@ export type Database = {
       }
       give_grant: {
         Args: {
-          project: Database["public"]["CompositeTypes"]["project_row"]
-          donor_comment: Database["public"]["CompositeTypes"]["comment_row"]
-          donation: Database["public"]["CompositeTypes"]["bid_row"]
+          project: Database['public']['CompositeTypes']['project_row']
+          donor_comment: Database['public']['CompositeTypes']['comment_row']
+          donation: Database['public']['CompositeTypes']['bid_row']
         }
         Returns: undefined
       }
       ivfflathandler: {
-        Args: { "": unknown }
+        Args: { '': unknown }
         Returns: unknown
       }
       reject_grant: {
@@ -988,56 +988,56 @@ export type Database = {
         Returns: undefined
       }
       vector_avg: {
-        Args: { "": number[] }
+        Args: { '': number[] }
         Returns: string
       }
       vector_dims: {
-        Args: { "": string }
+        Args: { '': string }
         Returns: number
       }
       vector_norm: {
-        Args: { "": string }
+        Args: { '': string }
         Returns: number
       }
       vector_out: {
-        Args: { "": string }
+        Args: { '': string }
         Returns: unknown
       }
       vector_send: {
-        Args: { "": string }
+        Args: { '': string }
         Returns: string
       }
       vector_typmod_in: {
-        Args: { "": unknown[] }
+        Args: { '': unknown[] }
         Returns: number
       }
     }
     Enums: {
-      bid_status: "deleted" | "pending" | "accepted" | "declined"
-      bid_type: "buy" | "sell" | "donate" | "assurance buy" | "assurance sell"
-      comment_type: "progress update" | "final report"
-      profile_type: "individual" | "org" | "fund" | "amm"
+      bid_status: 'deleted' | 'pending' | 'accepted' | 'declined'
+      bid_type: 'buy' | 'sell' | 'donate' | 'assurance buy' | 'assurance sell'
+      comment_type: 'progress update' | 'final report'
+      profile_type: 'individual' | 'org' | 'fund' | 'amm'
       project_stage:
-        | "active"
-        | "proposal"
-        | "not funded"
-        | "complete"
-        | "hidden"
-        | "draft"
-      project_type: "grant" | "cert" | "dummy"
+        | 'active'
+        | 'proposal'
+        | 'not funded'
+        | 'complete'
+        | 'hidden'
+        | 'draft'
+      project_type: 'grant' | 'cert' | 'dummy'
       txn_type:
-        | "profile donation"
-        | "project donation"
-        | "user to user trade"
-        | "user to amm trade"
-        | "withdraw"
-        | "deposit"
-        | "cash to charity transfer"
-        | "inject amm liquidity"
-        | "mint cert"
-        | "mana deposit"
-        | "tip"
-        | "return bank funds"
+        | 'profile donation'
+        | 'project donation'
+        | 'user to user trade'
+        | 'user to amm trade'
+        | 'withdraw'
+        | 'deposit'
+        | 'cash to charity transfer'
+        | 'inject amm liquidity'
+        | 'mint cert'
+        | 'mana deposit'
+        | 'tip'
+        | 'return bank funds'
     }
     CompositeTypes: {
       bid_row: {
@@ -1066,8 +1066,8 @@ export type Database = {
         min_funding: number | null
         funding_goal: number | null
         founder_shares: number | null
-        type: Database["public"]["Enums"]["project_type"] | null
-        stage: Database["public"]["Enums"]["project_stage"] | null
+        type: Database['public']['Enums']['project_type'] | null
+        stage: Database['public']['Enums']['project_stage'] | null
         round: string | null
         slug: string | null
         location_description: string | null
@@ -1082,140 +1082,140 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DefaultSchema = Database[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    ? keyof (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
+      DefaultSchema['Views'])
+  ? (DefaultSchema['Tables'] &
+      DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
     : never
+  : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    ? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+  ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
     : never
+  : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
+    | keyof DefaultSchema['Tables']
     | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    ? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    : never = never
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
+  ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
     : never
+  : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
+    | keyof DefaultSchema['Enums']
     | { schema: keyof Database },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    ? keyof Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    : never = never
 > = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+  ? Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
+  ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+  : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
+    | keyof DefaultSchema['CompositeTypes']
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    ? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    : never = never
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+  ? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
+  ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  : never
 
 export const Constants = {
   public: {
     Enums: {
-      bid_status: ["deleted", "pending", "accepted", "declined"],
-      bid_type: ["buy", "sell", "donate", "assurance buy", "assurance sell"],
-      comment_type: ["progress update", "final report"],
-      profile_type: ["individual", "org", "fund", "amm"],
+      bid_status: ['deleted', 'pending', 'accepted', 'declined'],
+      bid_type: ['buy', 'sell', 'donate', 'assurance buy', 'assurance sell'],
+      comment_type: ['progress update', 'final report'],
+      profile_type: ['individual', 'org', 'fund', 'amm'],
       project_stage: [
-        "active",
-        "proposal",
-        "not funded",
-        "complete",
-        "hidden",
-        "draft",
+        'active',
+        'proposal',
+        'not funded',
+        'complete',
+        'hidden',
+        'draft',
       ],
-      project_type: ["grant", "cert", "dummy"],
+      project_type: ['grant', 'cert', 'dummy'],
       txn_type: [
-        "profile donation",
-        "project donation",
-        "user to user trade",
-        "user to amm trade",
-        "withdraw",
-        "deposit",
-        "cash to charity transfer",
-        "inject amm liquidity",
-        "mint cert",
-        "mana deposit",
-        "tip",
-        "return bank funds",
+        'profile donation',
+        'project donation',
+        'user to user trade',
+        'user to amm trade',
+        'withdraw',
+        'deposit',
+        'cash to charity transfer',
+        'inject amm liquidity',
+        'mint cert',
+        'mana deposit',
+        'tip',
+        'return bank funds',
       ],
     },
   },
