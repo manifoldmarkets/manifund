@@ -16,10 +16,7 @@
     "update-deps": "bunx npm-check-updates -i",
     "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty",
     "setup-local-env": "bun run setup/setup-local-env.ts",
-    "sync-data-from-prod": "bun run setup/sync-data-from-prod.ts",
-    "embeddings:sync": "dotenv -e .env.development.local -e .env.local -- bun run scripts/sync-embeddings-local.ts",
-    "embeddings:sync:force": "dotenv -e .env.development.local -e .env.local -- FORCE_REGENERATE=true bun run scripts/sync-embeddings-local.ts",
-    "identify:similar": "dotenv -e .env.development.local -e .env.local -- bun run scripts/identify-similar-projects.ts"
+    "sync-data-from-prod": "bun run setup/sync-data-from-prod.ts"
   },
   "dependencies": {
     "@floating-ui/react": "^0.19.2",
