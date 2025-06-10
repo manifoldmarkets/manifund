@@ -45,7 +45,7 @@ export default async function Projects(props: {
         <AsyncFeedTabs
           searchParams={props.searchParams}
           userId={user?.id}
-          projectLimit={300}
+          projectLimit={2000}
         />
       </Suspense>
     </Col>
