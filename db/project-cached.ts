@@ -3,6 +3,7 @@ import { listProjects } from './project'
 import { createPublicSupabaseClient } from './supabase-server'
 
 // Cached version of listProjects for public pages
+// TODO: this is too large for the cache, should use a different approach
 export const listProjectsCached = unstable_cache(
   // eslint-disable-next-line @typescript-eslint/require-await
   async () => {
