@@ -10,6 +10,7 @@ import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { JSONContent } from '@tiptap/react'
 import { calculateCharityBalance } from '@/utils/math'
 import { getTxnAndProjectsByUser } from '@/db/txn'
+import { invalidateProjectsCache } from '@/db/project-cached'
 import { getBidsByUser } from '@/db/bid'
 import { updateProjectCauses } from '@/db/cause'
 
@@ -175,5 +176,8 @@ export default async function handler(req: NextRequest) {
     return NextResponse.error()
   }
   await updateProjectCauses(supabase, causeSlugs, project.id)
+
+  invalidateProjectsCache()
+
   return NextResponse.json(project)
 }
