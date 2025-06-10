@@ -36,6 +36,18 @@ export const createServerSupabaseClient = async () => {
   })
 }
 
+// for cached functions and other contexts where cookies aren't needed
+export function createPublicSupabaseClient() {
+  return createServerClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
+    cookies: {
+      getAll() {
+        return []
+      },
+      setAll() {},
+    },
+  })
+}
+
 // For Middleware and Edge API routes that have access to NextRequest/NextResponse
 export function createMiddlewareSupabaseClient(
   req: NextRequest,

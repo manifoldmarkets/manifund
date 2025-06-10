@@ -1,4 +1,5 @@
 import { updateProject, getProjectById } from '@/db/project'
+import { invalidateProjectsCache } from '@/db/project-cached'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, createEdgeClient } from './_db'
 import { createUpdateFromParams, ProjectParams } from '@/utils/upsert-project'
@@ -66,5 +67,8 @@ export default async function handler(req: NextRequest) {
       await seedAmm(updatedProject, supabaseAdmin, certParams.ammDollars)
     }
   }
+
+  invalidateProjectsCache()
+
   return NextResponse.json('success')
 }
