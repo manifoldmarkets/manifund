@@ -7,6 +7,7 @@ import { ProjectParams } from '@/utils/upsert-project'
 import { getPrizeCause, updateProjectCauses } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
 import { insertBid } from '@/db/bid'
+import { invalidateProjectsCache } from '@/db/project-cached'
 import { seedAmm } from '@/utils/activate-project'
 import { upvoteOwnProject, giveCreatorShares } from '@/utils/upsert-project'
 
@@ -118,5 +119,8 @@ export default async function handler(req: NextRequest) {
       await seedAmm(project, supabaseAdmin, certParams.ammDollars)
     }
   }
+
+  invalidateProjectsCache()
+
   return NextResponse.json(project)
 }

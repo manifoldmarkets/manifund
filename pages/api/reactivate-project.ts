@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { invalidateProjectsCache } from '@/db/project-cached'
 import { createEdgeClient } from './_db'
 import { getUser } from '@/db/profile'
 import { getProjectWithCausesById } from '@/db/project'
@@ -32,6 +33,9 @@ export default async function handler(req: NextRequest) {
     return Response.error()
   }
   await reactivateProject(supabase, projectId)
+
+  invalidateProjectsCache()
+
   return NextResponse.json('success')
 }
 

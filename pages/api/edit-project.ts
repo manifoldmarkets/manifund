@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { invalidateProjectsCache } from '@/db/project-cached'
 import { updateProjectCauses } from '@/db/cause'
 import { createAdminClient, createEdgeClient } from './_db'
 import { ProjectUpdate, updateProject } from '@/db/project'
@@ -27,5 +28,8 @@ export default async function handler(req: NextRequest) {
   await updateProject(supabase, projectId, projectUpdate)
   console.log(causeSlugs)
   await updateProjectCauses(supabase, causeSlugs, projectId)
+
+  invalidateProjectsCache()
+
   return NextResponse.json('success')
 }

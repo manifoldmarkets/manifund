@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createEdgeClient } from './_db'
+import { invalidateProjectsCache } from '@/db/project-cached'
 import { getProjectById, updateProjectStage } from '@/db/project'
 import { JSONContent } from '@tiptap/core'
 import { sendComment } from '@/db/comment'
@@ -34,5 +35,8 @@ export default async function handler(req: NextRequest) {
     undefined,
     'final report'
   )
+
+  invalidateProjectsCache()
+
   return NextResponse.json('success')
 }

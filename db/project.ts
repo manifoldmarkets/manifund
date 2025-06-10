@@ -184,7 +184,6 @@ export async function listProjects(supabase: SupabaseClient) {
   return Array.from(projectsMap.values()) as FullProject[]
 }
 
-
 export async function listProjectsForEvals(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('projects')

@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { listProjects } from '@/db/project'
+import { listProjectsCached } from '@/db/project-cached'
 import { getUser } from '@/db/profile'
 import { Col } from '@/components/layout/col'
 import { FeedTabs } from './feed-tabs'
@@ -11,8 +12,7 @@ import { listSimpleCauses, getSomeFullCauses } from '@/db/cause'
 import { LandingSection } from './landing-section'
 import { CausesSection } from './causes-section'
 
-// Make this a dynamic route that's revalidated every 24h
-export const revalidate = 86400 // 24 hours
+// Page is dynamic due to cookies(), but listProjects is cached for 30s
 
 export default async function Projects(props: {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -73,7 +73,7 @@ async function AsyncFeedTabs({
   const supabase = await createServerSupabaseClient()
   const [projects, recentComments, recentDonations, recentBids, causesList] =
     await Promise.all([
-      shouldLoadProjects ? listProjects(supabase) : Promise.resolve([]),
+      shouldLoadProjects ? listProjectsCached() : Promise.resolve([]),
       getRecentFullComments(supabase, PAGE_SIZE, start),
       getRecentFullTxns(supabase, PAGE_SIZE, start),
       getRecentFullBids(supabase, PAGE_SIZE, start),
