@@ -100,7 +100,7 @@ export async function listProjects(supabase: SupabaseClient) {
 
   // fetch all related data in parallel
   const fetchPromises = batches.map(async (batchIds) => {
-    const [bids, txns, votes, transfers] = await Promise.all([
+    const [bids, txns, votes, transfers, comments] = await Promise.all([
       supabase.from('bids').select('*').in('project', batchIds),
 
       supabase.from('txns').select('*').in('project', batchIds),
@@ -111,6 +111,8 @@ export async function listProjects(supabase: SupabaseClient) {
         .in('project_id', batchIds),
 
       supabase.from('project_transfers').select('*').in('project_id', batchIds),
+
+      supabase.from('comments').select('project, id').in('project', batchIds),
     ])
 
     return {
@@ -118,16 +120,11 @@ export async function listProjects(supabase: SupabaseClient) {
       txns: txns.data,
       votes: votes.data,
       transfers: transfers.data,
+      comments: comments.data,
     }
   })
 
   const batchResults = await Promise.all(fetchPromises)
-
-  // get comment counts separately (lightweight)
-  const { data: commentCounts } = await supabase
-    .from('comments')
-    .select('project, id')
-    .in('project', projectIds)
 
   // merge all data
   const projectsMap = new Map<string, any>()
@@ -167,17 +164,21 @@ export async function listProjects(supabase: SupabaseClient) {
       const project = projectsMap.get(transfer.project_id)
       if (project) project.project_transfers.push(transfer)
     })
-  })
-  const commentCountMap = new Map<string, number>()
-  commentCounts?.forEach((comment) => {
-    const count = commentCountMap.get(comment.project) || 0
-    commentCountMap.set(comment.project, count + 1)
-  })
 
-  commentCountMap.forEach((count, projectId) => {
-    const project = projectsMap.get(projectId)
-    if (project) {
-      project.comments = Array(count).fill({ id: '' })
+    // Process comments
+    if (batch.comments) {
+      const commentCountMap = new Map<string, number>()
+      batch.comments.forEach((comment) => {
+        const count = commentCountMap.get(comment.project) || 0
+        commentCountMap.set(comment.project, count + 1)
+      })
+
+      commentCountMap.forEach((count, projectId) => {
+        const project = projectsMap.get(projectId)
+        if (project) {
+          project.comments = Array(count).fill({ id: '' })
+        }
+      })
     }
   })
 
