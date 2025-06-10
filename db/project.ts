@@ -65,20 +65,125 @@ export async function getProjectsByUser(
   return data as FullProject[]
 }
 
-export async function listProjects(supabase: SupabaseClient, limit?: number) {
-  const { data } = await supabase
+export async function listProjects(supabase: SupabaseClient) {
+  // get base project data with only essential joins
+  const { data: projectsBase } = await supabase
     .from('projects')
     .select(
-      'title, id, created_at, creator, slug, blurb, stage, auction_close, funding_goal, min_funding, type, approved, signed_agreement, lobbying, amm_shares, founder_shares, profiles!projects_creator_fkey(*), bids(*), txns(*), comments(id), rounds(title, slug), project_transfers(*), project_votes(magnitude), causes(title, slug)'
+      `
+      title, id, created_at, creator, slug, blurb, stage, 
+      auction_close, funding_goal, min_funding, type, approved, 
+      signed_agreement, lobbying, amm_shares, founder_shares,
+      profiles!projects_creator_fkey(*),
+      rounds(title, slug),
+      causes(title, slug)
+    `
     )
     .neq('stage', 'hidden')
     .neq('stage', 'draft')
     .order('created_at', { ascending: false })
-    .limit(limit ?? 2000)
     .throwOnError()
-  // Scary type conversion!
-  return data as unknown as FullProject[]
+
+  if (!projectsBase || projectsBase.length === 0) {
+    return []
+  }
+
+  const projectIds = projectsBase.map((p) => p.id)
+
+  // fetch related data in parallel batches
+  const batchSize = 200
+  const batches = []
+
+  for (let i = 0; i < projectIds.length; i += batchSize) {
+    batches.push(projectIds.slice(i, i + batchSize))
+  }
+
+  // fetch all related data in parallel
+  const fetchPromises = batches.map(async (batchIds) => {
+    const [bids, txns, votes, transfers] = await Promise.all([
+      supabase.from('bids').select('*').in('project', batchIds),
+
+      supabase.from('txns').select('*').in('project', batchIds),
+
+      supabase
+        .from('project_votes')
+        .select('project_id, magnitude')
+        .in('project_id', batchIds),
+
+      supabase.from('project_transfers').select('*').in('project_id', batchIds),
+    ])
+
+    return {
+      bids: bids.data,
+      txns: txns.data,
+      votes: votes.data,
+      transfers: transfers.data,
+    }
+  })
+
+  const batchResults = await Promise.all(fetchPromises)
+
+  // get comment counts separately (lightweight)
+  const { data: commentCounts } = await supabase
+    .from('comments')
+    .select('project, id')
+    .in('project', projectIds)
+
+  // merge all data
+  const projectsMap = new Map<string, any>()
+
+  // shape the data
+  projectsBase.forEach((project) => {
+    projectsMap.set(project.id, {
+      ...project,
+      bids: [],
+      txns: [],
+      comments: [],
+      project_votes: [],
+      project_transfers: [],
+    })
+  })
+
+  // Merge batch results
+  batchResults.forEach((batch) => {
+    batch.bids?.forEach((bid) => {
+      const project = projectsMap.get(bid.project)
+      if (project) project.bids.push(bid)
+    })
+
+    batch.txns?.forEach((txn) => {
+      if (txn.project) {
+        const project = projectsMap.get(txn.project)
+        if (project) project.txns.push(txn)
+      }
+    })
+
+    batch.votes?.forEach((vote) => {
+      const project = projectsMap.get(vote.project_id)
+      if (project) project.project_votes.push(vote)
+    })
+
+    batch.transfers?.forEach((transfer) => {
+      const project = projectsMap.get(transfer.project_id)
+      if (project) project.project_transfers.push(transfer)
+    })
+  })
+  const commentCountMap = new Map<string, number>()
+  commentCounts?.forEach((comment) => {
+    const count = commentCountMap.get(comment.project) || 0
+    commentCountMap.set(comment.project, count + 1)
+  })
+
+  commentCountMap.forEach((count, projectId) => {
+    const project = projectsMap.get(projectId)
+    if (project) {
+      project.comments = Array(count).fill({ id: '' })
+    }
+  })
+
+  return Array.from(projectsMap.values()) as FullProject[]
 }
+
 
 export async function listProjectsForEvals(supabase: SupabaseClient) {
   const { data } = await supabase
