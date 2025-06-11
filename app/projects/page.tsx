@@ -9,7 +9,7 @@ import { listSimpleCauses } from '@/db/cause'
 import { listLiteProjectsCached } from '@/db/project-cached'
 import { LandingSection } from './landing-section'
 
-// Page is dynamic due to cookies()
+// Page is dynamic due to cookies(), but projects are cached for 30s
 
 export default async function Projects(props: {
   searchParams: { [key: string]: string | string[] | undefined }

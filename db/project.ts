@@ -250,90 +250,68 @@ export async function listLiteProjects(supabase: SupabaseClient) {
 
   const projectIds = projectsBase.map((p) => p.id)
 
-  const BATCH_SIZE = 200
-  const projectBatches = []
-  for (let i = 0; i < projectIds.length; i += BATCH_SIZE) {
-    projectBatches.push(projectIds.slice(i, i + BATCH_SIZE))
-  }
-
-  type LiteVote = Pick<ProjectVote, 'project_id' | 'magnitude'>
   type LiteComment = Pick<Comment, 'project'>
+  type LiteVote = Pick<ProjectVote, 'project_id' | 'magnitude'>
   type LiteTransfer = Pick<ProjectTransfer, 'project_id' | 'transferred'>
 
-  // Initialize results with proper types
-  let allVotes: LiteVote[] = []
-  let allComments: LiteComment[] = []
-  let allBids: LiteBid[] = []
-  let allTxns: LiteTxn[] = []
-  let allTransfers: LiteTransfer[] = []
+  // Fetch all related data in parallel (no batching)
+  const [
+    voteResult,
+    commentResult,
+    bidResult,
+    txnResult,
+    transferResult,
+    regranterResult,
+  ] = await Promise.all([
+    supabase
+      .from('project_votes')
+      .select('project_id, magnitude')
+      .in('project_id', projectIds),
 
-  // Process each batch
-  for (const batchIds of projectBatches) {
-    const [voteResult, commentResult, bidResult, txnResult, transferResult] =
-      await Promise.all([
-        supabase
-          .from('project_votes')
-          .select('project_id, magnitude')
-          .in('project_id', batchIds),
-        supabase.from('comments').select('project').in('project', batchIds),
+    supabase.from('comments').select('project').in('project', projectIds),
 
-        supabase
-          .from('bids')
-          .select('project, amount, type, bidder, status')
-          .in('project', batchIds)
-          .in('type', ['buy', 'assurance buy', 'donate'])
-          .eq('status', 'pending'),
+    supabase
+      .from('bids')
+      .select('project, amount, type, bidder, status')
+      .in('project', projectIds)
+      .in('type', ['buy', 'assurance buy', 'donate'])
+      .eq('status', 'pending'),
 
-        supabase
-          .from('txns')
-          .select('project, amount, to_id, from_id, token')
-          .in('project', batchIds)
-          .eq('type', 'project donation')
-          .eq('token', 'USD'),
+    supabase
+      .from('txns')
+      .select('project, amount, to_id, from_id, token')
+      .in('project', projectIds)
+      .eq('type', 'project donation')
+      .eq('token', 'USD'),
 
-        supabase
-          .from('project_transfers')
-          .select('project_id, transferred')
-          .in('project_id', batchIds),
-      ])
+    supabase
+      .from('project_transfers')
+      .select('project_id, transferred')
+      .in('project_id', projectIds),
 
-    if (voteResult.data) allVotes = allVotes.concat(voteResult.data)
-    if (commentResult.data) allComments = allComments.concat(commentResult.data)
-    if (bidResult.data) allBids = allBids.concat(bidResult.data)
-    if (txnResult.data) allTxns = allTxns.concat(txnResult.data)
-    if (transferResult.data)
-      allTransfers = allTransfers.concat(transferResult.data)
-  }
+    supabase
+      .from('profiles')
+      .select('id')
+      .not('regranter_status', 'is', null)
+      .eq('regranter_status', true),
+  ])
 
-  // Get only regranters
-  const regranterResult = await supabase
-    .from('profiles')
-    .select('id')
-    .not('regranter_status', 'is', null)
-    .eq('regranter_status', true)
-
-  // Process aggregated donation data
   const projectMap = new Map<string, any>()
   projectsBase.forEach((p) => projectMap.set(p.id, p))
 
-  // Create set of regrantor IDs
   const regranterIds = new Set(regranterResult.data?.map((p) => p.id) || [])
-
-  // Create maps for efficient lookups
   const bidsMap: Map<string, LiteBid[]> = reduceBy(
-    allBids,
+    bidResult.data || [],
     (bid) => bid.project,
     Reducers.append<LiteBid>()
   )
 
-  // Group txns by project (filtering out nulls)
   const txnsMap: Map<string, LiteTxn[]> = reduceBy(
-    allTxns.filter((txn) => txn.project),
-    (txn) => txn.project!,
+    txnResult.data?.filter((txn) => txn.project) || [],
+    (txn) => txn.project,
     Reducers.append<LiteTxn>()
   )
 
-  // Calculate donation amounts and build map directly
   const donationMap = new Map<
     string,
     { amount_raised: number; regrantor_funded: boolean }
@@ -372,23 +350,19 @@ export async function listLiteProjects(supabase: SupabaseClient) {
     })
   })
 
-  // Create maps for quick lookup
   const voteMap = reduceBy(
-    allVotes,
+    voteResult.data || [],
     (vote) => vote.project_id,
-    Reducers.sum<Pick<ProjectVote, 'project_id' | 'magnitude'>>(
-      (vote) => vote.magnitude
-    )
+    Reducers.sum<LiteVote>((vote) => vote.magnitude)
   )
   const commentMap = reduceBy(
-    allComments,
+    commentResult.data || [],
     (comment) => comment.project,
     Reducers.count<LiteComment>()
   )
 
-  // Track which projects have at least one pending transfer (boolean, not count)
   const transferMap = reduceBy(
-    allTransfers,
+    transferResult.data || [],
     (transfer) => transfer.project_id,
     Reducers.or<LiteTransfer>((transfer) => !transfer.transferred)
   )

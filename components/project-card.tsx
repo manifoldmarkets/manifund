@@ -1,7 +1,7 @@
 'use client'
 import { Profile } from '@/db/profile'
 import { formatMoney } from '@/utils/formatting'
-import { calculateAmountRaised, getMinIncludingAmm } from '@/utils/math'
+import { getMinIncludingAmm } from '@/utils/math'
 import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
 import { ProgressBar } from './progress-bar'
@@ -20,7 +20,7 @@ import {
   ProjectType,
   getVoteCount,
   getCommentCount,
-  getAmountRaised as getAmountRaisedUtil,
+  getAmountRaised,
   getRegrantorFunded,
   getProjectTransferRecipient,
 } from '@/utils/project-utils'
@@ -31,8 +31,7 @@ export function ProjectCard(props: {
 }) {
   const { project, valuation } = props
 
-  // Use helper functions for all calculated values
-  const amountRaised = getAmountRaisedUtil(project)
+  const amountRaised = getAmountRaised(project)
   const regrantorFunded = getRegrantorFunded(project)
   const voteCount = getVoteCount(project)
   const commentCount = getCommentCount(project)
@@ -172,11 +171,7 @@ export function CardlessProject(props: {
   showFundingBar?: boolean
 }) {
   const { project, regrantors, showFundingBar } = props
-  const amountRaised = calculateAmountRaised(
-    project,
-    project.bids ?? [],
-    project.txns ?? []
-  )
+  const amountRaised = getAmountRaised(project)
   return (
     <Col className="items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">
       <Row className="flex-2 w-full items-center justify-between gap-3 text-xs">
