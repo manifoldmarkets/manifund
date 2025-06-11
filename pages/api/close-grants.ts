@@ -1,7 +1,7 @@
 import { differenceInDays, isBefore } from 'date-fns'
 import { NextResponse } from 'next/server'
 import { createAdminClient } from './_db'
-import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
+import { calculateAmountRaised, getMinIncludingAmm } from '@/utils/math'
 import { Project } from '@/db/project'
 import { Bid } from '@/db/bid'
 import { SupabaseClient } from '@supabase/supabase-js'
@@ -70,7 +70,7 @@ async function closeProject(
   supabase: SupabaseClient,
   prizeCause?: Cause
 ) {
-  const amountRaised = getAmountRaised(project, bids)
+  const amountRaised = calculateAmountRaised(project, bids)
   const minIncludingAmm = getMinIncludingAmm(project)
   const activeAuction =
     !!prizeCause?.cert_params?.auction && project.stage === 'proposal'

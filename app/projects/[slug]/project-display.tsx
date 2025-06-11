@@ -13,7 +13,7 @@ import {
   calculateCashBalance,
   calculateCharityBalance,
   calculateSellableShares,
-  getAmountRaised,
+  calculateAmountRaised,
   getMinIncludingAmm,
   getProjectValuation,
 } from '@/utils/math'
@@ -103,7 +103,7 @@ export function ProjectDisplay(props: {
     !!project.project_follows.find(
       (follow) => follow.follower_id === userProfile.id
     )
-  const amountRaised = getAmountRaised(project, projectBids, projectTxns)
+  const amountRaised = calculateAmountRaised(project, projectBids, projectTxns)
   const minIncludingAmm = getMinIncludingAmm(project)
   const tradePoints = calculateTradePoints(projectTxns, project.id)
   const activeAuction =

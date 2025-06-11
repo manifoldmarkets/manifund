@@ -9,7 +9,7 @@ import { useSearchParams } from 'next/navigation'
 import { Pagination } from '@/components/pagination'
 import { useState } from 'react'
 import { ProjectsDisplay } from '@/components/projects-display'
-import { FullProject } from '@/db/project'
+import { LiteProject } from '@/db/project'
 import { SimpleCause } from '@/db/cause'
 import { Tag } from '@/components/tags'
 import { Card } from '@/components/layout/card'
@@ -22,7 +22,7 @@ export function FeedTabs(props: {
   recentComments: FullComment[]
   recentDonations: FullTxn[]
   recentBids: FullBid[]
-  projects: FullProject[]
+  projects: LiteProject[]
   causesList: SimpleCause[]
   userId?: string
 }) {

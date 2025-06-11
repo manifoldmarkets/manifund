@@ -1,11 +1,12 @@
 import { Bid, BidAndProject } from '@/db/bid'
-import { FullProject, Project } from '@/db/project'
+import { FullProject, Project, LiteBid, LiteTxn } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, Txn, TxnAndProject } from '@/db/txn'
 import { isBefore } from 'date-fns'
-import { sortBy } from 'lodash'
+import { sortBy } from '@/utils/lodash-edge'
 import { isCharitableDeposit } from './constants'
 import { calculateAMMPorfolio, calculateValuation } from './amm'
+import { ProjectType } from './project-utils'
 
 const IGNORE_ACCREDITATION_DATE = new Date('2023-11-02')
 
@@ -23,14 +24,14 @@ export function getProjectValuation(project: FullProject) {
       )
 }
 
-export function getProposalValuation(project: Project) {
+export function getProposalValuation(project: ProjectType | Project) {
   const { min_funding, amm_shares, founder_shares } = project
   const investorPercent =
     (TOTAL_SHARES - founder_shares - (amm_shares ?? 0)) / TOTAL_SHARES
   return min_funding / investorPercent
 }
 
-export function getMinIncludingAmm(project: Project) {
+export function getMinIncludingAmm(project: ProjectType | Project) {
   const { min_funding, amm_shares, type } = project
   return (
     min_funding +
@@ -86,7 +87,11 @@ export function calculateUserBalance(txns: Txn[], userId: string) {
   return balance
 }
 
-export function getAmountRaised(project: Project, bids?: Bid[], txns?: Txn[]) {
+export function calculateAmountRaised(
+  project: Pick<Project, 'type' | 'stage' | 'creator' | 'funding_goal'>,
+  bids?: (Bid | LiteBid)[],
+  txns?: (Txn | LiteTxn)[]
+): number {
   if (project.type === 'dummy') {
     return project.funding_goal
   }
@@ -107,6 +112,26 @@ export function getAmountRaised(project: Project, bids?: Bid[], txns?: Txn[]) {
           )
           .reduce((acc, txn) => acc + txn.amount, 0)) ?? 0
   )
+}
+
+export function calculateIsRegrantorFunded(
+  project: Pick<Project, 'type' | 'stage' | 'creator' | 'funding_goal'>,
+  regranterIds: Set<string>,
+  txns: (Txn | LiteTxn)[]
+): boolean {
+  let regrantor_funded = false
+  if (project.stage !== 'proposal') {
+    txns.forEach((txn) => {
+      if (
+        txn.to_id === project.creator &&
+        txn.from_id &&
+        regranterIds.has(txn.from_id)
+      ) {
+        regrantor_funded = true
+      }
+    })
+  }
+  return regrantor_funded
 }
 
 export function calculateUserLockedFunds(bids: Bid[]) {

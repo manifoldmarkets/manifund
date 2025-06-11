@@ -1,9 +1,8 @@
 'use client'
-import { FullProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { getAmountRaised, getProjectValuation } from '@/utils/math'
+import { getProjectValuation } from '@/utils/math'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
 import { Row } from './layout/row'
@@ -15,7 +14,15 @@ import { searchInAny } from '@/utils/parse'
 import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
 import { Select } from './select'
 import { sortBy } from 'lodash'
-import { countVotes, hotScore } from '@/utils/sort'
+import {
+  ProjectType,
+  getVoteCount,
+  getCommentCount,
+  hotScore,
+  getAmountRaised,
+  getProjectTransferRecipient,
+  isLiteProject,
+} from '@/utils/project-utils'
 
 type SortOption =
   | 'votes'
@@ -38,7 +45,7 @@ const DEFAULT_SORT_OPTIONS = [
 ] as SortOption[]
 
 export function ProjectsDisplay(props: {
-  projects: FullProject[]
+  projects: ProjectType[]
   causesList: SimpleCause[]
   defaultSort?: SortOption
   hideRound?: boolean
@@ -65,7 +72,7 @@ export function ProjectsDisplay(props: {
         project.blurb ?? '',
         project.profiles.full_name,
         project.profiles.username,
-        project.project_transfers?.[0]?.recipient_name ?? ''
+        getProjectTransferRecipient(project) ?? ''
       )
     })
     .slice(0, numToShow)
@@ -140,15 +147,18 @@ export function ProjectsDisplay(props: {
   )
 }
 function sortProjects(
-  projects: FullProject[],
+  projects: ProjectType[],
   prices: { [k: string]: number },
   sortType: SortOption
 ) {
+  // Filter bids for FullProjects
   projects.forEach((project) => {
-    project.bids = project.bids.filter((bid) => bid.status == 'pending')
+    if ('bids' in project) {
+      project.bids = project.bids.filter((bid) => bid.status == 'pending')
+    }
   })
   if (sortType === 'votes') {
-    return sortBy(projects, countVotes).reverse()
+    return sortBy(projects, (p) => -getVoteCount(p))
   }
   if (sortType === 'oldest') {
     return sortBy(projects, (project) => new Date(project.created_at))
@@ -157,17 +167,14 @@ function sortProjects(
     return sortBy(projects, (project) => -new Date(project.created_at))
   }
   if (sortType === 'comments') {
-    return sortBy(projects, (project) => -project.comments.length)
+    return sortBy(projects, (p) => -getCommentCount(p))
   }
   if (sortType === 'price' || sortType === 'goal' || sortType === 'valuation') {
     // TODO: Prices and goal seems kinda broken atm
     return sortBy(projects, (project) => -prices[project.id])
   }
   if (sortType === 'funding') {
-    return sortBy(
-      projects,
-      (project) => -getAmountRaised(project, project.bids, project.txns)
-    )
+    return sortBy(projects, (p) => -getAmountRaised(p))
   }
   if (sortType === 'hot') {
     return sortBy(projects, hotScore)
@@ -188,7 +195,7 @@ function sortProjects(
   return projects
 }
 
-function filterProjects(projects: FullProject[], includedCauses: Cause[]) {
+function filterProjects(projects: ProjectType[], includedCauses: Cause[]) {
   if (includedCauses.length === 0) return projects
   return projects.filter((project) => {
     return project.causes.some((cause) => {
@@ -297,10 +304,15 @@ function CauseFilterSelect(props: {
 }
 
 // Price here means goal for grants and valuation for certs
-function getPrices(projects: FullProject[]) {
+function getPrices(projects: ProjectType[]) {
   const prices = Object.fromEntries(projects.map((project) => [project.id, 0]))
   projects.forEach((project) => {
-    prices[project.id] = getProjectValuation(project)
+    // use funding_goal as a simple approximation
+    if (isLiteProject(project)) {
+      prices[project.id] = project.funding_goal
+    } else {
+      prices[project.id] = getProjectValuation(project)
+    }
   })
   return prices
 }

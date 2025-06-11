@@ -1,7 +1,7 @@
 'use client'
 import { Profile } from '@/db/profile'
 import { formatMoney } from '@/utils/formatting'
-import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
+import { getMinIncludingAmm } from '@/utils/math'
 import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
 import { ProgressBar } from './progress-bar'
@@ -10,40 +10,37 @@ import {
   ChatBubbleLeftEllipsisIcon,
   ChevronUpDownIcon,
   CheckBadgeIcon,
-  CircleStackIcon,
 } from '@heroicons/react/20/solid'
-import { orderBy } from 'lodash'
 import { CauseTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { Card } from './layout/card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
-import { getSponsoredAmount } from '@/utils/constants'
+import {
+  ProjectType,
+  getVoteCount,
+  getCommentCount,
+  getAmountRaised,
+  getRegrantorFunded,
+  getProjectTransferRecipient,
+} from '@/utils/project-utils'
 
 export function ProjectCard(props: {
-  project: FullProject
+  project: ProjectType
   valuation?: number
 }) {
   const { project, valuation } = props
-  const amountRaised = getAmountRaised(project, project.bids, project.txns)
-  // const firstDonorId =
-  //   project.stage === 'proposal'
-  //     ? orderBy(project.bids, 'created_at', 'asc')[0]?.bidder
-  //     : orderBy(project.txns, 'created_at', 'asc')[0]?.from_id
-  const regrantorFunded = project.txns.some(
-    (txn) => txn.from_id && getSponsoredAmount(txn.from_id) > 0
-  )
-  const voteCount = project.project_votes.reduce(
-    (acc, vote) => vote.magnitude + acc,
-    0
-  )
+
+  const amountRaised = getAmountRaised(project)
+  const regrantorFunded = getRegrantorFunded(project)
+  const voteCount = getVoteCount(project)
+  const commentCount = getCommentCount(project)
+  const projectTransferRecipient = getProjectTransferRecipient(project)
+
   const minIncludingAmm = getMinIncludingAmm(project)
   const fundingGoal =
     project.type === 'cert' ? minIncludingAmm : project.funding_goal
-  const projectTransfers = project.project_transfers
-  const incompleteProjectTransfers = projectTransfers.filter(
-    (pt) => !pt.transferred
-  )
+
   return (
     <Card className="px-4 pb-2 pt-1">
       <Col className="h-full justify-between">
@@ -52,13 +49,7 @@ export function ProjectCard(props: {
           creator={project.profiles}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
           regrantorFunded={regrantorFunded}
-          projectRecipient={
-            incompleteProjectTransfers.length > 0
-              ? incompleteProjectTransfers[0].recipient_name
-              : projectTransfers.length > 0 && !project.profiles.full_name
-              ? projectTransfers[0].recipient_name
-              : undefined
-          }
+          projectRecipient={projectTransferRecipient}
         />
         <Link
           href={`/projects/${project.slug}`}
@@ -89,7 +80,7 @@ export function ProjectCard(props: {
           )}
           <ProjectCardData
             voteCount={voteCount}
-            numComments={project.comments.length}
+            numComments={commentCount}
             amountRaised={amountRaised}
             fundingGoal={project.stage === 'proposal' ? fundingGoal : undefined}
             projectSlug={project.slug}
@@ -180,11 +171,7 @@ export function CardlessProject(props: {
   showFundingBar?: boolean
 }) {
   const { project, regrantors, showFundingBar } = props
-  const amountRaised = getAmountRaised(
-    project,
-    project.bids ?? [],
-    project.txns ?? []
-  )
+  const amountRaised = getAmountRaised(project)
   return (
     <Col className="items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">
       <Row className="flex-2 w-full items-center justify-between gap-3 text-xs">
