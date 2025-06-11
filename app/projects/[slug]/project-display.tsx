@@ -6,7 +6,7 @@ import { ProgressBar } from '@/components/progress-bar'
 import { BidAndProfile, BidAndProject } from '@/db/bid'
 import { CommentAndProfileAndRxns } from '@/db/comment'
 import { Profile } from '@/db/profile'
-import { FullProject, Project } from '@/db/project'
+import { FullProject, FullProjectWithSimilarity, Project } from '@/db/project'
 import { Cause, SimpleCause } from '@/db/cause'
 import { TxnAndProfiles, TxnAndProject } from '@/db/txn'
 import {
@@ -53,6 +53,7 @@ export function ProjectDisplay(props: {
   userProfile?: Profile
   creatorEmail?: string
   userIsAdmin?: boolean
+  similarProjects?: FullProjectWithSimilarity[]
 }) {
   const {
     project,
@@ -66,6 +67,7 @@ export function ProjectDisplay(props: {
     causesList,
     prizeCause,
     userIsAdmin,
+    similarProjects,
   } = props
   const userCharityBalance = userProfile
     ? calculateCharityBalance(
@@ -284,6 +286,7 @@ export function ProjectDisplay(props: {
             userSellableShares={userSellableShares}
             specialCommentPrompt={specialCommentPrompt}
             activeAuction={activeAuction}
+            similarProjects={similarProjects}
           />
         </div>
       </Col>
