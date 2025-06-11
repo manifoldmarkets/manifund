@@ -2,7 +2,7 @@
 import { Profile } from '@/db/profile'
 import { formatMoney } from '@/utils/formatting'
 import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
-import { FullProject, Project, LiteProject } from '@/db/project'
+import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
@@ -18,9 +18,15 @@ import { UserAvatarAndBadge } from './user-link'
 import { Card } from './layout/card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
-import { getSponsoredAmount } from '@/utils/constants'
-
-type ProjectType = FullProject | LiteProject
+import {
+  ProjectType,
+  getVoteCount,
+  getCommentCount,
+  getAmountRaised as getAmountRaisedUtil,
+  getRegrantorFunded,
+  hasPendingTransfers,
+  getProjectTransferRecipient,
+} from '@/utils/project-utils'
 
 export function ProjectCard(props: {
   project: ProjectType
@@ -28,45 +34,17 @@ export function ProjectCard(props: {
 }) {
   const { project, valuation } = props
 
-  // Handle different project types
-  const amountRaised =
-    'amount_raised' in project
-      ? project.amount_raised
-      : getAmountRaised(project, project.bids, project.txns)
-
-  const regrantorFunded =
-    'regrantor_funded' in project
-      ? project.regrantor_funded
-      : project.txns.some(
-          (txn) => txn.from_id && getSponsoredAmount(txn.from_id) > 0
-        )
-
-  const voteCount =
-    'vote_count' in project
-      ? project.vote_count
-      : project.project_votes.reduce((acc, vote) => vote.magnitude + acc, 0)
+  // Use helper functions for all calculated values
+  const amountRaised = getAmountRaisedUtil(project)
+  const regrantorFunded = getRegrantorFunded(project)
+  const voteCount = getVoteCount(project)
+  const commentCount = getCommentCount(project)
+  const projectTransferRecipient = getProjectTransferRecipient(project)
 
   const minIncludingAmm = getMinIncludingAmm(project)
   const fundingGoal =
     project.type === 'cert' ? minIncludingAmm : project.funding_goal
 
-  const hasPendingTransfers =
-    'has_pending_transfers' in project
-      ? project.has_pending_transfers
-      : 'project_transfers' in project &&
-        project.project_transfers.some((pt) => !pt.transferred)
-
-  const commentCount =
-    'comment_count' in project ? project.comment_count : project.comments.length
-
-  const projectTransferRecipient =
-    hasPendingTransfers && 'project_transfers' in project
-      ? project.project_transfers.find((pt) => !pt.transferred)?.recipient_name
-      : 'project_transfers' in project &&
-        project.project_transfers.length > 0 &&
-        !project.profiles.full_name
-      ? project.project_transfers[0].recipient_name
-      : undefined
   return (
     <Card className="px-4 pb-2 pt-1">
       <Col className="h-full justify-between">
@@ -130,7 +108,7 @@ function ProjectCardData(props: {
     <div className="grid grid-cols-3 text-sm text-gray-400">
       <Row className="justify-start">
         <Tooltip text="Votes" className="flex items-center gap-0">
-          <ChevronUpDownIcon className="h-4 w-4 stroke-2" />
+          <ChatBubbleLeftEllipsisIcon className="h-4 w-4 stroke-2" />
           <span>{voteCount}</span>
         </Tooltip>
       </Row>

@@ -1,42 +1,57 @@
 'use client'
-import { FullProject, LiteProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { getAmountRaised, getProjectValuation } from '@/utils/math'
-import clsx from 'clsx'
-import { ProjectGroup } from '@/components/project-group'
-import { Row } from './layout/row'
-import { MiniCause, Cause, SimpleCause } from '@/db/cause'
-import { CauseTag } from './tags'
-import { Col } from './layout/col'
-import { SearchBar } from './input'
+import { ProjectCard } from './project-card'
 import { searchInAny } from '@/utils/parse'
-import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
+import { Row } from './layout/row'
+import { Button } from './button'
+import { SimpleCause, Cause } from '@/db/cause'
+import { CauseTag } from './tags'
+import { Input } from './input'
+import clsx from 'clsx'
+
 import { Select } from './select'
 import { sortBy } from 'lodash'
 import { countVotes, hotScore } from '@/utils/sort'
-
-type ProjectType = FullProject | LiteProject
+import {
+  ProjectType,
+  getVoteCount,
+  getCommentCount,
+  getAmountRaised,
+  isLiteProject,
+  isFullProject,
+  addLiteProjectDiscriminators,
+} from '@/utils/project-utils'
+import { LiteProject } from '@/db/project'
+import { FullProject } from '@/db/project'
+import { getAmountRaised as getAmountRaisedUtil } from '@/utils/math'
+import { getProjectValuation } from '@/utils/math'
+import { ProjectGroup } from '@/components/project-group'
+import { Col } from './layout/col'
+import { SearchBar } from './input'
+import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
+import { MiniCause } from '@/db/cause'
 
 type SortOption =
   | 'votes'
   | 'goal'
-  | 'funding'
-  | 'valuation'
-  | 'price'
+  | 'hot'
   | 'comments'
   | 'newest'
   | 'oldest'
-  | 'hot'
+  | 'valuation'
+  | 'funding'
+  | 'price'
   | 'closing soon'
 
 const DEFAULT_SORT_OPTIONS = [
   'hot',
   'newest',
-  'closing soon',
   'votes',
+  'comments',
   'funding',
+  'closing soon',
 ] as SortOption[]
 
 export function ProjectsDisplay(props: {
@@ -44,22 +59,29 @@ export function ProjectsDisplay(props: {
   causesList: SimpleCause[]
   defaultSort?: SortOption
   hideRound?: boolean
-  noFilter?: boolean
+  searchBar?: boolean
+  sortOptions?: SortOption[]
 }) {
-  const { projects, defaultSort, causesList, noFilter } = props
+  const {
+    projects: rawProjects,
+    causesList,
+    defaultSort = 'hot',
+    hideRound = false,
+    searchBar = true,
+    sortOptions = DEFAULT_SORT_OPTIONS,
+  } = props
+
+  // Add discriminators to projects
+  const projects = addLiteProjectDiscriminators(rawProjects)
+
+  const [search, setSearch] = useState('')
+  const [selectedCauseNames, setSelectedCauseNames] = useState<Cause[]>([])
+  const [numToShow, setNumToShow] = useState(30)
+  const [sort, setSort] = useState<SortOption>(defaultSort)
   const prices = getPrices(projects)
-  const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'hot')
-  const [includedCauses, setIncludedCauses] = useState<Cause[]>([])
-  const [search, setSearch] = useState<string>('')
-  const filteredProjects = filterProjects(projects, includedCauses)
-  const sortedProjects = sortProjects(
-    noFilter ? projects : filteredProjects,
-    prices,
-    sortBy
-  )
-  const CLIENT_PAGE_SIZE = 20
-  const [numToShow, setNumToShow] = useState<number>(CLIENT_PAGE_SIZE)
-  const selectedProjects = sortedProjects
+  const filtered = filterProjects(projects, selectedCauseNames)
+  const sorted = sortProjects(filtered, prices, sort)
+  const displayed = sorted
     .filter((project) => {
       return searchInAny(
         search,
@@ -71,13 +93,13 @@ export function ProjectsDisplay(props: {
     })
     .slice(0, numToShow)
 
-  const fundableProjects = selectedProjects.filter(
+  const fundableProjects = displayed.filter(
     (project) => project.stage == 'proposal' || project.stage == 'active'
   )
-  const completeProjects = selectedProjects.filter(
+  const completeProjects = displayed.filter(
     (project) => project.stage == 'complete'
   )
-  const unfundedProjects = selectedProjects.filter(
+  const unfundedProjects = displayed.filter(
     (project) => project.stage == 'not funded'
   )
 
@@ -87,20 +109,24 @@ export function ProjectsDisplay(props: {
         <SearchBar search={search} setSearch={setSearch} className="w-full" />
         <div className="lg:w-4/12">
           <Select
-            options={DEFAULT_SORT_OPTIONS}
-            selected={sortBy}
-            onSelect={(event) => setSortBy(event as SortOption)}
+            options={sortOptions}
+            selected={sort}
+            onSelect={(event) => setSort(event as SortOption)}
             label="Sort by"
           />
         </div>
       </div>
-      {!noFilter && (
+      {!hideRound && (
         <div className="relative w-full">
-          <Listbox value={includedCauses} onChange={setIncludedCauses} multiple>
+          <Listbox
+            value={selectedCauseNames}
+            onChange={setSelectedCauseNames}
+            multiple
+          >
             {({ open }) => (
               <CauseFilterSelect
-                includedCauses={includedCauses}
-                setIncludedCauses={setIncludedCauses}
+                includedCauses={selectedCauseNames}
+                setIncludedCauses={setSelectedCauseNames}
                 open={open}
                 causes={causesList.filter((c) => !c.prize)}
               />
@@ -133,13 +159,14 @@ export function ProjectsDisplay(props: {
       </div>
       <LoadMoreUntilNotVisible
         loadMore={() => {
-          setNumToShow(numToShow + CLIENT_PAGE_SIZE)
+          setNumToShow(numToShow + 30)
           return Promise.resolve(true)
         }}
       />
     </Col>
   )
 }
+
 function sortProjects(
   projects: ProjectType[],
   prices: { [k: string]: number },
@@ -183,7 +210,7 @@ function sortProjects(
       (project) =>
         -('amount_raised' in project
           ? project.amount_raised
-          : getAmountRaised(
+          : getAmountRaisedUtil(
               project as FullProject,
               (project as FullProject).bids,
               (project as FullProject).txns

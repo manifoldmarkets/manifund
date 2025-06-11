@@ -169,6 +169,7 @@ export async function listProjects(supabase: SupabaseClient) {
       comments: [],
       project_votes: [],
       project_transfers: [],
+      _type: 'full' as const,
     })
   })
 
@@ -213,7 +214,7 @@ export async function listProjects(supabase: SupabaseClient) {
     }
   })
 
-  return Array.from(projectsMap.values()) as FullProject[]
+  return Array.from(projectsMap.values()) as (FullProject & { _type: 'full' })[]
 }
 
 export async function listLiteProjects(supabase: SupabaseClient) {
@@ -379,29 +380,32 @@ export async function listLiteProjects(supabase: SupabaseClient) {
     }
   })
 
-  const liteProjects: LiteProject[] = projectsBase.map((project: any) => ({
-    title: project.title,
-    id: project.id,
-    created_at: project.created_at,
-    creator: project.creator,
-    slug: project.slug,
-    blurb: project.blurb,
-    stage: project.stage,
-    type: project.type,
-    funding_goal: project.funding_goal,
-    min_funding: project.min_funding,
-    auction_close: project.auction_close,
-    amm_shares: project.amm_shares,
-    founder_shares: project.founder_shares,
-    profiles: project.profiles as Profile,
-    causes: project.causes || [],
-    rounds: project.rounds?.[0],
-    vote_count: voteMap.get(project.id) || 0,
-    comment_count: commentMap.get(project.id) || 0,
-    amount_raised: donationMap.get(project.id)?.amount_raised || 0,
-    regrantor_funded: donationMap.get(project.id)?.regrantor_funded || false,
-    has_pending_transfers: transferMap.get(project.id) || false,
-  }))
+  const liteProjects: (LiteProject & { _type: 'lite' })[] = projectsBase.map(
+    (project: any) => ({
+      title: project.title,
+      id: project.id,
+      created_at: project.created_at,
+      creator: project.creator,
+      slug: project.slug,
+      blurb: project.blurb,
+      stage: project.stage,
+      type: project.type,
+      funding_goal: project.funding_goal,
+      min_funding: project.min_funding,
+      auction_close: project.auction_close,
+      amm_shares: project.amm_shares,
+      founder_shares: project.founder_shares,
+      profiles: project.profiles as Profile,
+      causes: project.causes || [],
+      rounds: project.rounds?.[0],
+      vote_count: voteMap.get(project.id) || 0,
+      comment_count: commentMap.get(project.id) || 0,
+      amount_raised: donationMap.get(project.id)?.amount_raised || 0,
+      regrantor_funded: donationMap.get(project.id)?.regrantor_funded || false,
+      has_pending_transfers: transferMap.get(project.id) || false,
+      _type: 'lite' as const,
+    })
+  )
 
   return liteProjects
 }
