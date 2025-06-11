@@ -3,7 +3,7 @@ import { Row } from '@/components/layout/row'
 import { SmallStat, statData } from '@/components/stat'
 import { FullProject } from '@/db/project'
 import { formatMoney } from '@/utils/formatting'
-import { getAmountRaised } from '@/utils/math'
+import { calculateAmountRaised } from '@/utils/math'
 import {
   EllipsisHorizontalCircleIcon,
   CircleStackIcon,
@@ -19,7 +19,7 @@ export function CauseData(props: { projects: FullProject[] }) {
     (project) => project.stage === 'proposal'
   ).length
   const totalRaised = projects.reduce((acc, project) => {
-    return acc + getAmountRaised(project, project.bids, project.txns)
+    return acc + calculateAmountRaised(project, project.bids, project.txns)
   }, 0)
   const stats = [
     {

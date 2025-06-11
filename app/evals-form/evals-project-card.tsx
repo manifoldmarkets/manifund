@@ -4,7 +4,7 @@ import { Row } from '@/components/layout/row'
 import { shortenName } from '@/components/user-link'
 import { MiniProject } from '@/db/project'
 import { formatMoney } from '@/utils/formatting'
-import { getAmountRaised } from '@/utils/math'
+import { calculateAmountRaised } from '@/utils/math'
 import Link from 'next/link'
 import { Draggable } from 'react-beautiful-dnd'
 import { ConfidenceMap } from './evals-form'
@@ -42,7 +42,7 @@ export function EvalsProjectCard(props: {
     project.stage === 'proposal' ||
     project.stage === 'not funded'
       ? project.funding_goal
-      : getAmountRaised(project, [], project.txns)
+      : calculateAmountRaised(project, [], project.txns)
   return (
     // @ts-ignore
     <Draggable key={project.id} draggableId={project.id} index={index}>

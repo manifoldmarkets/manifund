@@ -1,7 +1,7 @@
 'use client'
 import { Profile } from '@/db/profile'
 import { formatMoney } from '@/utils/formatting'
-import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
+import { calculateAmountRaised, getMinIncludingAmm } from '@/utils/math'
 import { FullProject, Project } from '@/db/project'
 import Link from 'next/link'
 import { ProgressBar } from './progress-bar'
@@ -10,9 +10,7 @@ import {
   ChatBubbleLeftEllipsisIcon,
   ChevronUpDownIcon,
   CheckBadgeIcon,
-  CircleStackIcon,
 } from '@heroicons/react/20/solid'
-import { orderBy } from 'lodash'
 import { CauseTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { Card } from './layout/card'
@@ -24,7 +22,6 @@ import {
   getCommentCount,
   getAmountRaised as getAmountRaisedUtil,
   getRegrantorFunded,
-  hasPendingTransfers,
   getProjectTransferRecipient,
 } from '@/utils/project-utils'
 
@@ -108,7 +105,7 @@ function ProjectCardData(props: {
     <div className="grid grid-cols-3 text-sm text-gray-400">
       <Row className="justify-start">
         <Tooltip text="Votes" className="flex items-center gap-0">
-          <ChatBubbleLeftEllipsisIcon className="h-4 w-4 stroke-2" />
+          <ChevronUpDownIcon className="h-4 w-4 stroke-2" />
           <span>{voteCount}</span>
         </Tooltip>
       </Row>
@@ -175,7 +172,7 @@ export function CardlessProject(props: {
   showFundingBar?: boolean
 }) {
   const { project, regrantors, showFundingBar } = props
-  const amountRaised = getAmountRaised(
+  const amountRaised = calculateAmountRaised(
     project,
     project.bids ?? [],
     project.txns ?? []

@@ -1,5 +1,11 @@
 import { Bid, BidAndProject } from '@/db/bid'
-import { FullProject, LiteProject, Project } from '@/db/project'
+import {
+  FullProject,
+  LiteProject,
+  Project,
+  LiteBid,
+  LiteTxn,
+} from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, Txn, TxnAndProject } from '@/db/txn'
 import { isBefore } from 'date-fns'
@@ -86,7 +92,11 @@ export function calculateUserBalance(txns: Txn[], userId: string) {
   return balance
 }
 
-export function getAmountRaised(project: Project, bids?: Bid[], txns?: Txn[]) {
+export function calculateAmountRaised(
+  project: Project,
+  bids?: (Bid | LiteBid)[],
+  txns?: (Txn | LiteTxn)[]
+) {
   if (project.type === 'dummy') {
     return project.funding_goal
   }

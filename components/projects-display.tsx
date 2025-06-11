@@ -21,11 +21,10 @@ import {
   getAmountRaised,
   isLiteProject,
   isFullProject,
-  addLiteProjectDiscriminators,
 } from '@/utils/project-utils'
 import { LiteProject } from '@/db/project'
 import { FullProject } from '@/db/project'
-import { getAmountRaised as getAmountRaisedUtil } from '@/utils/math'
+import { calculateAmountRaised as getAmountRaisedUtil } from '@/utils/math'
 import { getProjectValuation } from '@/utils/math'
 import { ProjectGroup } from '@/components/project-group'
 import { Col } from './layout/col'
@@ -63,16 +62,13 @@ export function ProjectsDisplay(props: {
   sortOptions?: SortOption[]
 }) {
   const {
-    projects: rawProjects,
+    projects,
     causesList,
     defaultSort = 'hot',
     hideRound = false,
     searchBar = true,
     sortOptions = DEFAULT_SORT_OPTIONS,
   } = props
-
-  // Add discriminators to projects
-  const projects = addLiteProjectDiscriminators(rawProjects)
 
   const [search, setSearch] = useState('')
   const [selectedCauseNames, setSelectedCauseNames] = useState<Cause[]>([])

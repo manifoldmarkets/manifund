@@ -1,21 +1,11 @@
 import { FullProject, LiteProject } from '@/db/project'
+import { calculateAmountRaised } from './math'
 
-// Union type with discriminator
-export type ProjectType =
-  | (FullProject & { _type: 'full' })
-  | (LiteProject & { _type: 'lite' })
+// Union type - only LiteProject has discriminator
+export type ProjectType = FullProject | LiteProject
 
-// Type guards
-export function isFullProject(
-  project: ProjectType
-): project is FullProject & { _type: 'full' } {
-  return project._type === 'full'
-}
-
-export function isLiteProject(
-  project: ProjectType
-): project is LiteProject & { _type: 'lite' } {
-  return project._type === 'lite'
+export function isLiteProject(project: ProjectType): project is LiteProject {
+  return '_type' in project && project._type === 'lite'
 }
 
 // Helper functions that work with both types
@@ -37,9 +27,6 @@ export function getAmountRaised(project: ProjectType): number {
   if (isLiteProject(project)) {
     return project.amount_raised
   }
-  // For FullProject, we need to import the calculation logic
-  // This is imported from math.ts
-  const { getAmountRaised: calculateAmountRaised } = require('@/utils/math')
   return calculateAmountRaised(project, project.bids, project.txns)
 }
 
@@ -82,28 +69,4 @@ export function getProjectTransferRecipient(
   }
 
   return undefined
-}
-
-// Add discriminator to existing projects
-export function addProjectDiscriminator<T extends FullProject | LiteProject>(
-  project: T,
-  type: 'full' | 'lite'
-): T & { _type: 'full' | 'lite' } {
-  return {
-    ...project,
-    _type: type,
-  }
-}
-
-// Batch conversion helpers
-export function addFullProjectDiscriminators(
-  projects: FullProject[]
-): (FullProject & { _type: 'full' })[] {
-  return projects.map((p) => addProjectDiscriminator(p, 'full'))
-}
-
-export function addLiteProjectDiscriminators(
-  projects: LiteProject[]
-): (LiteProject & { _type: 'lite' })[] {
-  return projects.map((p) => addProjectDiscriminator(p, 'lite'))
 }
