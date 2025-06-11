@@ -2,7 +2,7 @@
 import { Profile } from '@/db/profile'
 import { formatMoney } from '@/utils/formatting'
 import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
-import { FullProject, Project } from '@/db/project'
+import { FullProject, Project, LiteProject } from '@/db/project'
 import Link from 'next/link'
 import { ProgressBar } from './progress-bar'
 import { Col } from './layout/col'
@@ -20,30 +20,53 @@ import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { getSponsoredAmount } from '@/utils/constants'
 
+type ProjectType = FullProject | LiteProject
+
 export function ProjectCard(props: {
-  project: FullProject
+  project: ProjectType
   valuation?: number
 }) {
   const { project, valuation } = props
-  const amountRaised = getAmountRaised(project, project.bids, project.txns)
-  // const firstDonorId =
-  //   project.stage === 'proposal'
-  //     ? orderBy(project.bids, 'created_at', 'asc')[0]?.bidder
-  //     : orderBy(project.txns, 'created_at', 'asc')[0]?.from_id
-  const regrantorFunded = project.txns.some(
-    (txn) => txn.from_id && getSponsoredAmount(txn.from_id) > 0
-  )
-  const voteCount = project.project_votes.reduce(
-    (acc, vote) => vote.magnitude + acc,
-    0
-  )
+
+  // Handle different project types
+  const amountRaised =
+    'amount_raised' in project
+      ? project.amount_raised
+      : getAmountRaised(project, project.bids, project.txns)
+
+  const regrantorFunded =
+    'regrantor_funded' in project
+      ? project.regrantor_funded
+      : project.txns.some(
+          (txn) => txn.from_id && getSponsoredAmount(txn.from_id) > 0
+        )
+
+  const voteCount =
+    'vote_count' in project
+      ? project.vote_count
+      : project.project_votes.reduce((acc, vote) => vote.magnitude + acc, 0)
+
   const minIncludingAmm = getMinIncludingAmm(project)
   const fundingGoal =
     project.type === 'cert' ? minIncludingAmm : project.funding_goal
-  const projectTransfers = project.project_transfers
-  const incompleteProjectTransfers = projectTransfers.filter(
-    (pt) => !pt.transferred
-  )
+
+  const hasPendingTransfers =
+    'has_pending_transfers' in project
+      ? project.has_pending_transfers
+      : 'project_transfers' in project &&
+        project.project_transfers.some((pt) => !pt.transferred)
+
+  const commentCount =
+    'comment_count' in project ? project.comment_count : project.comments.length
+
+  const projectTransferRecipient =
+    hasPendingTransfers && 'project_transfers' in project
+      ? project.project_transfers.find((pt) => !pt.transferred)?.recipient_name
+      : 'project_transfers' in project &&
+        project.project_transfers.length > 0 &&
+        !project.profiles.full_name
+      ? project.project_transfers[0].recipient_name
+      : undefined
   return (
     <Card className="px-4 pb-2 pt-1">
       <Col className="h-full justify-between">
@@ -52,13 +75,7 @@ export function ProjectCard(props: {
           creator={project.profiles}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
           regrantorFunded={regrantorFunded}
-          projectRecipient={
-            incompleteProjectTransfers.length > 0
-              ? incompleteProjectTransfers[0].recipient_name
-              : projectTransfers.length > 0 && !project.profiles.full_name
-              ? projectTransfers[0].recipient_name
-              : undefined
-          }
+          projectRecipient={projectTransferRecipient}
         />
         <Link
           href={`/projects/${project.slug}`}
@@ -89,7 +106,7 @@ export function ProjectCard(props: {
           )}
           <ProjectCardData
             voteCount={voteCount}
-            numComments={project.comments.length}
+            numComments={commentCount}
             amountRaised={amountRaised}
             fundingGoal={project.stage === 'proposal' ? fundingGoal : undefined}
             projectSlug={project.slug}

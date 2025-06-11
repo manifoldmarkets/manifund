@@ -1,9 +1,11 @@
 'use client'
-import { FullProject } from '@/db/project'
+import { FullProject, LiteProject } from '@/db/project'
 import { ProjectCard } from '@/components/project-card'
 
+type ProjectType = FullProject | LiteProject
+
 export function ProjectGroup(props: {
-  projects: FullProject[]
+  projects: ProjectType[]
   prices?: { [k: string]: number }
 }) {
   const { projects, prices } = props

@@ -7,10 +7,10 @@ import { getRecentFullComments } from '@/db/comment'
 import { getRecentFullTxns } from '@/db/txn'
 import { getRecentFullBids } from '@/db/bid'
 import { listSimpleCauses } from '@/db/cause'
-import { listProjects } from '@/db/project'
+import { listProjects, listLiteProjects } from '@/db/project'
 import { LandingSection } from './landing-section'
 
-// Page is dynamic due to cookies(), but listProjects is cached for 30s
+// Page is dynamic due to cookies()
 
 export default async function Projects(props: {
   searchParams: { [key: string]: string | string[] | undefined }
@@ -71,7 +71,11 @@ async function AsyncFeedTabs({
   const supabase = await createServerSupabaseClient()
   const [projects, recentComments, recentDonations, recentBids, causesList] =
     await Promise.all([
-      shouldLoadProjects ? listProjects(supabase) : Promise.resolve([]),
+      shouldLoadProjects
+        ? listLiteProjects(supabase).then((projects) =>
+            projectLimit ? projects.slice(0, projectLimit) : projects
+          )
+        : Promise.resolve([]),
       getRecentFullComments(supabase, PAGE_SIZE, start),
       getRecentFullTxns(supabase, PAGE_SIZE, start),
       getRecentFullBids(supabase, PAGE_SIZE, start),

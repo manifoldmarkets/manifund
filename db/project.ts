@@ -7,6 +7,8 @@ import { Comment } from '@/db/comment'
 import { Round } from './round'
 import { CertParams, MiniCause } from './cause'
 import { ProjectFollow } from './follows'
+import { unstable_cache } from 'next/cache'
+import { createServerSupabaseClient } from './supabase-server'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectUpdate = Database['public']['Tables']['projects']['Update']
@@ -26,7 +28,35 @@ export type FullProject = Project & { profiles: Profile } & {
 } & { project_votes: ProjectVote[] } & { causes: MiniCause[] } & {
   project_follows: ProjectFollow[]
 }
+
 export type FullProjectWithSimilarity = FullProject & { similarity: number }
+
+export type LiteProject = Pick<
+  Project,
+  | 'title'
+  | 'id'
+  | 'created_at'
+  | 'creator'
+  | 'slug'
+  | 'blurb'
+  | 'stage'
+  | 'type'
+  | 'funding_goal'
+  | 'min_funding'
+  | 'auction_close'
+  | 'amm_shares'
+  | 'founder_shares'
+> & {
+  profiles: Profile
+  causes: MiniCause[]
+  rounds?: Pick<Round, 'title' | 'slug'>
+  vote_count: number
+  comment_count: number
+  amount_raised: number
+  has_pending_transfers: boolean
+  regrantor_funded: boolean
+}
+
 export type MiniProject = Project & { profiles: Profile } & { txns: Txn[] }
 export const TOTAL_SHARES = 10_000_000
 
@@ -184,6 +214,196 @@ export async function listProjects(supabase: SupabaseClient) {
   })
 
   return Array.from(projectsMap.values()) as FullProject[]
+}
+
+export async function listLiteProjects(supabase: SupabaseClient) {
+  const { data: projectsBase } = await supabase
+    .from('projects')
+    .select(
+      `
+      title, id, created_at, creator, slug, blurb, stage,
+      auction_close, funding_goal, min_funding, type,
+      amm_shares, founder_shares,
+      profiles!projects_creator_fkey(*),
+      rounds(title, slug),
+      causes(title, slug)
+    `
+    )
+    .neq('stage', 'hidden')
+    .neq('stage', 'draft')
+    .order('created_at', { ascending: false })
+    .throwOnError()
+
+  if (!projectsBase || projectsBase.length === 0) {
+    return []
+  }
+
+  const projectIds = projectsBase.map((p) => p.id)
+
+  const BATCH_SIZE = 200
+  const projectBatches = []
+  for (let i = 0; i < projectIds.length; i += BATCH_SIZE) {
+    projectBatches.push(projectIds.slice(i, i + BATCH_SIZE))
+  }
+
+  // Initialize results
+  let allVotes: any[] = []
+  let allComments: any[] = []
+  let allBids: any[] = []
+  let allTxns: any[] = []
+  let allTransfers: any[] = []
+
+  // Process each batch
+  for (const batchIds of projectBatches) {
+    const [voteResult, commentResult, bidResult, txnResult, transferResult] =
+      await Promise.all([
+        supabase
+          .from('project_votes')
+          .select('project_id, magnitude')
+          .in('project_id', batchIds),
+        supabase.from('comments').select('project').in('project', batchIds),
+
+        supabase
+          .from('bids')
+          .select('project, amount, type, bidder')
+          .in('project', batchIds)
+          .in('type', ['buy', 'assurance buy', 'donate'])
+          .eq('status', 'pending'),
+
+        supabase
+          .from('txns')
+          .select('project, amount, to_id, from_id')
+          .in('project', batchIds)
+          .eq('type', 'project donation')
+          .eq('token', 'USD'),
+
+        supabase
+          .from('project_transfers')
+          .select('project_id, transferred')
+          .in('project_id', batchIds),
+      ])
+
+    if (voteResult.data) allVotes = allVotes.concat(voteResult.data)
+    if (commentResult.data) allComments = allComments.concat(commentResult.data)
+    if (bidResult.data) allBids = allBids.concat(bidResult.data)
+    if (txnResult.data) allTxns = allTxns.concat(txnResult.data)
+    if (transferResult.data)
+      allTransfers = allTransfers.concat(transferResult.data)
+  }
+
+  const profileResult = await supabase
+    .from('profiles')
+    .select('id, regranter_status')
+
+  // Create result objects to mimic original structure
+  const voteResult = { data: allVotes, error: null }
+  const commentResult = { data: allComments, error: null }
+  const bidResult = { data: allBids, error: null }
+  const txnResult = { data: allTxns, error: null }
+  const transferResult = { data: allTransfers, error: null }
+
+  // Process aggregated donation data
+  const projectMap = new Map<string, any>()
+  projectsBase.forEach((p) => projectMap.set(p.id, p))
+
+  // Create set of regrantor IDs
+  const regranterIds = new Set(
+    profileResult.data?.filter((p) => p.regranter_status).map((p) => p.id) || []
+  )
+
+  // Aggregate donation amounts
+  const donationResults: any[] = []
+  projectIds.forEach((projectId) => {
+    const project = projectMap.get(projectId)
+    if (!project) return
+
+    let amount_raised = 0
+    let regrantor_funded = false
+
+    if (project.type === 'dummy') {
+      amount_raised = project.funding_goal
+    } else if (project.stage === 'proposal') {
+      // Sum bids
+      bidResult.data?.forEach((bid) => {
+        if (bid.project === projectId) {
+          amount_raised += bid.amount
+        }
+      })
+    } else {
+      // Sum txns
+      txnResult.data?.forEach((txn) => {
+        if (txn.project === projectId && txn.to_id === project.creator) {
+          amount_raised += txn.amount
+          if (txn.from_id && regranterIds.has(txn.from_id)) {
+            regrantor_funded = true
+          }
+        }
+      })
+    }
+
+    donationResults.push({
+      project_id: projectId,
+      amount_raised,
+      regrantor_funded,
+    })
+  })
+
+  // Create maps for quick lookup
+  const voteMap = new Map<string, number>()
+  voteResult.data?.forEach((vote) => {
+    const current = voteMap.get(vote.project_id) || 0
+    voteMap.set(vote.project_id, current + vote.magnitude)
+  })
+
+  const commentMap = new Map<string, number>()
+  commentResult.data?.forEach((comment) => {
+    const current = commentMap.get(comment.project) || 0
+    commentMap.set(comment.project, current + 1)
+  })
+
+  const donationMap = new Map<
+    string,
+    { amount_raised: number; regrantor_funded: boolean }
+  >()
+  donationResults.forEach((donation: any) => {
+    donationMap.set(donation.project_id, {
+      amount_raised: donation.amount_raised || 0,
+      regrantor_funded: donation.regrantor_funded || false,
+    })
+  })
+
+  const transferMap = new Map<string, boolean>()
+  transferResult.data?.forEach((transfer) => {
+    if (!transfer.transferred) {
+      transferMap.set(transfer.project_id, true)
+    }
+  })
+
+  const liteProjects: LiteProject[] = projectsBase.map((project: any) => ({
+    title: project.title,
+    id: project.id,
+    created_at: project.created_at,
+    creator: project.creator,
+    slug: project.slug,
+    blurb: project.blurb,
+    stage: project.stage,
+    type: project.type,
+    funding_goal: project.funding_goal,
+    min_funding: project.min_funding,
+    auction_close: project.auction_close,
+    amm_shares: project.amm_shares,
+    founder_shares: project.founder_shares,
+    profiles: project.profiles as Profile,
+    causes: project.causes || [],
+    rounds: project.rounds?.[0],
+    vote_count: voteMap.get(project.id) || 0,
+    comment_count: commentMap.get(project.id) || 0,
+    amount_raised: donationMap.get(project.id)?.amount_raised || 0,
+    regrantor_funded: donationMap.get(project.id)?.regrantor_funded || false,
+    has_pending_transfers: transferMap.get(project.id) || false,
+  }))
+
+  return liteProjects
 }
 
 export async function listProjectsForEvals(supabase: SupabaseClient) {
