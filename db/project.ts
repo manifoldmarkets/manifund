@@ -7,7 +7,7 @@ import { Comment } from '@/db/comment'
 import { Round } from './round'
 import { CertParams, MiniCause } from './cause'
 import { ProjectFollow } from './follows'
-import { calculateAmountRaised } from '@/utils/math'
+import { calculateAmountRaised, calculateIsRegrantorFunded } from '@/utils/math'
 import { reduceBy, Reducers } from '@/utils/collection-utils'
 import { getCommentCount } from '@/utils/project-utils'
 
@@ -249,8 +249,6 @@ export async function listLiteProjects(supabase: SupabaseClient) {
     return []
   }
 
-  const projectIds = projectsBase.map((p) => p.id)
-
   type LiteComment = Pick<Comment, 'project'>
   type LiteVote = Pick<ProjectVote, 'project_id' | 'magnitude'>
   type LiteTransfer = Pick<ProjectTransfer, 'project_id' | 'transferred'>
@@ -310,36 +308,20 @@ export async function listLiteProjects(supabase: SupabaseClient) {
     { amount_raised: number; regrantor_funded: boolean }
   >()
 
-  projectIds.forEach((projectId) => {
-    const project = projectMap.get(projectId)
+  projectsBase.forEach((project) => {
+    const projectId = project.id
     if (!project) return
 
     const projectBids = bidsMap.get(projectId) || []
     const projectTxns = txnsMap.get(projectId) || []
 
-    const amount_raised = calculateAmountRaised(
-      project,
-      projectBids,
-      projectTxns
-    )
-
-    // Check if regrantor funded (only for txns)
-    let regrantor_funded = false
-    if (project.stage !== 'proposal') {
-      projectTxns.forEach((txn) => {
-        if (
-          txn.to_id === project.creator &&
-          txn.from_id &&
-          regranterIds.has(txn.from_id)
-        ) {
-          regrantor_funded = true
-        }
-      })
-    }
-
     donationMap.set(projectId, {
-      amount_raised: amount_raised || 0,
-      regrantor_funded: regrantor_funded || false,
+      amount_raised: calculateAmountRaised(project, projectBids, projectTxns),
+      regrantor_funded: calculateIsRegrantorFunded(
+        project,
+        regranterIds,
+        projectTxns
+      ),
     })
   })
 

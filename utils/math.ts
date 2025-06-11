@@ -88,10 +88,10 @@ export function calculateUserBalance(txns: Txn[], userId: string) {
 }
 
 export function calculateAmountRaised(
-  project: Project,
+  project: Pick<Project, 'type' | 'stage' | 'creator' | 'funding_goal'>,
   bids?: (Bid | LiteBid)[],
   txns?: (Txn | LiteTxn)[]
-) {
+): number {
   if (project.type === 'dummy') {
     return project.funding_goal
   }
@@ -112,6 +112,26 @@ export function calculateAmountRaised(
           )
           .reduce((acc, txn) => acc + txn.amount, 0)) ?? 0
   )
+}
+
+export function calculateIsRegrantorFunded(
+  project: Pick<Project, 'type' | 'stage' | 'creator' | 'funding_goal'>,
+  regranterIds: Set<string>,
+  txns: (Txn | LiteTxn)[]
+): boolean {
+  let regrantor_funded = false
+  if (project.stage !== 'proposal') {
+    txns.forEach((txn) => {
+      if (
+        txn.to_id === project.creator &&
+        txn.from_id &&
+        regranterIds.has(txn.from_id)
+      ) {
+        regrantor_funded = true
+      }
+    })
+  }
+  return regrantor_funded
 }
 
 export function calculateUserLockedFunds(bids: Bid[]) {
