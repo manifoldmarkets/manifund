@@ -1,30 +1,27 @@
 'use client'
+import { FullProject, LiteProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { searchInAny } from '@/utils/parse'
-import { Row } from './layout/row'
-import { SimpleCause, Cause } from '@/db/cause'
-import { CauseTag } from './tags'
-import clsx from 'clsx'
-
-import { Select } from './select'
-import { sortBy } from 'lodash'
-import { hotScore } from '@/utils/sort'
-import {
-  getAmountRaised,
-  getCommentCount,
-  getVoteCount,
-  ProjectType,
-} from '@/utils/project-utils'
-import { LiteProject } from '@/db/project'
-import { FullProject } from '@/db/project'
 import { getProjectValuation } from '@/utils/math'
+import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
+import { Row } from './layout/row'
+import { MiniCause, Cause, SimpleCause } from '@/db/cause'
+import { CauseTag } from './tags'
 import { Col } from './layout/col'
 import { SearchBar } from './input'
+import { searchInAny } from '@/utils/parse'
 import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
-import { MiniCause } from '@/db/cause'
+import { Select } from './select'
+import { sortBy } from 'lodash'
+import {
+  ProjectType,
+  getVoteCount,
+  getCommentCount,
+  hotScore,
+  getAmountRaised,
+} from '@/utils/project-utils'
 
 type SortOption =
   | 'votes'
@@ -47,48 +44,46 @@ const DEFAULT_SORT_OPTIONS = [
 ] as SortOption[]
 
 export function ProjectsDisplay(props: {
-  projects: LiteProject[]
+  projects: ProjectType[]
   causesList: SimpleCause[]
   defaultSort?: SortOption
   hideRound?: boolean
-  searchBar?: boolean
-  sortOptions?: SortOption[]
+  noFilter?: boolean
 }) {
-  const {
-    projects,
-    causesList,
-    defaultSort = 'hot',
-    hideRound = false,
-    searchBar = true,
-    sortOptions = DEFAULT_SORT_OPTIONS,
-  } = props
-
-  const [search, setSearch] = useState('')
-  const [selectedCauseNames, setSelectedCauseNames] = useState<Cause[]>([])
-  const [numToShow, setNumToShow] = useState(30)
-  const [sort, setSort] = useState<SortOption>(defaultSort)
+  const { projects, defaultSort, causesList, noFilter } = props
   const prices = getPrices(projects)
-  const filtered = filterProjects(projects, selectedCauseNames)
-  const sorted = sortProjects(filtered, prices, sort)
-  const displayed = sorted
+  const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'hot')
+  const [includedCauses, setIncludedCauses] = useState<Cause[]>([])
+  const [search, setSearch] = useState<string>('')
+  const filteredProjects = filterProjects(projects, includedCauses)
+  const sortedProjects = sortProjects(
+    noFilter ? projects : filteredProjects,
+    prices,
+    sortBy
+  )
+  const CLIENT_PAGE_SIZE = 20
+  const [numToShow, setNumToShow] = useState<number>(CLIENT_PAGE_SIZE)
+  const selectedProjects = sortedProjects
     .filter((project) => {
       return searchInAny(
         search,
         project.title,
         project.blurb ?? '',
-        project.profiles?.full_name ?? '',
-        project.profiles?.username ?? ''
+        project.profiles.full_name,
+        project.profiles.username,
+        // Note: LiteProject doesn't have project_transfers
+        ''
       )
     })
     .slice(0, numToShow)
 
-  const fundableProjects = displayed.filter(
+  const fundableProjects = selectedProjects.filter(
     (project) => project.stage == 'proposal' || project.stage == 'active'
   )
-  const completeProjects = displayed.filter(
+  const completeProjects = selectedProjects.filter(
     (project) => project.stage == 'complete'
   )
-  const unfundedProjects = displayed.filter(
+  const unfundedProjects = selectedProjects.filter(
     (project) => project.stage == 'not funded'
   )
 
@@ -98,24 +93,20 @@ export function ProjectsDisplay(props: {
         <SearchBar search={search} setSearch={setSearch} className="w-full" />
         <div className="lg:w-4/12">
           <Select
-            options={sortOptions}
-            selected={sort}
-            onSelect={(event) => setSort(event as SortOption)}
+            options={DEFAULT_SORT_OPTIONS}
+            selected={sortBy}
+            onSelect={(event) => setSortBy(event as SortOption)}
             label="Sort by"
           />
         </div>
       </div>
-      {!hideRound && (
+      {!noFilter && (
         <div className="relative w-full">
-          <Listbox
-            value={selectedCauseNames}
-            onChange={setSelectedCauseNames}
-            multiple
-          >
+          <Listbox value={includedCauses} onChange={setIncludedCauses} multiple>
             {({ open }) => (
               <CauseFilterSelect
-                includedCauses={selectedCauseNames}
-                setIncludedCauses={setSelectedCauseNames}
+                includedCauses={includedCauses}
+                setIncludedCauses={setIncludedCauses}
                 open={open}
                 causes={causesList.filter((c) => !c.prize)}
               />
@@ -148,14 +139,13 @@ export function ProjectsDisplay(props: {
       </div>
       <LoadMoreUntilNotVisible
         loadMore={() => {
-          setNumToShow(numToShow + 30)
+          setNumToShow(numToShow + CLIENT_PAGE_SIZE)
           return Promise.resolve(true)
         }}
       />
     </Col>
   )
 }
-
 function sortProjects(
   projects: ProjectType[],
   prices: { [k: string]: number },
@@ -168,7 +158,7 @@ function sortProjects(
     }
   })
   if (sortType === 'votes') {
-    return sortBy(projects, (project) => -getVoteCount(project))
+    return sortBy(projects, (p) => -getVoteCount(p))
   }
   if (sortType === 'oldest') {
     return sortBy(projects, (project) => new Date(project.created_at))
@@ -177,21 +167,17 @@ function sortProjects(
     return sortBy(projects, (project) => -new Date(project.created_at))
   }
   if (sortType === 'comments') {
-    return sortBy(projects, (project) => -getCommentCount(project))
+    return sortBy(projects, (p) => -getCommentCount(p))
   }
   if (sortType === 'price' || sortType === 'goal' || sortType === 'valuation') {
     // TODO: Prices and goal seems kinda broken atm
     return sortBy(projects, (project) => -prices[project.id])
   }
   if (sortType === 'funding') {
-    return sortBy(projects, (project) => -getAmountRaised(project))
+    return sortBy(projects, (p) => -getAmountRaised(p))
   }
   if (sortType === 'hot') {
-    return sortBy(projects, (project) =>
-      'vote_count' in project
-        ? hotScoreLite(project as LiteProject)
-        : hotScore(project as FullProject)
-    )
+    return sortBy(projects, (p) => hotScore(p))
   }
   if (sortType === 'closing soon') {
     return sortBy(projects, (project) => {
@@ -315,24 +301,6 @@ function CauseFilterSelect(props: {
       </Transition>
     </div>
   )
-}
-
-// Hot score for LiteProject
-function hotScoreLite(project: LiteProject) {
-  // Factors:
-  // Time in days since project was created
-  let time = Date.now() - new Date(project.created_at).getTime()
-  time = time / (1000 * 60 * 60 * 24)
-
-  const votes = project.vote_count
-  const comments = project.comment_count
-  const raised = project.amount_raised
-
-  const points = votes * 2 + comments + Math.log(raised + 1) * 3
-  // Hacker News newness algorithm
-  const score = (points + 2) / time ** 1.8
-
-  return -score
 }
 
 // Price here means goal for grants and valuation for certs
