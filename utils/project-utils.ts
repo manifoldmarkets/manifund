@@ -2,14 +2,12 @@ import { FullProject, LiteProject } from '@/db/project'
 import { calculateAmountRaised } from './math'
 import { getSponsoredAmount } from './constants'
 
-// Union type - only LiteProject has discriminator
 export type ProjectType = FullProject | LiteProject
 
 export function isLiteProject(project: ProjectType): project is LiteProject {
   return '_type' in project && project._type === 'lite'
 }
 
-// Helper functions that work with both types
 export function getVoteCount(project: ProjectType): number {
   if (isLiteProject(project)) {
     return project.vote_count

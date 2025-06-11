@@ -1,5 +1,4 @@
 'use client'
-import { FullProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
@@ -312,7 +311,7 @@ function getPrices(projects: ProjectType[]) {
     if (isLiteProject(project)) {
       prices[project.id] = project.funding_goal
     } else {
-      prices[project.id] = getProjectValuation(project as FullProject)
+      prices[project.id] = getProjectValuation(project)
     }
   })
   return prices
