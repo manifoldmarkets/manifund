@@ -9,7 +9,6 @@ import { CertParams, MiniCause } from './cause'
 import { ProjectFollow } from './follows'
 import { calculateAmountRaised, calculateIsRegrantorFunded } from '@/utils/math'
 import { reduceBy, Reducers } from '@/utils/collection-utils'
-import { getCommentCount } from '@/utils/project-utils'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectUpdate = Database['public']['Tables']['projects']['Update']

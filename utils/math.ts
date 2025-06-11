@@ -3,7 +3,7 @@ import { FullProject, Project, LiteBid, LiteTxn } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, Txn, TxnAndProject } from '@/db/txn'
 import { isBefore } from 'date-fns'
-import { sortBy } from 'lodash'
+import { sortBy } from '@/utils/lodash-edge'
 import { isCharitableDeposit } from './constants'
 import { calculateAMMPorfolio, calculateValuation } from './amm'
 import { ProjectType } from './project-utils'
@@ -24,14 +24,14 @@ export function getProjectValuation(project: FullProject) {
       )
 }
 
-export function getProposalValuation(project: ProjectType) {
+export function getProposalValuation(project: ProjectType | Project) {
   const { min_funding, amm_shares, founder_shares } = project
   const investorPercent =
     (TOTAL_SHARES - founder_shares - (amm_shares ?? 0)) / TOTAL_SHARES
   return min_funding / investorPercent
 }
 
-export function getMinIncludingAmm(project: ProjectType) {
+export function getMinIncludingAmm(project: ProjectType | Project) {
   const { min_funding, amm_shares, type } = project
   return (
     min_funding +
