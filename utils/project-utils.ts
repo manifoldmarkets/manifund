@@ -1,5 +1,6 @@
 import { FullProject, LiteProject } from '@/db/project'
 import { calculateAmountRaised } from './math'
+import { getSponsoredAmount } from './constants'
 
 // Union type - only LiteProject has discriminator
 export type ProjectType = FullProject | LiteProject
@@ -34,8 +35,6 @@ export function getRegrantorFunded(project: ProjectType): boolean {
   if (isLiteProject(project)) {
     return project.regrantor_funded
   }
-  // For FullProject, check if any txn is from a regrantor
-  const { getSponsoredAmount } = require('@/utils/constants')
   return project.txns.some(
     (txn) => txn.from_id && getSponsoredAmount(txn.from_id) > 0
   )

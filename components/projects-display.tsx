@@ -2,29 +2,23 @@
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { ProjectCard } from './project-card'
 import { searchInAny } from '@/utils/parse'
 import { Row } from './layout/row'
-import { Button } from './button'
 import { SimpleCause, Cause } from '@/db/cause'
 import { CauseTag } from './tags'
-import { Input } from './input'
 import clsx from 'clsx'
 
 import { Select } from './select'
 import { sortBy } from 'lodash'
-import { countVotes, hotScore } from '@/utils/sort'
+import { hotScore } from '@/utils/sort'
 import {
-  ProjectType,
-  getVoteCount,
-  getCommentCount,
   getAmountRaised,
-  isLiteProject,
-  isFullProject,
+  getCommentCount,
+  getVoteCount,
+  ProjectType,
 } from '@/utils/project-utils'
 import { LiteProject } from '@/db/project'
 import { FullProject } from '@/db/project'
-import { calculateAmountRaised as getAmountRaisedUtil } from '@/utils/math'
 import { getProjectValuation } from '@/utils/math'
 import { ProjectGroup } from '@/components/project-group'
 import { Col } from './layout/col'
@@ -35,22 +29,21 @@ import { MiniCause } from '@/db/cause'
 type SortOption =
   | 'votes'
   | 'goal'
-  | 'hot'
+  | 'funding'
+  | 'valuation'
+  | 'price'
   | 'comments'
   | 'newest'
   | 'oldest'
-  | 'valuation'
-  | 'funding'
-  | 'price'
+  | 'hot'
   | 'closing soon'
 
 const DEFAULT_SORT_OPTIONS = [
   'hot',
   'newest',
-  'votes',
-  'comments',
-  'funding',
   'closing soon',
+  'votes',
+  'funding',
 ] as SortOption[]
 
 export function ProjectsDisplay(props: {
@@ -175,11 +168,7 @@ function sortProjects(
     }
   })
   if (sortType === 'votes') {
-    return sortBy(projects, (project) =>
-      'vote_count' in project
-        ? -project.vote_count
-        : -countVotes(project as FullProject)
-    )
+    return sortBy(projects, (project) => -getVoteCount(project))
   }
   if (sortType === 'oldest') {
     return sortBy(projects, (project) => new Date(project.created_at))
@@ -188,30 +177,14 @@ function sortProjects(
     return sortBy(projects, (project) => -new Date(project.created_at))
   }
   if (sortType === 'comments') {
-    return sortBy(
-      projects,
-      (project) =>
-        -('comment_count' in project
-          ? project.comment_count
-          : project.comments.length)
-    )
+    return sortBy(projects, (project) => -getCommentCount(project))
   }
   if (sortType === 'price' || sortType === 'goal' || sortType === 'valuation') {
     // TODO: Prices and goal seems kinda broken atm
     return sortBy(projects, (project) => -prices[project.id])
   }
   if (sortType === 'funding') {
-    return sortBy(
-      projects,
-      (project) =>
-        -('amount_raised' in project
-          ? project.amount_raised
-          : getAmountRaisedUtil(
-              project as FullProject,
-              (project as FullProject).bids,
-              (project as FullProject).txns
-            ))
-    )
+    return sortBy(projects, (project) => -getAmountRaised(project))
   }
   if (sortType === 'hot') {
     return sortBy(projects, (project) =>
