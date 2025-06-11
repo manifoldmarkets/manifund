@@ -418,6 +418,44 @@ export type Database = {
           }
         ]
       }
+      project_embeddings: {
+        Row: {
+          created_at: string | null
+          embedding: string
+          id: string
+          model_dimension: number
+          model_name: string
+          project_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          embedding: string
+          id?: string
+          model_dimension?: number
+          model_name?: string
+          project_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          embedding?: string
+          id?: string
+          model_dimension?: number
+          model_name?: string
+          project_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'project_embeddings_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: true
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          }
+        ]
+      }
       project_evals: {
         Row: {
           confidence: number
@@ -871,6 +909,16 @@ export type Database = {
             }
         Returns: undefined
       }
+      find_similar_projects: {
+        Args: { project_id: string; match_count?: number }
+        Returns: {
+          id: string
+          slug: string
+          title: string
+          blurb: string
+          similarity: number
+        }[]
+      }
       follow_project: {
         Args: { project_id: string; follower_id: string }
         Returns: undefined
@@ -890,6 +938,10 @@ export type Database = {
           donation: Database['public']['CompositeTypes']['bid_row']
         }
         Returns: undefined
+      }
+      ivfflathandler: {
+        Args: { '': unknown }
+        Returns: unknown
       }
       reject_grant: {
         Args: { project_id: string }
@@ -934,6 +986,30 @@ export type Database = {
       unfollow_project: {
         Args: { project_id: string; follower_id: string }
         Returns: undefined
+      }
+      vector_avg: {
+        Args: { '': number[] }
+        Returns: string
+      }
+      vector_dims: {
+        Args: { '': string }
+        Returns: number
+      }
+      vector_norm: {
+        Args: { '': string }
+        Returns: number
+      }
+      vector_out: {
+        Args: { '': string }
+        Returns: unknown
+      }
+      vector_send: {
+        Args: { '': string }
+        Returns: string
+      }
+      vector_typmod_in: {
+        Args: { '': unknown[] }
+        Returns: number
       }
     }
     Enums: {

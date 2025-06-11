@@ -10,6 +10,8 @@ import {
 } from '@tiptap/react'
 import React, { ReactNode } from 'react'
 
+export { toMarkdown } from '@/utils/tiptap-parsing'
+
 export function insertContent(editor: Editor | null, ...contents: Content[]) {
   if (!editor) {
     return
