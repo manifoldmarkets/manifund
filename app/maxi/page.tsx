@@ -1,7 +1,7 @@
 import { Avatar } from '@/components/avatar'
 import { listProjects } from '@/db/project'
 import { createServerSupabaseClient } from '@/db/supabase-server'
-import { hotScore } from '@/utils/sort'
+import { hotScore } from '@/utils/project-utils'
 import { sortBy } from 'lodash'
 
 export default async function Maxifund() {
