@@ -1,5 +1,5 @@
 'use client'
-import { FullProject, LiteProject } from '@/db/project'
+import { FullProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
@@ -21,6 +21,8 @@ import {
   getCommentCount,
   hotScore,
   getAmountRaised,
+  getProjectTransferRecipient,
+  isLiteProject,
 } from '@/utils/project-utils'
 
 type SortOption =
@@ -71,8 +73,7 @@ export function ProjectsDisplay(props: {
         project.blurb ?? '',
         project.profiles.full_name,
         project.profiles.username,
-        // Note: LiteProject doesn't have project_transfers
-        ''
+        getProjectTransferRecipient(project) ?? ''
       )
     })
     .slice(0, numToShow)
@@ -177,7 +178,7 @@ function sortProjects(
     return sortBy(projects, (p) => -getAmountRaised(p))
   }
   if (sortType === 'hot') {
-    return sortBy(projects, (p) => hotScore(p))
+    return sortBy(projects, hotScore)
   }
   if (sortType === 'closing soon') {
     return sortBy(projects, (project) => {
@@ -307,11 +308,11 @@ function CauseFilterSelect(props: {
 function getPrices(projects: ProjectType[]) {
   const prices = Object.fromEntries(projects.map((project) => [project.id, 0]))
   projects.forEach((project) => {
-    if ('bids' in project && 'txns' in project) {
-      prices[project.id] = getProjectValuation(project as FullProject)
-    } else {
-      // For LiteProject, use funding_goal as a simple approximation
+    // use funding_goal as a simple approximation
+    if (isLiteProject(project)) {
       prices[project.id] = project.funding_goal
+    } else {
+      prices[project.id] = getProjectValuation(project as FullProject)
     }
   })
   return prices
