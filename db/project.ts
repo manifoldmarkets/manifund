@@ -9,6 +9,7 @@ import { CertParams, MiniCause } from './cause'
 import { ProjectFollow } from './follows'
 import { calculateAmountRaised } from '@/utils/math'
 import { reduceBy, Reducers } from '@/utils/collection-utils'
+import { getCommentCount } from '@/utils/project-utils'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectUpdate = Database['public']['Tables']['projects']['Update']
@@ -263,31 +264,23 @@ export async function listLiteProjects(supabase: SupabaseClient) {
     transferResult,
     regranterResult,
   ] = await Promise.all([
-    supabase
-      .from('project_votes')
-      .select('project_id, magnitude')
-      .in('project_id', projectIds),
+    supabase.from('project_votes').select('project_id, magnitude'),
 
-    supabase.from('comments').select('project').in('project', projectIds),
+    supabase.from('comments').select('project'),
 
     supabase
       .from('bids')
       .select('project, amount, type, bidder, status')
-      .in('project', projectIds)
       .in('type', ['buy', 'assurance buy', 'donate'])
       .eq('status', 'pending'),
 
     supabase
       .from('txns')
       .select('project, amount, to_id, from_id, token')
-      .in('project', projectIds)
       .eq('type', 'project donation')
       .eq('token', 'USD'),
 
-    supabase
-      .from('project_transfers')
-      .select('project_id, transferred')
-      .in('project_id', projectIds),
+    supabase.from('project_transfers').select('project_id, transferred'),
 
     supabase
       .from('profiles')
