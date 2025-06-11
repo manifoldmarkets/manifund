@@ -1,16 +1,15 @@
 import { revalidateTag, unstable_cache } from 'next/cache'
-import { listProjects } from './project'
+import { listLiteProjects } from './project'
 import { createPublicSupabaseClient } from './supabase-server'
 
-// Cached version of listProjects for public pages
-// TODO: this is too large for the cache, should use a different approach
-export const listProjectsCached = unstable_cache(
+// Cached version of listLiteProjects for public pages
+export const listLiteProjectsCached = unstable_cache(
   // eslint-disable-next-line require-await
   async () => {
     const supabase = createPublicSupabaseClient()
-    return listProjects(supabase)
+    return listLiteProjects(supabase)
   },
-  ['list-projects'], // cache key
+  ['list-projects-lite'], // cache key
   {
     revalidate: 30, // in seconds
     tags: ['projects'], // for invalidation

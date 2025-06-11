@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getUser } from '@/db/profile'
 import { Col } from '@/components/layout/col'
@@ -7,7 +6,7 @@ import { getRecentFullComments } from '@/db/comment'
 import { getRecentFullTxns } from '@/db/txn'
 import { getRecentFullBids } from '@/db/bid'
 import { listSimpleCauses } from '@/db/cause'
-import { listProjects, listLiteProjects } from '@/db/project'
+import { listLiteProjectsCached } from '@/db/project-cached'
 import { LandingSection } from './landing-section'
 
 // Page is dynamic due to cookies()
@@ -27,25 +26,7 @@ export default async function Projects(props: {
           {/* Or use <CausesWithFeatured /> to include active rounds */}
         </>
       )}
-
-      {/* Use nested suspense to load the full feed after the fast feed */}
-      <Suspense
-        fallback={
-          <Suspense fallback={<FeedTabsSkeleton />}>
-            <AsyncFeedTabs
-              searchParams={props.searchParams}
-              userId={user?.id}
-              projectLimit={30}
-            />
-          </Suspense>
-        }
-      >
-        <AsyncFeedTabs
-          searchParams={props.searchParams}
-          userId={user?.id}
-          projectLimit={2000}
-        />
-      </Suspense>
+      <AsyncFeedTabs searchParams={props.searchParams} userId={user?.id} />
     </Col>
   )
 }
@@ -54,11 +35,9 @@ export default async function Projects(props: {
 async function AsyncFeedTabs({
   searchParams,
   userId,
-  projectLimit,
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
   userId?: string
-  projectLimit?: number
 }) {
   const PAGE_SIZE = 20
   const page = parseInt(searchParams?.p as string) || 1
@@ -71,11 +50,7 @@ async function AsyncFeedTabs({
   const supabase = await createServerSupabaseClient()
   const [projects, recentComments, recentDonations, recentBids, causesList] =
     await Promise.all([
-      shouldLoadProjects
-        ? listLiteProjects(supabase).then((projects) =>
-            projectLimit ? projects.slice(0, projectLimit) : projects
-          )
-        : Promise.resolve([]),
+      shouldLoadProjects ? listLiteProjectsCached() : Promise.resolve([]),
       getRecentFullComments(supabase, PAGE_SIZE, start),
       getRecentFullTxns(supabase, PAGE_SIZE, start),
       getRecentFullBids(supabase, PAGE_SIZE, start),

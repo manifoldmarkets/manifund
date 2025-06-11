@@ -1,5 +1,5 @@
 import { Bid, BidAndProject } from '@/db/bid'
-import { FullProject, Project } from '@/db/project'
+import { FullProject, LiteProject, Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, Txn, TxnAndProject } from '@/db/txn'
 import { isBefore } from 'date-fns'
@@ -23,14 +23,14 @@ export function getProjectValuation(project: FullProject) {
       )
 }
 
-export function getProposalValuation(project: Project) {
+export function getProposalValuation(project: Project | LiteProject) {
   const { min_funding, amm_shares, founder_shares } = project
   const investorPercent =
     (TOTAL_SHARES - founder_shares - (amm_shares ?? 0)) / TOTAL_SHARES
   return min_funding / investorPercent
 }
 
-export function getMinIncludingAmm(project: Project) {
+export function getMinIncludingAmm(project: Project | LiteProject) {
   const { min_funding, amm_shares, type } = project
   return (
     min_funding +
