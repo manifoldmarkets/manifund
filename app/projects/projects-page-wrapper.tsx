@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/db/supabase-browser'
 import { Col } from '@/components/layout/col'
 import { FeedTabs } from './feed-tabs'
@@ -30,6 +31,15 @@ export function ProjectsPageWrapper({
   const [userId, setUserId] = useState<string | undefined>(undefined)
   const [isLoading, setIsLoading] = useState(true)
   const supabase = createClient()
+  const searchParams = useSearchParams()
+
+  const PAGE_SIZE = 20
+  const page = parseInt(searchParams?.get('p') || '1')
+  const start = (page - 1) * PAGE_SIZE
+
+  const paginatedComments = recentComments.slice(start, start + PAGE_SIZE)
+  const paginatedDonations = recentDonations.slice(start, start + PAGE_SIZE)
+  const paginatedBids = recentBids.slice(start, start + PAGE_SIZE)
 
   useEffect(() => {
     const setupAuth = async () => {
@@ -40,6 +50,7 @@ export function ProjectsPageWrapper({
       setIsAuthenticated(!!session)
       setUserId(session?.user?.id)
       setIsLoading(false)
+
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -73,9 +84,9 @@ export function ProjectsPageWrapper({
     <Col className="gap-16 px-3 py-5 sm:px-6">
       {(isLoading || !isAuthenticated) && <LandingSection />}
       <FeedTabs
-        recentComments={recentComments}
-        recentDonations={recentDonations}
-        recentBids={recentBids}
+        recentComments={paginatedComments}
+        recentDonations={paginatedDonations}
+        recentBids={paginatedBids}
         projects={projects}
         causesList={causesList}
         userId={userId}

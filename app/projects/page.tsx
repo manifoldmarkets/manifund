@@ -9,29 +9,23 @@ import { ProjectsPageWrapper } from './projects-page-wrapper'
 // Enable ISR with 60 second revalidation
 export const revalidate = 60
 
-export default async function Projects(props: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
-  // this does not use cookies, it won't override the ISR behavior and make this page dynamically rendered
+export default async function Projects() {
+  // this does not use cookies or searchParams, so ISR will work
   const supabase = createPublicSupabaseClient()
 
-  const PAGE_SIZE = 20
-  const page = parseInt(props.searchParams?.p as string) || 1
-  const tab = props.searchParams?.tab as string
-  const shouldLoadProjects = !tab || tab === 'projects'
-  const start = (page - 1) * PAGE_SIZE
+  // Load all data for ISR - pagination/filtering will be done client-side
+  const PAGE_SIZE = 100 // Increase to load more data upfront
 
   const [projects, recentComments, recentDonations, recentBids, causesList] =
     await Promise.all([
-      shouldLoadProjects ? listProjects(supabase) : Promise.resolve([]),
-      getRecentFullComments(supabase, PAGE_SIZE, start),
-      getRecentFullTxns(supabase, PAGE_SIZE, start),
-      getRecentFullBids(supabase, PAGE_SIZE, start),
+      listProjects(supabase),
+      getRecentFullComments(supabase, PAGE_SIZE, 0),
+      getRecentFullTxns(supabase, PAGE_SIZE, 0),
+      getRecentFullBids(supabase, PAGE_SIZE, 0),
       listSimpleCauses(supabase),
     ])
 
   return (
-    // this page uses cookies, so it will be dynamically rendered, but the projects fed into the wrapper will be static
     <ProjectsPageWrapper
       recentComments={recentComments}
       recentDonations={recentDonations}
