@@ -19,26 +19,24 @@ import { Card } from './layout/card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { getSponsoredAmount } from '@/utils/constants'
-import {
-  getVoteCount,
-  getCommentCount,
-  getProjectAmountRaised,
-  getIsRegrantorFunded,
-  getHasPendingTransfers,
-} from '@/utils/project-utils'
 
 export function ProjectCard(props: {
   project: FullProject
   valuation?: number
 }) {
   const { project, valuation } = props
-  const amountRaised = getProjectAmountRaised(project)
+  const amountRaised = getAmountRaised(project, project.bids, project.txns)
   // const firstDonorId =
   //   project.stage === 'proposal'
   //     ? orderBy(project.bids, 'created_at', 'asc')[0]?.bidder
   //     : orderBy(project.txns, 'created_at', 'asc')[0]?.from_id
-  const regrantorFunded = getIsRegrantorFunded(project)
-  const voteCount = getVoteCount(project)
+  const regrantorFunded = project.txns.some(
+    (txn) => txn.from_id && getSponsoredAmount(txn.from_id) > 0
+  )
+  const voteCount = project.project_votes.reduce(
+    (acc, vote) => vote.magnitude + acc,
+    0
+  )
   const minIncludingAmm = getMinIncludingAmm(project)
   const fundingGoal =
     project.type === 'cert' ? minIncludingAmm : project.funding_goal
@@ -91,7 +89,7 @@ export function ProjectCard(props: {
           )}
           <ProjectCardData
             voteCount={voteCount}
-            numComments={getCommentCount(project)}
+            numComments={project.comments.length}
             amountRaised={amountRaised}
             fundingGoal={project.stage === 'proposal' ? fundingGoal : undefined}
             projectSlug={project.slug}
@@ -182,7 +180,11 @@ export function CardlessProject(props: {
   showFundingBar?: boolean
 }) {
   const { project, regrantors, showFundingBar } = props
-  const amountRaised = getProjectAmountRaised(project)
+  const amountRaised = getAmountRaised(
+    project,
+    project.bids ?? [],
+    project.txns ?? []
+  )
   return (
     <Col className="items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">
       <Row className="flex-2 w-full items-center justify-between gap-3 text-xs">

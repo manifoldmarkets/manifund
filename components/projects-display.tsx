@@ -3,8 +3,7 @@ import { FullProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { getProjectValuation } from '@/utils/math'
-import { getProjectAmountRaised, getCommentCount } from '@/utils/project-utils'
+import { getAmountRaised, getProjectValuation } from '@/utils/math'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
 import { Row } from './layout/row'
@@ -158,14 +157,16 @@ function sortProjects(
     return sortBy(projects, [(project) => -new Date(project.created_at)])
   }
   if (sortType === 'comments') {
-    return sortBy(projects, [(project) => -getCommentCount(project)])
+    return sortBy(projects, [(project) => -project.comments.length])
   }
   if (sortType === 'price' || sortType === 'goal' || sortType === 'valuation') {
     // TODO: Prices and goal seems kinda broken atm
     return sortBy(projects, [(project) => -prices[project.id]])
   }
   if (sortType === 'funding') {
-    return sortBy(projects, [(project) => -getProjectAmountRaised(project)])
+    return sortBy(projects, [
+      (project) => -getAmountRaised(project, project.bids, project.txns),
+    ])
   }
   if (sortType === 'hot') {
     return sortBy(projects, [hotScore])
