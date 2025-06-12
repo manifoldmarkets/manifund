@@ -8,7 +8,7 @@ import {
   ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
-import { orderBy } from 'lodash'
+import { orderBy } from 'es-toolkit'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { calcAuctionResolution, Resolution } from '@/utils/resolve-auction'
 import { Bid } from '@/db/bid'
@@ -260,7 +260,7 @@ function resolvePlayBids(
   founderPortion: number
 ) {
   // Sort bids by valuation (keep $0 bids so they don't disappear from UI)
-  const sortedBids = orderBy(playBids, 'valuation', 'desc')
+  const sortedBids = orderBy(playBids, ['valuation'], ['desc'])
   sortedBids.forEach((bid) => {
     if (!bid.amount) {
       bid.amount = 0

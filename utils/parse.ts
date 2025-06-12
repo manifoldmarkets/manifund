@@ -1,5 +1,5 @@
 import { JSONContent } from '@tiptap/react'
-import { uniq } from 'lodash'
+import { uniq } from 'es-toolkit'
 
 export const beginsWith = (text: string, query: string) =>
   text.toLocaleLowerCase().startsWith(query.toLocaleLowerCase())

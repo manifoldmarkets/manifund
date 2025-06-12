@@ -20,7 +20,7 @@ import { useState } from 'react'
 import clsx from 'clsx'
 import { RightCarrotIcon } from '@/components/icons'
 import { formatDistanceToNow } from 'date-fns'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit'
 import { Col } from '@/components/layout/col'
 import {
   Table,
@@ -106,7 +106,7 @@ export function ProfileContent(props: {
         (project.stage !== 'hidden' && project.stage !== 'draft') ||
         isOwnProfile
     )
-  const sortedTxns = sortBy(txns, (txn) => -new Date(txn.created_at).getTime())
+  const sortedTxns = sortBy(txns, [(txn) => -new Date(txn.created_at).getTime()])
   return (
     <div className="flex flex-col gap-6">
       {profile.regranter_status && !isOwnProfile && (

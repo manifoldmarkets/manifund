@@ -73,7 +73,7 @@ export const generateReact = (doc: JSONContent, extensions: Extensions) => {
   )
 
   // const exts = keyBy(extensionsIncludingStarterKit, 'name')
-  // Replace lodash keyBy with a simple object
+  // Replace keyBy with a simple object
   const exts: Record<string, AnyExtension> = extensionsIncludingStarterKit
     .map((e) => [e.name, e])
     .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {})

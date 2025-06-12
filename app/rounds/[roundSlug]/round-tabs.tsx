@@ -10,7 +10,7 @@ import { Round } from '@/db/round'
 import { SimpleCause } from '@/db/cause'
 import { getSponsoredAmount2023 } from '@/utils/constants'
 import { UserPlusIcon, WrenchIcon } from '@heroicons/react/20/solid'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit'
 import { useSearchParams } from 'next/navigation'
 import { EditRound } from './edit-round'
 
@@ -48,11 +48,9 @@ export function RoundTabs(props: {
     },
   ]
   if (round.title === 'Regrants' && regranters) {
-    const sortedRegranters = sortBy(regranters, [
-      function (regranter: Profile) {
-        return -getSponsoredAmount2023(regranter.id)
-      },
-    ])
+    const sortedRegranters = sortBy(regranters, [(regranter: Profile) => {
+      return -getSponsoredAmount2023(regranter.id)
+    }])
     tabs.push({
       name: 'Regrantors',
       id: 'regrants',

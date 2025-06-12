@@ -1,6 +1,7 @@
 import { ScaleContinuousNumeric, ScaleTime } from 'd3-scale'
 import { Dispatch, SetStateAction } from 'react'
-import { first, last, mapValues, meanBy } from 'lodash'
+import { last, meanBy } from 'es-toolkit'
+import { mapValues } from 'es-toolkit'
 
 const removeUndefinedProps = <T extends object>(obj: T): T => {
   const newObj: any = {}
@@ -121,7 +122,7 @@ export function binAvg<P extends HistoryPoint>(sorted: P[], limit = 100) {
     return sorted
   }
 
-  const min = first(sorted)?.x ?? 0
+  const min = sorted[0].x
   const max = last(sorted)?.x ?? 0
   const binWidth = Math.ceil((max - min) / limit)
 
@@ -133,7 +134,7 @@ export function binAvg<P extends HistoryPoint>(sorted: P[], limit = 100) {
     const binEnd = binStart + binWidth
     const binPoints = sorted.filter((p) => p.x >= binStart && p.x < binEnd)
     if (binPoints.length > 0) {
-      lastAvgY = meanBy(binPoints, 'y')
+      lastAvgY = meanBy(binPoints, (p) => p.y)
     }
     newPoints.push({ x: binEnd, y: lastAvgY })
   }
