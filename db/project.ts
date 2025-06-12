@@ -7,6 +7,7 @@ import { Comment } from '@/db/comment'
 import { Round } from './round'
 import { CertParams, MiniCause } from './cause'
 import { ProjectFollow } from './follows'
+import { countVotes } from '@/utils/sort'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectUpdate = Database['public']['Tables']['projects']['Update']
@@ -454,12 +455,16 @@ export async function getFullSimilarProjects(
     return []
   }
 
-  const projectsWithSimilarity = data.map((project) => {
-    const similarity =
-      similarProjects.find((p: any) => p.id === project.id)?.similarity || 0
-    return { ...project, similarity }
-  })
-  return projectsWithSimilarity.sort(
-    (a, b) => b.similarity - a.similarity
-  ) as FullProjectWithSimilarity[]
+  const projectsWithSimilarity = data
+    // Add similarity to each project
+    .map((project) => {
+      const similarity =
+        similarProjects.find((p: any) => p.id === project.id)?.similarity || 0
+      return { ...project, similarity }
+    })
+    // Exclude projects with zero or fewer net votes
+    .filter((project) => countVotes(project) > 0)
+    // Sort by similarity
+    .sort((a, b) => b.similarity - a.similarity) as FullProjectWithSimilarity[]
+  return projectsWithSimilarity
 }

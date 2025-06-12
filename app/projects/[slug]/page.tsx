@@ -65,7 +65,7 @@ export default async function ProjectPage(props: { params: { slug: string } }) {
     getBidsByProject(supabase, project.id),
     getTxnsByProject(supabase, project.id),
     listSimpleCauses(supabase),
-    getFullSimilarProjects(supabase, project.id, 3),
+    getFullSimilarProjects(supabase, project.id, 8),
   ])
   const prizeCause = await getPrizeCause(
     project.causes.map((c) => c.slug),
