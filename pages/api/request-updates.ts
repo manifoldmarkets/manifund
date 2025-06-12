@@ -3,14 +3,11 @@ import { NextResponse } from 'next/server'
 import { createAdminClient } from './_db'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { isProd } from '@/db/env'
-import { orderBy } from 'lodash'
+import { orderBy } from 'es-toolkit'
 
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
-  unstable_allowDynamic: [
-    '**/node_modules/lodash/_root.js', // Use a glob to allow anything in the function-bind 3rd party module
-  ],
 }
 
 export default async function handler() {
@@ -34,7 +31,7 @@ export default async function handler() {
     const updates = project.comments.filter(
       (c) => c.special_type === 'progress update'
     )
-    const sortedUpdates = orderBy(updates, 'created_at', 'desc')
+    const sortedUpdates = orderBy(updates, ['created_at'], ['desc'])
     const latestUpdate = sortedUpdates.length ? sortedUpdates[0] : null
     const latestUpdateDate = latestUpdate
       ? new Date(latestUpdate.created_at)

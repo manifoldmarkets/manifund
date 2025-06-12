@@ -3,7 +3,7 @@ import { Stat } from '@/components/stat'
 import { Row } from '@/components/layout/row'
 import { FullTxn } from '@/db/txn'
 import { formatMoney } from '@/utils/formatting'
-import { uniq } from 'lodash'
+import { uniq } from 'es-toolkit'
 import React from 'react'
 import {
   BarChart,

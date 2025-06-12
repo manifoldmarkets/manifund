@@ -11,7 +11,7 @@ import {
   UserGroupIcon,
 } from '@heroicons/react/24/solid'
 import { formatDistanceToNow } from 'date-fns'
-import { orderBy } from 'lodash'
+import { orderBy } from 'es-toolkit'
 import Link from 'next/link'
 
 export function OutgoingDonationsHistory(props: {
@@ -19,8 +19,8 @@ export function OutgoingDonationsHistory(props: {
   pendingDonateBids: BidAndProject[]
 }) {
   const { donations, pendingDonateBids } = props
-  const sortedDonations = orderBy(donations, 'created_at', 'desc')
-  const sortedBids = orderBy(pendingDonateBids, 'created_at', 'desc')
+  const sortedDonations = orderBy(donations, ['created_at'], ['desc'])
+  const sortedBids = orderBy(pendingDonateBids, ['created_at'], ['desc'])
   const donationsDisplay = sortedDonations.map((donation) => {
     const type = donation.project
       ? 'project'

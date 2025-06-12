@@ -7,7 +7,7 @@ import { generateText, JSONContent } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Mention from '@tiptap/extension-mention'
 import { Link as ExtensionLink } from '@tiptap/extension-link'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit'
 import { hotScore } from '@/utils/sort'
 
 type Donation = {
@@ -32,7 +32,7 @@ export default async function Minifund() {
       getRecentFullBids(supabase, PAGE_SIZE, start),
     ])
 
-  const projectsToShow = sortBy(projects, hotScore).slice(0, 20)
+  const projectsToShow = sortBy(projects, [hotScore]).slice(0, 20)
 
   const donations = recentBids.map((bid) => {
     return {

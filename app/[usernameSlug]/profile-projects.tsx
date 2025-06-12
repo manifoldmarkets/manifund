@@ -2,14 +2,14 @@
 import { Project } from '@/db/project'
 import Link from 'next/link'
 import { StageIcon } from '@/components/tags'
-import { orderBy } from 'lodash'
+import { orderBy } from 'es-toolkit'
 import { Table, TableRow } from '@/components/table'
 import { Tooltip } from '@/components/tooltip'
 
 // TODO: use full project and display amount raised, valuation, etc.
 export function Projects(props: { projects: Project[] }) {
   const { projects } = props
-  const sortedProjects = orderBy(projects, 'created_at', 'desc')
+  const sortedProjects = orderBy(projects, ['created_at'], ['desc'])
 
   return (
     <div>

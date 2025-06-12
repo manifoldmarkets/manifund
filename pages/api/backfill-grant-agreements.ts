@@ -1,16 +1,13 @@
 import { FullProject } from '@/db/project'
 import { isBefore } from 'date-fns'
 import { createAdminClient } from './_db'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
-  unstable_allowDynamic: [
-    '**/node_modules/lodash/_root.js', // Use a glob to allow anything in the function-bind 3rd party module
-  ],
 }
 
 export default async function handler() {
@@ -27,7 +24,7 @@ export default async function handler() {
       : isBefore(createdDate, v3StartDate)
       ? 2
       : 3
-    const sortedTxns = sortBy(project.txns, 'created_at')
+    const sortedTxns = sortBy(project.txns, ['created_at'])
     const firstUSDTxn = sortedTxns.find((t) => t.token === 'USD')
     const activationDate =
       firstUSDTxn && project.stage !== 'proposal' && project.stage !== 'draft'
