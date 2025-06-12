@@ -3,7 +3,7 @@ import { FullProject, Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, Txn, TxnAndProject } from '@/db/txn'
 import { isBefore } from 'date-fns'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit/compat'
 import { isCharitableDeposit } from './constants'
 import { calculateAMMPorfolio, calculateValuation } from './amm'
 

@@ -8,7 +8,7 @@ import {
   ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'react'
-import { orderBy } from 'lodash'
+import { orderBy } from 'es-toolkit/compat'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { calcAuctionResolution, Resolution } from '@/utils/resolve-auction'
 import { Bid } from '@/db/bid'

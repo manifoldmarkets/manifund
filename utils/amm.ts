@@ -2,7 +2,7 @@ import { TradePoint } from '@/components/chart/chart'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn, TxnAndProfiles } from '@/db/txn'
 import { isBefore, sub } from 'date-fns'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit/compat'
 import { formatMoneyPrecise } from './formatting'
 
 export type BinaryModeId = 'buy' | 'sell' | null

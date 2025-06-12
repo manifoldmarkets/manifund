@@ -9,7 +9,7 @@ import {
   showPrecision,
 } from '@/utils/formatting'
 import clsx from 'clsx'
-import { orderBy } from 'lodash'
+import { orderBy } from 'es-toolkit/compat'
 import { formatDistanceToNow } from 'date-fns'
 import { bundleTxns } from '@/utils/math'
 import { Shareholder } from './project-tabs'

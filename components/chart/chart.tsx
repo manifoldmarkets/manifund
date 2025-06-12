@@ -7,7 +7,7 @@ import {
   curveStepAfter,
   curveStepBefore,
 } from 'd3-shape'
-import { range } from 'lodash'
+import { range } from 'es-toolkit/compat'
 import { Key, ReactNode, useCallback, useId, useMemo, useState } from 'react'
 import {
   AxisConstraints,

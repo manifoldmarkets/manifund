@@ -2,7 +2,7 @@ import { Avatar } from '@/components/avatar'
 import { listProjects } from '@/db/project'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { hotScore } from '@/utils/sort'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit/compat'
 
 export default async function Maxifund() {
   const supabase = await createServerSupabaseClient()

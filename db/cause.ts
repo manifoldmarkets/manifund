@@ -1,6 +1,6 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { sortBy, uniq } from 'lodash'
+import { sortBy, uniq } from 'es-toolkit/compat'
 
 export type Cause = Omit<
   Database['public']['Tables']['causes']['Row'],

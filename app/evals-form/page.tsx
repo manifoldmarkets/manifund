@@ -3,7 +3,7 @@ import { listProjectsForEvals } from '@/db/project'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { EvalsForm } from './evals-form'
 import { getProfileTrusts, getUserEvals } from '@/db/eval'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit/compat'
 import AuthModal from '@/components/auth/AuthModal'
 
 export default async function EvalsPage() {

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Row } from '@/components/layout/row'
 import { ProfileAndProjectTitles } from '@/db/profile'
 import { useState } from 'react'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit/compat'
 import { Tooltip } from '@/components/tooltip'
 import {
   CheckBadgeIcon,

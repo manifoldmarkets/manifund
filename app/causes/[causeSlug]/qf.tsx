@@ -8,7 +8,7 @@ import {
 import { BidAndProfile } from '@/db/bid'
 import { Project } from '@/db/project'
 import { TxnAndProfiles } from '@/db/txn'
-import { keyBy, sum } from 'lodash'
+import { keyBy, sum } from 'es-toolkit/compat'
 import Link from 'next/link'
 
 // A single donation or offer, used for calculating quadratic funding match

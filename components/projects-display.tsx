@@ -14,7 +14,7 @@ import { SearchBar } from './input'
 import { searchInAny } from '@/utils/parse'
 import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
 import { Select } from './select'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit/compat'
 import { countVotes, hotScore } from '@/utils/sort'
 
 type SortOption =

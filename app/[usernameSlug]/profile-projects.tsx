@@ -2,7 +2,7 @@
 import { Project } from '@/db/project'
 import Link from 'next/link'
 import { StageIcon } from '@/components/tags'
-import { orderBy } from 'lodash'
+import { orderBy } from 'es-toolkit/compat'
 import { Table, TableRow } from '@/components/table'
 import { Tooltip } from '@/components/tooltip'
 

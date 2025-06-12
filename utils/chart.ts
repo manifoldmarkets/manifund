@@ -1,6 +1,6 @@
 import { ScaleContinuousNumeric, ScaleTime } from 'd3-scale'
 import { Dispatch, SetStateAction } from 'react'
-import { first, last, mapValues, meanBy } from 'lodash'
+import { first, last, mapValues, meanBy } from 'es-toolkit/compat'
 
 const removeUndefinedProps = <T extends object>(obj: T): T => {
   const newObj: any = {}

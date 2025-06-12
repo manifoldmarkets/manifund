@@ -7,7 +7,7 @@ import { generateText, JSONContent } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Mention from '@tiptap/extension-mention'
 import { Link as ExtensionLink } from '@tiptap/extension-link'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit/compat'
 import { hotScore } from '@/utils/sort'
 
 type Donation = {

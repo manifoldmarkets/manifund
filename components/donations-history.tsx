@@ -4,7 +4,7 @@ import { TxnAndProfiles } from '@/db/txn'
 import { formatMoney } from '@/utils/formatting'
 import clsx from 'clsx'
 import { format } from 'date-fns'
-import { orderBy, uniq } from 'lodash'
+import { orderBy, uniq } from 'es-toolkit'
 import { useState } from 'react'
 import { Avatar } from './avatar'
 import { RightCarrotIcon } from './icons'
@@ -13,7 +13,7 @@ import { UserAvatarAndBadge } from './user-link'
 
 export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
   const { donations } = props
-  const sortedDonations = orderBy(donations, 'created_at', 'desc')
+  const sortedDonations = orderBy(donations, ['created_at'], ['desc'])
   return (
     <>
       {donations.length > 0 ? (

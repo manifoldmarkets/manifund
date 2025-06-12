@@ -10,7 +10,7 @@ import { Round } from '@/db/round'
 import { SimpleCause } from '@/db/cause'
 import { getSponsoredAmount2023 } from '@/utils/constants'
 import { UserPlusIcon, WrenchIcon } from '@heroicons/react/20/solid'
-import { sortBy } from 'lodash'
+import { sortBy } from 'es-toolkit/compat'
 import { useSearchParams } from 'next/navigation'
 import { EditRound } from './edit-round'
 

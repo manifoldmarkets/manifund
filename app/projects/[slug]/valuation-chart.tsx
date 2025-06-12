@@ -1,4 +1,4 @@
-import _, { last, sortBy } from 'lodash'
+import _, { last, sortBy } from 'es-toolkit/compat'
 import { scaleTime, scaleLinear } from 'd3-scale'
 import { calculateAMMPorfolio, calculateValuation } from '@/utils/amm'
 import { Row } from '@/components/layout/row'
