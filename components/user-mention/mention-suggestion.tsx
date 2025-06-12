@@ -1,7 +1,7 @@
 import type { MentionOptions } from '@tiptap/extension-mention'
 import { ReactRenderer } from '@tiptap/react'
 import { beginsWith, searchInAny } from '@/utils/parse'
-import { orderBy } from 'es-toolkit/compat'
+import { orderBy } from 'es-toolkit'
 import tippy from 'tippy.js'
 import { getAllMiniProfiles } from '@/db/profile'
 import { MentionList } from './mention-list'

@@ -12,7 +12,7 @@ import {
   CheckBadgeIcon,
   CircleStackIcon,
 } from '@heroicons/react/20/solid'
-import { orderBy } from 'es-toolkit/compat'
+import { orderBy } from 'es-toolkit'
 import { CauseTag } from './tags'
 import { UserAvatarAndBadge } from './user-link'
 import { Card } from './layout/card'

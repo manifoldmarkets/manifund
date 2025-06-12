@@ -8,7 +8,7 @@ import {
 import { BidAndProfile } from '@/db/bid'
 import { Project } from '@/db/project'
 import { TxnAndProfiles } from '@/db/txn'
-import { keyBy, sum } from 'es-toolkit/compat'
+import { keyBy, sum } from 'es-toolkit'
 import Link from 'next/link'
 
 // A single donation or offer, used for calculating quadratic funding match
@@ -40,7 +40,7 @@ export default function QuadraticMatch(props: {
 }) {
   const { projects = [], matchTxns = [], matchBids = [] } = props
 
-  const projectMap = keyBy(projects, 'id')
+  const projectMap = keyBy(projects, (p) => p.id)
   // const profiles = [
   //   ...matchTxns.map((txn) => txn.profiles),
   //   ...matchBids.map((bid) => bid.profiles),

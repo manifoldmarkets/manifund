@@ -1,4 +1,4 @@
-import _, { last, sortBy } from 'es-toolkit/compat'
+import { last, sortBy } from 'es-toolkit'
 import { scaleTime, scaleLinear } from 'd3-scale'
 import { calculateAMMPorfolio, calculateValuation } from '@/utils/amm'
 import { Row } from '@/components/layout/row'
@@ -45,7 +45,7 @@ export const CertValuationChart = (props: {
   className?: string
 }) => {
   const { ammTxns, ammId, size, tradePoints, className } = props
-  const sortedAmmTxns = sortBy(ammTxns, 'created_at')
+  const sortedAmmTxns = sortBy(ammTxns, ['created_at'])
   const [start, end] = [
     new Date(sortedAmmTxns[0]?.created_at)?.getTime() ?? 0,
     new Date().getTime(),
@@ -57,7 +57,7 @@ export const CertValuationChart = (props: {
     return [...tradePoints, { y: currValuation, x: now }]
   }, [end, currValuation, tradePoints])
   const rightmostDate = getRightmostVisibleDate(end, last(tradePoints)?.x, now)
-  const maxValuation = _.max(data.map((p) => p.y)) ?? 100
+  const maxValuation = Math.max(...data.map((p) => p.y), 100)
   if (sortedAmmTxns.length === 0) return null
   return (
     <SizedContainer

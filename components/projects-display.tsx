@@ -14,7 +14,7 @@ import { SearchBar } from './input'
 import { searchInAny } from '@/utils/parse'
 import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
 import { Select } from './select'
-import { sortBy } from 'es-toolkit/compat'
+import { sortBy } from 'es-toolkit'
 import { countVotes, hotScore } from '@/utils/sort'
 
 type SortOption =
@@ -148,42 +148,41 @@ function sortProjects(
     project.bids = project.bids.filter((bid) => bid.status == 'pending')
   })
   if (sortType === 'votes') {
-    return sortBy(projects, countVotes).reverse()
+    return sortBy(projects, [countVotes]).reverse()
   }
   if (sortType === 'oldest') {
-    return sortBy(projects, (project) => new Date(project.created_at))
+    return sortBy(projects, [(project) => new Date(project.created_at)])
   }
   if (sortType === 'newest') {
-    return sortBy(projects, (project) => -new Date(project.created_at))
+    return sortBy(projects, [(project) => -new Date(project.created_at)])
   }
   if (sortType === 'comments') {
-    return sortBy(projects, (project) => -project.comments.length)
+    return sortBy(projects, [(project) => -project.comments.length])
   }
   if (sortType === 'price' || sortType === 'goal' || sortType === 'valuation') {
     // TODO: Prices and goal seems kinda broken atm
-    return sortBy(projects, (project) => -prices[project.id])
+    return sortBy(projects, [(project) => -prices[project.id]])
   }
   if (sortType === 'funding') {
     return sortBy(
       projects,
-      (project) => -getAmountRaised(project, project.bids, project.txns)
+      [(project) => -getAmountRaised(project, project.bids, project.txns)]
     )
   }
   if (sortType === 'hot') {
-    return sortBy(projects, hotScore)
+    return sortBy(projects, [hotScore])
   }
   if (sortType === 'closing soon') {
-    return sortBy(projects, (project) => {
+    return sortBy(projects, [(project) => {
       // Show proposals with a close date of today or later
       if (project.stage === 'proposal' && project.auction_close) {
-        console.log(project.auction_close)
         const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
         if (closeDate >= new Date()) {
           return closeDate.getTime()
         }
       }
       return Infinity
-    })
+    }])
   }
   return projects
 }

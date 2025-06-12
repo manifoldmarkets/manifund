@@ -3,7 +3,7 @@ import { FullProject, Project } from '@/db/project'
 import { TOTAL_SHARES } from '@/db/project'
 import { FullTxn, Txn, TxnAndProject } from '@/db/txn'
 import { isBefore } from 'date-fns'
-import { sortBy } from 'es-toolkit/compat'
+import { sortBy } from 'es-toolkit'
 import { isCharitableDeposit } from './constants'
 import { calculateAMMPorfolio, calculateValuation } from './amm'
 
@@ -57,7 +57,7 @@ function getActiveValuation(
     if (userTradeTxns.length === 0) {
       const pendingBids = bids.filter((bid) => bid.status === 'pending')
       if (pendingBids.length > 0) {
-        const sortedBids = sortBy(pendingBids, (bid) => bid.created_at)
+        const sortedBids = sortBy(pendingBids, [(bid) => bid.created_at])
         const latestBid = sortedBids[sortedBids.length - 1]
         return latestBid.valuation
       } else {
@@ -65,7 +65,7 @@ function getActiveValuation(
       }
     } else {
       const bundles = bundleTxns(userTradeTxns)
-      const sortedBundles = sortBy(bundles, (bundle) => bundle[0].created_at)
+      const sortedBundles = sortBy(bundles, [(bundle) => bundle[0].created_at])
       const latestBundle = sortedBundles[sortedBundles.length - 1]
       const amountUSD =
         latestBundle.find((txn) => txn.token === 'USD')?.amount ?? 0
@@ -183,7 +183,7 @@ export function calculateCashBalance(
   accreditationStatus: boolean
 ) {
   let cashBalance = 0
-  const sortedTxns = sortBy(txns, 'created_at')
+  const sortedTxns = sortBy(txns, ['created_at'])
   sortedTxns.forEach((txn) => {
     cashBalance +=
       txn.amount * getTxnCashMultiplier(txn, userId, accreditationStatus)
@@ -201,7 +201,7 @@ export function calculateCharityBalance(
   accreditationStatus: boolean
 ) {
   let charityBalance = 0
-  const sortedTxns = sortBy(txns, 'created_at')
+  const sortedTxns = sortBy(txns, ['created_at'])
 
   sortedTxns.forEach((txn) => {
     charityBalance +=

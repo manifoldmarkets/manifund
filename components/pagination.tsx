@@ -5,7 +5,7 @@
 'use client'
 import clsx from 'clsx'
 import { ReactNode, useEffect } from 'react'
-import { range } from 'es-toolkit/compat'
+import { range } from 'es-toolkit'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Row } from './layout/row'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'

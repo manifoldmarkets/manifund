@@ -5,7 +5,7 @@ import { ProfileCard } from '@/components/profile-card'
 import { Profile } from '@/db/profile'
 import { getSponsoredAmount } from '@/utils/constants'
 import clsx from 'clsx'
-import { sortBy } from 'es-toolkit/compat'
+import { sortBy } from 'es-toolkit'
 import { useState } from 'react'
 
 const YEARS = [2023, 2024, 2025]

@@ -36,7 +36,7 @@ export function ExpandableDonationsHistory(props: {
 }) {
   const { donations } = props
   const [expanded, setExpanded] = useState(false)
-  const sortedDonations = orderBy(donations, 'created_at', 'desc')
+  const sortedDonations = orderBy(donations, ['created_at'], ['desc'])
   const recentDonations = sortedDonations.slice(0, 3)
   const recentDonors = uniq(recentDonations.map((txn) => txn.profiles))
   return (

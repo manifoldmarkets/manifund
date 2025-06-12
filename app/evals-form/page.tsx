@@ -3,7 +3,7 @@ import { listProjectsForEvals } from '@/db/project'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { EvalsForm } from './evals-form'
 import { getProfileTrusts, getUserEvals } from '@/db/eval'
-import { sortBy } from 'es-toolkit/compat'
+import { sortBy } from 'es-toolkit'
 import AuthModal from '@/components/auth/AuthModal'
 
 export default async function EvalsPage() {
@@ -21,13 +21,13 @@ export default async function EvalsPage() {
     getProfileTrusts(user.id, supabase),
   ])
   const username = profiles.find((p) => p.id === user.id)?.username
-  const sortedProjects = sortBy(projects, (p) => {
+  const sortedProjects = sortBy(projects, [(p) => {
     if (p.stage === 'active') {
       return 0
     } else {
       return 1
     }
-  })
+  }])
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold">

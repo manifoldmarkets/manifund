@@ -5,7 +5,7 @@ import { MiniProject } from '@/db/project'
 import useLocalStorage, {
   clearLocalStorageItem,
 } from '@/hooks/use-local-storage'
-import { cloneDeep } from 'es-toolkit/compat'
+import { cloneDeep } from 'es-toolkit'
 import { useState } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { SetTrust } from './set-trust'

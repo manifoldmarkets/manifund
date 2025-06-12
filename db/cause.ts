@@ -1,6 +1,6 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { sortBy, uniq } from 'es-toolkit/compat'
+import { sortBy, uniq } from 'es-toolkit'
 
 export type Cause = Omit<
   Database['public']['Tables']['causes']['Row'],
@@ -34,7 +34,8 @@ export async function listFullCauses(supabase: SupabaseClient) {
   if (error) {
     throw error
   }
-  return sortBy(data, 'sort') as FullCause[]
+  const sortedCauses = sortBy(data, ['name'])
+  return sortedCauses as FullCause[]
 }
 
 export async function getSomeFullCauses(
@@ -48,7 +49,8 @@ export async function getSomeFullCauses(
   if (error) {
     throw error
   }
-  return sortBy(data, 'sort') as FullCause[]
+  const sortedCauses = sortBy(data, ['name'])
+  return sortedCauses as FullCause[]
 }
 
 export async function listMiniCauses(supabase: SupabaseClient) {

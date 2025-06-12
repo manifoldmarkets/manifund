@@ -13,7 +13,7 @@ import React, {
   useState,
 } from 'react'
 import { useMeasureSize } from '@/hooks/use-measure-size'
-import { clamp } from 'es-toolkit/compat'
+import { clamp } from 'es-toolkit'
 import {
   add,
   differenceInHours,

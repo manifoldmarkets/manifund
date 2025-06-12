@@ -9,7 +9,7 @@ import {
   showPrecision,
 } from '@/utils/formatting'
 import clsx from 'clsx'
-import { orderBy } from 'es-toolkit/compat'
+import { orderBy } from 'es-toolkit'
 import { formatDistanceToNow } from 'date-fns'
 import { bundleTxns } from '@/utils/math'
 import { Shareholder } from './project-tabs'
@@ -32,7 +32,7 @@ export function Shareholders(props: {
     (txn) => txn.from_id === projectId || txn.to_id === projectId
   )
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
-  const sortedShareholders = orderBy(nonAmmShareholders, 'numShares', 'desc')
+  const sortedShareholders = orderBy(nonAmmShareholders, ['numShares'], ['desc'])
   return (
     <Row className="w-full justify-center">
       <Col className="w-full max-w-md sm:max-w-2xl">
@@ -102,8 +102,8 @@ function TradeHistory(props: { txns: TxnAndProfiles[]; creatorId: string }) {
   const bundledTxns = bundleTxns(tradeTxns)
   const sortedBundles = orderBy(
     bundledTxns,
-    (bundle) => bundle[0].created_at,
-    'desc'
+    [(bundle) => bundle[0].created_at],
+    ['desc']
   )
   const tradeDisplay = sortedBundles.flatMap((bundle) => {
     const usdTxn = bundle.find((txn) => txn.token === 'USD')

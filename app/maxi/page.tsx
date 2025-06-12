@@ -2,12 +2,12 @@ import { Avatar } from '@/components/avatar'
 import { listProjects } from '@/db/project'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { hotScore } from '@/utils/sort'
-import { sortBy } from 'es-toolkit/compat'
+import { sortBy } from 'es-toolkit'
 
 export default async function Maxifund() {
   const supabase = await createServerSupabaseClient()
   const [projects] = await Promise.all([listProjects(supabase)])
-  const projectsToShow = sortBy(projects, hotScore).slice(0, 18)
+  const projectsToShow = sortBy(projects, [hotScore]).slice(0, 18)
 
   return (
     <div>

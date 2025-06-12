@@ -9,7 +9,7 @@ import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 import { Row } from '@/components/layout/row'
 import { IconButton } from '@/components/button'
 import { useEffect, useState } from 'react'
-import { orderBy, sortBy } from 'es-toolkit/compat'
+import { orderBy, sortBy } from 'es-toolkit'
 import { Tooltip } from '@/components/tooltip'
 import { Avatar } from '@/components/avatar'
 import { useRouter } from 'next/navigation'
@@ -151,9 +151,9 @@ function genThreads(
   })
   const threadsArray = Object.values(threads)
   threadsArray.forEach((thread) => {
-    thread.replies = sortBy(thread.replies, 'created_at')
+    thread.replies = sortBy(thread.replies, ['created_at'])
   })
-  return orderBy(threadsArray, 'root.created_at', 'desc')
+  return orderBy(threadsArray, [(thread) => thread.root.created_at], ['desc'])
 }
 
 export function WriteComment(props: {
