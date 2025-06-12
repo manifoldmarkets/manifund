@@ -1,13 +1,10 @@
-import { Col } from '@/components/layout/col'
-import { FeedTabs } from './feed-tabs'
 import { getRecentFullComments } from '@/db/comment'
 import { getRecentFullTxns } from '@/db/txn'
 import { getRecentFullBids } from '@/db/bid'
 import { listSimpleCauses } from '@/db/cause'
 import { listProjects } from '@/db/project'
-import { LandingSection } from './landing-section'
 import { createPublicSupabaseClient } from '@/db/supabase-server'
-import { headers } from 'next/headers'
+import { ProjectsPageWrapper } from './projects-page-wrapper'
 
 // Enable ISR with 60 second revalidation
 export const revalidate = 60
@@ -17,11 +14,6 @@ export default async function Projects(props: {
 }) {
   // this does not use cookies, it won't override the ISR behavior and make this page dynamically rendered
   const supabase = createPublicSupabaseClient()
-
-  // but we do need to check if the user is authenticated to decide what to render. middleware populates this header for us
-  const headersList = headers()
-  const isAuthenticated = headersList.get('x-user-authenticated') === 'true'
-  const userId = headersList.get('x-user-id') || undefined
 
   const PAGE_SIZE = 20
   const page = parseInt(props.searchParams?.p as string) || 1
@@ -39,16 +31,13 @@ export default async function Projects(props: {
     ])
 
   return (
-    <Col className="gap-16 px-3 py-5 sm:px-6">
-      {!isAuthenticated && <LandingSection />}
-      <FeedTabs
-        recentComments={recentComments}
-        recentDonations={recentDonations}
-        recentBids={recentBids}
-        projects={projects}
-        causesList={causesList}
-        userId={userId}
-      />
-    </Col>
+    // this page uses cookies, so it will be dynamically rendered, but the projects fed into the wrapper will be static
+    <ProjectsPageWrapper
+      recentComments={recentComments}
+      recentDonations={recentDonations}
+      recentBids={recentBids}
+      projects={projects}
+      causesList={causesList}
+    />
   )
 }
