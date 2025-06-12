@@ -8,6 +8,8 @@ import { Round } from './round'
 import { CertParams, MiniCause } from './cause'
 import { ProjectFollow } from './follows'
 import { countVotes } from '@/utils/sort'
+import { getAmountRaised } from '@/utils/math'
+import { getSponsoredAmount } from '@/utils/constants'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectUpdate = Database['public']['Tables']['projects']['Update']
@@ -26,10 +28,35 @@ export type FullProject = Project & { profiles: Profile } & {
   project_transfers: ProjectTransfer[]
 } & { project_votes: ProjectVote[] } & { causes: MiniCause[] } & {
   project_follows: ProjectFollow[]
+} & {
+  // Denormalized computed fields (populated after fetch)
+  _vote_count?: number
+  _comment_count?: number
+  _amount_raised?: number
+  _has_pending_transfers?: boolean
+  _regrantor_funded?: boolean
 }
 export type FullProjectWithSimilarity = FullProject & { similarity: number }
 export type MiniProject = Project & { profiles: Profile } & { txns: Txn[] }
 export const TOTAL_SHARES = 10_000_000
+
+export function addComputedFields(project: FullProject): FullProject {
+  return {
+    ...project,
+    _vote_count: project.project_votes.reduce(
+      (acc, vote) => vote.magnitude + acc,
+      0
+    ),
+    _comment_count: project.comments.length,
+    _amount_raised: getAmountRaised(project, project.bids, project.txns),
+    _has_pending_transfers: project.project_transfers.some(
+      (pt) => !pt.transferred
+    ),
+    _regrantor_funded: project.txns.some(
+      (txn) => txn.from_id && getSponsoredAmount(txn.from_id) > 0
+    ),
+  }
+}
 
 export async function getProjectBySlug(supabase: SupabaseClient, slug: string) {
   const { data, error } = await supabase
@@ -184,7 +211,9 @@ export async function listProjects(supabase: SupabaseClient) {
     }
   })
 
-  return Array.from(projectsMap.values()) as FullProject[]
+  return Array.from(projectsMap.values()).map(
+    addComputedFields
+  ) as FullProject[]
 }
 
 export async function listProjectsForEvals(supabase: SupabaseClient) {
@@ -216,7 +245,7 @@ export async function getFullProjectBySlug(
   if (data === null) {
     return null
   }
-  return data[0] as FullProject
+  return addComputedFields(data[0] as FullProject)
 }
 
 export async function getProjectAndProfileBySlug(
@@ -266,7 +295,7 @@ export async function getFullProjectsByRound(
     throw error
   }
   // Scary type conversion!
-  return data as unknown as FullProject[]
+  return (data as unknown as FullProject[]).map(addComputedFields)
 }
 
 export async function getFullProjectsByCause(
@@ -284,7 +313,7 @@ export async function getFullProjectsByCause(
   if (error) {
     throw error
   }
-  return data as unknown as FullProject[]
+  return (data as unknown as FullProject[]).map(addComputedFields)
 }
 
 export async function getProjectsPendingTransferByUser(
@@ -301,7 +330,7 @@ export async function getProjectsPendingTransferByUser(
           .length
       : 0
     return numTransfers > 0
-  }) as Project[]
+  }) as FullProject[]
 }
 
 export async function getProjectAndBidsById(
@@ -456,11 +485,11 @@ export async function getFullSimilarProjects(
   }
 
   const projectsWithSimilarity = data
-    // Add similarity to each project
+    // Add similarity to each project and computed fields
     .map((project) => {
       const similarity =
         similarProjects.find((p: any) => p.id === project.id)?.similarity || 0
-      return { ...project, similarity }
+      return { ...addComputedFields(project as FullProject), similarity }
     })
     // Exclude projects with zero or fewer net votes
     .filter((project) => countVotes(project) > 0)

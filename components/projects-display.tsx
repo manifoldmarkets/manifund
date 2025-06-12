@@ -3,7 +3,8 @@ import { FullProject } from '@/db/project'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { Listbox, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
-import { getAmountRaised, getProjectValuation } from '@/utils/math'
+import { getProjectValuation } from '@/utils/math'
+import { getProjectAmountRaised, getCommentCount } from '@/utils/project-utils'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
 import { Row } from './layout/row'
@@ -157,32 +158,31 @@ function sortProjects(
     return sortBy(projects, [(project) => -new Date(project.created_at)])
   }
   if (sortType === 'comments') {
-    return sortBy(projects, [(project) => -project.comments.length])
+    return sortBy(projects, [(project) => -getCommentCount(project)])
   }
   if (sortType === 'price' || sortType === 'goal' || sortType === 'valuation') {
     // TODO: Prices and goal seems kinda broken atm
     return sortBy(projects, [(project) => -prices[project.id]])
   }
   if (sortType === 'funding') {
-    return sortBy(
-      projects,
-      [(project) => -getAmountRaised(project, project.bids, project.txns)]
-    )
+    return sortBy(projects, [(project) => -getProjectAmountRaised(project)])
   }
   if (sortType === 'hot') {
     return sortBy(projects, [hotScore])
   }
   if (sortType === 'closing soon') {
-    return sortBy(projects, [(project) => {
-      // Show proposals with a close date of today or later
-      if (project.stage === 'proposal' && project.auction_close) {
-        const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
-        if (closeDate >= new Date()) {
-          return closeDate.getTime()
+    return sortBy(projects, [
+      (project) => {
+        // Show proposals with a close date of today or later
+        if (project.stage === 'proposal' && project.auction_close) {
+          const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
+          if (closeDate >= new Date()) {
+            return closeDate.getTime()
+          }
         }
-      }
-      return Infinity
-    }])
+        return Infinity
+      },
+    ])
   }
   return projects
 }

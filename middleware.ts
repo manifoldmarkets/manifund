@@ -18,6 +18,14 @@ export async function middleware(req: NextRequest) {
     session = newSession
   }
 
+  // this header allows ISR pages to know the authentication state without accessing cookies
+  if (req.nextUrl.pathname === '/' || req.nextUrl.pathname === '/projects') {
+    res.headers.set('x-user-authenticated', session ? 'true' : 'false')
+    if (session?.user?.id) {
+      res.headers.set('x-user-id', session.user.id)
+    }
+  }
+
   return res
 }
 

@@ -1,5 +1,9 @@
 import { FullProject } from '@/db/project'
-import { getAmountRaised } from '@/utils/math'
+import {
+  getProjectAmountRaised,
+  getVoteCount,
+  getCommentCount,
+} from '@/utils/project-utils'
 
 export function hotScore(project: FullProject) {
   // Factors:
@@ -7,9 +11,9 @@ export function hotScore(project: FullProject) {
   let time = Date.now() - new Date(project.created_at).getTime()
   time = time / (1000 * 60 * 60 * 24)
 
-  const votes = countVotes(project)
-  const comments = project.comments.length
-  const raised = getAmountRaised(project, project.bids, project.txns)
+  const votes = getVoteCount(project)
+  const comments = getCommentCount(project)
+  const raised = getProjectAmountRaised(project)
 
   const points = votes * 2 + comments + Math.log(raised + 1) * 3
   // Hacker News newness algorithm: https://medium.com/hacking-and-gonzo/how-hacker-news-ranking-algorithm-works-1d9b0cf2c08d
@@ -19,5 +23,4 @@ export function hotScore(project: FullProject) {
   return -score
 }
 
-export const countVotes = (project: FullProject) =>
-  project.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
+export const countVotes = (project: FullProject) => getVoteCount(project)
