@@ -80,21 +80,6 @@ export function ProjectTabs(props: {
     },
   ]
 
-  const similarEnoughSimilarProjects = similarProjects?.filter(
-    (project) => project.similarity > SIMILARITY_THRESHOLD
-  )
-
-  if (similarEnoughSimilarProjects?.length) {
-    tabs.push({
-      name: 'Similar Projects',
-      id: 'similar',
-      count: similarEnoughSimilarProjects.length,
-      display: (
-        <SimilarProjects similarProjects={similarEnoughSimilarProjects} />
-      ),
-    })
-  }
-
   if (
     ((project.stage === 'active' || project.stage === 'complete') &&
       project.type === 'cert') ||
@@ -155,6 +140,21 @@ export function ProjectTabs(props: {
   //   display: <MarketTab project={project} userProfile={userProfile} />,
   //   count: markets?.length ?? 0,
   // })
+
+  const similarEnoughSimilarProjects = similarProjects?.filter(
+    (project) => project.similarity > SIMILARITY_THRESHOLD
+  )
+
+  if (similarEnoughSimilarProjects?.length) {
+    tabs.push({
+      name: 'Similar',
+      id: 'similar',
+      count: similarEnoughSimilarProjects.length,
+      display: (
+        <SimilarProjects similarProjects={similarEnoughSimilarProjects} />
+      ),
+    })
+  }
 
   return <Tabs tabs={tabs} currentTabId={currentTabId} />
 }
