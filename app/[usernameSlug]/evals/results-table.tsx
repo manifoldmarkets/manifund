@@ -24,11 +24,13 @@ export function ResultsTable(props: {
 }) {
   const { resultsMap, projects } = props
   const [sort, setSort] = useState<ResultKey>('overallScore')
-  const sortedProjects = sortBy(projects, [(project) => {
-    const result = resultsMap[project.id]
-    if (!result) return 0
-    return -result[sort]
-  }])
+  const sortedProjects = sortBy(projects, [
+    (project) => {
+      const result = resultsMap[project.id]
+      if (!result) return 0
+      return -result[sort]
+    },
+  ])
   return (
     <Col className="mt-5 divide-y divide-gray-200">
       <div className="grid grid-cols-7 gap-2 py-2 text-sm">

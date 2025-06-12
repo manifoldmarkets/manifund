@@ -32,7 +32,11 @@ export function Shareholders(props: {
     (txn) => txn.from_id === projectId || txn.to_id === projectId
   )
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
-  const sortedShareholders = orderBy(nonAmmShareholders, ['numShares'], ['desc'])
+  const sortedShareholders = orderBy(
+    nonAmmShareholders,
+    ['numShares'],
+    ['desc']
+  )
   return (
     <Row className="w-full justify-center">
       <Col className="w-full max-w-md sm:max-w-2xl">

@@ -109,13 +109,15 @@ function ProfileRow(props: { profile: Profile; isCreator?: boolean }) {
 }
 
 function sortProfiles(profiles: ProfileAndProjectTitles[]) {
-  const sortedProfiles = sortBy(profiles, [(profile) => {
-    if (profile.regranter_status) return -getSponsoredAmount2025(profile.id)
-    else if (profile.projects.length > 0) return 1
-    else if (profile.bio) return 2
-    else if (profile.accreditation_status) return 3
-    else return 4
-  }])
+  const sortedProfiles = sortBy(profiles, [
+    (profile) => {
+      if (profile.regranter_status) return -getSponsoredAmount2025(profile.id)
+      else if (profile.projects.length > 0) return 1
+      else if (profile.bio) return 2
+      else if (profile.accreditation_status) return 3
+      else return 4
+    },
+  ])
   return sortedProfiles
 }
 

@@ -48,9 +48,11 @@ export function RoundTabs(props: {
     },
   ]
   if (round.title === 'Regrants' && regranters) {
-    const sortedRegranters = sortBy(regranters, [(regranter: Profile) => {
-      return -getSponsoredAmount2023(regranter.id)
-    }])
+    const sortedRegranters = sortBy(regranters, [
+      (regranter: Profile) => {
+        return -getSponsoredAmount2023(regranter.id)
+      },
+    ])
     tabs.push({
       name: 'Regrantors',
       id: 'regrants',

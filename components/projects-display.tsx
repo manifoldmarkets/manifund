@@ -164,25 +164,26 @@ function sortProjects(
     return sortBy(projects, [(project) => -prices[project.id]])
   }
   if (sortType === 'funding') {
-    return sortBy(
-      projects,
-      [(project) => -getAmountRaised(project, project.bids, project.txns)]
-    )
+    return sortBy(projects, [
+      (project) => -getAmountRaised(project, project.bids, project.txns),
+    ])
   }
   if (sortType === 'hot') {
     return sortBy(projects, [hotScore])
   }
   if (sortType === 'closing soon') {
-    return sortBy(projects, [(project) => {
-      // Show proposals with a close date of today or later
-      if (project.stage === 'proposal' && project.auction_close) {
-        const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
-        if (closeDate >= new Date()) {
-          return closeDate.getTime()
+    return sortBy(projects, [
+      (project) => {
+        // Show proposals with a close date of today or later
+        if (project.stage === 'proposal' && project.auction_close) {
+          const closeDate = new Date(`${project.auction_close}T23:59:59-12:00`)
+          if (closeDate >= new Date()) {
+            return closeDate.getTime()
+          }
         }
-      }
-      return Infinity
-    }])
+        return Infinity
+      },
+    ])
   }
   return projects
 }

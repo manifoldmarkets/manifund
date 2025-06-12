@@ -21,13 +21,15 @@ export default async function EvalsPage() {
     getProfileTrusts(user.id, supabase),
   ])
   const username = profiles.find((p) => p.id === user.id)?.username
-  const sortedProjects = sortBy(projects, [(p) => {
-    if (p.stage === 'active') {
-      return 0
-    } else {
-      return 1
-    }
-  }])
+  const sortedProjects = sortBy(projects, [
+    (p) => {
+      if (p.stage === 'active') {
+        return 0
+      } else {
+        return 1
+      }
+    },
+  ])
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold">

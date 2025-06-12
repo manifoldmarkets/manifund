@@ -83,7 +83,7 @@ export default async function handler() {
 export async function listProjectsForAgreements(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('projects')
-    .select('*, profiles!projects_creator_fkey(*), txns(*), comments(*))')
+    .select('*, profiles!projects_creator_fkey(*), txns(*), comments(*)')
     .order('created_at', { ascending: false })
     .throwOnError()
   return data as unknown as FullProject[]
