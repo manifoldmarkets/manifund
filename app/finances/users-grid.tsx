@@ -87,23 +87,27 @@ export default function UsersGrid({ users }: { users: User[] }) {
 }
 
 export function BalanceSheet() {
-  const lastUpdated = '2025-04-04'
+  const lastUpdated = '2025-06-12'
   const $ = {
     // Stripe Opal + Payments balance
-    stripe: 936_835 + 66_082,
+    stripe: 809_922 + 123_966,
     // Mercury Manifund Grants account
-    mercury: 1_642_197,
-    coinbase: 869_722,
-    // Current users, plus regranting. We've put down Neel's budget already.
-    users: -1_727_776 - 2_000_000,
-    pending: 0,
+    mercury: 2_498_558,
+    coinbase: 635_459,
+    // Current users
+    users: -3_725_548,
+    // Regranting pot owed, plus 11 * 100k regrantors + neel (250k)
+    regranting: -2_250_000 + 100_000 * 11 + 250_000,
+    // not credited: 250k in flight for Craig
+    pending: 250_000,
     // Donations for Manifold for Charity
     // 500k initial - donated - David MCF - AmmonLam
     charity: 500000 - 315832 - 186747,
     // Manifest balance
-    manifest: 92_000,
-    // Mox: Mercury + Stripe pending
-    mox: 84_288 + 2_390,
+    manifest: 290_338,
+    // Mox: Mercury + Stripe pending + pending donations from EAIF
+    // Note that we've transferred $500k from the grants balance so far
+    mox: 77_465 + 4_195 + 65_000,
   }
   const financeRows = [
     { name: 'Stripe Bank', balance: $.stripe },
@@ -111,15 +115,16 @@ export function BalanceSheet() {
     { name: 'Coinbase (USDC)', balance: $.coinbase },
     { name: 'Total assets', balance: $.stripe + $.mercury + $.coinbase },
     {},
-    { name: 'User balances + $2m regranting', balance: $.users },
+    { name: 'User balances', balance: $.users },
+    { name: 'Unallocated regrant funds', balance: $.regranting },
     { name: 'Pending transfers', balance: $.pending },
     { name: 'Pending: Manifold for Charity donations', balance: $.charity },
-    { name: 'Total liabilities', balance: $.users + $.pending + $.charity },
+    { name: 'Total liabilities', balance: $.users + $.regranting + $.pending + $.charity },
     {},
     {
       name: 'Grants net balance',
       balance:
-        $.stripe + $.mercury + $.coinbase + $.users + $.pending + $.charity,
+        $.stripe + $.mercury + $.coinbase + $.users + $.regranting + $.pending + $.charity,
     },
     { name: 'Manifest balance', balance: $.manifest },
     { name: 'Mox balance', balance: $.mox },
@@ -130,6 +135,7 @@ export function BalanceSheet() {
         $.mercury +
         $.coinbase +
         $.users +
+        $.regranting +
         $.pending +
         $.charity +
         $.manifest +
