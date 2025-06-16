@@ -106,7 +106,9 @@ export function ProfileContent(props: {
         (project.stage !== 'hidden' && project.stage !== 'draft') ||
         isOwnProfile
     )
-  const sortedTxns = sortBy(txns, [(txn) => -new Date(txn.created_at).getTime()])
+  const sortedTxns = sortBy(txns, [
+    (txn) => -new Date(txn.created_at).getTime(),
+  ])
   return (
     <div className="flex flex-col gap-6">
       {profile.regranter_status && !isOwnProfile && (
