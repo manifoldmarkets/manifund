@@ -43,12 +43,23 @@ export function ProjectsDisplay(props: {
   defaultSort?: SortOption
   hideRound?: boolean
   noFilter?: boolean
+  onLoadMore?: () => Promise<FullProject[]>
 }) {
-  const { projects, defaultSort, causesList, noFilter } = props
-  const prices = getPrices(projects)
+  const {
+    projects: initialProjects,
+    defaultSort,
+    causesList,
+    noFilter,
+    onLoadMore,
+  } = props
+  const prices = getPrices(initialProjects)
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'hot')
   const [includedCauses, setIncludedCauses] = useState<Cause[]>([])
   const [search, setSearch] = useState<string>('')
+  const [projects, setProjects] = useState<FullProject[]>(initialProjects)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+
   const filteredProjects = filterProjects(projects, includedCauses)
   const sortedProjects = sortProjects(
     noFilter ? projects : filteredProjects,
@@ -79,6 +90,23 @@ export function ProjectsDisplay(props: {
   const unfundedProjects = selectedProjects.filter(
     (project) => project.stage == 'not funded'
   )
+
+  const loadMore = async () => {
+    if (!onLoadMore || isLoadingMore || !hasMore) return false
+    setIsLoadingMore(true)
+    try {
+      const newProjects = await onLoadMore()
+      if (newProjects.length === 0) {
+        setHasMore(false)
+        return false
+      }
+      setProjects([...projects, ...newProjects])
+      setNumToShow(numToShow + CLIENT_PAGE_SIZE)
+      return true
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }
 
   return (
     <Col className="gap-2">
@@ -130,12 +158,12 @@ export function ProjectsDisplay(props: {
           </div>
         )}
       </div>
-      <LoadMoreUntilNotVisible
-        loadMore={() => {
-          setNumToShow(numToShow + CLIENT_PAGE_SIZE)
-          return Promise.resolve(true)
-        }}
-      />
+      <LoadMoreUntilNotVisible loadMore={loadMore} />
+      {isLoadingMore && (
+        <div className="flex justify-center py-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+        </div>
+      )}
     </Col>
   )
 }

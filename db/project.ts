@@ -7,7 +7,9 @@ import { Comment } from '@/db/comment'
 import { Round } from './round'
 import { CertParams, MiniCause } from './cause'
 import { ProjectFollow } from './follows'
-import { countVotes } from '@/utils/sort'
+import { countVotes, hotScore } from '@/utils/sort'
+import { getAmountRaised } from '@/utils/math'
+import { sortBy } from 'es-toolkit'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectUpdate = Database['public']['Tables']['projects']['Update']
@@ -59,7 +61,9 @@ export async function getProjectsByUser(
 ) {
   const { data, error } = await supabase
     .from('projects')
-    .select('*, bids(*), txns(*), comments(*), rounds(*), project_transfers(*)')
+    .select(
+      '*, bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), causes(title, slug), profiles!projects_creator_fkey(*)'
+    )
     .eq('creator', user)
   if (error) {
     throw error
@@ -301,7 +305,7 @@ export async function getProjectsPendingTransferByUser(
           .length
       : 0
     return numTransfers > 0
-  }) as Project[]
+  }) as FullProject[]
 }
 
 export async function getProjectAndBidsById(
@@ -467,4 +471,139 @@ export async function getFullSimilarProjects(
     // Sort by similarity
     .sort((a, b) => b.similarity - a.similarity) as FullProjectWithSimilarity[]
   return projectsWithSimilarity
+}
+
+export async function listProjectCards(
+  supabase: SupabaseClient,
+  page = 1,
+  pageSize = 20,
+  sort: 'newest' | 'oldest' | 'hot' | 'votes' | 'funding' = 'newest'
+) {
+  let query = supabase
+    .from('projects')
+    .select(
+      `
+      id, 
+      title, 
+      created_at, 
+      creator,
+      slug, 
+      blurb, 
+      stage, 
+      type,
+      funding_goal,
+      min_funding,
+      auction_close,
+      approved,
+      signed_agreement,
+      lobbying,
+      amm_shares,
+      founder_shares,
+      description,
+      external_link,
+      location_description,
+      markets,
+      public_benefit,
+      round,
+      profiles!projects_creator_fkey(username, full_name, avatar_url, id),
+      causes(title, slug),
+      project_votes(magnitude),
+      project_transfers(recipient_name, transferred)
+    `
+    )
+    .neq('stage', 'hidden')
+    .neq('stage', 'draft')
+
+  // Apply sorting
+  switch (sort) {
+    case 'newest':
+      query = query.order('created_at', { ascending: false })
+      break
+    case 'oldest':
+      query = query.order('created_at', { ascending: true })
+      break
+    case 'hot':
+      // For hot sorting, we need to fetch all projects first to calculate hot scores
+      const { data: allProjects } = await query.throwOnError()
+      const projectsWithHotScore = allProjects.map((project) => ({
+        ...project,
+        hotScore: hotScore(project as unknown as FullProject),
+      }))
+      const sortedProjects = sortBy(projectsWithHotScore, [
+        'hotScore',
+      ]).reverse()
+      return sortedProjects.slice(
+        (page - 1) * pageSize,
+        page * pageSize
+      ) as unknown as FullProject[]
+    case 'votes':
+      query = query.order('project_votes(magnitude)', { ascending: false })
+      break
+    case 'funding':
+      // For funding sorting, we need to fetch all projects first to calculate funding
+      const { data: allProjectsForFunding } = await query.throwOnError()
+      const projectIds = allProjectsForFunding.map((p) => p.id)
+      const [bids, txns] = await Promise.all([
+        supabase
+          .from('bids')
+          .select(
+            'project, amount, status, bidder, created_at, id, type, valuation'
+          )
+          .in('project', projectIds)
+          .eq('status', 'pending'),
+        supabase
+          .from('txns')
+          .select(
+            'project, amount, token, bundle, created_at, from_id, id, to_id, type'
+          )
+          .in('project', projectIds)
+          .eq('token', 'USD'),
+      ])
+      const projectsWithFunding = allProjectsForFunding.map((project) => ({
+        ...project,
+        funding: getAmountRaised(
+          project as unknown as FullProject,
+          bids.data?.filter((b) => b.project === project.id) ?? [],
+          txns.data?.filter((t) => t.project === project.id) ?? []
+        ),
+      }))
+      const sortedByFunding = sortBy(projectsWithFunding, ['funding']).reverse()
+      return sortedByFunding.slice(
+        (page - 1) * pageSize,
+        page * pageSize
+      ) as unknown as FullProject[]
+  }
+
+  // Apply pagination
+  query = query.range((page - 1) * pageSize, page * pageSize - 1)
+  const { data: projects } = await query.throwOnError()
+
+  if (!projects) return []
+
+  // Get minimal bid/txn data for funding calculations
+  const projectIds = projects.map((p) => p.id)
+  const [bids, txns] = await Promise.all([
+    supabase
+      .from('bids')
+      .select(
+        'project, amount, status, bidder, created_at, id, type, valuation'
+      )
+      .in('project', projectIds)
+      .eq('status', 'pending'),
+    supabase
+      .from('txns')
+      .select(
+        'project, amount, token, bundle, created_at, from_id, id, to_id, type'
+      )
+      .in('project', projectIds)
+      .eq('token', 'USD'),
+  ])
+
+  // Merge the data
+  return projects.map((project) => ({
+    ...project,
+    bids: bids.data?.filter((b) => b.project === project.id) ?? [],
+    txns: txns.data?.filter((t) => t.project === project.id) ?? [],
+    comments: [], // We don't need comment data for the card view
+  })) as unknown as FullProject[]
 }

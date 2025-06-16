@@ -30,13 +30,31 @@ export function FeedTabs(props: {
     recentComments,
     recentDonations,
     recentBids,
-    projects,
+    projects: initialProjects,
     causesList,
     userId,
   } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab') ?? 'projects'
   const [page, setPage] = useState(1)
+  const [projects, setProjects] = useState(initialProjects)
+  const [sort, setSort] = useState<
+    'newest' | 'oldest' | 'hot' | 'votes' | 'funding'
+  >('hot')
+
+  const loadMore = async () => {
+    const nextPage = page + 1
+    const response = await fetch(
+      `/api/v0/projects?page=${nextPage}&pageSize=20&sort=${sort}`
+    )
+    const newProjects = await response.json()
+    if (newProjects.length > 0) {
+      setProjects([...projects, ...newProjects])
+      setPage(nextPage)
+      return newProjects
+    }
+    return []
+  }
 
   const ProjectsTab = (
     <Col className="gap-3">
@@ -45,8 +63,9 @@ export function FeedTabs(props: {
       </p>
       <ProjectsDisplay
         projects={projects}
-        defaultSort={'hot'}
+        defaultSort={sort}
         causesList={causesList}
+        onLoadMore={loadMore}
       />
     </Col>
   )
