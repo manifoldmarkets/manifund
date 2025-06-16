@@ -59,7 +59,9 @@ export async function getProjectsByUser(
 ) {
   const { data, error } = await supabase
     .from('projects')
-    .select('*, bids(*), txns(*), comments(*), rounds(*), project_transfers(*)')
+    .select(
+      '*, bids(*), txns(*), comments(*), rounds(*), project_transfers(*), project_votes(*), causes(title, slug), profiles!projects_creator_fkey(*)'
+    )
     .eq('creator', user)
   if (error) {
     throw error
@@ -301,7 +303,7 @@ export async function getProjectsPendingTransferByUser(
           .length
       : 0
     return numTransfers > 0
-  }) as Project[]
+  }) as FullProject[]
 }
 
 export async function getProjectAndBidsById(
