@@ -13,9 +13,7 @@ import { getBidsByUser } from '@/db/bid'
 export const config = {
   runtime: 'edge',
   regions: ['sfo1'],
-  unstable_allowDynamic: [
-    '**/node_modules/function-bind/implementation.js',
-  ],
+  unstable_allowDynamic: ['**/node_modules/function-bind/implementation.js'],
 }
 
 const stripe = new Stripe(STRIPE_SECRET_KEY as string, {

@@ -119,12 +119,21 @@ export function BalanceSheet() {
     { name: 'Unallocated regrant funds', balance: $.regranting },
     { name: 'Pending transfers', balance: $.pending },
     { name: 'Pending: Manifold for Charity donations', balance: $.charity },
-    { name: 'Total liabilities', balance: $.users + $.regranting + $.pending + $.charity },
+    {
+      name: 'Total liabilities',
+      balance: $.users + $.regranting + $.pending + $.charity,
+    },
     {},
     {
       name: 'Grants net balance',
       balance:
-        $.stripe + $.mercury + $.coinbase + $.users + $.regranting + $.pending + $.charity,
+        $.stripe +
+        $.mercury +
+        $.coinbase +
+        $.users +
+        $.regranting +
+        $.pending +
+        $.charity,
     },
     { name: 'Manifest balance', balance: $.manifest },
     { name: 'Mox balance', balance: $.mox },
