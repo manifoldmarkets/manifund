@@ -7,20 +7,16 @@ const apis = [
     name: 'List projects',
     id: 'projects',
     path: '/api/v0/projects',
-    description: 'Get a list of all public projects.',
+    description:
+      'Get a list of 100 most recent projects. ' +
+      'Use the `before` parameter (eg from the `created_at` of the 100th project) to paginate.',
     method: 'GET',
     params: [
       {
-        name: 'limit',
-        type: 'number',
+        name: 'before',
+        type: 'string',
         required: false,
-        desc: 'Max projects to return.',
-      },
-      {
-        name: 'offset',
-        type: 'number',
-        required: false,
-        desc: 'How many to skip.',
+        desc: 'Timestamp in UTC to fetch projects before.',
       },
     ],
     response: `[
@@ -58,26 +54,16 @@ const apis = [
     name: 'List comments',
     id: 'comments',
     path: '/api/v0/comments',
-    description: 'Get a list of all public comments.',
+    description:
+      'Get a list of all public comments. ' +
+      'Use the `before` parameter (eg from the `created_at` of the 100th comment) to paginate.',
     method: 'GET',
     params: [
       {
-        name: 'projectId',
+        name: 'before',
         type: 'string',
         required: false,
-        desc: 'Filter by project.',
-      },
-      {
-        name: 'limit',
-        type: 'number',
-        required: false,
-        desc: 'Max comments to return.',
-      },
-      {
-        name: 'offset',
-        type: 'number',
-        required: false,
-        desc: 'How many to skip.',
+        desc: 'Timestamp in UTC to fetch comments before.',
       },
     ],
     response: `[
@@ -147,9 +133,7 @@ export default function ApiDocsPage() {
           {apis.map((api) => (
             <section key={api.id} id={api.id} className="scroll-mt-24 py-24">
               <div className="mb-8">
-                <h2 className="mb-2 text-3xl font-bold text-gray-900">
-                  {api.name}
-                </h2>
+                <h2 className="mb-2 text-3xl text-gray-900">{api.name}</h2>
                 <span className="mr-2 inline-block rounded bg-orange-100 px-2 py-1 text-xs font-semibold text-orange-600">
                   {api.method}
                 </span>
