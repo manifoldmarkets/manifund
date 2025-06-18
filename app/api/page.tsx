@@ -1,6 +1,8 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import React from 'react'
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 
 const apis = [
   {
@@ -8,15 +10,16 @@ const apis = [
     id: 'projects',
     path: '/api/v0/projects',
     description:
-      'Get a list of 100 most recent projects. ' +
-      'Use the `before` parameter (eg from the `created_at` of the 100th project) to paginate.',
+      'Return the 100 most recent projects. \n\n' +
+      'To get older projects, paginate with the `before` parameter, eg from the `created_at` of the 100th project:\n' +
+      '`https://manifund.org/api/v0/projects?before=2025-01-24T19:16:45.757Z`',
     method: 'GET',
     params: [
       {
         name: 'before',
-        type: 'string',
+        type: 'ISO 8601 timestamp',
         required: false,
-        desc: 'Timestamp in UTC to fetch projects before.',
+        desc: 'Fetch projects before this time',
       },
     ],
     response: `[
@@ -55,15 +58,16 @@ const apis = [
     id: 'comments',
     path: '/api/v0/comments',
     description:
-      'Get a list of all public comments. ' +
-      'Use the `before` parameter (eg from the `created_at` of the 100th comment) to paginate.',
+      'Return the 100 most recent comments. \n\n' +
+      'To get older comments, paginate with the `before` parameter, eg from the `created_at` of the 100th comment:\n' +
+      '`https://manifund.org/api/v0/comments?before=2025-01-24T19:16:45.757Z`',
     method: 'GET',
     params: [
       {
         name: 'before',
-        type: 'string',
+        type: 'ISO 8601 timestamp',
         required: false,
-        desc: 'Timestamp in UTC to fetch comments before.',
+        desc: 'Fetch comments before this time',
       },
     ],
     response: `[
@@ -93,7 +97,14 @@ export default function ApiDocsPage() {
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 h-screen w-56 border-r bg-white p-6 md:block">
         <div className="mb-8 flex items-center gap-2">
-          <span className="text-lg tracking-tight text-orange-600">
+          <span className="text-lg tracking-tight">
+            <Image
+              src="/SolidOrangeManifox.png"
+              alt="Manifox"
+              width={24}
+              height={24}
+              className="mr-2 inline-block"
+            />
             Manifund API
           </span>
         </div>
@@ -102,7 +113,7 @@ export default function ApiDocsPage() {
             <a
               key={a.id}
               href={`#${a.id}`}
-              className="block w-full rounded px-3 py-2 text-left font-medium text-gray-700 transition hover:bg-orange-50 hover:text-orange-600"
+              className="block w-full rounded px-3 text-left text-gray-700 transition hover:bg-orange-50 hover:text-orange-600"
             >
               {a.name}
             </a>
@@ -113,7 +124,14 @@ export default function ApiDocsPage() {
       {/* Main content */}
       <main className="flex-1 px-4 py-10 md:ml-56 md:px-12 lg:px-24">
         <div className="max-w-2xl">
-          <h1 className="mb-8 flex items-center gap-2 text-3xl tracking-tight text-orange-600">
+          <h1 className="mb-8 flex items-center gap-2 text-3xl tracking-tight">
+            <Image
+              src="/SolidOrangeManifox.png"
+              alt="Manifox"
+              width={32}
+              height={32}
+              className="inline-block"
+            />
             Manifund API
           </h1>
           <p className="mb-10 text-gray-600">
@@ -137,11 +155,24 @@ export default function ApiDocsPage() {
                 <span className="mr-2 inline-block rounded bg-orange-100 px-2 py-1 text-xs font-semibold text-orange-600">
                   {api.method}
                 </span>
-                <span className="font-mono text-sm text-gray-700">
-                  {api.path}
-                </span>
+
+                <Link
+                  href={api.path}
+                  className="group inline-block rounded px-2 py-1 text-xs font-semibold text-orange-600"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="flex items-center gap-1">
+                    <span className="font-mono text-sm text-gray-700">
+                      {api.path}
+                    </span>
+                    <ArrowTopRightOnSquareIcon className="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
+                  </div>
+                </Link>
               </div>
-              <p className="mb-6 text-gray-600">{api.description}</p>
+              <p className="mb-6 whitespace-pre-wrap text-gray-600">
+                {api.description}
+              </p>
               <h3 className="mb-2 mt-6 font-semibold text-gray-900">
                 Query Parameters
               </h3>
