@@ -1,9 +1,10 @@
 'use client'
+import Link from 'next/link'
 import React from 'react'
 
 const apis = [
   {
-    name: 'Projects',
+    name: 'List projects',
     id: 'projects',
     path: '/api/v0/projects',
     description: 'Get a list of all public projects.',
@@ -24,16 +25,37 @@ const apis = [
     ],
     response: `[
   {
-    "id": "string",
-    "name": "string",
-    "description": "string",
-    ...
+    title: string,
+    id: string,
+    created_at: string,
+    creator: string,
+    // URL of the project is https://manifund.org/projects/{slug}
+    slug: string,
+    blurb: string,
+    // Markdown description of the project
+    description: string,
+    stage: string,
+    funding_goal: number,
+    min_funding: number,
+    type: string,
+    profiles: {
+      username: string,
+      full_name: string
+    },
+    txns: [],
+    bids: [],
+    causes: [
+      {
+        title: string,
+        slug: string
+      }
+    ]
   }
 ]`,
     curl: `curl https://manifund.org/api/v0/projects`,
   },
   {
-    name: 'Comments',
+    name: 'List comments',
     id: 'comments',
     path: '/api/v0/comments',
     description: 'Get a list of all public comments.',
@@ -60,11 +82,19 @@ const apis = [
     ],
     response: `[
   {
-    "id": "string",
-    "projectId": "string",
-    "userId": "string",
-    "content": "string",
-    ...
+    id: string,
+    created_at: string,
+    content: string,
+    commenter: string,
+    project: string,
+    profiles: {
+      username: string,
+      full_name: string
+    },
+    projects: {
+      title: string,
+      slug: string
+    }
   }
 ]`,
     curl: `curl https://manifund.org/api/v0/comments`,
@@ -101,12 +131,25 @@ export default function ApiDocsPage() {
             Manifund API
           </h1>
           <p className="mb-10 text-gray-600">
-            Welcome! Below are all public endpoints. Use the sidebar to jump to
-            a section. All endpoints are open and require no authentication.
+            Manifund makes all of our data public, for developers and LLMs
+            alike. Our endpoints are open and require no authentication.
+            <br />
+            <br />
+            Building something cool with this? Hop in our{' '}
+            <Link
+              href="https://discord.gg/ZGsDMWSA5Q"
+              className="text-orange-600 underline"
+            >
+              Discord
+            </Link>{' '}
+            and let us know!
           </p>
           {apis.map((api) => (
             <section key={api.id} id={api.id} className="scroll-mt-24 py-24">
               <div className="mb-8">
+                <h2 className="mb-2 text-3xl font-bold text-gray-900">
+                  {api.name}
+                </h2>
                 <span className="mr-2 inline-block rounded bg-orange-100 px-2 py-1 text-xs font-semibold text-orange-600">
                   {api.method}
                 </span>
@@ -114,9 +157,6 @@ export default function ApiDocsPage() {
                   {api.path}
                 </span>
               </div>
-              <h2 className="mb-2 text-xl font-bold text-gray-900">
-                {api.name}
-              </h2>
               <p className="mb-6 text-gray-600">{api.description}</p>
               <h3 className="mb-2 mt-6 font-semibold text-gray-900">
                 Query Parameters
