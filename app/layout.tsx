@@ -13,6 +13,7 @@ import { Toaster } from 'react-hot-toast'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Suspense } from 'react'
 import { OAuthCodeHandler } from '@/components/oauth-code-handler'
+import { Providers } from './providers'
 
 const readex = Readex_Pro({ subsets: ['latin'], variable: '--font-readex-pro' })
 const josefin = Josefin_Slab({
@@ -52,26 +53,28 @@ export default async function RootLayout({
     <html lang="en" className={fontVars}>
       <head />
       <body className="min-h-screen w-full bg-gray-50">
-        <SupabaseProvider
-          session={session}
-          className={`mx-auto mb-20 w-full font-sans lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
-        >
-          <Toaster />
-          <Suspense fallback={null}>
-            <Sidebar />
-          </Suspense>
-          <SupabaseListener serverAccessToken={session?.access_token} />
-          <main className="flex flex-col lg:col-span-8">
+        <Providers>
+          <SupabaseProvider
+            session={session}
+            className={`mx-auto mb-20 w-full font-sans lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
+          >
+            <Toaster />
             <Suspense fallback={null}>
-              <CompleteProfileBanner />
+              <Sidebar />
             </Suspense>
-            {children}
-          </main>
-          <Suspense fallback={null}>
-            <BottomNavBar />
-          </Suspense>
-          <OAuthCodeHandler />
-        </SupabaseProvider>
+            <SupabaseListener serverAccessToken={session?.access_token} />
+            <main className="flex flex-col lg:col-span-8">
+              <Suspense fallback={null}>
+                <CompleteProfileBanner />
+              </Suspense>
+              {children}
+            </main>
+            <Suspense fallback={null}>
+              <BottomNavBar />
+            </Suspense>
+            <OAuthCodeHandler />
+          </SupabaseProvider>
+        </Providers>
         <Script
           src="https://analytics.umami.is/script.js"
           data-website-id="5bd676d9-a4fd-4b50-bed5-b15a561c7374"

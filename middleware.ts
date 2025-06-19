@@ -13,6 +13,9 @@ export async function middleware(req: NextRequest) {
   if (!session) {
     const supabase = createMiddlewareSupabaseClient(req, res)
     const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    const {
       data: { session: newSession },
     } = await supabase.auth.getSession()
     session = newSession
@@ -28,69 +31,59 @@ async function migrateSessionIfNeeded(
   try {
     const newSupabase = createMiddlewareSupabaseClient(req, res)
     const {
+      data: { user },
+    } = await newSupabase.auth.getUser()
+    const {
       data: { session: newSession },
-      error: newError,
     } = await newSupabase.auth.getSession()
 
-    if (!newError && newSession) {
-      return newSession
+    if (!newSession) {
+      return null
     }
 
     const oldSupabase = createMiddlewareClient({ req, res })
-    let {
-      data: { session: oldSession },
-      error: oldError,
-    } = await oldSupabase.auth.getSession()
-
-    if (oldError || !(oldSession?.access_token && oldSession?.refresh_token)) {
-      return null
-    }
-
-    console.debug('Migrating session from auth-helpers to SSR format...')
-
     const {
-      data: { session: refreshedOldSession },
-      error: refreshError,
-    } = await oldSupabase.auth.refreshSession()
-    if (!refreshError && refreshedOldSession) {
-      console.debug('Refreshed old session', refreshedOldSession)
-      oldSession = refreshedOldSession
-    } else if (refreshError) {
-      console.debug('Failed to refresh old session:', refreshError.message)
-    }
+      data: { user: oldUser },
+    } = await oldSupabase.auth.getUser()
 
-    const { error: setError } = await newSupabase.auth.setSession({
-      access_token: oldSession.access_token,
-      refresh_token: oldSession.refresh_token,
-    })
+    if (oldUser) {
+      console.debug('Migrating session from auth-helpers to SSR format...')
 
-    if (setError) {
-      console.debug('Failed to migrate session:', setError.message)
-      return null
-    }
-
-    const oldCookies = req.cookies
-      .getAll()
-      .filter(
-        (cookie) =>
-          cookie.name.startsWith('sb-') &&
-          cookie.name.endsWith('-auth-token') &&
-          !cookie.name.includes('code-verifier')
-      )
-
-    for (const cookie of oldCookies) {
-      res.cookies.set(cookie.name, '', {
-        expires: new Date(0),
-        path: '/',
-        domain: cookie.name.includes('localhost') ? 'localhost' : undefined,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+      const { error: setError } = await newSupabase.auth.setSession({
+        access_token: oldUser.access_token,
+        refresh_token: oldUser.refresh_token,
       })
+
+      if (setError) {
+        console.debug('Failed to migrate session:', setError.message)
+        return null
+      }
+
+      const oldCookies = req.cookies
+        .getAll()
+        .filter(
+          (cookie) =>
+            cookie.name.startsWith('sb-') &&
+            cookie.name.endsWith('-auth-token') &&
+            !cookie.name.includes('code-verifier')
+        )
+
+      for (const cookie of oldCookies) {
+        res.cookies.set(cookie.name, '', {
+          expires: new Date(0),
+          path: '/',
+          domain: cookie.name.includes('localhost') ? 'localhost' : undefined,
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+        })
+      }
+
+      console.debug('Session migration completed successfully')
+      return oldUser
     }
 
-    console.debug('Session migration completed successfully')
-    return oldSession
+    return null
   } catch (error) {
     console.debug('Session migration failed:', error)
     return null
