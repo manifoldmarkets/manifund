@@ -1,4 +1,4 @@
-# Manifund Development Guide
+# Manifund Dev Guide
 
 ## Prerequisites
 
