@@ -70,6 +70,7 @@ export function CauseTabs(props: {
               projects={grants}
               causesList={causesList}
               noFilter={!cause.prize}
+              userId={userId}
             />
           )}
         </>
@@ -94,6 +95,7 @@ export function CauseTabs(props: {
               projects={certs}
               causesList={causesList}
               noFilter={!cause.prize}
+              userId={userId}
             />
           </div>
         </>

@@ -6,6 +6,7 @@ import { RoundData } from '@/components/round-data'
 import Image from 'next/image'
 import { getRegranters } from '@/db/profile'
 import { listSimpleCauses } from '@/db/cause'
+import { getUser } from '@/db/profile'
 
 export const revalidate = 60
 
@@ -26,6 +27,7 @@ export default async function RoundPage(props: {
   const { roundSlug } = props.params
   const supabase = await createServerSupabaseClient()
   const round = await getRoundBySlug(supabase, roundSlug)
+  const user = await getUser(supabase)
   const [projects, regranters, causesList] = await Promise.all([
     getFullProjectsByRound(supabase, round.title),
     round.title === 'Regrants' ? getRegranters(supabase) : [],
@@ -54,6 +56,7 @@ export default async function RoundPage(props: {
         projects={visibleProjects}
         causesList={causesList}
         regranters={round.title === 'Regrants' ? regranters : undefined}
+        userId={user?.id}
       />
     </div>
   )

@@ -7,7 +7,7 @@ import { getAmountRaised, getProjectValuation } from '@/utils/math'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
 import { Row } from './layout/row'
-import { MiniCause, Cause, SimpleCause } from '@/db/cause'
+import { MiniCause, SimpleCause } from '@/db/cause'
 import { CauseTag } from './tags'
 import { Col } from './layout/col'
 import { SearchBar } from './input'
@@ -16,6 +16,7 @@ import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
 import { Select } from './select'
 import { sortBy } from 'es-toolkit'
 import { countVotes, hotScore } from '@/utils/sort'
+import { ProminentCauseFilter } from './prominent-cause-filter'
 
 type SortOption =
   | 'votes'
@@ -43,12 +44,13 @@ export function ProjectsDisplay(props: {
   defaultSort?: SortOption
   hideRound?: boolean
   noFilter?: boolean
+  userId?: string
 }) {
-  const { projects, defaultSort, causesList, noFilter } = props
+  const { projects, defaultSort, causesList, noFilter, userId } = props
   const prices = getPrices(projects)
-  const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'hot')
-  const [includedCauses, setIncludedCauses] = useState<Cause[]>([])
-  const [search, setSearch] = useState<string>('')
+  const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState<SortOption>(props.defaultSort ?? 'hot')
+  const [includedCauses, setIncludedCauses] = useState<MiniCause[]>([])
   const filteredProjects = filterProjects(projects, includedCauses)
   const sortedProjects = sortProjects(
     noFilter ? projects : filteredProjects,
@@ -81,7 +83,16 @@ export function ProjectsDisplay(props: {
   )
 
   return (
-    <Col className="gap-2">
+    <Col className="gap-4">
+      {!noFilter && (
+        <ProminentCauseFilter
+          causes={causesList.filter((c) => !c.prize)}
+          includedCauses={includedCauses}
+          setIncludedCauses={setIncludedCauses}
+          userId={userId}
+        />
+      )}
+
       <div className="flex flex-col justify-between gap-2 lg:flex-row lg:items-center">
         <SearchBar search={search} setSearch={setSearch} className="w-full" />
         <div className="lg:w-4/12">
@@ -93,7 +104,8 @@ export function ProjectsDisplay(props: {
           />
         </div>
       </div>
-      {!noFilter && (
+
+      {!noFilter && !userId && (
         <div className="relative w-full">
           <Listbox value={includedCauses} onChange={setIncludedCauses} multiple>
             {({ open }) => (
@@ -107,6 +119,7 @@ export function ProjectsDisplay(props: {
           </Listbox>
         </div>
       )}
+
       <div className="mt-2 flex flex-col gap-5 sm:mt-5 sm:gap-10">
         {fundableProjects.length > 0 && (
           <div>
@@ -188,7 +201,7 @@ function sortProjects(
   return projects
 }
 
-function filterProjects(projects: FullProject[], includedCauses: Cause[]) {
+function filterProjects(projects: FullProject[], includedCauses: MiniCause[]) {
   if (includedCauses.length === 0) return projects
   return projects.filter((project) => {
     return project.causes.some((cause) => {
@@ -200,8 +213,8 @@ function filterProjects(projects: FullProject[], includedCauses: Cause[]) {
 }
 
 function CauseFilterSelect(props: {
-  includedCauses: Cause[]
-  setIncludedCauses: (causes: Cause[]) => void
+  includedCauses: MiniCause[]
+  setIncludedCauses: (causes: MiniCause[]) => void
   open: boolean
   causes: MiniCause[]
 }) {
@@ -244,7 +257,7 @@ function CauseFilterSelect(props: {
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
       >
-        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-400 focus:outline-none">
           <div className="relative w-full cursor-pointer select-none py-2 pl-3 pr-9 text-sm text-gray-900 hover:bg-orange-500 hover:text-white">
             <button
               onClick={() => setIncludedCauses([])}
