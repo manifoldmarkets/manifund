@@ -3,6 +3,7 @@ import {
   getNewProjectsLastWeek,
   generateProjectListHtml,
   formatWeekRange,
+  getRegrantorEmails,
   sendWeeklyDigest,
 } from '../utils/weekly-digest'
 
@@ -37,6 +38,10 @@ async function testWeeklyDigest() {
     // Test actually sending the email
     // await sendWeeklyDigest(supabase)
     // console.log('Sent weekly digest -- check your email!')
+
+    // Log regrantor emails
+    // const regrantorEmails = await getRegrantorEmails(supabase, 2025)
+    // console.log('Regrantor emails:', regrantorEmails)
 
     console.log('✅ All tests passed!')
   } catch (error) {

@@ -3,18 +3,57 @@ import { FullProject } from '@/db/project'
 import { sendEmail } from './email'
 import { pointScore } from './sort'
 import { getAmountRaised } from './math'
+import { getUserEmail } from './email'
+import { getSponsoredAmount } from './constants'
 
 /* TODOs:
-- [ ] Pull out regrantor (or all) emails from Supabase
-- [ ] Send out batch emails on batch endpoint
+- [x] Pull out regrantor emails from Supabase
 - [x] Sort by "great" score
+- [ ] Pull out _all_ emails from Supabase?
+- [ ] Send out batch emails on batch endpoint
 */
 
 // Hardcoded email list for now
-const DIGEST_RECIPIENTS = [
+const DEFAULT_DIGEST_RECIPIENTS = [
   'austin@manifund.org',
   // Add more emails here as needed
 ]
+
+export async function getRegrantorEmails(
+  supabase: SupabaseClient,
+  year?: number
+): Promise<string[]> {
+  // Get all regrantors from profiles table
+  const { data: regrantors } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('regranter_status', true)
+    .throwOnError()
+
+  if (!regrantors || regrantors.length === 0) {
+    return []
+  }
+
+  // Filter regrantors by year if specified
+  const filteredRegrantors = year
+    ? regrantors.filter(
+        (regrantor) => getSponsoredAmount(regrantor.id, year) > 0
+      )
+    : regrantors
+
+  // Get emails for each regrantor
+  const emails = await Promise.all(
+    filteredRegrantors.map(async (regrantor) => {
+      const email = await getUserEmail(supabase, regrantor.id)
+      return email
+    })
+  )
+
+  // Filter out null emails and return unique emails
+  return Array.from(
+    new Set(emails.filter((email): email is string => email !== null))
+  )
+}
 
 export async function getNewProjectsLastWeek(
   supabase: SupabaseClient
@@ -314,8 +353,13 @@ export async function sendWeeklyDigest(
 
   console.log(`Found ${projects.length} new projects for weekly digest`)
 
+  const recipients = [
+    ...DEFAULT_DIGEST_RECIPIENTS,
+    ...(await getRegrantorEmails(supabase, 2025)),
+  ]
+
   // Send to all recipients
-  for (const email of DIGEST_RECIPIENTS) {
+  for (const email of recipients) {
     try {
       await sendEmail(
         email,
