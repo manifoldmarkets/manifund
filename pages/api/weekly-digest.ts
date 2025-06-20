@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createAdminClient } from './_db'
 import { sendWeeklyDigest } from '@/utils/weekly-digest'
-import { isProd } from '@/utils/constants'
+import { isProd } from '@/db/env'
 
 export default async function handler(req: NextRequest) {
   console.log('Weekly digest cron job triggered')
@@ -15,7 +15,7 @@ export default async function handler(req: NextRequest) {
   try {
     const supabase = createAdminClient()
     await sendWeeklyDigest(supabase)
-    
+
     console.log('Weekly digest sent successfully')
     return new Response('Weekly digest sent successfully', { status: 200 })
   } catch (error) {
