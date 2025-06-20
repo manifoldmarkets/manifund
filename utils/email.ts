@@ -66,7 +66,9 @@ export async function sendEmail(
   subject: string,
   htmlBody: string,
   textBody: string,
-  fromEmail?: string
+  fromEmail?: string,
+  // 'outbound' for transactional emails, 'broadcast' for marketing emails
+  messageStream?: string
 ) {
   const response = await fetch('https://api.postmarkapp.com/email', {
     method: 'POST',
@@ -81,6 +83,7 @@ export async function sendEmail(
       Subject: subject,
       HtmlBody: htmlBody,
       TextBody: textBody,
+      MessageStream: messageStream ?? '',
     }),
   })
   const json = await response.json()

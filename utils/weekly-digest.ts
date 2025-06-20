@@ -281,7 +281,6 @@ export function generateHtmlDigest(projects: ProjectWithData[]): string {
 
         <div class="footer">
             <p>This digest includes all new projects listed on <a href="https://manifund.org">Manifund</a> in the past week.</p>
-            <p>Visit <a href="https://manifund.org">manifund.org</a> to discover and support innovative projects.</p>
         </div>
     </div>
 </body>
@@ -306,7 +305,14 @@ export async function sendWeeklyDigest(
   // Send to all recipients
   for (const email of DIGEST_RECIPIENTS) {
     try {
-      await sendEmail(email, subject, htmlBody, textBody)
+      await sendEmail(
+        email,
+        subject,
+        htmlBody,
+        textBody,
+        'Manifund Digest <digest@manifund.org>',
+        'outbound'
+      )
       console.log(`Weekly digest sent to ${email}`)
     } catch (error) {
       console.error(`Failed to send weekly digest to ${email}:`, error)
