@@ -1,6 +1,13 @@
 import { SupabaseClient } from '@supabase/supabase-js'
-import { Project } from '@/db/project'
+import { FullProject } from '@/db/project'
 import { sendEmail } from './email'
+import { pointScore } from './sort'
+
+/* TODOs:
+- [ ] Pull out regrantor (or all) emails from Supabase
+- [ ] Send out batch emails on batch endpoint
+- [x] Sort by "great" score
+*/
 
 // Hardcoded email list for now
 const DIGEST_RECIPIENTS = [
@@ -10,7 +17,7 @@ const DIGEST_RECIPIENTS = [
 
 export async function getNewProjectsLastWeek(
   supabase: SupabaseClient
-): Promise<ProjectWithData[]> {
+): Promise<FullProject[]> {
   const oneWeekAgo = new Date()
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
 
@@ -37,44 +44,45 @@ export async function getNewProjectsLastWeek(
   const projectIds = projectsBase.map((p) => p.id)
 
   // Get related data for these projects
-  const [votes, comments] = await Promise.all([
+  const [votes, comments, bids, txns] = await Promise.all([
     supabase
       .from('project_votes')
       .select('project_id, magnitude')
       .in('project_id', projectIds),
     supabase.from('comments').select('project, id').in('project', projectIds),
+    supabase.from('bids').select('*').in('project', projectIds),
+    supabase.from('txns').select('*').in('project', projectIds),
   ])
 
   // Process the data
-  const projects: ProjectWithData[] = projectsBase.map((project) => {
+  const projects: FullProject[] = projectsBase.map((project) => {
     const projectVotes =
       votes.data?.filter((v) => v.project_id === project.id) || []
     const projectComments =
       comments.data?.filter((c) => c.project === project.id) || []
+    const projectBids = bids.data?.filter((b) => b.project === project.id) || []
+    const projectTxns = txns.data?.filter((t) => t.project === project.id) || []
 
     return {
       ...project,
       project_votes: projectVotes,
       comments: projectComments,
+      bids: projectBids,
+      txns: projectTxns,
+      project_transfers: [],
+      project_follows: [],
     }
   })
 
-  return projects
+  // Sort by pointScore (highest first)
+  return projects.sort((a, b) => pointScore(b) - pointScore(a))
 }
 
-type ProjectWithData = Project & {
-  profiles: any
-  project_votes: { project_id: string; magnitude: number }[]
-  comments: { project: string; id: string }[]
-  rounds: { title: string; slug: string }[]
-  causes: { title: string; slug: string }[]
-}
-
-function countProjectVotes(project: ProjectWithData): number {
+function countProjectVotes(project: FullProject): number {
   return project.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
 }
 
-export function generateProjectListHtml(projects: ProjectWithData[]): string {
+export function generateProjectListHtml(projects: FullProject[]): string {
   return projects
     .map((project) => {
       const upvotes = countProjectVotes(project)
@@ -118,7 +126,7 @@ export function formatWeekRange(): { weekStart: string; weekEnd: string } {
   }
 }
 
-export function generatePlaintextDigest(projects: ProjectWithData[]): string {
+export function generatePlaintextDigest(projects: FullProject[]): string {
   const { weekStart, weekEnd } = formatWeekRange()
 
   let text = `Manifund: New projects weekly\n${weekStart} - ${weekEnd}\n\n`
@@ -141,7 +149,7 @@ export function generatePlaintextDigest(projects: ProjectWithData[]): string {
   return text
 }
 
-export function generateHtmlDigest(projects: ProjectWithData[]): string {
+export function generateHtmlDigest(projects: FullProject[]): string {
   const { weekStart, weekEnd } = formatWeekRange()
   const projectListHtml =
     projects.length > 0 ? generateProjectListHtml(projects) : ''
