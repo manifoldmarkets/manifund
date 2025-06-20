@@ -2,6 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { FullProject } from '@/db/project'
 import { sendEmail } from './email'
 import { pointScore } from './sort'
+import { getAmountRaised } from './math'
 
 /* TODOs:
 - [ ] Pull out regrantor (or all) emails from Supabase
@@ -90,6 +91,7 @@ export function generateProjectListHtml(projects: FullProject[]): string {
       const creatorName =
         project.profiles?.full_name || project.profiles?.username || 'Anonymous'
       const summary = project.blurb || 'No description available'
+      const raised = getAmountRaised(project, project.bids, project.txns)
 
       return `
       <div class="project-item">
@@ -101,7 +103,9 @@ export function generateProjectListHtml(projects: FullProject[]): string {
         <div class="project-stats">
           <span class="stats-item">${upvotes} ⬆️</span>
           <span class="stats-item">${commentCount} 💬</span>
-          <span class="stats-item">💰 $${project.funding_goal}</span>
+          <span class="stats-item">💰 $${raised} / ${
+        project.funding_goal
+      }</span>
         </div>
       </div>
     `
