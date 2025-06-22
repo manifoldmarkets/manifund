@@ -325,12 +325,14 @@ export function generatePlaintextCommentsSection(
 
 export function generateHtmlDigest(
   projects: FullProject[],
-  notableComments: any[] = []
+  notableComments: any[] = [],
+  notableGrants: any[] = []
 ): string {
   const { weekStart, weekEnd } = formatWeekRange()
   const projectListHtml =
     projects.length > 0 ? generateProjectListHtml(projects) : ''
   const commentsSectionHtml = generateCommentsSectionHtml(notableComments)
+  const grantsSectionHtml = generateGrantsSectionHtml(notableGrants)
 
   return `
 <!DOCTYPE html>
@@ -376,7 +378,6 @@ export function generateHtmlDigest(
         }
         .project-item {
             padding: 15px 0;
-            border-bottom: 1px solid #eee;
         }
         .project-item:last-child {
             border-bottom: none;
@@ -413,6 +414,9 @@ export function generateHtmlDigest(
         .comments-section {
             margin: 30px 0;
         }
+        .grants-section {
+            margin: 30px 0;
+        }
         .section-header {
             margin: 25px 0 15px 0;
             border-bottom: 1px solid #eee;
@@ -431,11 +435,19 @@ export function generateHtmlDigest(
         .comments-list {
             margin: 15px 0;
         }
+        .grants-list {
+            margin: 15px 0;
+        }
         .comment-item {
             padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
         }
         .comment-item:last-child {
+            border-bottom: none;
+        }
+        .grant-item {
+            padding: 12px 0;
+        }
+        .grant-item:last-child {
             border-bottom: none;
         }
         .comment-header {
@@ -447,7 +459,15 @@ export function generateHtmlDigest(
             font-weight: 600;
             color: #2c3e50;
         }
+        .bidder-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
         .comment-project a {
+            color: #ea580c;
+            text-decoration: underline;
+        }
+        .grant-project a {
             color: #ea580c;
             text-decoration: underline;
         }
@@ -456,6 +476,11 @@ export function generateHtmlDigest(
             font-weight: 500;
         }
         .comment-content {
+            color: #555;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .grant-content {
             color: #555;
             font-size: 14px;
             margin: 5px 0;
@@ -522,6 +547,8 @@ export function generateHtmlDigest(
 
         ${commentsSectionHtml}
 
+        ${grantsSectionHtml}
+
         <div class="footer">
             <p>This digest includes all new projects listed on <a href="https://manifund.org">Manifund</a> in the past week.</p>
         </div>
@@ -533,7 +560,8 @@ export function generateHtmlDigest(
 
 export function generatePlaintextDigest(
   projects: FullProject[],
-  notableComments: any[] = []
+  notableComments: any[] = [],
+  notableGrants: any[] = []
 ): string {
   const { weekStart, weekEnd } = formatWeekRange()
 
@@ -555,6 +583,7 @@ export function generatePlaintextDigest(
   }
 
   text += generatePlaintextCommentsSection(notableComments)
+  text += generatePlaintextGrantsSection(notableGrants)
 
   return text
 }
@@ -566,18 +595,24 @@ export async function sendWeeklyDigest(
 
   const projects = await getNewProjectsLastWeek(supabase)
   const notableComments = await getNotableCommentsLastWeek(supabase, 15)
+  const notableGrants = await getNotableGrantsLastWeek(supabase, 15)
   const { weekStart, weekEnd } = formatWeekRange()
 
   const subject = `Manifund: New projects weekly, from ${weekStart}`
-  const htmlBody = generateHtmlDigest(projects, notableComments)
-  const textBody = generatePlaintextDigest(projects, notableComments)
+  const htmlBody = generateHtmlDigest(projects, notableComments, notableGrants)
+  const textBody = generatePlaintextDigest(
+    projects,
+    notableComments,
+    notableGrants
+  )
 
   console.log(`Found ${projects.length} new projects for weekly digest`)
   console.log(`Found ${notableComments.length} notable comments`)
+  console.log(`Found ${notableGrants.length} notable grants`)
 
   const recipients = [
     ...DEFAULT_DIGEST_RECIPIENTS,
-    ...(await getRegrantorEmails(supabase, 2025)),
+    // ...(await getRegrantorEmails(supabase, 2025)),
   ]
 
   // Send to all recipients
@@ -605,4 +640,116 @@ function escapeHtml(text: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
+}
+
+export async function getNotableGrantsLastWeek(
+  supabase: SupabaseClient,
+  limit: number = 15
+): Promise<any[]> {
+  const oneWeekAgo = new Date()
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+
+  // Get all regrantors for identification
+  const { data: regrantors } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('regranter_status', true)
+    .throwOnError()
+
+  const regrantorIds = new Set(regrantors?.map((r) => r.id) || [])
+
+  // Get all bids from the last week
+  const { data: bids } = await supabase
+    .from('bids')
+    .select(
+      `
+      *,
+      profiles!bids_bidder_fkey(id, username, full_name, avatar_url),
+      projects(id, title, slug, stage)
+    `
+    )
+    .gte('created_at', oneWeekAgo.toISOString())
+    .neq('projects.stage', 'hidden')
+    .order('created_at', { ascending: false })
+    .throwOnError()
+
+  if (!bids || bids.length === 0) {
+    return []
+  }
+
+  // Filter for notable bids: $1k+ or made by regrantors
+  const notableBids = bids.filter((bid) => {
+    const isRegrantor = regrantorIds.has(bid.bidder)
+    const isLargeAmount = bid.amount >= 1000
+    return isRegrantor || isLargeAmount
+  })
+
+  // Add regrantor flag and sort by amount (highest first)
+  const bidsWithFlags = notableBids.map((bid) => ({
+    ...bid,
+    isRegrantor: regrantorIds.has(bid.bidder),
+  }))
+
+  return bidsWithFlags.sort((a, b) => b.amount - a.amount).slice(0, limit)
+}
+
+export function generateGrantsSectionHtml(notableGrants: any[]): string {
+  if (notableGrants.length === 0) {
+    return ''
+  }
+
+  let html = `
+    <div class="grants-section">
+      <div class="section-header">
+        <h2>Notable Grants</h2>
+      </div>
+      <div class="grants-list">
+  `
+
+  notableGrants.forEach((grant) => {
+    const bidderName =
+      grant.profiles?.full_name || grant.profiles?.username || 'Anonymous'
+    const projectTitle = grant.projects?.title || 'Unknown Project'
+    const projectSlug = grant.projects?.slug || ''
+
+    html += `
+      <div class="grant-item">
+        <div class="grant-content">
+          <span class="bidder-name">${escapeHtml(bidderName)}${
+      grant.isRegrantor ? ' ⭐️' : ''
+    }</span>
+          <span class="grant-text"> offered $${grant.amount.toLocaleString()} to </span>
+          <span class="grant-project"><a href="https://manifund.org/projects/${escapeHtml(
+            projectSlug
+          )}">${escapeHtml(projectTitle)}</a></span>
+        </div>
+      </div>
+    `
+  })
+
+  html += `
+      </div>
+    </div>
+  `
+  return html
+}
+
+export function generatePlaintextGrantsSection(notableGrants: any[]): string {
+  if (notableGrants.length === 0) {
+    return ''
+  }
+
+  let text = '\nNotable grants this week:\n\n'
+
+  notableGrants.forEach((grant) => {
+    const bidderName =
+      grant.profiles?.full_name || grant.profiles?.username || 'Anonymous'
+    const projectTitle = grant.projects?.title || 'Unknown Project'
+
+    text += `- ${bidderName}${
+      grant.isRegrantor ? ' ⭐️' : ''
+    } offered $${grant.amount.toLocaleString()} to ${projectTitle}\n`
+  })
+
+  return text
 }
