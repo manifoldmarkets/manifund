@@ -586,14 +586,17 @@ export async function sendWeeklyDigest(
   ]
   const uniqueRecipients = new Set(recipients)
 
-  const batchEmails = Array.from(uniqueRecipients).map((email) => ({
-    toEmail: email,
-    subject,
-    htmlBody,
-    textBody,
-    fromEmail: 'Manifund Digest <digest@manifund.org>',
-    messageStream: 'broadcast' as const,
-  }))
+  const batchEmails = Array.from(uniqueRecipients)
+    // Cap at 500 recipients due to Postmark limit
+    .slice(0, 500)
+    .map((email) => ({
+      toEmail: email,
+      subject,
+      htmlBody,
+      textBody,
+      fromEmail: 'Manifund Digest <digest@manifund.org>',
+      messageStream: 'broadcast' as const,
+    }))
 
   try {
     await sendBatchEmail(batchEmails)
