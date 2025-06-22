@@ -9,6 +9,7 @@ import { getSponsoredAmount } from './constants'
 /* TODOs:
 - [x] Pull out regrantor emails from Supabase
 - [x] Sort by "great" score
+- [x] Add comments section with regrantor comments and top emoji reactions
 - [ ] Pull out _all_ emails from Supabase?
 - [ ] Send out batch emails on batch endpoint
 */
@@ -169,33 +170,164 @@ export function formatWeekRange(): { weekStart: string; weekEnd: string } {
   }
 }
 
-export function generatePlaintextDigest(projects: FullProject[]): string {
-  const { weekStart, weekEnd } = formatWeekRange()
+export async function getNotableCommentsLastWeek(
+  supabase: SupabaseClient,
+  limit: number = 15
+): Promise<any[]> {
+  const oneWeekAgo = new Date()
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
 
-  let text = `Manifund: New projects weekly\n${weekStart} - ${weekEnd}\n\n`
+  // Get all regrantors for bonus scoring
+  const { data: regrantors } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('regranter_status', true)
+    .throwOnError()
 
-  if (projects.length === 0) {
-    text += 'No new projects were created this week.\n'
-  } else {
-    text += 'New projects this week:\n\n'
-    projects.forEach((project) => {
-      const upvotes = countProjectVotes(project)
-      const commentCount = project.comments.length
-      const creatorName =
-        project.profiles?.full_name || project.profiles?.username || 'Anonymous'
-      const summary = project.blurb || 'No description available'
+  const regrantorIds = new Set(regrantors?.map((r) => r.id) || [])
 
-      text += `- ${project.title}, by ${creatorName} - ${summary}. ${upvotes} ⬆️ ${commentCount} 💬\n`
-    })
+  // Get all comments from the last week with their reactions
+  const { data: comments } = await supabase
+    .from('comments')
+    .select(
+      `
+      *,
+      profiles!comments_commenter_fkey(id, username, full_name, avatar_url),
+      projects(id, title, slug, stage),
+      comment_rxns(reactor_id, reaction)
+    `
+    )
+    .gte('created_at', oneWeekAgo.toISOString())
+    .neq('projects.stage', 'hidden')
+    .order('created_at', { ascending: false })
+    .throwOnError()
+
+  if (!comments || comments.length === 0) {
+    return []
   }
+
+  // Calculate reaction scores for each comment
+  const commentsWithScores = comments.map((comment) => {
+    const reactions = comment.comment_rxns || []
+    const reactionCounts: { [key: string]: number } = {}
+
+    reactions.forEach((rxn: any) => {
+      reactionCounts[rxn.reaction] = (reactionCounts[rxn.reaction] || 0) + 1
+    })
+
+    // Calculate total score (simple sum of all reactions)
+    const baseScore = Object.values(reactionCounts).reduce(
+      (sum, count) => sum + (count as number),
+      0
+    )
+
+    // Add +2 bonus for regrantors
+    const REGRANTOR_BONUS = 2
+    const isRegrantor = regrantorIds.has(comment.commenter)
+    const totalScore = baseScore + (isRegrantor ? REGRANTOR_BONUS : 0)
+
+    return {
+      ...comment,
+      reactionCounts,
+      baseScore,
+      totalScore,
+      isRegrantor,
+    }
+  })
+
+  // Sort by total score and return top comments
+  return commentsWithScores
+    .sort((a, b) => b.totalScore - a.totalScore)
+    .slice(0, limit)
+}
+
+export function generateCommentsSectionHtml(notableComments: any[]): string {
+  if (notableComments.length === 0) {
+    return ''
+  }
+
+  let html = `
+    <div class="comments-section">
+      <div class="section-header">
+        <h2>Notable Comments</h2>
+        <p>Most engaged-with comments in the past week</p>
+      </div>
+      <div class="comments-list">
+  `
+
+  notableComments.forEach((comment) => {
+    const commenterName =
+      comment.profiles?.full_name || comment.profiles?.username || 'Anonymous'
+    const projectTitle = comment.projects?.title || 'Unknown Project'
+    const projectSlug = comment.projects?.slug || ''
+    const commentText =
+      comment.content?.content?.[0]?.content?.[0]?.text || 'No content'
+    const reactionHtml = Object.entries(comment.reactionCounts)
+      .map(([emoji, count]) => `${emoji}${(count as number) > 1 ? count : ''}`)
+      .join(' ')
+
+    html += `
+      <div class="comment-item">
+        <div class="comment-header">
+          <span class="commenter-name">${escapeHtml(commenterName)}${
+      comment.isRegrantor ? ' ⭐️' : ''
+    }</span>
+          <span class="comment-project">on <a href="https://manifund.org/projects/${escapeHtml(
+            projectSlug
+          )}">${escapeHtml(projectTitle)}</a></span>
+        </div>
+        <div class="comment-content">${escapeHtml(commentText)}</div>
+        ${
+          reactionHtml
+            ? `<div class="comment-reactions">${reactionHtml}</div>`
+            : ''
+        }
+      </div>
+    `
+  })
+
+  html += `
+      </div>
+    </div>
+  `
+  return html
+}
+
+export function generatePlaintextCommentsSection(
+  notableComments: any[]
+): string {
+  if (notableComments.length === 0) {
+    return ''
+  }
+
+  let text = '\nNotable comments this week:\n\n'
+
+  notableComments.forEach((comment) => {
+    const commenterName =
+      comment.profiles?.full_name || comment.profiles?.username || 'Anonymous'
+    const projectTitle = comment.projects?.title || 'Unknown Project'
+    const commentText =
+      comment.content?.content?.[0]?.content?.[0]?.text || 'No content'
+    const reactionText = Object.entries(comment.reactionCounts)
+      .map(([emoji, count]) => `${emoji}${(count as number) > 1 ? count : ''}`)
+      .join(' ')
+
+    text += `- ${commenterName}${
+      comment.isRegrantor ? ' ⭐️' : ''
+    } on "${projectTitle}": ${commentText} ${reactionText}\n`
+  })
 
   return text
 }
 
-export function generateHtmlDigest(projects: FullProject[]): string {
+export function generateHtmlDigest(
+  projects: FullProject[],
+  notableComments: any[] = []
+): string {
   const { weekStart, weekEnd } = formatWeekRange()
   const projectListHtml =
     projects.length > 0 ? generateProjectListHtml(projects) : ''
+  const commentsSectionHtml = generateCommentsSectionHtml(notableComments)
 
   return `
 <!DOCTYPE html>
@@ -275,6 +407,61 @@ export function generateHtmlDigest(projects: FullProject[]): string {
             display: inline-block;
             margin-right: 15px;
         }
+        .comments-section {
+            margin: 30px 0;
+        }
+        .section-header {
+            margin: 25px 0 15px 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .section-header h2 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 20px;
+        }
+        .section-header p {
+            color: #7f8c8d;
+            margin: 5px 0 0 0;
+            font-size: 12px;
+        }
+        .comments-list {
+            margin: 15px 0;
+        }
+        .comment-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+        .comment-header {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        .commenter-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .comment-project a {
+            color: #ea580c;
+            text-decoration: underline;
+        }
+        .comment-score {
+            color: #27ae60;
+            font-weight: 500;
+        }
+        .comment-content {
+            color: #555;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .comment-reactions {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
         .footer {
             margin-top: 40px;
             padding-top: 20px;
@@ -330,6 +517,8 @@ export function generateHtmlDigest(projects: FullProject[]): string {
         `
         }
 
+        ${commentsSectionHtml}
+
         <div class="footer">
             <p>This digest includes all new projects listed on <a href="https://manifund.org">Manifund</a> in the past week.</p>
         </div>
@@ -339,19 +528,49 @@ export function generateHtmlDigest(projects: FullProject[]): string {
   `
 }
 
+export function generatePlaintextDigest(
+  projects: FullProject[],
+  notableComments: any[] = []
+): string {
+  const { weekStart, weekEnd } = formatWeekRange()
+
+  let text = `Manifund: New projects weekly\n${weekStart} - ${weekEnd}\n\n`
+
+  if (projects.length === 0) {
+    text += 'No new projects were created this week.\n'
+  } else {
+    text += 'New projects this week:\n\n'
+    projects.forEach((project) => {
+      const upvotes = countProjectVotes(project)
+      const commentCount = project.comments.length
+      const creatorName =
+        project.profiles?.full_name || project.profiles?.username || 'Anonymous'
+      const summary = project.blurb || 'No description available'
+
+      text += `- ${project.title}, by ${creatorName} - ${summary}. ${upvotes} ⬆️ ${commentCount} 💬\n`
+    })
+  }
+
+  text += generatePlaintextCommentsSection(notableComments)
+
+  return text
+}
+
 export async function sendWeeklyDigest(
   supabase: SupabaseClient
 ): Promise<void> {
   console.log('Starting weekly digest generation...')
 
   const projects = await getNewProjectsLastWeek(supabase)
+  const notableComments = await getNotableCommentsLastWeek(supabase, 15)
   const { weekStart, weekEnd } = formatWeekRange()
 
   const subject = `Manifund: New projects weekly, from ${weekStart}`
-  const htmlBody = generateHtmlDigest(projects)
-  const textBody = generatePlaintextDigest(projects)
+  const htmlBody = generateHtmlDigest(projects, notableComments)
+  const textBody = generatePlaintextDigest(projects, notableComments)
 
   console.log(`Found ${projects.length} new projects for weekly digest`)
+  console.log(`Found ${notableComments.length} notable comments`)
 
   const recipients = [
     ...DEFAULT_DIGEST_RECIPIENTS,
