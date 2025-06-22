@@ -14,10 +14,9 @@ import { toPlaintext } from './tiptap-parsing'
 - [x] Pull out large donor emails from Supabase
 - [x] Send out batch emails on batch endpoint
 - [ ] Prettify email, rename
-- [ ] Simplify code & payload
+- [x] Simplify code & payload
 */
 
-// Types
 interface NotableComment {
   id: string
   content: any
@@ -57,8 +56,8 @@ const NOTABLE_GRANT_THRESHOLD = 1000
 const LARGE_DONOR_THRESHOLD = 1000
 
 const EMAIL_STYLES = `
-  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
-  .container { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+  body { font-family: sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
+  .container { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); max-width: 768px; margin: 0 auto; }
   .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e0e0e0; padding-bottom: 20px; }
   .header h1 { color: #2c3e50; margin: 0; font-size: 28px; }
   .header p { color: #7f8c8d; margin: 5px 0 0 0; font-size: 14px; }
@@ -586,7 +585,7 @@ export async function sendWeeklyDigest(
     htmlBody,
     textBody,
     fromEmail: 'Manifund Digest <digest@manifund.org>',
-    messageStream: 'outbound' as const,
+    messageStream: 'broadcast' as const,
   }))
 
   try {
