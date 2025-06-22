@@ -105,3 +105,41 @@ export async function getUserEmail(
   }
   return data ? data.email : null
 }
+
+export async function sendBatchEmail(
+  emails: Array<{
+    toEmail: string
+    subject: string
+    htmlBody: string
+    textBody: string
+    fromEmail?: string
+    messageStream?: string
+  }>
+) {
+  const batchPayload = emails.map((email) => ({
+    From: email.fromEmail ?? 'info@manifund.org',
+    To: email.toEmail,
+    Subject: email.subject,
+    HtmlBody: email.htmlBody,
+    TextBody: email.textBody,
+    MessageStream: email.messageStream ?? 'outbound',
+  }))
+
+  const response = await fetch('https://api.postmarkapp.com/email/batch', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'X-Postmark-Server-Token': process.env.POSTMARK_SERVER_TOKEN ?? '',
+    },
+    body: JSON.stringify(batchPayload),
+  })
+
+  const json = await response.json()
+  console.log('Sent batch emails', json)
+  console.log(
+    'Request size of batch payload:',
+    JSON.stringify(batchPayload).length
+  )
+  return json
+}

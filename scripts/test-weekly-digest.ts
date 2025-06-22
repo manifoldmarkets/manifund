@@ -1,9 +1,6 @@
 import { createAdminClient } from '../pages/api/_db'
 import {
   getNewProjectsLastWeek,
-  generateProjectListHtml,
-  formatWeekRange,
-  getRegrantorEmails,
   sendWeeklyDigest,
 } from '../utils/weekly-digest'
 
@@ -28,20 +25,23 @@ async function testWeeklyDigest() {
     }
 
     // Test HTML generation
-    const html = generateProjectListHtml(projects)
-    console.log('Generated HTML length:', html.length)
+    // const html = generateProjectListHtml(projects)
+    // console.log('Generated HTML length:', html.length)
 
     // Test date formatting
-    const { weekStart, weekEnd } = formatWeekRange()
-    console.log('Week range:', `${weekStart} - ${weekEnd}`)
+    // const { weekStart, weekEnd } = formatWeekRange()
+    // console.log('Week range:', `${weekStart} - ${weekEnd}`)
 
-    // Test actually sending the email
-    // await sendWeeklyDigest(supabase)
-    // console.log('Sent weekly digest -- check your email!')
-
-    // Log regrantor emails
+    // Log emails
     // const regrantorEmails = await getRegrantorEmails(supabase, 2025)
     // console.log('Regrantor emails:', regrantorEmails)
+    // const largeDonors = await getLargeDonorsEmails(supabase, 1000)
+    // console.log('Large donors count:', largeDonors.length)
+    // console.log('Large donors:', largeDonors)
+
+    // Test actually sending the email
+    await sendWeeklyDigest(supabase)
+    console.log('Sent weekly digest -- check your email!')
 
     console.log('✅ All tests passed!')
   } catch (error) {
