@@ -5,6 +5,7 @@ import { pointScore } from './sort'
 import { getAmountRaised } from './math'
 import { getUserEmail } from './email'
 import { getSponsoredAmount } from './constants'
+import { toPlaintext } from './tiptap-parsing'
 
 /* TODOs:
 - [x] Pull out regrantor emails from Supabase
@@ -250,7 +251,6 @@ export function generateCommentsSectionHtml(notableComments: any[]): string {
     <div class="comments-section">
       <div class="section-header">
         <h2>Notable Comments</h2>
-        <p>Most engaged-with comments in the past week</p>
       </div>
       <div class="comments-list">
   `
@@ -260,8 +260,11 @@ export function generateCommentsSectionHtml(notableComments: any[]): string {
       comment.profiles?.full_name || comment.profiles?.username || 'Anonymous'
     const projectTitle = comment.projects?.title || 'Unknown Project'
     const projectSlug = comment.projects?.slug || ''
-    const commentText =
-      comment.content?.content?.[0]?.content?.[0]?.text || 'No content'
+    let commentText = toPlaintext(comment.content)
+    // If > 280 chars, trim down and add ellipsis
+    if (commentText.length > 360) {
+      commentText = commentText.substring(0, 360) + '...'
+    }
     const reactionHtml = Object.entries(comment.reactionCounts)
       .map(([emoji, count]) => `${emoji}${(count as number) > 1 ? count : ''}`)
       .join(' ')
