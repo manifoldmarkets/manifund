@@ -67,12 +67,13 @@ export async function getProjectsByUser(
   return data as FullProject[]
 }
 
-export async function listProjects(supabase: SupabaseClient) {
+export async function listProjects(
+  supabase: SupabaseClient,
+  limitToProjectIds?: string[]
+) {
   // get base project data with only essential joins
-  const { data: projectsBase } = await supabase
-    .from('projects')
-    .select(
-      `
+  let query = supabase.from('projects').select(
+    `
       title, id, created_at, creator, slug, blurb, stage, 
       auction_close, funding_goal, min_funding, type, approved, 
       signed_agreement, lobbying, amm_shares, founder_shares,
@@ -80,11 +81,23 @@ export async function listProjects(supabase: SupabaseClient) {
       rounds(title, slug),
       causes(title, slug)
     `
-    )
+  )
+
+  // if specific project IDs are provided, filter by them
+  if (limitToProjectIds && limitToProjectIds.length > 0) {
+    if (limitToProjectIds.length > 1000) {
+      throw new Error(
+        `Cannot fetch more than 1000 projects at once. Requested: ${limitToProjectIds.length}`
+      )
+    }
+    query = query.in('id', limitToProjectIds)
+  }
+  query = query
     .neq('stage', 'hidden')
     .neq('stage', 'draft')
     .order('created_at', { ascending: false })
-    .throwOnError()
+
+  const { data: projectsBase } = await query.throwOnError()
 
   if (!projectsBase || projectsBase.length === 0) {
     return []
