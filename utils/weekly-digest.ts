@@ -66,12 +66,16 @@ const EMAIL_STYLES = `
   .section-header h2 { color: #2c3e50; margin: 0; font-size: 20px; }
   .item { padding: 15px 0; }
   .title { font-weight: bold; color: #2c3e50; font-size: 16px; margin-bottom: 5px; }
-  .title a { color: #ea580c; text-decoration: underline; font-weight: bold; }
+  .title a { color: #ea580c; font-weight: bold; }
   .creator { color: #7f8c8d; font-weight: 500; }
+  .name { color: #000; font-weight: 500; }
+  .amount { color: #000; font-weight: 600; }
+  .gray-text { color: #7f8c8d; }
   .summary { color: #555; margin: 8px 0; font-size: 14px; }
   .stats { font-size: 13px; color: #7f8c8d; margin-top: 8px; }
   .stats span { display: inline-block; margin-right: 15px; }
   .content { color: #555; font-size: 14px; margin: 5px 0; }
+  .content a { color: #ea580c; text-decoration: none !important; }
   .reactions { font-size: 12px; color: #7f8c8d; margin-top: 5px; }
   .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: center; font-size: 12px; color: #7f8c8d; }
   .footer a { color: #3498db; text-decoration: none; }
@@ -346,8 +350,9 @@ const generateProjectItem = (project: FullProject): string => {
     <div class="item">
       <div class="title"><a href="https://manifund.org/projects/${escapeHtml(
         project.slug
-      )}">${escapeHtml(project.title)}</a></div>
-      <div class="creator">by ${escapeHtml(creatorName)}</div>
+      )}">${escapeHtml(
+    project.title
+  )}</a> <span class="creator">by ${escapeHtml(creatorName)}</span></div>
       <div class="summary">${escapeHtml(summary)}</div>
       <div class="stats">
         <span>${upvotes} ⬆️</span>
@@ -375,10 +380,10 @@ const generateCommentItem = (comment: NotableComment): string => {
   return `
     <div class="item">
       <div class="content">
-        <span class="creator">${escapeHtml(commenterName)}${
+        <span class="name">${escapeHtml(commenterName)}${
     comment.isRegrantor ? ' ⭐️' : ''
   }</span>
-        <span> on <a href="https://manifund.org/projects/${escapeHtml(
+        <span class="gray-text"> on <a href="https://manifund.org/projects/${escapeHtml(
           projectSlug
         )}">${escapeHtml(projectTitle)}</a></span>
       </div>
@@ -396,10 +401,9 @@ const generateGrantItem = (grant: NotableGrant): string => {
   return `
     <div class="item">
       <div class="content">
-        <span class="creator">${escapeHtml(bidderName)}${
+        <span class="name">${escapeHtml(bidderName)}${
     grant.isRegrantor ? ' ⭐️' : ''
-  }</span>
-        <span> offered $${grant.amount.toLocaleString()} to </span>
+  }</span> offered <span class="amount">$${grant.amount.toLocaleString()}</span> to 
         <span><a href="https://manifund.org/projects/${escapeHtml(
           projectSlug
         )}">${escapeHtml(projectTitle)}</a></span>
@@ -450,7 +454,7 @@ export function generateHtmlDigest(
         ${projects.map(generateProjectItem).join('')}
       </div>
       <div style="text-align: center;">
-        <a href="https://manifund.org/projects" class="cta-button">Browse All Projects</a>
+        <a href="https://manifund.org/projects" class="cta-button">View all projects</a>
       </div>
     `
       : '<div class="no-projects">No new projects were created this week.</div>'
@@ -472,18 +476,18 @@ export function generateHtmlDigest(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manifund: New projects weekly</title>
+    <title>Manifund: Weekly Digest</title>
     <style>${EMAIL_STYLES}</style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Manifund: New projects weekly</h1>
+            <h1>Manifund: Weekly Digest</h1>
             <p>${weekStart} - ${weekEnd}</p>
         </div>
         ${projectsSection}
-        ${commentsSection}
         ${grantsSection}
+        ${commentsSection}
         <div class="footer">
             <p>Not interested? <a href="{{{ pm:unsubscribe }}}">Unsubscribe</a></p>
         </div>
@@ -500,7 +504,7 @@ export function generatePlaintextDigest(
 ): string {
   const { weekStart, weekEnd } = formatWeekRange()
 
-  let text = `Manifund: New projects weekly\n${weekStart} - ${weekEnd}\n\n`
+  let text = `Manifund: Weekly Digest\n${weekStart} - ${weekEnd}\n\n`
 
   if (projects.length === 0) {
     text += 'No new projects were created this week.\n'
@@ -564,7 +568,7 @@ export async function sendWeeklyDigest(
   ])
 
   const { weekStart } = formatWeekRange()
-  const subject = `Manifund: New projects weekly, from ${weekStart}`
+  const subject = `Manifund: Weekly Digest, from ${weekStart}`
   const htmlBody = generateHtmlDigest(projects, notableComments, notableGrants)
   const textBody = generatePlaintextDigest(
     projects,
