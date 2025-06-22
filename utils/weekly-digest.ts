@@ -612,7 +612,8 @@ export async function sendWeeklyDigest(
 
   const recipients = [
     ...DEFAULT_DIGEST_RECIPIENTS,
-    // ...(await getRegrantorEmails(supabase, 2025)),
+    ...(await getRegrantorEmails(supabase, 2025)),
+    ...(await getLargeDonors(supabase, 1000)),
   ]
 
   // Send to all recipients
@@ -752,4 +753,61 @@ export function generatePlaintextGrantsSection(notableGrants: any[]): string {
   })
 
   return text
+}
+
+export async function getLargeDonors(
+  supabase: SupabaseClient,
+  minAmount: number = 1000
+): Promise<string[]> {
+  // Get all USD transactions
+  const { data: txns } = await supabase
+    .from('txns')
+    .select('*')
+    .eq('token', 'USD')
+    .eq('type', 'deposit')
+    .throwOnError()
+
+  if (!txns || txns.length === 0) {
+    return []
+  }
+
+  // Calculate total donated per user (sum of deposit amounts)
+  const donatedByUserId: Record<string, number> = {}
+  txns.forEach((txn) => {
+    donatedByUserId[txn.to_id] = (donatedByUserId[txn.to_id] || 0) + txn.amount
+  })
+
+  // Filter users who have donated at least minAmount
+  const largeDonorIds = Object.entries(donatedByUserId)
+    .filter(([_, amount]) => amount >= minAmount)
+    .map(([userId, _]) => userId)
+
+  if (largeDonorIds.length === 0) {
+    return []
+  }
+
+  // Get profiles for these users to exclude regrantors
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id')
+    .in('id', largeDonorIds)
+    .eq('regranter_status', false)
+    .throwOnError()
+
+  if (!profiles || profiles.length === 0) {
+    return []
+  }
+
+  // Get emails for each large donor
+  const emails = await Promise.all(
+    profiles.map(async (profile) => {
+      const email = await getUserEmail(supabase, profile.id)
+      return email
+    })
+  )
+
+  // Filter out null emails and return unique emails
+  return Array.from(
+    new Set(emails.filter((email): email is string => email !== null))
+  )
 }
