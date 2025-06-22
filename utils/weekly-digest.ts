@@ -46,8 +46,7 @@ interface WeekRange {
 // Constants
 const DEFAULT_DIGEST_RECIPIENTS = [
   'austin@manifund.org',
-  'akrolsmir@gmail.com',
-  // 'rachel.weinberg12@gmail.com',
+  'rachel.weinberg12@gmail.com',
   // Add more emails here as needed
 ]
 
@@ -580,7 +579,11 @@ export async function sendWeeklyDigest(
     `Found ${projects.length} new projects, ${notableComments.length} notable comments, ${notableGrants.length} notable grants`
   )
 
-  const recipients = [...DEFAULT_DIGEST_RECIPIENTS]
+  const recipients = [
+    ...DEFAULT_DIGEST_RECIPIENTS,
+    ...(await getLargeDonorsEmails(supabase)),
+    ...(await getRegrantorEmails(supabase)),
+  ]
   const uniqueRecipients = new Set(recipients)
 
   const batchEmails = Array.from(uniqueRecipients).map((email) => ({
