@@ -1,6 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import { FullProject } from '@/db/project'
-import { sendEmail } from './email'
+import { sendEmail, sendBatchEmail } from './email'
 import { pointScore } from './sort'
 import { getAmountRaised } from './math'
 import { getUserEmail } from './email'
@@ -11,13 +11,17 @@ import { toPlaintext } from './tiptap-parsing'
 - [x] Pull out regrantor emails from Supabase
 - [x] Sort by "great" score
 - [x] Add comments section with regrantor comments and top emoji reactions
-- [ ] Pull out _all_ emails from Supabase?
-- [ ] Send out batch emails on batch endpoint
+- [x] Pull out large donor emails from Supabase
+- [x] Send out batch emails on batch endpoint
+- [ ] Prettify email, rename
+- [ ] Simplify code & payload
 */
 
 // Hardcoded email list for now
 const DEFAULT_DIGEST_RECIPIENTS = [
   'austin@manifund.org',
+  'akrolsmir@gmail.com',
+  // 'rachel.weinberg12@gmail.com',
   // Add more emails here as needed
 ]
 
@@ -550,8 +554,7 @@ export function generateHtmlDigest(
         ${grantsSectionHtml}
 
         <div class="footer">
-            <p>This digest includes all new projects listed on <a href="https://manifund.org">Manifund</a> in the past week.</p>
-            <p><a href="{{{ pm:unsubscribe }}}">Unsubscribe from this list</a></p>
+            <p>Not interested? <a href="{{{ pm:unsubscribe }}}">Unsubscribe</a></p>
         </div>
     </div>
 </body>
@@ -613,25 +616,29 @@ export async function sendWeeklyDigest(
 
   const recipients = [
     ...DEFAULT_DIGEST_RECIPIENTS,
-    ...(await getRegrantorEmails(supabase, 2025)),
-    ...(await getLargeDonors(supabase, 1000)),
+    // ...(await getRegrantorEmails(supabase, 2025)),
+    // ...(await getLargeDonorsEmails(supabase, 1000)),
   ]
 
-  // Send to all recipients
-  for (const email of recipients) {
-    try {
-      await sendEmail(
-        email,
-        subject,
-        htmlBody,
-        textBody,
-        'Manifund Digest <digest@manifund.org>',
-        'outbound'
-      )
-      console.log(`Weekly digest sent to ${email}`)
-    } catch (error) {
-      console.error(`Failed to send weekly digest to ${email}:`, error)
-    }
+  // Prepare batch email payload
+  const uniqueRecipients = new Set(recipients)
+  const batchEmails = Array.from(uniqueRecipients).map((email) => ({
+    toEmail: email,
+    subject,
+    htmlBody,
+    textBody,
+    fromEmail: 'Manifund Digest <digest@manifund.org>',
+    messageStream: 'outbound' as const,
+  }))
+
+  // Send batch email
+  try {
+    await sendBatchEmail(batchEmails)
+    console.log(
+      `Weekly digest sent to ${recipients.length} recipients via batch API`
+    )
+  } catch (error) {
+    console.error('Failed to send weekly digest batch:', error)
   }
 }
 
@@ -756,7 +763,7 @@ export function generatePlaintextGrantsSection(notableGrants: any[]): string {
   return text
 }
 
-export async function getLargeDonors(
+export async function getLargeDonorsEmails(
   supabase: SupabaseClient,
   minAmount: number = 1000
 ): Promise<string[]> {
