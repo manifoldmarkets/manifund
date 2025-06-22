@@ -551,6 +551,7 @@ export function generateHtmlDigest(
 
         <div class="footer">
             <p>This digest includes all new projects listed on <a href="https://manifund.org">Manifund</a> in the past week.</p>
+            <p><a href="{{{ pm:unsubscribe }}}">Unsubscribe from this list</a></p>
         </div>
     </div>
 </body>
