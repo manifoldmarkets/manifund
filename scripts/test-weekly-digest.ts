@@ -1,6 +1,12 @@
 import { createAdminClient } from '../pages/api/_db'
 import {
   getNewProjectsLastWeek,
+<<<<<<< HEAD
+=======
+  generateProjectListHtml,
+  formatWeekRange,
+  getRegrantorEmails,
+>>>>>>> main
   sendWeeklyDigest,
 } from '../utils/weekly-digest'
 
@@ -25,6 +31,7 @@ async function testWeeklyDigest() {
     }
 
     // Test HTML generation
+<<<<<<< HEAD
     // const html = generateProjectListHtml(projects)
     // console.log('Generated HTML length:', html.length)
 
@@ -42,6 +49,22 @@ async function testWeeklyDigest() {
     // Test actually sending the email
     await sendWeeklyDigest(supabase)
     console.log('Sent weekly digest -- check your email!')
+=======
+    const html = generateProjectListHtml(projects)
+    console.log('Generated HTML length:', html.length)
+
+    // Test date formatting
+    const { weekStart, weekEnd } = formatWeekRange()
+    console.log('Week range:', `${weekStart} - ${weekEnd}`)
+
+    // Test actually sending the email
+    // await sendWeeklyDigest(supabase)
+    // console.log('Sent weekly digest -- check your email!')
+
+    // Log regrantor emails
+    // const regrantorEmails = await getRegrantorEmails(supabase, 2025)
+    // console.log('Regrantor emails:', regrantorEmails)
+>>>>>>> main
 
     console.log('✅ All tests passed!')
   } catch (error) {
