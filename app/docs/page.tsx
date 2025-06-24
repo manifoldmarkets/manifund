@@ -86,6 +86,7 @@ const apis = [
       slug: string
     },
     replying_to: string,
+    // Can be "progress update" | "final report" | null
     special_type: string
   }
 ]`,
