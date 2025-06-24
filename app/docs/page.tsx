@@ -84,7 +84,9 @@ const apis = [
     projects: {
       title: string,
       slug: string
-    }
+    },
+    replying_to: string,
+    special_type: string
   }
 ]`,
     curl: `curl https://manifund.org/api/v0/comments`,
