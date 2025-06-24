@@ -17,7 +17,9 @@ async function listCommentsPaginated(
       commenter,
       project,
       profiles!comments_commenter_fkey(username, full_name),
-      projects(title, slug)
+      projects(title, slug),
+      replying_to,
+      special_type
     `
     )
     .order('created_at', { ascending: false })
