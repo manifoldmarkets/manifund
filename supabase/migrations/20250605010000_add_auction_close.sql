@@ -1,1 +1,0 @@
-ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS auction_close timestamp with time zone; 
