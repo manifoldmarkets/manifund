@@ -1,1 +1,0 @@
-ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS approved boolean DEFAULT false; 
