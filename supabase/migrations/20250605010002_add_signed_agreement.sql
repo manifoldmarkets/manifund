@@ -1,1 +1,0 @@
-ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS signed_agreement boolean DEFAULT false; 
