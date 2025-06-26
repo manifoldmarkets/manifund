@@ -57,6 +57,7 @@ module.exports = {
     require('@tailwindcss/forms'),
     require('@tailwindcss/typography'),
     require('tailwind-scrollbar-hide'),
+    require('tailwind-scrollbar')({ nocompatible: true }),
     plugin(function ({ matchUtilities, theme }) {
       matchUtilities(
         {
