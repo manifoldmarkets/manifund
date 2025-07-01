@@ -1,98 +1,29 @@
 import { createMiddlewareSupabaseClient } from './db/supabase-server'
 import { NextResponse } from 'next/server'
-import { createMiddlewareClient, Session } from '@supabase/auth-helpers-nextjs'
 
 import type { NextRequest } from 'next/server'
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
 
-  const existingSession = await migrateSessionIfNeeded(req, res)
+  const supabase = createMiddlewareSupabaseClient(req, res)
 
-  let session = existingSession
-  if (!session) {
-    const supabase = createMiddlewareSupabaseClient(req, res)
-    const {
-      data: { session: newSession },
-    } = await supabase.auth.getSession()
-    session = newSession
-  }
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   return res
 }
 
-async function migrateSessionIfNeeded(
-  req: NextRequest,
-  res: NextResponse
-): Promise<Session | null> {
-  try {
-    const newSupabase = createMiddlewareSupabaseClient(req, res)
-    const {
-      data: { session: newSession },
-      error: newError,
-    } = await newSupabase.auth.getSession()
-
-    if (!newError && newSession) {
-      return newSession
-    }
-
-    const oldSupabase = createMiddlewareClient({ req, res })
-    let {
-      data: { session: oldSession },
-      error: oldError,
-    } = await oldSupabase.auth.getSession()
-
-    if (oldError || !(oldSession?.access_token && oldSession?.refresh_token)) {
-      return null
-    }
-
-    console.debug('Migrating session from auth-helpers to SSR format...')
-
-    const {
-      data: { session: refreshedOldSession },
-      error: refreshError,
-    } = await oldSupabase.auth.refreshSession()
-    if (!refreshError && refreshedOldSession) {
-      console.debug('Refreshed old session', refreshedOldSession)
-      oldSession = refreshedOldSession
-    } else if (refreshError) {
-      console.debug('Failed to refresh old session:', refreshError.message)
-    }
-
-    const { error: setError } = await newSupabase.auth.setSession({
-      access_token: oldSession.access_token,
-      refresh_token: oldSession.refresh_token,
-    })
-
-    if (setError) {
-      console.debug('Failed to migrate session:', setError.message)
-      return null
-    }
-
-    const oldCookies = req.cookies
-      .getAll()
-      .filter(
-        (cookie) =>
-          cookie.name.startsWith('sb-') &&
-          cookie.name.endsWith('-auth-token') &&
-          !cookie.name.includes('code-verifier')
-      )
-
-    for (const cookie of oldCookies) {
-      res.cookies.set(cookie.name, '', {
-        expires: new Date(0),
-        path: '/',
-        domain: cookie.name.includes('localhost') ? 'localhost' : undefined,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-      })
-    }
-
-    console.debug('Session migration completed successfully')
-    return oldSession
-  } catch (error) {
-    console.debug('Session migration failed:', error)
-    return null
-  }
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * Feel free to modify this pattern to include more paths.
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }

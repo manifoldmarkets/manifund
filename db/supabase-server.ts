@@ -51,7 +51,7 @@ export function createPublicSupabaseClient() {
 // For Middleware and Edge API routes that have access to NextRequest/NextResponse
 export function createMiddlewareSupabaseClient(
   req: NextRequest,
-  res?: NextResponse
+  res: NextResponse
 ) {
   return createServerClient<Database>(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
     cookies: {
@@ -59,12 +59,15 @@ export function createMiddlewareSupabaseClient(
         return req.cookies.getAll()
       },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value, options }) => {
+        cookiesToSet.forEach(({ name, value, options }) =>
           req.cookies.set(name, value)
-          if (res) {
-            res.cookies.set(name, value, options)
-          }
+        )
+        res = NextResponse.next({
+          request: req,
         })
+        cookiesToSet.forEach(({ name, value, options }) =>
+          res.cookies.set(name, value, options)
+        )
       },
     },
   })
