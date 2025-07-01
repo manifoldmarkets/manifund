@@ -36,14 +36,14 @@ export default function PasswordResetPage() {
       }
     })
 
-    // Also check current session immediately
-    const checkSession = async () => {
+    // Also check current user immediately
+    const checkUser = async () => {
       const {
-        data: { session },
+        data: { user },
         error,
-      } = await supabase.auth.getSession()
+      } = await supabase.auth.getUser()
 
-      if (session && !error) {
+      if (user && !error) {
         setStatus('success')
         setTimeout(() => {
           router.push(next)
@@ -54,7 +54,7 @@ export default function PasswordResetPage() {
       }
     }
 
-    void checkSession()
+    void checkUser()
 
     // Set a timeout in case no auth events come
     const timeoutId = setTimeout(() => {

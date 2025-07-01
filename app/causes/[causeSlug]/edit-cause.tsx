@@ -14,8 +14,7 @@ import { Cause } from '@/db/cause'
 
 export function EditCause(props: { cause: Cause }) {
   const { cause } = props
-  const { supabase, session } = useSupabase()
-  const user = session?.user
+  const { supabase, user } = useSupabase()
   const [showEditor, setShowEditor] = useState(false)
   const [saving, setSaving] = useState(false)
   const [headerImage, setHeaderImage] = useState<File | null>(null)

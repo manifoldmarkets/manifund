@@ -128,8 +128,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     }
   }, [selectedPrize])
 
-  const { session } = useSupabase()
-  const user = session?.user
+  const { user } = useSupabase()
   if (!user) {
     return (
       <div>

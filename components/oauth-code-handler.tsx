@@ -20,10 +20,10 @@ export function OAuthCodeHandler() {
           // The Supabase client automatically handles the code exchange
           // We just need to check if the user is authenticated
           const {
-            data: { session },
-          } = await supabase.auth.getSession()
+            data: { user },
+          } = await supabase.auth.getUser()
 
-          if (session) {
+          if (user) {
             // User is authenticated, clean up the URL
             const currentUrl = new URL(window.location.href)
 

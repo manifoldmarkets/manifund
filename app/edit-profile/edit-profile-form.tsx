@@ -20,7 +20,7 @@ import { UpdatePasswordForm } from '@/app/edit-profile/update-password-form'
 
 export function EditProfileForm(props: { profile: Profile }) {
   const { profile } = props
-  const { supabase, session } = useSupabase()
+  const { supabase, user } = useSupabase()
   const [username, setUsername] = useState<string>(
     profile.username === profile.id ? '' : profile.username
   )
@@ -33,8 +33,6 @@ export function EditProfileForm(props: { profile: Profile }) {
   const params = useSearchParams()
   const router = useRouter()
   const redirect = params?.get('redirectTo')
-
-  const user = session?.user
   const isNewUser = username === user?.id
 
   // Check if user is email-password based (not OAuth)

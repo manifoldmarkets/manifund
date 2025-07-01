@@ -14,8 +14,7 @@ import { SUPABASE_BUCKET_URL } from '@/db/env'
 
 export function EditRound(props: { round: Round }) {
   const { round } = props
-  const { supabase, session } = useSupabase()
-  const user = session?.user
+  const { supabase, user } = useSupabase()
   const [showEditor, setShowEditor] = useState(false)
   const [saving, setSaving] = useState(false)
   const [headerImage, setHeaderImage] = useState<File | null>(null)

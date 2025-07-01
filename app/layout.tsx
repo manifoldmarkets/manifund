@@ -46,21 +46,21 @@ export default async function RootLayout({
 }) {
   const supabase = await createServerSupabaseClient()
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
   return (
     <html lang="en" className={fontVars}>
       <head />
       <body className="min-h-screen w-full bg-gray-50">
         <SupabaseProvider
-          session={session}
+          user={user}
           className={`mx-auto mb-20 w-full font-sans lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
         >
           <Toaster />
           <Suspense fallback={null}>
             <Sidebar />
           </Suspense>
-          <SupabaseListener serverAccessToken={session?.access_token} />
+          <SupabaseListener serverAccessToken={user?.id} />
           <main className="flex flex-col lg:col-span-8">
             <Suspense fallback={null}>
               <CompleteProfileBanner />

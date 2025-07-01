@@ -15,7 +15,7 @@ export default function SupabaseListener(props: {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.access_token !== serverAccessToken) {
+      if (session?.user?.id !== serverAccessToken) {
         router.refresh()
       }
     })
