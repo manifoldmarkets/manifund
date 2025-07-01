@@ -1,6 +1,7 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import { FullProject, listProjects } from './project'
-import { hotScore } from '@/utils/sort'
+import { countVotes, hotScore } from '@/utils/sort'
+import { getAmountRaised } from '@/utils/math'
 
 export async function getHotProjects(
   supabase: SupabaseClient,
@@ -30,28 +31,9 @@ export async function getHotProjects(
 
   // Calculate hot scores for all projects
   const projectsWithScores = projectsWithStats.map((project) => {
-    const voteTotal =
-      project.project_votes?.reduce(
-        (sum: number, vote: any) => sum + (vote.magnitude || 0),
-        0
-      ) || 0
+    const voteTotal = countVotes(project)
     const commentCount = project.comments?.length || 0
-    const bidAmount =
-      project.bids?.reduce(
-        (sum: number, bid: any) =>
-          bid.status === 'approved' ? sum + (bid.amount || 0) : sum,
-        0
-      ) || 0
-    const txnAmount =
-      project.txns?.reduce(
-        (sum: number, txn: any) =>
-          txn.type === 'transfer' || txn.type === 'donate'
-            ? sum + (txn.amount || 0)
-            : sum,
-        0
-      ) || 0
-
-    const totalRaised = bidAmount + txnAmount
+    const totalRaised = getAmountRaised(project, project.bids, project.txns)
     // minimal FullProject object with just the data needed for scoring
     const tempFullProject: FullProject = {
       ...project,
