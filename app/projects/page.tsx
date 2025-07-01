@@ -1,5 +1,8 @@
 import { Suspense } from 'react'
-import { createServerSupabaseClient } from '@/db/supabase-server'
+import {
+  createPublicSupabaseClient,
+  createServerSupabaseClient,
+} from '@/db/supabase-server'
 import { getUser } from '@/db/profile'
 import { Col } from '@/components/layout/col'
 import { FeedTabs } from './feed-tabs'
@@ -69,7 +72,7 @@ async function AsyncFeedTabs({
   const shouldLoadProjects = !tab || tab === 'projects'
   const start = (page - 1) * PAGE_SIZE
 
-  const supabase = await createServerSupabaseClient()
+  const supabase = createPublicSupabaseClient()
   const loadProjects = async () => {
     if (!shouldLoadProjects) return []
     if (useHotProjects) {
