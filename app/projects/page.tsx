@@ -8,6 +8,7 @@ import { getRecentFullTxns } from '@/db/txn'
 import { getRecentFullBids } from '@/db/bid'
 import { listSimpleCauses } from '@/db/cause'
 import { listProjects } from '@/db/project'
+import { getHotProjectsCached } from '@/db/project-cached'
 import { LandingSection } from './landing-section'
 
 // Page is dynamic due to cookies(), but listProjects is cached for 30s
@@ -35,7 +36,7 @@ export default async function Projects(props: {
             <AsyncFeedTabs
               searchParams={props.searchParams}
               userId={user?.id}
-              projectLimit={30}
+              useHotProjects={true}
             />
           </Suspense>
         }
@@ -43,7 +44,7 @@ export default async function Projects(props: {
         <AsyncFeedTabs
           searchParams={props.searchParams}
           userId={user?.id}
-          projectLimit={2000}
+          useHotProjects={false}
         />
       </Suspense>
     </Col>
@@ -54,11 +55,11 @@ export default async function Projects(props: {
 async function AsyncFeedTabs({
   searchParams,
   userId,
-  projectLimit,
+  useHotProjects,
 }: {
   searchParams: { [key: string]: string | string[] | undefined }
   userId?: string
-  projectLimit?: number
+  useHotProjects: boolean
 }) {
   const PAGE_SIZE = 20
   const page = parseInt(searchParams?.p as string) || 1
@@ -69,9 +70,17 @@ async function AsyncFeedTabs({
   const start = (page - 1) * PAGE_SIZE
 
   const supabase = await createServerSupabaseClient()
+  const loadProjects = async () => {
+    if (!shouldLoadProjects) return []
+    if (useHotProjects) {
+      return await getHotProjectsCached()
+    }
+    return await listProjects(supabase)
+  }
+
   const [projects, recentComments, recentDonations, recentBids, causesList] =
     await Promise.all([
-      shouldLoadProjects ? listProjects(supabase) : Promise.resolve([]),
+      loadProjects(),
       getRecentFullComments(supabase, PAGE_SIZE, start),
       getRecentFullTxns(supabase, PAGE_SIZE, start),
       getRecentFullBids(supabase, PAGE_SIZE, start),
