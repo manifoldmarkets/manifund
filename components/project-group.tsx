@@ -1,6 +1,7 @@
 'use client'
 import { FullProject } from '@/db/project'
 import { ProjectCard } from '@/components/project-card'
+import { Masonry } from 'masonic'
 
 export function ProjectGroup(props: {
   projects: FullProject[]
@@ -8,14 +9,19 @@ export function ProjectGroup(props: {
 }) {
   const { projects, prices } = props
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      {projects.map((project) => (
-        <ProjectCard
-          key={project.id}
-          project={project}
-          valuation={prices ? prices[project.id] : undefined}
-        />
-      ))}
-    </div>
+    <Masonry
+      items={projects}
+      columnCount={2}
+      columnGutter={16}
+      rowGutter={0}
+      render={({ data }) => (
+        <div className="mb-4 break-inside-avoid">
+          <ProjectCard
+            project={data}
+            valuation={prices ? prices[data.id] : undefined}
+          />
+        </div>
+      )}
+    />
   )
 }
