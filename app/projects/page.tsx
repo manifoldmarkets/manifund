@@ -73,9 +73,9 @@ async function AsyncFeedTabs({
   const loadProjects = async () => {
     if (!shouldLoadProjects) return []
     if (useHotProjects) {
-      return getHotProjectsCached()
+      return await getHotProjectsCached()
     }
-    return listProjects(supabase)
+    return await listProjects(supabase)
   }
 
   const [projects, recentComments, recentDonations, recentBids, causesList] =
