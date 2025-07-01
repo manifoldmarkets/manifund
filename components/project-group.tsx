@@ -12,8 +12,9 @@ export function ProjectGroup(props: {
     <Masonry
       items={projects}
       config={{
-        columns: 2,
-        gap: 16,
+        columns: [1, 2],
+        gap: [16, 16],
+        media: [640, 1024],
       }}
       render={(item, idx) => (
         <ProjectCard
