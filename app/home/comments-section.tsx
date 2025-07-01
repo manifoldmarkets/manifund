@@ -3,6 +3,7 @@
 import { Col } from '@/components/layout/col'
 import { Comment } from '@/components/comment'
 import { FullComment } from '@/db/comment'
+import { Row } from '@/components/layout/row'
 
 export function CommentsSection({
   comments,
@@ -13,15 +14,21 @@ export function CommentsSection({
 }) {
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Recent Comments</h2>
+      <div className="my-4 flex items-center justify-center">
+        <div className="h-px flex-1 bg-gray-300"></div>
+        <h2 className="px-6 font-serif text-2xl tracking-wide text-gray-700">
+          Comments
+        </h2>
+        <div className="h-px flex-1 bg-gray-300"></div>
+      </div>
+      <Row className="justify-end">
         <a
           href="/projects?tab=comments"
-          className="text-sm text-gray-600 hover:text-gray-900"
+          className="font-serif text-sm italic text-gray-600 hover:text-gray-900"
         >
           View all →
         </a>
-      </div>
+      </Row>
       <Col className="gap-6">
         {comments.map((comment) => (
           <Comment

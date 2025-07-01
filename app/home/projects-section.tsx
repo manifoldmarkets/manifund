@@ -1,7 +1,7 @@
-import { Col } from '@/components/layout/col'
 import { ProjectsDisplay } from '@/components/projects-display'
 import { FullProject } from '@/db/project'
 import { SimpleCause } from '@/db/cause'
+import { HomeHeader } from '@/components/home-header'
 
 export function ProjectsSection({
   projects,
@@ -12,14 +12,7 @@ export function ProjectsSection({
 }) {
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
-        <a
-          href="/projects"
-          className="text-sm text-gray-600 hover:text-gray-900"
-        >
-          View all →
-        </a>
-      </div>
+      <HomeHeader title="Projects" viewAllLink="/projects" />
       <ProjectsDisplay
         projects={projects}
         defaultSort={'hot'}

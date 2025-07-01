@@ -3,6 +3,7 @@ import { Card } from '@/components/layout/card'
 import { Row } from '@/components/layout/row'
 import { Tag } from '@/components/tags'
 import { UserAvatarAndBadge } from '@/components/user-link'
+import { HomeHeader } from '@/components/home-header'
 import { FullTxn } from '@/db/txn'
 import { FullBid } from '@/db/bid'
 import { formatDistanceToNow } from 'date-fns'
@@ -31,15 +32,7 @@ export function DonationsSection({
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Recent Activity</h2>
-        <a
-          href="/projects?tab=donations"
-          className="text-sm text-gray-600 hover:text-gray-900"
-        >
-          View all →
-        </a>
-      </div>
+      <HomeHeader title="Donations" viewAllLink="/projects?tab=donations" />
 
       <Col className="gap-4">
         {combinedItems.map(({ type, item }) => (
