@@ -1,7 +1,7 @@
 'use client'
 import { FullProject } from '@/db/project'
 import { ProjectCard } from '@/components/project-card'
-import { Masonry } from 'masonic'
+import { Masonry } from 'react-plock'
 
 export function ProjectGroup(props: {
   projects: FullProject[]
@@ -11,16 +11,16 @@ export function ProjectGroup(props: {
   return (
     <Masonry
       items={projects}
-      columnCount={2}
-      columnGutter={16}
-      rowGutter={0}
-      render={({ data }) => (
-        <div className="mb-4 break-inside-avoid">
-          <ProjectCard
-            project={data}
-            valuation={prices ? prices[data.id] : undefined}
-          />
-        </div>
+      config={{
+        columns: 2,
+        gap: 16,
+      }}
+      render={(item, idx) => (
+        <ProjectCard
+          key={idx}
+          project={item}
+          valuation={prices ? prices[item.id] : undefined}
+        />
       )}
     />
   )
