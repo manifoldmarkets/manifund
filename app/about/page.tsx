@@ -68,7 +68,15 @@ const APPROACH_FEATURES = [
         >
           meeting notes
         </SiteLink>
-        !
+        ! Developers can also explore our{' '}
+        <SiteLink
+          href="/docs"
+          followsLinkClass
+          className="text-orange-500 underline decoration-orange-500 decoration-dotted underline-offset-2"
+        >
+          API documentation
+        </SiteLink>{' '}
+        to build on top of our platform.
       </p>
     ),
   },
