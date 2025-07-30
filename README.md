@@ -3,10 +3,27 @@
 ## Prerequisites
 
 1. Install [Bun](https://bun.sh/): `curl -fsSL https://bun.sh/install | bash`
-2. Install docker: [Orbstack.dev](https://orbstack.dev/) or [Docker desktop](https://docs.docker.com/desktop/setup/install/mac-install/)
-3. Install dependencies: `bun install`
+2. Install dependencies: `bun install`
 
-## Development against local supabase (Recommended)
+## Development against prod or dev db
+
+(Easier to get started, but you'll be working against real data, so be careful)
+
+```bash
+# Get environment variables
+bunx vercel link
+bunx vercel env pull
+
+# Run against remote
+bun run dev      # Production database
+bun run dev:dev  # Development database
+```
+
+## Development against local db
+
+(Somewhat trickier to set up)
+
+1. Install docker: [Orbstack.dev](https://orbstack.dev/) or [Docker desktop](https://docs.docker.com/desktop/setup/install/mac-install/)
 
 ### Typical Workflow
 
@@ -65,18 +82,6 @@ Setup for this requires:
 
 1. Creating a google cloud project and (enabling oauth)[https://console.cloud.google.com/apis/credentials]
 2. Creating Oauth2.0 credentials with `http://127.0.0.1:54321/auth/v1/callback` as an authorized reidrect URI
-
-## Development against remote supabase
-
-```bash
-# Get environment variables
-bunx vercel link
-bunx vercel env pull
-
-# Run against remote
-bun run dev      # Production database
-bun run dev:dev  # Development database
-```
 
 ### Typescript type Generation
 
