@@ -78,13 +78,13 @@ export function CharityRow({ charity, userId }: CharityRowProps) {
         {/* Trade Buttons */}
         <div className="ml-4 flex gap-2">
           <button
-            className="rounded bg-green-600 px-3 py-1.5 text-sm text-white transition-colors hover:bg-green-700"
+            className="rounded border border-green-600 bg-transparent px-3 py-1.5 text-sm text-green-600 transition-colors hover:bg-green-50"
             onClick={() => alert(`Buy ${charity.ticker} (demo mode)`)}
           >
             Buy
           </button>
           <button
-            className="rounded bg-red-600 px-3 py-1.5 text-sm text-white transition-colors hover:bg-red-700"
+            className="rounded border border-red-600 bg-transparent px-3 py-1.5 text-sm text-red-600 transition-colors hover:bg-red-50"
             onClick={() => alert(`Sell ${charity.ticker} (demo mode)`)}
           >
             Sell
