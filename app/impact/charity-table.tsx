@@ -34,13 +34,15 @@ export function CharityTable({
 
         {/* Table Body */}
         <div>
-          {charities.map((charity) => (
-            <CharityRow
-              key={charity.ticker}
-              charity={charity}
-              userId={userId}
-            />
-          ))}
+          {charities
+            .sort((a, b) => b.marketCap - a.marketCap)
+            .map((charity) => (
+              <CharityRow
+                key={charity.ticker}
+                charity={charity}
+                userId={userId}
+              />
+            ))}
         </div>
       </div>
     </Col>

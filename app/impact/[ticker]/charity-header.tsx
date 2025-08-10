@@ -31,9 +31,7 @@ export function CharityHeader({ charity }: CharityHeaderProps) {
               </span>
             </div>
             <Col className="gap-1">
-              <h1 className="text-3xl font-bold text-gray-900">
-                {charity.name}
-              </h1>
+              <h1 className="text-3xl text-gray-900">{charity.name}</h1>
               <Row className="items-center gap-3 text-gray-600">
                 <span className="text-lg font-medium">{charity.ticker}</span>
                 <Row className="items-center gap-1">

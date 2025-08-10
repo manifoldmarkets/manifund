@@ -16,8 +16,7 @@ export function ImpactExchangeHeader() {
           MIX: Manifund Impact eXchange
         </h1>
         <p className="mt-4 text-lg font-light text-gray-500">
-          Trade impact certificates from leading charities in AI safety and EA
-          spaces
+          Trade impact certificates on leading orgs in AI safety and EA
         </p>
       </div>
 
