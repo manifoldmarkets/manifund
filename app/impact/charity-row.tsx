@@ -19,12 +19,16 @@ export function CharityRow({ charity, userId }: CharityRowProps) {
     <div className="border-b border-gray-200 transition-colors hover:bg-gray-50">
       <Row className="items-center gap-4 px-6 py-4">
         {/* Icon + Name */}
-        <div className="flex w-80 min-w-0 items-center gap-3">
-          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
-            <span className="text-xs font-bold text-white">
-              {charity.ticker.substring(0, 2)}
-            </span>
-          </div>
+        <div className="flex w-80 min-w-0 items-center gap-4">
+          {charity.iconUrl ? (
+            <img src={charity.iconUrl} alt={charity.name} className="h-6 w-6" />
+          ) : (
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
+              <span className="text-xs font-bold text-white">
+                {charity.ticker.substring(0, 2)}
+              </span>
+            </div>
+          )}
           <Link
             href={`/impact/${charity.ticker}`}
             className="min-w-0 flex-1 hover:underline"

@@ -9,6 +9,7 @@ export interface CharityData {
   description: string
   founded: string
   website: string
+  iconUrl?: string
   priceHistory: Array<{
     date: string
     price: number
@@ -40,6 +41,8 @@ export const DUMMY_CHARITY_DATA: Record<string, CharityData[]> = {
         'Researching mathematical foundations of artificial intelligence alignment.',
       founded: '2000',
       website: 'https://intelligence.org',
+      iconUrl:
+        'https://intelligence.org/wp-content/uploads/2024/10/Group-26.png',
       priceHistory: generatePriceHistory(125.5, 30),
       recentNews: [
         {
@@ -81,6 +84,7 @@ export const DUMMY_CHARITY_DATA: Record<string, CharityData[]> = {
         'Berkeley-based research center focused on AI alignment and safety.',
       founded: '2016',
       website: 'https://humancompatible.ai',
+      iconUrl: 'https://humancompatible.ai/favicon.ico',
       priceHistory: generatePriceHistory(89.25, 30),
       recentNews: [
         {
@@ -107,6 +111,8 @@ export const DUMMY_CHARITY_DATA: Record<string, CharityData[]> = {
       description: 'UK government institute for AI safety research and policy.',
       founded: '2023',
       website: 'https://aisi.gov.uk',
+      iconUrl:
+        'https://cdn.prod.website-files.com/663bd486c5e4c81588db7a1d/6851b4a9c117f83c4217e827_AISI%20icon%2032.png',
       priceHistory: generatePriceHistory(156.8, 30),
       recentNews: [
         {
@@ -134,6 +140,7 @@ export const DUMMY_CHARITY_DATA: Record<string, CharityData[]> = {
         'AI safety research organization focusing on interpretability and alignment.',
       founded: '2021',
       website: 'https://redwoodresearch.org',
+      iconUrl: 'https://www.redwoodresearch.org/icon.png?99d7085f2ee4ed1d',
       priceHistory: generatePriceHistory(72.4, 30),
       recentNews: [
         {
@@ -161,6 +168,8 @@ export const DUMMY_CHARITY_DATA: Record<string, CharityData[]> = {
         'AI safety company focused on developing safe, beneficial AI systems.',
       founded: '2021',
       website: 'https://anthropic.com',
+      iconUrl:
+        'https://cdn.prod.website-files.com/67ce28cfec624e2b733f8a52/681d52619fec35886a7f1a70_favicon.png',
       priceHistory: generatePriceHistory(245.9, 30),
       recentNews: [
         {
@@ -174,6 +183,92 @@ export const DUMMY_CHARITY_DATA: Record<string, CharityData[]> = {
         { name: 'Google', shares: 8000, percentage: 16.0 },
         { name: 'Spark Capital', shares: 6000, percentage: 12.0 },
         { name: 'Individual Investors', shares: 36000, percentage: 72.0 },
+      ],
+    },
+    {
+      ticker: 'APOL',
+      name: 'Apollo Research',
+      currentPrice: 61.2,
+      priceChange: 2.1,
+      volume24h: 22000,
+      shareholders: 110,
+      marketCap: 673200,
+      description:
+        'Research organization advancing AI alignment and interpretability.',
+      founded: '2022',
+      website: 'https://apolloresearch.ai',
+      iconUrl:
+        'https://images.squarespace-cdn.com/content/v1/6593e7097565990e65c886fd/6d42360e-c273-4f7e-b4de-70488cefa95c/favicon.ico',
+      priceHistory: generatePriceHistory(61.2, 30),
+      recentNews: [
+        {
+          date: '2025-01-10',
+          headline: 'Apollo launches new interpretability challenge',
+          content:
+            'Apollo Research invites the community to participate in a novel interpretability benchmark.',
+        },
+      ],
+      topShareholders: [
+        { name: 'Open Philanthropy', shares: 2000, percentage: 18.2 },
+        { name: 'Apollo Team', shares: 3000, percentage: 27.3 },
+        { name: 'Individual Investors', shares: 6000, percentage: 54.5 },
+      ],
+    },
+    {
+      ticker: 'TIMAE',
+      name: 'Timaeus',
+      currentPrice: 44.7,
+      priceChange: -0.9,
+      volume24h: 9000,
+      shareholders: 67,
+      marketCap: 299490,
+      description:
+        'Nonprofit focused on foundational research in AI safety and philosophy.',
+      founded: '2023',
+      website: 'https://timaeus.ai',
+      iconUrl: 'https://timaeus.co/apple-touch-icon.png',
+      priceHistory: generatePriceHistory(44.7, 30),
+      recentNews: [
+        {
+          date: '2025-01-12',
+          headline: 'Timaeus publishes report on AI value alignment',
+          content:
+            'A new whitepaper explores the philosophical underpinnings of value alignment in AI systems.',
+        },
+      ],
+      topShareholders: [
+        { name: 'Effective Altruism Funds', shares: 1200, percentage: 17.9 },
+        { name: 'Timaeus Founders', shares: 1800, percentage: 26.9 },
+        { name: 'Individual Investors', shares: 3680, percentage: 55.2 },
+      ],
+    },
+    {
+      ticker: 'FAR',
+      name: 'FAR AI',
+      currentPrice: 53.5,
+      priceChange: 1.3,
+      volume24h: 15000,
+      shareholders: 89,
+      marketCap: 476150,
+      description:
+        'Nonprofit research lab dedicated to scalable oversight and robust AI alignment.',
+      founded: '2021',
+      website: 'https://far.ai',
+      iconUrl:
+        'https://cdn.prod.website-files.com/66f4503c3d0f4d4a75074a18/6711a658d6ce0b4be55a68ab_FAR-AI-32logoicon.png',
+      priceHistory: generatePriceHistory(53.5, 30),
+      recentNews: [
+        {
+          date: '2025-01-14',
+          headline: 'FAR AI receives grant for scalable oversight research',
+          content:
+            'FAR AI secures new funding to expand its scalable oversight research program.',
+        },
+      ],
+      topShareholders: [
+        { name: 'Open Philanthropy', shares: 1500, percentage: 18.2 },
+        { name: 'FAR AI Team', shares: 2000, percentage: 24.7 },
+        { name: 'Individual Investors', shares: 4600, percentage: 57.1 },
       ],
     },
   ],
