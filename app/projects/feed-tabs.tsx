@@ -47,6 +47,7 @@ export function FeedTabs(props: {
         projects={projects}
         defaultSort={'hot'}
         causesList={causesList}
+        userId={userId}
       />
     </Col>
   )
