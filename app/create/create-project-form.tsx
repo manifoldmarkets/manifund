@@ -101,19 +101,38 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
 
   const router = useRouter()
   const handleSubmit = async () => {
+    if (isSubmitting) return // Prevent multiple simultaneous calls
+
     setIsSubmitting(true)
-    const finalDescription = editor?.getJSON() ?? '<p>No description</p>'
-    const response = await fetch('/api/create-project', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ...projectParams, description: finalDescription }),
-    })
-    const newProject = await response.json()
-    router.push(`/projects/${newProject.slug}`)
-    clearLocalStorageItem(DESCRIPTION_KEY)
-    setIsSubmitting(false)
+    try {
+      const finalDescription = editor?.getJSON() ?? '<p>No description</p>'
+      const response = await fetch('/api/create-project', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...projectParams,
+          description: finalDescription,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const newProject = await response.json()
+      router.push(`/projects/${newProject.slug}`)
+      clearLocalStorageItem(DESCRIPTION_KEY)
+    } catch (error) {
+      console.error('Failed to create project:', error)
+      // Show user-friendly error message
+      alert(`Something might have gone wrong.\n
+        Check if your project is up on manifund.org; if not, please resubmit.\n
+        Error: ${error}`)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   // If ?prize=... param is set, then choose that prize by default
