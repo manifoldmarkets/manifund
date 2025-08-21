@@ -66,10 +66,7 @@ export default async function Sidebar() {
                 { name: 'Regranting', href: '/about/regranting' },
                 { name: 'Impact markets', href: '/about/impact-certificates' },
                 { name: 'Applying for funding', href: '/about/open-call' },
-                {
-                  name: '2023 in review',
-                  href: 'https://manifund.substack.com/p/manifund-2023-in-review',
-                },
+                { name: 'API docs', href: '/docs' },
               ],
             }}
           />

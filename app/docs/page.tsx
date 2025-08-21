@@ -142,14 +142,14 @@ export default function ApiDocsPage() {
             alike. Our endpoints are open and require no authentication.
             <br />
             <br />
-            Building something cool with this? Hop in our{' '}
+            Need help, or want to show off something cool? Find us on{' '}
             <Link
               href="https://discord.gg/ZGsDMWSA5Q"
               className="text-orange-600 underline"
             >
               Discord
-            </Link>{' '}
-            and let us know!
+            </Link>
+            !
           </p>
           {apis.map((api) => (
             <section key={api.id} id={api.id} className="scroll-mt-24 py-24">
