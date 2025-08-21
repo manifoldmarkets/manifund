@@ -7,6 +7,7 @@ import {
   LockClosedIcon,
   PaperAirplaneIcon,
   PencilIcon,
+  EyeSlashIcon,
 } from '@heroicons/react/20/solid'
 import { TextEditor } from '@/components/editor'
 import { useTextEditor } from '@/hooks/use-text-editor'
@@ -40,6 +41,9 @@ export function CreatorActionPanel(props: {
       {project.stage === 'active' && <CloseProject projectId={project.id} />}
       {checkReactivateEligible(project, prizeCause) && (
         <Reactivate projectId={project.id} />
+      )}
+      {project.stage !== 'draft' && project.stage !== 'hidden' && (
+        <HideProject projectId={project.id} />
       )}
     </Row>
   )
@@ -418,6 +422,72 @@ function Edit(props: {
             </Tooltip>
           </div>
         </Col>
+      </Modal>
+    </>
+  )
+}
+
+function HideProject(props: { projectId: string }) {
+  const { projectId } = props
+  const [modalOpen, setModalOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter()
+
+  return (
+    <>
+      <Button
+        className="flex items-center"
+        size="2xs"
+        color="light-orange"
+        onClick={() => setModalOpen(true)}
+      >
+        <EyeSlashIcon className="relative right-1 h-4 w-4" />
+        Hide project
+      </Button>
+      <Modal open={modalOpen} setOpen={setModalOpen}>
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+          <EyeSlashIcon className="h-6 w-6 text-orange-600" />
+        </div>
+        <div className="my-3 text-center">
+          <Dialog.Title
+            as="h3"
+            className="text-base font-semibold leading-6 text-gray-900"
+          >
+            Hide project
+          </Dialog.Title>
+          <p className="text-sm text-gray-600">
+            WARNING: Once hidden, only you and admins will be able to find this
+            projects, and only admins can unhide it.
+          </p>
+        </div>
+        <div className="sm:flex-2 mt-3 flex flex-col gap-3 sm:flex-row">
+          <Button
+            color="gray"
+            className="inline-flex w-full justify-center sm:col-start-1"
+            onClick={() => setModalOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="sm:flex-2 inline-flex w-full justify-center"
+            loading={isSubmitting}
+            onClick={async () => {
+              setIsSubmitting(true)
+              await fetch('/api/hide-project', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ projectId }),
+              })
+              setModalOpen(false)
+              setIsSubmitting(false)
+              router.refresh()
+            }}
+          >
+            Hide project
+          </Button>
+        </div>
       </Modal>
     </>
   )
