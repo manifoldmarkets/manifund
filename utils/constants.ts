@@ -78,7 +78,7 @@ export function getSponsoredAmount2024(regrantorId: string) {
 
 export function getSponsoredAmount2025(regrantorId: string) {
   const sponsoredRegrantors = {
-    'e9362a95-cbec-4685-b179-91b4c5ba4edc': 250_000, // Neel Nanda
+    'e9362a95-cbec-4685-b179-91b4c5ba4edc': 350_000, // Neel Nanda
     '4988c7d8-e1a6-4f2b-b9d9-f80cd02f1732': 100_000, // Lisa
     'aa7c88dc-7311-4577-8cd3-c58a0d41fc31': 100_000, // Joel
     'dd68802c-760d-4241-9431-352e1f635f6a': 100_000, // Lauren
@@ -89,6 +89,7 @@ export function getSponsoredAmount2025(regrantorId: string) {
     '75d73803-3b02-4e20-826c-c7bd96127a9e': 100_000, // Richard
     'e2a30cdd-6797-4e2c-8823-f051195fc77a': 100_000, // Ryan
     'b11620f2-fdc7-414c-8a63-9ddee17ee669': 100_000, // Marcus
+    'a3a0607a-b240-47ff-9025-77e6453f171f': 100_000, // Ethan
   } as { [key: string]: number }
   return sponsoredRegrantors[regrantorId] ?? 0
 }

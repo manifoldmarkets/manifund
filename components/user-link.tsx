@@ -106,14 +106,16 @@ const microregrantors = [
 const regrantors = [
   'NeelNanda',
   'lisathiergart',
+  'joel_bkr',
   'laurenm',
-  'aog',
   'gleech',
   'mariushobbhahn',
   'Thomas',
   'Tamay',
   'Richard',
-  'joel_bkr',
+  'RyanKidd',
+  'MarcusAbramovitch',
+  'ethanjperez',
 ]
 
 export function UserBadge(props: { username: string }) {
