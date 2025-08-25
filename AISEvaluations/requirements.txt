@@ -1,0 +1,5 @@
+google-api-python-client==2.153.0
+python-dotenv==1.0.1
+pandas==2.2.2
+isodate==0.6.1
+tqdm==4.66.4
