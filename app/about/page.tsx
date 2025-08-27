@@ -127,13 +127,13 @@ const TEAM_MEMBERS = [
       'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/10bd8a14-4002-47ff-af4a-92b227423a74/avatar',
     username: 'Austin',
   },
-  {
-    name: 'Rachel Weinberg',
-    title: 'Cofounder, Engineer',
-    avatarUrl:
-      'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/4de2634d-3802-4141-881e-9ce687f87485/8271a711-1159-0a97-6620-bd082b6ebc3b',
-    username: 'Rachel',
-  },
+  // {
+  //   name: 'Rachel Weinberg',
+  //   title: 'Cofounder, Engineer',
+  //   avatarUrl:
+  //     'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/4de2634d-3802-4141-881e-9ce687f87485/8271a711-1159-0a97-6620-bd082b6ebc3b',
+  //   username: 'Rachel',
+  // },
 ]
 
 export default function AboutPage() {
