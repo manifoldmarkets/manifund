@@ -87,27 +87,27 @@ export default function UsersGrid({ users }: { users: User[] }) {
 }
 
 export function BalanceSheet() {
-  const lastUpdated = '2025-07-24'
+  const lastUpdated = '2025-09-04'
   const $ = {
     // Stripe Opal + Payments balance
-    stripe: 635_777 + 128_046,
+    stripe: 597_062 + 88_134,
     // Mercury Manifund Grants account
-    mercury: 2_419_162,
-    coinbase: 1_117_538,
+    mercury: 617_925,
+    coinbase: 1_562_246,
     // Current users
-    users: -3_797_453,
-    // Regranting pot owed, plus 11 * 100k regrantors + neel (250k)
-    regranting: -2_250_000 + 100_000 * 11 + 250_000,
-    // not credited: 57k txn'd, but not yet sent to grantees
-    pending: -57_321,
+    users: -2_742_856,
+    // Regranting pot owed, plus 11 * 100k regrantors + neel (350k)
+    regranting: -2_250_000 + 100_000 * 11 + 350_000,
+    // not credited: txn'd but not yet sent to grantees + 359k VARA (Manifund, Joel)
+    pending: -23_110 + 359_000,
     // Donations for Manifold for Charity
     // 500k initial - donated - David MCF - AmmonLam
     charity: 500000 - 315832 - 186747,
     // Manifest balance, from initial $100k base
-    manifest: 193_715,
-    // Mox: Mercury + Stripe pending + pending donations from EAIF
-    // Note that we've transferred $600k from the grants balance so far
-    mox: 111_767 + 11_826 + 65_000,
+    manifest: 193_740,
+    // Mox: Mercury + Stripe pending
+    // Note that we've transferred $800k from the grants balance so far, and recouped $315k
+    mox: 49_435 + 2_275,
   }
   const financeRows = [
     { name: 'Stripe Bank', balance: $.stripe },
@@ -117,7 +117,7 @@ export function BalanceSheet() {
     {},
     { name: 'User balances', balance: $.users },
     { name: 'Unallocated regrant funds', balance: $.regranting },
-    { name: 'Pending transfers', balance: $.pending },
+    { name: 'Pending transfers + $359k VARA', balance: $.pending },
     { name: 'Pending: Manifold for Charity donations', balance: $.charity },
     {
       name: 'Total liabilities',
