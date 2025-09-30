@@ -12,8 +12,8 @@ export const Input = forwardRef<
     error?: boolean
     errorMessage?: string
   } & Omit<React.JSX.IntrinsicElements['input'], 'onChange'> & {
-    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
-  }
+      onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+    }
 >(({ error, errorMessage, className, ...rest }, ref) => {
   return (
     <>
@@ -37,7 +37,9 @@ export const Input = forwardRef<
 
 export const Checkbox = forwardRef<
   HTMLInputElement,
-  React.JSX.IntrinsicElements['input']
+  Omit<React.JSX.IntrinsicElements['input'], 'onChange'> & {
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  }
 >(({ className, ...rest }, ref) => {
   return (
     <Row className="h-6 items-center">
@@ -56,7 +58,9 @@ export const Checkbox = forwardRef<
 
 export const RadioButton = forwardRef<
   HTMLInputElement,
-  React.JSX.IntrinsicElements['input']
+  Omit<React.JSX.IntrinsicElements['input'], 'onChange'> & {
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  }
 >(({ className, ...rest }, ref) => {
   return (
     <Row className="h-6 items-center">
@@ -85,7 +89,10 @@ export function AmountInput(
     inputRef?: React.MutableRefObject<any>
     allowFloat?: boolean
     allowNegative?: boolean
-  } & React.JSX.IntrinsicElements['input']
+  } & Omit<React.JSX.IntrinsicElements['input'], 'onChange' | 'onKeyDown'> & {
+      onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+      onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void
+    }
 ) {
   const {
     amount,
@@ -137,11 +144,9 @@ export function AmountInput(
       value={amountString}
       error={error}
       errorMessage={errorMessage}
-      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-        onAmountChange(e.target.value)
-      }
+      onChange={(e) => onAmountChange(e.target.value)}
       onBlur={() => setAmountString(amount?.toString() ?? '')}
-      onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+      onKeyDown={(e) => {
         if (e.key === 'ArrowUp') {
           onChangeAmount((amount ?? 0) + 5)
         } else if (e.key === 'ArrowDown') {
@@ -170,9 +175,7 @@ export function SearchBar(props: {
         placeholder="Search"
         className="w-full rounded-md border-0 py-1.5 pl-7 text-sm text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-500 sm:pl-9 sm:text-base sm:leading-6"
         value={search}
-        onChange={(event) => {
-          setSearch(event.target.value)
-        }}
+        onChange={(event) => setSearch(event.target.value)}
       />
     </div>
   )

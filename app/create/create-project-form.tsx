@@ -206,7 +206,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             autoComplete="off"
             maxLength={80}
             value={projectParams.title}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={(event) =>
               updateProjectParams({ title: event.target.value })
             }
           />
