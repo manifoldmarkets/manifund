@@ -109,7 +109,7 @@ export function BalanceSheet() {
 
     // Investments
     vara_for_manifund: 300_563,
-    vara_for_others: 1_434_000 - 300_000,
+    vara_for_others: 1_434_000 - 300_563,
     mox_fund: 118_400,
   }
   const financeRows = [
