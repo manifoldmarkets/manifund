@@ -7,7 +7,7 @@ import {
   ArrowRightIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { orderBy } from 'es-toolkit'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
 import { calcAuctionResolution, Resolution } from '@/utils/resolve-auction'
@@ -62,9 +62,11 @@ export function AuctionPlayground() {
   const [minFunding, setMinFunding] = useState<number | undefined>(900)
   const [founderPortion, setFounderPortion] = useState<number | undefined>(0.1)
   const [playBids, setPlayBids] = useState<Bid[]>(INITIAL_BIDS)
-  const [playBidsDisplay, setPlayBidsDisplay] = useState<JSX.Element[]>([])
+  const [playBidsDisplay, setPlayBidsDisplay] = useState<React.JSX.Element[]>(
+    []
+  )
   const [seeResults, setSeeResults] = useState<boolean>(false)
-  const [resultsText, setResultsText] = useState<JSX.Element>(<></>)
+  const [resultsText, setResultsText] = useState<React.JSX.Element>(<></>)
   const [resolution, setResolution] = useState<Resolution>({
     amountsPaid: {},
     valuation: -1,
