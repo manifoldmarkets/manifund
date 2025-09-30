@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import clsx from 'clsx'
 import { Menu } from '@headlessui/react'
 import { EllipsisVerticalIcon, TrashIcon } from '@heroicons/react/24/outline'
@@ -24,9 +25,9 @@ export const Table = (props: {
 }
 
 export function TableRow(props: {
-  title: string | JSX.Element
-  tag?: JSX.Element
-  subtitle?: JSX.Element
+  title: string | React.JSX.Element
+  tag?: React.JSX.Element
+  subtitle?: React.JSX.Element
   href: string
   deleteFunction?: () => void
 }) {

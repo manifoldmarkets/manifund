@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import { getRoundTheme } from '@/utils/constants'
 import clsx from 'clsx'
 import Link from 'next/link'
@@ -112,7 +113,7 @@ const CAUSE_ICONS = {
   'china-talk': <StarIcon className="h-3 w-3 stroke-2" />,
   'acx-grants-2024': <PiSpiralBold className="h-3 w-3" />,
   medical: <MdOutlineMedicalServices className="h-3 w-3" />,
-} as { [key: string]: JSX.Element }
+} as { [key: string]: React.JSX.Element }
 
 export function CauseTag(props: {
   causeTitle: string

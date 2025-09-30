@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -11,7 +12,7 @@ export type Tab = {
   name: string
   id: string
   count?: number
-  display: JSX.Element
+  display: React.JSX.Element
 }
 export function Tabs(props: { tabs: Tab[]; currentTabId?: string | null }) {
   const { tabs } = props

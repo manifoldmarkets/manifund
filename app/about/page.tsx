@@ -1,3 +1,4 @@
+import React from 'react'
 import { Avatar } from '@/components/avatar'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
@@ -225,7 +226,7 @@ function FundingMechanism(props: {
   title: string
   description: string
   href: string
-  icon: JSX.Element
+  icon: React.JSX.Element
 }) {
   const { title, description, href, icon } = props
   return (

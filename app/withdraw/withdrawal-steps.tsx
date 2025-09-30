@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { Row } from '@/components/layout/row'
@@ -17,7 +18,7 @@ import { StepsDisplay } from './steps-display'
 export type Step = {
   id: number
   name: string
-  display: JSX.Element
+  display: React.JSX.Element
 }
 
 export function WithdrawalSteps(props: {

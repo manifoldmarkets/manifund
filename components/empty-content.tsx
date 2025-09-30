@@ -1,9 +1,10 @@
+import React from 'react'
 import { Row } from './layout/row'
 
 export function EmptyContent(props: {
   link?: string
   onClick?: () => void
-  icon: JSX.Element
+  icon: React.JSX.Element
   title?: string
   subtitle: string
 }) {

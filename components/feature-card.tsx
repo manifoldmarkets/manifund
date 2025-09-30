@@ -1,9 +1,10 @@
+import React from 'react'
 import { ArrowRightIcon } from '@heroicons/react/20/solid'
 import { Col } from './layout/col'
 import { Row } from './layout/row'
 
 export function FeatureCard(props: {
-  icon: JSX.Element
+  icon: React.JSX.Element
   title: string
   description: string
   url?: string
