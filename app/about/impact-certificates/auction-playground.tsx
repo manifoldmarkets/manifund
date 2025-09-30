@@ -171,7 +171,7 @@ export function AuctionPlayground() {
           id="minFunding"
           amount={minFunding}
           className="relative bottom-2 w-24"
-          onChangeAmount={(newAmount) => {
+          onChangeAmount={(newAmount: number | undefined) => {
             setMinFunding(newAmount)
             setSeeResults(false)
           }}
@@ -183,7 +183,7 @@ export function AuctionPlayground() {
           id="founderPortion"
           className=" relative bottom-2 w-24"
           amount={founderPortion ? founderPortion * 100 : undefined}
-          onChangeAmount={(newPortion) => {
+          onChangeAmount={(newPortion: number | undefined) => {
             setFounderPortion(newPortion ? newPortion / 100 : undefined)
             setSeeResults(false)
           }}
