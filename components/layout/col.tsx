@@ -3,7 +3,7 @@ import React from 'react'
 
 export const Col = React.forwardRef<
   HTMLDivElement,
-  JSX.IntrinsicElements['div']
+  React.JSX.IntrinsicElements['div']
 >(function Col({ children, className, ...rest }, ref) {
   return (
     <div className={clsx(className, 'flex flex-col')} ref={ref} {...rest}>

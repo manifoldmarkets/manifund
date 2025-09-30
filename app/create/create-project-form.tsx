@@ -206,7 +206,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             autoComplete="off"
             maxLength={80}
             value={projectParams.title}
-            onChange={(event) =>
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               updateProjectParams({ title: event.target.value })
             }
           />
@@ -224,7 +224,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             autoComplete="off"
             maxLength={160}
             value={projectParams.subtitle ?? ''}
-            onChange={(event) =>
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               updateProjectParams({ subtitle: event.target.value })
             }
           />
@@ -276,7 +276,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             <AmountInput
               id="minFunding"
               amount={projectParams.minFunding}
-              onChangeAmount={(newMin) =>
+              onChangeAmount={(newMin: number | undefined) =>
                 updateProjectParams({ minFunding: newMin })
               }
               placeholder={minMinFunding.toString()}
@@ -318,7 +318,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           <AmountInput
             id="fundingGoal"
             amount={projectParams.fundingGoal}
-            onChangeAmount={(newGoal) =>
+            onChangeAmount={(newGoal: number | undefined) =>
               updateProjectParams({ fundingGoal: Number(newGoal) })
             }
             placeholder={minMinFunding.toString()}
@@ -348,7 +348,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           <Input
             type="date"
             value={projectParams.verdictDate ?? ''}
-            onChange={(event) =>
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               updateProjectParams({ verdictDate: event.target.value })
             }
           />
@@ -376,7 +376,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         <Input
           type="text"
           value={projectParams.location}
-          onChange={(event) =>
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             updateProjectParams({ location: event.target.value })
           }
         />
@@ -385,7 +385,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       <Row className="items-start">
         <Checkbox
           checked={projectParams.lobbying}
-          onChange={(event) =>
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             updateProjectParams({ lobbying: event.target.checked })
           }
         />

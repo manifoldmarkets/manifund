@@ -3,7 +3,7 @@ import React from 'react'
 
 export const Card = React.forwardRef<
   HTMLDivElement,
-  JSX.IntrinsicElements['div']
+  React.JSX.IntrinsicElements['div']
 >(function Card({ children, className, ...rest }, ref) {
   return (
     <div

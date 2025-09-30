@@ -11,7 +11,9 @@ export const Input = forwardRef<
   {
     error?: boolean
     errorMessage?: string
-  } & JSX.IntrinsicElements['input']
+  } & Omit<React.JSX.IntrinsicElements['input'], 'onChange'> & {
+    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+  }
 >(({ error, errorMessage, className, ...rest }, ref) => {
   return (
     <>
@@ -35,7 +37,7 @@ export const Input = forwardRef<
 
 export const Checkbox = forwardRef<
   HTMLInputElement,
-  JSX.IntrinsicElements['input']
+  React.JSX.IntrinsicElements['input']
 >(({ className, ...rest }, ref) => {
   return (
     <Row className="h-6 items-center">
@@ -54,7 +56,7 @@ export const Checkbox = forwardRef<
 
 export const RadioButton = forwardRef<
   HTMLInputElement,
-  JSX.IntrinsicElements['input']
+  React.JSX.IntrinsicElements['input']
 >(({ className, ...rest }, ref) => {
   return (
     <Row className="h-6 items-center">
@@ -83,7 +85,7 @@ export function AmountInput(
     inputRef?: React.MutableRefObject<any>
     allowFloat?: boolean
     allowNegative?: boolean
-  } & JSX.IntrinsicElements['input']
+  } & React.JSX.IntrinsicElements['input']
 ) {
   const {
     amount,
@@ -135,9 +137,11 @@ export function AmountInput(
       value={amountString}
       error={error}
       errorMessage={errorMessage}
-      onChange={(e) => onAmountChange(e.target.value)}
+      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+        onAmountChange(e.target.value)
+      }
       onBlur={() => setAmountString(amount?.toString() ?? '')}
-      onKeyDown={(e) => {
+      onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'ArrowUp') {
           onChangeAmount((amount ?? 0) + 5)
         } else if (e.key === 'ArrowDown') {

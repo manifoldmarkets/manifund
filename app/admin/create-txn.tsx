@@ -19,12 +19,16 @@ export function CreateTxn() {
     <Row className="justify-between">
       <Input
         value={fromUsername}
-        onChange={(event) => setFromUsername(event.target.value)}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+          setFromUsername(event.target.value)
+        }
         placeholder="From username"
       />
       <Input
         value={toUsername}
-        onChange={(event) => setToUsername(event.target.value)}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+          setToUsername(event.target.value)
+        }
         placeholder="To username"
       />
       <AmountInput
@@ -34,7 +38,9 @@ export function CreateTxn() {
       />
       <Input
         value={projectSlug}
-        onChange={(event) => setProjectSlug(event.target.value)}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+          setProjectSlug(event.target.value)
+        }
         placeholder="Project slug"
       />
       <Button
