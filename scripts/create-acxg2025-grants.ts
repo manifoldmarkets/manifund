@@ -178,7 +178,25 @@ async function createProject(json: PublicProject) {
     content: [
       {
         type: 'paragraph',
-        content: [{ type: 'text', text: 'Grant from ACX Grants 2025' }],
+        content: [
+          { type: 'text', text: 'Grant from ' },
+          // Link to ACX Grants 2025
+          {
+            type: 'text',
+            text: 'ACX Grants 2025',
+            marks: [
+              {
+                type: 'link',
+                attrs: {
+                  rel: 'noopener noreferrer nofollow',
+                  href: 'https://www.astralcodexten.com/p/acx-grants-results-2025',
+                  class: 'underline',
+                  target: '_blank',
+                },
+              },
+            ],
+          },
+        ],
       },
     ],
   }
@@ -206,18 +224,18 @@ async function createProject(json: PublicProject) {
         grant_amount: donorContribution,
       })
       .throwOnError()
-    const postmarkVars = {
-      amount: donorContribution,
-      regranterName: regranterProfile.full_name,
-      projectTitle: title,
-      loginUrl: `${getURL()}login?email=${recipientEmail}`,
-    }
-    await sendTemplateEmail(
-      TEMPLATE_IDS.NEW_USER_GRANT,
-      postmarkVars,
-      undefined,
-      recipientEmail
-    )
+    // const postmarkVars = {
+    //   amount: donorContribution,
+    //   regranterName: regranterProfile.full_name,
+    //   projectTitle: title,
+    //   loginUrl: `${getURL()}login?email=${recipientEmail}`,
+    // }
+    // await sendTemplateEmail(
+    //   TEMPLATE_IDS.NEW_USER_GRANT,
+    //   postmarkVars,
+    //   undefined,
+    //   recipientEmail
+    // )
   } else if (recipientProfile) {
     const donorComment = {
       id: uuid(),
@@ -238,17 +256,17 @@ async function createProject(json: PublicProject) {
         donation: donation,
       })
       .throwOnError()
-    const postmarkVars = {
-      amount: donorContribution,
-      regranterName: regranterProfile.full_name,
-      projectTitle: title,
-      projectUrl: `${getURL()}projects/${slug}`,
-    }
-    await sendTemplateEmail(
-      TEMPLATE_IDS.EXISTING_USER_GRANT,
-      postmarkVars,
-      recipientProfile.id
-    )
+    // const postmarkVars = {
+    //   amount: donorContribution,
+    //   regranterName: regranterProfile.full_name,
+    //   projectTitle: title,
+    //   projectUrl: `${getURL()}projects/${slug}`,
+    // }
+    // await sendTemplateEmail(
+    //   TEMPLATE_IDS.EXISTING_USER_GRANT,
+    //   postmarkVars,
+    //   recipientProfile.id
+    // )
   } else {
     console.error('invalid inputs 2')
     throw new Error()
@@ -256,12 +274,13 @@ async function createProject(json: PublicProject) {
 
   await updateProjectCauses(supabase, ['acx-grants-2025'], project.id)
 
-  console.log('project created', project.title, project.slug)
+  console.log('project created', project.title)
+  console.log('https://manifund.org/projects/' + project.slug)
 }
 
 export async function createAcxg2025Grants() {
-  const toSkipIds = [271, 450]
-  for (const grant of ACXG_2025_GRANTS.slice(2, 3)) {
+  const toSkipIds = [271] // Skip Elaine's kidney grant for now, for lobbying budget management
+  for (const grant of ACXG_2025_GRANTS.slice(3, 4)) {
     if (toSkipIds.includes(grant.id)) {
       console.log('skipping grant', grant.id)
       continue
