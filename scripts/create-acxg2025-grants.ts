@@ -58,16 +58,16 @@ type PublicProject = {
   name: string
   email: string
   projectTitle: string
-  projectDescription: string
-  backgroundQualifications: string
-  socialMediaWebsite: string
-  fundingAmountRequested: string
-  additionalInformation: string
-  backupPlan: string
-  privacyLevel: string
-  locationTimezone: string
-  termsAgreement: string
-  additionalComments: string
+  projectDescription?: string
+  backgroundQualifications?: string
+  socialMediaWebsite?: string
+  fundingAmountRequested: string | number
+  additionalInformation?: string
+  backupPlan?: string
+  privacyLevel?: string
+  locationTimezone?: string
+  termsAgreement?: string
+  additionalComments?: string
   shortTitle: string
   minAmount: number
 }
@@ -89,8 +89,8 @@ function p(text: string) {
   }
 }
 
-function ps(text: string) {
-  return text
+function ps(text?: string | number) {
+  return (text?.toString() ?? '(not provided)')
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line.length > 0)
@@ -279,12 +279,9 @@ async function createProject(json: PublicProject) {
 }
 
 export async function createAcxg2025Grants() {
-  const toSkipIds = [271] // Skip Elaine's kidney grant for now, for lobbying budget management
-  for (const grant of ACXG_2025_GRANTS.slice(3, 4)) {
-    if (toSkipIds.includes(grant.id)) {
-      console.log('skipping grant', grant.id)
-      continue
-    }
+  for (const grant of ACXG_2025_GRANTS.slice(30, 42)) {
+    console.log('--------------------------------')
+    console.log('creating grant', grant.id, grant.shortTitle)
     await createProject(grant as PublicProject)
   }
 }
