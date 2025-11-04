@@ -36,8 +36,12 @@ const DEFAULT_PUBLIC_BENEFITS = [
   'Other',
 ]
 
-export function GrantVerdict(props: { projectId: string; lobbying: boolean }) {
-  const { projectId, lobbying } = props
+export function GrantVerdict(props: {
+  projectId: string
+  lobbying: boolean
+  buttonContent?: React.ReactNode
+}) {
+  const { projectId, lobbying, buttonContent } = props
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [approveGrant, setApproveGrant] = useState(true)
   const [publicBenefitIdx, setPublicBenefitIdx] = useState<number>(0)
@@ -58,7 +62,14 @@ export function GrantVerdict(props: { projectId: string; lobbying: boolean }) {
   }, [approveGrant])
   return (
     <>
-      <Button onClick={() => setOpen(true)}>🔔</Button>
+      <Button
+        onClick={() => setOpen(true)}
+        size={buttonContent ? '2xs' : undefined}
+        color={buttonContent ? 'light-orange' : undefined}
+        className={buttonContent ? 'flex items-center' : undefined}
+      >
+        {buttonContent ?? '🔔'}
+      </Button>
       <Modal open={open} setOpen={setOpen}>
         <div className="p-3">
           <h1 className="text-lg font-semibold">Grant verdict</h1>

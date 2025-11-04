@@ -29,6 +29,7 @@ import { calculateTradePoints } from '@/utils/amm'
 import { CertValuationChart } from './valuation-chart'
 import { RichContent } from '@/components/editor'
 import { CreatorActionPanel } from './creator-action-panel'
+import { AdminActionPanel } from './admin-action-panel'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { Tooltip } from '@/components/tooltip'
 import { EnvelopeIcon } from '@heroicons/react/20/solid'
@@ -178,6 +179,13 @@ export function ProjectDisplay(props: {
                 project={project}
                 causesList={causesList}
                 prizeCause={prizeCause}
+              />
+            )}
+            {userIsAdmin && (
+              <AdminActionPanel
+                project={project}
+                projectBids={projectBids}
+                projectTxns={projectTxns}
               />
             )}
           </Row>
