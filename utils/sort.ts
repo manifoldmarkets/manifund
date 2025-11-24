@@ -8,6 +8,12 @@ export function pointScore(project: FullProject) {
   const comments = project.comments.length
   const raised = getAmountRaised(project, project.bids, project.txns)
 
+  // Special: Penalize low-quality projects, usually ones that Austin
+  // manually downvotes
+  if (votes <= 0 && raised <= 500) {
+    return -2
+  }
+
   const points = votes * 2 + comments + Math.log(raised + 1) * 3
   return points
 }
