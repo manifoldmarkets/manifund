@@ -116,6 +116,7 @@ const regrantors = [
   'RyanKidd',
   'MarcusAbramovitch',
   'ethanjperez',
+  'alexandraabates',
 ]
 
 export function UserBadge(props: { username: string }) {
