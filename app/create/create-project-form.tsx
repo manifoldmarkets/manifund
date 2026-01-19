@@ -126,10 +126,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       clearLocalStorageItem(DESCRIPTION_KEY)
     } catch (error) {
       console.error('Failed to create project:', error)
-      // Show user-friendly error message
-      alert(`Something might have gone wrong.\n
-        Check if your project is up on manifund.org; if not, please resubmit.\n
-        Error: ${error}`)
+      alert(
+        `Something went wrong. Your project may have been created — please check your profile before trying again. Error: ${error}`
+      )
+      console.error('Failed to create project:', error)
     } finally {
       setIsSubmitting(false)
     }

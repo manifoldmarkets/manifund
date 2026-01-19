@@ -37,6 +37,19 @@ export default async function handler(req: NextRequest) {
   const user = resp.data.user
   if (!user) return NextResponse.error()
 
+  // Check for existing project with same title by this user (prevents duplicates from double-submit)
+  const { data: existingProjects } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('creator', user.id)
+    .eq('title', title)
+    .limit(1)
+
+  if (existingProjects && existingProjects.length > 0) {
+    // Return existing project instead of creating duplicate
+    return NextResponse.json(existingProjects[0])
+  }
+
   const slug = await projectSlugify(title, supabase)
   const projectId = uuid()
   const defaultProject = {
