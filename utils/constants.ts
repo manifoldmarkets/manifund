@@ -91,7 +91,7 @@ export function getSponsoredAmount2025(regrantorId: string) {
     'e2a30cdd-6797-4e2c-8823-f051195fc77a': 100_000, // Ryan
     'b11620f2-fdc7-414c-8a63-9ddee17ee669': 100_000, // Marcus
     'a3a0607a-b240-47ff-9025-77e6453f171f': 125_000, // Ethan
-    '3f45ee75-65b2-4768-9101-bbd628747661': 100_000, // Alexandra
+    '3f45ee75-65b2-4768-9101-bbd628747661': 125_000, // Alexandra
   } as { [key: string]: number }
   return sponsoredRegrantors[regrantorId] ?? 0
 }

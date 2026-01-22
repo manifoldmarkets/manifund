@@ -87,29 +87,29 @@ export default function UsersGrid({ users }: { users: User[] }) {
 }
 
 export function BalanceSheet() {
-  const lastUpdated = '2025-11-21'
+  const lastUpdated = '2026-01-22'
   const $ = {
     // Stripe Opal + Payments balance
-    stripe: 313_348 + 97_386,
+    stripe: 116_088 + 90_806,
     // Mercury Manifund Grants account
-    mercury: 930_580,
-    coinbase: 1_676_103,
+    mercury: 1_225_640,
+    coinbase: 2_279_269,
     // Current users
-    users: -2_912_045,
-    // Regranting pot owed, plus 11 * 100k regrantors + neel (350k) + gavin/joel reup (2*50k)
-    regranting: -2_250_000 + 100_000 * 11 + 350_000 + 100_000,
-    // not credited: txn'd but not yet sent to grantees; ACXG balance not yet removed
-    pending: -7_173 + 50_000,
+    users: -3_970_255,
+    // Regranting pot owed, plus 12 * 100k regrantors + neel (350k) + gavin/joel reup (2*50k) + 100k (joel/joel/richard/ethan)
+    regranting: -2_250_000 + 100_000 * 12 + 350_000 + 100_000 + 100_000, 
+    // not credited: -pending grants on Airtable; Frame deposit; -Eric VARA; ACX; 
+    pending: -50 + 280_000 - 24_897,
     // Donations for Manifold for Charity
     // 500k initial - donated - David MCF - AmmonLam
     charity: 500000 - 315832 - 186747,
     // Mox: Mercury + Stripe pending
     // Note that we've transferred $800k from the grants balance so far, and recouped $315k
-    mox: 148_954 + 16_684,
+    mox: 46_715 + 23_937,
 
     // Investments
-    vara_for_manifund: 476_566,
-    vara_for_others: 2_587_484 - 476_566,
+    vara_for_manifund: 439_318,
+    vara_for_others: 2_439_021 - 439_318,
     mox_fund: 129_800,
   }
   const financeRows = [
@@ -156,8 +156,8 @@ export function BalanceSheet() {
     {},
     { name: '(not included in net calculations)' },
     { name: 'VARA, for donors', balance: $.vara_for_others },
-    { name: 'ACX Grants balance', balance: 854_410 },
-    { name: 'Frame Fellowship', balance: 50_000 },
+    { name: 'ACX Grants balance', balance: 37_380 },
+    { name: 'Frame Fellowship', balance: 242_588 },
   ]
   // Using a grid to display the finances
   return (
