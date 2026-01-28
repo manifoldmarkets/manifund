@@ -8,6 +8,9 @@ import { addHttpToUrl } from '@/utils/formatting'
 import { Row } from '@/components/layout/row'
 import { Col } from '@/components/layout/col'
 import { SignOutButton } from './sign-out-button'
+import { SuperBanButton } from './superban-dialog'
+import { FullProject } from '@/db/project'
+import { CommentAndProjectAndRxns } from '@/db/comment'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
 
@@ -15,8 +18,11 @@ export function ProfileHeader(props: {
   profile: Profile
   isOwnProfile: boolean
   email?: string
+  isAdmin?: boolean
+  projects?: FullProject[]
+  comments?: CommentAndProjectAndRxns[]
 }) {
-  const { profile, isOwnProfile, email } = props
+  const { profile, isOwnProfile, email, isAdmin, projects, comments } = props
   const website = addHttpToUrl(profile.website ?? '')
   return (
     <div className="flex flex-col gap-3">
@@ -68,7 +74,16 @@ export function ProfileHeader(props: {
             </Row>
           </Col>
         </Row>
-        {isOwnProfile && <SignOutButton />}
+        <Row className="gap-2">
+          {isAdmin && !isOwnProfile && projects && comments && (
+            <SuperBanButton
+              profile={profile}
+              projects={projects}
+              comments={comments}
+            />
+          )}
+          {isOwnProfile && <SignOutButton />}
+        </Row>
       </Row>
       <div>
         <p>{profile.bio}</p>

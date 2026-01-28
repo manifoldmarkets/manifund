@@ -1,4 +1,4 @@
-import { getProfileById, getProfileByUsername, getUser } from '@/db/profile'
+import { getProfileById, getProfileByUsername, getUser, isAdmin } from '@/db/profile'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { getFullTxnsByUser, getTxnsByUser } from '@/db/txn'
@@ -37,12 +37,16 @@ export default async function UserProfilePage(props: {
     user ? getBidsByUser(supabase, user.id) : undefined,
   ])
   const isOwnProfile = user?.id === profile?.id
+  const userIsAdmin = isAdmin(user)
   return (
     <div className="flex flex-col gap-8 p-3 sm:p-5">
       <ProfileHeader
         profile={profile}
         isOwnProfile={isOwnProfile}
         email={isOwnProfile ? user.email : undefined}
+        isAdmin={userIsAdmin}
+        projects={projects}
+        comments={comments}
       />
       <ProfileContent
         profile={profile}
