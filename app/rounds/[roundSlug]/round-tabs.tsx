@@ -19,8 +19,9 @@ export function RoundTabs(props: {
   projects: FullProject[]
   causesList: SimpleCause[]
   regranters?: Profile[]
+  userId?: string
 }) {
-  const { round, projects, causesList, regranters } = props
+  const { round, projects, causesList, regranters, userId } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
   const visibleProjects = projects.filter(
@@ -41,7 +42,7 @@ export function RoundTabs(props: {
               subtitle={'Create one!'}
             />
           ) : (
-            <ProjectsDisplay projects={projects} causesList={causesList} />
+            <ProjectsDisplay projects={projects} causesList={causesList} userId={userId} />
           )}
         </>
       ),

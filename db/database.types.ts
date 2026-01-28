@@ -825,6 +825,35 @@ export type Database = {
           }
         ]
       }
+      user_preferences: {
+        Row: {
+          created_at: string
+          preferred_cause_slugs: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          preferred_cause_slugs?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          preferred_cause_slugs?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'user_preferences_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          }
+        ]
+      }
     }
     Views: {
       users: {
@@ -931,6 +960,10 @@ export type Database = {
           balance: number
         }[]
       }
+      get_user_preferences: {
+        Args: { user_uuid: string }
+        Returns: string[]
+      }
       give_grant: {
         Args: {
           project: Database['public']['CompositeTypes']['project_row']
@@ -949,6 +982,10 @@ export type Database = {
       }
       reject_proposal: {
         Args: { project_id: string }
+        Returns: undefined
+      }
+      set_user_preferences: {
+        Args: { user_uuid: string; cause_slugs: string[] }
         Returns: undefined
       }
       toggle_follow: {

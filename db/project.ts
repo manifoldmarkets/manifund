@@ -5,9 +5,10 @@ import { Txn } from './txn'
 import { Profile } from './profile'
 import { Comment } from '@/db/comment'
 import { Round } from './round'
-import { CertParams, MiniCause } from './cause'
+import { CertParams, SimpleCause } from './cause'
 import { ProjectFollow } from './follows'
 import { countVotes } from '@/utils/sort'
+import { MiniCause } from '@/db/cause'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectUpdate = Database['public']['Tables']['projects']['Update']
