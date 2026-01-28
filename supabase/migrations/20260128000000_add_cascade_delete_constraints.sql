@@ -48,3 +48,35 @@ DROP CONSTRAINT IF EXISTS comment_rxns_txn_id_fkey;
 ALTER TABLE public.comment_rxns
 ADD CONSTRAINT comment_rxns_txn_id_fkey 
 FOREIGN KEY (txn_id) REFERENCES public.txns(id) ON DELETE CASCADE;
+
+-- Fix project_votes.project_id foreign key
+ALTER TABLE public.project_votes 
+DROP CONSTRAINT IF EXISTS project_votes_project_id_fkey;
+
+ALTER TABLE public.project_votes
+ADD CONSTRAINT project_votes_project_id_fkey 
+FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
+
+-- Fix project_causes.project_id foreign key
+ALTER TABLE public.project_causes 
+DROP CONSTRAINT IF EXISTS project_causes_project_id_fkey;
+
+ALTER TABLE public.project_causes
+ADD CONSTRAINT project_causes_project_id_fkey 
+FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
+
+-- Fix project_follows.project_id foreign key
+ALTER TABLE public.project_follows 
+DROP CONSTRAINT IF EXISTS project_follows_project_id_fkey;
+
+ALTER TABLE public.project_follows
+ADD CONSTRAINT project_follows_project_id_fkey 
+FOREIGN KEY (project_id) REFERENCES public.projects(id) ON DELETE CASCADE;
+
+-- Fix comments.project foreign key
+ALTER TABLE public.comments 
+DROP CONSTRAINT IF EXISTS comments_project_fkey;
+
+ALTER TABLE public.comments
+ADD CONSTRAINT comments_project_fkey 
+FOREIGN KEY (project) REFERENCES public.projects(id) ON DELETE CASCADE;
