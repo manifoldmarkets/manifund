@@ -11,6 +11,10 @@ import { invalidateProjectsCache } from '@/db/project-cached'
 import { seedAmm } from '@/utils/activate-project'
 import { upvoteOwnProject, giveCreatorShares } from '@/utils/upsert-project'
 import { updateProjectEmbedding } from '@/app/utils/embeddings'
+import {
+  DISABLE_NEW_SIGNUPS_AND_PROJECTS,
+  SIGNUP_DISABLED_MESSAGE,
+} from '@/utils/constants'
 
 export const config = {
   runtime: 'edge',
@@ -18,6 +22,10 @@ export const config = {
 }
 
 export default async function handler(req: NextRequest) {
+  if (DISABLE_NEW_SIGNUPS_AND_PROJECTS) {
+    return NextResponse.json({ error: SIGNUP_DISABLED_MESSAGE }, { status: 503 })
+  }
+
   const {
     title,
     subtitle,

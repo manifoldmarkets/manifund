@@ -3,7 +3,11 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createServerSupabaseClient } from '@/db/supabase-server'
-import { getURL } from '@/utils/constants'
+import {
+  getURL,
+  DISABLE_NEW_SIGNUPS_AND_PROJECTS,
+  SIGNUP_DISABLED_MESSAGE,
+} from '@/utils/constants'
 
 export type AuthResult = {
   type: 'error' | 'success'
@@ -30,6 +34,10 @@ export async function signIn(formData: FormData): Promise<AuthResult> {
 }
 
 export async function signUp(formData: FormData): Promise<AuthResult> {
+  if (DISABLE_NEW_SIGNUPS_AND_PROJECTS) {
+    return { type: 'error', text: SIGNUP_DISABLED_MESSAGE }
+  }
+
   const supabase = await createServerSupabaseClient()
 
   const data = {

@@ -24,6 +24,7 @@ import { Checkbox } from '@/components/input'
 import { usePartialUpdater } from '@/hooks/user-partial-updater'
 import { ProjectParams } from '@/utils/upsert-project'
 import { useSearchParams } from 'next/navigation'
+import { Modal } from '@/components/modal'
 
 const DESCRIPTION_OUTLINE = `
 <h3>Project summary</h3>
@@ -57,6 +58,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     }
   )
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false)
+  const [errorModalMessage, setErrorModalMessage] = useState<string>('')
 
   const editor = useTextEditor(DESCRIPTION_OUTLINE, DESCRIPTION_KEY)
   const [madeChanges, setMadeChanges] = useState<boolean>(false)
@@ -117,19 +120,25 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         }),
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        const message =
+          data?.error ||
+          `Something went wrong. Your project may have been created — please check your profile before trying again.`
+        setErrorModalMessage(message)
+        setErrorModalOpen(true)
+        return
       }
 
-      const newProject = await response.json()
-      router.push(`/projects/${newProject.slug}`)
+      router.push(`/projects/${data.slug}`)
       clearLocalStorageItem(DESCRIPTION_KEY)
     } catch (error) {
       console.error('Failed to create project:', error)
-      alert(
-        `Something went wrong. Your project may have been created — please check your profile before trying again. Error: ${error}`
+      setErrorModalMessage(
+        `Something went wrong. Your project may have been created — please check your profile before trying again.`
       )
-      console.error('Failed to create project:', error)
+      setErrorModalOpen(true)
     } finally {
       setIsSubmitting(false)
     }
@@ -162,6 +171,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
 
   return (
     <Col className="gap-4 p-5">
+      <Modal open={errorModalOpen} setOpen={setErrorModalOpen}>
+        <Col className="gap-4">
+          <h2 className="text-lg font-semibold text-gray-900">Error</h2>
+          <p className="text-gray-600">{errorModalMessage}</p>
+          <Button onClick={() => setErrorModalOpen(false)}>Close</Button>
+        </Col>
+      </Modal>
       <div className="flex flex-col md:flex-row md:justify-between">
         <h1 className="text-3xl font-bold">Add a project</h1>
       </div>
