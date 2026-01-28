@@ -23,17 +23,7 @@ export default async function handler(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // Delete all comments by this user
-  const { error: commentsError } = await adminSupabase
-    .from('comments')
-    .delete()
-    .eq('commenter', userId)
-  if (commentsError) {
-    console.error('Error deleting comments:', commentsError)
-    return NextResponse.json({ error: 'Failed to delete comments' }, { status: 500 })
-  }
-
-  // Delete all projects by this user
+  // Delete all projects by this user (cascades to txns, bids, comments on projects, etc.)
   const { error: projectsError } = await adminSupabase
     .from('projects')
     .delete()
@@ -43,7 +33,17 @@ export default async function handler(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to delete projects' }, { status: 500 })
   }
 
-  // Delete the user profile
+  // Delete all comments by this user (cascades to comment_rxns)
+  const { error: commentsError } = await adminSupabase
+    .from('comments')
+    .delete()
+    .eq('commenter', userId)
+  if (commentsError) {
+    console.error('Error deleting comments:', commentsError)
+    return NextResponse.json({ error: 'Failed to delete comments' }, { status: 500 })
+  }
+
+  // Delete the user profile (cascades to bids, votes, evals, follows, reactions, etc.)
   const { error: profileError } = await adminSupabase
     .from('profiles')
     .delete()

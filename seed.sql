@@ -167,6 +167,7 @@ create table if not exists public.txns (
   token text not null,
   created_at timestamp not null default now(),
   type txn_type not null,
+  project uuid references public.projects(id) on delete cascade,
   primary key (id)
 );
 
@@ -478,7 +479,7 @@ WITH CHECK (auth.uid() = follower_id)
 
 -- Grant agreements
 CREATE TABLE public.grant_agreements (
-  project_id uuid NOT NULL REFERENCES public.projects(id),
+  project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
   lobbying_clause_excluded boolean NOT NULL DEFAULT false,
   signed_off_site boolean NOT NULL DEFAULT false,
   signed_at timestamptz,
@@ -487,7 +488,7 @@ CREATE TABLE public.grant_agreements (
   project_title text,
   project_description jsonb,
   approved_at timestamptz,
-  approved_by uuid REFERENCES public.profiles(id),
+  approved_by uuid REFERENCES public.profiles(id) ON DELETE CASCADE,
   completed_at timestamptz,
   version int2 DEFAULT 1,
   PRIMARY KEY (project_id)
@@ -517,10 +518,10 @@ using (
 
 -- Comment rxns
 CREATE TABLE public.comment_rxns (
-  comment_id uuid NOT NULL REFERENCES public.comments(id),
-  reactor_id uuid NOT NULL REFERENCES public.profiles(id),
+  comment_id uuid NOT NULL REFERENCES public.comments(id) ON DELETE CASCADE,
+  reactor_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   reaction text NOT NULL,
-  txn_id uuid REFERENCES public.txns(id),
+  txn_id uuid REFERENCES public.txns(id) ON DELETE CASCADE,
   PRIMARY KEY (comment_id, reactor_id, reaction)
 );
 
