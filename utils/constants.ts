@@ -1,7 +1,8 @@
 export const CENTS_PER_DOLLAR = 100
 
 // Temporary flag to disable new signups and projects during spambot attack
-export const DISABLE_NEW_SIGNUPS_AND_PROJECTS = false
+// Set to false to re-enable
+export const DISABLE_NEW_SIGNUPS_AND_PROJECTS = true
 export const SIGNUP_DISABLED_MESSAGE =
   'New projects and accounts disabled as we deal with spambots; contact austin@manifund.org if you have questions.'
 
