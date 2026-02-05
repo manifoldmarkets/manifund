@@ -124,7 +124,7 @@ export async function withdrawViaMercury(
     }
   }
 
-  const accountId = process.env.MERCURY_ACCOUNT_ID
+  const accountId = process.env.MERCURY_GRANTS_ACCOUNT_ID
   if (!accountId) {
     return { success: false, error: 'Mercury account not configured' }
   }
@@ -155,6 +155,7 @@ export async function withdrawViaMercury(
         recipientId: profile.mercury_recipient_id,
         amount,
         paymentMethod: 'ach',
+        idempotencyKey: txnId,
         note: `Manifund withdrawal for ${profile.full_name} (${txnId})`,
       }),
     }

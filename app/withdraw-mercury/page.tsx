@@ -49,7 +49,7 @@ async function fetchMercuryRecipient(recipientId: string) {
 
   try {
     const res = await fetch(
-      `https://api.mercury.com/api/v1/recipients/${recipientId}`,
+      `https://api.mercury.com/api/v1/recipient/${recipientId}`,
       { headers: { Authorization: `Bearer ${apiKey}` } }
     )
     if (!res.ok) return null
