@@ -1,13 +1,27 @@
 'use server'
 
+import { getUser } from '@/db/profile'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { revalidatePath } from 'next/cache'
+
+export type ElectronicAccountType =
+  | 'businessChecking'
+  | 'businessSavings'
+  | 'personalChecking'
+  | 'personalSavings'
 
 export type BankAccountInfo = {
   accountNumber: string
   routingNumber: string
-  accountType: 'checking' | 'savings'
-  bankName: string
+  electronicAccountType: ElectronicAccountType
+  address: {
+    address1: string
+    address2?: string
+    city: string
+    region: string
+    postalCode: string
+    country: string
+  }
 }
 
 export type CreateRecipientResult =
@@ -15,15 +29,21 @@ export type CreateRecipientResult =
   | { success: false; error: string }
 
 export async function createMercuryRecipient(
-  userId: string,
+  // userId: string,
   bankInfo: BankAccountInfo
 ): Promise<CreateRecipientResult> {
   const supabase = await createServerSupabaseClient()
+  const user = await getUser(supabase)
+  const email = user?.email
+  console.log('email', email)
+  if (!user || !user.id || !user.email) {
+    return { success: false, error: 'User, or id, or email not found' }
+  }
 
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('id, full_name, mercury_recipient_id')
-    .eq('id', userId)
+    .eq('id', user.id)
     .single()
 
   if (profileError || !profile) {
@@ -31,7 +51,10 @@ export async function createMercuryRecipient(
   }
 
   if (profile.mercury_recipient_id) {
-    return { success: false, error: 'Mercury recipient already exists for this user' }
+    return {
+      success: false,
+      error: 'Mercury recipient already exists for this user',
+    }
   }
 
   const apiKey = process.env.MERCURY_API_KEY
@@ -43,24 +66,37 @@ export async function createMercuryRecipient(
     const response = await fetch('https://api.mercury.com/api/v1/recipients', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         name: profile.full_name,
-        electronicRoutingInfo: {
-          accountNumber: bankInfo.accountNumber,
-          routingNumber: bankInfo.routingNumber,
-          bankAccountType: bankInfo.accountType,
-          electronicAccountType: 'businessChecking',
-        },
+        // electronicRoutingInfo: {
+        //   accountNumber: bankInfo.accountNumber,
+        //   routingNumber: bankInfo.routingNumber,
+        //   electronicAccountType: bankInfo.electronicAccountType,
+        //   address: {
+        //     address1: bankInfo.address.address1,
+        //     address2: bankInfo.address.address2 || null,
+        //     city: bankInfo.address.city,
+        //     region: bankInfo.address.region,
+        //     postalCode: bankInfo.address.postalCode,
+        //     country: bankInfo.address.country,
+        //   },
+        // },
+        electronicRoutingInfo: bankInfo,
+        contactEmail: email,
+        emails: [email],
       }),
     })
 
     if (!response.ok) {
       const errorData = await response.text()
       console.error('Mercury API error:', errorData)
-      return { success: false, error: `Mercury API error: ${response.status}` }
+      return {
+        success: false,
+        error: `Mercury API error: ${response.status} ${errorData}`,
+      }
     }
 
     const data = await response.json()
@@ -69,7 +105,7 @@ export async function createMercuryRecipient(
     const { error: updateError } = await supabase
       .from('profiles')
       .update({ mercury_recipient_id: recipientId })
-      .eq('id', userId)
+      .eq('id', user.id)
 
     if (updateError) {
       console.error('Failed to update profile with recipient ID:', updateError)
@@ -111,7 +147,7 @@ export async function getMercuryRecipient(userId: string) {
       `https://api.mercury.com/api/v1/recipients/${profile.mercury_recipient_id}`,
       {
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
+          Authorization: `Bearer ${apiKey}`,
         },
       }
     )
@@ -125,7 +161,7 @@ export async function getMercuryRecipient(userId: string) {
       id: data.id,
       name: data.name,
       accountLastFour: data.electronicRoutingInfo?.accountNumber?.slice(-4),
-      bankAccountType: data.electronicRoutingInfo?.bankAccountType,
+      electronicAccountType: data.electronicRoutingInfo?.electronicAccountType,
     }
   } catch (error) {
     console.error('Error fetching Mercury recipient:', error)
