@@ -56,7 +56,7 @@ export default function WithdrawMercuryPage() {
       return
     }
 
-    loadExistingRecipient()
+    void loadExistingRecipient()
   }, [session])
 
   const loadExistingRecipient = async () => {
@@ -164,7 +164,8 @@ export default function WithdrawMercuryPage() {
             </Col>
 
             <div className="text-center text-sm text-gray-500">
-              To update your bank information, please contact support.
+              To update your bank information, please contact
+              austin@manifund.org.
             </div>
           </Col>
         </Card>

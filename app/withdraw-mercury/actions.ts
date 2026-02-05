@@ -144,7 +144,7 @@ export async function getMercuryRecipient(userId: string) {
 
   try {
     const response = await fetch(
-      `https://api.mercury.com/api/v1/recipients/${profile.mercury_recipient_id}`,
+      `https://api.mercury.com/api/v1/recipient/${profile.mercury_recipient_id}`,
       {
         headers: {
           Authorization: `Bearer ${apiKey}`,
