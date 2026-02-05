@@ -11,6 +11,7 @@ import { useSupabase } from '@/db/supabase-provider'
 import {
   createMercuryRecipient,
   getMercuryRecipient,
+  withdrawViaMercury,
   BankAccountInfo,
   ElectronicAccountType,
 } from './actions'
@@ -35,6 +36,9 @@ export default function WithdrawMercuryPage() {
   const [submitting, setSubmitting] = useState(false)
   const [existingRecipient, setExistingRecipient] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
+  const [withdrawAmount, setWithdrawAmount] = useState<string>('')
+  const [withdrawing, setWithdrawing] = useState(false)
+  const [withdrawSuccess, setWithdrawSuccess] = useState<string | null>(null)
 
   const [bankInfo, setBankInfo] = useState<BankAccountInfo>({
     accountNumber: '',
@@ -114,6 +118,36 @@ export default function WithdrawMercuryPage() {
     }
   }
 
+  const handleWithdraw = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setWithdrawSuccess(null)
+
+    const amount = parseFloat(withdrawAmount)
+    if (isNaN(amount) || amount <= 0) {
+      setError('Please enter a valid withdrawal amount')
+      return
+    }
+
+    setWithdrawing(true)
+    try {
+      const result = await withdrawViaMercury(amount)
+      if (result.success) {
+        setWithdrawSuccess(
+          `Withdrawal successful! Transaction ID: ${result.transactionId}`
+        )
+        setWithdrawAmount('')
+      } else {
+        setError(result.error)
+      }
+    } catch (err) {
+      setError('An unexpected error occurred')
+      console.error('Error processing withdrawal:', err)
+    } finally {
+      setWithdrawing(false)
+    }
+  }
+
   if (loading) {
     return (
       <Col className="mx-auto max-w-2xl p-6">
@@ -168,6 +202,78 @@ export default function WithdrawMercuryPage() {
               austin@manifund.org.
             </div>
           </Col>
+        </Card>
+
+        <Card className="mt-6 p-8">
+          <form onSubmit={handleWithdraw}>
+            <Col className="gap-6">
+              <h2 className="text-xl font-bold">Withdraw Funds</h2>
+
+              {withdrawSuccess && (
+                <div className="rounded-md bg-emerald-50 p-4 text-sm text-emerald-800">
+                  {withdrawSuccess}
+                </div>
+              )}
+
+              {error && (
+                <div className="rounded-md bg-rose-50 p-4 text-sm text-rose-800">
+                  {error}
+                </div>
+              )}
+
+              <div className="rounded-lg bg-gray-50 p-4">
+                <Row className="justify-between">
+                  <span className="text-sm font-medium text-gray-700">
+                    Available Balance:
+                  </span>
+                  <span className="text-lg font-bold text-gray-900">
+                    ${existingRecipient?.withdrawBalance?.toFixed(2) || '0.00'}
+                  </span>
+                </Row>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="amount"
+                  className="mb-1 block text-sm font-medium text-gray-700"
+                >
+                  Withdrawal Amount (USD)
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                    $
+                  </span>
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="500"
+                    min="500"
+                    max={existingRecipient?.withdrawBalance || 0}
+                    placeholder="500"
+                    value={withdrawAmount}
+                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    disabled={withdrawing}
+                    required
+                    className="pl-8"
+                  />
+                </div>
+                <p className="mt-1 text-xs text-gray-500">
+                  Minimum withdrawal amount is $500
+                </p>
+              </div>
+
+              <Button
+                type="submit"
+                size="lg"
+                color="orange"
+                className="w-full"
+                disabled={withdrawing || !withdrawAmount}
+                loading={withdrawing}
+              >
+                {withdrawing ? 'Processing...' : 'Withdraw'}
+              </Button>
+            </Col>
+          </form>
         </Card>
       </Col>
     )
