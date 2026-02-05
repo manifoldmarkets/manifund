@@ -347,6 +347,7 @@ export type Database = {
           full_name: string
           id: string
           long_description: Json | null
+          mercury_recipient_id: string | null
           regranter_status: boolean
           stripe_connect_id: string | null
           type: Database['public']['Enums']['profile_type']
@@ -360,6 +361,7 @@ export type Database = {
           full_name?: string
           id?: string
           long_description?: Json | null
+          mercury_recipient_id?: string | null
           regranter_status?: boolean
           stripe_connect_id?: string | null
           type?: Database['public']['Enums']['profile_type']
@@ -373,6 +375,7 @@ export type Database = {
           full_name?: string
           id?: string
           long_description?: Json | null
+          mercury_recipient_id?: string | null
           regranter_status?: boolean
           stripe_connect_id?: string | null
           type?: Database['public']['Enums']['profile_type']

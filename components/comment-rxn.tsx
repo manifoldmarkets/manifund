@@ -351,6 +351,7 @@ export function CommentRxnsPanel(props: {
           bio: '',
           long_description: {},
           regranter_status: false,
+          mercury_recipient_id: null,
           stripe_connect_id: null,
           type: 'individual',
           website: null,

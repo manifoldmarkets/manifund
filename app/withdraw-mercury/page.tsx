@@ -1,570 +1,69 @@
-'use client'
+import { createServerSupabaseClient } from '@/db/supabase-server'
+import { getProfileById, getUser } from '@/db/profile'
+import { getTxnAndProjectsByUser } from '@/db/txn'
+import { getBidsByUser } from '@/db/bid'
+import { calculateCashBalance } from '@/utils/math'
+import AuthModal from '@/components/auth/AuthModal'
+import { BankInfoForm, WithdrawForm } from './withdraw-mercury-client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { Card } from '@/components/layout/card'
-import { Col } from '@/components/layout/col'
-import { Row } from '@/components/layout/row'
-import { Input } from '@/components/input'
-import { Button } from '@/components/button'
-import { useSupabase } from '@/db/supabase-provider'
-import {
-  createMercuryRecipient,
-  getMercuryRecipient,
-  withdrawViaMercury,
-  BankAccountInfo,
-  ElectronicAccountType,
-} from './actions'
-import { CheckCircleIcon } from '@heroicons/react/20/solid'
+export default async function WithdrawMercuryPage() {
+  const supabase = await createServerSupabaseClient()
+  const user = await getUser(supabase)
+  if (!user) return <AuthModal isOpen={true} />
 
-const ACCOUNT_TYPE_OPTIONS: { value: ElectronicAccountType; label: string }[] =
-  [
-    { value: 'personalChecking', label: 'Personal Checking' },
-    { value: 'personalSavings', label: 'Personal Savings' },
-    { value: 'businessChecking', label: 'Business Checking' },
-    { value: 'businessSavings', label: 'Business Savings' },
-  ]
+  const profile = await getProfileById(supabase, user.id)
+  if (!profile) return null
 
-function formatAccountType(type: ElectronicAccountType | undefined): string {
-  return ACCOUNT_TYPE_OPTIONS.find((o) => o.value === type)?.label || 'Unknown'
-}
-
-export default function WithdrawMercuryPage() {
-  const { session } = useSupabase()
-  const router = useRouter()
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [existingRecipient, setExistingRecipient] = useState<any>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [withdrawAmount, setWithdrawAmount] = useState<string>('')
-  const [withdrawing, setWithdrawing] = useState(false)
-  const [withdrawSuccess, setWithdrawSuccess] = useState<string | null>(null)
-
-  const [bankInfo, setBankInfo] = useState<BankAccountInfo>({
-    accountNumber: '',
-    routingNumber: '',
-    electronicAccountType: 'personalChecking',
-    address: {
-      address1: '',
-      address2: '',
-      city: '',
-      region: '',
-      postalCode: '',
-      country: 'US',
-    },
-  })
-
-  useEffect(() => {
-    if (!session?.user?.id) {
-      router.push('/login')
-      return
-    }
-
-    void loadExistingRecipient()
-  }, [session])
-
-  const loadExistingRecipient = async () => {
-    if (!session?.user?.id) return
-
-    setLoading(true)
-    try {
-      const recipient = await getMercuryRecipient(session.user.id)
-      if (recipient) {
-        setExistingRecipient(recipient)
-      }
-    } catch (err) {
-      console.error('Error loading recipient:', err)
-    } finally {
-      setLoading(false)
-    }
+  // If no Mercury recipient yet, show the bank info form
+  if (!profile.mercury_recipient_id) {
+    return <BankInfoForm />
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
+  // Fetch Mercury recipient details and balance in parallel
+  const [recipientData, txns, bids] = await Promise.all([
+    fetchMercuryRecipient(profile.mercury_recipient_id),
+    getTxnAndProjectsByUser(supabase, user.id),
+    getBidsByUser(supabase, user.id),
+  ])
 
-    if (!session?.user?.id) {
-      setError('You must be logged in to continue')
-      return
-    }
-
-    if (
-      !bankInfo.accountNumber ||
-      !bankInfo.routingNumber ||
-      !bankInfo.address.address1 ||
-      !bankInfo.address.city ||
-      !bankInfo.address.region ||
-      !bankInfo.address.postalCode ||
-      !bankInfo.address.country
-    ) {
-      setError('Please fill in all required fields')
-      return
-    }
-
-    setSubmitting(true)
-    try {
-      const result = await createMercuryRecipient(bankInfo)
-
-      if (result.success) {
-        await loadExistingRecipient()
-      } else {
-        setError(result.error)
-      }
-    } catch (err) {
-      setError('An unexpected error occurred')
-      console.error('Error creating recipient:', err)
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  const handleWithdraw = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setWithdrawSuccess(null)
-
-    const amount = parseFloat(withdrawAmount)
-    if (isNaN(amount) || amount <= 0) {
-      setError('Please enter a valid withdrawal amount')
-      return
-    }
-
-    setWithdrawing(true)
-    try {
-      const result = await withdrawViaMercury(amount)
-      if (result.success) {
-        setWithdrawSuccess(
-          `Withdrawal successful! Transaction ID: ${result.transactionId}`
-        )
-        setWithdrawAmount('')
-      } else {
-        setError(result.error)
-      }
-    } catch (err) {
-      setError('An unexpected error occurred')
-      console.error('Error processing withdrawal:', err)
-    } finally {
-      setWithdrawing(false)
-    }
-  }
-
-  if (loading) {
-    return (
-      <Col className="mx-auto max-w-2xl p-6">
-        <Card className="p-8">
-          <div className="text-center text-gray-500">Loading...</div>
-        </Card>
-      </Col>
-    )
-  }
-
-  if (existingRecipient) {
-    return (
-      <Col className="mx-auto p-6">
-        <Card className="p-8">
-          <Col className="gap-6">
-            <div className="text-center">
-              <CheckCircleIcon className="mx-auto h-12 w-12 text-emerald-500" />
-              <h1 className="mt-4 text-2xl font-bold">
-                Bank Account Connected
-              </h1>
-              <p className="mt-2 text-gray-600">
-                Your bank account is already connected for withdrawals.
-              </p>
-            </div>
-
-            <Col className="gap-4 rounded-lg bg-gray-50 p-6">
-              <h2 className="font-semibold text-gray-900">
-                Account Information
-              </h2>
-              <div className="space-y-2 text-sm">
-                <Row className="justify-between">
-                  <span className="text-gray-600">Account Name:</span>
-                  <span className="font-medium">{existingRecipient.name}</span>
-                </Row>
-                <Row className="justify-between">
-                  <span className="text-gray-600">Account Type:</span>
-                  <span className="font-medium">
-                    {formatAccountType(existingRecipient.electronicAccountType)}
-                  </span>
-                </Row>
-                <Row className="justify-between">
-                  <span className="text-gray-600">Account Number:</span>
-                  <span className="font-medium">
-                    ****{existingRecipient.accountLastFour}
-                  </span>
-                </Row>
-              </div>
-            </Col>
-
-            <div className="text-center text-sm text-gray-500">
-              To update your bank information, please contact
-              austin@manifund.org.
-            </div>
-          </Col>
-        </Card>
-
-        <Card className="mt-6 p-8">
-          <form onSubmit={handleWithdraw}>
-            <Col className="gap-6">
-              <h2 className="text-xl font-bold">Withdraw Funds</h2>
-
-              {withdrawSuccess && (
-                <div className="rounded-md bg-emerald-50 p-4 text-sm text-emerald-800">
-                  {withdrawSuccess}
-                </div>
-              )}
-
-              {error && (
-                <div className="rounded-md bg-rose-50 p-4 text-sm text-rose-800">
-                  {error}
-                </div>
-              )}
-
-              <div className="rounded-lg bg-gray-50 p-4">
-                <Row className="justify-between">
-                  <span className="text-sm font-medium text-gray-700">
-                    Available Balance:
-                  </span>
-                  <span className="text-lg font-bold text-gray-900">
-                    ${existingRecipient?.withdrawBalance?.toFixed(2) || '0.00'}
-                  </span>
-                </Row>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="amount"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  Withdrawal Amount (USD)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                    $
-                  </span>
-                  <Input
-                    id="amount"
-                    type="number"
-                    step="500"
-                    min="500"
-                    max={existingRecipient?.withdrawBalance || 0}
-                    placeholder="500"
-                    value={withdrawAmount}
-                    onChange={(e) => setWithdrawAmount(e.target.value)}
-                    disabled={withdrawing}
-                    required
-                    className="pl-8"
-                  />
-                </div>
-                <p className="mt-1 text-xs text-gray-500">
-                  Minimum withdrawal amount is $500
-                </p>
-              </div>
-
-              <Button
-                type="submit"
-                size="lg"
-                color="orange"
-                className="w-full"
-                disabled={withdrawing || !withdrawAmount}
-                loading={withdrawing}
-              >
-                {withdrawing ? 'Processing...' : 'Withdraw'}
-              </Button>
-            </Col>
-          </form>
-        </Card>
-      </Col>
-    )
-  }
+  const withdrawBalance = calculateCashBalance(
+    txns,
+    bids,
+    user.id,
+    profile.accreditation_status
+  )
 
   return (
-    <Col className="mx-auto max-w-2xl p-6">
-      <form onSubmit={handleSubmit}>
-        <Col className="gap-6">
-          <div>
-            <h1 className="text-2xl font-bold">Connect Your Bank Account</h1>
-            <p className="mt-2 text-gray-600">
-              Enter your US bank account information to enable withdrawals.
-            </p>
-          </div>
-
-          {error && (
-            <div className="rounded-md bg-rose-50 p-4 text-sm text-rose-800">
-              {error}
-            </div>
-          )}
-
-          <Col className="gap-4">
-            <div>
-              <label
-                htmlFor="routingNumber"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
-                Routing Number *
-              </label>
-              <Input
-                id="routingNumber"
-                type="text"
-                placeholder="9 digits"
-                maxLength={9}
-                pattern="[0-9]{9}"
-                value={bankInfo.routingNumber}
-                onChange={(e) =>
-                  setBankInfo({
-                    ...bankInfo,
-                    routingNumber: e.target.value.replace(/\D/g, ''),
-                  })
-                }
-                disabled={submitting}
-                required
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                The 9-digit routing number for your bank
-              </p>
-            </div>
-
-            <div>
-              <label
-                htmlFor="accountNumber"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
-                Account Number *
-              </label>
-              <Input
-                id="accountNumber"
-                type="text"
-                placeholder="Your account number"
-                value={bankInfo.accountNumber}
-                onChange={(e) =>
-                  setBankInfo({
-                    ...bankInfo,
-                    accountNumber: e.target.value.replace(/\D/g, ''),
-                  })
-                }
-                disabled={submitting}
-                required
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="accountType"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
-                Account Type *
-              </label>
-              <select
-                id="accountType"
-                value={bankInfo.electronicAccountType}
-                onChange={(e) =>
-                  setBankInfo({
-                    ...bankInfo,
-                    electronicAccountType: e.target
-                      .value as ElectronicAccountType,
-                  })
-                }
-                disabled={submitting}
-                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
-              >
-                {ACCOUNT_TYPE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="border-t pt-4">
-              <h3 className="mb-3 text-sm font-semibold text-gray-900">
-                Account Holder Address
-              </h3>
-              <Col className="gap-3">
-                <div>
-                  <label
-                    htmlFor="address1"
-                    className="mb-1 block text-sm font-medium text-gray-700"
-                  >
-                    Address Line 1 *
-                  </label>
-                  <Input
-                    id="address1"
-                    type="text"
-                    placeholder="Street address"
-                    value={bankInfo.address.address1}
-                    onChange={(e) =>
-                      setBankInfo({
-                        ...bankInfo,
-                        address: {
-                          ...bankInfo.address,
-                          address1: e.target.value,
-                        },
-                      })
-                    }
-                    disabled={submitting}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="address2"
-                    className="mb-1 block text-sm font-medium text-gray-700"
-                  >
-                    Address Line 2
-                  </label>
-                  <Input
-                    id="address2"
-                    type="text"
-                    placeholder="Apt, suite, etc. (optional)"
-                    value={bankInfo.address.address2 || ''}
-                    onChange={(e) =>
-                      setBankInfo({
-                        ...bankInfo,
-                        address: {
-                          ...bankInfo.address,
-                          address2: e.target.value,
-                        },
-                      })
-                    }
-                    disabled={submitting}
-                  />
-                </div>
-
-                <Row className="gap-3">
-                  <div className="flex-1">
-                    <label
-                      htmlFor="city"
-                      className="mb-1 block text-sm font-medium text-gray-700"
-                    >
-                      City *
-                    </label>
-                    <Input
-                      id="city"
-                      type="text"
-                      placeholder="City"
-                      value={bankInfo.address.city}
-                      onChange={(e) =>
-                        setBankInfo({
-                          ...bankInfo,
-                          address: {
-                            ...bankInfo.address,
-                            city: e.target.value,
-                          },
-                        })
-                      }
-                      disabled={submitting}
-                      required
-                    />
-                  </div>
-                  <div className="w-24">
-                    <label
-                      htmlFor="region"
-                      className="mb-1 block text-sm font-medium text-gray-700"
-                    >
-                      State *
-                    </label>
-                    <Input
-                      id="region"
-                      type="text"
-                      placeholder="CA"
-                      maxLength={2}
-                      value={bankInfo.address.region}
-                      onChange={(e) =>
-                        setBankInfo({
-                          ...bankInfo,
-                          address: {
-                            ...bankInfo.address,
-                            region: e.target.value.toUpperCase(),
-                          },
-                        })
-                      }
-                      disabled={submitting}
-                      required
-                    />
-                  </div>
-                </Row>
-
-                <Row className="gap-3">
-                  <div className="flex-1">
-                    <label
-                      htmlFor="postalCode"
-                      className="mb-1 block text-sm font-medium text-gray-700"
-                    >
-                      ZIP Code *
-                    </label>
-                    <Input
-                      id="postalCode"
-                      type="text"
-                      placeholder="12345"
-                      maxLength={10}
-                      value={bankInfo.address.postalCode}
-                      onChange={(e) =>
-                        setBankInfo({
-                          ...bankInfo,
-                          address: {
-                            ...bankInfo.address,
-                            postalCode: e.target.value,
-                          },
-                        })
-                      }
-                      disabled={submitting}
-                      required
-                    />
-                  </div>
-                  <div className="w-24">
-                    <label
-                      htmlFor="country"
-                      className="mb-1 block text-sm font-medium text-gray-700"
-                    >
-                      Country *
-                    </label>
-                    <Input
-                      id="country"
-                      type="text"
-                      placeholder="US"
-                      maxLength={2}
-                      value={bankInfo.address.country}
-                      onChange={(e) =>
-                        setBankInfo({
-                          ...bankInfo,
-                          address: {
-                            ...bankInfo.address,
-                            country: e.target.value.toUpperCase(),
-                          },
-                        })
-                      }
-                      disabled={submitting}
-                      required
-                    />
-                  </div>
-                </Row>
-              </Col>
-            </div>
-          </Col>
-
-          <div className="rounded-lg bg-blue-50 p-4 text-sm text-blue-800">
-            <p className="font-semibold">Important:</p>
-            <ul className="mt-1 list-inside list-disc space-y-1">
-              <li>Only US bank accounts are currently supported</li>
-              <li>Your information is securely transmitted and stored</li>
-              <li>Bank verification may take 1-2 business days</li>
-            </ul>
-          </div>
-
-          <Button
-            type="submit"
-            size="lg"
-            color="orange"
-            className="w-full"
-            disabled={submitting}
-            loading={submitting}
-          >
-            {submitting ? 'Connecting...' : 'Connect Bank Account'}
-          </Button>
-        </Col>
-      </form>
-    </Col>
+    <WithdrawForm
+      recipientName={recipientData?.name ?? profile.full_name}
+      accountLastFour={recipientData?.accountLastFour}
+      accountType={recipientData?.accountType}
+      withdrawBalance={withdrawBalance}
+    />
   )
+}
+
+async function fetchMercuryRecipient(recipientId: string) {
+  const apiKey = process.env.MERCURY_API_KEY
+  if (!apiKey) return null
+
+  try {
+    const res = await fetch(
+      `https://api.mercury.com/api/v1/recipients/${recipientId}`,
+      { headers: { Authorization: `Bearer ${apiKey}` } }
+    )
+    if (!res.ok) return null
+    const data = await res.json()
+    return {
+      name: data.name as string,
+      accountLastFour: data.electronicRoutingInfo?.accountNumber?.slice(-4) as
+        | string
+        | undefined,
+      accountType: data.electronicRoutingInfo?.electronicAccountType as
+        | string
+        | undefined,
+    }
+  } catch {
+    return null
+  }
 }
