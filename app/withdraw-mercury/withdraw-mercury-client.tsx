@@ -263,9 +263,10 @@ export function WithdrawForm(props: {
   recipientName: string
   accountLastFour: string | undefined
   accountType: string | undefined
-  withdrawBalance: number
+  balance: number
 }) {
-  const { recipientName, accountLastFour, accountType, withdrawBalance } = props
+  const { recipientName, accountLastFour, accountType } = props
+  const [balance, setBalance] = useState(props.balance)
   const [amount, setAmount] = useState('')
   const [withdrawing, setWithdrawing] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -290,6 +291,7 @@ export function WithdrawForm(props: {
       const result = await withdrawViaMercury(dollars)
       if (result.success) {
         setSuccess(`Withdrawal of $${dollars.toFixed(2)} submitted.`)
+        setBalance((b) => b - dollars)
         setAmount('')
       } else {
         setError(result.error)
@@ -346,7 +348,7 @@ export function WithdrawForm(props: {
                   Available Balance
                 </span>
                 <span className="text-lg font-bold">
-                  ${withdrawBalance.toFixed(2)}
+                  ${balance.toFixed(2)}
                 </span>
               </Row>
             </div>
@@ -361,8 +363,8 @@ export function WithdrawForm(props: {
                   id="amount"
                   type="number"
                   step="0.01"
-                  min="1"
-                  max={withdrawBalance}
+                  min="100"
+                  max={balance}
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}

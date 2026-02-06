@@ -169,6 +169,14 @@ export async function withdrawViaMercury(
     return { success: false, error: `Mercury API error: ${response.status}` }
   }
 
-  revalidatePath('/withdraw-mercury')
+  const data = await response.json()
+
+  await supabase.from('stripe_txns').insert({
+    session_id: `mercury_${data.id ?? txnId}`,
+    customer_id: user.id,
+    amount,
+    txn_id: txnId,
+  })
+
   return { success: true, transactionId: txnId }
 }

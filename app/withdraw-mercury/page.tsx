@@ -1,3 +1,5 @@
+'use server'
+
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getProfileById, getUser } from '@/db/profile'
 import { getTxnAndProjectsByUser } from '@/db/txn'
@@ -38,32 +40,31 @@ export default async function WithdrawMercuryPage() {
       recipientName={recipientData?.name ?? profile.full_name}
       accountLastFour={recipientData?.accountLastFour}
       accountType={recipientData?.accountType}
-      withdrawBalance={withdrawBalance}
+      balance={withdrawBalance}
     />
   )
 }
 
 async function fetchMercuryRecipient(recipientId: string) {
   const apiKey = process.env.MERCURY_API_KEY
-  if (!apiKey) return null
+  if (!apiKey) throw new Error('No Mercury API key')
 
-  try {
-    const res = await fetch(
-      `https://api.mercury.com/api/v1/recipient/${recipientId}`,
-      { headers: { Authorization: `Bearer ${apiKey}` } }
+  const res = await fetch(
+    `https://api.mercury.com/api/v1/recipient/${recipientId}`,
+    { headers: { Authorization: `Bearer ${apiKey}` } }
+  )
+  const data = await res.json()
+  if (!res.ok)
+    throw new Error(
+      'Failed to fetch Mercury recipient: ' + JSON.stringify(data)
     )
-    if (!res.ok) return null
-    const data = await res.json()
-    return {
-      name: data.name as string,
-      accountLastFour: data.electronicRoutingInfo?.accountNumber?.slice(-4) as
-        | string
-        | undefined,
-      accountType: data.electronicRoutingInfo?.electronicAccountType as
-        | string
-        | undefined,
-    }
-  } catch {
-    return null
+  return {
+    name: data.name as string,
+    accountLastFour: data.electronicRoutingInfo?.accountNumber?.slice(-4) as
+      | string
+      | undefined,
+    accountType: data.electronicRoutingInfo?.electronicAccountType as
+      | string
+      | undefined,
   }
 }
