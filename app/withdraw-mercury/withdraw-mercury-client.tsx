@@ -10,7 +10,12 @@ import {
   createMercuryRecipient,
   withdrawViaMercury,
   BankAccountInfo,
+  RecipientInput,
 } from './actions'
+import {
+  InternationalWireFields,
+  useInternationalWireState,
+} from './international-wire-form'
 
 type AccountType = BankAccountInfo['electronicAccountType']
 
@@ -45,7 +50,10 @@ function Alert(props: {
 
 // --- Bank info form (shown when no Mercury recipient exists) ---
 
+type TransferType = 'domestic' | 'international'
+
 export function BankInfoForm() {
+  const [transferType, setTransferType] = useState<TransferType>('domestic')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [bankInfo, setBankInfo] = useState<BankAccountInfo>({
@@ -60,6 +68,7 @@ export function BankInfoForm() {
       country: 'US',
     },
   })
+  const intlWireState = useInternationalWireState()
 
   const update = (patch: Partial<BankAccountInfo>) =>
     setBankInfo((prev) => ({ ...prev, ...patch }))
@@ -74,7 +83,11 @@ export function BankInfoForm() {
     setError(null)
     setSubmitting(true)
     try {
-      const result = await createMercuryRecipient(bankInfo)
+      const input: RecipientInput =
+        transferType === 'domestic'
+          ? { type: 'domestic', bankInfo }
+          : { type: 'international', wireInfo: intlWireState.wireInfo }
+      const result = await createMercuryRecipient(input)
       if (result.success) {
         window.location.reload()
       } else {
@@ -95,150 +108,195 @@ export function BankInfoForm() {
             <div>
               <h1 className="text-2xl font-bold">Connect Your Bank Account</h1>
               <p className="mt-1 text-sm text-gray-600">
-                Enter your US bank account details to enable withdrawals.
+                Enter your bank account details to enable withdrawals.
               </p>
+            </div>
+
+            {/* Transfer type toggle */}
+            <div className="flex rounded-lg border border-gray-300 p-1">
+              <button
+                type="button"
+                className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                  transferType === 'domestic'
+                    ? 'bg-orange-500 text-white'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+                onClick={() => setTransferType('domestic')}
+                disabled={submitting}
+              >
+                US Bank Transfer
+              </button>
+              <button
+                type="button"
+                className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                  transferType === 'international'
+                    ? 'bg-orange-500 text-white'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+                onClick={() => setTransferType('international')}
+                disabled={submitting}
+              >
+                International Wire
+              </button>
             </div>
 
             {error && <Alert type="error">{error}</Alert>}
 
-            <div>
-              <Label htmlFor="routingNumber">Routing Number</Label>
-              <Input
-                id="routingNumber"
-                placeholder="9 digits"
-                maxLength={9}
-                value={bankInfo.routingNumber}
-                onChange={(e) =>
-                  update({ routingNumber: e.target.value.replace(/\D/g, '') })
-                }
-                disabled={submitting}
-                required
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="accountNumber">Account Number</Label>
-              <Input
-                id="accountNumber"
-                placeholder="Account number"
-                value={bankInfo.accountNumber}
-                onChange={(e) =>
-                  update({ accountNumber: e.target.value.replace(/\D/g, '') })
-                }
-                disabled={submitting}
-                required
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="accountType">Account Type</Label>
-              <select
-                id="accountType"
-                value={bankInfo.electronicAccountType}
-                onChange={(e) =>
-                  update({
-                    electronicAccountType: e.target.value as AccountType,
-                  })
-                }
-                disabled={submitting}
-                className="h-12 w-full rounded-md border border-gray-300 bg-white px-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-              >
-                {ACCOUNT_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>
-                    {t.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="border-t pt-4">
-              <h3 className="mb-3 text-sm font-semibold text-gray-900">
-                Account Holder Address
-              </h3>
-              <Col className="gap-3">
+            {transferType === 'domestic' ? (
+              <>
                 <div>
-                  <Label htmlFor="address1">Street Address</Label>
+                  <Label htmlFor="routingNumber">Routing Number</Label>
                   <Input
-                    id="address1"
-                    placeholder="123 Main St"
-                    value={bankInfo.address.address1}
-                    onChange={(e) => updateAddress({ address1: e.target.value })}
+                    id="routingNumber"
+                    placeholder="9 digits"
+                    maxLength={9}
+                    value={bankInfo.routingNumber}
+                    onChange={(e) =>
+                      update({
+                        routingNumber: e.target.value.replace(/\D/g, ''),
+                      })
+                    }
                     disabled={submitting}
                     required
                     className="w-full"
                   />
                 </div>
 
-                <Row className="gap-3">
-                  <div className="flex-1">
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      placeholder="City"
-                      value={bankInfo.address.city}
-                      onChange={(e) => updateAddress({ city: e.target.value })}
-                      disabled={submitting}
-                      required
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="w-24">
-                    <Label htmlFor="region">State</Label>
-                    <Input
-                      id="region"
-                      placeholder="CA"
-                      maxLength={2}
-                      value={bankInfo.address.region}
-                      onChange={(e) =>
-                        updateAddress({
-                          region: e.target.value.toUpperCase(),
-                        })
-                      }
-                      disabled={submitting}
-                      required
-                      className="w-full"
-                    />
-                  </div>
-                </Row>
+                <div>
+                  <Label htmlFor="accountNumber">Account Number</Label>
+                  <Input
+                    id="accountNumber"
+                    placeholder="Account number"
+                    value={bankInfo.accountNumber}
+                    onChange={(e) =>
+                      update({
+                        accountNumber: e.target.value.replace(/\D/g, ''),
+                      })
+                    }
+                    disabled={submitting}
+                    required
+                    className="w-full"
+                  />
+                </div>
 
-                <Row className="gap-3">
-                  <div className="flex-1">
-                    <Label htmlFor="postalCode">ZIP Code</Label>
-                    <Input
-                      id="postalCode"
-                      placeholder="12345"
-                      maxLength={10}
-                      value={bankInfo.address.postalCode}
-                      onChange={(e) =>
-                        updateAddress({ postalCode: e.target.value })
-                      }
-                      disabled={submitting}
-                      required
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="w-24">
-                    <Label htmlFor="country">Country</Label>
-                    <Input
-                      id="country"
-                      placeholder="US"
-                      maxLength={2}
-                      value={bankInfo.address.country}
-                      onChange={(e) =>
-                        updateAddress({
-                          country: e.target.value.toUpperCase(),
-                        })
-                      }
-                      disabled={submitting}
-                      required
-                      className="w-full"
-                    />
-                  </div>
-                </Row>
-              </Col>
-            </div>
+                <div>
+                  <Label htmlFor="accountType">Account Type</Label>
+                  <select
+                    id="accountType"
+                    value={bankInfo.electronicAccountType}
+                    onChange={(e) =>
+                      update({
+                        electronicAccountType: e.target.value as AccountType,
+                      })
+                    }
+                    disabled={submitting}
+                    className="h-12 w-full rounded-md border border-gray-300 bg-white px-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  >
+                    {ACCOUNT_TYPES.map((t) => (
+                      <option key={t.value} value={t.value}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h3 className="mb-3 text-sm font-semibold text-gray-900">
+                    Account Holder Address
+                  </h3>
+                  <Col className="gap-3">
+                    <div>
+                      <Label htmlFor="address1">Street Address</Label>
+                      <Input
+                        id="address1"
+                        placeholder="123 Main St"
+                        value={bankInfo.address.address1}
+                        onChange={(e) =>
+                          updateAddress({ address1: e.target.value })
+                        }
+                        disabled={submitting}
+                        required
+                        className="w-full"
+                      />
+                    </div>
+
+                    <Row className="gap-3">
+                      <div className="flex-1">
+                        <Label htmlFor="city">City</Label>
+                        <Input
+                          id="city"
+                          placeholder="City"
+                          value={bankInfo.address.city}
+                          onChange={(e) =>
+                            updateAddress({ city: e.target.value })
+                          }
+                          disabled={submitting}
+                          required
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="w-24">
+                        <Label htmlFor="region">State</Label>
+                        <Input
+                          id="region"
+                          placeholder="CA"
+                          maxLength={2}
+                          value={bankInfo.address.region}
+                          onChange={(e) =>
+                            updateAddress({
+                              region: e.target.value.toUpperCase(),
+                            })
+                          }
+                          disabled={submitting}
+                          required
+                          className="w-full"
+                        />
+                      </div>
+                    </Row>
+
+                    <Row className="gap-3">
+                      <div className="flex-1">
+                        <Label htmlFor="postalCode">ZIP Code</Label>
+                        <Input
+                          id="postalCode"
+                          placeholder="12345"
+                          maxLength={10}
+                          value={bankInfo.address.postalCode}
+                          onChange={(e) =>
+                            updateAddress({ postalCode: e.target.value })
+                          }
+                          disabled={submitting}
+                          required
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="w-24">
+                        <Label htmlFor="country">Country</Label>
+                        <Input
+                          id="country"
+                          placeholder="US"
+                          maxLength={2}
+                          value={bankInfo.address.country}
+                          onChange={(e) =>
+                            updateAddress({
+                              country: e.target.value.toUpperCase(),
+                            })
+                          }
+                          disabled={submitting}
+                          required
+                          className="w-full"
+                        />
+                      </div>
+                    </Row>
+                  </Col>
+                </div>
+              </>
+            ) : (
+              <InternationalWireFields
+                wireState={intlWireState}
+                disabled={submitting}
+              />
+            )}
 
             <Button
               type="submit"

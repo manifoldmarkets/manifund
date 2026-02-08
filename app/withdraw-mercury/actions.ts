@@ -34,12 +34,40 @@ export type BankAccountInfo = {
   }
 }
 
+export type InternationalWireInfo = {
+  swiftCode: string
+  iban: string
+  address: {
+    address1: string
+    address2?: string
+    city: string
+    region: string
+    postalCode: string
+    country: string
+  }
+  bankDetails: {
+    bankName: string
+    bankCountry: string
+    cityState: string
+  }
+  correspondentInfo?: {
+    bankName: string
+    routingNumber?: string
+    swiftCode?: string
+  }
+  countrySpecific?: Record<string, string>
+}
+
+export type RecipientInput =
+  | { type: 'domestic'; bankInfo: BankAccountInfo }
+  | { type: 'international'; wireInfo: InternationalWireInfo }
+
 type ActionResult<T = {}> =
   | ({ success: true } & T)
   | { success: false; error: string }
 
 export async function createMercuryRecipient(
-  bankInfo: BankAccountInfo
+  input: RecipientInput
 ): Promise<ActionResult<{ recipientId: string }>> {
   const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
@@ -56,13 +84,18 @@ export async function createMercuryRecipient(
     return { success: false, error: 'Bank account already connected' }
   }
 
+  const routingInfo =
+    input.type === 'domestic'
+      ? { electronicRoutingInfo: input.bankInfo }
+      : { internationalWireRoutingInfo: input.wireInfo }
+
   const response = await fetch(`${MERCURY_API}/recipients`, {
     method: 'POST',
     headers: mercuryHeaders(),
     body: JSON.stringify({
       name: profile.full_name,
       emails: [user.email],
-      electronicRoutingInfo: bankInfo,
+      ...routingInfo,
     }),
   })
 
