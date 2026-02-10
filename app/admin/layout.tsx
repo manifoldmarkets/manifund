@@ -3,7 +3,7 @@ import { createServerSupabaseClient } from '@/db/supabase-server'
 import NoAccess from '../no-access'
 import Link from 'next/link'
 import { Suspense } from 'react'
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { HomeIcon } from '@heroicons/react/24/outline'
 
 // Revalidate every 5 minutes

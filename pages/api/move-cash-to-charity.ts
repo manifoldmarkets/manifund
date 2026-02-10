@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from './_db'
+import { createEdgeClient } from '@/db/edge'
 import { getProfileById } from '@/db/profile'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getPendingBidsByUser } from '@/db/bid'

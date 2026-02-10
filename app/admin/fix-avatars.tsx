@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@/components/button'
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { SupabaseClient } from '@supabase/supabase-js'
 
 export function FixAvatars() {

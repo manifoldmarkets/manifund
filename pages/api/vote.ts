@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from './_db'
+import { createEdgeClient } from '@/db/edge'
 import { getUser } from '@/db/profile'
 import { getUserProjectVote } from '@/db/project'
 

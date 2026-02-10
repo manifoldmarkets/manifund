@@ -1,7 +1,7 @@
 import { listProjects } from '@/db/project'
 // import { uniq } from 'es-toolkit'
 import { uniq } from 'es-toolkit'
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 
 export const config = {
   runtime: 'edge',

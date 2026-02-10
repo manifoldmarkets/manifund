@@ -1,6 +1,6 @@
 import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { Project, TOTAL_SHARES, updateProjectStage } from '@/db/project'
 import { getBidsForResolution, BidAndProfile } from '@/db/bid'
 import { formatMoney, formatPercent } from '@/utils/formatting'

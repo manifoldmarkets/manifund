@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { genTradeText, makeTrade, updateBidFromTrade } from '@/utils/trade'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getProfileById } from '@/db/profile'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import {
   calculateCashBalance,
   calculateCharityBalance,

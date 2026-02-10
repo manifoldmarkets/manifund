@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { invalidateProjectsCache } from '@/db/project-cached'
 import { updateProjectCauses } from '@/db/cause'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { ProjectUpdate, updateProject } from '@/db/project'
 import { isAdmin } from '@/db/txn'
 import { updateProjectEmbedding } from '@/app/utils/embeddings'

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from './_db'
+import { createEdgeClient } from '@/db/edge'
 import { JSONContent } from '@tiptap/react'
 import { sendComment, Comment } from '@/db/comment'
 

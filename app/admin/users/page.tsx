@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { PayUser } from '../pay-user'
 import { VerifyInvestor } from '../verify-investor'
 import { DownloadTextButton } from '../download-text-button'

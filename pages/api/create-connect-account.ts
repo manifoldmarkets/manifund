@@ -1,6 +1,6 @@
 import { STRIPE_SECRET_KEY } from '@/db/env'
 import Stripe from 'stripe'
-import { createEdgeClient } from './_db'
+import { createEdgeClient } from '@/db/edge'
 import { getUser } from '@/db/profile'
 import { NextRequest, NextResponse } from 'next/server'
 export const config = {

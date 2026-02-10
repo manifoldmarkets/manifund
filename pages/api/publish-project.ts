@@ -1,7 +1,7 @@
 import { updateProject, getProjectById } from '@/db/project'
 import { invalidateProjectsCache } from '@/db/project-cached'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { createUpdateFromParams, ProjectParams } from '@/utils/upsert-project'
 import { getPrizeCause } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'

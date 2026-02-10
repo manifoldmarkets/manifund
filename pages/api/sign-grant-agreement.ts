@@ -1,6 +1,6 @@
 import { getProjectAndProfileById, ProjectAndProfile } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from './_db'
+import { createEdgeClient } from '@/db/edge'
 import { maybeActivateProject } from '@/utils/activate-project'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { format } from 'date-fns'

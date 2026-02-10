@@ -1,6 +1,6 @@
 import { getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { getProfileById } from '@/db/profile'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getPendingBidsByUser } from '@/db/bid'

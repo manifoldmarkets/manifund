@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { invalidateProjectsCache } from '@/db/project-cached'
-import { createEdgeClient } from './_db'
+import { createEdgeClient } from '@/db/edge'
 import { getUser } from '@/db/profile'
 import { getProjectWithCausesById } from '@/db/project'
 import { getPrizeCause } from '@/db/cause'

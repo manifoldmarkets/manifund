@@ -1,7 +1,7 @@
 import { getProfileById, getUser } from '@/db/profile'
 import { NextRequest, NextResponse } from 'next/server'
 import { getTxnAndProjectsByUser, getTxnsByUser } from '@/db/txn'
-import { createEdgeClient } from './_db'
+import { createEdgeClient } from '@/db/edge'
 import {
   calculateAMMPorfolio,
   calculateBuyShares,

@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 import { STRIPE_SECRET_KEY } from '@/db/env'
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Readable } from 'node:stream'

@@ -1,7 +1,7 @@
 import { Project, TOTAL_SHARES } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { projectSlugify, toTitleCase } from '@/utils/formatting'
 import { ProjectParams } from '@/utils/upsert-project'
 import { getPrizeCause, updateProjectCauses } from '@/db/cause'

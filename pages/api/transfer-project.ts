@@ -1,4 +1,4 @@
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 import { NextApiRequest } from 'next'
 import { User } from '@supabase/supabase-js'
 import { getTransfersByEmail } from '@/db/project-transfer'

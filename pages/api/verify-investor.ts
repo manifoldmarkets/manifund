@@ -1,7 +1,7 @@
 import { VerifyInvestorProps } from '@/app/admin/verify-investor'
 import { getUser, isAdmin } from '@/db/profile'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 
 export const config = {
   runtime: 'edge',

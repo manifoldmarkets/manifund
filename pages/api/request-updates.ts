@@ -1,6 +1,6 @@
 import { differenceInMonths } from 'date-fns'
 import { NextResponse } from 'next/server'
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { isProd } from '@/db/env'
 import { orderBy } from 'es-toolkit'

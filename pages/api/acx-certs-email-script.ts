@@ -1,4 +1,4 @@
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 import { getIncompleteTransfers } from '@/db/project-transfer'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'

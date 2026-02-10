@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { listProjects } from '@/db/project'
 import { AddTags } from '../add-tags'
 import { ActivateProject } from '../activate-project'

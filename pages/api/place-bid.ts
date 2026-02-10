@@ -1,7 +1,7 @@
 import { Bid, getBidsByUser } from '@/db/bid'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
-import { createEdgeClient } from './_db'
+import { createEdgeClient } from '@/db/edge'
 import { getProjectAndBidsById } from '@/db/project'
 import { getProfileAndBidsById, getUser } from '@/db/profile'
 import { getTxnAndProjectsByUser } from '@/db/txn'

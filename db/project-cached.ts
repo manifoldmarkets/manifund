@@ -16,5 +16,5 @@ export const getHotProjectsCached = unstable_cache(
 )
 
 export function invalidateProjectsCache() {
-  revalidateTag('hot-projects')
+  revalidateTag('hot-projects', 'max')
 }

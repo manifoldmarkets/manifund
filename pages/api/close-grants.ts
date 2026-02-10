@@ -1,6 +1,6 @@
 import { differenceInDays, isBefore } from 'date-fns'
 import { NextResponse } from 'next/server'
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
 import { Project } from '@/db/project'
 import { Bid } from '@/db/bid'

@@ -1,4 +1,4 @@
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 
 export const config = {
   runtime: 'edge',

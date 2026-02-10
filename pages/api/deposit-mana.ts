@@ -1,5 +1,5 @@
 import { getUser } from '@/db/profile'
-import { createEdgeClient } from '@/pages/api/_db'
+import { createEdgeClient } from '@/db/edge'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const config = {

@@ -1,5 +1,5 @@
 import { ProjectAndProfile } from '@/db/project'
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { GrantAgreement } from '@/db/grant_agreement'

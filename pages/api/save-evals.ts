@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from './_db'
+import { createEdgeClient } from '@/db/edge'
 import { ConfidenceMap, TierObj, TrustObj } from '@/app/evals-form/evals-form'
 
 export const config = {

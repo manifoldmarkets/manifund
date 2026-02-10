@@ -7,7 +7,7 @@ import {
   TOTAL_SHARES,
 } from '@/db/project'
 import { getTxnsByProject } from '@/db/txn'
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { differenceInDays, isBefore } from 'date-fns'
 import { uniq } from 'es-toolkit'

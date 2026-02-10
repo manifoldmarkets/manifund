@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { ACXG_2025_GRANTS } from './acxg2025-grants'
 import { Project, TOTAL_SHARES } from '@/db/project'
 import { projectSlugify } from '@/utils/formatting'

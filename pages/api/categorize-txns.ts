@@ -2,7 +2,7 @@ import { Txn } from '@/db/txn'
 import { bundleTxns } from '@/utils/math'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 
 export const config = {
   runtime: 'edge',

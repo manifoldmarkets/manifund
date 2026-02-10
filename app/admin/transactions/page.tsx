@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { CreateTxn } from '../create-txn'
 import { Table } from '@/components/table-catalyst'
 

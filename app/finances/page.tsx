@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { userBalances } from '../admin/utils'
 import UsersGrid from './users-grid'
 

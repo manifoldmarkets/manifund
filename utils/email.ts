@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { SupabaseClient } from '@supabase/supabase-js'
 
 export const TEMPLATE_IDS = {

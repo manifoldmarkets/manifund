@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 import { sendWeeklyDigest } from '@/utils/weekly-digest'
 import { isProd } from '@/db/env'
 

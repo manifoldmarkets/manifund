@@ -1,7 +1,7 @@
 import { Txn, TxnType } from '@/db/txn'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 import { Project } from '@/db/project'
 import { calculateAMMPorfolio } from '@/utils/amm'
 import uuid from 'react-uuid'

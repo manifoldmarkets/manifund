@@ -1,6 +1,6 @@
 import { FullProject } from '@/db/project'
 import { isBefore } from 'date-fns'
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 import { sortBy } from 'es-toolkit'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'

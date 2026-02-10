@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { RunScript } from '../run-script'
 import { Donations } from '../donations'
 import { RoundBidAmounts } from '../round-bid-amounts'

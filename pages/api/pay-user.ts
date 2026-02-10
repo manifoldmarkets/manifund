@@ -3,7 +3,7 @@ import { getProfileById, getUser, isAdmin } from '@/db/profile'
 import { getUserEmail, sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 
 export const config = {
   runtime: 'edge',

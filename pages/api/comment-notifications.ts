@@ -7,7 +7,7 @@ import { Comment } from '@/db/comment'
 import { JSONContent } from '@tiptap/core'
 import { TIPTAP_EXTENSIONS } from '@/components/editor'
 import { getProjectFollowerIds } from '@/db/follows'
-import { createAdminClient } from './_db'
+import { createAdminClient } from '@/db/edge'
 
 export default async function handler(
   req: NextApiRequest,

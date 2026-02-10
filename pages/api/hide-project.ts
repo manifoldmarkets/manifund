@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from './_db'
+import { createEdgeClient } from '@/db/edge'
 import { invalidateProjectsCache } from '@/db/project-cached'
 import { getProjectById, updateProjectStage } from '@/db/project'
 

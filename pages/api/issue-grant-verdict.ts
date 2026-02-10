@@ -1,6 +1,6 @@
 import { JSONContent } from '@tiptap/react'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from './_db'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { getUser, isAdmin } from '@/db/profile'
 import { getProjectById } from '@/db/project'
 import { getAdminName, getURL } from '@/utils/constants'

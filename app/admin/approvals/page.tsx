@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/pages/api/_db'
+import { createAdminClient } from '@/db/edge'
 import { GrantVerdict } from '../grant-verdict'
 import Link from 'next/link'
 import clsx from 'clsx'
