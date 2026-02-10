@@ -2,7 +2,6 @@ import 'server-only'
 
 import SupabaseListener from '@/db/supabase-listener'
 import SupabaseProvider from '@/db/supabase-provider'
-import { createServerSupabaseClient } from '@/db/supabase-server'
 import './globals.css'
 import Sidebar from './sidebar'
 import { Readex_Pro, Josefin_Slab, Satisfy } from 'next/font/google'
@@ -39,28 +38,23 @@ export const metadata = {
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createServerSupabaseClient()
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
   return (
     <html lang="en" className={fontVars}>
       <head />
       <body className="min-h-screen w-full bg-gray-50">
         <SupabaseProvider
-          session={session}
           className={`mx-auto mb-20 w-full font-sans lg:grid lg:max-w-7xl lg:grid-cols-12 lg:gap-x-2 xl:max-w-7xl xl:gap-x-8`}
         >
           <Toaster />
           <Suspense fallback={null}>
             <Sidebar />
           </Suspense>
-          <SupabaseListener serverAccessToken={session?.access_token} />
+          <SupabaseListener />
           <main className="flex flex-col lg:col-span-8">
             <Suspense fallback={null}>
               <CompleteProfileBanner />

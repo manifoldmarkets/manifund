@@ -4,26 +4,21 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useSupabase } from './supabase-provider'
 
-export default function SupabaseListener(props: {
-  serverAccessToken?: string
-}) {
-  const { serverAccessToken } = props
+export default function SupabaseListener() {
   const { supabase } = useSupabase()
   const router = useRouter()
 
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.access_token !== serverAccessToken) {
-        router.refresh()
-      }
+    } = supabase.auth.onAuthStateChange(() => {
+      router.refresh()
     })
 
     return () => {
       subscription.unsubscribe()
     }
-  }, [serverAccessToken, router, supabase])
+  }, [router, supabase])
 
   return null
 }
