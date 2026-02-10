@@ -8,18 +8,19 @@ import { ProfileHeader } from '../[usernameSlug]/profile-header'
 
 export const revalidate = 60
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: {
-    code?: string
-    recovery?: string
-    redirectTo?: string
-    error?: string
-    error_code?: string
-    error_description?: string
+export default async function Page(
+  props: {
+    searchParams: Promise<{
+      code?: string
+      recovery?: string
+      redirectTo?: string
+      error?: string
+      error_code?: string
+      error_description?: string
+    }>
   }
-}) {
+) {
+  const searchParams = await props.searchParams;
   // some redirect error, likely from password reset
   if (searchParams.error) {
     return (

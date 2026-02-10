@@ -20,9 +20,9 @@ import { calculateCharityBalance } from '@/utils/math'
 export const revalidate = 60
 
 export default async function CharityPage(props: {
-  params: { charitySlug: string }
+  params: Promise<{ charitySlug: string }>
 }) {
-  const { charitySlug } = props.params
+  const { charitySlug } = (await props.params)
   const supabase = await createServerSupabaseClient()
   const charity = await getProfileByUsername(supabase, charitySlug)
   if (!charity) {

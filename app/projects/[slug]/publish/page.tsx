@@ -6,9 +6,9 @@ import React from 'react'
 import { PublishProjectForm } from './publish-form'
 
 export default async function PublishProjectPage(props: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
-  const { slug } = props.params
+  const { slug } = (await props.params)
   const supabase = await createServerSupabaseClient()
   const project = await getProjectWithCausesBySlug(supabase, slug)
   const user = await getUser(supabase)

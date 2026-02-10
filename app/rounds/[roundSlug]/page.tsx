@@ -10,9 +10,9 @@ import { listSimpleCauses } from '@/db/cause'
 export const revalidate = 60
 
 export async function generateMetadata(props: {
-  params: { roundSlug: string }
+  params: Promise<{ roundSlug: string }>
 }) {
-  const { roundSlug } = props.params
+  const { roundSlug } = (await props.params)
   const supabase = await createServerSupabaseClient()
   const round = await getRoundBySlug(supabase, roundSlug)
   return {
@@ -21,9 +21,9 @@ export async function generateMetadata(props: {
 }
 
 export default async function RoundPage(props: {
-  params: { roundSlug: string }
+  params: Promise<{ roundSlug: string }>
 }) {
-  const { roundSlug } = props.params
+  const { roundSlug } = (await props.params)
   const supabase = await createServerSupabaseClient()
   const round = await getRoundBySlug(supabase, roundSlug)
   const [projects, regranters, causesList] = await Promise.all([

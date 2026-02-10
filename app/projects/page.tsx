@@ -17,7 +17,7 @@ import { LandingSection } from './landing-section'
 // Page is dynamic due to cookies(), but listProjects is cached for 30s
 
 export default async function Projects(props: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
@@ -31,13 +31,12 @@ export default async function Projects(props: {
           {/* Or use <CausesWithFeatured /> to include active rounds */}
         </>
       )}
-
       {/* Use nested suspense to load the full feed after the fast feed */}
       <Suspense
         fallback={
           <Suspense fallback={<FeedTabsSkeleton />}>
             <AsyncFeedTabs
-              searchParams={props.searchParams}
+              searchParams={(await props.searchParams)}
               userId={user?.id}
               useHotProjects={true}
             />
@@ -45,13 +44,13 @@ export default async function Projects(props: {
         }
       >
         <AsyncFeedTabs
-          searchParams={props.searchParams}
+          searchParams={(await props.searchParams)}
           userId={user?.id}
           useHotProjects={false}
         />
       </Suspense>
     </Col>
-  )
+  );
 }
 
 // Separate component for async feed data

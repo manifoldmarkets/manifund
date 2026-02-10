@@ -12,15 +12,15 @@ import NotFound from '../not-found'
 export const revalidate = 60
 
 export default async function UserProfilePage(props: {
-  params: { usernameSlug: string }
+  params: Promise<{ usernameSlug: string }>
 }) {
-  const { usernameSlug } = props.params
+  const { usernameSlug } = (await props.params)
   const supabase = await createServerSupabaseClient()
   const profile = await getProfileByUsername(supabase, usernameSlug)
   if (!profile) {
     return <NotFound />
   } else if (profile.type === 'fund') {
-    return <FundPage params={{ fundSlug: usernameSlug }} />
+    return <FundPage params={Promise.resolve({ fundSlug: usernameSlug })} />
   } else if (profile.type !== 'individual') {
     return <div>Profile type not supported</div>
   }

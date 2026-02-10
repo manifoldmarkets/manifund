@@ -18,8 +18,8 @@ import NoAccess from '@/app/no-access'
 
 export const revalidate = 0
 
-export async function generateMetadata(props: { params: { slug: string } }) {
-  const { slug } = props.params
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
+  const { slug } = (await props.params)
   const supabase = await createServerSupabaseClient()
   const project = await getProjectBySlug(supabase, slug)
   const description = project.blurb ?? 'A project on Manifund'
@@ -38,8 +38,8 @@ export async function generateMetadata(props: { params: { slug: string } }) {
   }
 }
 
-export default async function ProjectPage(props: { params: { slug: string } }) {
-  const { slug } = props.params
+export default async function ProjectPage(props: { params: Promise<{ slug: string }> }) {
+  const { slug } = (await props.params)
   const supabase = await createServerSupabaseClient()
   const [project, user] = await Promise.all([
     getFullProjectBySlug(supabase, slug),

@@ -10,9 +10,9 @@ import { Row } from '@/components/layout/row'
 import { Tag } from '@/components/tags'
 
 export default async function GrantAgreementPage(props: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
-  const { slug } = props.params
+  const { slug } = (await props.params)
   const supabase = await createServerSupabaseClient()
   const project = await getProjectAndProfileBySlug(supabase, slug)
   if (!project || project.approved === false) {
