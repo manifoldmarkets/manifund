@@ -13,10 +13,7 @@ export async function getRounds(supabase: SupabaseClient) {
 }
 
 export async function getRoundBySlug(supabase: SupabaseClient, slug: string) {
-  const { data, error } = await supabase
-    .from('rounds')
-    .select('*')
-    .eq('slug', slug)
+  const { data, error } = await supabase.from('rounds').select('*').eq('slug', slug)
   if (error) {
     throw error
   }

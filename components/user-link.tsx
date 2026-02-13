@@ -15,8 +15,8 @@ export function shortenName(name: string) {
         ? firstName
         : firstName.substring(0, maxLength - 3) + '...'
       : name.length > maxLength
-      ? name.substring(0, maxLength - 3) + '...'
-      : name
+        ? name.substring(0, maxLength - 3) + '...'
+        : name
   return shortName
 }
 
@@ -29,12 +29,7 @@ export function UserAvatarAndBadge(props: {
   const { profile, className, short, creatorBadge } = props
   return (
     <div className={clsx('flex flex-row items-center gap-1', className)}>
-      <Avatar
-        username={profile.username}
-        avatarUrl={profile.avatar_url}
-        id={profile.id}
-        size={6}
-      />
+      <Avatar username={profile.username} avatarUrl={profile.avatar_url} id={profile.id} size={6} />
       <UserLink
         name={profile.full_name}
         username={profile.username}
@@ -54,8 +49,7 @@ export function UserLink(props: {
   hideBadge?: boolean
   creatorBadge?: boolean
 }) {
-  const { name, username, className, short, noLink, hideBadge, creatorBadge } =
-    props
+  const { name, username, className, short, noLink, hideBadge, creatorBadge } = props
   const shortName = short ? shortenName(name) : name
   const shortened = shortName !== name
   return (

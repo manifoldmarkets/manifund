@@ -19,11 +19,7 @@ export type ProjectParams = {
   lobbying: boolean
 }
 
-export async function giveCreatorShares(
-  supabase: SupabaseClient,
-  id: string,
-  creator: string
-) {
+export async function giveCreatorShares(supabase: SupabaseClient, id: string, creator: string) {
   const txn = {
     from_id: null,
     to_id: creator,
@@ -74,9 +70,7 @@ export function createUpdateFromParams(projectParams: ProjectParams) {
     description,
     min_funding: minFunding ?? 0,
     funding_goal: fundingGoal ?? minFunding ?? 0,
-    founder_shares: !!selectedPrize
-      ? (founderPercent / 100) * TOTAL_SHARES
-      : TOTAL_SHARES,
+    founder_shares: !!selectedPrize ? (founderPercent / 100) * TOTAL_SHARES : TOTAL_SHARES,
     auction_close: verdictDate,
     location_description: location,
     lobbying,

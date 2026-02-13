@@ -64,16 +64,10 @@ export function UpdatePasswordForm({
 
   return (
     <div className="pt-4">
-      {title && (
-        <h3 className="mb-4 text-lg font-medium text-gray-900">{title}</h3>
-      )}
+      {title && <h3 className="mb-4 text-lg font-medium text-gray-900">{title}</h3>}
 
       {!showPasswordForm ? (
-        <Button
-          type="button"
-          onClick={() => setShowPasswordForm(true)}
-          className="mb-4"
-        >
+        <Button type="button" onClick={() => setShowPasswordForm(true)} className="mb-4">
           {title || 'Update Password'}
         </Button>
       ) : (
@@ -102,16 +96,10 @@ export function UpdatePasswordForm({
             />
           </Col>
 
-          {passwordError && (
-            <div className="text-sm text-red-600">{passwordError}</div>
-          )}
+          {passwordError && <div className="text-sm text-red-600">{passwordError}</div>}
 
           <div className="flex gap-2">
-            <Button
-              type="submit"
-              disabled={passwordSubmitting}
-              loading={passwordSubmitting}
-            >
+            <Button type="submit" disabled={passwordSubmitting} loading={passwordSubmitting}>
               {passwordSubmitting ? 'Submitting...' : 'Submit'}
             </Button>
             {!stayOpen && (

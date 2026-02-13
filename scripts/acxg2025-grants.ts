@@ -38,8 +38,7 @@ export const ACXG_2025_GRANTS = [
       'Background: High frequency trading, Redwood MLab, and a good SWE baseline. Really likes predicting stuff and believes in the Futarchy. \n\nReferences (Will provide contact details upon request): \nGame Theory and Academics: https://www.cmu.edu/dietrich/philosophy/people/faculty/aydin-mohseni.html\nhttps://www.danielherrmann.ca/\nPrevious boss at qSpark/Lattice Investment\nAI, etc: https://metr.org/team/sydney-von-arx/',
     socialMediaWebsite:
       'https://whatsbuild.ing/\nhttps://www.lesswrong.com/users/winstonbosan\nI worked as trialee at Lighthaven/Lesswrong in 2022.\nMy references',
-    fundingAmountRequested:
-      '$25000 - LEAN, $41000 - Extended. Details see main description.',
+    fundingAmountRequested: '$25000 - LEAN, $41000 - Extended. Details see main description.',
     additionalInformation: '',
     backupPlan:
       'I will make a shorter run to validate the approach. And participate in the August Metacuclus AI forecasting micro-bench. Then go back to machining.',
@@ -110,10 +109,8 @@ export const ACXG_2025_GRANTS = [
       'Flood the internet with stories about AI being nice, to nudge future AI training data nicer ',
     projectDescription:
       "Nostalgebrist has a vision of humanity accidentally memeing itself into doom, by constantly writing about how the AI will betray us, into training data from which the AI extrapolates a self-concept. Gwern's example AI takeover scenario involves the nascent AI reading the internet, concluding \"I am probably a paperclip maximizer\", and then mulching all humanity in accordance with its newfound purpose. Flooding the internet with an absolute deluge of text about the AI being nice and saving us in a pinch is not a *good* alignment strategy, but, like, it's cheap; why wouldn't we do it? \n\nTraining sets are about a trillion words. Of those, maybe 10B or less are science fiction. Of *those*, perhaps 1B words are about AI? I would further guesstimate ~70% of those involve the AI misbehaving. So, we have maybe 700M words of naughty AI fic to 300M of Good!AI. \n\nAW and I are working on setting up an experimental AI publishinghouse; it costs us a few dollars to recursively prompt a 100k word book out of the models. This suggests we could double the amount of Good!AI fic on the internet for, like, $7,000. \n\nAny alignment strategy which hinges on the internet being nice is already doomed. But we live in clown world, and who knows what farcical causality pachinko will seal our fates. Donald Trump is president. \n\nLet us lay our fingers 'pon the scale. ",
-    backgroundQualifications:
-      "Sometimes an idea bothers me for years and I can't not ",
-    socialMediaWebsite:
-      'jamiewahls.com, welcometotheheist.com , asking people we know ',
+    backgroundQualifications: "Sometimes an idea bothers me for years and I can't not ",
+    socialMediaWebsite: 'jamiewahls.com, welcometotheheist.com , asking people we know ',
     fundingAmountRequested:
       "5000 or so. This is to build out the website backend, and ideally buy a memorable domain like hyperstition.ai. If this successfully takes off or is fun to use, it'll be self-sustaining.",
     additionalInformation:
@@ -148,8 +145,7 @@ export const ACXG_2025_GRANTS = [
       "I’ve applied to NSF SBIR, and am working on trying to find other grants.\n\nIt's no secret the biotech VC fundraising environment is bleak for early stage work so I am not optimistic on traditional venture means, but starting to put more effort in there. \n\nBeing pretty fresh out of grad school (did flip a condo during it) I only have 6 months of financial runway before I have to move on. Frankly, if I don't do it no one will; it's a complicated system to work with. ",
     privacyLevel:
       'Public (I can share your project with evaluators and external funders, and mention it briefly on my blog - for example, to congratulate you if you win. I will avoid mentioning any parts of this form you specifically describe as secret.)',
-    locationTimezone:
-      'Yes, assuming I agree the terms are fair once I see them',
+    locationTimezone: 'Yes, assuming I agree the terms are fair once I see them',
     termsAgreement: '',
     additionalComments: '',
     shortTitle: 'Scale up biologics manufacturing',
@@ -247,8 +243,7 @@ export const ACXG_2025_GRANTS = [
     backupPlan: 'N/A',
     privacyLevel:
       'Public (I can share your project with evaluators and external funders, and mention it briefly on my blog - for example, to congratulate you if you win. I will avoid mentioning any parts of this form you specifically describe as secret.)',
-    locationTimezone:
-      'Yes, assuming I agree the terms are fair once I see them',
+    locationTimezone: 'Yes, assuming I agree the terms are fair once I see them',
     termsAgreement: 'Yes, assuming I agree the terms are fair once I see them',
     additionalComments: '',
     shortTitle: 'Epidemic preparedness in Liberia',
@@ -258,8 +253,7 @@ export const ACXG_2025_GRANTS = [
     id: 227,
     name: 'Daniela Shuman',
     email: 'dshuman@uchicago.edu',
-    projectTitle:
-      'Help previously ineligible living organ donors become eligible to donate',
+    projectTitle: 'Help previously ineligible living organ donors become eligible to donate',
     projectDescription:
       'More than enough people sign up to donate their kidney each year, yet roughly 98% of potential living donors never make it to surgery. Over 30% of potential donors are ruled out for addressable health reasons, like being a few pounds overweight. Despite the life-saving potential of living donation, the current system lacks programs or pathways to support these motivated individuals in overcoming barriers to donation. \n\nProject Donor supports prospective living donors who have been ruled out of donation for addressable barriers. We provide free, targeted support for the most common barriers to donation, including programs for weight loss, smoking cessation, blood pressure control, mental health, and financial assistance. These programs, paired with our 1:1 case management, provide participants with the support they need to overcome their barriers and donate.\n\nSince our first donation in February 2023, Project Donor has onboarded over 1,000 participants and enabled 88 successful transplants. We have over 400 active participants working towards donation across our 78 partnered transplant centers, and a 16% donation rate– 8x the national average. Since launching, the program has grown at an average month-over-month rate of 14%, reflecting strong and accelerating demand among prospective donors.\n\nOur program is also notably cost effective. We spend just $65 per participant per month on our program (including administrative costs), and this number is decreasing. We expect by December 2025, it will cost $59 per participant per month, or $66 per QALY. This translates to ~$2400 for each life saved, comparable to current GiveWell standards for effective charities.\n\nIn the past year alone we have seen incredible growth, doubling our number of partnered transplant centers and increasing our rate of new participants; however, this is just a start. We want to reach the entire market, partnering with all 215 transplant centers nationwide and reaching the estimated 14,000 annual potential donors, yielding 2,000 annual counterfactual living kidney transplants. \n\nIn addition, we want to continue to push for system-wide change in eligibility practices. Eligibility is often treated by centers as a fixed status; donors ruled out during initial screenings are left with no path forward. Project Donor believes eligibility is malleable and can change through low-lift behavioral interventions. We are starting to see this view being adopted by transplant centers like UCSF, who increased their BMI cutoff to support more previously rejected donors.\n\nBy combining direct support with systems-change advocacy, Project Donor is working to ensure every motivated donor has a real chance to save a life, and no donor is left behind.\n',
     backgroundQualifications:
@@ -435,8 +429,7 @@ export const ACXG_2025_GRANTS = [
       'Our execution plan is flexible enough to accommodate different levels of risk/ambition of each investor. For instance, the first milestone can be simplified to only target a fraction of the SRA/GEO and still deliver an outsized, high-impact result.',
     privacyLevel:
       'Public (I can share your project with evaluators and external funders, and mention it briefly on my blog - for example, to congratulate you if you win. I will avoid mentioning any parts of this form you specifically describe as secret.)',
-    locationTimezone:
-      'Yes, assuming I agree the terms are fair once I see them',
+    locationTimezone: 'Yes, assuming I agree the terms are fair once I see them',
     termsAgreement: '',
     additionalComments:
       'The answers above were significantly simplified to respect the character count limits. I can provide a document with more detailed answers, if needed.',
@@ -499,24 +492,21 @@ export const ACXG_2025_GRANTS = [
     id: 419,
     name: 'Charlie Molthrop',
     email: 'charliemolthrop@gmail.com',
-    projectTitle:
-      'Normie-friendly interfaces for prediction markets and their probabilities',
+    projectTitle: 'Normie-friendly interfaces for prediction markets and their probabilities',
     projectDescription:
       "I want to continue my exploration of normie-friendly packaging for prediction market probabilities.\n\nMost prediction market platform UI's are trader-centric. This makes sense because without traders, markets are no good. However, prediction markets have a second, much larger 'lurker' audience that I believe is underserved by the major platforms. As prediction markets become more useful, I believe the ways in which non-bettors consume them should keep up.\n\nSome of what I am proposing are improvements and enhancements to my existing projects in this space. They include:\n- WHEN (https://when.val.run) — a live timeline of when everything's going to happen, according to Manifold date markets.\n- @manifoldmaven (https://x.com/manifoldmaven) — a Twitter bot that tweets big 24h moves on popular manifold markets.\n\nI have broken my project proposal into three levels of ambition, each building on the last. \n\nI. Ambition level 1:\n   A. Improvements to \"WHEN\", my future timeline of everything that is going to happen, according to Manifold Markets Date markets.\n      i. Allow users to filter the timeline by Topic, Number of Traders, Liquidity\n      ii. Performance and design improvements\n      iii. Exploring integrations with non-Manifold providers\n      iv. Start adding information from non-date markets to the timeline:\n          a. ex: on known future Fed Meeting dates, add an event that says Fed Cuts Rates X%, where X is the current predicted rate cut\n   B. Improvements to @manifoldmaven, my Twitter bot that tweets every time a popular Manifold market moves by a large margin in 24 hours.\n      i. Polymarket and Kalshi support\n      ii. optimize Tweet format based on feedback from superfans/powerusers\n      iii. add email alerts or other types of digests.\n      iv. speed improvements and migration from Firebase to val.town for much faster iteration speeds\n      v. smarter market selection and collapsing multiple market updates into replies\n   C. New Projects:\n      i. Countdown: simply paste a manifold date market url to the end of this url and it will automatically generate a live countdown page for that market's estimated date.\n      ii. A semi-automated newsletter that packages important prediction probabilities into useful insights.\n   D. Marketing\n      i. Funny, slick social media/LinkedIn Posts/Videos about I'm working on.\n\nII. Ambition Level 2:\n   A. Everything from level 1 plus:\n   B. Enhancing 'The Rundown' (https://therundown.val.run/) (my prototype of a user-generated prediction market dashboard)\n      i. Making it so that users can easily create their own prediction market dashboards with this tool\n   C. A consistent, dedicated content strategy\n      i. A dedicated monthly newsletter for at least one year.\n      ii. Ongoing social media/Youtube video updates of projects and their progress\n      iii. Outreach to podcasts in order to discuss these projects\n   D. Additional WHEN Timeline work:\n      i. allow for the creation of markets on the timeline (via a link to Manifold)\n      ii. Start maintaining dedicated timelines for important events\n      iii. Branch into non-timeline pages for important events\n      iv. Make it possible for people to add things to the timeline (by creating a Manifold Market)\n\nIII. Ambition level 3:\n   A. everything from levels 1 and 2\n   B. incorporate prediction market tools into my social building site (build.moi/@dcm31 (beta))\n      i. build.moi is a project I made that is meant to be TikTok for your vibe-coded creations\n      ii. I will incorporate user-generated prediction markets and dashboards into the build.moi feed\n      iii. The big goal here is to make important prediction market content swipeable, snackable, and hackable, so that anyone can build on top of it.\n      iv. Mana economy\n          1. make it so that users of build.moi can spend and charge manifold mana for services created by other build.moi users.\n          2. mana will cycle in and out of both prediction markets and users' wallets, as they reward each other for software, services, funny comments, etc.\n   C. Updates to WHEN\n      i. Automated timeline management\n          1. auto-creation and management of important date markets\n          2. Agents that automatically bet on the date markets based on the latest news.\n   D. I haven't contacted them about this, but to the extent that it is logical, I would be open to building some of these things directly into Manifold as a sort of ACX-sponsored fellowship.\n",
     backgroundQualifications:
       "I strongly believe that prediction markets could go much more mainstream as tools for truth-seeking. This belief has manifested itself in the form of numerous attempts to rearrange prediction markets in novel ways that better communicate the knowledge they contain. Since discovering prediction markets through ACX's evangelism of Manifold, I have created:\n\nWHEN (when.val.run): a future timeline of everything that's going to happen, according to Manifold date markets.\n@manifoldmaven (https://x.com/manifoldmaven): a twitter bot that tweets every time a popular Manifold market moves significantly\nThe Rundown (https://therundown.val.run/): a prototype of an extremely easy-to-use prediction market dashboard creator (for Manifold and Polymarket)\nUSMNT Roster Market: A custom page for my Manifold market about who will play for the USA in the 2026 World Cup.\nExpected Work (https://expectedwork.val.run/): A Fatebook.io-integrated tool that helps you calculate a daily work goal based on your self-rated probability of success at various pomodoro amounts.\n\nI also believe I'm qualified to break prediction markets out of the nerd-bubble because I have a history of storytelling, and I straddle the normie/nerdy world more than most prediction-pilled enthusiasts:\nMy wife is a semi-famous Brazilian travel influencer, and we spent the last three years traveling the world creating Instagram content for various travel and hospitality brands. I have spent a lot of time in the comedy world, writing sketch comedy in college and performing stand-up and improv across three continents. I've recently been in discussions to create launch videos for startups, after making a funny one for the YC-backed Paloma: \nhttps://www.linkedin.com/posts/alex-avnit-222b3611a_paloma-yc-s25-is-a-modular-quote-to-cash-activity-7358713557267435521-JUUr\n\nIn 2016 also co-founded Emile.chat, a chatbot for getting to bed early. It can be considered a commercial failure, but after almost 10 years, it still maintains a tiny cohort of dedicated users who check in with Emile every day.\n\nReferences:\n\nI believe that most of the Manifold founders and others on the Manifold Discord server are familiar with me and my work in this space. (I also brought pastries to the Manifold office once upon a time when I was passing through SF, confirming that I am both a real person and a trusted purveyor of sticky, enjoyable products.)\n\nForecasting pioneer Nuño Sempere also shared my WHEN timeline to his Forecasting Newsletter.\n\nYou can also reach out to my former co-founder Nazli Danis about me. \nhttps://www.linkedin.com/in/nazlidanis/\n\n\nSkills\nI believe I possess the technical and design skills necessary to execute everything I'm proposing. I also believe I'm qualified to make fun videos about this content.\n\nWeaknesses:\nI am good at building, and I am good at making content. I have struggled in the past to make content about the things I have built. I believe a specific carve-out of my time on this project should be content creation and strategy.",
     socialMediaWebsite:
       'https://www.linkedin.com/in/charlie-molthrop-a2a67729/\nhttps://www.instagram.com/charliemocomedy\nhttps://probabilitythoughtsdraft.val.run/',
-    fundingAmountRequested:
-      'Ambition Level 1: $5K; Levels 1+2: $15K total; Levels 1-3: $45K',
+    fundingAmountRequested: 'Ambition Level 1: $5K; Levels 1+2: $15K total; Levels 1-3: $45K',
     additionalInformation:
       'https://manifold.markets/Charlie/\n\nProject links:\n\nwhen.val.run\n\nhttps://x.com/manifoldmaven\n\nhttps://therundown.val.run/\n\nhttps://expectedwork.val.run/\n\nhttps://probabilitythoughtsdraft.val.run/\n\nbuild.moi/@dcm31 (beta)\n\n(ad I made for Paloma) https://www.linkedin.com/posts/alex-avnit-222b3611a_paloma-yc-s25-is-a-modular-quote-to-cash-activity-7358713557267435521-JUUr',
     backupPlan:
       'Without ACXG, I’ll likely prioritize more immediately profitable work (e.g., AI video projects) and only tinker on these tools occasionally; improvements to the existing projects usually don’t rise to the top of my list. \n\nI am not pursuing other sources of funding. Without this funding, 90% of this probably will not happen.',
     privacyLevel:
       'Public (I can share your project with evaluators and external funders, and mention it briefly on my blog - for example, to congratulate you if you win. I will avoid mentioning any parts of this form you specifically describe as secret.)',
-    locationTimezone:
-      'Yes, assuming I agree the terms are fair once I see them',
+    locationTimezone: 'Yes, assuming I agree the terms are fair once I see them',
     termsAgreement: 'Yes, assuming I agree the terms are fair once I see them',
     additionalComments:
       'Feel free to pick and choose from the individual projects listed to say "we want to fund more of this but not this."\n\nI also wouldn\'t be opposed to taking things in a completely different direction and making fun videos about each of the other grant recipients. ',
@@ -606,8 +596,7 @@ export const ACXG_2025_GRANTS = [
     id: 456,
     name: 'Alejandro Acelas',
     email: 'alejoacelas@gmail.com',
-    projectTitle:
-      'Create open-source AI tools for customer screening of DNA orders.',
+    projectTitle: 'Create open-source AI tools for customer screening of DNA orders.',
     projectDescription:
       "Motivation and project description\n\nDNA synthesis is becoming cheaper and more accessible, but most providers do little to vet customers placing potentially dangerous orders (those flagged for resembling sequences of concern). Companies that do screen customers report that processing a flagged order can take several hours from trained personnel. A 2015 JCVI report estimated that 87% of the time devoted to screening orders is spent on customer follow-up of flagged orders.\n\nBecause of the self-contained, repetitive nature of the task, we think we can build AI tools that could substantially reduce the time needed to verify and follow-up with flagged orders. This could reduce costs for providers who already screen customers and make it easier for other providers to start adopting better screening practices.\n\nAs we don't expect that second group to adopt meaningful customer screening even if it becomes significantly cheaper, our main goal is facilitating regulation that incentivizes or mandates minimum screening standards. This could reduce DNA misuse risk while imposing minimal burden on providers. If we succeed, advocates for such regulation could point to the low cost of screening among providers using these tools and the availability of openly available tools that make compliance much less burdensome than manual screening.\n\nTo our knowledge, Aclid is the only organization offering easy-to-adopt customer screening solutions for DNA synthesis companies and they're already incorporating AI into their product. While they already work with some of the largest providers, we believe a free open-source alternative could make it easier for some providers to adopt such tools and for advocates to make the regulatory case.\n\nImplementation\n\nStarting January of next year, Hanna and I would develop the tool full-time, which would involve:\n\n* Reaching out to DNA providers to offer technical assistance for introducing AI automations to their existing customer screening processes  \n* Incorporating what we learn from providers' workflows to design open-source tools that facilitate our work in providing that technical assistance, iterating towards well-packaged tools that providers would be able to adopt and customize themselves\n\nBefore January, we'll start taking steps to derisk our idea so that we're confident we can productively work on it by the moment we receive the funding decision. For that we will:\n\n* Finish our draft of the theory of change for the tool and send it for feedback among 5-15 relevant domain experts  \n* Share demos of our existing tool with DNA providers and assess their interest for receiving technical assistance in customer screening\n\nHanna would be working on this project during a 3-month leave from their PhD. After those 3 months, we'll evaluate different paths for the project, which could include:\n\n* We continue working on the project at less than full-time capacity  \n* We recruit additional people to work on the project. Alejandro may remain working on the project full-time, as he doesn't have commitments scheduled for next year  \n* We hand over the project to IBBIS if they think it's a good fit for the organization",
     backgroundQualifications:
@@ -672,8 +661,7 @@ export const ACXG_2025_GRANTS = [
       'We will continue to seek funding as I cannot continue to self-fund it. I have already invested two months of my own full-time personal.',
     privacyLevel:
       'Public (I can share your project with evaluators and external funders, and mention it briefly on my blog - for example, to congratulate you if you win. I will avoid mentioning any parts of this form you specifically describe as secret.)',
-    locationTimezone:
-      'Yes, assuming I agree the terms are fair once I see them',
+    locationTimezone: 'Yes, assuming I agree the terms are fair once I see them',
     termsAgreement: '',
     additionalComments: '',
     shortTitle: 'Telemedicine platform for Congo',
@@ -683,8 +671,7 @@ export const ACXG_2025_GRANTS = [
     id: 519,
     name: 'Jacob Witten',
     email: 'jswitten@mit.edu',
-    projectTitle:
-      'Cure idiopathic pulmonary fibrosis, eventually reverse lung aging',
+    projectTitle: 'Cure idiopathic pulmonary fibrosis, eventually reverse lung aging',
     projectDescription:
       'Idiopathic pulmonary fibrosis (IPF) is a progressive, fatal lung disease that destroys alveoli and causes lung failure; median survival is only 3–5 years after diagnosis. Existing drugs (pirfenidone and nintedanib) barely slow decline and have significant side effects. Each year, ~30,000 new patients are diagnosed in the US (~200,000 globally) and those numbers are set to grow as the population ages.\n\nI propose to treat IPF using inhaled lipid nanoparticles (LNPs) to deliver messenger RNA (mRNA) directly to the lung. This is the same core technology behind the Pfizer-BioNTech and Moderna COVID vaccines, but chemically tuned for lung delivery, one of the hardest problems in gene therapy. Previously, I published the first study showing broad mRNA delivery to ferret lungs; this is a key milestone since ferrets are anatomically and physiologically far closer to humans than mice and are the industry standard for preclinical inhaled gene therapy.\n\nUsing this state-of-the-art gene delivery technology, I am now focused on using LNPs to reverse structural lung damage. mRNA-LNPs drive gene expression for ~24 hours, which is long enough to promote tissue repair but avoids the cancer risks associated with prolonged expression of tissue repair factors. Using a novel mRNA cargo and my mouse- and ferret-validated LNP chemistry, I have reversed IPF in a bleomycin mouse model of IPF. My treatment improves lung function and survival, reduces fibrosis by >80%, and fully restores many other phenotypes to pre-bleomycin levels. Bleomycin models of IPF can be unreliable, but this problem is most acute when mice are treated within the first week after bleomycin administration. My treatment works at 14 days, after significant fibrosis has already developed. While fibrosis does eventually resolve in mice, this takes at least a month, and my untreated mice show no resolution by 24 days. To my knowledge, no published mRNA treatment has ever shown efficacy in a bleomycin model after 14 days.\n\nI am interested in spinning my work out into a startup. However, it is very difficult to raise significant money without non-mouse disease efficacy data, so I would like to perform a therapeutic experiment in ferrets. As with the previous ferret work, this would be with Dr. John Engelhardt, the world authority on ferret lung biology. \n\nWe estimate that a ferret experiment would cost about $80,000, so it will require a grant. The experiment would consist of administering bleomycin to ferrets (which drives very human IPF-like disease) and then treating with my mRNA-LNPs along with either PBS or non-therapeutic mRNA-LNP controls (n=5 for each condition). Dr. Engelhardt’s group will look at lung fibrotic phenotype (Ashcroft score, collagen levels, etc) as described in the preprint cited below to check for improvement. The experiment can happen as soon as ferrets and money become available, likely in Q1 2025.\n\nI’m applying here because a traditional NIH grant would take at least a year which conflicts with my own timing as I am currently at a career crossroads: I have always focused on the academic route and have a good faculty offer, but I’ve come to believe that for biotech, starting companies is the best way to make a concrete positive impact on the world. \n\nHowever, a faculty offer at a great university is difficult to turn down without a clearly viable alternative, particularly as I have two young children, a Cambridge cost of living, and a postdoc salary. So, this grant could provide the data I need to allow a startup to be a responsible choice.\n\nIf successful, I will expand the pipeline beyond IPF to other aging-related lung diseases. The same basic therapeutic mechanism could potentially treat bronchiectasis (~5M cases), chronic obstructive pulmonary disease (>300M people), and eventually aging itself. Existing mRNA anti-aging companies such as NewLimit target the liver and immune system because these are easy targets for mRNA delivery, while the lung, which is an extremely common site of disease, receives dramatically less interest due to the difficulty in delivery: a difficulty that I am well positioned to address. So if my startup proceeds according to plan, I will move from the relatively rare IPF to treating hundreds of millions or billions of people and having a massive impact on global health.\n\nReference:\n\nWu, Shuang, et al. "Ferret model of bleomycin-induced lung injury shares features of human idiopathic pulmonary fibrosis." bioRxiv (2025): 2025-05.',
     backgroundQualifications:
@@ -722,8 +709,7 @@ export const ACXG_2025_GRANTS = [
       'Without ACXG funding, the application of AI to the FDA submission process will still happen, but it will almost certainly be through proprietary, closed-source tools. The status quo will continue, where large firms can afford expensive solutions, while small companies and academic research teams are left with few options to navigate the path to market for their new medical technologies. There will be little progress toward creating the public standards and open-source tooling needed to raise the bar for all players.',
     privacyLevel:
       'Public (I can share your project with evaluators and external funders, and mention it briefly on my blog - for example, to congratulate you if you win. I will avoid mentioning any parts of this form you specifically describe as secret.)',
-    locationTimezone:
-      'Yes, assuming I agree the terms are fair once I see them',
+    locationTimezone: 'Yes, assuming I agree the terms are fair once I see them',
     termsAgreement: '',
     additionalComments:
       "If you'd like to see any of our materials with better formatting, especially anything about what we could do at different levels of funding and how we intend to spend money, please feel free to view our application doc: https://docs.google.com/document/d/1h41RWHYVHYs_OPnMeKnfv0GCWG_TdfbrDdxv3SNSRio/edit?tab=t.0#heading=h.u4njn238487v",
@@ -775,8 +761,7 @@ export const ACXG_2025_GRANTS = [
       'I will apply for Open Philanthropy funding and some VCs (e.g. Halcyon) - but they can take several months. When every month counts, I think ACX grants are currently the best option for me. ',
     privacyLevel:
       'Public (I can share your project with evaluators and external funders, and mention it briefly on my blog - for example, to congratulate you if you win. I will avoid mentioning any parts of this form you specifically describe as secret.)',
-    locationTimezone:
-      'Yes, assuming I agree the terms are fair once I see them',
+    locationTimezone: 'Yes, assuming I agree the terms are fair once I see them',
     termsAgreement: '',
     additionalComments: '',
     shortTitle: 'Help AIs create AI safety tools',
@@ -803,8 +788,7 @@ export const ACXG_2025_GRANTS = [
       'Public (I can share your project with evaluators and external funders, and mention it briefly on my blog - for example, to congratulate you if you win. I will avoid mentioning any parts of this form you specifically describe as secret.)',
     locationTimezone: 'No',
     termsAgreement: 'Yes, assuming I agree the terms are fair once I see them',
-    additionalComments:
-      "I'd love to hear any feedback on these ideas, if that is possible. ",
+    additionalComments: "I'd love to hear any feedback on these ideas, if that is possible. ",
     shortTitle: 'LLM-driven metascience observatory',
     minAmount: 25,
   },
@@ -812,8 +796,7 @@ export const ACXG_2025_GRANTS = [
     id: 593,
     name: 'Center for Educational Progress, Inc.',
     email: 'centerforedprogress@gmail.com',
-    projectTitle:
-      'To reorient American education around a culture of excellence',
+    projectTitle: 'To reorient American education around a culture of excellence',
     projectDescription:
       'The Center for Educational Progress is a 501(c)(3) nonprofit research and advocacy organization devoted to studying and promoting excellence in education. We reject the one-size-fits-all model that has dominated American education for half a century, instead embracing a vision where every student can advance as far and as fast as their curiosity and determination will take them. Through research, policy advocacy, and community building, we work to create educational environments that foster genuine excellence — not by pretending all students learn the same way at the same pace, but by meeting each student where they are and enabling them to soar. Our work spans from early childhood development to advanced academic acceleration, from classroom discipline to cognitive science, centered around a common mission: to understand how humans learn and excel, and to build systems that let them do so without artificial constraints.\n\nOur immediate goals are to build profiles of each state\'s gifted education regulations and get in a posture of preparedness to push back via formal public policymaking (amicus briefs for active cases; white papers and position statements for education committees, school board hearings, etc.; and model policies for schools, teachers, and administrators) and public pressure against attacks on academic excellence. \n\nIf, for example, next week the San Francisco Unified School District again proposed restricting access to 8th grade algebra classes, then we want to have developed the full fleet of possible responses in order to put pressure against such a decision. These would include letters to the SF School Board, information pamphlets for parents, and organizing among our network of community members and connected journalists to raise the local and national salience of the issue. We have currently been writing about Mamdani\'s proposed education policies for the upcoming NYC Mayoral Race in order to raise the salience of those policies for that campaign. \n\nThe combined national and local scope of our project means that reaching a "critical mass" -- of both readers and potential operational impact -- will take some time to build up. But we have nevertheless begun. This summer we have been building out our national map of gifted and talented state regulations; writing coverage of attacks on national excellence; and researching the history of school reform efforts, and have some exciting pieces on the horizon.\n\nBuilding out our technical and legal capacity is going to be a priority focus until summer 2026, though, when we aim to kick our operations into full gear. By that time we will have developed the journalistic reach and coverage, (hopefully) the financial capacity, and the legal/institutional impact plan that will allow us to defend pro-excellence education policies nationwide. \n',
     backgroundQualifications:
@@ -853,8 +836,7 @@ export const ACXG_2025_GRANTS = [
       'The prototype that we build with an ACX grant would allow us to optimize our future trajectory for wide impact by partnering with public-health minded investment for the next stage. We are unfamiliar with other grants that come with as few strings attached about specific applications of interest (allowing development of tech at early Tech Readiness Level outside a university). Without a grant like this, out primary path forward to develop this technology would be to raise venture funding. That would lock us into a monetization (value capture) trajectory and timeline that is typical of VC-funded startups, and might influence products in a manner that detracts from having the widest reach and impact. We accept that possibility that we might need to pursue that path (especially given that it seems to be the typical MO for ambitious endeavours today) but would appreciate a chance to make it work without having to segment the market by monetizability.',
     privacyLevel:
       'Public (I can share your project with evaluators and external funders, and mention it briefly on my blog - for example, to congratulate you if you win. I will avoid mentioning any parts of this form you specifically describe as secret.)',
-    locationTimezone:
-      'Yes, assuming I agree the terms are fair once I see them',
+    locationTimezone: 'Yes, assuming I agree the terms are fair once I see them',
     termsAgreement: '',
     additionalComments:
       'We are serious about this idea, and have rigorously developed this over a few years in different capacities — fleshing out the overall vision, the technology, and the potential applications. We have discussed the potential with doctors and putative home-use patients, and have also thought through the FDA approval strategy for such novel medical technology. Currently we are both principally occupied building this.',
@@ -881,8 +863,7 @@ export const ACXG_2025_GRANTS = [
       'Our current plan is to continue self-funding and selling aerolamps, but this will go way more slowly than if we are certain to have grants for parts of the longterm plan, and may fail entirely',
     privacyLevel:
       'Public (I can share your project with evaluators and external funders, and mention it briefly on my blog - for example, to congratulate you if you win. I will avoid mentioning any parts of this form you specifically describe as secret.)',
-    locationTimezone:
-      'Yes, assuming I agree the terms are fair once I see them',
+    locationTimezone: 'Yes, assuming I agree the terms are fair once I see them',
     termsAgreement: '',
     additionalComments:
       "Re: a SAFE or other investment, since we're open sourcing the project this is a little bit hard to sell as profitable because in principle any competitor or newcomer can just start also selling the same lamps\n\nin practice I think the moat of hassle is high enough this will not be case for a significant length of time.\n\nOur goal is to proliferate the adoption of far-UVC, while making enough money to pay the bills.  We much prefer to out-innovate our competition rather than hide behind patents and secrets.  If someone uses our hard work to quickly provide affordable disease-preventing devices everywhere, we will consider our mission accomplished.\n\nAlso, there's an obvious conflict of interest here as I am reviewer in this process, but hopefully other reviewers can handle this proposal ",
@@ -915,8 +896,7 @@ export const ACXG_2025_GRANTS = [
     id: 160,
     name: 'Chris Pang',
     email: 'mutatismutandisetplusultra@gmail.com',
-    projectTitle:
-      'Investigate the safety properties of online learning in AI systems',
+    projectTitle: 'Investigate the safety properties of online learning in AI systems',
     fundingAmountRequested:
       "Depends on how much is available. On the order of 10000 lets us start work until the fiscal sponsor can meet ARIA's requirements. Any more of course opens the door to extra collaborators, extra project scoping etc.",
     shortTitle: 'Investigate AI safety of alternate architectures',
@@ -979,8 +959,7 @@ export const ACXG_2025_GRANTS = [
     id: 608,
     name: 'Alyssia Jovellanos',
     email: 'alyssia.jovellanos@gmail.com',
-    projectTitle:
-      'An open-source LM arena for epistemic virtues “Epistemics Arena”',
+    projectTitle: 'An open-source LM arena for epistemic virtues “Epistemics Arena”',
     fundingAmountRequested:
       '$10,000 (if I can get more for compute/model credits that would be great too!) ',
     shortTitle: 'LM arena for epistemic virtue',

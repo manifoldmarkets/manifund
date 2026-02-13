@@ -16,11 +16,7 @@ export default function MiniMaxi() {
         )
       </div>
 
-      <ReactCompareSlider
-        onlyHandleDraggable
-        itemOne={<Minifund />}
-        itemTwo={<Maxifund />}
-      />
+      <ReactCompareSlider onlyHandleDraggable itemOne={<Minifund />} itemTwo={<Maxifund />} />
     </div>
   )
 }

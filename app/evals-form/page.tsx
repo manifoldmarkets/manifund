@@ -32,14 +32,11 @@ export default async function EvalsPage() {
   ])
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">
-        Grant evaluation form (experimental)
-      </h1>
+      <h1 className="text-2xl font-bold">Grant evaluation form (experimental)</h1>
       <p className="mt-1 text-sm text-gray-600">
-        Anyone on Manifund can fill out this form! Score grants Manifund has
-        given or passed on. When you&apos;re done, you&apos;ll be able to see
-        where these projects stack up, taking into account your confidence in
-        each of your ratings, your trust in other evaluators, and their
+        Anyone on Manifund can fill out this form! Score grants Manifund has given or passed on.
+        When you&apos;re done, you&apos;ll be able to see where these projects stack up, taking into
+        account your confidence in each of your ratings, your trust in other evaluators, and their
         evaluations.{' '}
         <a
           href="https://manifoldmarkets.notion.site/EigenEvals-Info-78683c6099fc40bc8c8b58f832afbbee?pvs=4"

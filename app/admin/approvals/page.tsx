@@ -25,9 +25,7 @@ export default async function ApprovalsPage() {
         project.approved === null &&
         project.bids.reduce(
           (acc, bid) =>
-            bid.type === 'assurance buy' || bid.type === 'donate'
-              ? acc + bid.amount
-              : acc,
+            bid.type === 'assurance buy' || bid.type === 'donate' ? acc + bid.amount : acc,
           0
         ) >= project.min_funding
     ) ?? []
@@ -45,25 +43,18 @@ export default async function ApprovalsPage() {
         {projectsToApprove.map((project) => (
           <tr key={project.id}>
             <td>
-              <Link href={`/${project.profiles?.username}`}>
-                {project.profiles?.full_name}
-              </Link>
+              <Link href={`/${project.profiles?.username}`}>{project.profiles?.full_name}</Link>
             </td>
             <td>
               <Link
                 href={`/projects/${project.slug}`}
-                className={clsx(
-                  project.signed_agreement ? 'text-gray-900' : 'text-rose-600'
-                )}
+                className={clsx(project.signed_agreement ? 'text-gray-900' : 'text-rose-600')}
               >
                 {project.title}
               </Link>
             </td>
             <td>
-              <GrantVerdict
-                projectId={project.id}
-                lobbying={project.lobbying}
-              />
+              <GrantVerdict projectId={project.id} lobbying={project.lobbying} />
             </td>
           </tr>
         ))}

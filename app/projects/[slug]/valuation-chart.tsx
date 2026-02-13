@@ -15,9 +15,7 @@ import {
 import { SizedContainer } from '@/components/layout/sized-container'
 import clsx from 'clsx'
 
-const ValuationChartTooltip = (
-  props: TooltipProps<TradePoint> & { dateLabel: string }
-) => {
+const ValuationChartTooltip = (props: TooltipProps<TradePoint> & { dateLabel: string }) => {
   const { prev, next, dateLabel } = props
   if (!prev) return null
   const profile = prev.obj

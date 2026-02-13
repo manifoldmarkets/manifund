@@ -8,11 +8,7 @@ import { ProfileAndProjectTitles } from '@/db/profile'
 import { useState } from 'react'
 import { sortBy } from 'es-toolkit'
 import { Tooltip } from '@/components/tooltip'
-import {
-  CheckBadgeIcon,
-  CurrencyDollarIcon,
-  WrenchIcon,
-} from '@heroicons/react/20/solid'
+import { CheckBadgeIcon, CurrencyDollarIcon, WrenchIcon } from '@heroicons/react/20/solid'
 import { getSponsoredAmount2025 } from '@/utils/constants'
 import { SearchBar } from '@/components/input'
 import { searchInAny } from '@/utils/parse'
@@ -42,11 +38,7 @@ export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
     <Col className="w-80 justify-center gap-2 sm:w-[30rem] lg:w-[36rem]">
       <SearchBar search={search} setSearch={setSearch} className="mt-2" />
       {selectedProfiles?.map((profile) => (
-        <ProfileRow
-          key={profile.id}
-          profile={profile}
-          isCreator={profile.projects.length > 0}
-        />
+        <ProfileRow key={profile.id} profile={profile} isCreator={profile.projects.length > 0} />
       ))}
       <LoadMoreUntilNotVisible
         loadMore={() => {
@@ -55,9 +47,7 @@ export function PeopleDisplay(props: { profiles: ProfileAndProjectTitles[] }) {
         }}
       />
       {selectedProfiles.length === 0 && (
-        <p className="my-10 w-full text-center italic text-gray-500">
-          no profiles found
-        </p>
+        <p className="my-10 w-full text-center italic text-gray-500">no profiles found</p>
       )}
     </Col>
   )
@@ -95,14 +85,10 @@ function ProfileRow(props: { profile: Profile; isCreator?: boolean }) {
           <Row className="gap-1">
             {profile.regranter_status && <MiniProfileTag role="regrantor" />}
             {isCreator && <MiniProfileTag role="creator" />}
-            {profile.accreditation_status && (
-              <MiniProfileTag role="accredited" />
-            )}
+            {profile.accreditation_status && <MiniProfileTag role="accredited" />}
           </Row>
         </Row>
-        <span className="truncate overflow-ellipsis text-xs text-gray-500">
-          {profile.bio}
-        </span>
+        <span className="truncate overflow-ellipsis text-xs text-gray-500">{profile.bio}</span>
       </Col>
     </Link>
   )

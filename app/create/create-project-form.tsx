@@ -44,19 +44,17 @@ const DESCRIPTION_KEY = 'ProjectDescription'
 
 export function CreateProjectForm(props: { causesList: Cause[] }) {
   const { causesList } = props
-  const [projectParams, updateProjectParams] = usePartialUpdater<ProjectParams>(
-    {
-      title: '',
-      subtitle: '',
-      verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
-      location: '',
-      selectedCauses: [],
-      selectedPrize: null,
-      founderPercent: 50,
-      agreedToTerms: false,
-      lobbying: false,
-    }
-  )
+  const [projectParams, updateProjectParams] = usePartialUpdater<ProjectParams>({
+    title: '',
+    subtitle: '',
+    verdictDate: format(add(new Date(), { months: 1 }), 'yyyy-MM-dd'),
+    location: '',
+    selectedCauses: [],
+    selectedPrize: null,
+    founderPercent: 50,
+    agreedToTerms: false,
+    lobbying: false,
+  })
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [errorModalOpen, setErrorModalOpen] = useState<boolean>(false)
   const [errorModalMessage, setErrorModalMessage] = useState<string>('')
@@ -74,33 +72,23 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     updateProjectParams({
       founderPercent:
         (1 -
-          (projectParams.selectedPrize?.cert_params?.defaultInvestorShares ??
-            0) /
-            TOTAL_SHARES) *
+          (projectParams.selectedPrize?.cert_params?.defaultInvestorShares ?? 0) / TOTAL_SHARES) *
         100,
     })
     if (!madeChanges) {
       editor?.commands.setContent(
-        projectParams.selectedPrize?.project_description_outline ??
-          DESCRIPTION_OUTLINE
+        projectParams.selectedPrize?.project_description_outline ?? DESCRIPTION_OUTLINE
       )
       setMadeChanges(false)
     }
   }, [projectParams.selectedPrize])
-  const selectablePrizeCauses = causesList.filter(
-    (cause) => cause.open && cause.prize
-  )
-  const selectableCauses = causesList.filter(
-    (cause) => cause.open && !cause.prize
-  )
+  const selectablePrizeCauses = causesList.filter((cause) => cause.open && cause.prize)
+  const selectableCauses = causesList.filter((cause) => cause.open && !cause.prize)
   const minMinFunding = projectParams.selectedPrize?.cert_params
     ? projectParams.selectedPrize.cert_params.minMinFunding
     : 500
   const certParams = projectParams.selectedPrize?.cert_params ?? null
-  const errorMessage = getCreateProjectErrorMessage(
-    projectParams,
-    minMinFunding
-  )
+  const errorMessage = getCreateProjectErrorMessage(projectParams, minMinFunding)
 
   const router = useRouter()
   const handleSubmit = async () => {
@@ -147,9 +135,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   // If ?prize=... param is set, then choose that prize by default
   const searchParams = useSearchParams()
   const prizeSlug = searchParams?.get('prize')
-  const selectedPrize = selectablePrizeCauses.find(
-    (cause) => cause.slug === prizeSlug
-  )
+  const selectedPrize = selectablePrizeCauses.find((cause) => cause.slug === prizeSlug)
   useEffect(() => {
     if (selectedPrize) {
       updateProjectParams({ selectedPrize })
@@ -190,16 +176,12 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               selectedPrize:
                 value === 'grant'
                   ? null
-                  : selectablePrizeCauses.find(
-                      (cause) => cause.slug === value
-                    ) ?? null,
+                  : (selectablePrizeCauses.find((cause) => cause.slug === value) ?? null),
             })
           }
           options={{
             grant: 'A regular grant',
-            ...Object.fromEntries(
-              selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
-            ),
+            ...Object.fromEntries(selectablePrizeCauses.map((cause) => [cause.slug, cause.title])),
           }}
         />
         <p className="text-sm text-gray-500">
@@ -222,13 +204,9 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             autoComplete="off"
             maxLength={80}
             value={projectParams.title}
-            onChange={(event) =>
-              updateProjectParams({ title: event.target.value })
-            }
+            onChange={(event) => updateProjectParams({ title: event.target.value })}
           />
-          <span className="text-right text-xs text-gray-600">
-            Maximum 80 characters
-          </span>
+          <span className="text-right text-xs text-gray-600">Maximum 80 characters</span>
         </Col>
       </Col>
       <Col className="gap-1">
@@ -244,9 +222,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               updateProjectParams({ subtitle: event.target.value })
             }
           />
-          <span className="text-right text-xs text-gray-600">
-            Maximum 160 characters
-          </span>
+          <span className="text-right text-xs text-gray-600">Maximum 160 characters</span>
         </Col>
       </Col>
       <Col className="gap-1">
@@ -259,8 +235,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             storageKey={DESCRIPTION_KEY}
             editor={editor}
             defaultContent={
-              projectParams.selectedPrize?.project_description_outline ??
-              DESCRIPTION_OUTLINE
+              projectParams.selectedPrize?.project_description_outline ?? DESCRIPTION_OUTLINE
             }
           />
         </Row>
@@ -283,10 +258,9 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             <RequiredStar />
           </label>
           <p className="text-sm text-gray-600">
-            The minimum amount of funding you need to start this project. If
-            this amount is not reached, no funds will be sent. Due to the cost
-            of approving grants and processing payments, we require this to be
-            at least ${minMinFunding}.
+            The minimum amount of funding you need to start this project. If this amount is not
+            reached, no funds will be sent. Due to the cost of approving grants and processing
+            payments, we require this to be at least ${minMinFunding}.
           </p>
           <Col>
             <AmountInput
@@ -297,8 +271,7 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               }
               placeholder={minMinFunding.toString()}
               error={
-                projectParams.minFunding !== undefined &&
-                projectParams.minFunding < minMinFunding
+                projectParams.minFunding !== undefined && projectParams.minFunding < minMinFunding
               }
               errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
             />
@@ -325,11 +298,10 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             <RequiredStar />
           </label>
           <p className="text-sm text-gray-600">
-            Until this amount is raised, the project will be marked for donors
-            as not fully funded. If this amount is different from your minimum
-            funding, please explain in your project description what you could
-            accomplish with the minimum funding and what you could accomplish
-            with the full funding.
+            Until this amount is raised, the project will be marked for donors as not fully funded.
+            If this amount is different from your minimum funding, please explain in your project
+            description what you could accomplish with the minimum funding and what you could
+            accomplish with the full funding.
           </p>
           <AmountInput
             id="fundingGoal"
@@ -357,9 +329,9 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             <RequiredStar />
           </label>
           <p className="text-sm text-gray-600">
-            After this deadline, if you have not reached your minimum funding
-            bar, your application will close and you will not receive any money.
-            This date cannot be more than 6 weeks after posting.
+            After this deadline, if you have not reached your minimum funding bar, your application
+            will close and you will not receive any money. This date cannot be more than 6 weeks
+            after posting.
           </p>
           <Input
             type="date"
@@ -418,8 +390,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           </span>
           <span>
             {' '}
-            Check this box if you will use this money to fund lobbying
-            activities within the US or internationally.
+            Check this box if you will use this money to fund lobbying activities within the US or
+            internationally.
           </span>
           <RequiredStar />
         </span>
@@ -439,23 +411,18 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   )
 }
 
-export function getCreateProjectErrorMessage(
-  projectParams: ProjectParams,
-  minMinFunding: number
-) {
+export function getCreateProjectErrorMessage(projectParams: ProjectParams, minMinFunding: number) {
   if (projectParams.title === '') {
     return 'Your project needs a title.'
   } else if (
     projectParams.minFunding === null &&
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase)
+    (!projectParams.selectedPrize || projectParams.selectedPrize.cert_params?.proposalPhase)
   ) {
     return 'Your project needs a minimum funding amount.'
   } else if (
     projectParams.minFunding !== undefined &&
     projectParams.minFunding < minMinFunding &&
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase)
+    (!projectParams.selectedPrize || projectParams.selectedPrize.cert_params?.proposalPhase)
   ) {
     return `Your minimum funding must be at least $${minMinFunding}.`
   } else if (
@@ -467,22 +434,17 @@ export function getCreateProjectErrorMessage(
   } else if (
     projectParams.fundingGoal &&
     !projectParams.selectedPrize &&
-    ((projectParams.minFunding &&
-      projectParams.minFunding > projectParams.fundingGoal) ||
+    ((projectParams.minFunding && projectParams.minFunding > projectParams.fundingGoal) ||
       projectParams.fundingGoal <= 0)
   ) {
     return 'Your funding goal must be greater than 0 and greater than or equal to your minimum funding goal.'
   } else if (
-    isAfter(
-      new Date(projectParams.verdictDate),
-      add(new Date(), { weeks: 6 })
-    ) ||
+    isAfter(new Date(projectParams.verdictDate), add(new Date(), { weeks: 6 })) ||
     isBefore(new Date(projectParams.verdictDate), new Date())
   ) {
     return 'Your application close date must be in the future but no more than 6 weeks from now.'
   } else if (
-    (!projectParams.selectedPrize ||
-      projectParams.selectedPrize.cert_params?.proposalPhase) &&
+    (!projectParams.selectedPrize || projectParams.selectedPrize.cert_params?.proposalPhase) &&
     !projectParams.verdictDate
   ) {
     return 'You need to set a decision deadline.'

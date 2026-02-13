@@ -11,11 +11,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, Fragment } from 'react'
 import { Item } from './bottom-nav-bar'
-import {
-  HomeIcon,
-  GlobeAltIcon,
-  UserCircleIcon,
-} from '@heroicons/react/24/outline'
+import { HomeIcon, GlobeAltIcon, UserCircleIcon } from '@heroicons/react/24/outline'
 
 const itemClass =
   'sm:hover:bg-gray-200 block w-full py-1 px-2 text-center sm:hover:text-orange-600 transition-colors'
@@ -35,11 +31,7 @@ function findIcon(name: string) {
   )
 }
 
-export function NavBarItem(props: {
-  item: Item
-  children?: any
-  className?: string
-}) {
+export function NavBarItem(props: { item: Item; children?: any; className?: string }) {
   const { item, children } = props
   const isCurrentPage = item.href === usePathname() && item.href != null
   const [touched, setTouched] = useState(false)
@@ -64,11 +56,7 @@ export function NavBarItem(props: {
   return (
     <Link
       href={item.href}
-      className={clsx(
-        itemClass,
-        touched && touchItemClass,
-        isCurrentPage && selectedItemClass
-      )}
+      className={clsx(itemClass, touched && touchItemClass, isCurrentPage && selectedItemClass)}
       onTouchStart={() => setTouched(true)}
       onTouchEnd={() => setTouched(false)}
     >
@@ -89,11 +77,7 @@ export function MobileSidebar(props: {
   return (
     <div>
       <Transition.Root show={sidebarOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-50 flex"
-          onClose={setSidebarOpen}
-        >
+        <Dialog as="div" className="fixed inset-0 z-50 flex" onClose={setSidebarOpen}>
           <Transition.Child
             as={Fragment}
             enter="transition-opacity ease-linear duration-300"
@@ -131,10 +115,7 @@ export function MobileSidebar(props: {
                     onClick={() => setSidebarOpen(false)}
                   >
                     <span className="sr-only">Close sidebar</span>
-                    <XMarkIcon
-                      className="h-6 w-6 text-white"
-                      aria-hidden="true"
-                    />
+                    <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
                   </button>
                 </div>
               </Transition.Child>

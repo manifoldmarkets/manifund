@@ -11,9 +11,7 @@ export function CloseOldProjects(props: { projectIds: string[] }) {
       disabled
       onClick={async () => {
         await Promise.all(
-          projectIds.map((projectId) =>
-            updateProjectStage(supabase, projectId, 'complete')
-          )
+          projectIds.map((projectId) => updateProjectStage(supabase, projectId, 'complete'))
         )
       }}
     >

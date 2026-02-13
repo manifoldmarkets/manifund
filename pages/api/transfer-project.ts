@@ -6,10 +6,7 @@ import { getTransfersByEmail } from '@/db/project-transfer'
 export default async function handler(req: NextApiRequest) {
   const user = req.body.record as User
   const supabaseAdmin = createAdminClient()
-  const projectTransfers = await getTransfersByEmail(
-    supabaseAdmin,
-    user.email ?? ''
-  )
+  const projectTransfers = await getTransfersByEmail(supabaseAdmin, user.email ?? '')
   projectTransfers.forEach(async (transfer) => {
     if (!transfer.transferred) {
       let args = {

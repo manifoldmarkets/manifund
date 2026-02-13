@@ -24,9 +24,7 @@ export function RegrantorsDisplay(props: { regrantors: Profile[] }) {
   return (
     <div className="mt-5">
       <Row className="justify-between">
-        <h3 className="mb-2 text-xl font-semibold text-gray-900">
-          Our regrantors
-        </h3>
+        <h3 className="mb-2 text-xl font-semibold text-gray-900">Our regrantors</h3>
         <Row className="gap-3">
           {YEARS.map((year) => (
             <button

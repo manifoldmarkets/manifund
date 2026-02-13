@@ -12,8 +12,7 @@ export function ViewerActionPanel(props: {
   currentlyFollowing: boolean
 }) {
   const { projectId, projectSlug, currentlyFollowing } = props
-  const [displayAsFollowing, setDisplayAsFollowing] =
-    useState(currentlyFollowing)
+  const [displayAsFollowing, setDisplayAsFollowing] = useState(currentlyFollowing)
   const router = useRouter()
   return (
     <Row className="flex items-center justify-end gap-2">
@@ -22,9 +21,7 @@ export function ViewerActionPanel(props: {
         color="light-orange"
         size="2xs"
         onClick={async () => {
-          await navigator.clipboard.writeText(
-            `${window.location.origin}/projects/${projectSlug}`
-          )
+          await navigator.clipboard.writeText(`${window.location.origin}/projects/${projectSlug}`)
         }}
       >
         <LinkIcon className="relative right-0.5 h-4 w-4 stroke-2" />

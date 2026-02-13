@@ -32,8 +32,7 @@ type TradeWithAmmProps = {
 }
 
 export default async function handler(req: NextRequest) {
-  const { projectId, amount, buying, valuation } =
-    (await req.json()) as TradeWithAmmProps
+  const { projectId, amount, buying, valuation } = (await req.json()) as TradeWithAmmProps
   const supabase = createEdgeClient(req)
   const user = await getUser(supabase)
   if (!user) {
@@ -44,8 +43,8 @@ export default async function handler(req: NextRequest) {
   const numDollars = buying
     ? amount
     : !!valuation
-    ? (amount / TOTAL_SHARES) * valuation
-    : calculateSellPayout(amount, ammShares, ammUSD)
+      ? (amount / TOTAL_SHARES) * valuation
+      : calculateSellPayout(amount, ammShares, ammUSD)
   const numShares = buying
     ? !!valuation
       ? (amount / valuation) * TOTAL_SHARES
@@ -69,12 +68,7 @@ export default async function handler(req: NextRequest) {
           user.id,
           userProfile?.accreditation_status ?? false
         )
-  const userSellableShares = calculateSellableShares(
-    userTxns,
-    userBids,
-    projectId,
-    user.id
-  )
+  const userSellableShares = calculateSellableShares(userTxns, userBids, projectId, user.id)
   const errorMessage = getTradeErrorMessage(
     buying ? 'buy' : 'sell',
     ammShares,
@@ -117,12 +111,7 @@ export default async function handler(req: NextRequest) {
         .single()
       const ammTxns = await getTxnsByUser(supabase, projectId)
       const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
-      const valuationAfterTrade = calculateValuationAfterTrade(
-        amount,
-        ammShares,
-        ammUSD,
-        buying
-      )
+      const valuationAfterTrade = calculateValuationAfterTrade(amount, ammShares, ammUSD, buying)
       const hitsLimitOrder =
         !!mostEligibleBid &&
         (buying
@@ -146,20 +135,14 @@ export default async function handler(req: NextRequest) {
             supabase
           )
         }
-        amountRemaining -= buying
-          ? Math.abs(usdInAmmTrade)
-          : Math.abs(sharesInAmmTrade)
+        amountRemaining -= buying ? Math.abs(usdInAmmTrade) : Math.abs(sharesInAmmTrade)
         const usdInUserTrade = Math.min(
           mostEligibleBid.amount,
-          buying
-            ? amountRemaining
-            : (amountRemaining / TOTAL_SHARES) * valuationAtLo
+          buying ? amountRemaining : (amountRemaining / TOTAL_SHARES) * valuationAtLo
         )
         const sharesInUserTrade = Math.min(
           (mostEligibleBid.amount / valuationAtLo) * TOTAL_SHARES,
-          buying
-            ? (amountRemaining / valuationAtLo) * TOTAL_SHARES
-            : amountRemaining
+          buying ? (amountRemaining / valuationAtLo) * TOTAL_SHARES : amountRemaining
         )
         await makeTrade(
           sharesInUserTrade,
@@ -174,11 +157,7 @@ export default async function handler(req: NextRequest) {
         await sendTemplateEmail(
           TEMPLATE_IDS.TRADE_ACCEPTED,
           {
-            tradeText: genTradeText(
-              mostEligibleBid,
-              project.title,
-              usdInUserTrade
-            ),
+            tradeText: genTradeText(mostEligibleBid, project.title, usdInUserTrade),
             recipientProfileUrl: `manifund.org/${mostEligibleBid.profiles?.username}`,
             bidType: buying ? 'sell' : 'buy',
             projectTitle: project.title,
@@ -187,15 +166,7 @@ export default async function handler(req: NextRequest) {
         )
         amountRemaining -= buying ? usdInUserTrade : sharesInUserTrade
       } else {
-        await makeTrade(
-          numShares,
-          numDollars,
-          projectId,
-          projectId,
-          user.id,
-          buying,
-          supabase
-        )
+        await makeTrade(numShares, numDollars, projectId, projectId, user.id, buying, supabase)
         amountRemaining = 0
       }
     }

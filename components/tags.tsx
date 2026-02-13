@@ -102,13 +102,7 @@ const CAUSE_ICONS = {
   science: <BeakerIcon className="h-3 w-3 stroke-2" />,
   forecasting: <ArrowTrendingUpIcon className="h-3 w-3 stroke-2" />,
   'manifold-community': (
-    <Image
-      className="h-4 w-4"
-      src="/ManifoldIcon.svg"
-      width="50"
-      height="50"
-      alt="Manifold icon"
-    />
+    <Image className="h-4 w-4" src="/ManifoldIcon.svg" width="50" height="50" alt="Manifold icon" />
   ),
   'china-talk': <StarIcon className="h-3 w-3 stroke-2" />,
   'acx-grants-2024': <PiSpiralBold className="h-3 w-3" />,
@@ -150,10 +144,7 @@ export function CauseTag(props: {
   )
 }
 
-export function StageIcon(props: {
-  stage: Project['stage']
-  className?: string
-}) {
+export function StageIcon(props: { stage: Project['stage']; className?: string }) {
   const { stage, className } = props
   const i = {
     icon: {
@@ -190,19 +181,13 @@ export function RegranterTag() {
     <Tooltip text="Regranters can receive donations from other users and give grants to the projects and organizations of their choice.">
       <Row className="max-w-fit gap-0.5 rounded-full bg-orange-100 px-2  pt-1 text-center">
         <CheckBadgeIcon className="relative bottom-0.5 m-auto h-4 w-4 stroke-2 text-orange-500" />
-        <div className="relative bottom-0.5 text-sm leading-tight text-orange-500">
-          regrantor
-        </div>
+        <div className="relative bottom-0.5 text-sm leading-tight text-orange-500">regrantor</div>
       </Row>
     </Tooltip>
   )
 }
 
-export function Tag(props: {
-  text: string
-  color?: string
-  className?: string
-}) {
+export function Tag(props: { text: string; color?: string; className?: string }) {
   const { text, color = 'orange', className } = props
   return (
     <div

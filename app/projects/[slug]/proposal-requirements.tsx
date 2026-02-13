@@ -1,8 +1,5 @@
 import { Row } from '@/components/layout/row'
-import {
-  CheckIcon,
-  EllipsisHorizontalCircleIcon,
-} from '@heroicons/react/20/solid'
+import { CheckIcon, EllipsisHorizontalCircleIcon } from '@heroicons/react/20/solid'
 
 export function ProposalRequirements(props: {
   approved: boolean
@@ -42,10 +39,7 @@ export function ProposalRequirements(props: {
             <Row className="w-full items-center">
               <Row className="items-center py-3 text-xs">
                 <Row className="h-4 w-4 items-center justify-center rounded-full bg-orange-600">
-                  <CheckIcon
-                    className="h-3 w-4 text-white"
-                    aria-hidden="true"
-                  />
+                  <CheckIcon className="h-3 w-4 text-white" aria-hidden="true" />
                 </Row>
                 {req.href ? (
                   <a href={req.href} className="ml-2  text-gray-900">
@@ -66,10 +60,7 @@ export function ProposalRequirements(props: {
                   />
                 </Row>
                 {req.href ? (
-                  <a
-                    href={req.href}
-                    className="ml-2 text-gray-500 hover:underline"
-                  >
+                  <a href={req.href} className="ml-2 text-gray-500 hover:underline">
                     {req.name}
                   </a>
                 ) : (

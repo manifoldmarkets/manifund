@@ -47,10 +47,7 @@ export function ProfileHeader(props: {
           {isOwnProfile && (
             <div className="relative right-4 top-8 h-5 w-5 rounded-full bg-orange-500 hover:bg-orange-600 sm:right-6 sm:top-14 sm:h-10 sm:w-10">
               <Link href="/edit-profile">
-                <PencilIcon
-                  className="h-5 w-5 p-1 text-white sm:h-10 sm:w-10 sm:p-2"
-                  aria-hidden
-                />
+                <PencilIcon className="h-5 w-5 p-1 text-white sm:h-10 sm:w-10 sm:p-2" aria-hidden />
               </Link>
             </div>
           )}
@@ -76,11 +73,7 @@ export function ProfileHeader(props: {
         </Row>
         <Row className="gap-2">
           {isAdmin && !isOwnProfile && projects && comments && (
-            <SuperBanButton
-              profile={profile}
-              projects={projects}
-              comments={comments}
-            />
+            <SuperBanButton profile={profile} projects={projects} comments={comments} />
           )}
           {isOwnProfile && <SignOutButton />}
         </Row>

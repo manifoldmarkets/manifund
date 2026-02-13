@@ -12,8 +12,7 @@ export default function Error(props: { error: Error; reset: () => void }) {
         <h3 className="mb-2 text-xl">Common errors</h3>
         <code className="font-bold">JWSError JWSInvalidSignature</code>
         <p>
-          This might be due to an auth mismatch between dev and prod Supabase;
-          try{' '}
+          This might be due to an auth mismatch between dev and prod Supabase; try{' '}
           <SiteLink followsLinkClass href="/login" className="text-orange-500">
             signing out.
           </SiteLink>

@@ -13,10 +13,7 @@ export function ProgressBar(props: {
   const minPercent = (minFunding / fundingGoal) * 100
   return (
     <div
-      className={clsx(
-        'relative w-full rounded-full bg-gray-200 shadow',
-        small ? 'h-1.5' : 'h-2'
-      )}
+      className={clsx('relative w-full rounded-full bg-gray-200 shadow', small ? 'h-1.5' : 'h-2')}
     >
       <div
         style={{
@@ -29,25 +26,18 @@ export function ProgressBar(props: {
           left: '0px',
         }}
       />
-      {amountRaised < minFunding &&
-        minFunding !== 0 &&
-        minFunding !== fundingGoal && (
-          <div
-            style={{
-              width: `${minPercent}%`,
-            }}
-            className="flex justify-end"
-          >
-            <Tooltip text={`min funding: ${formatMoney(minFunding)}`}>
-              <div
-                className={clsx(
-                  'w-0.5 rounded bg-gray-400 sm:w-1',
-                  small ? 'h-1.5' : 'h-2'
-                )}
-              />
-            </Tooltip>
-          </div>
-        )}
+      {amountRaised < minFunding && minFunding !== 0 && minFunding !== fundingGoal && (
+        <div
+          style={{
+            width: `${minPercent}%`,
+          }}
+          className="flex justify-end"
+        >
+          <Tooltip text={`min funding: ${formatMoney(minFunding)}`}>
+            <div className={clsx('w-0.5 rounded bg-gray-400 sm:w-1', small ? 'h-1.5' : 'h-2')} />
+          </Tooltip>
+        </div>
+      )}
     </div>
   )
 }

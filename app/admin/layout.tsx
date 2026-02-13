@@ -12,9 +12,7 @@ export const revalidate = 300
 // Separate components for each count to allow parallel loading
 async function UserCount() {
   const supabase = createAdminClient()
-  const { count } = await supabase
-    .from('users')
-    .select('*', { count: 'exact', head: true })
+  const { count } = await supabase.from('users').select('*', { count: 'exact', head: true })
 
   return (
     <span className="ml-2 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
@@ -61,11 +59,7 @@ function CountLoading() {
   )
 }
 
-export default async function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
   if (!user || !isAdmin(user)) {
@@ -114,9 +108,7 @@ export default async function AdminLayout({
           <Link href="/" className="p-2 text-white hover:text-gray-200">
             <HomeIcon className="h-5 w-5" />
           </Link>
-          <h1 className="flex-1 text-center text-lg text-white">
-            Manifund admin ({user.email})
-          </h1>
+          <h1 className="flex-1 text-center text-lg text-white">Manifund admin ({user.email})</h1>
         </div>
       </div>
 

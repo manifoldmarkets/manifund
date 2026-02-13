@@ -18,16 +18,11 @@ export const revalidate = 300
 
 export default async function UsersPage() {
   const supabaseAdmin = createAdminClient()
-  const [{ data: users }, { data: profiles }, { data: txns }] =
-    await Promise.all([
-      supabaseAdmin.from('users').select('*'),
-      supabaseAdmin.from('profiles').select('*'),
-      supabaseAdmin
-        .from('txns')
-        .select('*')
-        .eq('token', 'USD')
-        .order('created_at'),
-    ])
+  const [{ data: users }, { data: profiles }, { data: txns }] = await Promise.all([
+    supabaseAdmin.from('users').select('*'),
+    supabaseAdmin.from('profiles').select('*'),
+    supabaseAdmin.from('txns').select('*').eq('token', 'USD').order('created_at'),
+  ])
 
   const userAndProfiles =
     users?.map((user) => {
@@ -58,10 +53,7 @@ export default async function UsersPage() {
         toDownload={usersCSV}
         filename="users.csv"
       />
-      <Table
-        dense
-        className="[--gutter:theme(spacing.0)] sm:[--gutter:theme(spacing.0)]"
-      >
+      <Table dense className="[--gutter:theme(spacing.0)] sm:[--gutter:theme(spacing.0)]">
         <TableHead>
           <TableRow>
             <TableHeader className="p-2">DB</TableHeader>
@@ -93,9 +85,7 @@ export default async function UsersPage() {
                   accredited={user.profile?.accreditation_status as boolean}
                 />
               </TableCell>
-              <TableCell>
-                {Number((balances.get(user.id ?? '') ?? 0).toFixed(2))}
-              </TableCell>
+              <TableCell>{Number((balances.get(user.id ?? '') ?? 0).toFixed(2))}</TableCell>
               <TableCell>
                 <PayUser userId={user.id ?? ''} />
               </TableCell>

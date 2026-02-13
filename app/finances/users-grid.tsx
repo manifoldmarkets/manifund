@@ -2,12 +2,7 @@
 
 import Link from 'next/link'
 import React, { useMemo } from 'react'
-import {
-  DataSheetGrid,
-  textColumn,
-  keyColumn,
-  floatColumn,
-} from 'react-datasheet-grid'
+import { DataSheetGrid, textColumn, keyColumn, floatColumn } from 'react-datasheet-grid'
 import 'react-datasheet-grid/dist/style.css'
 
 type User = {
@@ -19,10 +14,8 @@ type User = {
 
 export default function UsersGrid({ users }: { users: User[] }) {
   // Manifund-Bank has a large negative balance for accounting; ignore it
-  const bankBalance =
-    users.find((user) => user.username === 'Manifund-Bank')?.balance ?? 0
-  const usersTotal =
-    users.reduce((acc, user) => acc + user.balance, 0) - bankBalance
+  const bankBalance = users.find((user) => user.username === 'Manifund-Bank')?.balance ?? 0
+  const usersTotal = users.reduce((acc, user) => acc + user.balance, 0) - bankBalance
 
   const columns = useMemo(
     () => [
@@ -75,13 +68,7 @@ export default function UsersGrid({ users }: { users: User[] }) {
           maximumFractionDigits: 0,
         })}
       </div>
-      <DataSheetGrid
-        value={users}
-        columns={columns}
-        rowHeight={30}
-        height={800}
-        lockRows
-      />
+      <DataSheetGrid value={users} columns={columns} rowHeight={30} height={800} lockRows />
     </div>
   )
 }
@@ -121,13 +108,7 @@ export function BalanceSheet() {
     { name: 'Mox Fund investments', balance: $.mox_fund },
     {
       name: 'Total assets',
-      balance:
-        $.stripe +
-        $.mercury +
-        $.coinbase +
-        $.vara_for_manifund +
-        $.mox +
-        $.mox_fund,
+      balance: $.stripe + $.mercury + $.coinbase + $.vara_for_manifund + $.mox + $.mox_fund,
     },
     {},
     { name: 'User balances', balance: $.users },
@@ -168,10 +149,7 @@ export function BalanceSheet() {
       <DataSheetGrid
         height={800}
         value={financeRows}
-        columns={[
-          keyColumn('name', textColumn),
-          keyColumn('balance', floatColumn),
-        ]}
+        columns={[keyColumn('name', textColumn), keyColumn('balance', floatColumn)]}
         lockRows
       />
     </>

@@ -2,10 +2,9 @@ import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sortBy, uniq } from 'es-toolkit'
 
-export type Cause = Omit<
-  Database['public']['Tables']['causes']['Row'],
-  'cert_params'
-> & { cert_params: CertParams | null }
+export type Cause = Omit<Database['public']['Tables']['causes']['Row'], 'cert_params'> & {
+  cert_params: CertParams | null
+}
 export type FullCause = Cause & { projects: { stage: string; type: string }[] }
 export type MiniCause = { title: string; slug: string }
 export type SimpleCause = {
@@ -28,9 +27,7 @@ export type CertParams = {
 }
 
 export async function listFullCauses(supabase: SupabaseClient) {
-  const { data, error } = await supabase
-    .from('causes')
-    .select('*, projects(stage)')
+  const { data, error } = await supabase.from('causes').select('*, projects(stage)')
   if (error) {
     throw error
   }
@@ -38,10 +35,7 @@ export async function listFullCauses(supabase: SupabaseClient) {
   return sortedCauses as FullCause[]
 }
 
-export async function getSomeFullCauses(
-  causeSlugs: string[],
-  supabase: SupabaseClient
-) {
+export async function getSomeFullCauses(causeSlugs: string[], supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('causes')
     .select('*, projects(stage, type)')
@@ -62,9 +56,7 @@ export async function listMiniCauses(supabase: SupabaseClient) {
 }
 
 export async function listSimpleCauses(supabase: SupabaseClient) {
-  const { data, error } = await supabase
-    .from('causes')
-    .select('title, slug, prize, open')
+  const { data, error } = await supabase.from('causes').select('title, slug, prize, open')
   if (error) {
     throw error
   }
@@ -79,10 +71,7 @@ export async function listCauses(supabase: SupabaseClient) {
   return data as Cause[]
 }
 
-export async function getPrizeCause(
-  causeSlugs: string[],
-  supabase: SupabaseClient
-) {
+export async function getPrizeCause(causeSlugs: string[], supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('causes')
     .select('*')
@@ -101,11 +90,7 @@ export async function updateProjectCauses(
   projectId: string
 ) {
   const uniqCauseSlugs = uniq(causeSlugs)
-  await supabase
-    .from('project_causes')
-    .delete()
-    .eq('project_id', projectId)
-    .throwOnError()
+  await supabase.from('project_causes').delete().eq('project_id', projectId).throwOnError()
   await supabase
     .from('project_causes')
     .insert(
@@ -118,10 +103,7 @@ export async function updateProjectCauses(
 }
 
 export async function getCause(supabase: SupabaseClient, slug: string) {
-  const { data, error } = await supabase
-    .from('causes')
-    .select('*')
-    .eq('slug', slug)
+  const { data, error } = await supabase.from('causes').select('*').eq('slug', slug)
   if (error) {
     throw error
   }

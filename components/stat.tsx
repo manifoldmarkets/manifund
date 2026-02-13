@@ -4,23 +4,14 @@ import { Col } from './layout/col'
 import { Row } from './layout/row'
 import { ArrowTrendingUpIcon } from '@heroicons/react/24/outline'
 
-export function Stat(props: {
-  value: string
-  label: string
-  theme?: string
-  className?: string
-}) {
+export function Stat(props: { value: string; label: string; theme?: string; className?: string }) {
   const { value, label, theme, className } = props
   return (
     <Col>
       <span
         className={clsx(
           'text-lg font-semibold sm:text-xl',
-          theme === 'white'
-            ? 'text-white'
-            : theme === 'gray'
-            ? 'text-gray-600'
-            : 'text-orange-600',
+          theme === 'white' ? 'text-white' : theme === 'gray' ? 'text-gray-600' : 'text-orange-600',
           className
         )}
       >

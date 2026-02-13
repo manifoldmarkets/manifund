@@ -74,9 +74,7 @@ export function createProjectEmbeddingText(project: {
 
   // Causes section
   if (project.causes && project.causes.length > 0) {
-    const causesList = project.causes
-      .map((cause) => `- ${cause.title}`)
-      .join('\n')
+    const causesList = project.causes.map((cause) => `- ${cause.title}`).join('\n')
     sections.push(`## Causes\n${causesList}`)
   }
 
@@ -144,18 +142,12 @@ export async function updateProjectEmbedding(
     causes:
       project.project_causes
         ?.map((pc) => pc.causes)
-        .filter(
-          (cause): cause is { title: string; slug: string } => cause !== null
-        ) || null,
+        .filter((cause): cause is { title: string; slug: string } => cause !== null) || null,
   }
   const textContent = createProjectEmbeddingText(projectForEmbedding)
 
   // Generate embedding with model info
-  const {
-    embedding,
-    model: usedModel,
-    dimension,
-  } = await generateEmbedding(textContent, model)
+  const { embedding, model: usedModel, dimension } = await generateEmbedding(textContent, model)
 
   // Check if embedding already exists
   const { data: existingEmbedding } = await (supabase as any)
@@ -181,14 +173,12 @@ export async function updateProjectEmbedding(
     }
   } else {
     // Insert new embedding
-    const { error: insertError } = await (supabase as any)
-      .from('project_embeddings')
-      .insert({
-        project_id: projectId,
-        embedding,
-        model_name: usedModel,
-        model_dimension: dimension,
-      })
+    const { error: insertError } = await (supabase as any).from('project_embeddings').insert({
+      project_id: projectId,
+      embedding,
+      model_name: usedModel,
+      model_dimension: dimension,
+    })
 
     if (insertError) {
       throw new Error(`Failed to insert embedding: ${insertError.message}`)
@@ -209,15 +199,8 @@ export interface EmbeddingSyncOptions {
   }) => void
 }
 
-export async function syncProjectEmbeddings(
-  options: EmbeddingSyncOptions = {}
-) {
-  const {
-    model = DEFAULT_EMBEDDING_MODEL,
-    batchSize = 5,
-    force = false,
-    onProgress,
-  } = options
+export async function syncProjectEmbeddings(options: EmbeddingSyncOptions = {}) {
+  const { model = DEFAULT_EMBEDDING_MODEL, batchSize = 5, force = false, onProgress } = options
 
   const supabase = createAdminSupabaseClient()
 
@@ -240,9 +223,7 @@ export async function syncProjectEmbeddings(
       .select('project_id')
       .eq('model_name', model)
 
-    const embeddedProjectIds = new Set(
-      (existingEmbeddings || []).map((e) => e.project_id)
-    )
+    const embeddedProjectIds = new Set((existingEmbeddings || []).map((e) => e.project_id))
 
     projectsToProcess = allProjects.filter((p) => !embeddedProjectIds.has(p.id))
   }
@@ -277,10 +258,7 @@ export async function syncProjectEmbeddings(
           await updateProjectEmbedding(project.id, model)
           return { success: true }
         } catch (error) {
-          console.error(
-            `Failed to update embedding for ${project.title}:`,
-            error
-          )
+          console.error(`Failed to update embedding for ${project.title}:`, error)
           return { success: false, error }
         }
       })

@@ -76,21 +76,18 @@ export function DonateBox(props: {
     <Card className="flex flex-col gap-3">
       <div>
         <Row className="justify-between">
-          <h2 className="text-lg font-bold">
-            {isBid ? 'Offer to donate' : 'Donate'}
-          </h2>
+          <h2 className="text-lg font-bold">{isBid ? 'Offer to donate' : 'Donate'}</h2>
           {isBid && <TimeLeftDisplay closeDate={project.auction_close ?? ''} />}
         </Row>
         {isBid && (
           <p className="text-sm font-light text-gray-500">
-            You&apos;re pledging to donate if the project hits its minimum goal
-            and gets approved. If not, your funds will be returned.
+            You&apos;re pledging to donate if the project hits its minimum goal and gets approved.
+            If not, your funds will be returned.
           </p>
         )}
         {charity?.type === 'individual' && (
           <p className="text-sm text-gray-500">
-            This is a donation to this user&apos;s regranting budget, which is
-            not withdrawable.
+            This is a donation to this user&apos;s regranting budget, which is not withdrawable.
           </p>
         )}
       </div>

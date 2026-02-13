@@ -8,10 +8,7 @@ export function FixAvatars() {
   return (
     <Button
       onClick={async () => {
-        await setAvatarUrls(
-          supabaseAdmin,
-          await getCurrentAvatars(supabaseAdmin)
-        )
+        await setAvatarUrls(supabaseAdmin, await getCurrentAvatars(supabaseAdmin))
         console.log('done')
       }}
       disabled

@@ -37,9 +37,7 @@ export default async function handler() {
     }
   }
   // Fix projects where they were not actually approved but the agreement says approved
-  const reverseMismatchedProjects = await listReverseMismatchedProjects(
-    supabase
-  )
+  const reverseMismatchedProjects = await listReverseMismatchedProjects(supabase)
   console.log(reverseMismatchedProjects?.length)
   for (const project of reverseMismatchedProjects) {
     console.log(project.title)

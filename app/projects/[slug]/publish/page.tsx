@@ -5,9 +5,7 @@ import { getPrizeCause, listSimpleCauses } from '@/db/cause'
 import React from 'react'
 import { PublishProjectForm } from './publish-form'
 
-export default async function PublishProjectPage(props: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function PublishProjectPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params
   const supabase = await createServerSupabaseClient()
   const project = await getProjectWithCausesBySlug(supabase, slug)
@@ -24,11 +22,5 @@ export default async function PublishProjectPage(props: {
     project.causes.map((c) => c.slug),
     supabase
   )
-  return (
-    <PublishProjectForm
-      causesList={causesList}
-      prizeCause={prizeCause}
-      project={project}
-    />
-  )
+  return <PublishProjectForm causesList={causesList} prizeCause={prizeCause} project={project} />
 }

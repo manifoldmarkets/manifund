@@ -13,10 +13,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function MarketTab(props: {
-  project: FullProject
-  userProfile?: Profile
-}) {
+export function MarketTab(props: { project: FullProject; userProfile?: Profile }) {
   const { project, userProfile } = props
   const markets = (props.project.markets || []) as string[]
   const [editing, setEditing] = useState(false)
@@ -37,9 +34,7 @@ export function MarketTab(props: {
         />
       )}
       {markets.length == 0 && (
-        <div className="text-center text-gray-500">
-          No prediction markets added yet
-        </div>
+        <div className="text-center text-gray-500">No prediction markets added yet</div>
       )}
     </Col>
   )
@@ -130,10 +125,7 @@ function createManifoldUrl(project: FullProject) {
     .replaceAll('1k', encodeURIComponent(project.min_funding.toString()))
     // TODO: Could pull out the first paragraph of the project description, but need to de-Tiptapify it
     .replace('testsummary', encodeURIComponent('...'))
-    .replaceAll(
-      'testlink',
-      encodeURIComponent(`https://manifund.org/projects/${project.slug}`)
-    )
+    .replaceAll('testlink', encodeURIComponent(`https://manifund.org/projects/${project.slug}`))
   return url
 }
 

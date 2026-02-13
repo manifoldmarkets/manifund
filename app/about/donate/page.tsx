@@ -43,14 +43,11 @@ export default async function DonatePage() {
     <div>
       <div className="grid w-full grid-cols-1 gap-8 rounded-b-lg bg-gradient-to-r from-orange-500 to-rose-500 p-8 sm:grid-cols-2">
         <Col className="flex flex-col justify-between gap-4 sm:h-full">
-          <h1 className="text-3xl font-bold text-white md:text-4xl">
-            Ways to give
-          </h1>
+          <h1 className="text-3xl font-bold text-white md:text-4xl">Ways to give</h1>
           <p className="text-white text-opacity-80">
-            Our donation options offer a range of flexibility and control: you
-            can choose whichever one feels right given your level of trust in us
-            and our regrantors and the amount of time and thought you want to
-            put into your giving.
+            Our donation options offer a range of flexibility and control: you can choose whichever
+            one feels right given your level of trust in us and our regrantors and the amount of
+            time and thought you want to put into your giving.
           </p>
           <Row className="mt-5 w-full justify-center gap-5">
             {!user && <SignInButton />}
@@ -68,21 +65,15 @@ export default async function DonatePage() {
                 height={1000}
               />
               <div className="pl-6">
-                <span className="font-semibold text-gray-900">
-                  General regranting
-                </span>
+                <span className="font-semibold text-gray-900">General regranting</span>
                 <p className="text-sm text-gray-500">
-                  This will be used to onboard new regrantors and to raise the
-                  budgets of regrantors with strong track records. We may use up
-                  to 5% to cover our operations.
+                  This will be used to onboard new regrantors and to raise the budgets of regrantors
+                  with strong track records. We may use up to 5% to cover our operations.
                 </p>
               </div>
               {user && (
                 <Row className="mx-auto mt-3 justify-center">
-                  <DepositButton
-                    userId={user.id}
-                    passFundsTo={passFundsTo ?? undefined}
-                  >
+                  <DepositButton userId={user.id} passFundsTo={passFundsTo ?? undefined}>
                     <div className={buttonClass('2xs', 'light-orange')}>
                       Give to general regranting
                     </div>
@@ -96,12 +87,9 @@ export default async function DonatePage() {
                 aria-hidden="true"
               />
               <div className="pl-6">
-                <span className="font-semibold text-gray-900">
-                  Custom allocation
-                </span>
+                <span className="font-semibold text-gray-900">Custom allocation</span>
                 <div className="text-sm text-gray-500">
-                  After adding money to your Manifund account, you can
-                  distribute it among:
+                  After adding money to your Manifund account, you can distribute it among:
                   <ul className="ml-5 list-disc">
                     <li>Regrantors</li>
                     <li>Projects</li>
@@ -112,9 +100,7 @@ export default async function DonatePage() {
               {user && (
                 <Row className="mx-auto mt-3 justify-center">
                   <DepositButton userId={user.id}>
-                    <div className={buttonClass('2xs', 'light-orange')}>
-                      Add funds to account
-                    </div>
+                    <div className={buttonClass('2xs', 'light-orange')}>Add funds to account</div>
                   </DepositButton>
                 </Row>
               )}
@@ -128,43 +114,35 @@ export default async function DonatePage() {
           <ul>
             <li>
               <strong>
-                There are specific regrantors you would trust to donate on your
-                behalf.
+                There are specific regrantors you would trust to donate on your behalf.
               </strong>{' '}
-              That is, there are experts in the areas you support who you think,
-              relative to you, have a comparative advantage giving your money to
-              the best projects in that area. These people don&apos;t
-              necessarily need to be on our site already; if you have someone in
-              mind you&apos;d like to sponsor, book a call and we can talk
-              through facilitating that!
+              That is, there are experts in the areas you support who you think, relative to you,
+              have a comparative advantage giving your money to the best projects in that area.
+              These people don&apos;t necessarily need to be on our site already; if you have
+              someone in mind you&apos;d like to sponsor, book a call and we can talk through
+              facilitating that!
             </li>
             <li>
-              <strong>You value transparency.</strong> When you give through
-              Manifund, you&apos;ll be able to see where your money goes and
-              why.
+              <strong>You value transparency.</strong> When you give through Manifund, you&apos;ll
+              be able to see where your money goes and why.
             </li>
             <li>
-              <strong>You believe in other benefits of our approach.</strong> We
-              think that the speed, transparency, and experimentation aspects of
-              our approach have big positive externalities for our grantees and
-              for philanthropy at large. When projects get funded faster, they
-              can start sooner. By being transparent, we provide information to
-              everyone about what grantmakers look for, help build grantmaker
-              trackrecords, keep ourselves accountable to public opinion, and
-              put pressure on other funders to be more transparent. By
-              experimenting with alternative mechanisms, we have the potential
-              to find better approaches to non-profit funding that could be
-              applied elsewhere.
+              <strong>You believe in other benefits of our approach.</strong> We think that the
+              speed, transparency, and experimentation aspects of our approach have big positive
+              externalities for our grantees and for philanthropy at large. When projects get funded
+              faster, they can start sooner. By being transparent, we provide information to
+              everyone about what grantmakers look for, help build grantmaker trackrecords, keep
+              ourselves accountable to public opinion, and put pressure on other funders to be more
+              transparent. By experimenting with alternative mechanisms, we have the potential to
+              find better approaches to non-profit funding that could be applied elsewhere.
             </li>
           </ul>
           <h2>Why not donate through regranting?</h2>
-          You might not want to donate through regranting if you have strong
-          takes on which projects within the cause area you care most about are
-          the highest impact, and want to devote your own time to evaluating
-          projects and charities yourself. In that case, you might think
-          outsourcing your donation decisions to a regrantor would result in the
-          money going to less impactful projects than if you distributed it
-          personally.
+          You might not want to donate through regranting if you have strong takes on which projects
+          within the cause area you care most about are the highest impact, and want to devote your
+          own time to evaluating projects and charities yourself. In that case, you might think
+          outsourcing your donation decisions to a regrantor would result in the money going to less
+          impactful projects than if you distributed it personally.
         </div>
         <div className="prose mx-auto mt-10">
           <h2>Some of our past grants</h2>
@@ -187,38 +165,33 @@ export default async function DonatePage() {
         <div className="prose mx-auto mt-10">
           <h2>FAQ</h2>
           <strong>
-            If I donate to a regrantor or a fund, can I maintain veto power over
-            grants they give?
+            If I donate to a regrantor or a fund, can I maintain veto power over grants they give?
           </strong>
           <p>
-            No. We think the extra coordination involved would be costly for
-            donors, regrantors, and grantees, without meaningfully improving the
-            quality of our grants.
+            No. We think the extra coordination involved would be costly for donors, regrantors, and
+            grantees, without meaningfully improving the quality of our grants.
           </p>
           <strong>Are donations to Manifund tax deductible?</strong>
           <p>
-            Yes if you&apos;re in the US! Manifold for Charity, our
-            organization, is a registered 501(c)(3) nonprofit.
+            Yes if you&apos;re in the US! Manifold for Charity, our organization, is a registered
+            501(c)(3) nonprofit.
           </p>
           <strong>Why do you take a 5% cut of donations?</strong>
           <p>
-            We need to cover our costs somehow, and we see two main ways of
-            doing that: taking a small cut of all donations, or fundraising
-            separately for our operations. We choose the former because we get a
-            better signal on the value of our work by pricing it in. If the work
-            we do building and maintaining the site, onboarding and managing
-            regrantors, and processing grants doesn&apos;t add as much value to
-            donors as it costs, then that&apos;s a useful signal that we
-            shouldn&apos;t be doing it anymore.
+            We need to cover our costs somehow, and we see two main ways of doing that: taking a
+            small cut of all donations, or fundraising separately for our operations. We choose the
+            former because we get a better signal on the value of our work by pricing it in. If the
+            work we do building and maintaining the site, onboarding and managing regrantors, and
+            processing grants doesn&apos;t add as much value to donors as it costs, then that&apos;s
+            a useful signal that we shouldn&apos;t be doing it anymore.
           </p>
           <strong>
-            What if I&apos;m interested in donating through regranting, but
-            I&apos;m interested in a different cause from any of your
-            regrantors?
+            What if I&apos;m interested in donating through regranting, but I&apos;m interested in a
+            different cause from any of your regrantors?
           </strong>
           <p>
-            Book a time to talk to us! We might be able to set you up with
-            regrantors you trust who have expertise in your area of choice.
+            Book a time to talk to us! We might be able to set you up with regrantors you trust who
+            have expertise in your area of choice.
           </p>
         </div>
       </div>

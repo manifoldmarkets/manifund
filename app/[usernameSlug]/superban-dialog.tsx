@@ -82,14 +82,12 @@ function SuperBanDialog(props: {
       <Col className="gap-4">
         <h2 className="text-xl font-bold text-red-600">Superban User</h2>
         <p className="text-sm text-gray-600">
-          You are about to permanently delete this user and all their content.
-          This action cannot be undone.
+          You are about to permanently delete this user and all their content. This action cannot be
+          undone.
         </p>
 
         <div className="rounded-md bg-red-50 p-4">
-          <h3 className="mb-2 font-semibold text-red-800">
-            The following will be deleted:
-          </h3>
+          <h3 className="mb-2 font-semibold text-red-800">The following will be deleted:</h3>
           <ul className="list-inside list-disc space-y-1 text-sm text-red-700">
             <li>
               <strong>{projects.length}</strong> project
@@ -118,10 +116,7 @@ function SuperBanDialog(props: {
         </div>
 
         <div>
-          <label
-            htmlFor="confirm"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="confirm" className="block text-sm font-medium text-gray-700">
             Type <strong>BAN</strong> to confirm
           </label>
           <input

@@ -1,8 +1,5 @@
 import { Suspense } from 'react'
-import {
-  createPublicSupabaseClient,
-  createServerSupabaseClient,
-} from '@/db/supabase-server'
+import { createPublicSupabaseClient, createServerSupabaseClient } from '@/db/supabase-server'
 import { getUser } from '@/db/profile'
 import { Col } from '@/components/layout/col'
 import { FeedTabs } from './feed-tabs'
@@ -80,14 +77,13 @@ async function AsyncFeedTabs({
     return await listProjects(supabase)
   }
 
-  const [projects, recentComments, recentDonations, recentBids, causesList] =
-    await Promise.all([
-      loadProjects(),
-      getRecentFullComments(supabase, PAGE_SIZE, start),
-      getRecentFullTxns(supabase, PAGE_SIZE, start),
-      getRecentFullBids(supabase, PAGE_SIZE, start),
-      listSimpleCauses(supabase),
-    ])
+  const [projects, recentComments, recentDonations, recentBids, causesList] = await Promise.all([
+    loadProjects(),
+    getRecentFullComments(supabase, PAGE_SIZE, start),
+    getRecentFullTxns(supabase, PAGE_SIZE, start),
+    getRecentFullBids(supabase, PAGE_SIZE, start),
+    listSimpleCauses(supabase),
+  ])
 
   return (
     <FeedTabs

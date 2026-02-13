@@ -1,13 +1,7 @@
 'use client'
 
 import { useState, useTransition, useEffect } from 'react'
-import {
-  signInWithGoogle,
-  signIn,
-  signUp,
-  resetPassword,
-  AuthResult,
-} from '@/lib/auth-actions'
+import { signInWithGoogle, signIn, signUp, resetPassword, AuthResult } from '@/lib/auth-actions'
 import { isRedirectError } from 'next/dist/client/components/redirect-error'
 
 interface AuthError {
@@ -81,10 +75,7 @@ export default function AuthModal({
 
         if (result) {
           setMessage(result)
-          if (
-            result.type === 'success' &&
-            ['signin', 'signup'].includes(mode)
-          ) {
+          if (result.type === 'success' && ['signin', 'signup'].includes(mode)) {
             markUserAsReturning()
           }
         }
@@ -94,10 +85,7 @@ export default function AuthModal({
         if (isRedirectError(error)) {
           throw error
         }
-        const message =
-          error instanceof Error
-            ? error.message
-            : 'An unexpected error occurred'
+        const message = error instanceof Error ? error.message : 'An unexpected error occurred'
         setMessage({ type: 'error', text: message })
       }
     })
@@ -154,10 +142,7 @@ export default function AuthModal({
       className="space-y-4"
     >
       <div>
-        <label
-          htmlFor="email"
-          className="mb-1 block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
           Email address
         </label>
         <input
@@ -172,10 +157,7 @@ export default function AuthModal({
 
       {mode !== 'forgot-password' && (
         <div>
-          <label
-            htmlFor="password"
-            className="mb-1 block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
             Password
           </label>
           <input
@@ -197,10 +179,10 @@ export default function AuthModal({
         {isPending
           ? 'Loading...'
           : mode === 'signin'
-          ? 'Sign in'
-          : mode === 'signup'
-          ? 'Create account'
-          : 'Send reset link'}
+            ? 'Sign in'
+            : mode === 'signup'
+              ? 'Create account'
+              : 'Send reset link'}
       </button>
     </form>
   )
@@ -216,23 +198,19 @@ export default function AuthModal({
                   ? 'Welcome back'
                   : 'Welcome'
                 : mode === 'signup'
-                ? 'Create your account'
-                : 'Reset password'}
+                  ? 'Create your account'
+                  : 'Reset password'}
             </h2>
           </div>
           {mode === 'signin' && recommendedEmail && (
             <div className="mt-2 text-center text-sm text-gray-600">
-              Make sure to create an account with the same email that your grant
-              notification was sent to (
-              <span className="font-bold text-black">{recommendedEmail}</span>
+              Make sure to create an account with the same email that your grant notification was
+              sent to (<span className="font-bold text-black">{recommendedEmail}</span>
               ).
             </div>
           )}
           {onClose && (
-            <button
-              onClick={onClose}
-              className="text-xl text-gray-400 hover:text-gray-600"
-            >
+            <button onClick={onClose} className="text-xl text-gray-400 hover:text-gray-600">
               ×
             </button>
           )}
@@ -253,15 +231,13 @@ export default function AuthModal({
         {authError && (
           <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
             <div className="mb-2 font-medium">
-              {authError.error === 'access_denied' &&
-              authError.errorCode === 'otp_expired'
+              {authError.error === 'access_denied' && authError.errorCode === 'otp_expired'
                 ? 'Email Link Expired'
                 : 'Authentication Error'}
             </div>
             <div className="mb-3 text-sm">
               {authError.errorDescription ||
-                (authError.error === 'access_denied' &&
-                authError.errorCode === 'otp_expired'
+                (authError.error === 'access_denied' && authError.errorCode === 'otp_expired'
                   ? 'The email link you clicked has expired. Please request a new password reset email.'
                   : `Error: ${authError.error}`)}
             </div>
@@ -276,9 +252,7 @@ export default function AuthModal({
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-2 text-gray-500">
-                  Or continue with
-                </span>
+                <span className="bg-white px-2 text-gray-500">Or continue with</span>
               </div>
             </div>
           </>
@@ -289,9 +263,7 @@ export default function AuthModal({
           {mode === 'signin' ? (
             <div className="space-y-2">
               <div>
-                <span className="text-sm text-gray-600">
-                  Don&apos;t have an account?{' '}
-                </span>
+                <span className="text-sm text-gray-600">Don&apos;t have an account? </span>
                 <button
                   type="button"
                   onClick={() => setMode('signup')}
@@ -310,9 +282,7 @@ export default function AuthModal({
             </div>
           ) : mode === 'signup' ? (
             <div>
-              <span className="text-sm text-gray-600">
-                Already have an account?{' '}
-              </span>
+              <span className="text-sm text-gray-600">Already have an account? </span>
               <button
                 type="button"
                 onClick={() => setMode('signin')}

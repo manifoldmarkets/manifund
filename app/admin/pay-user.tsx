@@ -20,12 +20,7 @@ export function PayUser(props: { userId: string }) {
   const [loading, setLoading] = useState(false)
   return (
     <Row>
-      <AmountInput
-        className="text-sm"
-        amount={amount}
-        onChangeAmount={setAmount}
-        allowNegative
-      />
+      <AmountInput className="text-sm" amount={amount} onChangeAmount={setAmount} allowNegative />
       <Row>
         <Checkbox
           checked={sendDonationReceipt}

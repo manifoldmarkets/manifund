@@ -93,9 +93,7 @@ export function EditRound(props: { round: Round }) {
               name="header"
               accept="image/png, image/jpeg"
               onChange={(event) => {
-                setHeaderImage(
-                  event.target.files ? event.target.files[0] : null
-                )
+                setHeaderImage(event.target.files ? event.target.files[0] : null)
               }}
             />
           </div>

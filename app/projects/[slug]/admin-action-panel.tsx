@@ -19,9 +19,7 @@ export function AdminActionPanel(props: {
   // Only show approve button for projects that need approval
   // Based on /admin/approvals logic: stage === 'proposal', approved === null, and reached min funding
   const needsApproval =
-    project.stage === 'proposal' &&
-    project.approved === null &&
-    amountRaised >= minIncludingAmm
+    project.stage === 'proposal' && project.approved === null && amountRaised >= minIncludingAmm
 
   if (!needsApproval) {
     return null

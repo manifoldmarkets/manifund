@@ -91,9 +91,7 @@ async function main() {
     process.exit(1)
   }
 
-  console.log(
-    '\nStep 3: Importing production data (filtering harmless errors)...'
-  )
+  console.log('\nStep 3: Importing production data (filtering harmless errors)...')
   try {
     // Import data and filter out known harmless errors
     const result = await $`psql ${localDbUrl} -f ${dataBackup}`.text()
@@ -121,9 +119,7 @@ async function main() {
 
     console.log('Production data imported')
   } catch (error) {
-    console.log(
-      'Production data imported with some errors (this might be expected)'
-    )
+    console.log('Production data imported with some errors (this might be expected)')
   }
 
   console.log('\nStep 4: Verifying data import...')

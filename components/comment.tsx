@@ -109,28 +109,20 @@ export function Comment(props: {
                 <LinkIcon
                   className="h-3 w-3 stroke-2 text-gray-500 hover:text-gray-700"
                   onClick={async () => {
-                    await navigator.clipboard.writeText(
-                      `${getURL()}${commentHref}`
-                    )
+                    await navigator.clipboard.writeText(`${getURL()}${commentHref}`)
                   }}
                 />
               </Tooltip>
             </Row>
             {comment.special_type && (
-              <Tag
-                text={toSentenceCase(comment.special_type)}
-                className="text-xs"
-                color="blue"
-              />
+              <Tag text={toSentenceCase(comment.special_type)} className="text-xs" color="blue" />
             )}
           </Row>
           <div className={clsx('relative', showExpandButton && 'pb-5')}>
             <div
               id="content"
               ref={contentElement}
-              className={clsx(
-                expanded || !showExpandButton ? 'max-h-fit' : 'line-clamp-[12]'
-              )}
+              className={clsx(expanded || !showExpandButton ? 'max-h-fit' : 'line-clamp-[12]')}
             >
               <RichContent content={comment.content} className="text-sm" />
             </div>

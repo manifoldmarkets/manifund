@@ -27,40 +27,19 @@ export function Tooltip(props: {
   hasSafePolygon?: boolean
   suppressHydrationWarning?: boolean
 }) {
-  const {
-    text,
-    children,
-    className,
-    noTap,
-    noFade,
-    hasSafePolygon,
-    suppressHydrationWarning,
-  } = props
+  const { text, children, className, noTap, noFade, hasSafePolygon, suppressHydrationWarning } =
+    props
 
   const arrowRef = useRef(null)
 
   const [open, setOpen] = useState(false)
 
-  const {
-    x,
-    y,
-    reference,
-    floating,
-    strategy,
-    middlewareData,
-    context,
-    placement,
-  } = useFloating({
+  const { x, y, reference, floating, strategy, middlewareData, context, placement } = useFloating({
     open: open,
     onOpenChange: setOpen,
     whileElementsMounted: autoUpdate,
     placement: props.placement ?? 'top',
-    middleware: [
-      offset(8),
-      flip(),
-      shift({ padding: 4 }),
-      arrow({ element: arrowRef }),
-    ],
+    middleware: [offset(8), flip(), shift({ padding: 4 }), arrow({ element: arrowRef })],
   })
 
   const { x: arrowX, y: arrowY } = middlewareData.arrow ?? {}

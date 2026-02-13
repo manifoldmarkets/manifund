@@ -1,11 +1,6 @@
 import { Cause } from '@/db/cause'
 import { getProfileById } from '@/db/profile'
-import {
-  getProjectBidsAndFollowsById,
-  Project,
-  ProjectAndBids,
-  TOTAL_SHARES,
-} from '@/db/project'
+import { getProjectBidsAndFollowsById, Project, ProjectAndBids, TOTAL_SHARES } from '@/db/project'
 import { getTxnsByProject } from '@/db/txn'
 import { createAdminClient } from '@/db/edge'
 import { SupabaseClient } from '@supabase/supabase-js'
@@ -17,10 +12,7 @@ import { sendTemplateEmail, TEMPLATE_IDS } from './email'
 import { getProposalValuation } from './math'
 import { resolveAuction } from './resolve-auction'
 
-export async function maybeActivateProject(
-  supabase: SupabaseClient,
-  projectId: string
-) {
+export async function maybeActivateProject(supabase: SupabaseClient, projectId: string) {
   const project = await getProjectBidsAndFollowsById(supabase, projectId)
   if (!project || !project.bids) {
     console.error('Project not found')
@@ -57,16 +49,13 @@ function checkFundingReady(project: ProjectAndBids) {
 export function calcFundingNeeded(project: ProjectAndBids) {
   return project.type === 'grant'
     ? project.min_funding
-    : project.bids.find(
-        (bid) => bid.type === 'assurance sell' && bid.bidder === project.creator
-      )?.amount ?? 0
+    : (project.bids.find((bid) => bid.type === 'assurance sell' && bid.bidder === project.creator)
+        ?.amount ?? 0)
 }
 
 export function calcTotalOffered(project: ProjectAndBids) {
   const fundingBids = project.bids.filter((bid) =>
-    project.type === 'grant'
-      ? bid.type === 'donate'
-      : bid.type === 'assurance buy'
+    project.type === 'grant' ? bid.type === 'donate' : bid.type === 'assurance buy'
   )
   return fundingBids
     .filter((bid) => bid.status === 'pending')
@@ -114,14 +103,10 @@ async function activateProject(project: Project, followerIds: string[]) {
       .map((txn) => txn.profiles)
   )
   const donorSubject = `"${project.title}" is active!`
-  const donorMessage = `The project you ${
-    isGrant ? 'donated' : 'made a buy offer'
-  } to, "${
+  const donorMessage = `The project you ${isGrant ? 'donated' : 'made a buy offer'} to, "${
     project.title
   }", has completed the seed funding process and become active! The funds you offered been sent to the project creator to be used for the project${
-    isGrant
-      ? ''
-      : ', and the shares you purchased have been added to your portfolio'
+    isGrant ? '' : ', and the shares you purchased have been added to your portfolio'
   }.`
   const siteUrl = getURL()
   await Promise.all(
@@ -169,11 +154,7 @@ async function activateProject(project: Project, followerIds: string[]) {
   }
 }
 
-export async function seedAmm(
-  project: Project,
-  supabase: SupabaseClient,
-  ammDollars?: number
-) {
+export async function seedAmm(project: Project, supabase: SupabaseClient, ammDollars?: number) {
   const valuation = getProposalValuation(project)
   const ammProfile = {
     username: `${project.slug}-amm`,
@@ -188,8 +169,7 @@ export async function seedAmm(
     token: 'USD',
     project: project.id,
     bundle,
-    amount:
-      ammDollars ?? (valuation * (project.amm_shares ?? 0)) / TOTAL_SHARES,
+    amount: ammDollars ?? (valuation * (project.amm_shares ?? 0)) / TOTAL_SHARES,
     type: 'inject amm liquidity',
   }
   const sharesTxn = {

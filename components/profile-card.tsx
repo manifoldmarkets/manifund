@@ -16,17 +16,9 @@ export function ProfileCard(props: {
 }) {
   const { profile, sponsoredAmount, className } = props
   return (
-    <Card
-      className={clsx(
-        'relative flex h-full flex-col gap-4 border-none py-3',
-        className
-      )}
-    >
+    <Card className={clsx('relative flex h-full flex-col gap-4 border-none py-3', className)}>
       <Row className="items-center justify-between">
-        <SponsoredTag
-          text={`${formatMoney(sponsoredAmount)}`}
-          className="absolute left-3 top-3"
-        />
+        <SponsoredTag text={`${formatMoney(sponsoredAmount)}`} className="absolute left-3 top-3" />
         {profile.website && (
           <Link href={addHttpToUrl(profile.website)}>
             <LinkIcon className="h-5 w-5 rounded bg-gray-100 stroke-2 p-1 text-gray-600 hover:bg-gray-200" />
@@ -44,9 +36,7 @@ export function ProfileCard(props: {
           />
         </Row>
         <Col className="flex h-full w-full flex-col gap-1">
-          <span className="text-center font-bold sm:text-lg">
-            {profile.full_name}
-          </span>
+          <span className="text-center font-bold sm:text-lg">{profile.full_name}</span>
           <Col className="h-full justify-center">
             <span className="line-clamp-3 text-center text-sm font-light leading-tight text-gray-500">
               {profile.bio}
@@ -78,10 +68,7 @@ export function CardlessProfile(props: { profile: Profile }) {
           className="shadow-md sm:hidden"
         />
       </Row>
-      <Link
-        href={`/${profile.username}`}
-        className="flex h-full flex-col justify-between gap-2"
-      >
+      <Link href={`/${profile.username}`} className="flex h-full flex-col justify-between gap-2">
         <h1 className="text-center font-semibold text-gray-900 group-hover:underline">
           {profile.full_name}
         </h1>

@@ -22,8 +22,8 @@ export default async function handler() {
     const version = isBefore(createdDate, v2StartDate)
       ? 1
       : isBefore(createdDate, v3StartDate)
-      ? 2
-      : 3
+        ? 2
+        : 3
     const sortedTxns = sortBy(project.txns, ['created_at'])
     const firstUSDTxn = sortedTxns.find((t) => t.token === 'USD')
     const activationDate =
@@ -35,20 +35,18 @@ export default async function handler() {
         ? '2024-03-22 12:00:00.000000+00'
         : activationDate
       : null
-    const finalReport = project.comments.find(
-      (c) => c.special_type === 'final report'
-    )
+    const finalReport = project.comments.find((c) => c.special_type === 'final report')
     const completedDate =
       project.stage === 'complete'
         ? finalReport
           ? finalReport.created_at
           : project.round === 'ACX Mini-Grants'
-          ? '2023-10-09 12:00:00.000000+00'
-          : project.round === 'OP AI Worldviews Contest'
-          ? '2023-09-29 12:00:00.000000+00'
-          : project.round === 'ChinaTalk Essay Contest'
-          ? '2024-02-12 12:00:00.000000+00'
-          : '2030-09-29 12:00:00.000000+00' // Meant to flag special cases
+            ? '2023-10-09 12:00:00.000000+00'
+            : project.round === 'OP AI Worldviews Contest'
+              ? '2023-09-29 12:00:00.000000+00'
+              : project.round === 'ChinaTalk Essay Contest'
+                ? '2024-02-12 12:00:00.000000+00'
+                : '2030-09-29 12:00:00.000000+00' // Meant to flag special cases
         : null
     const { error } = await supabase
       .from('grant_agreements')
@@ -58,12 +56,8 @@ export default async function handler() {
           version,
           lobbying_clause_excluded: project.lobbying,
           signed_at: signedDate,
-          signatory_name: project.signed_agreement
-            ? project.profiles.full_name
-            : null,
-          recipient_name: project.signed_agreement
-            ? project.profiles.full_name
-            : null,
+          signatory_name: project.signed_agreement ? project.profiles.full_name : null,
+          recipient_name: project.signed_agreement ? project.profiles.full_name : null,
           project_description: project.description,
           project_title: project.title,
           approved_at: project.approved ? activationDate : null,

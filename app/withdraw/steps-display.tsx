@@ -2,11 +2,7 @@ import { Row } from '@/components/layout/row'
 import { CheckIcon } from '@heroicons/react/20/solid'
 import { Step } from './withdrawal-steps'
 
-export function StepsDisplay(props: {
-  steps: Step[]
-  complete: boolean
-  currentStepId: number
-}) {
+export function StepsDisplay(props: { steps: Step[]; complete: boolean; currentStepId: number }) {
   const { steps, complete, currentStepId } = props
   return (
     <nav aria-label="Progress">
@@ -28,27 +24,17 @@ export function StepsDisplay(props: {
               <Row className="group w-full items-center">
                 <span className="flex items-center px-6 py-4 text-sm font-medium">
                   <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-500 group-hover:bg-orange-700">
-                    <CheckIcon
-                      className="h-6 w-6 text-white"
-                      aria-hidden="true"
-                    />
+                    <CheckIcon className="h-6 w-6 text-white" aria-hidden="true" />
                   </span>
-                  <span className="ml-4 text-sm font-medium text-gray-900">
-                    {step.name}
-                  </span>
+                  <span className="ml-4 text-sm font-medium text-gray-900">{step.name}</span>
                 </span>
               </Row>
             ) : step.id === currentStepId ? (
-              <Row
-                className="items-center px-6 py-4 text-sm font-medium"
-                aria-current="step"
-              >
+              <Row className="items-center px-6 py-4 text-sm font-medium" aria-current="step">
                 <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-orange-500">
                   <span className="text-orange-500">{step.id}</span>
                 </span>
-                <span className="ml-4 text-sm font-medium text-orange-500">
-                  {step.name}
-                </span>
+                <span className="ml-4 text-sm font-medium text-orange-500">{step.name}</span>
               </Row>
             ) : (
               <Row className="items-center">
@@ -56,9 +42,7 @@ export function StepsDisplay(props: {
                   <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border-2 border-gray-300">
                     <span className="text-gray-500">{step.id}</span>
                   </span>
-                  <span className="ml-4 text-sm font-medium text-gray-500">
-                    {step.name}
-                  </span>
+                  <span className="ml-4 text-sm font-medium text-gray-500">{step.name}</span>
                 </span>
               </Row>
             )}

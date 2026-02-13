@@ -45,9 +45,7 @@ export function CauseTabs(props: {
   } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
-  const visibleProjects = projects.filter(
-    (project) => project.stage !== 'hidden'
-  )
+  const visibleProjects = projects.filter((project) => project.stage !== 'hidden')
   const grants = visibleProjects.filter(
     (project) => project.type === 'grant' || project.type === 'dummy'
   )
@@ -66,11 +64,7 @@ export function CauseTabs(props: {
               subtitle={'No projects here yet.'}
             />
           ) : (
-            <ProjectsDisplay
-              projects={grants}
-              causesList={causesList}
-              noFilter={!cause.prize}
-            />
+            <ProjectsDisplay projects={grants} causesList={causesList} noFilter={!cause.prize} />
           )}
         </>
       ),
@@ -90,11 +84,7 @@ export function CauseTabs(props: {
                 <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
               </Link>
             </div>
-            <ProjectsDisplay
-              projects={certs}
-              causesList={causesList}
-              noFilter={!cause.prize}
-            />
+            <ProjectsDisplay projects={certs} causesList={causesList} noFilter={!cause.prize} />
           </div>
         </>
       ),
@@ -128,13 +118,7 @@ export function CauseTabs(props: {
         name: 'Matching',
         id: 'match',
         count: 0,
-        display: (
-          <QuadraticMatch
-            projects={projects}
-            matchTxns={matchTxns}
-            matchBids={matchBids}
-          />
-        ),
+        display: <QuadraticMatch projects={projects} matchTxns={matchTxns} matchBids={matchBids} />,
       })
     }
   }
@@ -146,11 +130,7 @@ export function CauseTabs(props: {
       display: (
         <>
           <span className="text-gray-600">{fund.bio}</span>
-          <DonateSection
-            fund={fund}
-            charityBalance={charityBalance}
-            userId={userId}
-          />
+          <DonateSection fund={fund} charityBalance={charityBalance} userId={userId} />
           <DividerWithHeader header="Donations history" />
           <DonationsHistory donations={fundTxns} />
         </>

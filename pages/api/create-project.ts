@@ -11,10 +11,7 @@ import { invalidateProjectsCache } from '@/db/project-cached'
 import { seedAmm } from '@/utils/activate-project'
 import { upvoteOwnProject, giveCreatorShares } from '@/utils/upsert-project'
 import { updateProjectEmbedding } from '@/app/utils/embeddings'
-import {
-  DISABLE_NEW_SIGNUPS_AND_PROJECTS,
-  SIGNUP_DISABLED_MESSAGE,
-} from '@/utils/constants'
+import { DISABLE_NEW_SIGNUPS_AND_PROJECTS, SIGNUP_DISABLED_MESSAGE } from '@/utils/constants'
 
 export const config = {
   runtime: 'edge',
@@ -23,10 +20,7 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   if (DISABLE_NEW_SIGNUPS_AND_PROJECTS) {
-    return NextResponse.json(
-      { error: SIGNUP_DISABLED_MESSAGE },
-      { status: 503 }
-    )
+    return NextResponse.json({ error: SIGNUP_DISABLED_MESSAGE }, { status: 503 })
   }
 
   const {
@@ -98,14 +92,11 @@ export default async function handler(req: NextRequest) {
   } else if (selectedPrize) {
     const seedingAmm =
       selectedPrize?.cert_params?.ammShares &&
-      (agreedToTerms ||
-        selectedPrize?.cert_params?.adjustableInvestmentStructure)
+      (agreedToTerms || selectedPrize?.cert_params?.adjustableInvestmentStructure)
     project = {
       ...defaultProject,
       founder_shares: (founderPercent / 100) * TOTAL_SHARES,
-      amm_shares: seedingAmm
-        ? selectedPrize.cert_params?.ammShares ?? null
-        : null,
+      amm_shares: seedingAmm ? (selectedPrize.cert_params?.ammShares ?? null) : null,
       round: toTitleCase(selectedPrize.title),
       stage: selectedPrize.cert_params?.proposalPhase ? 'proposal' : 'active',
       type: 'cert',

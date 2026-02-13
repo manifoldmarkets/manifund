@@ -83,9 +83,7 @@ export function CreateGrantForm(props: {
   const reasoningEditor = useTextEditor(REASONING_OUTLINE, REASONING_KEY)
   const router = useRouter()
 
-  const selectableCauses = causesList.filter(
-    (cause) => cause.open && !cause.prize
-  )
+  const selectableCauses = causesList.filter((cause) => cause.open && !cause.prize)
 
   const fundingOptions = {
     fullyFund: 'be fully funded',
@@ -97,8 +95,7 @@ export function CreateGrantForm(props: {
   if (!recipientOnManifund) {
     if (
       profiles.find(
-        (profile) =>
-          profile.full_name === recipientFullName && recipientFullName !== ''
+        (profile) => profile.full_name === recipientFullName && recipientFullName !== ''
       )
     ) {
       recipientDoesExistError = true
@@ -109,10 +106,7 @@ export function CreateGrantForm(props: {
   useEffect(() => {
     if (recipientOnManifund) {
       recipientDoesExistError = false
-      setRecipient(
-        profiles.find((profile) => profile.full_name === recipientFullName) ??
-          null
-      )
+      setRecipient(profiles.find((profile) => profile.full_name === recipientFullName) ?? null)
     }
   }, [recipientOnManifund, recipientFullName, profiles])
 
@@ -185,9 +179,7 @@ export function CreateGrantForm(props: {
         minFunding,
         recipientEmail: recipientOnManifund ? undefined : recipientEmail,
         recipientName: recipientOnManifund ? undefined : recipientFullName,
-        recipientUsername: recipientOnManifund
-          ? recipient?.username
-          : undefined,
+        recipientUsername: recipientOnManifund ? recipient?.username : undefined,
         causeSlugs: selectedCauses.map((cause) => cause.slug),
         locationDescription,
         lobbying,
@@ -204,20 +196,18 @@ export function CreateGrantForm(props: {
       <div>
         <h1 className="text-2xl font-bold">Create grant</h1>
         <span className="my-1 text-sm text-gray-600">
-          Use this form to give a grant for a project that is not already posted
-          on Manifund. Note that all grants are public.{' '}
+          Use this form to give a grant for a project that is not already posted on Manifund. Note
+          that all grants are public.{' '}
         </span>
         <span className="my-1 text-sm text-gray-600">
-          We expect this writeup to take 0.5-2 hours, and ask that you take less
-          time and include fewer details for small grants and spend more time
-          and include more details for large grants.
+          We expect this writeup to take 0.5-2 hours, and ask that you take less time and include
+          fewer details for small grants and spend more time and include more details for large
+          grants.
         </span>
       </div>
       <Row
         className={clsx(
-          recipientDoesExistError
-            ? 'rounded-md border-2 border-rose-500 bg-rose-100 p-1'
-            : ''
+          recipientDoesExistError ? 'rounded-md border-2 border-rose-500 bg-rose-100 p-1' : ''
         )}
       >
         <Checkbox
@@ -277,15 +267,10 @@ export function CreateGrantForm(props: {
               <Combobox.Input
                 className="invalid:border-scarlet-500 invalid:text-scarlet-900 invalid:placeholder-scarlet-300 h-12 w-full rounded-md border border-gray-300 bg-white px-4 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-50 disabled:text-gray-500"
                 onChange={(event) => setQuery(event.target.value)}
-                displayValue={(profile: MiniProfile | null) =>
-                  profile?.full_name ?? ''
-                }
+                displayValue={(profile: MiniProfile | null) => profile?.full_name ?? ''}
               />
               <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                <ChevronUpDownIcon
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
+                <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
               </Combobox.Button>
               {filteredProfiles.length > 0 && (
                 <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
@@ -310,12 +295,7 @@ export function CreateGrantForm(props: {
                               size={'xs'}
                               className="relative bottom-0.5"
                             />
-                            <span
-                              className={clsx(
-                                'truncate',
-                                selected && 'font-semibold'
-                              )}
-                            >
+                            <span className={clsx('truncate', selected && 'font-semibold')}>
                               {profile.full_name}
                             </span>
                             <span
@@ -334,10 +314,7 @@ export function CreateGrantForm(props: {
                                 active ? 'text-white' : 'text-orange-500'
                               )}
                             >
-                              <CheckIcon
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                              />
+                              <CheckIcon className="h-5 w-5" aria-hidden="true" />
                             </span>
                           )}
                         </>
@@ -363,9 +340,7 @@ export function CreateGrantForm(props: {
             value={title}
             onChange={(event) => setTitle(event.target.value)}
           />
-          <span className="text-right text-xs text-gray-600">
-            Maximum 80 characters
-          </span>
+          <span className="text-right text-xs text-gray-600">Maximum 80 characters</span>
         </Col>
       </Col>
       <Col className="gap-1">
@@ -378,9 +353,7 @@ export function CreateGrantForm(props: {
             value={subtitle}
             onChange={(event) => setSubtitle(event.target.value)}
           />
-          <span className="text-right text-xs text-gray-600">
-            Maximum 160 characters
-          </span>
+          <span className="text-right text-xs text-gray-600">Maximum 160 characters</span>
         </Col>
       </Col>
       <Col className="gap-1">
@@ -415,11 +388,7 @@ export function CreateGrantForm(props: {
           <span className="text-sm text-gray-600">
             No money will be transferred until this amount has been raised.
           </span>
-          <AmountInput
-            id="minFunding"
-            amount={minFunding}
-            onChangeAmount={setMinFunding}
-          />
+          <AmountInput id="minFunding" amount={minFunding} onChangeAmount={setMinFunding} />
         </Col>
       )}
       {fundingOption !== 'fullyFund' && (
@@ -428,20 +397,14 @@ export function CreateGrantForm(props: {
             Funding goal (USD) <RequiredStar />
           </label>
           <span className="text-sm text-gray-600">
-            Until this amount is raised, the project will be marked to other
-            donors as not fully funded.
+            Until this amount is raised, the project will be marked to other donors as not fully
+            funded.
           </span>
           <AmountInput
             id="fundingGoal"
             amount={fundingGoal}
             onChangeAmount={setFundingGoal}
-            error={
-              !!(
-                fundingGoal &&
-                donorContribution &&
-                fundingGoal <= donorContribution
-              )
-            }
+            error={!!(fundingGoal && donorContribution && fundingGoal <= donorContribution)}
             errorMessage="The funding goal must be greater than your contribution. Otherwise, indicate that the project will be fully funded."
           />
         </Col>
@@ -459,9 +422,9 @@ export function CreateGrantForm(props: {
           />
         </Row>
         <span className="text-sm text-gray-600">
-          This will be displayed as the public description of this project, but
-          can be edited by the grant recipient. In this section, please describe
-          in objective terms the nature of the project.
+          This will be displayed as the public description of this project, but can be edited by the
+          grant recipient. In this section, please describe in objective terms the nature of the
+          project.
         </span>
         <TextEditor editor={descriptionEditor} />
       </Col>
@@ -478,9 +441,8 @@ export function CreateGrantForm(props: {
           />
         </Row>
         <span className="text-sm text-gray-600">
-          This will be displayed as a public comment on this project. In this
-          section, please describe in subjective terms why you are excited to
-          fund this project.
+          This will be displayed as a public comment on this project. In this section, please
+          describe in subjective terms why you are excited to fund this project.
         </span>
         <TextEditor editor={reasoningEditor} />
       </Col>
@@ -494,8 +456,7 @@ export function CreateGrantForm(props: {
       </Col>
       <Col className="gap-1">
         <label>
-          In what countries are the grantee and anyone else working on this
-          project located?
+          In what countries are the grantee and anyone else working on this project located?
           <RequiredStar />
         </label>
         <p className="text-sm text-gray-600">
@@ -508,10 +469,7 @@ export function CreateGrantForm(props: {
         />
       </Col>
       <Row className="items-start">
-        <Checkbox
-          checked={lobbying}
-          onChange={(event) => setLobbying(event.target.checked)}
-        />
+        <Checkbox checked={lobbying} onChange={(event) => setLobbying(event.target.checked)} />
         <span className="ml-3 mt-0.5 text-sm leading-tight">
           <span className="font-bold">
             This project will engage in{' '}
@@ -525,8 +483,8 @@ export function CreateGrantForm(props: {
           </span>
           <span>
             {' '}
-            Check this box if this project will involve any lobbying activities,
-            in the US or internationally.
+            Check this box if this project will involve any lobbying activities, in the US or
+            internationally.
           </span>
           <RequiredStar />
         </span>

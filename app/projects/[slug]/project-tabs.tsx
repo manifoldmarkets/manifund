@@ -1,10 +1,6 @@
 'use client'
 import { Comments } from './comments'
-import {
-  FullProject,
-  FullProjectWithSimilarity,
-  TOTAL_SHARES,
-} from '@/db/project'
+import { FullProject, FullProjectWithSimilarity, TOTAL_SHARES } from '@/db/project'
 import { Profile } from '@/db/profile'
 import { useSearchParams } from 'next/navigation'
 import { Bids } from './bids'
@@ -52,16 +48,10 @@ export function ProjectTabs(props: {
   const currentTabId = searchParams.get('tab')
   const creator = project.profiles
   const shareholders =
-    (project.stage === 'active' || project.stage === 'complete') &&
-    project.type === 'cert'
+    (project.stage === 'active' || project.stage === 'complete') && project.type === 'cert'
       ? getShareholders(txns)
       : undefined
-  const commenterContributions = getCommenterContributions(
-    comments,
-    bids,
-    txns,
-    shareholders
-  )
+  const commenterContributions = getCommenterContributions(comments, bids, txns, shareholders)
   const tabs = [
     {
       name: 'Comments',
@@ -81,8 +71,7 @@ export function ProjectTabs(props: {
   ]
 
   if (
-    ((project.stage === 'active' || project.stage === 'complete') &&
-      project.type === 'cert') ||
+    ((project.stage === 'active' || project.stage === 'complete') && project.type === 'cert') ||
     project.stage === 'proposal'
   ) {
     const bidsToShow = bids.filter((bid) => bid.type !== 'assurance sell')
@@ -119,10 +108,7 @@ export function ProjectTabs(props: {
     })
   }
 
-  if (
-    (project.stage === 'active' || project.stage === 'complete') &&
-    project.type === 'grant'
-  ) {
+  if ((project.stage === 'active' || project.stage === 'complete') && project.type === 'grant') {
     const donations = txns.filter((txn) => txn.type === 'project donation')
     tabs.push({
       name: 'Donations',
@@ -150,9 +136,7 @@ export function ProjectTabs(props: {
       name: 'Similar',
       id: 'similar',
       count: similarEnoughSimilarProjects.length,
-      display: (
-        <SimilarProjects similarProjects={similarEnoughSimilarProjects} />
-      ),
+      display: <SimilarProjects similarProjects={similarEnoughSimilarProjects} />,
     })
   }
 
@@ -199,33 +183,21 @@ export function getCommenterContributions(
   shareholders?: Shareholder[]
 ) {
   const commenterIds = uniq(comments.map((comment) => comment.commenter))
-  const contributions = Object.fromEntries(
-    commenterIds.map((commenterId) => [commenterId, ''])
-  )
+  const contributions = Object.fromEntries(commenterIds.map((commenterId) => [commenterId, '']))
   commenterIds.forEach((commenterId) => {
     if (shareholders) {
-      const holding = shareholders.find(
-        (shareholder) => shareholder.profile.id === commenterId
-      )
+      const holding = shareholders.find((shareholder) => shareholder.profile.id === commenterId)
       if (holding) {
-        contributions[commenterId] = `holds ${formatPercent(
-          holding.numShares / TOTAL_SHARES
-        )}`
+        contributions[commenterId] = `holds ${formatPercent(holding.numShares / TOTAL_SHARES)}`
       }
     }
     if (!contributions[commenterId] && txns) {
       const donations = txns.filter(
-        (txn) =>
-          txn.from_id === commenterId && txn.token === 'USD' && !txn.bundle
+        (txn) => txn.from_id === commenterId && txn.token === 'USD' && !txn.bundle
       )
-      const totalDonated = donations.reduce(
-        (total, txn) => total + txn.amount,
-        0
-      )
+      const totalDonated = donations.reduce((total, txn) => total + txn.amount, 0)
       if (totalDonated > 0) {
-        contributions[commenterId] = `donated ${formatMoneyPrecise(
-          totalDonated
-        )}`
+        contributions[commenterId] = `donated ${formatMoneyPrecise(totalDonated)}`
       }
     }
     if (!contributions[commenterId]) {
@@ -237,9 +209,7 @@ export function getCommenterContributions(
       )
       const latestBid = sortedBids[0]
       if (latestBid) {
-        const offered = formatMoneyPrecise(
-          relevantBids.reduce((acc, bid) => acc + bid.amount, 0)
-        )
+        const offered = formatMoneyPrecise(relevantBids.reduce((acc, bid) => acc + bid.amount, 0))
         contributions[commenterId] =
           latestBid.type === 'donate' ||
           latestBid.type === 'buy' ||

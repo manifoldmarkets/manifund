@@ -91,10 +91,8 @@ const escapeHtml = (text: string): string =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
 
-const getDisplayName = (profile?: {
-  full_name?: string
-  username?: string
-}): string => profile?.full_name || profile?.username || 'Anonymous'
+const getDisplayName = (profile?: { full_name?: string; username?: string }): string =>
+  profile?.full_name || profile?.username || 'Anonymous'
 
 const formatWeekRange = (): WeekRange => {
   const now = new Date()
@@ -134,18 +132,12 @@ export async function getRegrantorEmails(
     ? regrantors.filter((r) => getSponsoredAmount(r.id, year) > 0)
     : regrantors
 
-  const emails = await Promise.all(
-    filteredRegrantors.map((r) => getUserEmail(supabase, r.id))
-  )
+  const emails = await Promise.all(filteredRegrantors.map((r) => getUserEmail(supabase, r.id)))
 
-  return Array.from(
-    new Set(emails.filter((email): email is string => email !== null))
-  )
+  return Array.from(new Set(emails.filter((email): email is string => email !== null)))
 }
 
-export async function getNewProjectsLastWeek(
-  supabase: SupabaseClient
-): Promise<FullProject[]> {
+export async function getNewProjectsLastWeek(supabase: SupabaseClient): Promise<FullProject[]> {
   const oneWeekAgo = getOneWeekAgo()
 
   const { data: projectsBase } = await supabase
@@ -168,10 +160,7 @@ export async function getNewProjectsLastWeek(
 
   const projectIds = projectsBase.map((p) => p.id)
   const [votes, comments, bids, txns] = await Promise.all([
-    supabase
-      .from('project_votes')
-      .select('project_id, magnitude')
-      .in('project_id', projectIds),
+    supabase.from('project_votes').select('project_id, magnitude').in('project_id', projectIds),
     supabase.from('comments').select('project, id').in('project', projectIds),
     supabase.from('bids').select('*').in('project', projectIds),
     supabase.from('txns').select('*').in('project', projectIds),
@@ -191,10 +180,7 @@ export async function getNewProjectsLastWeek(
     projects
       // Exclude projects with 0 or fewer net upvotes
       .filter((p) => {
-        const netUpvotes = p.project_votes.reduce(
-          (acc, v) => acc + v.magnitude,
-          0
-        )
+        const netUpvotes = p.project_votes.reduce((acc, v) => acc + v.magnitude, 0)
         return netUpvotes > 0
       })
       .sort((a, b) => pointScore(b) - pointScore(a))
@@ -208,11 +194,7 @@ export async function getNotableCommentsLastWeek(
   const oneWeekAgo = getOneWeekAgo()
 
   const [{ data: regrantors }, { data: comments }] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('id')
-      .eq('regranter_status', true)
-      .throwOnError(),
+    supabase.from('profiles').select('id').eq('regranter_status', true).throwOnError(),
     supabase
       .from('comments')
       .select(
@@ -256,9 +238,7 @@ export async function getNotableCommentsLastWeek(
     }
   })
 
-  return commentsWithScores
-    .sort((a, b) => b.totalScore - a.totalScore)
-    .slice(0, limit)
+  return commentsWithScores.sort((a, b) => b.totalScore - a.totalScore).slice(0, limit)
 }
 
 export async function getNotableGrantsLastWeek(
@@ -268,11 +248,7 @@ export async function getNotableGrantsLastWeek(
   const oneWeekAgo = getOneWeekAgo()
 
   const [{ data: regrantors }, { data: bids }] = await Promise.all([
-    supabase
-      .from('profiles')
-      .select('id')
-      .eq('regranter_status', true)
-      .throwOnError(),
+    supabase.from('profiles').select('id').eq('regranter_status', true).throwOnError(),
     supabase
       .from('bids')
       .select(
@@ -337,20 +313,13 @@ export async function getLargeDonorsEmails(
 
   if (!profiles?.length) return []
 
-  const emails = await Promise.all(
-    profiles.map((p) => getUserEmail(supabase, p.id))
-  )
-  return Array.from(
-    new Set(emails.filter((email): email is string => email !== null))
-  )
+  const emails = await Promise.all(profiles.map((p) => getUserEmail(supabase, p.id)))
+  return Array.from(new Set(emails.filter((email): email is string => email !== null)))
 }
 
 // Content generation functions
 const generateProjectItem = (project: FullProject): string => {
-  const upvotes = project.project_votes.reduce(
-    (acc, vote) => acc + vote.magnitude,
-    0
-  )
+  const upvotes = project.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
   const commentCount = project.comments.length
   const creatorName = getDisplayName(project.profiles)
   const summary = project.blurb || 'No description available'
@@ -361,8 +330,8 @@ const generateProjectItem = (project: FullProject): string => {
       <div class="title"><a href="https://manifund.org/projects/${escapeHtml(
         project.slug
       )}">${escapeHtml(
-    project.title
-  )}</a> <span class="creator">by ${escapeHtml(creatorName)}</span></div>
+        project.title
+      )}</a> <span class="creator">by ${escapeHtml(creatorName)}</span></div>
       <div class="summary">${escapeHtml(summary)}</div>
       <div class="stats">
         <span>${upvotes} ⬆️</span>
@@ -390,9 +359,7 @@ const generateCommentItem = (comment: NotableComment): string => {
   return `
     <div class="item">
       <div class="content">
-        <span class="name">${escapeHtml(commenterName)}${
-    comment.isRegrantor ? ' ⭐️' : ''
-  }</span>
+        <span class="name">${escapeHtml(commenterName)}${comment.isRegrantor ? ' ⭐️' : ''}</span>
         <span class="gray-text"> on <a href="https://manifund.org/projects/${escapeHtml(
           projectSlug
         )}">${escapeHtml(projectTitle)}</a></span>
@@ -412,8 +379,8 @@ const generateGrantItem = (grant: NotableGrant): string => {
     <div class="item">
       <div class="content">
         <span class="name">${escapeHtml(bidderName)}${
-    grant.isRegrantor ? ' ⭐️' : ''
-  }</span> offered <span class="amount">$${grant.amount.toLocaleString()}</span> to 
+          grant.isRegrantor ? ' ⭐️' : ''
+        }</span> offered <span class="amount">$${grant.amount.toLocaleString()}</span> to 
         <span><a href="https://manifund.org/projects/${escapeHtml(
           projectSlug
         )}">${escapeHtml(projectTitle)}</a></span>
@@ -469,16 +436,8 @@ export function generateHtmlDigest(
     `
       : '<div class="no-projects">No new projects were created this week.</div>'
 
-  const commentsSection = generateSection(
-    'Notable Comments',
-    notableComments,
-    generateCommentItem
-  )
-  const grantsSection = generateSection(
-    'Notable Grants',
-    notableGrants,
-    generateGrantItem
-  )
+  const commentsSection = generateSection('Notable Comments', notableComments, generateCommentItem)
+  const grantsSection = generateSection('Notable Grants', notableGrants, generateGrantItem)
 
   return `
 <!DOCTYPE html>
@@ -521,10 +480,7 @@ export function generatePlaintextDigest(
   } else {
     text += 'New projects this week:\n\n'
     projects.forEach((project) => {
-      const upvotes = project.project_votes.reduce(
-        (acc, vote) => acc + vote.magnitude,
-        0
-      )
+      const upvotes = project.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
       const commentCount = project.comments.length
       const creatorName = getDisplayName(project.profiles)
       const summary = project.blurb || 'No description available'
@@ -532,43 +488,31 @@ export function generatePlaintextDigest(
     })
   }
 
-  text += generatePlaintextSection(
-    'Notable comments this week',
-    notableComments,
-    (comment) => {
-      const commenterName = getDisplayName(comment.profiles)
-      const projectTitle = comment.projects?.title || 'Unknown Project'
-      const commentText = toPlaintext(comment.content)
-      const reactionText = Object.entries(comment.reactionCounts)
-        .map(
-          ([emoji, count]) => `${emoji}${(count as number) > 1 ? count : ''}`
-        )
-        .join(' ')
-      return `- ${commenterName}${
-        comment.isRegrantor ? ' ⭐️' : ''
-      } on "${projectTitle}": ${commentText} ${reactionText}\n`
-    }
-  )
+  text += generatePlaintextSection('Notable comments this week', notableComments, (comment) => {
+    const commenterName = getDisplayName(comment.profiles)
+    const projectTitle = comment.projects?.title || 'Unknown Project'
+    const commentText = toPlaintext(comment.content)
+    const reactionText = Object.entries(comment.reactionCounts)
+      .map(([emoji, count]) => `${emoji}${(count as number) > 1 ? count : ''}`)
+      .join(' ')
+    return `- ${commenterName}${
+      comment.isRegrantor ? ' ⭐️' : ''
+    } on "${projectTitle}": ${commentText} ${reactionText}\n`
+  })
 
-  text += generatePlaintextSection(
-    'Notable grants this week',
-    notableGrants,
-    (grant) => {
-      const bidderName = getDisplayName(grant.profiles)
-      const projectTitle = grant.projects?.title || 'Unknown Project'
-      return `- ${bidderName}${
-        grant.isRegrantor ? ' ⭐️' : ''
-      } offered $${grant.amount.toLocaleString()} to ${projectTitle}\n`
-    }
-  )
+  text += generatePlaintextSection('Notable grants this week', notableGrants, (grant) => {
+    const bidderName = getDisplayName(grant.profiles)
+    const projectTitle = grant.projects?.title || 'Unknown Project'
+    return `- ${bidderName}${
+      grant.isRegrantor ? ' ⭐️' : ''
+    } offered $${grant.amount.toLocaleString()} to ${projectTitle}\n`
+  })
 
   return text
 }
 
 // Main function
-export async function sendWeeklyDigest(
-  supabase: SupabaseClient
-): Promise<void> {
+export async function sendWeeklyDigest(supabase: SupabaseClient): Promise<void> {
   console.log('Starting weekly digest generation...')
 
   const [projects, notableComments, notableGrants] = await Promise.all([
@@ -580,11 +524,7 @@ export async function sendWeeklyDigest(
   const { weekStart } = formatWeekRange()
   const subject = `Manifund: Weekly Digest, from ${weekStart}`
   const htmlBody = generateHtmlDigest(projects, notableComments, notableGrants)
-  const textBody = generatePlaintextDigest(
-    projects,
-    notableComments,
-    notableGrants
-  )
+  const textBody = generatePlaintextDigest(projects, notableComments, notableGrants)
 
   console.log(
     `Found ${projects.length} new projects, ${notableComments.length} notable comments, ${notableGrants.length} notable grants`
@@ -611,9 +551,7 @@ export async function sendWeeklyDigest(
 
   try {
     await sendBatchEmail(batchEmails)
-    console.log(
-      `Weekly digest sent to ${recipients.length} recipients via batch API`
-    )
+    console.log(`Weekly digest sent to ${recipients.length} recipients via batch API`)
   } catch (error) {
     console.error('Failed to send weekly digest batch:', error)
   }

@@ -17,8 +17,7 @@ export function Avatar(props: {
 }) {
   const { username, avatarUrl, id, noLink, size, className } = props
   const router = useRouter()
-  const s =
-    size == 'xxs' ? 4 : size == 'xs' ? 6 : size === 'sm' ? 8 : size || 12
+  const s = size == 'xxs' ? 4 : size == 'xs' ? 6 : size === 'sm' ? 8 : size || 12
   const sizeInPx = s * 4
 
   const onClick = (e: MouseEvent) => {
@@ -44,20 +43,13 @@ export function Avatar(props: {
       alt={`${username ?? 'Unknown user'} avatar`}
     />
   ) : (
-    <div
-      onClick={onClick}
-      className={clsx(className, 'rounded-full', !noLink && 'cursor-pointer')}
-    >
+    <div onClick={onClick} className={clsx(className, 'rounded-full', !noLink && 'cursor-pointer')}>
       <GeneratedAvatar seed={id} size={s} aria-hidden="true" />
     </div>
   )
 }
 
-export function EmptyAvatar(props: {
-  className?: string
-  size?: number
-  multi?: boolean
-}) {
+export function EmptyAvatar(props: { className?: string; size?: number; multi?: boolean }) {
   const { className, size = 8, multi } = props
   const insize = size - 3
   const Icon = multi ? UsersIcon : UserIcon
@@ -104,12 +96,12 @@ export function GeneratedAvatar(props: { seed: string; size?: number }) {
     size < 8
       ? 'text-xs'
       : size < 12
-      ? 'text-lg'
-      : size < 16
-      ? 'text-xl'
-      : size < 24
-      ? 'text-3xl'
-      : 'text-5xl'
+        ? 'text-lg'
+        : size < 16
+          ? 'text-xl'
+          : size < 24
+            ? 'text-3xl'
+            : 'text-5xl'
 
   return (
     <div

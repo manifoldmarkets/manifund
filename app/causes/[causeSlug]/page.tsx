@@ -6,19 +6,13 @@ import { CauseTabs } from './cause-tabs'
 import { CauseData } from './cause-data'
 import { getUser, getProfilesWithRoles } from '@/db/profile'
 import { calculateCharityBalance } from '@/utils/math'
-import {
-  getIncomingTxnsByUserWithDonor,
-  getMatchTxns,
-  getTxnAndProjectsByUser,
-} from '@/db/txn'
+import { getIncomingTxnsByUserWithDonor, getMatchTxns, getTxnAndProjectsByUser } from '@/db/txn'
 import { getMatchBids, getPendingBidsByUser } from '@/db/bid'
 import { getProfileById } from '@/db/profile'
 
 export const revalidate = 60
 
-export async function generateMetadata(props: {
-  params: Promise<{ causeSlug: string }>
-}) {
+export async function generateMetadata(props: { params: Promise<{ causeSlug: string }> }) {
   const { causeSlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const cause = await getCause(supabase, causeSlug)
@@ -27,9 +21,7 @@ export async function generateMetadata(props: {
   }
 }
 
-export default async function CausePage(props: {
-  params: Promise<{ causeSlug: string }>
-}) {
+export default async function CausePage(props: { params: Promise<{ causeSlug: string }> }) {
   // TODO: Maybe batch with Promise.all for fewer roundtrips
   const { causeSlug } = await props.params
   const supabase = await createServerSupabaseClient()
@@ -37,12 +29,8 @@ export default async function CausePage(props: {
   const causesList = await listSimpleCauses(supabase)
   const projects = await getFullProjectsByCause(supabase, cause.slug)
   const user = await getUser(supabase)
-  const fund = cause.fund_id
-    ? await getProfileById(supabase, cause.fund_id)
-    : undefined
-  const fundTxns = fund
-    ? await getIncomingTxnsByUserWithDonor(supabase, fund.id)
-    : []
+  const fund = cause.fund_id ? await getProfileById(supabase, cause.fund_id) : undefined
+  const fundTxns = fund ? await getIncomingTxnsByUserWithDonor(supabase, fund.id) : []
   const userTxns = user ? await getTxnAndProjectsByUser(supabase, user.id) : []
   const userBids = user ? await getPendingBidsByUser(supabase, user.id) : []
   const userProfile = user ? await getProfileById(supabase, user.id) : null
@@ -56,12 +44,7 @@ export default async function CausePage(props: {
         ])
       : []
   const charityBalance = userProfile
-    ? calculateCharityBalance(
-        userTxns,
-        userBids,
-        userProfile.id,
-        userProfile.accreditation_status
-      )
+    ? calculateCharityBalance(userTxns, userBids, userProfile.id, userProfile.accreditation_status)
     : 0
 
   return (
@@ -75,9 +58,7 @@ export default async function CausePage(props: {
           alt="header image"
         />
       )}
-      <h1 className="mb-1 mt-3 text-3xl font-bold lg:text-4xl">
-        {cause.title}
-      </h1>
+      <h1 className="mb-1 mt-3 text-3xl font-bold lg:text-4xl">{cause.title}</h1>
       <CauseData projects={projects} />
       <CauseTabs
         cause={cause}

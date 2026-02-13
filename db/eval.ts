@@ -15,10 +15,7 @@ export async function getUserEvals(userId: string, supabase: SupabaseClient) {
   return evals as ProjectEval[]
 }
 
-export async function getProfileTrusts(
-  userId: string,
-  supabase: SupabaseClient
-) {
+export async function getProfileTrusts(userId: string, supabase: SupabaseClient) {
   const { data: profileTrusts, error } = await supabase
     .from('profile_trust')
     .select('*')
@@ -30,9 +27,7 @@ export async function getProfileTrusts(
 }
 
 export async function getAllEvals(supabase: SupabaseClient) {
-  const { data: evals, error } = await supabase
-    .from('project_evals')
-    .select('*')
+  const { data: evals, error } = await supabase.from('project_evals').select('*')
   if (error) {
     throw error
   }
@@ -40,9 +35,7 @@ export async function getAllEvals(supabase: SupabaseClient) {
 }
 
 export async function getAllTrusts(supabase: SupabaseClient) {
-  const { data: profileTrusts, error } = await supabase
-    .from('profile_trust')
-    .select('*')
+  const { data: profileTrusts, error } = await supabase.from('profile_trust').select('*')
   if (error) {
     throw error
   }

@@ -23,9 +23,7 @@ export function RoundTabs(props: {
   const { round, projects, causesList, regranters } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab')
-  const visibleProjects = projects.filter(
-    (project) => project.stage !== 'hidden'
-  )
+  const visibleProjects = projects.filter((project) => project.stage !== 'hidden')
   const tabs = [
     {
       name: 'Projects',

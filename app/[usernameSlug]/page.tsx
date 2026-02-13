@@ -1,9 +1,4 @@
-import {
-  getProfileById,
-  getProfileByUsername,
-  getUser,
-  isAdmin,
-} from '@/db/profile'
+import { getProfileById, getProfileByUsername, getUser, isAdmin } from '@/db/profile'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { getFullTxnsByUser, getTxnsByUser } from '@/db/txn'

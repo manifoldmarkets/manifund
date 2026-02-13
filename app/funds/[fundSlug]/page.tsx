@@ -1,15 +1,7 @@
 import { RichContent } from '@/components/editor'
-import {
-  getFundByUsername,
-  getUser,
-  Profile,
-  getProfileById,
-} from '@/db/profile'
+import { getFundByUsername, getUser, Profile, getProfileById } from '@/db/profile'
 import { createServerSupabaseClient } from '@/db/supabase-server'
-import {
-  getTxnAndProjectsByUser,
-  getIncomingTxnsByUserWithDonor,
-} from '@/db/txn'
+import { getTxnAndProjectsByUser, getIncomingTxnsByUserWithDonor } from '@/db/txn'
 import { getPendingBidsByUser } from '@/db/bid'
 import { calculateCharityBalance } from '@/utils/math'
 import Image from 'next/image'
@@ -20,9 +12,7 @@ import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { ExpandableDonationsHistory } from '@/components/donations-history'
 
-export default async function FundPage(props: {
-  params: Promise<{ fundSlug: string }>
-}) {
+export default async function FundPage(props: { params: Promise<{ fundSlug: string }> }) {
   const { fundSlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
@@ -35,12 +25,7 @@ export default async function FundPage(props: {
   const userBids = user ? await getPendingBidsByUser(supabase, user.id) : []
   const userProfile = user ? await getProfileById(supabase, user.id) : null
   const charityBalance = userProfile
-    ? calculateCharityBalance(
-        userTxns,
-        userBids,
-        userProfile.id,
-        userProfile.accreditation_status
-      )
+    ? calculateCharityBalance(userTxns, userBids, userProfile.id, userProfile.accreditation_status)
     : 0
   return (
     <div className="p-5">
@@ -57,19 +42,12 @@ export default async function FundPage(props: {
       <span className="text-gray-600">{fund.bio}</span>
       {!user && (
         <Row className="my-10 justify-center">
-          <Link
-            className={clsx(buttonClass('xl', 'gradient'), 'font-semibold')}
-            href="/login"
-          >
+          <Link className={clsx(buttonClass('xl', 'gradient'), 'font-semibold')} href="/login">
             Sign in to donate
           </Link>
         </Row>
       )}
-      <DonateSection
-        userId={user?.id}
-        fund={fund as Profile}
-        charityBalance={charityBalance}
-      />
+      <DonateSection userId={user?.id} fund={fund as Profile} charityBalance={charityBalance} />
       <ExpandableDonationsHistory donations={fundTxns} />
       <RichContent className="mt-6" content={fund.long_description} />
     </div>

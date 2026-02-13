@@ -23,14 +23,7 @@ export default async function handler(req: NextRequest) {
   const project = await getProjectById(supabase, projectId)
   if (!user || user.id !== project.creator) return NextResponse.error()
   await updateProjectStage(supabase, projectId, 'complete')
-  await sendComment(
-    supabase,
-    reportContent,
-    project.id,
-    user.id,
-    undefined,
-    'final report'
-  )
+  await sendComment(supabase, reportContent, project.id, user.id, undefined, 'final report')
 
   invalidateProjectsCache()
 

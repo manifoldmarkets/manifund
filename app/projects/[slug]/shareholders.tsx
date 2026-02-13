@@ -3,11 +3,7 @@ import { Row } from '@/components/layout/row'
 import { UserAvatarAndBadge } from '@/components/user-link'
 import { Profile } from '@/db/profile'
 import { TOTAL_SHARES } from '@/db/project'
-import {
-  formatMoneyPrecise,
-  formatPercent,
-  showPrecision,
-} from '@/utils/formatting'
+import { formatMoneyPrecise, formatPercent, showPrecision } from '@/utils/formatting'
 import clsx from 'clsx'
 import { orderBy } from 'es-toolkit'
 import { formatDistanceToNow } from 'date-fns'
@@ -28,15 +24,9 @@ export function Shareholders(props: {
   const nonAmmShareholders = shareholders.filter(
     (shareholder) => shareholder.profile.type !== 'amm'
   )
-  const ammTxns = txns.filter(
-    (txn) => txn.from_id === projectId || txn.to_id === projectId
-  )
+  const ammTxns = txns.filter((txn) => txn.from_id === projectId || txn.to_id === projectId)
   const [ammShares, ammUSD] = calculateAMMPorfolio(ammTxns, projectId)
-  const sortedShareholders = orderBy(
-    nonAmmShareholders,
-    ['numShares'],
-    ['desc']
-  )
+  const sortedShareholders = orderBy(nonAmmShareholders, ['numShares'], ['desc'])
   return (
     <Row className="w-full justify-center">
       <Col className="w-full max-w-md sm:max-w-2xl">
@@ -45,8 +35,7 @@ export function Shareholders(props: {
             key={shareholder.profile?.id}
             className={clsx(
               'justify-between rounded p-3 hover:bg-gray-200',
-              shareholder.profile?.id === creator.id &&
-                'bg-orange-100 hover:bg-orange-200'
+              shareholder.profile?.id === creator.id && 'bg-orange-100 hover:bg-orange-200'
             )}
           >
             <UserAvatarAndBadge profile={shareholder.profile} />{' '}
@@ -55,10 +44,9 @@ export function Shareholders(props: {
         ))}
         {usingAmm && (
           <span className="my-5 text-sm text-gray-500">
-            The automated market maker currently holds{' '}
-            {formatPercent(ammShares / TOTAL_SHARES)} equity and{' '}
-            {formatMoneyPrecise(ammUSD)}. Those assets will be returned to the
-            founder when the project closes.
+            The automated market maker currently holds {formatPercent(ammShares / TOTAL_SHARES)}{' '}
+            equity and {formatMoneyPrecise(ammUSD)}. Those assets will be returned to the founder
+            when the project closes.
           </span>
         )}
         <TradeHistory txns={txns} creatorId={creator.id} />
@@ -75,8 +63,7 @@ function Trade(props: {
   createdAt: string
   isBuying: boolean
 }) {
-  const { trader, isCreator, amountUSD, equityPortion, createdAt, isBuying } =
-    props
+  const { trader, isCreator, amountUSD, equityPortion, createdAt, isBuying } = props
   return (
     <Row className="justify-center">
       <div className="grid w-full max-w-md grid-cols-2 justify-between gap-3 rounded p-3 text-sm hover:bg-gray-200 sm:max-w-2xl sm:grid-cols-3">
@@ -100,15 +87,10 @@ function Trade(props: {
 function TradeHistory(props: { txns: TxnAndProfiles[]; creatorId: string }) {
   const { txns, creatorId } = props
   const tradeTxns = txns.filter(
-    (txn) =>
-      txn.type === 'user to user trade' || txn.type === 'user to amm trade'
+    (txn) => txn.type === 'user to user trade' || txn.type === 'user to amm trade'
   )
   const bundledTxns = bundleTxns(tradeTxns)
-  const sortedBundles = orderBy(
-    bundledTxns,
-    [(bundle) => bundle[0].created_at],
-    ['desc']
-  )
+  const sortedBundles = orderBy(bundledTxns, [(bundle) => bundle[0].created_at], ['desc'])
   const tradeDisplay = sortedBundles.flatMap((bundle) => {
     const usdTxn = bundle.find((txn) => txn.token === 'USD')
     const sharesTxn = bundle.find((txn) => txn.token !== 'USD')
@@ -128,8 +110,7 @@ function TradeHistory(props: { txns: TxnAndProfiles[]; creatorId: string }) {
         />
       ))
     } else {
-      const realTrader = bundle.find((txn) => txn.from_id !== txn.project)
-        ?.profiles as Profile
+      const realTrader = bundle.find((txn) => txn.from_id !== txn.project)?.profiles as Profile
       return (
         <Trade
           key={bundle[0].id}

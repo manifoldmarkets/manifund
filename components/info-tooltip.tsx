@@ -6,9 +6,7 @@ export function InfoTooltip(props: { text: string; className?: string }) {
   const { text, className } = props
   return (
     <Tooltip className="inline-block" text={text}>
-      <InformationCircleIcon
-        className={clsx('-mb-1 h-5 w-5 text-gray-500', className)}
-      />
+      <InformationCircleIcon className={clsx('-mb-1 h-5 w-5 text-gray-500', className)} />
     </Tooltip>
   )
 }

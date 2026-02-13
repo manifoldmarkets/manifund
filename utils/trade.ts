@@ -14,8 +14,7 @@ export async function makeTrade(
   supabase: SupabaseClient
 ) {
   const bundleId = uuid()
-  const tradeType =
-    tradePartnerId === projectId ? 'user to amm trade' : 'user to user trade'
+  const tradeType = tradePartnerId === projectId ? 'user to amm trade' : 'user to user trade'
   const sharesTxn = {
     amount: numShares,
     from_id: buying ? tradePartnerId : userId,
@@ -41,11 +40,7 @@ export async function makeTrade(
   }
 }
 
-export async function updateBidFromTrade(
-  bid: Bid,
-  amountTraded: number,
-  supabase: SupabaseClient
-) {
+export async function updateBidFromTrade(bid: Bid, amountTraded: number, supabase: SupabaseClient) {
   const { error } = await supabase
     .from('bids')
     .update({
@@ -59,11 +54,7 @@ export async function updateBidFromTrade(
   }
 }
 
-export function genTradeText(
-  oldBid: Bid,
-  projectTitle: string,
-  usdTraded: number
-) {
+export function genTradeText(oldBid: Bid, projectTitle: string, usdTraded: number) {
   return `Your ${
     oldBid.type === 'buy' ? 'buy' : 'sell'
   } offer on "${projectTitle}" has been accepted. You ${

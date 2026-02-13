@@ -10,8 +10,8 @@ export default function NoAccess() {
           Access denied
         </h1>
         <p className="mt-6 text-base leading-7 text-gray-600">
-          Sorry, you don’t have access to this page. Make sure you’re signed in
-          to the correct account.
+          Sorry, you don’t have access to this page. Make sure you’re signed in to the correct
+          account.
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6">
           <Link href="/" className={buttonClass('md', 'orange')}>

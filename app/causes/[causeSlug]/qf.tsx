@@ -1,10 +1,4 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from '@/components/table-catalyst'
+import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/table-catalyst'
 import { BidAndProfile } from '@/db/bid'
 import { Project } from '@/db/project'
 import { TxnAndProfiles } from '@/db/txn'
@@ -27,10 +21,7 @@ type VoteMap = {
 // Txns & offers in 08-12 to 09-05 are eligible for EA Community Choice
 function eligibleTime(createdAt: string) {
   const date = new Date(createdAt)
-  return (
-    new Date('2024-08-12') <= date &&
-    date < new Date('2024-09-05T11:59:59.999Z')
-  )
+  return new Date('2024-08-12') <= date && date < new Date('2024-09-05T11:59:59.999Z')
 }
 
 export default function QuadraticMatch(props: {
@@ -93,13 +84,10 @@ export default function QuadraticMatch(props: {
 
   return (
     <div>
-      <p>
-        Donations made during EA Community Choice qualify for the $100k matching
-        pool!
-      </p>
+      <p>Donations made during EA Community Choice qualify for the $100k matching pool!</p>
       <p className="mb-4 text-sm font-extralight italic text-gray-500">
-        All amounts are projections; they may change based on further donations
-        or at Manifund&apos;s discretion.
+        All amounts are projections; they may change based on further donations or at
+        Manifund&apos;s discretion.
       </p>
       <Table dense>
         <TableRow>
@@ -113,16 +101,10 @@ export default function QuadraticMatch(props: {
           {/* First row is total across projects */}
           <TableRow>
             <TableCell>Total</TableCell>
-            <TableCell>
-              {new Set(votes.map((vote) => vote.donorId)).size}
-            </TableCell>
-            <TableCell>
-              {sum(votes.map((vote) => vote.amount)).toFixed(0)}
-            </TableCell>
+            <TableCell>{new Set(votes.map((vote) => vote.donorId)).size}</TableCell>
+            <TableCell>{sum(votes.map((vote) => vote.amount)).toFixed(0)}</TableCell>
             <TableCell>{POOL_SIZE}</TableCell>
-            <TableCell>
-              {(POOL_SIZE + sum(votes.map((vote) => vote.amount))).toFixed(0)}
-            </TableCell>
+            <TableCell>{(POOL_SIZE + sum(votes.map((vote) => vote.amount))).toFixed(0)}</TableCell>
           </TableRow>
 
           {/* Sort table by total donated, thencreate one row per project */}
@@ -144,9 +126,7 @@ export default function QuadraticMatch(props: {
                 <TableCell>{Object.keys(votes).length}</TableCell>
                 <TableCell>{total(votes).toFixed(0)}</TableCell>
                 <TableCell>{match(votes).toFixed(0)}</TableCell>
-                <TableCell>
-                  {(total(votes) + match(votes)).toFixed(0)}
-                </TableCell>
+                <TableCell>{(total(votes) + match(votes)).toFixed(0)}</TableCell>
               </TableRow>
             ))}
         </TableBody>

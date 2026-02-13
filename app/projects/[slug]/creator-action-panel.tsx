@@ -39,9 +39,7 @@ export function CreatorActionPanel(props: {
       )}
       {project.stage === 'active' && <ProgressUpdate project={project} />}
       {project.stage === 'active' && <CloseProject projectId={project.id} />}
-      {checkReactivateEligible(project, prizeCause) && (
-        <Reactivate projectId={project.id} />
-      )}
+      {checkReactivateEligible(project, prizeCause) && <Reactivate projectId={project.id} />}
       {project.stage !== 'draft' && project.stage !== 'hidden' && (
         <HideProject projectId={project.id} />
       )}
@@ -80,16 +78,12 @@ function ProgressUpdate(props: { project: Project }) {
           <PaperAirplaneIcon className="h-6 w-6 text-orange-600" />
         </div>
         <div className="my-3 text-center">
-          <Dialog.Title
-            as="h3"
-            className="text-base font-semibold leading-6 text-gray-900"
-          >
+          <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
             Post progress update
           </Dialog.Title>
           <p className="text-sm text-gray-600">
             This will be posted as a public comment and all of your{' '}
-            {project.type === 'cert' ? 'investors' : 'donors'} will be notified
-            of your update.
+            {project.type === 'cert' ? 'investors' : 'donors'} will be notified of your update.
           </p>
         </div>
         <TextEditor editor={editor} />
@@ -160,24 +154,20 @@ function CloseProject(props: { projectId: string }) {
           <LockClosedIcon className="h-6 w-6 text-orange-600" />
         </div>
         <div className="my-3 text-center">
-          <Dialog.Title
-            as="h3"
-            className="text-base font-semibold leading-6 text-gray-900"
-          >
+          <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
             Close project
           </Dialog.Title>
           <p className="text-sm text-gray-600">
-            Closing this project ends the grant period, marks the project as
-            complete, prevents future donations, and means you will not be asked
-            for further project updates in the future. Do this if you have
-            completed the project as described in the initial proposal, have
-            spent all of the funds you received, and/or do not plan to work on
-            this project further.
+            Closing this project ends the grant period, marks the project as complete, prevents
+            future donations, and means you will not be asked for further project updates in the
+            future. Do this if you have completed the project as described in the initial proposal,
+            have spent all of the funds you received, and/or do not plan to work on this project
+            further.
           </p>
           <p className="mt-2 text-sm text-gray-600">
-            <strong>Your report will be posted as a public comment.</strong> If
-            there&apos;s anything you&apos;d like to share with Manifund but
-            cannot post publicly, you can email austin@manifund.org.
+            <strong>Your report will be posted as a public comment.</strong> If there&apos;s
+            anything you&apos;d like to share with Manifund but cannot post publicly, you can email
+            austin@manifund.org.
           </p>
         </div>
         <TextEditor editor={editor} />
@@ -238,15 +228,12 @@ export function Reactivate(props: { projectId: string }) {
           <FireIcon className="h-6 w-6 text-orange-600" aria-hidden="true" />
         </div>
         <div className="my-3 text-center">
-          <Dialog.Title
-            as="h3"
-            className="text-base font-semibold leading-6 text-gray-900"
-          >
+          <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
             Reactivate project
           </Dialog.Title>
           <p className="my-2 text-sm text-gray-500">
-            Your project will be moved into the active stage and remain eligible
-            for trading and retroactive funding. It will not have an AMM.
+            Your project will be moved into the active stage and remain eligible for trading and
+            retroactive funding. It will not have an AMM.
           </p>
         </div>
         <div className="sm:flex-2 mt-3 flex flex-col gap-3 sm:flex-row">
@@ -284,17 +271,12 @@ export function Reactivate(props: { projectId: string }) {
   )
 }
 
-function Edit(props: {
-  project: ProjectWithCauses
-  causesList: SimpleCause[]
-}) {
+function Edit(props: { project: ProjectWithCauses; causesList: SimpleCause[] }) {
   const { project, causesList } = props
   const [modalOpen, setModalOpen] = useState(false)
   const [title, setTitle] = useState(project.title)
   const [subtitle, setSubtitle] = useState(project.blurb ?? '')
-  const [fundingGoal, setFundingGoal] = useState<number | undefined>(
-    project.funding_goal
-  )
+  const [fundingGoal, setFundingGoal] = useState<number | undefined>(project.funding_goal)
   const [selectedCauses, setSelectedCauses] = useState(project.causes)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
@@ -347,10 +329,7 @@ function Edit(props: {
           <PencilIcon className="h-6 w-6 text-orange-600" aria-hidden="true" />
         </div>
         <div className="my-3 text-center">
-          <Dialog.Title
-            as="h3"
-            className="text-base font-semibold leading-6 text-gray-900"
-          >
+          <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
             Edit project details
           </Dialog.Title>
         </div>
@@ -363,9 +342,7 @@ function Edit(props: {
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
               />
-              <span className="text-right text-xs text-gray-600">
-                Maximum 80 characters
-              </span>
+              <span className="text-right text-xs text-gray-600">Maximum 80 characters</span>
             </Col>
           </Col>
           <Col className="gap-1">
@@ -376,9 +353,7 @@ function Edit(props: {
                 value={subtitle}
                 onChange={(event) => setSubtitle(event.target.value)}
               />
-              <span className="text-right text-xs text-gray-600">
-                Maximum 160 characters
-              </span>
+              <span className="text-right text-xs text-gray-600">Maximum 160 characters</span>
             </Col>
           </Col>
           <Col className="gap-1">
@@ -388,10 +363,7 @@ function Edit(props: {
           {project.type === 'grant' && !project.lobbying && (
             <Col className="gap-1">
               <label>Funding goal</label>
-              <AmountInput
-                amount={fundingGoal}
-                onChangeAmount={setFundingGoal}
-              />
+              <AmountInput amount={fundingGoal} onChangeAmount={setFundingGoal} />
             </Col>
           )}
           <Col className="gap-1">
@@ -449,15 +421,12 @@ function HideProject(props: { projectId: string }) {
           <EyeSlashIcon className="h-6 w-6 text-orange-600" />
         </div>
         <div className="my-3 text-center">
-          <Dialog.Title
-            as="h3"
-            className="text-base font-semibold leading-6 text-gray-900"
-          >
+          <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
             Hide project
           </Dialog.Title>
           <p className="text-sm text-gray-600">
-            WARNING: Once hidden, only you and admins will be able to find this
-            projects, and only admins can unhide it.
+            WARNING: Once hidden, only you and admins will be able to find this projects, and only
+            admins can unhide it.
           </p>
         </div>
         <div className="sm:flex-2 mt-3 flex flex-col gap-3 sm:flex-row">

@@ -3,10 +3,7 @@ import { NextResponse } from 'next/server'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { toMarkdown } from '@/utils/tiptap-parsing'
 
-async function listProjectsPaginated(
-  supabase: SupabaseClient,
-  before?: string | null
-) {
+async function listProjectsPaginated(supabase: SupabaseClient, before?: string | null) {
   let query = supabase
     .from('projects')
     .select(

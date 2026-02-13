@@ -3,10 +3,7 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { toMarkdown } from '@/utils/tiptap-parsing'
 
-async function listCommentsPaginated(
-  supabase: SupabaseClient,
-  before?: string | null
-) {
+async function listCommentsPaginated(supabase: SupabaseClient, before?: string | null) {
   let query = supabase
     .from('comments')
     .select(

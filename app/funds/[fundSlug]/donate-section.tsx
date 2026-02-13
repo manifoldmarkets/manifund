@@ -12,11 +12,7 @@ import { formatMoneyPrecise } from '@/utils/formatting'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 
-export function DonateSection(props: {
-  fund: Profile
-  userId?: string
-  charityBalance: number
-}) {
+export function DonateSection(props: { fund: Profile; userId?: string; charityBalance: number }) {
   const { fund, userId, charityBalance } = props
   const [amount, setAmount] = useState<number>()
   let fromBalanceError = null
@@ -41,12 +37,7 @@ export function DonateSection(props: {
           </div>
           {userId && (
             <DepositButton userId={userId} passFundsTo={fund}>
-              <span
-                className={clsx(
-                  buttonClass('sm', 'light-orange'),
-                  'w-fit font-bold'
-                )}
-              >
+              <span className={clsx(buttonClass('sm', 'light-orange'), 'w-fit font-bold')}>
                 Checkout
               </span>
             </DepositButton>
@@ -56,8 +47,7 @@ export function DonateSection(props: {
           <div>
             <h3 className="text-lg font-bold">Manifund balance</h3>
             <p className="text-gray-600">
-              Transfer money from your existing charity balance to{' '}
-              {fund.full_name}.
+              Transfer money from your existing charity balance to {fund.full_name}.
             </p>
           </div>
           {userId && (
@@ -107,10 +97,7 @@ export function DonateSection(props: {
           </div>
           <a
             href="https://manifoldmarkets.notion.site/Instructions-for-donations-via-wire-ACH-or-DAF-02aee92e884a47e49efd4d93242e2080?pvs=4"
-            className={clsx(
-              buttonClass('sm', 'light-orange'),
-              'w-fit font-bold'
-            )}
+            className={clsx(buttonClass('sm', 'light-orange'), 'w-fit font-bold')}
             target="_blank"
           >
             See details

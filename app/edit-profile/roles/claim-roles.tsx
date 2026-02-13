@@ -20,8 +20,7 @@ function RoleInput(props: {
   placeholder?: string
   disabled?: boolean
 }) {
-  const { label, name, handleChange, value, type, placeholder, disabled } =
-    props
+  const { label, name, handleChange, value, type, placeholder, disabled } = props
   const DEFAULT_CHECK = type === 'checkbox' ? true : ''
   return (
     <div className="mb-4">
@@ -30,9 +29,7 @@ function RoleInput(props: {
           <Checkbox
             checked={value !== undefined}
             disabled={disabled}
-            onChange={(e) =>
-              handleChange(name, e.target.checked ? DEFAULT_CHECK : undefined)
-            }
+            onChange={(e) => handleChange(name, e.target.checked ? DEFAULT_CHECK : undefined)}
             className="mr-2"
           />
           <div>
@@ -119,9 +116,8 @@ export function ClaimRoles(props: {
       <h1 className="mb-6 text-2xl font-bold">EA Community Roles</h1>
       <div className="prose rounded-lg bg-gray-200 p-4">
         <AlertBox title="Update 2024-08-21, 17:00 PT: Funds paused">
-          We&apos;ve sent out the initial $100k in funds! We&apos;re happy
-          there&apos;s so much interest, but are now pausing new claims while
-          trying to fundraise for more.
+          We&apos;ve sent out the initial $100k in funds! We&apos;re happy there&apos;s so much
+          interest, but are now pausing new claims while trying to fundraise for more.
           <br />
           <br />
           Join{' '}
@@ -129,8 +125,8 @@ export function ClaimRoles(props: {
             the waitlist
           </Link>{' '}
           to be notified if & when we receive more funding, or email{' '}
-          <a href="mailto:austin@manifund.org">austin@manifund.org</a> if you
-          know someone might contribute!
+          <a href="mailto:austin@manifund.org">austin@manifund.org</a> if you know someone might
+          contribute!
         </AlertBox>
         <br />
         <br />
@@ -140,14 +136,8 @@ export function ClaimRoles(props: {
         </Link>
         !
         <ul>
-          <li>
-            You get $100 to donate, plus $100 for each role you qualify for
-            below
-          </li>
-          <li>
-            Your responses below may be displayed publicly on your Manifund
-            profile
-          </li>
+          <li>You get $100 to donate, plus $100 for each role you qualify for below</li>
+          <li>Your responses below may be displayed publicly on your Manifund profile</li>
           <li>You can&apos;t update your responses once you submit</li>
           <li>
             Please share EA Community Choice with other EAs!
@@ -156,8 +146,7 @@ export function ClaimRoles(props: {
             </ul>
           </li>
           <li>
-            Other questions? Ask us on{' '}
-            <Link href="https://discord.gg/ZGsDMWSA5Q">Discord</Link>!
+            Other questions? Ask us on <Link href="https://discord.gg/ZGsDMWSA5Q">Discord</Link>!
           </li>
         </ul>
       </div>
@@ -222,9 +211,7 @@ export function ClaimRoles(props: {
         handleChange={handleChange}
         disabled={!!profileRoles}
       />
-      {submitState === 'error' && (
-        <div className="mt-4 text-red-500">{message}</div>
-      )}
+      {submitState === 'error' && <div className="mt-4 text-red-500">{message}</div>}
       {profileRoles ? (
         <div className="mt-4 italic text-orange-600">
           You&apos;ve claimed ${totalGrant}. Now browse the{' '}
@@ -243,8 +230,8 @@ export function ClaimRoles(props: {
           {submitState === 'submitting'
             ? 'Submitting...'
             : formUnfilled
-            ? 'Fill in all fields'
-            : `Claim $${totalGrant} to donate`}
+              ? 'Fill in all fields'
+              : `Claim $${totalGrant} to donate`}
         </Button>
       )}
     </form>

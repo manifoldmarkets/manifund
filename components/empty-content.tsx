@@ -12,9 +12,7 @@ export function EmptyContent(props: {
   const content = (
     <>
       <Row className="justify-center">{icon}</Row>
-      {title && (
-        <span className="mt-2 block font-semibold text-gray-900">{title}</span>
-      )}
+      {title && <span className="mt-2 block font-semibold text-gray-900">{title}</span>}
       <span className="block text-sm text-gray-500">{subtitle}</span>
     </>
   )

@@ -16,10 +16,7 @@ export function useTextEditor(
   placeholder?: string,
   className?: string
 ) {
-  const { value: content, setValue: saveContent } = useLocalStorage(
-    defaultContent,
-    key
-  )
+  const { value: content, setValue: saveContent } = useLocalStorage(defaultContent, key)
   const [edited, setEdited] = useState(false)
   const { supabase } = useSupabase()
   const editor = useEditor({

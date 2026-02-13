@@ -23,12 +23,7 @@ export function Tier(props: {
         })
       : tier.projects
   return (
-    <div
-      className={clsx(
-        'rounded border-2 bg-gray-100 shadow',
-        `border-${tier.color}`
-      )}
-    >
+    <div className={clsx('rounded border-2 bg-gray-100 shadow', `border-${tier.color}`)}>
       <Row className="justify-between">
         <Row
           className={clsx(
@@ -36,11 +31,7 @@ export function Tier(props: {
             `bg-${tier.color}`
           )}
         >
-          <span
-            className={
-              tier.id === 'unsorted' ? 'text-sm' : 'text-xl font-semibold'
-            }
-          >
+          <span className={tier.id === 'unsorted' ? 'text-sm' : 'text-xl font-semibold'}>
             {tier.id}
           </span>
           {tier.description && tier.multiplier !== undefined && (
@@ -50,11 +41,7 @@ export function Tier(props: {
           )}
         </Row>
         {tier.id === 'unsorted' && (
-          <SearchBar
-            search={search}
-            setSearch={setSearch}
-            className="mr-1 mt-1 lg:w-8/12"
-          />
+          <SearchBar search={search} setSearch={setSearch} className="mr-1 mt-1 lg:w-8/12" />
         )}
       </Row>
       <div className="flex-inline relative w-full items-center">
@@ -67,10 +54,7 @@ export function Tier(props: {
         >
           {/* @ts-ignore */}
           {(dropProvided) => (
-            <div
-              {...dropProvided.droppableProps}
-              className="flex flex-col overflow-auto"
-            >
+            <div {...dropProvided.droppableProps} className="flex flex-col overflow-auto">
               <div className="inline-flex grow">
                 <Row
                   className="my-1 min-h-[6rem] min-w-[80vw] items-start lg:min-w-[40rem]"

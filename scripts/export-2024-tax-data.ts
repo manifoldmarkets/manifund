@@ -42,10 +42,7 @@ async function export2024TaxData() {
   for (const withdrawal of withdrawals) {
     if (withdrawal.from_id) {
       const currentTotal = withdrawalsByCreator.get(withdrawal.from_id) || 0
-      withdrawalsByCreator.set(
-        withdrawal.from_id,
-        currentTotal + withdrawal.amount
-      )
+      withdrawalsByCreator.set(withdrawal.from_id, currentTotal + withdrawal.amount)
     }
   }
 
@@ -72,9 +69,7 @@ async function export2024TaxData() {
 
   // Combine data - one row per creator
   const results: RecipientWithProjectsAndWithdrawals[] = []
-  for (const [creatorId, creatorProjects] of Array.from(
-    projectsByCreator.entries()
-  )) {
+  for (const [creatorId, creatorProjects] of Array.from(projectsByCreator.entries())) {
     const totalWithdrawn = withdrawalsByCreator.get(creatorId) || 0
     const firstProject = creatorProjects[0]
 
@@ -85,9 +80,7 @@ async function export2024TaxData() {
     const projectIds = creatorProjects.map((p: any) => p.id).join('; ')
 
     // Get unique locations and concatenate with '; '
-    const uniqueLocations = Array.from(
-      new Set(creatorProjects.map((p: any) => p.location))
-    )
+    const uniqueLocations = Array.from(new Set(creatorProjects.map((p: any) => p.location)))
     const projectLocations = uniqueLocations.join('; ')
 
     results.push({

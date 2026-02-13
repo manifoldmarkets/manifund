@@ -30,10 +30,7 @@ export default async function handler(req: NextRequest) {
     .eq('creator', userId)
   if (projectsError) {
     console.error('Error deleting projects:', projectsError)
-    return NextResponse.json(
-      { error: 'Failed to delete projects' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete projects' }, { status: 500 })
   }
 
   // Delete all comments by this user (cascades to comment_rxns)
@@ -43,33 +40,21 @@ export default async function handler(req: NextRequest) {
     .eq('commenter', userId)
   if (commentsError) {
     console.error('Error deleting comments:', commentsError)
-    return NextResponse.json(
-      { error: 'Failed to delete comments' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete comments' }, { status: 500 })
   }
 
   // Delete the user profile (cascades to bids, votes, evals, follows, reactions, etc.)
-  const { error: profileError } = await adminSupabase
-    .from('profiles')
-    .delete()
-    .eq('id', userId)
+  const { error: profileError } = await adminSupabase.from('profiles').delete().eq('id', userId)
   if (profileError) {
     console.error('Error deleting profile:', profileError)
-    return NextResponse.json(
-      { error: 'Failed to delete profile' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete profile' }, { status: 500 })
   }
 
   // Delete the auth user
   const { error: authError } = await adminSupabase.auth.admin.deleteUser(userId)
   if (authError) {
     console.error('Error deleting auth user:', authError)
-    return NextResponse.json(
-      { error: 'Failed to delete auth user' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete auth user' }, { status: 500 })
   }
 
   return NextResponse.json({ success: true })

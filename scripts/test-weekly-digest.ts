@@ -1,8 +1,5 @@
 import { createAdminClient } from '@/db/edge'
-import {
-  getNewProjectsLastWeek,
-  sendWeeklyDigest,
-} from '../utils/weekly-digest'
+import { getNewProjectsLastWeek, sendWeeklyDigest } from '../utils/weekly-digest'
 
 async function testWeeklyDigest() {
   console.log('Testing weekly digest functionality...')
@@ -17,8 +14,7 @@ async function testWeeklyDigest() {
     if (projects.length > 0) {
       console.log('Sample project:', {
         title: projects[0].title,
-        creator:
-          projects[0].profiles?.full_name || projects[0].profiles?.username,
+        creator: projects[0].profiles?.full_name || projects[0].profiles?.username,
         created_at: projects[0].created_at,
         blurb: projects[0].blurb?.substring(0, 100) + '...',
       })

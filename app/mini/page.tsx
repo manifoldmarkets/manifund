@@ -24,13 +24,12 @@ export default async function Minifund() {
   const start = 0
 
   const supabase = await createServerSupabaseClient()
-  const [projects, recentComments, recentDonations, recentBids] =
-    await Promise.all([
-      listProjects(supabase),
-      getRecentFullComments(supabase, PAGE_SIZE, start),
-      getRecentFullTxns(supabase, PAGE_SIZE, start),
-      getRecentFullBids(supabase, PAGE_SIZE, start),
-    ])
+  const [projects, recentComments, recentDonations, recentBids] = await Promise.all([
+    listProjects(supabase),
+    getRecentFullComments(supabase, PAGE_SIZE, start),
+    getRecentFullTxns(supabase, PAGE_SIZE, start),
+    getRecentFullBids(supabase, PAGE_SIZE, start),
+  ])
 
   const projectsToShow = sortBy(projects, [hotScore]).slice(0, 20)
 
@@ -92,9 +91,7 @@ export default async function Minifund() {
             <li key={comment.id} className="mb-0.5">
               <a href={`/projects/${comment.projects.slug}`}>
                 {comment.profiles.full_name}:{' '}
-                <span className="font-extralight text-gray-600">
-                  {commentPreview(comment)}
-                </span>
+                <span className="font-extralight text-gray-600">{commentPreview(comment)}</span>
               </a>
             </li>
           )
@@ -108,10 +105,7 @@ export default async function Minifund() {
             <li key={donation.id} className="mb-0.5">
               <a href={`/projects/${donation.projectSlug}`}>
                 ${donation.amount} from {donation.donor}
-                <span className="font-extralight text-gray-600">
-                  {' '}
-                  to {donation.projectTitle}
-                </span>
+                <span className="font-extralight text-gray-600"> to {donation.projectTitle}</span>
               </a>
             </li>
           )
@@ -123,11 +117,10 @@ export default async function Minifund() {
 
 function commentPreview(comment: FullComment) {
   return (
-    generateText(comment.content as JSONContent, [
-      StarterKit,
-      TextMention,
-      ExtensionLink,
-    ]).slice(0, 100) + '...'
+    generateText(comment.content as JSONContent, [StarterKit, TextMention, ExtensionLink]).slice(
+      0,
+      100
+    ) + '...'
   )
 }
 

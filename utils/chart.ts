@@ -33,23 +33,15 @@ export const unserializeMultiPoints = (data: MultiSerializedPoints) => {
   return mapValues(data, (points) => points.map(([x, y]) => ({ x, y })))
 }
 
-export const serializeMultiPoints = (data: {
-  [answerId: string]: HistoryPoint[]
-}) => {
-  return mapValues(data, (points) =>
-    points.map(({ x, y }) => [x, y] as [number, number])
-  )
+export const serializeMultiPoints = (data: { [answerId: string]: HistoryPoint[] }) => {
+  return mapValues(data, (points) => points.map(({ x, y }) => [x, y] as [number, number]))
 }
 
 export type viewScale = {
   viewXScale: ScaleTime<number, number, never> | undefined
-  setViewXScale: Dispatch<
-    SetStateAction<ScaleTime<number, number, never> | undefined>
-  >
+  setViewXScale: Dispatch<SetStateAction<ScaleTime<number, number, never> | undefined>>
   viewYScale: ScaleContinuousNumeric<number, number, never> | undefined
-  setViewYScale: Dispatch<
-    SetStateAction<ScaleContinuousNumeric<number, number, never> | undefined>
-  >
+  setViewYScale: Dispatch<SetStateAction<ScaleContinuousNumeric<number, number, never> | undefined>>
 }
 
 export type AxisConstraints = {
@@ -58,10 +50,7 @@ export type AxisConstraints = {
   minExtent?: number
 }
 
-export const maxMinBin = <P extends HistoryPoint>(
-  points: P[],
-  bins: number
-) => {
+export const maxMinBin = <P extends HistoryPoint>(points: P[], bins: number) => {
   if (points.length < 2 || bins <= 0) return points
 
   const min = points[0].x
@@ -95,17 +84,10 @@ export const maxMinBin = <P extends HistoryPoint>(
 }
 
 // compresses points within a visible range, so as you zoom there's more detail.
-export const compressPoints = <P extends HistoryPoint>(
-  points: P[],
-  min: number,
-  max: number
-) => {
+export const compressPoints = <P extends HistoryPoint>(points: P[], min: number, max: number) => {
   // add buffer of 100 points on each side for nice panning.
   const smallIndex = Math.max(points.findIndex((p) => p.x >= min) - 100, 0)
-  const bigIndex = Math.min(
-    points.findIndex((p) => p.x >= max) + 100,
-    points.length
-  )
+  const bigIndex = Math.min(points.findIndex((p) => p.x >= max) + 100, points.length)
 
   const toCompress = points.slice(smallIndex, bigIndex)
 

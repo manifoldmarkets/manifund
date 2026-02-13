@@ -6,10 +6,7 @@ export function Donors(props: { donors: ProfileWithRoles[] }) {
   function budget(roles: Record<string, boolean | string | null>) {
     return Object.values(roles).filter(Boolean).length * 100
   }
-  const totalBudget = donors.reduce(
-    (acc, donor) => acc + budget(donor.roles),
-    0
-  )
+  const totalBudget = donors.reduce((acc, donor) => acc + budget(donor.roles), 0)
 
   return (
     <div className="space-y-4">
@@ -43,11 +40,7 @@ export function Donors(props: { donors: ProfileWithRoles[] }) {
                       {role}
                       <span className="font-light">
                         {typeof value === 'string' &&
-                          `: ${
-                            role === 'scholar'
-                              ? value.split('/').pop() || value
-                              : value
-                          }`}
+                          `: ${role === 'scholar' ? value.split('/').pop() || value : value}`}
                       </span>
                     </div>
                   )
@@ -65,12 +58,8 @@ export function Donors(props: { donors: ProfileWithRoles[] }) {
 function Stat(props: { name: string; stat: number | string }) {
   return (
     <div className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-      <dt className="truncate text-sm font-medium text-gray-500">
-        {props.name}
-      </dt>
-      <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
-        {props.stat}
-      </dd>
+      <dt className="truncate text-sm font-medium text-gray-500">{props.name}</dt>
+      <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{props.stat}</dd>
     </div>
   )
 }

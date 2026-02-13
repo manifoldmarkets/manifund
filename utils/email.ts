@@ -40,23 +40,20 @@ export async function sendTemplateEmail(
   }
 
   // Using fetch instead of postmark's client because it doesn't work on the edge:
-  const response = await fetch(
-    'https://api.postmarkapp.com/email/withTemplate',
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'X-Postmark-Server-Token': process.env.POSTMARK_SERVER_TOKEN ?? '',
-      },
-      body: JSON.stringify({
-        From: fromEmail ?? 'info@manifund.org',
-        To: sendToEmail,
-        TemplateId: templateId,
-        TemplateModel: templateModel,
-      }),
-    }
-  )
+  const response = await fetch('https://api.postmarkapp.com/email/withTemplate', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      'X-Postmark-Server-Token': process.env.POSTMARK_SERVER_TOKEN ?? '',
+    },
+    body: JSON.stringify({
+      From: fromEmail ?? 'info@manifund.org',
+      To: sendToEmail,
+      TemplateId: templateId,
+      TemplateModel: templateModel,
+    }),
+  })
   const json = await response.json()
   console.log('Sent message', json)
 }
@@ -91,10 +88,7 @@ export async function sendEmail(
   return json
 }
 
-export async function getUserEmail(
-  supabaseAdmin: SupabaseClient,
-  userId: string
-) {
+export async function getUserEmail(supabaseAdmin: SupabaseClient, userId: string) {
   const { data, error } = await supabaseAdmin
     .from('users')
     .select('email')
@@ -137,9 +131,6 @@ export async function sendBatchEmail(
 
   const json = await response.json()
   console.log('Sent batch emails', json)
-  console.log(
-    'Request size of batch payload:',
-    JSON.stringify(batchPayload).length
-  )
+  console.log('Request size of batch payload:', JSON.stringify(batchPayload).length)
   return json
 }

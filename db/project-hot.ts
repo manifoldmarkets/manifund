@@ -41,9 +41,7 @@ export async function getHotProjects(
       txns: totalRaised > 0 ? ([{ amount: totalRaised }] as any) : [],
       comments: Array(commentCount).fill({ id: '' }),
       project_votes:
-        voteTotal > 0
-          ? ([{ project_id: project.id, magnitude: voteTotal }] as any)
-          : [],
+        voteTotal > 0 ? ([{ project_id: project.id, magnitude: voteTotal }] as any) : [],
       project_transfers: [],
       project_follows: [],
     }

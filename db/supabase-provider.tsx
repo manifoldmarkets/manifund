@@ -13,10 +13,7 @@ type SupabaseContext = {
 
 const Context = createContext<SupabaseContext | undefined>(undefined)
 
-export default function SupabaseProvider(props: {
-  children: React.ReactNode
-  className: string
-}) {
+export default function SupabaseProvider(props: { children: React.ReactNode; className: string }) {
   const { children, className } = props
   const [supabase] = useState(() => createClient())
   const [session, setSession] = useState<Session | null>(null)

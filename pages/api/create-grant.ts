@@ -131,12 +131,7 @@ export default async function handler(req: NextRequest) {
       projectTitle: title,
       loginUrl: `${getURL()}login?email=${recipientEmail}`,
     }
-    await sendTemplateEmail(
-      TEMPLATE_IDS.NEW_USER_GRANT,
-      postmarkVars,
-      undefined,
-      recipientEmail
-    )
+    await sendTemplateEmail(TEMPLATE_IDS.NEW_USER_GRANT, postmarkVars, undefined, recipientEmail)
   } else if (recipientProfile) {
     const donorComment = {
       id: uuid(),
@@ -163,11 +158,7 @@ export default async function handler(req: NextRequest) {
       projectTitle: title,
       projectUrl: `${getURL()}projects/${slug}`,
     }
-    await sendTemplateEmail(
-      TEMPLATE_IDS.EXISTING_USER_GRANT,
-      postmarkVars,
-      recipientProfile.id
-    )
+    await sendTemplateEmail(TEMPLATE_IDS.EXISTING_USER_GRANT, postmarkVars, recipientProfile.id)
   } else {
     console.error('invalid inputs 2')
     return NextResponse.error()

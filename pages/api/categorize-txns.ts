@@ -19,9 +19,7 @@ export default async function handler() {
 
 async function dbCategorizeTxns(txns: Txn[], supabase: SupabaseClient) {
   const bundledTxns = bundleTxns(txns)
-  const categorizedTxns = Object.fromEntries(
-    txns.map((txn) => [txn.id, null as string | null])
-  )
+  const categorizedTxns = Object.fromEntries(txns.map((txn) => [txn.id, null as string | null]))
   bundledTxns.forEach((bundle) => {
     if (bundle.length === 1) {
       const txn = bundle[0]
@@ -69,10 +67,7 @@ async function dbCategorizeTxns(txns: Txn[], supabase: SupabaseClient) {
   })
 
   const promises = txns.map(async (txn) => {
-    await supabase
-      .from('txns')
-      .update({ type: categorizedTxns[txn.id] })
-      .eq('id', txn.id)
+    await supabase.from('txns').update({ type: categorizedTxns[txn.id] }).eq('id', txn.id)
   })
   await Promise.all(promises)
 }

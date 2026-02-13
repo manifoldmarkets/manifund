@@ -2,19 +2,12 @@
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
-import {
-  ArrowLeftIcon,
-  MinusSmallIcon,
-  PlusSmallIcon,
-} from '@heroicons/react/24/outline'
+import { ArrowLeftIcon, MinusSmallIcon, PlusSmallIcon } from '@heroicons/react/24/outline'
 import { HeartIcon } from '@heroicons/react/24/solid'
 import React from 'react'
 import { Stat } from '@/components/stat'
 import { Card } from '@/components/layout/card'
-import {
-  AirtableDepositButton,
-  DepositButton,
-} from '@/components/deposit-buttons'
+import { AirtableDepositButton, DepositButton } from '@/components/deposit-buttons'
 import Link from 'next/link'
 import { Button, IconButton } from '@/components/button'
 import { Modal } from '@/components/modal'
@@ -32,14 +25,7 @@ export function BalanceDisplay(props: {
   isOwnProfile?: boolean
   userId?: string
 }) {
-  const {
-    balance,
-    cashBalance,
-    charityBalance,
-    accredited,
-    isOwnProfile,
-    userId,
-  } = props
+  const { balance, cashBalance, charityBalance, accredited, isOwnProfile, userId } = props
   const stats = [
     { name: 'charity balance', value: charityBalance },
     { name: 'cash balance', value: cashBalance },
@@ -59,10 +45,7 @@ export function BalanceDisplay(props: {
           />
         </div>
         {stats.map((stat) => (
-          <Card
-            key={stat.name}
-            className="relative w-full min-w-fit border-none px-2 py-1"
-          >
+          <Card key={stat.name} className="relative w-full min-w-fit border-none px-2 py-1">
             <Stat
               label={stat.name}
               value={stat.value.toLocaleString('en-US', {
@@ -93,10 +76,7 @@ export function BalanceDisplay(props: {
                 ) : (
                   <Row className="absolute right-2 top-2 justify-between gap-1">
                     {accredited && <AirtableDepositButton />}
-                    <Link
-                      href="/withdraw"
-                      className="rounded bg-orange-500 p-0.5 shadow"
-                    >
+                    <Link href="/withdraw" className="rounded bg-orange-500 p-0.5 shadow">
                       <Tooltip text="Withdraw funds" placement="left">
                         <MinusSmallIcon className="h-4 w-4 stroke-2 text-white" />
                       </Tooltip>
@@ -109,8 +89,7 @@ export function BalanceDisplay(props: {
         ))}
       </Row>
       <p className="mt-2 w-full rounded bg-gray-100 p-1 text-center text-sm tracking-wider text-gray-400">
-        {formatMoneyPrecise(balance - cashBalance - charityBalance)} in pending
-        offers
+        {formatMoneyPrecise(balance - cashBalance - charityBalance)} in pending offers
       </p>
     </Col>
   )
@@ -132,10 +111,7 @@ function CashToCharityButton(props: { cashBalance: number }) {
   }
   return (
     <>
-      <IconButton
-        className="rounded bg-white p-0 shadow-none"
-        onClick={() => setOpen(true)}
-      >
+      <IconButton className="rounded bg-white p-0 shadow-none" onClick={() => setOpen(true)}>
         <ArrowLeftIcon className="h-4 w-4 stroke-2 text-orange-500" />
       </IconButton>
       <Modal open={open} setOpen={setOpen}>
@@ -143,15 +119,12 @@ function CashToCharityButton(props: { cashBalance: number }) {
           <HeartIcon className="h-6 w-6 text-orange-600" aria-hidden="true" />
         </div>
         <div className="my-3 text-center sm:mt-5">
-          <Dialog.Title
-            as="h3"
-            className="text-base font-semibold leading-6 text-gray-900"
-          >
+          <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
             Transfer cash balance to charity balance
           </Dialog.Title>
           <p className="my-2 text-sm text-gray-500">
-            Money in your charity balance can be donated but not withdrawn,
-            whereas money in your cash balance can be withdrawn but not donated.
+            Money in your charity balance can be donated but not withdrawn, whereas money in your
+            cash balance can be withdrawn but not donated.
           </p>
           <label htmlFor="amount">Amount (USD): </label>
           <AmountInput
@@ -199,9 +172,9 @@ function CashToCharityButton(props: { cashBalance: number }) {
           </Tooltip>
         </div>
         <p className="mt-4 text-xs text-gray-500">
-          This constitutes a donation to Manifold for Charity, a registered
-          501(c)(3) nonprofit. Money in your charity balance has zero monetary
-          value and is not redeemable for cash, but can be donated to charity.
+          This constitutes a donation to Manifold for Charity, a registered 501(c)(3) nonprofit.
+          Money in your charity balance has zero monetary value and is not redeemable for cash, but
+          can be donated to charity.
         </p>
       </Modal>
     </>

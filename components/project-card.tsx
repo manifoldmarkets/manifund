@@ -20,10 +20,7 @@ import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { getSponsoredAmount } from '@/utils/constants'
 
-export function ProjectCard(props: {
-  project: FullProject
-  valuation?: number
-}) {
+export function ProjectCard(props: { project: FullProject; valuation?: number }) {
   const { project, valuation } = props
   const amountRaised = getAmountRaised(project, project.bids, project.txns)
   // const firstDonorId =
@@ -33,17 +30,11 @@ export function ProjectCard(props: {
   const regrantorFunded = project.txns.some(
     (txn) => txn.from_id && getSponsoredAmount(txn.from_id) > 0
   )
-  const voteCount = project.project_votes.reduce(
-    (acc, vote) => vote.magnitude + acc,
-    0
-  )
+  const voteCount = project.project_votes.reduce((acc, vote) => vote.magnitude + acc, 0)
   const minIncludingAmm = getMinIncludingAmm(project)
-  const fundingGoal =
-    project.type === 'cert' ? minIncludingAmm : project.funding_goal
+  const fundingGoal = project.type === 'cert' ? minIncludingAmm : project.funding_goal
   const projectTransfers = project.project_transfers
-  const incompleteProjectTransfers = projectTransfers.filter(
-    (pt) => !pt.transferred
-  )
+  const incompleteProjectTransfers = projectTransfers.filter((pt) => !pt.transferred)
   return (
     <Card className="px-4 pb-2 pt-1">
       <Col className="h-full justify-between">
@@ -56,8 +47,8 @@ export function ProjectCard(props: {
             incompleteProjectTransfers.length > 0
               ? incompleteProjectTransfers[0].recipient_name
               : projectTransfers.length > 0 && !project.profiles.full_name
-              ? projectTransfers[0].recipient_name
-              : undefined
+                ? projectTransfers[0].recipient_name
+                : undefined
           }
         />
         <Link
@@ -67,17 +58,11 @@ export function ProjectCard(props: {
           <h1 className="text-lg font-medium leading-tight tracking-tight group-hover:underline">
             {project.title}
           </h1>
-          <p className="text-xs font-light text-gray-500 sm:text-sm">
-            {project.blurb}
-          </p>
+          <p className="text-xs font-light text-gray-500 sm:text-sm">{project.blurb}</p>
         </Link>
         <Row className="mb-1 flex-wrap gap-1">
           {project.causes?.map((cause) => (
-            <CauseTag
-              key={cause.slug}
-              causeTitle={cause.title}
-              causeSlug={cause.slug}
-            />
+            <CauseTag key={cause.slug} causeTitle={cause.title} causeSlug={cause.slug} />
           ))}
         </Row>
         <Col className="mt-1 gap-1">
@@ -109,8 +94,7 @@ function ProjectCardData(props: {
   fundingGoal?: number
   projectSlug: string
 }) {
-  const { numComments, voteCount, amountRaised, fundingGoal, projectSlug } =
-    props
+  const { numComments, voteCount, amountRaised, fundingGoal, projectSlug } = props
   return (
     <div className="grid grid-cols-3 text-sm text-gray-400">
       <Row className="justify-start">
@@ -146,8 +130,7 @@ export function ProjectCardHeader(props: {
   valuation?: number
   regrantorFunded?: boolean
 }) {
-  const { creator, valuation, projectRecipient, projectType, regrantorFunded } =
-    props
+  const { creator, valuation, projectRecipient, projectType, regrantorFunded } = props
   return (
     <Row className="mt-1 items-start justify-between">
       <div>
@@ -182,18 +165,11 @@ export function CardlessProject(props: {
   showFundingBar?: boolean
 }) {
   const { project, regrantors, showFundingBar } = props
-  const amountRaised = getAmountRaised(
-    project,
-    project.bids ?? [],
-    project.txns ?? []
-  )
+  const amountRaised = getAmountRaised(project, project.bids ?? [], project.txns ?? [])
   return (
     <Col className="items-start justify-between gap-3 rounded p-3 hover:bg-gray-100">
       <Row className="flex-2 w-full items-center justify-between gap-3 text-xs">
-        <UserAvatarAndBadge
-          profile={project.profiles}
-          className="text-sm text-gray-600"
-        />
+        <UserAvatarAndBadge profile={project.profiles} className="text-sm text-gray-600" />
         {showFundingBar && (
           <ProgressBar
             amountRaised={amountRaised}
@@ -207,20 +183,12 @@ export function CardlessProject(props: {
         </span>
       </Row>
       <Link href={`/projects/${project.slug}`}>
-        <h3 className="tracking-0 font-semibold leading-6 text-gray-900">
-          {project.title}
-        </h3>
-        <p className="mt-1 text-sm leading-5 text-gray-600 lg:line-clamp-2">
-          {project.blurb}
-        </p>
+        <h3 className="tracking-0 font-semibold leading-6 text-gray-900">{project.title}</h3>
+        <p className="mt-1 text-sm leading-5 text-gray-600 lg:line-clamp-2">{project.blurb}</p>
       </Link>
       <Row className="flex-wrap gap-1">
         {project.causes?.map((cause) => (
-          <CauseTag
-            key={cause.slug}
-            causeTitle={cause.title}
-            causeSlug={cause.slug}
-          />
+          <CauseTag key={cause.slug} causeTitle={cause.title} causeSlug={cause.slug} />
         ))}
       </Row>
       {regrantors && (

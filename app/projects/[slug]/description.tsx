@@ -20,11 +20,7 @@ export function Description(props: { description: Json }) {
   return (
     <div className="px-3 text-gray-500">
       <div
-        className={clsx(
-          expanded || !showExpandButton
-            ? 'max-h-fit'
-            : 'relative line-clamp-[16]'
-        )}
+        className={clsx(expanded || !showExpandButton ? 'max-h-fit' : 'relative line-clamp-[16]')}
         ref={contentElement}
       >
         <RichContent content={description} className="text-sm" />

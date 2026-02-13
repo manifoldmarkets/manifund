@@ -32,9 +32,7 @@ export function SidebarItem(props: { item: Item }) {
   const sidebarItem = (
     <div
       className={clsx(
-        isCurrentPage
-          ? 'bg-gray-200 text-gray-900'
-          : 'text-gray-600 hover:bg-gray-100',
+        isCurrentPage ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:bg-gray-100',
         'group flex cursor-pointer items-center rounded-md px-3 py-2 text-sm font-medium'
       )}
       aria-current={item.href == usePathname() ? 'page' : undefined}

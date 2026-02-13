@@ -1,12 +1,7 @@
 'use client'
 import { Button } from '@/components/button'
 import { AmountInput, Input } from '@/components/input'
-import {
-  PlusIcon,
-  XCircleIcon,
-  ArrowRightIcon,
-  ArrowPathIcon,
-} from '@heroicons/react/24/outline'
+import { PlusIcon, XCircleIcon, ArrowRightIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import React, { useEffect, useState } from 'react'
 import { orderBy } from 'es-toolkit'
 import { formatLargeNumber, formatMoney } from '@/utils/formatting'
@@ -62,9 +57,7 @@ export function AuctionPlayground() {
   const [minFunding, setMinFunding] = useState<number | undefined>(900)
   const [founderPortion, setFounderPortion] = useState<number | undefined>(0.1)
   const [playBids, setPlayBids] = useState<Bid[]>(INITIAL_BIDS)
-  const [playBidsDisplay, setPlayBidsDisplay] = useState<React.JSX.Element[]>(
-    []
-  )
+  const [playBidsDisplay, setPlayBidsDisplay] = useState<React.JSX.Element[]>([])
   const [seeResults, setSeeResults] = useState<boolean>(false)
   const [resultsText, setResultsText] = useState<React.JSX.Element>(<></>)
   const [resolution, setResolution] = useState<Resolution>({
@@ -72,9 +65,7 @@ export function AuctionPlayground() {
     valuation: -1,
   })
 
-  let minValuation = founderPortion
-    ? Math.round((minFunding ?? 0) / (1 - founderPortion))
-    : 0
+  let minValuation = founderPortion ? Math.round((minFunding ?? 0) / (1 - founderPortion)) : 0
 
   let errorMessage: string | null = null
   if (founderPortion === null || !founderPortion || founderPortion >= 1) {
@@ -93,9 +84,7 @@ export function AuctionPlayground() {
             <XCircleIcon
               className="relative top-1 h-6 w-6 cursor-pointer text-rose-500"
               onClick={() => {
-                setPlayBids(
-                  playBids.filter((bid) => bid.id !== playBids[index].id)
-                )
+                setPlayBids(playBids.filter((bid) => bid.id !== playBids[index].id))
                 setSeeResults(false)
               }}
             />
@@ -162,8 +151,7 @@ export function AuctionPlayground() {
       />
       <h3 className="mt-0 text-center">Auction Playground</h3>
       <p className="relative bottom-3 mt-0 text-center">
-        Use this widget to play around with different auction scenarios and see
-        what would happen!
+        Use this widget to play around with different auction scenarios and see what would happen!
       </p>
       <div className="flex justify-center gap-1">
         <label htmlFor="minFunding">Project Minimum Funding: $</label>
@@ -190,9 +178,7 @@ export function AuctionPlayground() {
         />
         %
       </div>
-      <p className="text-center">
-        {formatMoney(minValuation)} minimum valuation
-      </p>
+      <p className="text-center">{formatMoney(minValuation)} minimum valuation</p>
       <hr className="mb-5 mt-2 h-0.5 rounded-sm bg-gray-500" />
       {playBidsDisplay}
       <div className="flex justify-center gap-1">
@@ -221,9 +207,7 @@ export function AuctionPlayground() {
           Add Bid
         </Button>
       </div>
-      {errorMessage && (
-        <p className="text-center text-rose-500">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="text-center text-rose-500">{errorMessage}</p>}
       {!seeResults && (
         <div className="flex justify-center">
           <Button
@@ -256,11 +240,7 @@ export function AuctionPlayground() {
   )
 }
 
-function resolvePlayBids(
-  playBids: Bid[],
-  minFunding: number,
-  founderPortion: number
-) {
+function resolvePlayBids(playBids: Bid[], minFunding: number, founderPortion: number) {
   // Sort bids by valuation (keep $0 bids so they don't disappear from UI)
   const sortedBids = orderBy(playBids, ['valuation'], ['desc'])
   sortedBids.forEach((bid) => {
@@ -268,11 +248,7 @@ function resolvePlayBids(
       bid.amount = 0
     }
   })
-  const resolution = calcAuctionResolution(
-    sortedBids,
-    minFunding,
-    founderPortion
-  )
+  const resolution = calcAuctionResolution(sortedBids, minFunding, founderPortion)
   if (resolution.valuation === -1) {
     playBids.forEach((bid) => (resolution.amountsPaid[bid.id] = 0))
     resolution
@@ -292,24 +268,19 @@ function BidResult(props: { amountPaid: number; resolvedValuation: number }) {
   }
   return (
     <div className="flex text-emerald-500">
-      <ArrowRightIcon className="relative top-1 mx-3 h-5 w-5" />$
-      {formatLargeNumber(amountPaid)} for{' '}
+      <ArrowRightIcon className="relative top-1 mx-3 h-5 w-5" />${formatLargeNumber(
+        amountPaid
+      )} for{' '}
       {formatLargeNumber((amountPaid / resolvedValuation) * 100)}% ownership
     </div>
   )
 }
 
-function ResultsText(props: {
-  playBids: Bid[]
-  founderPortion: number
-  resolution: Resolution
-}) {
+function ResultsText(props: { playBids: Bid[]; founderPortion: number; resolution: Resolution }) {
   const { playBids, founderPortion, resolution } = props
   let totalFunding = playBids.reduce(
     (total, current) =>
-      resolution.amountsPaid[current.id] > 0
-        ? total + resolution.amountsPaid[current.id]
-        : total,
+      resolution.amountsPaid[current.id] > 0 ? total + resolution.amountsPaid[current.id] : total,
     0
   )
   let portionSold = totalFunding / resolution.valuation
@@ -325,11 +296,11 @@ function ResultsText(props: {
   } else if (totalFunding > 0) {
     return (
       <div className="rounded-md  bg-emerald-100 p-3 text-center font-bold text-emerald-500 shadow-sm">
-        Funding successful! The project received {formatMoney(totalFunding)} in
-        funding. {formatLargeNumber(portionSold * 100)}% of shares were sold at
-        a valuation of {formatMoney(resolution.valuation)}, the founder holds
-        another {formatLargeNumber(founderPortion * 100)}%, and the remaining
-        shares will be sold on the market.
+        Funding successful! The project received {formatMoney(totalFunding)} in funding.{' '}
+        {formatLargeNumber(portionSold * 100)}% of shares were sold at a valuation of{' '}
+        {formatMoney(resolution.valuation)}, the founder holds another{' '}
+        {formatLargeNumber(founderPortion * 100)}%, and the remaining shares will be sold on the
+        market.
       </div>
     )
   } else {

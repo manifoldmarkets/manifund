@@ -36,11 +36,7 @@ export function OAuthCodeHandler() {
             const next = searchParams?.get('next') || '/'
 
             // Use replaceState to update URL without navigation
-            window.history.replaceState(
-              {},
-              '',
-              currentUrl.pathname + currentUrl.search
-            )
+            window.history.replaceState({}, '', currentUrl.pathname + currentUrl.search)
 
             // Revalidate the path to update server components
             await revalidateAfterAuth()

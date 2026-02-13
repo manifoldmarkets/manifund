@@ -22,10 +22,7 @@ export type CommentAndProfileAndProject = Comment & { profiles: Profile } & {
   projects: Project
 }
 
-export async function getCommentsByProject(
-  supabase: SupabaseClient,
-  project: string
-) {
+export async function getCommentsByProject(supabase: SupabaseClient, project: string) {
   const { data, error } = await supabase
     .from('comments')
     .select(
@@ -72,20 +69,14 @@ export async function getCommentById(supabase: SupabaseClient, id: string) {
 }
 
 export async function getReplies(supabase: SupabaseClient, rootId: string) {
-  const { data, error } = await supabase
-    .from('comments')
-    .select('*')
-    .eq('replying_to', rootId)
+  const { data, error } = await supabase.from('comments').select('*').eq('replying_to', rootId)
   if (error) {
     throw error
   }
   return data as Comment[]
 }
 
-export async function getCommentsByUser(
-  supabase: SupabaseClient,
-  commenterId: string
-) {
+export async function getCommentsByUser(supabase: SupabaseClient, commenterId: string) {
   const { data, error } = await supabase
     .from('comments')
     .select(
@@ -115,10 +106,7 @@ export async function getRecentFullComments(
   return data as FullComment[]
 }
 
-export async function getMinimalCommentFromId(
-  supabase: SupabaseClient,
-  commentId: string
-) {
+export async function getMinimalCommentFromId(supabase: SupabaseClient, commentId: string) {
   const { data, error } = await supabase
     .from('comments')
     .select('*, projects(slug)')

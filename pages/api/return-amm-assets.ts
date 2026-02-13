@@ -14,10 +14,7 @@ export const config = {
 // Used to add txn type column to txns table
 export default async function handler() {
   const supabaseAdmin = createAdminClient()
-  const projects = await getProjectsByRound(
-    supabaseAdmin,
-    'Manifold Community Fund'
-  )
+  const projects = await getProjectsByRound(supabaseAdmin, 'Manifold Community Fund')
   if (!projects) {
     console.error('No projects found')
     return NextResponse.error()
@@ -58,9 +55,6 @@ export default async function handler() {
 
 type ProjectAndTxns = Project & { txns: Txn[] }
 async function getProjectsByRound(supabase: SupabaseClient, round: string) {
-  const { data: projects } = await supabase
-    .from('projects')
-    .select('*, txns(*)')
-    .eq('round', round)
+  const { data: projects } = await supabase.from('projects').select('*, txns(*)').eq('round', round)
   return projects as ProjectAndTxns[]
 }

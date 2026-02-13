@@ -1,9 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import {
-  getProjectAndProfileById,
-  ProjectAndProfile,
-  TOTAL_SHARES,
-} from '@/db/project'
+import { getProjectAndProfileById, ProjectAndProfile, TOTAL_SHARES } from '@/db/project'
 import { maybeActivateProject } from '@/utils/activate-project'
 import { Bid } from '@/db/bid'
 import { getShareholders } from '@/app/projects/[slug]/project-tabs'
@@ -14,10 +10,7 @@ import { getTxnsByProject } from '@/db/txn'
 import { getProfileById } from '@/db/profile'
 import { makeTrade, updateBidFromTrade } from '@/utils/trade'
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const bid = req.body.record as Bid
   const supabase = createAdminClient()
   const project = await getProjectAndProfileById(supabase, bid.project)
@@ -111,7 +104,5 @@ async function findAndMakeTrades(bid: Bid, supabase: SupabaseClient) {
 function genBidText(bidderName: string, bid: Bid, project: ProjectAndProfile) {
   return `${bidderName} has made a ${bid.type} offer for ${Math.round(
     (bid.amount / bid.valuation) * 100
-  )}% equity at a valuation of $${bid.valuation} for the project "${
-    project.title
-  }" on Manifund.`
+  )}% equity at a valuation of $${bid.valuation} for the project "${project.title}" on Manifund.`
 }

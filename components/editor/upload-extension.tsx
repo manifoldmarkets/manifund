@@ -4,16 +4,11 @@ import { Editor } from '@tiptap/core'
 import toast from 'react-hot-toast'
 import uuid from 'react-uuid'
 
-export function handleImageOnPaste(
-  editor: Editor | null,
-  supabase: SupabaseClient
-) {
+export function handleImageOnPaste(editor: Editor | null, supabase: SupabaseClient) {
   if (!editor) return null
 
   const getImages = (data: DataTransfer | null) =>
-    Array.from(data?.files ?? []).filter((file) =>
-      file.type.startsWith('image')
-    )
+    Array.from(data?.files ?? []).filter((file) => file.type.startsWith('image'))
 
   editor.setOptions({
     editorProps: {
@@ -37,27 +32,16 @@ export function handleImageOnPaste(
 }
 
 // Heavily modified from Manifold; this uses supabase and skips the useMutation shenagians
-export async function uploadImages(
-  editor: Editor,
-  files: File[],
-  supabase: SupabaseClient
-) {
+export async function uploadImages(editor: Editor, files: File[], supabase: SupabaseClient) {
   // Upload a single image
   async function uploadImage(file: File) {
     const id = uuid()
     const fullUrl = `${SUPABASE_BUCKET_URL}/storage/v1/object/public/image-uploads/${id}`
-    const { error } = await supabase.storage
-      .from('image-uploads')
-      .upload(id, file)
+    const { error } = await supabase.storage.from('image-uploads').upload(id, file)
     if (error) {
       toast.error(error.message ?? error)
     } else {
-      editor
-        .chain()
-        .focus()
-        .setImage({ src: fullUrl })
-        .createParagraphNear()
-        .run()
+      editor.chain().focus().setImage({ src: fullUrl }).createParagraphNear().run()
     }
   }
 

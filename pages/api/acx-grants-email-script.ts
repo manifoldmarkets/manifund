@@ -19,11 +19,7 @@ export default async function handler() {
     const recipientExists = !!userId
     console.log('recipient exists: ', recipientExists)
     const isGrant = transfer.projects.type === 'grant'
-    const emailHtmlContent = getEmailHtmlContent(
-      isGrant,
-      recipientExists,
-      transfer.recipient_name
-    )
+    const emailHtmlContent = getEmailHtmlContent(isGrant, recipientExists, transfer.recipient_name)
     console.log('about to send email!')
     console.log(emailHtmlContent)
     await sendTemplateEmail(
@@ -51,19 +47,12 @@ export default async function handler() {
       await supabase.rpc('_transfer_project', args).throwOnError()
     }
     console.log('updating project stage to ', isGrant ? 'proposal' : 'active')
-    await updateProjectStage(
-      supabase,
-      transfer.project_id,
-      isGrant ? 'proposal' : 'active'
-    )
+    await updateProjectStage(supabase, transfer.project_id, isGrant ? 'proposal' : 'active')
     console.log('------------done with transfer----------')
   }
 }
 
-async function getUserIdFromEmail(
-  supabaseAdmin: SupabaseClient,
-  email: string
-) {
+async function getUserIdFromEmail(supabaseAdmin: SupabaseClient, email: string) {
   const { data, error } = await supabaseAdmin
     .from('users')
     .select('id')
@@ -76,11 +65,7 @@ async function getUserIdFromEmail(
   return data?.id
 }
 
-function getEmailHtmlContent(
-  isGrant: boolean,
-  recipientExists: boolean,
-  recipientName: string
-) {
+function getEmailHtmlContent(isGrant: boolean, recipientExists: boolean, recipientName: string) {
   if (isGrant) {
     if (recipientExists) {
       return `<div>

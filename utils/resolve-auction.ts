@@ -16,11 +16,7 @@ export async function resolveAuction(project: Project) {
   const supabase = createAdminClient()
   const bids = await getBidsForResolution(supabase, project.id)
   let founderPortion = project.founder_shares / TOTAL_SHARES
-  const resolution = calcAuctionResolution(
-    bids,
-    project.min_funding,
-    founderPortion
-  )
+  const resolution = calcAuctionResolution(bids, project.min_funding, founderPortion)
   await sendAuctionCloseEmails(bids, project, resolution, founderPortion)
   if (resolution.valuation === -1) {
     await updateProjectStage(supabase, project.id, 'not funded')
@@ -102,9 +98,7 @@ async function addFounderLeftoversOffer(
       type: 'sell',
       status: 'pending',
     }
-    const { error } = await supabase
-      .from('bids')
-      .insert([founderLeftoversOffer])
+    const { error } = await supabase.from('bids').insert([founderLeftoversOffer])
     if (error) {
       console.error('createFounderLeftoversOffer', error)
     }
@@ -158,8 +152,7 @@ export function calcAuctionResolution(
     // If all shares are sold, bids go through
     if (unsoldPortion <= 0) {
       // Current bid gets partially paid out
-      resolution.amountsPaid[sortedBids[i].id] =
-        sortedBids[i].amount + unsoldPortion * valuation
+      resolution.amountsPaid[sortedBids[i].id] = sortedBids[i].amount + unsoldPortion * valuation
       // Early return resolution data
       resolution.valuation = valuation
       return resolution
@@ -180,9 +173,7 @@ export function calcAuctionResolution(
     i++
   }
   // Bids are exhausted and minimum funding was not reached: reject all bids & return resolution data
-  resolution.amountsPaid = Object.fromEntries(
-    sortedBids.map((bid) => [bid.id, 0])
-  )
+  resolution.amountsPaid = Object.fromEntries(sortedBids.map((bid) => [bid.id, 0]))
   return resolution
 }
 
@@ -195,10 +186,7 @@ async function sendAuctionCloseEmails(
   const projectUrl = `https://manifund.org/projects/${project.slug}?tab=shareholders#tabs`
   const totalFunding =
     resolution.valuation > 0
-      ? bids.reduce(
-          (total, current) => total + resolution.amountsPaid[current.id],
-          0
-        )
+      ? bids.reduce((total, current) => total + resolution.amountsPaid[current.id], 0)
       : 0
   const portionSold = totalFunding / resolution.valuation
   const offeredUnsoldPortion = 1 - founderPortion - portionSold
@@ -218,11 +206,7 @@ async function sendAuctionCloseEmails(
       auctionResolutionText,
       bidResolutionText,
     }
-    await sendTemplateEmail(
-      TEMPLATE_IDS.OFFER_RESOLVED,
-      bidderPostmarkVars,
-      bid.bidder
-    )
+    await sendTemplateEmail(TEMPLATE_IDS.OFFER_RESOLVED, bidderPostmarkVars, bid.bidder)
   }
   const creatorPostmarkVars = {
     projectTitle: project.title,
@@ -241,11 +225,7 @@ async function sendAuctionCloseEmails(
         : '',
     auctionResolutionText,
   }
-  await sendTemplateEmail(
-    TEMPLATE_IDS.AUCTION_RESOLVED,
-    creatorPostmarkVars,
-    project.creator
-  )
+  await sendTemplateEmail(TEMPLATE_IDS.AUCTION_RESOLVED, creatorPostmarkVars, project.creator)
 }
 
 function genAuctionResolutionText(
@@ -260,17 +240,15 @@ function genAuctionResolutionText(
         ${formatMoney(valuation)} and the project received
         ${formatMoney(totalFunding)} in funding.`
   } else if (valuation > 0) {
-    return `This project was successfully funded. It received ${formatMoney(
-      totalFunding
-    )} in
+    return `This project was successfully funded. It received ${formatMoney(totalFunding)} in
         funding. ${formatPercent(portionSold)} of shares were sold at
         a valuation of ${formatMoney(
           valuation
         )}. The founder currently holds the other ${formatPercent(
-      1 - portionSold
-    )}, and ${formatPercent(
-      offeredUnsoldPortion
-    )} has been offered for sale at a valuation of ${formatMoney(valuation)}.`
+          1 - portionSold
+        )}, and ${formatPercent(
+          offeredUnsoldPortion
+        )} has been offered for sale at a valuation of ${formatMoney(valuation)}.`
   } else {
     return `Funding unsuccessful. The project will not proceed.`
   }
@@ -282,11 +260,9 @@ function genBidResolutionText(bid: Bid, resolution: Resolution) {
       bid.valuation
     )} was accepted! You paid
         ${formatMoney(resolution.amountsPaid[bid.id])} for ${formatPercent(
-      resolution.amountsPaid[bid.id] / resolution.valuation
-    )}% ownership of the impact certificate.`
+          resolution.amountsPaid[bid.id] / resolution.valuation
+        )}% ownership of the impact certificate.`
   } else {
-    return `Your bid of ${formatMoney(bid.amount)} at ${formatMoney(
-      bid.valuation
-    )} was declined.`
+    return `Your bid of ${formatMoney(bid.amount)} at ${formatMoney(bid.valuation)} was declined.`
   }
 }

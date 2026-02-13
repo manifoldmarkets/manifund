@@ -13,20 +13,19 @@ export function getProjectValuation(project: FullProject) {
   return project.type === 'grant'
     ? project.funding_goal
     : project.stage === 'proposal'
-    ? getProposalValuation(project)
-    : getActiveValuation(
-        project.txns,
-        project.bids,
-        project.id,
-        !!project.amm_shares,
-        getProposalValuation(project)
-      )
+      ? getProposalValuation(project)
+      : getActiveValuation(
+          project.txns,
+          project.bids,
+          project.id,
+          !!project.amm_shares,
+          getProposalValuation(project)
+        )
 }
 
 export function getProposalValuation(project: Project) {
   const { min_funding, amm_shares, founder_shares } = project
-  const investorPercent =
-    (TOTAL_SHARES - founder_shares - (amm_shares ?? 0)) / TOTAL_SHARES
+  const investorPercent = (TOTAL_SHARES - founder_shares - (amm_shares ?? 0)) / TOTAL_SHARES
   return min_funding / investorPercent
 }
 
@@ -34,8 +33,7 @@ export function getMinIncludingAmm(project: Project) {
   const { min_funding, amm_shares, type } = project
   return (
     min_funding +
-    ((amm_shares ?? 0) / TOTAL_SHARES) *
-      (type === 'cert' ? getProposalValuation(project) : 1)
+    ((amm_shares ?? 0) / TOTAL_SHARES) * (type === 'cert' ? getProposalValuation(project) : 1)
   )
 }
 
@@ -47,13 +45,10 @@ function getActiveValuation(
   minValuation: number
 ) {
   const ammTxns = txns.filter(
-    (txn) =>
-      txn.type === 'user to amm trade' || txn.type === 'inject amm liquidity'
+    (txn) => txn.type === 'user to amm trade' || txn.type === 'inject amm liquidity'
   )
   if (ammTxns.length === 0 || !activeAmm) {
-    const userTradeTxns = txns.filter(
-      (txn) => txn.type === 'user to user trade'
-    )
+    const userTradeTxns = txns.filter((txn) => txn.type === 'user to user trade')
     if (userTradeTxns.length === 0) {
       const pendingBids = bids.filter((bid) => bid.status === 'pending')
       if (pendingBids.length > 0) {
@@ -67,10 +62,8 @@ function getActiveValuation(
       const bundles = bundleTxns(userTradeTxns)
       const sortedBundles = sortBy(bundles, [(bundle) => bundle[0].created_at])
       const latestBundle = sortedBundles[sortedBundles.length - 1]
-      const amountUSD =
-        latestBundle.find((txn) => txn.token === 'USD')?.amount ?? 0
-      const numShares =
-        latestBundle.find((txn) => txn.token !== 'USD')?.amount ?? 1
+      const amountUSD = latestBundle.find((txn) => txn.token === 'USD')?.amount ?? 0
+      const numShares = latestBundle.find((txn) => txn.token !== 'USD')?.amount ?? 1
       return (amountUSD / numShares) * TOTAL_SHARES
     }
   } else {
@@ -95,36 +88,24 @@ export function getAmountRaised(project: Project, bids?: Bid[], txns?: Txn[]) {
       ? bids
           ?.filter(
             (bid) =>
-              (bid.type === 'buy' ||
-                bid.type === 'assurance buy' ||
-                bid.type === 'donate') &&
+              (bid.type === 'buy' || bid.type === 'assurance buy' || bid.type === 'donate') &&
               bid.status === 'pending'
           )
           .reduce((acc, bid) => acc + bid.amount, 0)
       : txns
-          ?.filter(
-            (txn) => txn.to_id === project.creator && txn.token === 'USD'
-          )
+          ?.filter((txn) => txn.to_id === project.creator && txn.token === 'USD')
           .reduce((acc, txn) => acc + txn.amount, 0)) ?? 0
   )
 }
 
 export function calculateUserLockedFunds(bids: Bid[]) {
   const lockedFunds = bids
-    .filter(
-      (bid) =>
-        bid.status === 'pending' &&
-        (bid.type === 'buy' || bid.type === 'donate')
-    )
+    .filter((bid) => bid.status === 'pending' && (bid.type === 'buy' || bid.type === 'donate'))
     .reduce((acc, bid) => acc + bid.amount, 0)
   return lockedFunds
 }
 
-export function calculateShares(
-  txns: Txn[],
-  userId: string,
-  projectId: string
-) {
+export function calculateShares(txns: Txn[], userId: string, projectId: string) {
   let shares = 0
   txns.forEach((txn) => {
     const incoming = txn.to_id === userId
@@ -137,12 +118,7 @@ export function calculateShares(
 
 export function calculateOfferedShares(bids: Bid[], projectId: string) {
   const offeredShares = bids
-    .filter(
-      (bid) =>
-        bid.type === 'sell' &&
-        bid.status === 'pending' &&
-        bid.project === projectId
-    )
+    .filter((bid) => bid.type === 'sell' && bid.status === 'pending' && bid.project === projectId)
     ?.reduce((acc, bid) => acc + bid.amount, 0)
   return offeredShares
 }
@@ -162,10 +138,7 @@ export function bundleTxns(txns: FullTxn[]) {
   const bundledTxns = txns
     .map((txn) => {
       if (txn.bundle && txn.token === 'USD') {
-        return [
-          txn,
-          txns.find((t) => t.bundle === txn.bundle && t.token !== 'USD'),
-        ]
+        return [txn, txns.find((t) => t.bundle === txn.bundle && t.token !== 'USD')]
       } else if (!txn.bundle) {
         return [txn]
       } else {
@@ -185,8 +158,7 @@ export function calculateCashBalance(
   let cashBalance = 0
   const sortedTxns = sortBy(txns, ['created_at'])
   sortedTxns.forEach((txn) => {
-    cashBalance +=
-      txn.amount * getTxnCashMultiplier(txn, userId, accreditationStatus)
+    cashBalance += txn.amount * getTxnCashMultiplier(txn, userId, accreditationStatus)
   })
   bids.forEach((bid) => {
     cashBalance += bid.amount * getBidCashMultiplier(bid)
@@ -204,8 +176,7 @@ export function calculateCharityBalance(
   const sortedTxns = sortBy(txns, ['created_at'])
 
   sortedTxns.forEach((txn) => {
-    charityBalance +=
-      txn.amount * getTxnCharityMultiplier(txn, userId, accreditationStatus)
+    charityBalance += txn.amount * getTxnCharityMultiplier(txn, userId, accreditationStatus)
   })
   bids.forEach((bid) => {
     charityBalance += bid.amount * getBidCharityMultiplier(bid)
@@ -255,11 +226,7 @@ function getBidCashMultiplier(bid: BidAndProject) {
   }
 }
 
-export function getTxnCharityMultiplier(
-  txn: TxnAndProject,
-  userId: string,
-  accredited: boolean
-) {
+export function getTxnCharityMultiplier(txn: TxnAndProject, userId: string, accredited: boolean) {
   if (
     txn.token !== 'USD' ||
     (txn.from_id !== userId && txn.to_id !== userId) ||
@@ -281,11 +248,7 @@ export function getTxnCharityMultiplier(
   if (txn.type === 'project donation') {
     return isIncoming ? 0 : -1
   }
-  if (
-    txn.type === 'profile donation' ||
-    txn.type === 'tip' ||
-    txn.type === 'return bank funds'
-  ) {
+  if (txn.type === 'profile donation' || txn.type === 'tip' || txn.type === 'return bank funds') {
     return isIncoming ? 1 : -1
   }
   if (txn.type === 'user to amm trade' || txn.type === 'user to user trade') {
@@ -304,11 +267,7 @@ export function getTxnCharityMultiplier(
   return 0
 }
 
-export function getTxnCashMultiplier(
-  txn: FullTxn,
-  userId: string,
-  accredited: boolean
-) {
+export function getTxnCashMultiplier(txn: FullTxn, userId: string, accredited: boolean) {
   if (
     txn.token !== 'USD' ||
     (txn.from_id !== userId && txn.to_id !== userId) ||

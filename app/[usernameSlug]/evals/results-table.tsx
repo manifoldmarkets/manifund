@@ -69,18 +69,11 @@ function ResultRow(props: { project: Project; result: Result }) {
 
   return (
     <div className="grid grid-cols-7 gap-4 py-2 text-sm">
-      <Link
-        className="col-span-3 line-clamp-1 hover:underline"
-        href={`/projects/${project.slug}`}
-      >
+      <Link className="col-span-3 line-clamp-1 hover:underline" href={`/projects/${project.slug}`}>
         {project.title}
       </Link>
       <p>{Math.round(result.insideScore * 10) / 10}</p>
-      <p>
-        {isNaN(result.outsideScore)
-          ? 'N/A'
-          : Math.round(result.outsideScore * 10) / 10}
-      </p>
+      <p>{isNaN(result.outsideScore) ? 'N/A' : Math.round(result.outsideScore * 10) / 10}</p>
       <p>{result.confidence}</p>
       <p className="font-bold">{Math.round(result.overallScore * 10) / 10}</p>
     </div>

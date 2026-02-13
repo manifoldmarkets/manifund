@@ -1,10 +1,4 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
@@ -59,7 +53,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'projects'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       causes: {
@@ -109,7 +103,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'profiles'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       comment_rxns: {
@@ -152,7 +146,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'txns'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       comments: {
@@ -204,7 +198,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'comments'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       grant_agreements: {
@@ -264,7 +258,7 @@ export type Database = {
             isOneToOne: true
             referencedRelation: 'projects'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       orgs: {
@@ -359,7 +353,7 @@ export type Database = {
             isOneToOne: true
             referencedRelation: 'profiles'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       profile_trust: {
@@ -395,7 +389,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'profiles'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       profiles: {
@@ -450,16 +444,12 @@ export type Database = {
           project_id: string
         }
         Insert: {
-          application_stage?:
-            | Database['public']['Enums']['project_stage']
-            | null
+          application_stage?: Database['public']['Enums']['project_stage'] | null
           cause_slug: string
           project_id: string
         }
         Update: {
-          application_stage?:
-            | Database['public']['Enums']['project_stage']
-            | null
+          application_stage?: Database['public']['Enums']['project_stage'] | null
           cause_slug?: string
           project_id?: string
         }
@@ -477,7 +467,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'projects'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       project_embeddings: {
@@ -515,7 +505,7 @@ export type Database = {
             isOneToOne: true
             referencedRelation: 'projects'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       project_evals: {
@@ -557,7 +547,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'projects'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       project_follows: {
@@ -587,7 +577,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'projects'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       project_transfers: {
@@ -622,7 +612,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'projects'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       project_votes: {
@@ -658,7 +648,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'profiles'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       projects: {
@@ -748,7 +738,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'rounds'
             referencedColumns: ['title']
-          }
+          },
         ]
       }
       rounds: {
@@ -826,7 +816,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'txns'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
       txns: {
@@ -884,7 +874,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'profiles'
             referencedColumns: ['id']
-          }
+          },
         ]
       }
     }
@@ -1054,13 +1044,7 @@ export type Database = {
       bid_type: 'buy' | 'sell' | 'donate' | 'assurance buy' | 'assurance sell'
       comment_type: 'progress update' | 'final report'
       profile_type: 'individual' | 'org' | 'fund' | 'amm'
-      project_stage:
-        | 'active'
-        | 'proposal'
-        | 'not funded'
-        | 'complete'
-        | 'hidden'
-        | 'draft'
+      project_stage: 'active' | 'proposal' | 'not funded' | 'complete' | 'hidden' | 'draft'
       project_type: 'grant' | 'cert' | 'dummy'
       txn_type:
         | 'profile donation'
@@ -1132,7 +1116,7 @@ export type Tables<
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
-    : never = never
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1142,15 +1126,13 @@ export type Tables<
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
-      DefaultSchema['Views'])
-  ? (DefaultSchema['Tables'] &
-      DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
-      Row: infer R
-    }
-    ? R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
     : never
-  : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
@@ -1160,7 +1142,7 @@ export type TablesInsert<
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never = never
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1170,12 +1152,12 @@ export type TablesInsert<
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-  ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-      Insert: infer I
-    }
-    ? I
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
     : never
-  : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
@@ -1185,7 +1167,7 @@ export type TablesUpdate<
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never = never
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1195,12 +1177,12 @@ export type TablesUpdate<
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-  ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-      Update: infer U
-    }
-    ? U
+    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
     : never
-  : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
@@ -1210,14 +1192,14 @@ export type Enums<
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
-    : never = never
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-  ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
-  : never
+    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
@@ -1227,14 +1209,14 @@ export type CompositeTypes<
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
-    : never = never
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-  ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
-  : never
+    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   public: {
@@ -1243,14 +1225,7 @@ export const Constants = {
       bid_type: ['buy', 'sell', 'donate', 'assurance buy', 'assurance sell'],
       comment_type: ['progress update', 'final report'],
       profile_type: ['individual', 'org', 'fund', 'amm'],
-      project_stage: [
-        'active',
-        'proposal',
-        'not funded',
-        'complete',
-        'hidden',
-        'draft',
-      ],
+      project_stage: ['active', 'proposal', 'not funded', 'complete', 'hidden', 'draft'],
       project_type: ['grant', 'cert', 'dummy'],
       txn_type: [
         'profile donation',

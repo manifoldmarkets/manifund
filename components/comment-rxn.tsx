@@ -13,18 +13,7 @@ import { Tooltip } from './tooltip'
 import { Avatar } from './avatar'
 import { Profile } from '@/db/profile'
 
-export const freeRxns = [
-  '➕',
-  '➖',
-  '🤔',
-  '😮',
-  '🥳',
-  '💡',
-  '❓',
-  '🔥',
-  '👏',
-  '🌈',
-]
+export const freeRxns = ['➕', '➖', '🤔', '😮', '🥳', '💡', '❓', '🔥', '👏', '🌈']
 
 export const tippedRxns = {
   '🧡': 1,
@@ -67,9 +56,7 @@ export function AddRxnPopover(props: {
           <h3 className="text-sm text-gray-700">Free reactions</h3>
           <div className="mx-auto grid w-fit grid-cols-5 gap-2">
             {freeRxns.map((reaction) => {
-              const userDidReact = !!userRxns.find(
-                (rxn) => rxn.reaction === reaction
-              )
+              const userDidReact = !!userRxns.find((rxn) => rxn.reaction === reaction)
               return (
                 <Popover.Button
                   key={reaction}
@@ -99,44 +86,30 @@ export function AddRxnPopover(props: {
             </h3>
             <Row className="mx-auto justify-between divide-x divide-gray-300">
               {Object.keys(tippedRxns).map((reaction) => {
-                const userDidReact = !!userRxns.find(
-                  (rxn) => rxn.reaction === reaction
-                )
-                const sufficientFunds =
-                  userCharityBalance >= tippedRxns[reaction]
+                const userDidReact = !!userRxns.find((rxn) => rxn.reaction === reaction)
+                const sufficientFunds = userCharityBalance >= tippedRxns[reaction]
                 const enabled = sufficientFunds && !userDidReact
                 return (
                   <div className="px-1" key={reaction}>
                     <Tooltip
                       text={
-                        !sufficientFunds
-                          ? 'Insufficient funds'
-                          : userDidReact
-                          ? 'Already used'
-                          : ''
+                        !sufficientFunds ? 'Insufficient funds' : userDidReact ? 'Already used' : ''
                       }
                     >
                       <button
                         key={reaction}
                         disabled={!enabled}
                         onClick={() =>
-                          setSelectedTippedRxn(
-                            selectedTippedRxn === reaction ? '' : reaction
-                          )
+                          setSelectedTippedRxn(selectedTippedRxn === reaction ? '' : reaction)
                         }
                         className={clsx(
-                          enabled
-                            ? 'cursor-pointer hover:bg-gray-200'
-                            : 'cursor-not-allowed',
+                          enabled ? 'cursor-pointer hover:bg-gray-200' : 'cursor-not-allowed',
                           userDidReact && 'bg-gray-200',
-                          reaction === selectedTippedRxn &&
-                            'bg-gray-200 ring-2 ring-gray-300',
+                          reaction === selectedTippedRxn && 'bg-gray-200 ring-2 ring-gray-300',
                           'flex items-center gap-0.5 rounded px-1 py-0.5'
                         )}
                       >
-                        <span className="text-xs text-gray-700">
-                          ${tippedRxns[reaction]}
-                        </span>
+                        <span className="text-xs text-gray-700">${tippedRxns[reaction]}</span>
                         <span className="text-base">{reaction}</span>
                       </button>
                     </Tooltip>
@@ -151,10 +124,7 @@ export function AddRxnPopover(props: {
                     await postRxn(selectedTippedRxn)
                     setSelectedTippedRxn('')
                   }}
-                  className={clsx(
-                    buttonClass('2xs', 'light-orange'),
-                    'flex gap-1'
-                  )}
+                  className={clsx(buttonClass('2xs', 'light-orange'), 'flex gap-1')}
                 >
                   <PaperAirplaneIcon className="h-4 w-4" />
                   Send ${tippedRxns[selectedTippedRxn]} tip
@@ -206,9 +176,7 @@ export function ExistingFreeRxnsDisplay(props: {
                     id={r.profiles.id}
                     size="xxs"
                   />
-                  <span className="text-xs">
-                    {r.profiles.full_name || r.profiles.username}
-                  </span>
+                  <span className="text-xs">{r.profiles.full_name || r.profiles.username}</span>
                 </Row>
               ))}
             </div>
@@ -229,9 +197,7 @@ export function ExistingFreeRxnsDisplay(props: {
               >
                 <span className="text-sm">{reaction}</span>
                 {rxnsWithCounts[reaction] > 1 && (
-                  <span className="text-xs text-gray-500">
-                    {rxnsWithCounts[reaction]}
-                  </span>
+                  <span className="text-xs text-gray-500">{rxnsWithCounts[reaction]}</span>
                 )}
               </button>
             </Tooltip>
@@ -265,9 +231,7 @@ export function ExistingTippedRxnsDisplay(props: {
           const numColumns = Math.min(5, Math.ceil(reactors.length / 10))
           const tooltip = (
             <Col className="gap-1.5">
-              <div className="text-xs font-medium">
-                ${tippedRxns[reaction]} tip
-              </div>
+              <div className="text-xs font-medium">${tippedRxns[reaction]} tip</div>
               <div
                 className={clsx(
                   'grid gap-1',
@@ -286,9 +250,7 @@ export function ExistingTippedRxnsDisplay(props: {
                       id={r.profiles.id}
                       size="xxs"
                     />
-                    <span className="text-xs">
-                      {r.profiles.full_name || r.profiles.username}
-                    </span>
+                    <span className="text-xs">{r.profiles.full_name || r.profiles.username}</span>
                   </Row>
                 ))}
               </div>
@@ -304,9 +266,7 @@ export function ExistingTippedRxnsDisplay(props: {
               >
                 <span className="text-sm">{reaction}</span>
                 {rxnsWithCounts[reaction] > 1 && (
-                  <span className="text-xs text-gray-500">
-                    {rxnsWithCounts[reaction]}
-                  </span>
+                  <span className="text-xs text-gray-500">{rxnsWithCounts[reaction]}</span>
                 )}
               </div>
             </Tooltip>
@@ -327,8 +287,7 @@ export function CommentRxnsPanel(props: {
   orangeBg?: boolean
   userProfile?: Profile
 }) {
-  const { commentId, rxns, userId, userCharityBalance, orangeBg, userProfile } =
-    props
+  const { commentId, rxns, userId, userCharityBalance, orangeBg, userProfile } = props
 
   const router = useRouter()
   const [localRxns, setLocalRxns] = useState(rxns)
@@ -385,11 +344,7 @@ export function CommentRxnsPanel(props: {
           orangeBg={orangeBg}
         />
       )}
-      <ExistingFreeRxnsDisplay
-        rxns={localRxns}
-        userId={userId}
-        postRxn={postRxn}
-      />
+      <ExistingFreeRxnsDisplay rxns={localRxns} userId={userId} postRxn={postRxn} />
       <ExistingTippedRxnsDisplay rxns={localRxns} userId={userId} />
     </Row>
   )

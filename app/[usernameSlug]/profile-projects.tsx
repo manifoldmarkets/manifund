@@ -26,10 +26,7 @@ export function Projects(props: { projects: Project[] }) {
               href={`/projects/${project.slug}`}
               tag={
                 <Tooltip text={project.stage}>
-                  <StageIcon
-                    stage={project.stage}
-                    className="h-5 w-5 text-gray-600"
-                  />
+                  <StageIcon stage={project.stage} className="h-5 w-5 text-gray-600" />
                 </Tooltip>
               }
             />
@@ -53,11 +50,7 @@ function NoProjects() {
 
 function NextStep(props: { project: Project }) {
   const { project } = props
-  if (
-    project.stage === 'proposal' &&
-    !project.signed_agreement &&
-    project.type === 'grant'
-  ) {
+  if (project.stage === 'proposal' && !project.signed_agreement && project.type === 'grant') {
     return (
       <Link
         href={`/projects/${project.slug}/agreement`}
@@ -67,11 +60,7 @@ function NextStep(props: { project: Project }) {
       </Link>
     )
   }
-  if (
-    project.stage === 'proposal' &&
-    project.type === 'grant' &&
-    !project.approved
-  ) {
+  if (project.stage === 'proposal' && project.type === 'grant' && !project.approved) {
     return <p>pending admin approval</p>
   } else if (project.stage === 'proposal') {
     return <p>pending sufficient pledged funds</p>

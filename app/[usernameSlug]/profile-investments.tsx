@@ -11,14 +11,10 @@ export function Investments(props: { investments: Investment[] }) {
       const priceText = (
         <span className="flex items-center text-sm font-normal text-gray-500">
           bought&nbsp;
-          <span className="text-black">
-            {formatMoney(-investment.priceUsd)}
-          </span>
+          <span className="text-black">{formatMoney(-investment.priceUsd)}</span>
           &nbsp;@&nbsp;
           <span className="text-black">
-            {formatMoney(
-              (-investment.priceUsd * 10000000) / investment.numShares
-            )}
+            {formatMoney((-investment.priceUsd * 10000000) / investment.numShares)}
           </span>
           &nbsp;valuation
         </span>

@@ -9,8 +9,7 @@ export async function CompleteProfileBanner() {
   const user = await getUser(supabase)
   const userProfile = await getProfileById(supabase, user?.id)
   const profileTodo =
-    userProfile &&
-    (userProfile.username === userProfile.id || !userProfile.full_name)
+    userProfile && (userProfile.username === userProfile.id || !userProfile.full_name)
   if (!profileTodo) {
     return null
   }

@@ -9,9 +9,7 @@ import { listSimpleCauses } from '@/db/cause'
 
 export const revalidate = 60
 
-export async function generateMetadata(props: {
-  params: Promise<{ roundSlug: string }>
-}) {
+export async function generateMetadata(props: { params: Promise<{ roundSlug: string }> }) {
   const { roundSlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const round = await getRoundBySlug(supabase, roundSlug)
@@ -20,9 +18,7 @@ export async function generateMetadata(props: {
   }
 }
 
-export default async function RoundPage(props: {
-  params: Promise<{ roundSlug: string }>
-}) {
+export default async function RoundPage(props: { params: Promise<{ roundSlug: string }> }) {
   const { roundSlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const round = await getRoundBySlug(supabase, roundSlug)
@@ -31,9 +27,7 @@ export default async function RoundPage(props: {
     round.title === 'Regrants' ? getRegranters(supabase) : [],
     listSimpleCauses(supabase),
   ])
-  const visibleProjects = projects.filter(
-    (project) => project.stage !== 'hidden'
-  )
+  const visibleProjects = projects.filter((project) => project.stage !== 'hidden')
   return (
     <div className="bg-dark-200 max-w-4xl">
       {round.header_image_url && (

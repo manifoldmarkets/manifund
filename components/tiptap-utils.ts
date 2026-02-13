@@ -29,11 +29,7 @@ export function insertContent(editor: Editor | null, ...contents: Content[]) {
 type ProsemirrorDOM =
   | 0
   | string
-  | [
-      tag: string,
-      attrs: Record<string, string | number | undefined>,
-      ...content: ProsemirrorDOM[]
-    ]
+  | [tag: string, attrs: Record<string, string | number | undefined>, ...content: ProsemirrorDOM[]]
 
 const pmdToJSX = (dom: ProsemirrorDOM, children: ReactNode): ReactNode => {
   if (Array.isArray(dom)) {

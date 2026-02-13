@@ -11,8 +11,7 @@ import { countVotes } from '@/utils/sort'
 
 export type Project = Database['public']['Tables']['projects']['Row']
 export type ProjectUpdate = Database['public']['Tables']['projects']['Update']
-export type ProjectTransfer =
-  Database['public']['Tables']['project_transfers']['Row']
+export type ProjectTransfer = Database['public']['Tables']['project_transfers']['Row']
 export type ProjectVote = Database['public']['Tables']['project_votes']['Row']
 export type ProjectWithCauses = Project & { causes: MiniCause[] }
 export type ProjectAndProfile = Project & { profiles: Profile }
@@ -32,10 +31,7 @@ export type MiniProject = Project & { profiles: Profile } & { txns: Txn[] }
 export const TOTAL_SHARES = 10_000_000
 
 export async function getProjectBySlug(supabase: SupabaseClient, slug: string) {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('slug', slug)
+  const { data, error } = await supabase.from('projects').select('*').eq('slug', slug)
   if (error) {
     throw error
   }
@@ -43,20 +39,14 @@ export async function getProjectBySlug(supabase: SupabaseClient, slug: string) {
 }
 
 export async function getProjectById(supabase: SupabaseClient, id: string) {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('id', id)
+  const { data, error } = await supabase.from('projects').select('*').eq('id', id)
   if (error) {
     throw error
   }
   return data[0] as Project
 }
 
-export async function getProjectsByUser(
-  supabase: SupabaseClient,
-  user: string
-) {
+export async function getProjectsByUser(supabase: SupabaseClient, user: string) {
   const { data, error } = await supabase
     .from('projects')
     .select('*, bids(*), txns(*), comments(*), rounds(*), project_transfers(*)')
@@ -67,10 +57,7 @@ export async function getProjectsByUser(
   return data as FullProject[]
 }
 
-export async function listProjects(
-  supabase: SupabaseClient,
-  limitToProjectIds?: string[]
-) {
+export async function listProjects(supabase: SupabaseClient, limitToProjectIds?: string[]) {
   // get base project data with only essential joins
   let query = supabase.from('projects').select(
     `
@@ -120,10 +107,7 @@ export async function listProjects(
 
       supabase.from('txns').select('*').in('project', batchIds),
 
-      supabase
-        .from('project_votes')
-        .select('project_id, magnitude')
-        .in('project_id', batchIds),
+      supabase.from('project_votes').select('project_id, magnitude').in('project_id', batchIds),
 
       supabase.from('project_transfers').select('*').in('project_id', batchIds),
 
@@ -215,10 +199,7 @@ export async function listProjectsForEvals(supabase: SupabaseClient) {
   return data as unknown as MiniProject[]
 }
 
-export async function getFullProjectBySlug(
-  supabase: SupabaseClient,
-  slug: string
-) {
+export async function getFullProjectBySlug(supabase: SupabaseClient, slug: string) {
   const { data } = await supabase
     .from('projects')
     .select(
@@ -232,10 +213,7 @@ export async function getFullProjectBySlug(
   return data[0] as FullProject
 }
 
-export async function getProjectAndProfileBySlug(
-  supabase: SupabaseClient,
-  slug: string
-) {
+export async function getProjectAndProfileBySlug(supabase: SupabaseClient, slug: string) {
   const { data } = await supabase
     .from('projects')
     .select('*, profiles!projects_creator_fkey(*)')
@@ -247,10 +225,7 @@ export async function getProjectAndProfileBySlug(
   return data[0] as ProjectAndProfile
 }
 
-export async function getProjectAndProfileById(
-  supabase: SupabaseClient,
-  id: string
-) {
+export async function getProjectAndProfileById(supabase: SupabaseClient, id: string) {
   const { data } = await supabase
     .from('projects')
     .select('*, profiles!projects_creator_fkey(*)')
@@ -263,10 +238,7 @@ export async function getProjectAndProfileById(
 }
 
 // This does not include project or round descriptions, for a smaller payload
-export async function getFullProjectsByRound(
-  supabase: SupabaseClient,
-  roundTitle: string
-) {
+export async function getFullProjectsByRound(supabase: SupabaseClient, roundTitle: string) {
   const { data, error } = await supabase
     .from('projects')
     .select(
@@ -282,10 +254,7 @@ export async function getFullProjectsByRound(
   return data as unknown as FullProject[]
 }
 
-export async function getFullProjectsByCause(
-  supabase: SupabaseClient,
-  causeSlug: string
-) {
+export async function getFullProjectsByCause(supabase: SupabaseClient, causeSlug: string) {
   const { data, error } = await supabase
     .from('projects')
     .select(
@@ -300,27 +269,20 @@ export async function getFullProjectsByCause(
   return data as unknown as FullProject[]
 }
 
-export async function getProjectsPendingTransferByUser(
-  supabase: SupabaseClient,
-  userId: string
-) {
+export async function getProjectsPendingTransferByUser(supabase: SupabaseClient, userId: string) {
   const { data } = await supabase
     .from('projects')
     .select('*, project_transfers(*)')
     .eq('creator', userId)
   return (data as FullProject[])?.filter((project) => {
     const numTransfers = project.project_transfers
-      ? project.project_transfers.filter((transfer) => !transfer.transferred)
-          .length
+      ? project.project_transfers.filter((transfer) => !transfer.transferred).length
       : 0
     return numTransfers > 0
   }) as Project[]
 }
 
-export async function getProjectAndBidsById(
-  supabase: SupabaseClient,
-  projectId: string
-) {
+export async function getProjectAndBidsById(supabase: SupabaseClient, projectId: string) {
   const { data } = await supabase
     .from('projects')
     .select('*, bids(*)')
@@ -332,10 +294,7 @@ export async function getProjectAndBidsById(
   return data[0] as ProjectAndBids
 }
 
-export async function getProjectBidsAndFollowsById(
-  supabase: SupabaseClient,
-  projectId: string
-) {
+export async function getProjectBidsAndFollowsById(supabase: SupabaseClient, projectId: string) {
   const { data } = await supabase
     .from('projects')
     .select('*, bids(*), project_follows(follower_id), causes(cert_params)')
@@ -360,24 +319,15 @@ export async function getUserProjectVote(
   return data?.find((vote) => vote.voter_id === userId) as ProjectVote | null
 }
 
-export async function getSelectProjects(
-  supabase: SupabaseClient,
-  projectIds: string[]
-) {
-  const { data: projects, error } = await supabase
-    .from('projects')
-    .select('*')
-    .in('id', projectIds)
+export async function getSelectProjects(supabase: SupabaseClient, projectIds: string[]) {
+  const { data: projects, error } = await supabase.from('projects').select('*').in('id', projectIds)
   if (error) {
     throw error
   }
   return projects
 }
 
-export async function getProjectWithCausesById(
-  supabase: SupabaseClient,
-  projectId: string
-) {
+export async function getProjectWithCausesById(supabase: SupabaseClient, projectId: string) {
   const { data } = await supabase
     .from('projects')
     .select('*, causes(slug)')
@@ -387,10 +337,7 @@ export async function getProjectWithCausesById(
   return data ? (data as ProjectWithCauses) : undefined
 }
 
-export async function getProjectWithCausesBySlug(
-  supabase: SupabaseClient,
-  projectSlug: string
-) {
+export async function getProjectWithCausesBySlug(supabase: SupabaseClient, projectSlug: string) {
   const { data } = await supabase
     .from('projects')
     .select('*, causes(slug)')
@@ -421,10 +368,7 @@ export async function updateProject(
   projectId: string,
   projectUpdate: ProjectUpdate
 ) {
-  const { error } = await supabase
-    .from('projects')
-    .update(projectUpdate)
-    .eq('id', projectId)
+  const { error } = await supabase.from('projects').update(projectUpdate).eq('id', projectId)
   if (error) {
     console.error(error)
   }
@@ -471,8 +415,7 @@ export async function getFullSimilarProjects(
   const projectsWithSimilarity = data
     // Add similarity to each project
     .map((project) => {
-      const similarity =
-        similarProjects.find((p: any) => p.id === project.id)?.similarity || 0
+      const similarity = similarProjects.find((p: any) => p.id === project.id)?.similarity || 0
       return { ...project, similarity }
     })
     // Exclude projects with zero or fewer net votes

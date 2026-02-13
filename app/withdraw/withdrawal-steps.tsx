@@ -4,10 +4,7 @@ import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { Row } from '@/components/layout/row'
 import { Tooltip } from '@/components/tooltip'
-import {
-  AccountStatus,
-  WithdrawalDetails,
-} from '@/components/withdrawal-details'
+import { AccountStatus, WithdrawalDetails } from '@/components/withdrawal-details'
 import { ArrowLeftCircleIcon, CheckCircleIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
@@ -28,8 +25,7 @@ export function WithdrawalSteps(props: {
   withdrawBalance: number
   loginUrl?: string
 }) {
-  const { accountStatus, withdrawalMethod, userId, withdrawBalance, loginUrl } =
-    props
+  const { accountStatus, withdrawalMethod, userId, withdrawBalance, loginUrl } = props
   const router = useRouter()
   const [withdrawAmount, setWithdrawAmount] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -111,11 +107,7 @@ export function WithdrawalSteps(props: {
 
   return (
     <>
-      <StepsDisplay
-        steps={steps}
-        currentStepId={currentStepIdx + 1}
-        complete={complete}
-      />
+      <StepsDisplay steps={steps} currentStepId={currentStepIdx + 1} complete={complete} />
       <Row className="w-full justify-center p-10">
         <div className="w-full max-w-2xl">
           {steps[currentStepIdx].display}
@@ -127,10 +119,7 @@ export function WithdrawalSteps(props: {
               )}
               onClick={() => previousStep()}
             >
-              <ArrowLeftCircleIcon
-                className="-ml-0.5 h-5 w-5"
-                aria-hidden="true"
-              />
+              <ArrowLeftCircleIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
               Back
             </button>
             <Tooltip text={errorMessage ?? ''}>
@@ -140,13 +129,8 @@ export function WithdrawalSteps(props: {
                 disabled={errorMessage !== null}
                 loading={isSubmitting}
               >
-                <CheckCircleIcon
-                  className="-ml-0.5 h-5 w-5"
-                  aria-hidden="true"
-                />
-                {currentStepIdx === 2
-                  ? 'Return to Manifund'
-                  : 'Confirm & continue'}
+                <CheckCircleIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+                {currentStepIdx === 2 ? 'Return to Manifund' : 'Confirm & continue'}
               </Button>
             </Tooltip>
           </Row>
@@ -164,15 +148,10 @@ function SelectWithdrawAmount(props: {
   const { withdrawBalance, withdrawAmount, setWithdrawAmount } = props
   return (
     <div>
-      <label
-        htmlFor="price"
-        className="block font-medium leading-6 text-gray-900"
-      >
+      <label htmlFor="price" className="block font-medium leading-6 text-gray-900">
         Withdrawal amount
       </label>
-      <p className="mt-1 text-sm text-gray-500">
-        You may withdraw up to ${withdrawBalance}.
-      </p>
+      <p className="mt-1 text-sm text-gray-500">You may withdraw up to ${withdrawBalance}.</p>
       <div className="relative mt-2 rounded-md shadow-sm">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
           <span className="text-gray-500 sm:text-sm">$</span>
@@ -202,8 +181,7 @@ function ConfirmWithdrawal(props: {
   complete: boolean
   setComplete: (complete: boolean) => void
 }) {
-  const { withdrawalMethod, isBank, withdrawAmount, complete, setComplete } =
-    props
+  const { withdrawalMethod, isBank, withdrawAmount, complete, setComplete } = props
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const completeWithdrawal = async () => {
@@ -240,8 +218,7 @@ function ConfirmWithdrawal(props: {
                   Withdrawal complete!
                 </h3>
                 <p className="mt-1 max-w-2xl text-center text-sm leading-6 text-gray-500">
-                  Your payment is on the way. It may take up to 2 business days
-                  to process.
+                  Your payment is on the way. It may take up to 2 business days to process.
                 </p>
               </div>
             ) : (
@@ -250,8 +227,7 @@ function ConfirmWithdrawal(props: {
                   Withdrawal destination and amount confirmation
                 </h3>
                 <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
-                  Confirm the following details are correct before completing
-                  your withdrawal.
+                  Confirm the following details are correct before completing your withdrawal.
                 </p>
               </>
             )}
@@ -280,23 +256,13 @@ function ConfirmWithdrawal(props: {
                 </dd>
               </div>
               <div className="grid grid-cols-2 gap-4 px-6 py-6">
-                <dt className=" text-sm font-medium text-gray-900">
-                  Amount to withdraw
-                </dt>
-                <dd className="mt-0 text-sm leading-6 text-gray-700">
-                  ${withdrawAmount}
-                </dd>
+                <dt className=" text-sm font-medium text-gray-900">Amount to withdraw</dt>
+                <dd className="mt-0 text-sm leading-6 text-gray-700">${withdrawAmount}</dd>
               </div>
               {!complete && (
                 <Row className="justify-center px-6 py-6">
                   <Tooltip
-                    text={
-                      isSubmitting
-                        ? 'Loading...'
-                        : complete
-                        ? 'Withdrawal complete'
-                        : ''
-                    }
+                    text={isSubmitting ? 'Loading...' : complete ? 'Withdrawal complete' : ''}
                   >
                     <Button
                       className="font-semibold"

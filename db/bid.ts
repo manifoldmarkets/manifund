@@ -13,20 +13,14 @@ export async function getBidsByUser(supabase: SupabaseClient, userId: string) {
   if (!userId) {
     return []
   }
-  const { data, error } = await supabase
-    .from('bids')
-    .select('*, projects(*)')
-    .eq('bidder', userId)
+  const { data, error } = await supabase.from('bids').select('*, projects(*)').eq('bidder', userId)
   if (error) {
     throw error
   }
   return data as BidAndProject[]
 }
 
-export async function getPendingBidsByUser(
-  supabase: SupabaseClient,
-  userId: string
-) {
+export async function getPendingBidsByUser(supabase: SupabaseClient, userId: string) {
   if (!userId) {
     return []
   }
@@ -42,10 +36,7 @@ export async function getPendingBidsByUser(
   return data as BidAndProject[]
 }
 
-export async function getBidsByProject(
-  supabase: SupabaseClient,
-  project: string
-) {
+export async function getBidsByProject(supabase: SupabaseClient, project: string) {
   const { data, error } = await supabase
     .from('bids')
     .select('*, profiles(*)')
@@ -56,10 +47,7 @@ export async function getBidsByProject(
   return data.filter((bid) => bid.status === 'pending') as BidAndProfile[]
 }
 
-export async function getBidsForResolution(
-  supabase: SupabaseClient,
-  projectId: string
-) {
+export async function getBidsForResolution(supabase: SupabaseClient, projectId: string) {
   const { data, error } = await supabase
     .from('bids')
     .select('*, profiles(*)')
@@ -85,10 +73,7 @@ export async function getBidById(bidId: string, supabase: SupabaseClient) {
 }
 
 export async function deleteBid(supabase: SupabaseClient, bidId: string) {
-  const { error } = await supabase
-    .from('bids')
-    .update({ status: 'deleted' })
-    .eq('id', bidId)
+  const { error } = await supabase.from('bids').update({ status: 'deleted' }).eq('id', bidId)
   if (error) {
     console.log(error)
   }
@@ -118,10 +103,7 @@ export async function insertBid(supabase: SupabaseClient, bid: BidInsert) {
 }
 
 // Return all bids on projects with this cause slug
-export async function getMatchBids(
-  supabase: SupabaseClient,
-  causeSlug: string
-) {
+export async function getMatchBids(supabase: SupabaseClient, causeSlug: string) {
   const { data } = await supabase
     .from('bids')
     .select(

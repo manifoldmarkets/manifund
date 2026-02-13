@@ -7,11 +7,7 @@ import { Row } from '@/components/layout/row'
 import { Slider } from '@/components/slider'
 import { TOTAL_SHARES } from '@/db/project'
 import { Txn } from '@/db/txn'
-import {
-  formatMoney,
-  formatMoneyPrecise,
-  formatPercent,
-} from '@/utils/formatting'
+import { formatMoney, formatMoneyPrecise, formatPercent } from '@/utils/formatting'
 import clsx from 'clsx'
 import { useState } from 'react'
 import { Tooltip } from '@/components/tooltip'
@@ -50,13 +46,7 @@ export function Trade(props: {
   userSellableShares: number
   signedIn?: boolean
 }) {
-  const {
-    ammTxns,
-    projectId,
-    userSpendableFunds,
-    userSellableShares,
-    signedIn,
-  } = props
+  const { ammTxns, projectId, userSpendableFunds, userSellableShares, signedIn } = props
   const usingAmm = !!ammTxns
   const [modeId, setModeId] = useState<BinaryModeId>(null)
   const [isLimitOrder, setIsLimitOrder] = useState(false)
@@ -76,9 +66,7 @@ export function Trade(props: {
                   }
                   className="w-full"
                   onClick={() => {
-                    setModeId(
-                      modeId === mode.id && !isLimitOrder ? null : mode.id
-                    )
+                    setModeId(modeId === mode.id && !isLimitOrder ? null : mode.id)
                     setIsLimitOrder(false)
                   }}
                 >
@@ -94,11 +82,7 @@ export function Trade(props: {
               setModeId(null)
             }}
           >
-            {usingAmm ? (
-              <AdjustmentsHorizontalIcon className="h-5 w-5" />
-            ) : (
-              'Make a trade offer'
-            )}
+            {usingAmm ? <AdjustmentsHorizontalIcon className="h-5 w-5" /> : 'Make a trade offer'}
           </Button>
         </Row>
         {(modeId !== null || isLimitOrder) && (
@@ -126,59 +110,38 @@ function TradeInputsPanel(props: {
   userSpendableFunds: number
   userSellableShares: number
 }) {
-  const {
-    modeId,
-    setModeId,
-    ammTxns,
-    projectId,
-    userSpendableFunds,
-    userSellableShares,
-  } = props
+  const { modeId, setModeId, ammTxns, projectId, userSpendableFunds, userSellableShares } = props
   const usingAmm = !!ammTxns
   const [amount, setAmount] = useState<number>()
   const [limitValuation, setLimitValuation] = useState<number>()
-  const [ammShares, ammUSD] = usingAmm
-    ? calculateAMMPorfolio(ammTxns, projectId)
-    : [0, 0]
+  const [ammShares, ammUSD] = usingAmm ? calculateAMMPorfolio(ammTxns, projectId) : [0, 0]
   const [submitting, setSubmitting] = useState(false)
   const router = useRouter()
 
   const mode = MODES.find((mode) => mode.id === modeId)
   const isLimitOrder = !!setModeId
   if (!isLimitOrder && !usingAmm) {
-    return (
-      <span className="text-center text-sm text-rose-600">
-        Something went wrong.
-      </span>
-    )
+    return <span className="text-center text-sm text-rose-600">Something went wrong.</span>
   }
   const valuationAfterTrade = isLimitOrder
     ? limitValuation
-    : calculateValuationAfterTrade(
-        amount ?? 0,
-        ammShares,
-        ammUSD,
-        modeId === 'buy'
-      )
+    : calculateValuationAfterTrade(amount ?? 0, ammShares, ammUSD, modeId === 'buy')
   const ammSharesAtTrade = isLimitOrder
     ? ammSharesAtValuation(ammUSD * ammShares, limitValuation ?? 0)
     : ammShares
-  const ammUSDAtTrade = isLimitOrder
-    ? (ammUSD * ammShares) / ammSharesAtTrade
-    : ammUSD
+  const ammUSDAtTrade = isLimitOrder ? (ammUSD * ammShares) / ammSharesAtTrade : ammUSD
   const percentEquity =
     modeId === 'buy'
       ? isLimitOrder
         ? (amount ?? 0) / (limitValuation ?? 1)
-        : calculateBuyShares(amount ?? 0, ammSharesAtTrade, ammUSDAtTrade) /
-          TOTAL_SHARES
+        : calculateBuyShares(amount ?? 0, ammSharesAtTrade, ammUSDAtTrade) / TOTAL_SHARES
       : (amount ?? 0) / TOTAL_SHARES
   const amountUSD =
     modeId === 'buy'
       ? amount
       : isLimitOrder
-      ? ((amount ?? 0) / TOTAL_SHARES) * (limitValuation ?? 0)
-      : calculateSellPayout(amount ?? 0, ammSharesAtTrade, ammUSDAtTrade)
+        ? ((amount ?? 0) / TOTAL_SHARES) * (limitValuation ?? 0)
+        : calculateSellPayout(amount ?? 0, ammSharesAtTrade, ammUSDAtTrade)
 
   const handleSubmit = async () => {
     setSubmitting(true)
@@ -271,27 +234,19 @@ function TradeInputsPanel(props: {
         {modeId === 'buy' && (!isLimitOrder || !!limitValuation) && (
           <Col>
             <label className="text-xs text-gray-600">Equity</label>
-            <span className="font-semibold">
-              {formatPercent(percentEquity)}
-            </span>
+            <span className="font-semibold">{formatPercent(percentEquity)}</span>
           </Col>
         )}
         {modeId === 'sell' && (!isLimitOrder || !!limitValuation) && (
           <Col>
             <label className="text-xs text-gray-600">Payout</label>
-            <span className="font-semibold">
-              {formatMoneyPrecise(amountUSD ?? 0)}
-            </span>
+            <span className="font-semibold">{formatMoneyPrecise(amountUSD ?? 0)}</span>
           </Col>
         )}
         {modeId && (!isLimitOrder || !!limitValuation) && (
           <Col>
-            <label className="text-xs text-gray-600">
-              Valuation after trade
-            </label>
-            <span className="font-semibold">
-              {formatMoneyPrecise(valuationAfterTrade ?? 0)}
-            </span>
+            <label className="text-xs text-gray-600">Valuation after trade</label>
+            <span className="font-semibold">{formatMoneyPrecise(valuationAfterTrade ?? 0)}</span>
           </Col>
         )}
       </Row>
@@ -340,8 +295,8 @@ function BuyPanelContent(props: {
   if (userSpendableFunds <= 0) {
     return (
       <div className="text-center text-sm text-gray-600">
-        You don&apos;t have any funds to buy with. Add funds to your account
-        through your profile page.
+        You don&apos;t have any funds to buy with. Add funds to your account through your profile
+        page.
       </div>
     )
   }
@@ -350,11 +305,7 @@ function BuyPanelContent(props: {
     <div>
       <label className="text-sm text-gray-600">Amount (USD)</label>
       <Row className="w-full items-center gap-4">
-        <AmountInput
-          amount={amount}
-          className="w-1/3"
-          onChangeAmount={setAmount}
-        />
+        <AmountInput amount={amount} className="w-1/3" onChangeAmount={setAmount} />
         <Slider
           amount={((amount ?? 0) / sliderMax) * 100}
           step={0.01}
@@ -398,9 +349,7 @@ function SellPanelContent(props: {
           amount={((amount ?? 0) / TOTAL_SHARES) * 100}
           className="w-1/3"
           maxLength={4}
-          onChangeAmount={(newAmount) =>
-            setAmount((Number(newAmount) / 100) * TOTAL_SHARES)
-          }
+          onChangeAmount={(newAmount) => setAmount((Number(newAmount) / 100) * TOTAL_SHARES)}
         />
         <Slider
           amount={((amount ?? 0) / sliderMax) * 100}

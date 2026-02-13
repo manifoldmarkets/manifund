@@ -36,10 +36,7 @@ import { EnvelopeIcon } from '@heroicons/react/20/solid'
 import { ViewerActionPanel } from './viewer-action-panel'
 import { toSentenceCase } from '@/utils/formatting'
 import Link from 'next/link'
-import {
-  ArrowTrendingUpIcon,
-  CircleStackIcon,
-} from '@heroicons/react/24/outline'
+import { ArrowTrendingUpIcon, CircleStackIcon } from '@heroicons/react/24/outline'
 import { format } from 'date-fns'
 
 export function ProjectDisplay(props: {
@@ -71,22 +68,12 @@ export function ProjectDisplay(props: {
     similarProjects,
   } = props
   const userCharityBalance = userProfile
-    ? calculateCharityBalance(
-        userTxns,
-        userBids,
-        userProfile.id,
-        userProfile.accreditation_status
-      )
+    ? calculateCharityBalance(userTxns, userBids, userProfile.id, userProfile.accreditation_status)
     : 0
   const userSpendableFunds = Math.max(
     userProfile
       ? project.type === 'cert' && userProfile.id === project.creator
-        ? calculateCashBalance(
-            userTxns,
-            userBids,
-            userProfile.id,
-            userProfile.accreditation_status
-          )
+        ? calculateCashBalance(userTxns, userBids, userProfile.id, userProfile.accreditation_status)
         : userCharityBalance
       : 0,
     0
@@ -101,17 +88,12 @@ export function ProjectDisplay(props: {
   )
   const userIsFollower =
     !!userProfile &&
-    !!project.project_follows.find(
-      (follow) => follow.follower_id === userProfile.id
-    )
+    !!project.project_follows.find((follow) => follow.follower_id === userProfile.id)
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
   const minIncludingAmm = getMinIncludingAmm(project)
   const tradePoints = calculateTradePoints(projectTxns, project.id)
-  const activeAuction =
-    !!prizeCause?.cert_params?.auction && project.stage === 'proposal'
-  const [specialCommentPrompt, setSpecialCommentPrompt] = useState<
-    undefined | string
-  >(undefined)
+  const activeAuction = !!prizeCause?.cert_params?.auction && project.stage === 'proposal'
+  const [specialCommentPrompt, setSpecialCommentPrompt] = useState<undefined | string>(undefined)
   return (
     <>
       {project.stage === 'proposal' && pendingProjectTransfers.length === 0 && (
@@ -139,11 +121,7 @@ export function ProjectDisplay(props: {
           </Row>
           <Row className="mb-1 flex-wrap gap-1">
             {project.causes?.map((cause) => (
-              <CauseTag
-                key={cause.slug}
-                causeTitle={cause.title}
-                causeSlug={cause.slug}
-              />
+              <CauseTag key={cause.slug} causeTitle={cause.title} causeSlug={cause.slug} />
             ))}
           </Row>
         </Col>
@@ -218,8 +196,7 @@ export function ProjectDisplay(props: {
               <CertValuationChart
                 tradePoints={tradePoints}
                 ammTxns={projectTxns.filter(
-                  (txn) =>
-                    txn.to_id === project.id || txn.from_id === project.id
+                  (txn) => txn.to_id === project.id || txn.from_id === project.id
                 )}
                 ammId={project.id}
                 size="lg"
@@ -231,8 +208,7 @@ export function ProjectDisplay(props: {
                 ammTxns={
                   !!project.amm_shares
                     ? projectTxns.filter(
-                        (txn) =>
-                          txn.to_id === project.id || txn.from_id === project.id
+                        (txn) => txn.to_id === project.id || txn.from_id === project.id
                       )
                     : undefined
                 }
@@ -249,9 +225,7 @@ export function ProjectDisplay(props: {
                 project={project}
                 minValuation={valuation}
                 offerSizePortion={
-                  (activeAuction
-                    ? minIncludingAmm
-                    : minIncludingAmm - amountRaised) / valuation
+                  (activeAuction ? minIncludingAmm : minIncludingAmm - amountRaised) / valuation
                 }
                 maxBuy={userSpendableFunds}
                 activeAuction={activeAuction}
@@ -336,9 +310,7 @@ export function ProjectTypeDisplay(props: {
         </span>
       </Row>
       {closeDate && stage === 'proposal' && (
-        <span className="text-xs text-gray-500">
-          Closes {formattedCloseDate}
-        </span>
+        <span className="text-xs text-gray-500">Closes {formattedCloseDate}</span>
       )}
     </Row>
   )

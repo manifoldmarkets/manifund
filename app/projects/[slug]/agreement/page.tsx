@@ -9,9 +9,7 @@ import { getGrantAgreement } from '@/db/grant_agreement'
 import { Row } from '@/components/layout/row'
 import { Tag } from '@/components/tags'
 
-export default async function GrantAgreementPage(props: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function GrantAgreementPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params
   const supabase = await createServerSupabaseClient()
   const project = await getProjectAndProfileBySlug(supabase, slug)
@@ -32,21 +30,18 @@ export default async function GrantAgreementPage(props: {
                 : 'AWAITING COUNTER SIGNATURE'
               : 'AWAITING SIGNATURE'
           }
-          color={
-            project.signed_agreement && project.approved ? 'orange' : 'rose'
-          }
+          color={project.signed_agreement && project.approved ? 'orange' : 'rose'}
         />
       </Row>
       <p className="mb-5 text-sm text-gray-500">
-        All grant recipients are required to agree to the terms and conditions
-        outlined here before receiving funds.
+        All grant recipients are required to agree to the terms and conditions outlined here before
+        receiving funds.
       </p>
       {agreement?.signed_off_site ? (
         <div className="rounded-md bg-gray-200 p-4 text-gray-600">
-          This grant agreement was signed off-site. We have grantees sign
-          agreements elsewhere in cases where they need a modified version of
-          the agreement, when a signatory signs on behalf of a receiving
-          organization, or where they want to preserve their anonymity on
+          This grant agreement was signed off-site. We have grantees sign agreements elsewhere in
+          cases where they need a modified version of the agreement, when a signatory signs on
+          behalf of a receiving organization, or where they want to preserve their anonymity on
           Manifund.
         </div>
       ) : (

@@ -17,13 +17,10 @@ export function RegrantingCause() {
       />
       <Col className="w-full justify-between">
         <Col className="mb-5 gap-2">
-          <p className="text-lg font-semibold leading-tight lg:text-xl">
-            AI Safety Regranting
-          </p>
+          <p className="text-lg font-semibold leading-tight lg:text-xl">AI Safety Regranting</p>
           <span className="text-sm text-gray-600 sm:text-base">
-            We&apos;ve delegated $1.5m to experts in AI safety, who can
-            independently recommend grants based on their knowledge of the
-            field.
+            We&apos;ve delegated $1.5m to experts in AI safety, who can independently recommend
+            grants based on their knowledge of the field.
           </span>
         </Col>
       </Col>

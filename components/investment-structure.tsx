@@ -52,11 +52,7 @@ export function InvestmentStructurePanel(props: {
   }, [])
   const editable = certParams.adjustableInvestmentStructure
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false)
-  const initialValuation = calcInitialValuation(
-    certParams,
-    minFunding,
-    founderPercent
-  )
+  const initialValuation = calcInitialValuation(certParams, minFunding, founderPercent)
   if (initialValuation === null) {
     return <span className="text-sm text-rose-600">Something went wrong.</span>
   }
@@ -71,10 +67,9 @@ export function InvestmentStructurePanel(props: {
           Change this only if you fully understand the implications.
         </p>
         <p className="text-sm text-gray-600">
-          &quot;Equity&quot; here does not refer to legal equity, but to stake
-          in the specific prize selected here. That is, if this project later
-          wins a different award, those who hold equity in the Manifund project
-          are not entitled to a portion of that prize.
+          &quot;Equity&quot; here does not refer to legal equity, but to stake in the specific prize
+          selected here. That is, if this project later wins a different award, those who hold
+          equity in the Manifund project are not entitled to a portion of that prize.
         </p>
         <Row className="mt-5 justify-center gap-10 text-sm text-gray-600">
           <Row className="items-center gap-1">
@@ -101,9 +96,7 @@ export function InvestmentStructurePanel(props: {
           className="relative mb-10 mt-5 flex h-5 touch-none select-none items-center"
           value={[founderPercent]}
           onValueChange={([val]) =>
-            val < 100 - ammPercent && val >= ammPercent
-              ? setFounderPercent(val)
-              : null
+            val < 100 - ammPercent && val >= ammPercent ? setFounderPercent(val) : null
           }
           min={0}
           max={100}
@@ -124,9 +117,7 @@ export function InvestmentStructurePanel(props: {
                 >
                   <div
                     className={clsx(
-                      founderPercent >= value
-                        ? 'bg-orange-500'
-                        : 'bg-emerald-500',
+                      founderPercent >= value ? 'bg-orange-500' : 'bg-emerald-500',
                       'h-2 w-2 rounded-full'
                     )}
                   />
@@ -140,9 +131,7 @@ export function InvestmentStructurePanel(props: {
           {/* @ts-ignore */}
           <RxSlider.Thumb
             className={clsx(
-              editable
-                ? 'cursor-grab active:cursor-grabbing'
-                : ' cursor-not-allowed',
+              editable ? 'cursor-grab active:cursor-grabbing' : ' cursor-not-allowed',
               'relative block rounded-full bg-orange-500 p-2 outline outline-4 outline-transparent transition-colors focus:outline-orange-500/30'
             )}
           >
@@ -177,16 +166,13 @@ export function InvestmentStructurePanel(props: {
             <Col>
               <p className="text-xs text-gray-600">Cost to seed AMM</p>
               <p className="text-base font-bold">
-                {ammPercent}%,{' '}
-                {formatMoneyPrecise(ammPortion * initialValuation)}
+                {ammPercent}%, {formatMoneyPrecise(ammPortion * initialValuation)}
               </p>
             </Col>
           )}
           <Col>
             <p className="text-xs text-gray-600">Initial valuation</p>
-            <p className="text-base font-bold">
-              {formatMoneyPrecise(initialValuation)}
-            </p>
+            <p className="text-base font-bold">{formatMoneyPrecise(initialValuation)}</p>
           </Col>
         </div>
         <Row className="mt-5 items-center">
@@ -214,10 +200,7 @@ export function InvestmentStructurePanel(props: {
                   ammPercent={ammPercent}
                   initialValuation={initialValuation}
                 />
-                <Button
-                  color="gray-outline"
-                  onClick={() => setDetailsOpen(false)}
-                >
+                <Button color="gray-outline" onClick={() => setDetailsOpen(false)}>
                   Close
                 </Button>
               </Col>
@@ -235,20 +218,17 @@ export function InvestmentStructurePanel(props: {
         />
         <span className="ml-3 leading-tight">
           <span className="text-sm font-bold text-gray-900">
-            I opt to create an automated market maker (AMM) which will allow
-            others to speculate on up to {ammPercent}% of the stake in my
-            project&apos;s potential prize.{' '}
+            I opt to create an automated market maker (AMM) which will allow others to speculate on
+            up to {ammPercent}% of the stake in my project&apos;s potential prize.{' '}
           </span>
           <span className="text-sm text-gray-600">
-            This requires no further action on your part. If you choose to do
-            this, {ammPercent}% of the &quot;equity&quot; in your project will
-            be temporarily given to the AMM, along with ${certParams.ammDollars}{' '}
-            from Manifund, giving your project a starting valuation of $
-            {(certParams.ammDollars ?? 0) / ammPortion}. This will allow you and
-            others to buy and sell shares of your project at any time, and
-            incentivizes engagement with your work. Once your project is
-            complete and closed, all equity held by the AMM and any money beyond
-            the $20 seed from Manifund will be returned to you.
+            This requires no further action on your part. If you choose to do this, {ammPercent}% of
+            the &quot;equity&quot; in your project will be temporarily given to the AMM, along with
+            ${certParams.ammDollars} from Manifund, giving your project a starting valuation of $
+            {(certParams.ammDollars ?? 0) / ammPortion}. This will allow you and others to buy and
+            sell shares of your project at any time, and incentivizes engagement with your work.
+            Once your project is complete and closed, all equity held by the AMM and any money
+            beyond the $20 seed from Manifund will be returned to you.
           </span>
         </span>
       </Row>
@@ -263,25 +243,19 @@ function GenInvestmentExplanation(props: {
   ammPercent: number
   initialValuation: number
 }) {
-  const {
-    certParams,
-    minFunding,
-    founderPercent,
-    ammPercent,
-    initialValuation,
-  } = props
+  const { certParams, minFunding, founderPercent, ammPercent, initialValuation } = props
   if (certParams.proposalPhase) {
     return (
       <>
         <span className="text-sm text-gray-600">
-          When you create this project, an offer will be placed on your behalf
-          to sell {100 - founderPercent}% of total equity to investors at a
-          valuation of {formatMoneyPrecise(initialValuation)}.
+          When you create this project, an offer will be placed on your behalf to sell{' '}
+          {100 - founderPercent}% of total equity to investors at a valuation of{' '}
+          {formatMoneyPrecise(initialValuation)}.
         </span>
         <span className="text-sm text-gray-600">
-          If this offer is fully accepted by any combination of investors, then
-          your project will become active and you&apos;ll receive ${minFunding}{' '}
-          which can be withdrawn and used for your project upfront.{' '}
+          If this offer is fully accepted by any combination of investors, then your project will
+          become active and you&apos;ll receive ${minFunding} which can be withdrawn and used for
+          your project upfront.{' '}
           {ammPercent > 0 &&
             `The remaining ${formatMoneyPrecise(
               (ammPercent * initialValuation) / 100
@@ -293,9 +267,8 @@ function GenInvestmentExplanation(props: {
             ? `all assets held by the amm
           will be returned to you. You may then`
             : 'you may'}{' '}
-          sell the {founderPercent}% of equity you hold to any retroactive
-          funders who place offers on your project, which allows you to profit
-          off of exceptional results.
+          sell the {founderPercent}% of equity you hold to any retroactive funders who place offers
+          on your project, which allows you to profit off of exceptional results.
         </span>
       </>
     )
@@ -303,40 +276,30 @@ function GenInvestmentExplanation(props: {
     return (
       <>
         <span className="text-sm text-gray-600">
-          When you create this project, an automated market maker (AMM) will be
-          seeded using {ammPercent}% of your equity and{' '}
-          {formatMoneyPrecise(certParams.ammDollars ?? 0)} from Manifund. The
-          AMM will allow you and potential investors to buy and sell stake in
-          your project at any time. Note though that unless you choose to sell
-          more equity to the AMM, you will keep at least {founderPercent}% of
-          your equity.
+          When you create this project, an automated market maker (AMM) will be seeded using{' '}
+          {ammPercent}% of your equity and {formatMoneyPrecise(certParams.ammDollars ?? 0)} from
+          Manifund. The AMM will allow you and potential investors to buy and sell stake in your
+          project at any time. Note though that unless you choose to sell more equity to the AMM,
+          you will keep at least {founderPercent}% of your equity.
         </span>
         <span className="text-sm text-gray-600">
-          Once your project is complete and closed, all assets held by the AMM
-          will be returned to you. Prizes will then be awarded in the form of
-          buy offers for equity, which you can accept by selling any remaining
-          equity you hold to the evaluator who placed the offer.
+          Once your project is complete and closed, all assets held by the AMM will be returned to
+          you. Prizes will then be awarded in the form of buy offers for equity, which you can
+          accept by selling any remaining equity you hold to the evaluator who placed the offer.
         </span>
         <span className="text-sm text-gray-600">
-          For example, if your project earns a $1000 prize, and you hold 95% of
-          your equity at the time of close, you can sell that 95% for $950.
+          For example, if your project earns a $1000 prize, and you hold 95% of your equity at the
+          time of close, you can sell that 95% for $950.
         </span>
       </>
     )
   }
 }
 
-function calcInitialValuation(
-  certParams: CertParams,
-  minFunding: number,
-  founderPercent: number
-) {
+function calcInitialValuation(certParams: CertParams, minFunding: number, founderPercent: number) {
   if (certParams.ammDollars) {
     return (certParams.ammDollars / certParams.ammShares) * TOTAL_SHARES
   } else {
-    return (
-      (100 * minFunding) /
-      (100 - founderPercent - (certParams.ammShares / TOTAL_SHARES) * 100)
-    )
+    return (100 * minFunding) / (100 - founderPercent - (certParams.ammShares / TOTAL_SHARES) * 100)
   }
 }

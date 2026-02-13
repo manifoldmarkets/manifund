@@ -4,10 +4,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { useState } from 'react'
 
-export const SignInButton = (props: {
-  buttonText: string
-  className?: string
-}) => {
+export const SignInButton = (props: { buttonText: string; className?: string }) => {
   const { buttonText, className } = props
   const [pathname, setPathname] = useState('')
   useSafeLayoutEffect(() => {

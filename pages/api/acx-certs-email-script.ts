@@ -12,9 +12,7 @@ export default async function handler() {
   const supabase = createAdminClient()
   const transfers = await getIncompleteTransfers(supabase)
   const acxCertTransfers = transfers.filter(
-    (transfer) =>
-      transfer.projects.round === 'ACX Grants 2024' &&
-      transfer.projects.type === 'cert'
+    (transfer) => transfer.projects.round === 'ACX Grants 2024' && transfer.projects.type === 'cert'
   )
   console.log(
     'ACX cert transfers:',
@@ -35,10 +33,7 @@ export default async function handler() {
       }
       await supabase.rpc('_transfer_project', args).throwOnError()
     }
-    const emailHtmlContent = getEmailHtmlContent(
-      recipientExists,
-      transfer.recipient_name
-    )
+    const emailHtmlContent = getEmailHtmlContent(recipientExists, transfer.recipient_name)
     console.log('about to send email!')
     console.log(emailHtmlContent)
     await sendTemplateEmail(
@@ -51,9 +46,7 @@ export default async function handler() {
         buttonUrl: recipientExists
           ? `https://manifund.org/projects/${transfer.projects.slug}`
           : `https://manifund.org/login?email=${transfer.recipient_email}`,
-        buttonText: recipientExists
-          ? 'View your project'
-          : 'Create your account',
+        buttonText: recipientExists ? 'View your project' : 'Create your account',
       },
       undefined,
       transfer.recipient_email
@@ -62,10 +55,7 @@ export default async function handler() {
   }
 }
 
-async function getUserIdFromEmail(
-  supabaseAdmin: SupabaseClient,
-  email: string
-) {
+async function getUserIdFromEmail(supabaseAdmin: SupabaseClient, email: string) {
   const { data, error } = await supabaseAdmin
     .from('users')
     .select('id')

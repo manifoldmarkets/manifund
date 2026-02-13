@@ -2,17 +2,8 @@ import React from 'react'
 import { Avatar } from '@/components/avatar'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
-import {
-  ArrowPathIcon,
-  ArrowTrendingUpIcon,
-  EyeIcon,
-} from '@heroicons/react/20/solid'
-import {
-  ArrowLongRightIcon,
-  BeakerIcon,
-  BoltIcon,
-  UserGroupIcon,
-} from '@heroicons/react/24/solid'
+import { ArrowPathIcon, ArrowTrendingUpIcon, EyeIcon } from '@heroicons/react/20/solid'
+import { ArrowLongRightIcon, BeakerIcon, BoltIcon, UserGroupIcon } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -144,17 +135,12 @@ export default function AboutPage() {
         <h1 className="text-center font-semibold text-white">
           Our open platform helps charity founders find aligned donors.
         </h1>
-        <h2 className="text-center text-4xl font-bold text-white">
-          Our approach is...
-        </h2>
+        <h2 className="text-center text-4xl font-bold text-white">Our approach is...</h2>
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-6 gap-y-10 text-base leading-7 text-gray-600 sm:grid-cols-2">
             {APPROACH_FEATURES.map((feature) => {
               return (
-                <Card
-                  key={feature.title}
-                  className="relative px-4 pb-6 pl-10 pt-4"
-                >
+                <Card key={feature.title} className="relative px-4 pb-6 pl-10 pt-4">
                   <div className="inline font-semibold text-gray-900">
                     <feature.icon
                       className="absolute left-3 top-5 h-5 w-5 stroke-2 text-orange-600"
@@ -168,10 +154,7 @@ export default function AboutPage() {
             })}
           </div>
         </div>
-        <Link
-          href="/about/donate"
-          className="w-full text-right text-sm font-semibold text-white"
-        >
+        <Link href="/about/donate" className="w-full text-right text-sm font-semibold text-white">
           Donate to Manifund
           <ArrowLongRightIcon className="ml-1 inline h-6 w-6 stroke-2" />
         </Link>
@@ -210,9 +193,7 @@ export default function AboutPage() {
                 <h1 className="mb-2 text-center font-semibold text-gray-900 sm:text-lg">
                   {person.name}
                 </h1>
-                <h2 className="text-center text-sm text-gray-600 sm:text-base">
-                  {person.title}
-                </h2>
+                <h2 className="text-center text-sm text-gray-600 sm:text-base">{person.title}</h2>
               </Link>
             </Col>
           ))}

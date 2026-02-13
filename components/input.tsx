@@ -28,9 +28,7 @@ export const Input = forwardRef<
         )}
         {...rest}
       />
-      {error && errorMessage && (
-        <span className="text-xs text-rose-500">{errorMessage}</span>
-      )}
+      {error && errorMessage && <span className="text-xs text-rose-500">{errorMessage}</span>}
     </>
   )
 })
@@ -112,10 +110,7 @@ export function AmountInput(
 
   const parse = allowFloat ? parseFloat : parseInt
 
-  const bannedChars = new RegExp(
-    `[^\\d${allowFloat && '.'}${allowNegative && '-'}]`,
-    'g'
-  )
+  const bannedChars = new RegExp(`[^\\d${allowFloat && '.'}${allowNegative && '-'}]`, 'g')
 
   useEffect(() => {
     if (amount !== parse(amountString))
@@ -166,10 +161,7 @@ export function SearchBar(props: {
   return (
     <div className={clsx('relative text-gray-600', className)}>
       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2">
-        <MagnifyingGlassIcon
-          className="h-4 w-4 text-gray-400 sm:h-5 sm:w-5"
-          aria-hidden="true"
-        />
+        <MagnifyingGlassIcon className="h-4 w-4 text-gray-400 sm:h-5 sm:w-5" aria-hidden="true" />
       </div>
       <input
         placeholder="Search"

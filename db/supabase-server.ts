@@ -4,11 +4,7 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { createClient } from '@supabase/supabase-js'
 import type { Database } from './database.types'
-import {
-  SUPABASE_ANON_KEY,
-  SUPABASE_URL,
-  SUPABASE_SERVICE_ROLE_KEY,
-} from './env'
+import { SUPABASE_ANON_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } from './env'
 
 // For Server Components, API Routes, and general server-side usage
 export const createServerSupabaseClient = async () => {
@@ -21,9 +17,7 @@ export const createServerSupabaseClient = async () => {
       },
       setAll(cookiesToSet) {
         try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
-          )
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options))
         } catch {
           // The `setAll` method was called from a Server Component.
           // This can be ignored if you have middleware refreshing

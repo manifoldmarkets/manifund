@@ -7,9 +7,7 @@ export default async function TransactionsPage() {
   const supabaseAdmin = createAdminClient()
   const { data: txns } = await supabaseAdmin
     .from('txns')
-    .select(
-      '*, from:profiles!txns_from_id_fkey(username), to:profiles!txns_to_id_fkey(username)'
-    )
+    .select('*, from:profiles!txns_from_id_fkey(username), to:profiles!txns_to_id_fkey(username)')
     .eq('token', 'USD')
     .order('created_at', { ascending: false })
 

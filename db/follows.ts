@@ -1,13 +1,9 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import { Database } from './database.types'
 
-export type ProjectFollow =
-  Database['public']['Tables']['project_follows']['Row']
+export type ProjectFollow = Database['public']['Tables']['project_follows']['Row']
 
-export async function getProjectFollowerIds(
-  supabase: SupabaseClient,
-  projectId: string
-) {
+export async function getProjectFollowerIds(supabase: SupabaseClient, projectId: string) {
   const { data, error } = await supabase
     .from('project_follows')
     .select('follower_id')

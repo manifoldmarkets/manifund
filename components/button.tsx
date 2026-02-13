@@ -31,28 +31,23 @@ export function buttonClass(size: SizeType, color: ColorType | 'override') {
   return clsx(
     'font-md inline-flex items-center justify-center rounded-md ring-inset shadow-sm transition-colors disabled:cursor-not-allowed text-center',
     sizeClasses[size],
-    color === 'emerald' &&
-      'disabled:bg-gray-200 bg-emerald-500 text-white hover:bg-emerald-600',
+    color === 'emerald' && 'disabled:bg-gray-200 bg-emerald-500 text-white hover:bg-emerald-600',
     color === 'emerald-outline' &&
       'disabled:bg-gray-200 bg-white ring-emerald-500 ring-2 text-emerald-500 hover:bg-emerald-500 hover:text-white',
-    color === 'rose' &&
-      'disabled:bg-gray-200 bg-rose-500 text-white hover:bg-rose-600',
+    color === 'rose' && 'disabled:bg-gray-200 bg-rose-500 text-white hover:bg-rose-600',
     color === 'rose-outline' &&
       'disabled:bg-gray-200 bg-white ring-rose-500  ring-2 text-rose-500 hover:bg-rose-500 hover:text-white',
-    color === 'orange' &&
-      'disabled:bg-gray-200 bg-orange-500 text-white hover:bg-orange-600',
+    color === 'orange' && 'disabled:bg-gray-200 bg-orange-500 text-white hover:bg-orange-600',
     color === 'orange-outline' &&
       'disabled:bg-gray-200 ring-2 ring-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white',
     color === 'light-orange' &&
       'disabled:bg-gray-100 disabled:text-gray-400 bg-orange-100 text-orange-600 hover:bg-orange-200',
-    color === 'gray' &&
-      'bg-gray-100 text-gray-500 hover:bg-gray-200 disabled:opacity-50',
+    color === 'gray' && 'bg-gray-100 text-gray-500 hover:bg-gray-200 disabled:opacity-50',
     color === 'gray-outline' &&
       'ring-2 ring-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white disabled:opacity-50',
     color === 'gradient' &&
       'disabled:bg-gray-200 bg-gradient-to-r from-orange-500 to-rose-500 text-white hover:from-orange-700 hover:to-rose-700',
-    color === 'gray-white' &&
-      'text-gray-600 hover:bg-gray-200 shadow-none disabled:opacity-50'
+    color === 'gray-white' && 'text-gray-600 hover:bg-gray-200 shadow-none disabled:opacity-50'
   )
 }
 

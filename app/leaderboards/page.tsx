@@ -7,16 +7,8 @@ function AvatarAndLink(props: { profile: Profile }) {
   const { profile } = props
   return (
     <div className="flex flex-row items-center gap-4">
-      <Avatar
-        username={profile.username}
-        size={6}
-        avatarUrl={profile.avatar_url}
-        id={profile.id}
-      />
-      <UserLink
-        name={profile.full_name || profile.username}
-        username={profile.username}
-      />
+      <Avatar username={profile.username} size={6} avatarUrl={profile.avatar_url} id={profile.id} />
+      <UserLink name={profile.full_name || profile.username} username={profile.username} />
     </div>
   )
 }
@@ -34,9 +26,7 @@ export default async function Leaderboard() {
   // Show a table listing all txns, as well as the user that made that txn
   // const balances = userBalances(txns ?? [])
   const usersById = new Map(users?.map((user) => [user.id, user]) ?? [])
-  const profilesById = new Map(
-    profiles?.map((profile) => [profile.id, profile]) ?? []
-  )
+  const profilesById = new Map(profiles?.map((profile) => [profile.id, profile]) ?? [])
 
   // Create on JSON object mapping toId -> total received (sum of txn amounts)
   const receivedByToId = {} as Record<string, number>

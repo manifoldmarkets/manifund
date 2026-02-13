@@ -40,8 +40,7 @@ export function EditProfileForm(props: { profile: Profile }) {
   // Check if user is email-password based (not OAuth)
   const isEmailPasswordUser =
     user?.app_metadata?.providers?.includes('email') ||
-    (user?.identities?.length === 1 &&
-      user?.identities[0]?.provider === 'email')
+    (user?.identities?.length === 1 && user?.identities[0]?.provider === 'email')
 
   // Grab fullname from Google signups
   if (isNewUser && user?.user_metadata.full_name) {
@@ -91,13 +90,9 @@ export function EditProfileForm(props: { profile: Profile }) {
 
   const Save = async () => {
     setSubmitting(true)
-    const formattedUsername = username
-      .replace(/ /g, '-')
-      .replace(/[^\w-]+/g, '')
+    const formattedUsername = username.replace(/ /g, '-').replace(/[^\w-]+/g, '')
     const longDescription =
-      editor?.getJSON() && editor.getHTML() !== '<p></p>'
-        ? editor.getJSON()
-        : null
+      editor?.getJSON() && editor.getHTML() !== '<p></p>' ? editor.getJSON() : null
     await saveProfile(
       {
         ...profile,
@@ -155,13 +150,11 @@ export function EditProfileForm(props: { profile: Profile }) {
         />
       </Col>
       <Col className="gap-1">
-        <label htmlFor="website">
-          Website (e.g. LinkedIn, Twitter, personal website)
-        </label>
+        <label htmlFor="website">Website (e.g. LinkedIn, Twitter, personal website)</label>
         {profile.regranter_status && (
           <p className="text-sm text-gray-500">
-            We strongly recommend regrantors add a website here. This will be
-            shown in your profile preview.
+            We strongly recommend regrantors add a website here. This will be shown in your profile
+            preview.
           </p>
         )}
         <Input
@@ -176,9 +169,8 @@ export function EditProfileForm(props: { profile: Profile }) {
         <label htmlFor="long_description">More about you</label>
         {profile.regranter_status && (
           <p className="text-sm text-gray-500">
-            We strongly recommend regrantors include key information about their
-            background, values, cause prioritization, and grant-making history
-            to help potential grantees and donors.
+            We strongly recommend regrantors include key information about their background, values,
+            cause prioritization, and grant-making history to help potential grantees and donors.
           </p>
         )}
         <TextEditor editor={editor} />
@@ -231,11 +223,7 @@ export function EditProfileForm(props: { profile: Profile }) {
   )
 }
 
-async function saveProfile(
-  new_profile: Profile,
-  avatar: File | null,
-  supabase: SupabaseClient
-) {
+async function saveProfile(new_profile: Profile, avatar: File | null, supabase: SupabaseClient) {
   let avatarUrl = new_profile.avatar_url
   if (avatar) {
     const avatarSlug = uuid()
@@ -265,9 +253,7 @@ async function saveAvatar(
   avatarSlug: string,
   avatar: File
 ) {
-  const { error } = await supabase.storage
-    .from('avatars')
-    .upload(`${userId}/${avatarSlug}`, avatar)
+  const { error } = await supabase.storage.from('avatars').upload(`${userId}/${avatarSlug}`, avatar)
   if (error) {
     throw error
   }

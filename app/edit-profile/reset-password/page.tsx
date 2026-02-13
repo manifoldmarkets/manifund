@@ -45,11 +45,7 @@ export default function ResetPasswordPage() {
             </p>
           </div>
         ) : (
-          <UpdatePasswordForm
-            onSuccess={handleSuccess}
-            stayOpen={true}
-            title="Reset Password"
-          />
+          <UpdatePasswordForm onSuccess={handleSuccess} stayOpen={true} title="Reset Password" />
         )}
       </div>
     </div>

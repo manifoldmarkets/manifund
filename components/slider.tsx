@@ -39,10 +39,7 @@ export function Slider(props: {
   return (
     // @ts-ignore
     <RxSlider.Root
-      className={clsx(
-        className,
-        'relative flex h-5 w-full touch-none select-none items-center'
-      )}
+      className={clsx(className, 'relative flex h-5 w-full touch-none select-none items-center')}
       value={[amount]}
       onValueChange={([val]) => onChange(val)}
       min={min}
@@ -76,21 +73,13 @@ export function Slider(props: {
   )
 }
 
-const Track = (props: {
-  rangeClass: string
-  trackClass: string
-  children?: ReactNode
-}) => {
+const Track = (props: { rangeClass: string; trackClass: string; children?: ReactNode }) => {
   const { rangeClass, trackClass, children } = props
   return (
     // @ts-ignore
-    <RxSlider.Track
-      className={clsx('relative h-1 grow rounded-full', trackClass)}
-    >
+    <RxSlider.Track className={clsx('relative h-1 grow rounded-full', trackClass)}>
       {/* @ts-ignore */}
-      <RxSlider.Range
-        className={clsx(rangeClass, 'absolute h-full rounded-full')}
-      />
+      <RxSlider.Range className={clsx(rangeClass, 'absolute h-full rounded-full')} />
       {children}
     </RxSlider.Track>
   )

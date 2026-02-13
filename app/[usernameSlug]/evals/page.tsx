@@ -17,9 +17,7 @@ export type Result = {
   overallScore: number
 }
 
-export default async function ResultsPage(props: {
-  params: Promise<{ usernameSlug: string }>
-}) {
+export default async function ResultsPage(props: { params: Promise<{ usernameSlug: string }> }) {
   const { usernameSlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const evaluator = await getProfileByUsername(supabase, usernameSlug)
@@ -38,9 +36,7 @@ export default async function ResultsPage(props: {
   )
   const resultsMap = Object.fromEntries(
     thisProfilesEvals.map((profilesEval) => {
-      const thisProjectEvals = evals.filter(
-        (e) => e.project_id === profilesEval.project_id
-      )
+      const thisProjectEvals = evals.filter((e) => e.project_id === profilesEval.project_id)
       const thisProjectTrusts = trusts.filter(
         (t) =>
           thisProjectEvals.find((e) => e.evaluator_id === t.trusted_id) &&
@@ -48,11 +44,7 @@ export default async function ResultsPage(props: {
       )
       return [
         profilesEval.project_id,
-        calculateResult(
-          thisProjectEvals,
-          thisProjectTrusts,
-          profilesEval.evaluator_id
-        ),
+        calculateResult(thisProjectEvals, thisProjectTrusts, profilesEval.evaluator_id),
       ]
     })
   )
@@ -77,15 +69,9 @@ export default async function ResultsPage(props: {
   )
 }
 
-function calculateResult(
-  evals: ProjectEval[],
-  trusts: ProfileTrust[],
-  evaluatorId: string
-) {
+function calculateResult(evals: ProjectEval[], trusts: ProfileTrust[], evaluatorId: string) {
   const resultsArr = makeResultsArraySingleProject(evals, trusts)
-  const thisProfileResult = resultsArr.find(
-    (i) => i.evaluatorId === evaluatorId
-  )
+  const thisProfileResult = resultsArr.find((i) => i.evaluatorId === evaluatorId)
   if (!thisProfileResult) {
     return null
   } else if (evals.length === 1) {
@@ -94,12 +80,9 @@ function calculateResult(
   } else {
     // Set initial overallScore and outsideScore non-self-referentially
     resultsArr.forEach((resultObj) => {
-      const otherResults = resultsArr.filter(
-        (i) => i.evaluatorId !== resultObj.evaluatorId
-      )
+      const otherResults = resultsArr.filter((i) => i.evaluatorId !== resultObj.evaluatorId)
       resultObj.outsideScore =
-        otherResults.reduce((acc, i) => acc + i.insideScore, 0) /
-        otherResults.length
+        otherResults.reduce((acc, i) => acc + i.insideScore, 0) / otherResults.length
       resultObj.overallScore =
         resultObj.insideScore * resultObj.confidence +
         resultObj.outsideScore * (1 - resultObj.confidence)
@@ -109,12 +92,9 @@ function calculateResult(
     while (epsilon !== 0 && epsilon > 0.01) {
       resultsArr.forEach((resultObj) => {
         const currOverallScore = resultObj.overallScore
-        const otherResults = resultsArr.filter(
-          (i) => i.evaluatorId !== resultObj.evaluatorId
-        )
+        const otherResults = resultsArr.filter((i) => i.evaluatorId !== resultObj.evaluatorId)
         resultObj.outsideScore = otherResults.reduce(
-          (acc, r) =>
-            acc + r.overallScore * resultObj.trustScores[r.evaluatorId],
+          (acc, r) => acc + r.overallScore * resultObj.trustScores[r.evaluatorId],
           0
         )
         resultObj.overallScore =
@@ -127,10 +107,7 @@ function calculateResult(
   return thisProfileResult
 }
 
-function makeResultsArraySingleProject(
-  evals: ProjectEval[],
-  trusts: ProfileTrust[]
-) {
+function makeResultsArraySingleProject(evals: ProjectEval[], trusts: ProfileTrust[]) {
   const results = [] as Result[]
   evals.forEach((evalItem) => {
     const trustScores = makeTrustScoresSingleProject(evals, trusts, evalItem)
@@ -151,12 +128,8 @@ function makeTrustScoresSingleProject(
   trusts: ProfileTrust[],
   currEval: ProjectEval
 ) {
-  const currEvaluatorTrusts = trusts.filter(
-    (t) => t.truster_id === currEval.evaluator_id
-  )
-  const trustScores = Object.fromEntries(
-    currEvaluatorTrusts.map((t) => [t.trusted_id, t.weight])
-  )
+  const currEvaluatorTrusts = trusts.filter((t) => t.truster_id === currEval.evaluator_id)
+  const trustScores = Object.fromEntries(currEvaluatorTrusts.map((t) => [t.trusted_id, t.weight]))
   evals.forEach((evalItem) => {
     if (evalItem.evaluator_id === currEval.evaluator_id) {
       trustScores[evalItem.evaluator_id] = 0
@@ -166,9 +139,6 @@ function makeTrustScoresSingleProject(
   })
   const total = Object.values(trustScores).reduce((acc, i) => acc + i, 0)
   return Object.fromEntries(
-    Object.entries(trustScores).map(([key, value]) => [
-      key,
-      total === 0 ? value : value / total,
-    ])
+    Object.entries(trustScores).map(([key, value]) => [key, total === 0 ? value : value / total])
   )
 }

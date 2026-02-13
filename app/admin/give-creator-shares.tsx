@@ -5,10 +5,7 @@ import { giveCreatorShares } from '@/utils/upsert-project'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export function GiveCreatorShares(props: {
-  projectId: string
-  creatorId: string
-}) {
+export function GiveCreatorShares(props: { projectId: string; creatorId: string }) {
   const { projectId, creatorId } = props
   const { supabase } = useSupabase()
   const [isSubmitting, setIsSubmitting] = useState(false)

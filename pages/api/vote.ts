@@ -22,16 +22,11 @@ export default async function handler(req: NextRequest) {
   }
   const oldVote = await getUserProjectVote(supabase, projectId, user.id)
   if (oldVote) {
-    await supabase
-      .from('project_votes')
-      .update({ magnitude: newMagnitude })
-      .eq('id', oldVote.id)
+    await supabase.from('project_votes').update({ magnitude: newMagnitude }).eq('id', oldVote.id)
   } else {
     await supabase
       .from('project_votes')
-      .insert([
-        { project_id: projectId, voter_id: user.id, magnitude: newMagnitude },
-      ])
+      .insert([{ project_id: projectId, voter_id: user.id, magnitude: newMagnitude }])
   }
   if (newMagnitude === 1) {
     const { error } = await supabase.rpc('follow_project', {

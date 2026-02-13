@@ -15,14 +15,11 @@ export default async function handler(req: NextRequest) {
   const user = await getUser(supabaseEdge)
   if (!user || !isAdmin(user)) return Response.error()
 
-  const { userId, amount, sendDonationReceipt } =
-    (await req.json()) as PayUserProps
+  const { userId, amount, sendDonationReceipt } = (await req.json()) as PayUserProps
   // Interpret negative amounts as payments to the bank
   const positiveAmount = Math.abs(amount)
-  const from_id =
-    amount > 0 ? (process.env.NEXT_PUBLIC_PROD_BANK_ID as string) : userId
-  const to_id =
-    amount > 0 ? userId : (process.env.NEXT_PUBLIC_PROD_BANK_ID as string)
+  const from_id = amount > 0 ? (process.env.NEXT_PUBLIC_PROD_BANK_ID as string) : userId
+  const to_id = amount > 0 ? userId : (process.env.NEXT_PUBLIC_PROD_BANK_ID as string)
 
   const supabaseAdmin = createAdminClient()
   // Create a new txn paying this user

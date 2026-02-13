@@ -15,8 +15,7 @@ export type DepositManaProps = {
   manaToDeposit: number
 }
 export default async function handler(req: NextRequest) {
-  const { manifoldApiKey, manaToDeposit } =
-    (await req.json()) as DepositManaProps
+  const { manifoldApiKey, manaToDeposit } = (await req.json()) as DepositManaProps
   const supabase = createEdgeClient(req)
   const user = await getUser(supabase)
   if (!user) {

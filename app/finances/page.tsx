@@ -4,12 +4,11 @@ import UsersGrid from './users-grid'
 
 export default async function FinancesPage() {
   const supabase = createAdminClient()
-  const [{ data: users }, { data: profiles }, { data: txns }] =
-    await Promise.all([
-      supabase.from('users').select('*'),
-      supabase.from('profiles').select('*'),
-      supabase.from('txns').select('*').eq('token', 'USD').order('created_at'),
-    ])
+  const [{ data: users }, { data: profiles }, { data: txns }] = await Promise.all([
+    supabase.from('users').select('*'),
+    supabase.from('profiles').select('*'),
+    supabase.from('txns').select('*').eq('token', 'USD').order('created_at'),
+  ])
   const balances = userBalances(txns ?? [])
 
   const userAndProfiles =

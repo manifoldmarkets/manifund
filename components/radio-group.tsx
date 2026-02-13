@@ -28,9 +28,7 @@ export function HorizontalRadioGroup(props: {
             className={({ checked }) =>
               clsx(
                 'cursor-pointer focus:outline-none',
-                checked
-                  ? 'bg-orange-500 text-white hover:bg-orange-600'
-                  : 'bg-white text-gray-900',
+                checked ? 'bg-orange-500 text-white hover:bg-orange-600' : 'bg-white text-gray-900',
                 'flex items-center justify-center rounded-md px-3 py-3 text-sm font-semibold'
               )
             }

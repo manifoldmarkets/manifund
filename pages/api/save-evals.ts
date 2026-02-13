@@ -44,9 +44,7 @@ export default async function handler(req: NextRequest) {
     return NextResponse.error()
   }
   const projectIdsToDelete =
-    tiers
-      .find((tier) => tier.id === 'unsorted')
-      ?.projects.map((project) => project.id) ?? []
+    tiers.find((tier) => tier.id === 'unsorted')?.projects.map((project) => project.id) ?? []
   const { error: evalsDeleteError } = await supabase
     .from('project_evals')
     .delete()
@@ -79,11 +77,7 @@ export default async function handler(req: NextRequest) {
   const { error: trustDeleteError } = await supabase
     .from('profile_trust')
     .delete()
-    .not(
-      'trusted_id',
-      'in',
-      `(${trustList.map((trust) => trust.profileId).toString()})`
-    )
+    .not('trusted_id', 'in', `(${trustList.map((trust) => trust.profileId).toString()})`)
     .eq('truster_id', user.id)
   if (trustDeleteError) {
     console.error(trustDeleteError)

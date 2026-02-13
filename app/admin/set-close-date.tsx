@@ -11,10 +11,7 @@ export function SetCloseDate(props: { project: Project }) {
   const { supabase } = useSupabase()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
-  const newCloseDate = format(
-    add(new Date(project.created_at), { weeks: 6 }),
-    'yyyy-MM-dd'
-  )
+  const newCloseDate = format(add(new Date(project.created_at), { weeks: 6 }), 'yyyy-MM-dd')
   return (
     <td>
       <Button

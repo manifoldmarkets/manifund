@@ -69,8 +69,7 @@ async function closeProject(
 ) {
   const amountRaised = getAmountRaised(project, bids)
   const minIncludingAmm = getMinIncludingAmm(project)
-  const activeAuction =
-    !!prizeCause?.cert_params?.auction && project.stage === 'proposal'
+  const activeAuction = !!prizeCause?.cert_params?.auction && project.stage === 'proposal'
   if (amountRaised >= minIncludingAmm) {
     if (!project.signed_agreement) {
       await sendTemplateEmail(
@@ -127,11 +126,7 @@ async function closeProject(
         subject: `Manifund project not funded: "${project.title}"`,
         adminName: 'Rachel',
       }
-      await sendTemplateEmail(
-        TEMPLATE_IDS.VERDICT,
-        creatorPostmarkVars,
-        project.creator
-      )
+      await sendTemplateEmail(TEMPLATE_IDS.VERDICT, creatorPostmarkVars, project.creator)
       const bidders = bids.map((bid) => bid.bidder)
       const uniqueBidders = uniq(bidders)
       uniqueBidders.forEach(async (bidder) => {
@@ -142,11 +137,7 @@ async function closeProject(
           auctionResolutionText: `This project was not funded, because it received only $${amountRaised} in funding, which is less than its minimum funding goal of $${project.min_funding}.`,
           bidResolutionText: `Your offer was declined.`,
         }
-        await sendTemplateEmail(
-          TEMPLATE_IDS.OFFER_RESOLVED,
-          bidderPostmarkVars,
-          bidder
-        )
+        await sendTemplateEmail(TEMPLATE_IDS.OFFER_RESOLVED, bidderPostmarkVars, bidder)
       })
     }
     // TODO: notify followers when project gets funded through auction

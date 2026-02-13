@@ -23,8 +23,7 @@ type MoneyTransferProps = {
 }
 
 export default async function handler(req: NextRequest) {
-  const { fromId, toId, amount, projectId } =
-    (await req.json()) as MoneyTransferProps
+  const { fromId, toId, amount, projectId } = (await req.json()) as MoneyTransferProps
   const supabase = createEdgeClient(req)
   const resp = await supabase.auth.getUser()
   const user = resp.data.user
@@ -91,11 +90,7 @@ export default async function handler(req: NextRequest) {
         donorName: donor.full_name,
         profileUrl: `${getURL()}/${regranterProfile.username}`,
       }
-      await sendTemplateEmail(
-        TEMPLATE_IDS.REGRANTER_DONATION,
-        postmarkVars,
-        toId
-      )
+      await sendTemplateEmail(TEMPLATE_IDS.REGRANTER_DONATION, postmarkVars, toId)
     }
   }
 

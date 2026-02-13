@@ -34,14 +34,12 @@ export function SignatureSection(props: {
             aria-describedby="terms-description"
             name="terms"
             checked={!!signedAt}
-            onChange={(event) =>
-              setSignedAt(event.target.checked ? new Date() : undefined)
-            }
+            onChange={(event) => setSignedAt(event.target.checked ? new Date() : undefined)}
           />
           <div className="ml-3 text-sm leading-6">
             <label htmlFor="terms" className="font-medium text-gray-900">
-              I, <strong>{project.profiles.full_name}</strong>, agree to the
-              terms of this grant as laid out in the above document.
+              I, <strong>{project.profiles.full_name}</strong>, agree to the terms of this grant as
+              laid out in the above document.
             </label>
           </div>
         </Row>
@@ -73,14 +71,10 @@ export function SignatureSection(props: {
       <SignatureDisplay
         fullName={agreement?.profiles?.full_name ?? ''}
         signatoryTitle="Charity signatory"
-        signedAt={
-          agreement?.approved_at ? new Date(agreement.approved_at) : undefined
-        }
+        signedAt={agreement?.approved_at ? new Date(agreement.approved_at) : undefined}
       />
       <div>
-        <span className="font-medium">
-          This grant benefits the public by funding:{' '}
-        </span>
+        <span className="font-medium">This grant benefits the public by funding: </span>
         {project.public_benefit}
       </div>
     </Col>

@@ -1,21 +1,10 @@
 import { bisector, extent } from 'd3-array'
 import { axisBottom, axisRight } from 'd3-axis'
 import { ScaleContinuousNumeric, ScaleTime } from 'd3-scale'
-import {
-  CurveFactory,
-  curveLinear,
-  curveStepAfter,
-  curveStepBefore,
-} from 'd3-shape'
+import { CurveFactory, curveLinear, curveStepAfter, curveStepBefore } from 'd3-shape'
 import { range } from 'es-toolkit'
 import { Key, ReactNode, useCallback, useId, useMemo, useState } from 'react'
-import {
-  AxisConstraints,
-  HistoryPoint,
-  Point,
-  ValueKind,
-  compressPoints,
-} from '@/utils/chart'
+import { AxisConstraints, HistoryPoint, Point, ValueKind, compressPoints } from '@/utils/chart'
 import { useEvent } from '@/hooks/use-event'
 import { formatMoney, roundToNearestFive } from '@/utils/formatting'
 import { Profile } from '@/db/profile'
@@ -60,10 +49,7 @@ const interpolateY = (
   }
 }
 
-const constrainExtent = (
-  extent: [number, number],
-  constraints: AxisConstraints
-) => {
+const constrainExtent = (extent: [number, number], constraints: AxisConstraints) => {
   // first clamp the extent to our min and max
   const min = constraints.min ?? -Infinity
   const max = constraints.max ?? Infinity
@@ -93,12 +79,7 @@ const constrainExtent = (
   }
 }
 
-const getTickValues = (
-  min: number,
-  max: number,
-  n: number,
-  negativeThreshold?: number
-) => {
+const getTickValues = (min: number, max: number, n: number, negativeThreshold?: number) => {
   let step = (max - min) / (n - 1)
   let theMin = min
   let theMax = max
@@ -107,11 +88,7 @@ const getTickValues = (
     theMax = roundToNearestFive(max)
     step = (theMax - theMin) / (n - 1)
   }
-  const defaultRange = [
-    theMin,
-    ...range(1, n - 1).map((i) => theMin + step * i),
-    theMax,
-  ]
+  const defaultRange = [theMin, ...range(1, n - 1).map((i) => theMin + step * i), theMax]
   if (negativeThreshold) {
     return defaultRange
       .filter((n) => Math.abs(negativeThreshold - n) > Math.max(step / 4, 1))
@@ -153,15 +130,12 @@ export const SingleValueHistoryChart = <P extends HistoryPoint>(props: {
   negativeThreshold?: number
 }) => {
   const { data, w, h, color, Tooltip, noAxes, negativeThreshold } = props
-  const { viewXScale, setViewXScale, viewYScale, setViewYScale } =
-    useViewScale()
+  const { viewXScale, setViewXScale, viewYScale, setViewYScale } = useViewScale()
   const yKind = props.yKind ?? 'amount'
   const xScale = viewXScale ?? props.xScale
   const yScale = viewYScale ?? props.yScale
 
-  const [xMin, xMax] = xScale
-    ?.domain()
-    .map((d: { getTime: () => any }) => d.getTime()) ?? [
+  const [xMin, xMax] = xScale?.domain().map((d: { getTime: () => any }) => d.getTime()) ?? [
     data[0].x,
     data[data.length - 1].x,
   ]
@@ -171,7 +145,7 @@ export const SingleValueHistoryChart = <P extends HistoryPoint>(props: {
     [data, xMin, xMax]
   )
 
-  const curve = props.curve ?? isCompressed ? curveLinear : curveStepAfter
+  const curve = (props.curve ?? isCompressed) ? curveLinear : curveStepAfter
 
   const [mouse, setMouse] = useState<TooltipProps<P>>()
 
@@ -181,9 +155,7 @@ export const SingleValueHistoryChart = <P extends HistoryPoint>(props: {
   const { xAxis, yAxis } = useMemo(() => {
     const [min, max] = yScale.domain()
     const nTicks = noAxes ? 0 : h < 200 ? 3 : 5
-    const customTickValues = noAxes
-      ? []
-      : getTickValues(min, max, nTicks, negativeThreshold)
+    const customTickValues = noAxes ? [] : getTickValues(min, max, nTicks, negativeThreshold)
     const xAxis = axisBottom<Date>(xScale).ticks(noAxes ? 0 : w / 100)
     const yAxis = negativeThreshold
       ? axisRight<number>(yScale)
@@ -234,10 +206,7 @@ export const SingleValueHistoryChart = <P extends HistoryPoint>(props: {
         const [yMin, yMax] = extent(visibleYs) as [number, number]
         // try to add extra space on top and bottom before constraining
         const padding = (yMax - yMin) * 0.1
-        const domain = constrainExtent(
-          [yMin - padding, yMax + padding],
-          Y_AXIS_CONSTRAINTS[yKind]
-        )
+        const domain = constrainExtent([yMin - padding, yMax + padding], Y_AXIS_CONSTRAINTS[yKind])
         setViewYScale(() => yScale.copy().domain(domain).nice())
       }
     } else {
@@ -248,8 +217,7 @@ export const SingleValueHistoryChart = <P extends HistoryPoint>(props: {
 
   const gradientId = useId()
   const stops = useMemo(
-    () =>
-      typeof color !== 'string' ? computeColorStops(points, color, px) : null,
+    () => (typeof color !== 'string' ? computeColorStops(points, color, px) : null),
     [color, points, px]
   )
 
@@ -270,14 +238,9 @@ export const SingleValueHistoryChart = <P extends HistoryPoint>(props: {
       {stops && (
         <defs>
           <linearGradient gradientUnits="userSpaceOnUse" id={gradientId}>
-            {stops.map(
-              (
-                s: { x: number; color: string | undefined },
-                i: Key | null | undefined
-              ) => (
-                <stop key={i} offset={`${s.x / w}`} stopColor={s.color} />
-              )
-            )}
+            {stops.map((s: { x: number; color: string | undefined }, i: Key | null | undefined) => (
+              <stop key={i} offset={`${s.x / w}`} stopColor={s.color} />
+            ))}
           </linearGradient>
         </defs>
       )}
@@ -289,9 +252,7 @@ export const SingleValueHistoryChart = <P extends HistoryPoint>(props: {
         py1={py1}
         curve={curve ?? curveLinear}
       />
-      {mouse && (
-        <SliceMarker color="#5BCEFF" x={mouse.x} y0={py0} y1={mouse.y} />
-      )}
+      {mouse && <SliceMarker color="#5BCEFF" x={mouse.x} y0={py0} y1={mouse.y} />}
     </SVGChart>
   )
 }

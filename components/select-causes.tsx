@@ -17,18 +17,14 @@ export function SelectCauses(props: {
     <Col className="gap-1">
       <Row className="flex-wrap gap-1">
         {causesList.map((cause) => {
-          const causeIncluded = !!selectedCauses.find(
-            (c) => c.slug === cause.slug
-          )
+          const causeIncluded = !!selectedCauses.find((c) => c.slug === cause.slug)
           const disabled = !causeIncluded && atLimit
           return (
             <button
               onClick={() => {
                 if (disabled) return
                 if (causeIncluded) {
-                  setSelectedCauses(
-                    selectedCauses.filter((t) => t.slug !== cause.slug)
-                  )
+                  setSelectedCauses(selectedCauses.filter((t) => t.slug !== cause.slug))
                 } else {
                   setSelectedCauses([...selectedCauses, cause])
                 }
@@ -45,8 +41,8 @@ export function SelectCauses(props: {
                   causeIncluded
                     ? 'bg-orange-500 text-white hover:bg-orange-600'
                     : disabled
-                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                    : 'bg-gray-200 hover:bg-gray-300'
+                      ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                      : 'bg-gray-200 hover:bg-gray-300'
                 )}
               />
             </button>
@@ -54,9 +50,7 @@ export function SelectCauses(props: {
         })}
       </Row>
       {atLimit && (
-        <p className="text-sm text-gray-500">
-          Maximum of {MAX_CAUSES} cause areas selected.
-        </p>
+        <p className="text-sm text-gray-500">Maximum of {MAX_CAUSES} cause areas selected.</p>
       )}
     </Col>
   )

@@ -23,17 +23,13 @@ export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
           })}
         </>
       ) : (
-        <p className="mt-3 text-center italic text-gray-500">
-          No donations yet. Be the first!
-        </p>
+        <p className="mt-3 text-center italic text-gray-500">No donations yet. Be the first!</p>
       )}{' '}
     </>
   )
 }
 
-export function ExpandableDonationsHistory(props: {
-  donations: TxnAndProfiles[]
-}) {
+export function ExpandableDonationsHistory(props: { donations: TxnAndProfiles[] }) {
   const { donations } = props
   const [expanded, setExpanded] = useState(false)
   const sortedDonations = orderBy(donations, ['created_at'], ['desc'])
@@ -42,16 +38,9 @@ export function ExpandableDonationsHistory(props: {
   return (
     <>
       <Row className="flex items-center justify-between">
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="flex items-center text-gray-800"
-        >
-          <RightCarrotIcon
-            className={clsx('h-4 w-6', expanded && 'rotate-90')}
-          />
-          <span className="text-lg">
-            {expanded ? 'Hide donations' : 'Show all donations'}
-          </span>
+        <button onClick={() => setExpanded(!expanded)} className="flex items-center text-gray-800">
+          <RightCarrotIcon className={clsx('h-4 w-6', expanded && 'rotate-90')} />
+          <span className="text-lg">{expanded ? 'Hide donations' : 'Show all donations'}</span>
         </button>
         {!expanded && (
           <Row className="items-center gap-1 text-gray-600">

@@ -1,10 +1,6 @@
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getUser, isAdmin, getProfileAndBidsById } from '@/db/profile'
-import {
-  getFullProjectBySlug,
-  getFullSimilarProjects,
-  getProjectBySlug,
-} from '@/db/project'
+import { getFullProjectBySlug, getFullSimilarProjects, getProjectBySlug } from '@/db/project'
 import { getCommentsByProject } from '@/db/comment'
 import { getBidsByProject } from '@/db/bid'
 import { getTxnsByProject, getTxnAndProjectsByUser } from '@/db/txn'
@@ -18,9 +14,7 @@ import NoAccess from '@/app/no-access'
 
 export const revalidate = 0
 
-export async function generateMetadata(props: {
-  params: Promise<{ slug: string }>
-}) {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params
   const supabase = await createServerSupabaseClient()
   const project = await getProjectBySlug(supabase, slug)
@@ -40,9 +34,7 @@ export async function generateMetadata(props: {
   }
 }
 
-export default async function ProjectPage(props: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function ProjectPage(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params
   const supabase = await createServerSupabaseClient()
   const [project, user] = await Promise.all([
@@ -80,8 +72,7 @@ export default async function ProjectPage(props: {
     : undefined
   const userIsAdmin = user ? isAdmin(user) : false
   const userIsOwner = user?.id === project.creator
-  const projectIsPrivate =
-    project.stage === 'hidden' || project.stage === 'draft'
+  const projectIsPrivate = project.stage === 'hidden' || project.stage === 'draft'
   return (
     <div className="p-4">
       {projectIsPrivate && !userIsOwner && !userIsAdmin ? (

@@ -26,9 +26,7 @@ export default async function handler(req: NextRequest) {
   const causeSlugs = projectParams.selectedCauses.map((cause) => cause.slug)
   const selectedPrize = projectParams.selectedPrize
   const startingStage =
-    selectedPrize && !selectedPrize.cert_params?.proposalPhase
-      ? 'active'
-      : 'proposal'
+    selectedPrize && !selectedPrize.cert_params?.proposalPhase ? 'active' : 'proposal'
   const type = !!selectedPrize ? 'cert' : 'grant'
   const projectUpdate = createUpdateFromParams(projectParams)
   await updateProject(supabase, projectId, {
@@ -67,10 +65,7 @@ export default async function handler(req: NextRequest) {
 
   invalidateProjectsCache()
   updateProjectEmbedding(projectId).catch((error) => {
-    console.error(
-      'Failed to regenerate embeddings for published project:',
-      error
-    )
+    console.error('Failed to regenerate embeddings for published project:', error)
   })
 
   return NextResponse.json('success')

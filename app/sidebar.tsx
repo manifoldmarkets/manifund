@@ -72,16 +72,11 @@ export default async function Sidebar() {
           />
           <SidebarItem item={{ name: 'People', href: '/people' }} />
           <SidebarItem item={{ name: 'Categories', href: '/causes' }} />
-          <SidebarItem
-            item={{ name: 'Newsletter', href: 'https://manifund.substack.com' }}
-          />
+          <SidebarItem item={{ name: 'Newsletter', href: 'https://manifund.substack.com' }} />
           {user && (
             <Link
               href={isRegranter ? '/create-grant' : '/create'}
-              className={clsx(
-                buttonClass('xl', 'gradient'),
-                'mt-4 w-52 bg-gradient-to-r'
-              )}
+              className={clsx(buttonClass('xl', 'gradient'), 'mt-4 w-52 bg-gradient-to-r')}
             >
               {isRegranter ? 'Give a grant' : 'Create a project'}
             </Link>
@@ -129,12 +124,7 @@ export async function ProfileSummary(props: { profile: Profile }) {
   const supabase = await createServerSupabaseClient()
   const txns = await getTxnAndProjectsByUser(supabase, profile.id)
   const bids = await getPendingBidsByUser(supabase, profile.id)
-  const cashBalance = calculateCashBalance(
-    txns,
-    bids,
-    profile.id,
-    profile.accreditation_status
-  )
+  const cashBalance = calculateCashBalance(txns, bids, profile.id, profile.accreditation_status)
   const charityBalance = calculateCharityBalance(
     txns,
     bids,
@@ -143,11 +133,7 @@ export async function ProfileSummary(props: { profile: Profile }) {
   )
   return (
     <Row className="group mb-3 items-center gap-2 truncate rounded-md px-1 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800">
-      <Avatar
-        username={profile.username}
-        avatarUrl={profile.avatar_url}
-        id={profile.id}
-      />
+      <Avatar username={profile.username} avatarUrl={profile.avatar_url} id={profile.id} />
       <Col className="w-full items-start">
         <Link href={`/${profile.username}`} className="w-full font-medium">
           {profile.full_name}
@@ -155,9 +141,7 @@ export async function ProfileSummary(props: { profile: Profile }) {
         <Row className="w-full items-start gap-3">
           <Col>
             <span className="text-sm">
-              {formatMoney(
-                Math.max(charityBalance, 0) + Math.min(cashBalance, 0)
-              )}
+              {formatMoney(Math.max(charityBalance, 0) + Math.min(cashBalance, 0))}
             </span>
           </Col>
           <DepositButton userId={profile.id}>

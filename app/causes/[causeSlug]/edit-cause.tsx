@@ -93,9 +93,7 @@ export function EditCause(props: { cause: Cause }) {
               name="header"
               accept="image/png, image/jpeg"
               onChange={(event) => {
-                setHeaderImage(
-                  event.target.files ? event.target.files[0] : null
-                )
+                setHeaderImage(event.target.files ? event.target.files[0] : null)
               }}
             />
           </div>

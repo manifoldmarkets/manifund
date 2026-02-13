@@ -9,7 +9,7 @@ bun run dev          # Dev server (turbo, production Supabase)
 bun run dev:dev      # Dev server (dev Supabase)
 bun run dev:local    # Dev server (local Supabase via Docker)
 bun run build        # Production build
-bun run format       # Prettier format all files
+bun run format       # oxfmt format all files
 bun run gen-types    # Regenerate Supabase TypeScript types
 ```
 
@@ -45,7 +45,7 @@ proxy.ts          # Next.js 16 middleware (session refresh, JWT validation)
 
 ## Code Style
 
-- **Prettier:** 2-space indent, no semicolons, single quotes, trailing commas
+- **oxfmt:** 2-space indent, no semicolons, single quotes, trailing commas
 - **Files:** kebab-case (`profile-card.tsx`)
 - **Components:** PascalCase (`ProfileHeader`)
 - **Functions:** camelCase (`getProjectBySlug`)

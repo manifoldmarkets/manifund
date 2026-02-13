@@ -6,10 +6,7 @@ import { useRouter } from 'next/navigation'
 import { RoundTag } from '@/components/tags'
 import { BidText } from './profile-active-bids'
 
-export function ProposalBids(props: {
-  bids: BidAndProject[]
-  isOwnProfile?: boolean
-}) {
+export function ProposalBids(props: { bids: BidAndProject[]; isOwnProfile?: boolean }) {
   const { bids, isOwnProfile } = props
   const { supabase } = useSupabase()
   const router = useRouter()

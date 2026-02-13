@@ -41,9 +41,7 @@ export default function AlertBox(props: {
         </div>
         <div className="ml-3">
           <h3 className={`text-${color}-800 text-sm font-medium`}>{title}</h3>
-          {children && (
-            <div className={`mt-2 text-sm text-${color}-700`}>{children}</div>
-          )}
+          {children && <div className={`mt-2 text-sm text-${color}-700`}>{children}</div>}
         </div>
       </div>
     </div>

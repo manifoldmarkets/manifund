@@ -118,10 +118,7 @@ export async function projectSlugify(title: string, supabase: SupabaseClient) {
     .toLowerCase()
     .replace(/ /g, '-')
     .replace(/[^\w-]+/g, '')
-  const { data } = await supabase
-    .from('projects')
-    .select('slug')
-    .eq('slug', slug)
+  const { data } = await supabase.from('projects').select('slug').eq('slug', slug)
   if (data && data.length > 0) {
     slug = slug + '-' + Math.random().toString(36).substring(2, 15)
   }

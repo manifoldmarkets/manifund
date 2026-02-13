@@ -24,10 +24,7 @@ export default async function handler(req: NextRequest) {
     .eq('id', user?.id ?? '')
     .single()
   if (existingRole)
-    return NextResponse.json(
-      { error: "You've already claimed your roles" },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: "You've already claimed your roles" }, { status: 400 })
 
   // Create profile_roles
   const newRoles = {

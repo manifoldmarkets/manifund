@@ -31,12 +31,8 @@ export function Tabs(props: { tabs: Tab[]; currentTabId?: string | null }) {
     <div>
       <div className="border-b border-gray-200 py-4 sm:hidden">
         <Select
-          selected={
-            (tabs.find((tab) => tab.id === currentTabId) ?? tabs[0]).name
-          }
-          onSelect={(event) =>
-            router.push(`?tab=${tabs.find((tab) => tab.name === event)?.id}`)
-          }
+          selected={(tabs.find((tab) => tab.id === currentTabId) ?? tabs[0]).name}
+          onSelect={(event) => router.push(`?tab=${tabs.find((tab) => tab.name === event)?.id}`)}
           options={tabs.map((tab) => tab.name)}
           label="Tab:"
         />
@@ -45,18 +41,12 @@ export function Tabs(props: { tabs: Tab[]; currentTabId?: string | null }) {
         <div className="border-b border-gray-200">
           <nav className="-mb-px flex space-x-8" aria-label="Tabs">
             {tabs.map((tab) => (
-              <SingleTab
-                tab={tab}
-                isCurrent={tab.id === currentTabId}
-                key={tab.id}
-              />
+              <SingleTab tab={tab} isCurrent={tab.id === currentTabId} key={tab.id} />
             ))}
           </nav>
         </div>
       </div>
-      <div className="py-6">
-        {tabs.filter((tab) => tab.id === currentTabId)[0].display}
-      </div>
+      <div className="py-6">{tabs.filter((tab) => tab.id === currentTabId)[0].display}</div>
     </div>
   )
 }
@@ -80,9 +70,7 @@ function SingleTab(props: { tab: Tab; isCurrent: boolean }) {
       {tab.count && tab.count > 0 ? (
         <span
           className={clsx(
-            isCurrent
-              ? 'bg-orange-100 text-orange-600'
-              : 'bg-gray-100 text-gray-900',
+            isCurrent ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-900',
             'ml-3 hidden rounded-full px-2.5 py-0.5 text-xs font-medium md:inline-block'
           )}
         >

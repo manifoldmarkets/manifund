@@ -52,14 +52,7 @@ export function Pagination(props: {
   className?: string
   savePageToQuery?: boolean
 }) {
-  const {
-    page,
-    itemsPerPage,
-    totalItems,
-    setPage,
-    className,
-    savePageToQuery,
-  } = props
+  const { page, itemsPerPage, totalItems, setPage, className, savePageToQuery } = props
   const router = useRouter()
   const searchParams = useSearchParams()
   const pageQuery = searchParams?.get('p')
@@ -90,26 +83,14 @@ export function Pagination(props: {
   const pageNumbers = getPageNumbers(maxPage, page)
   return (
     <nav
-      className={clsx(
-        'flex w-full items-center bg-inherit pb-4 pt-2',
-        className
-      )}
+      className={clsx('flex w-full items-center bg-inherit pb-4 pt-2', className)}
       aria-label="Pagination"
     >
       <Row className="mx-auto gap-4">
-        <PaginationArrow
-          onClick={() => onClick(page - 1)}
-          disabled={page <= 0}
-          nextOrPrev="prev"
-        />
+        <PaginationArrow onClick={() => onClick(page - 1)} disabled={page <= 0} nextOrPrev="prev" />
         <Row className="gap-2">
           {pageNumbers.map((pageNumber) => (
-            <PageNumbers
-              key={pageNumber}
-              pageNumber={pageNumber}
-              setPage={onClick}
-              page={page}
-            />
+            <PageNumbers key={pageNumber} pageNumber={pageNumber} setPage={onClick} page={page} />
           ))}
         </Row>
         <PaginationArrow
@@ -138,12 +119,8 @@ export function PaginationArrow(props: {
           : 'cursor-pointer text-primary-600 hover:bg-ink-100'
       )}
     >
-      {nextOrPrev === 'prev' && (
-        <ChevronLeftIcon className="h-[24px] w-[24px]" />
-      )}
-      {nextOrPrev === 'next' && (
-        <ChevronRightIcon className="h-[24px] w-[24px]" />
-      )}
+      {nextOrPrev === 'prev' && <ChevronLeftIcon className="h-[24px] w-[24px]" />}
+      {nextOrPrev === 'next' && <ChevronRightIcon className="h-[24px] w-[24px]" />}
     </div>
   )
 }
@@ -174,25 +151,19 @@ export function PageNumbers(props: {
   )
 }
 
-export function getPageNumbers(
-  maxPage: number,
-  page: number
-): Array<pageNumbers> {
+export function getPageNumbers(maxPage: number, page: number): Array<pageNumbers> {
   if (maxPage <= 7) {
     return range(0, maxPage + 1)
   }
   if (page < 5) {
-    return Array.from<unknown, pageNumbers>(
-      { length: 5 },
-      (_, index) => index
-    ).concat([PAGE_ELLIPSES, maxPage])
+    return Array.from<unknown, pageNumbers>({ length: 5 }, (_, index) => index).concat([
+      PAGE_ELLIPSES,
+      maxPage,
+    ])
   }
   if (page >= maxPage - 2) {
     return [0, PAGE_ELLIPSES].concat(
-      Array.from<unknown, pageNumbers>(
-        { length: 5 },
-        (_, index) => index + maxPage - 4
-      )
+      Array.from<unknown, pageNumbers>({ length: 5 }, (_, index) => index + maxPage - 4)
     )
   }
   return [0, PAGE_ELLIPSES, page - 1, page, page + 1, PAGE_ELLIPSES, maxPage]

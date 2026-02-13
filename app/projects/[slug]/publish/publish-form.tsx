@@ -45,27 +45,24 @@ export function PublishProjectForm(props: {
   prizeCause?: Cause
 }) {
   const { causesList, prizeCause, project } = props
-  const [projectParams, updateProjectParams] = usePartialUpdater<ProjectParams>(
-    {
-      title: project.title,
-      subtitle: project.blurb,
-      minFunding: project.min_funding,
-      fundingGoal: project.funding_goal,
-      verdictDate: format(
-        new Date(project.auction_close ?? add(new Date(), { months: 1 })),
-        'yyyy-MM-dd'
-      ),
-      location: project.location_description ?? '',
-      selectedCauses: project.causes,
-      selectedPrize: prizeCause ?? null,
-      founderPercent: (project.founder_shares / TOTAL_SHARES) * 100,
-      agreedToTerms: true,
-      lobbying: false,
-    }
-  )
+  const [projectParams, updateProjectParams] = usePartialUpdater<ProjectParams>({
+    title: project.title,
+    subtitle: project.blurb,
+    minFunding: project.min_funding,
+    fundingGoal: project.funding_goal,
+    verdictDate: format(
+      new Date(project.auction_close ?? add(new Date(), { months: 1 })),
+      'yyyy-MM-dd'
+    ),
+    location: project.location_description ?? '',
+    selectedCauses: project.causes,
+    selectedPrize: prizeCause ?? null,
+    founderPercent: (project.founder_shares / TOTAL_SHARES) * 100,
+    agreedToTerms: true,
+    lobbying: false,
+  })
   const defaultFounderPercent = roundLargeNumber(
-    (1 - (prizeCause?.cert_params?.defaultInvestorShares ?? 0) / TOTAL_SHARES) *
-      100
+    (1 - (prizeCause?.cert_params?.defaultInvestorShares ?? 0) / TOTAL_SHARES) * 100
   )
   const [showInvestmentPanel, setShowInvestmentPanel] = useState<boolean>(
     !!prizeCause && defaultFounderPercent === projectParams.founderPercent
@@ -74,17 +71,12 @@ export function PublishProjectForm(props: {
 
   const descriptionKey = `ProjectDescription${project.slug}`
   const editor = useTextEditor(project.description, descriptionKey)
-  const selectableCauses = causesList.filter(
-    (cause) => cause.open && !cause.prize
-  )
+  const selectableCauses = causesList.filter((cause) => cause.open && !cause.prize)
   const minMinFunding = projectParams.selectedPrize?.cert_params
     ? projectParams.selectedPrize.cert_params.minMinFunding
     : 500
   const certParams = projectParams.selectedPrize?.cert_params ?? null
-  const errorMessage = getCreateProjectErrorMessage(
-    projectParams,
-    minMinFunding
-  )
+  const errorMessage = getCreateProjectErrorMessage(projectParams, minMinFunding)
 
   const router = useRouter()
   const cancel = () => {
@@ -145,13 +137,9 @@ export function PublishProjectForm(props: {
             autoComplete="off"
             maxLength={80}
             value={projectParams.title}
-            onChange={(event) =>
-              updateProjectParams({ title: event.target.value })
-            }
+            onChange={(event) => updateProjectParams({ title: event.target.value })}
           />
-          <span className="text-right text-xs text-gray-600">
-            Maximum 80 characters
-          </span>
+          <span className="text-right text-xs text-gray-600">Maximum 80 characters</span>
         </Col>
       </Col>
       <Col className="gap-1">
@@ -163,13 +151,9 @@ export function PublishProjectForm(props: {
             autoComplete="off"
             maxLength={160}
             value={projectParams.subtitle ?? ''}
-            onChange={(event) =>
-              updateProjectParams({ subtitle: event.target.value })
-            }
+            onChange={(event) => updateProjectParams({ subtitle: event.target.value })}
           />
-          <span className="text-right text-xs text-gray-600">
-            Maximum 160 characters
-          </span>
+          <span className="text-right text-xs text-gray-600">Maximum 160 characters</span>
         </Col>
       </Col>
       <Col className="gap-1">
@@ -199,22 +183,18 @@ export function PublishProjectForm(props: {
               <RequiredStar />
             </label>
             <p className="text-sm text-gray-600">
-              The minimum amount of funding you need to do this project as
-              described above. If this amount is not reached, no funds will be
-              sent. Due to the cost of approving grants and processing payments,
-              we require this to be at least ${minMinFunding}.
+              The minimum amount of funding you need to do this project as described above. If this
+              amount is not reached, no funds will be sent. Due to the cost of approving grants and
+              processing payments, we require this to be at least ${minMinFunding}.
             </p>
             <Col>
               <AmountInput
                 id="minFunding"
                 amount={projectParams.minFunding}
-                onChangeAmount={(newMin) =>
-                  updateProjectParams({ minFunding: newMin })
-                }
+                onChangeAmount={(newMin) => updateProjectParams({ minFunding: newMin })}
                 placeholder={minMinFunding.toString()}
                 error={
-                  projectParams.minFunding !== undefined &&
-                  projectParams.minFunding < minMinFunding
+                  projectParams.minFunding !== undefined && projectParams.minFunding < minMinFunding
                 }
                 errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
               />
@@ -226,18 +206,15 @@ export function PublishProjectForm(props: {
               <RequiredStar />
             </label>
             <p className="text-sm text-gray-600">
-              Until this amount is raised, the project will be marked for donors
-              as not fully funded. If this amount is different from your minimum
-              funding, please explain in your project description what you could
-              accomplish with the minimum funding and what you could accomplish
-              with the full funding.
+              Until this amount is raised, the project will be marked for donors as not fully
+              funded. If this amount is different from your minimum funding, please explain in your
+              project description what you could accomplish with the minimum funding and what you
+              could accomplish with the full funding.
             </p>
             <AmountInput
               id="fundingGoal"
               amount={projectParams.fundingGoal}
-              onChangeAmount={(newGoal) =>
-                updateProjectParams({ fundingGoal: Number(newGoal) })
-              }
+              onChangeAmount={(newGoal) => updateProjectParams({ fundingGoal: Number(newGoal) })}
               placeholder={minMinFunding.toString()}
               error={
                 !!(
@@ -264,17 +241,14 @@ export function PublishProjectForm(props: {
               }}
             />
             <span className="ml-3 mt-0.5 text-sm leading-tight">
-              <span className="font-bold">
-                Default investment structure (recommended).
-              </span>
+              <span className="font-bold">Default investment structure (recommended).</span>
               <span>
                 {' '}
-                You will receive some amount of upfront funding between your
-                minimum and your goal listed above, or none at all. This option
-                maximizes your chances of getting upfront funding, but means you
-                will not receive any prize money if your project is awarded by a
-                retroactive funder at the end of this round. That is, this will
-                work basically as a normal grant.
+                You will receive some amount of upfront funding between your minimum and your goal
+                listed above, or none at all. This option maximizes your chances of getting upfront
+                funding, but means you will not receive any prize money if your project is awarded
+                by a retroactive funder at the end of this round. That is, this will work basically
+                as a normal grant.
               </span>
             </span>
           </Row>
@@ -290,8 +264,7 @@ export function PublishProjectForm(props: {
               <span className="font-bold">Custom investment structure.</span>
               <span>
                 {' '}
-                Specify below how much equity you would like to sell to your
-                investors upfront.
+                Specify below how much equity you would like to sell to your investors upfront.
               </span>
             </span>
           </Row>
@@ -318,16 +291,14 @@ export function PublishProjectForm(props: {
             <RequiredStar />
           </label>
           <p className="text-sm text-gray-600">
-            After this deadline, if you have not reached your minimum funding
-            bar, your application will close and you will not receive any money.
-            This date cannot be more than 6 weeks after posting.
+            After this deadline, if you have not reached your minimum funding bar, your application
+            will close and you will not receive any money. This date cannot be more than 6 weeks
+            after posting.
           </p>
           <Input
             type="date"
             value={projectParams.verdictDate ?? ''}
-            onChange={(event) =>
-              updateProjectParams({ verdictDate: event.target.value })
-            }
+            onChange={(event) => updateProjectParams({ verdictDate: event.target.value })}
           />
         </Col>
       )}
@@ -353,18 +324,14 @@ export function PublishProjectForm(props: {
         <Input
           type="text"
           value={projectParams.location}
-          onChange={(event) =>
-            updateProjectParams({ location: event.target.value })
-          }
+          onChange={(event) => updateProjectParams({ location: event.target.value })}
         />
       </Col>
 
       <Row className="items-start">
         <Checkbox
           checked={projectParams.lobbying}
-          onChange={(event) =>
-            updateProjectParams({ lobbying: event.target.checked })
-          }
+          onChange={(event) => updateProjectParams({ lobbying: event.target.checked })}
         />
         <span className="ml-3 mt-0.5 text-sm leading-tight">
           <span className="font-bold">
@@ -379,8 +346,8 @@ export function PublishProjectForm(props: {
           </span>
           <span>
             {' '}
-            Check this box if you will use this money to fund lobbying
-            activities within the US or internationally.
+            Check this box if you will use this money to fund lobbying activities within the US or
+            internationally.
           </span>
           <RequiredStar />
         </span>

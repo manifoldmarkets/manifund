@@ -24,19 +24,12 @@ export function ProjectData(props: {
         <Stat value={formatMoneyPrecise(minimum)} label="minimum funding" />
       )}
       {['draft', 'proposal', 'active'].includes(project.stage) && (
-        <Stat
-          value={formatMoneyPrecise(project.funding_goal)}
-          label="funding goal"
-        />
+        <Stat value={formatMoneyPrecise(project.funding_goal)} label="funding goal" />
       )}
       {project.type === 'cert' && (
         <Stat
           value={formatMoneyPrecise(valuation)}
-          label={
-            ['draft', 'proposal'].includes(project.stage)
-              ? 'minimum valuation'
-              : 'valuation'
-          }
+          label={['draft', 'proposal'].includes(project.stage) ? 'minimum valuation' : 'valuation'}
         />
       )}
     </div>

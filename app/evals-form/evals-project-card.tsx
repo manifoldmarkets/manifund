@@ -38,9 +38,7 @@ export function EvalsProjectCard(props: {
   const creator = project.profiles
   const shortName = shortenName(creator.full_name)
   const amountRaised =
-    project.type === 'dummy' ||
-    project.stage === 'proposal' ||
-    project.stage === 'not funded'
+    project.type === 'dummy' || project.stage === 'proposal' || project.stage === 'not funded'
       ? project.funding_goal
       : getAmountRaised(project, [], project.txns)
   return (
@@ -110,11 +108,7 @@ export function EvalsProjectCard(props: {
               </Col>
             )}
             <Row className="flex-2 items-center justify-between gap-2">
-              <Link
-                className="flex gap-1"
-                href={`/${creator.username}`}
-                target="_blank"
-              >
+              <Link className="flex gap-1" href={`/${creator.username}`} target="_blank">
                 <Avatar
                   username={creator.username}
                   avatarUrl={creator.avatar_url}

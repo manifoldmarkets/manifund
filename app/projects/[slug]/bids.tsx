@@ -26,23 +26,11 @@ export function Bids(props: {
   userProfile?: Profile
   activeAuction?: boolean
 }) {
-  const {
-    bids,
-    project,
-    userSpendableFunds,
-    userSellableShares,
-    userProfile,
-    activeAuction,
-  } = props
+  const { bids, project, userSpendableFunds, userSellableShares, userProfile, activeAuction } =
+    props
   if (bids.length === 0)
-    return (
-      <p className="text-center italic text-gray-500">
-        There are no bids on this project.
-      </p>
-    )
-  const buyBids = bids.filter(
-    (bid) => bid.type === 'buy' || bid.type === 'assurance buy'
-  )
+    return <p className="text-center italic text-gray-500">There are no bids on this project.</p>
+  const buyBids = bids.filter((bid) => bid.type === 'buy' || bid.type === 'assurance buy')
   const sellBids = bids.filter((bid) => bid.type === 'sell')
   const donateBids = bids.filter((bid) => bid.type === 'donate')
   return (
@@ -77,9 +65,7 @@ export function Bids(props: {
           ))}
         </Col>
         <Col>
-          {donateBids.length !== 0 && (
-            <h1 className="text-xl">Donation Offers</h1>
-          )}
+          {donateBids.length !== 0 && <h1 className="text-xl">Donation Offers</h1>}
           {donateBids.map((bid) => (
             <Bid
               key={bid.id}
@@ -103,14 +89,7 @@ export function Bid(props: {
   userSpendableFunds?: number
   userSellableShares?: number
 }) {
-  const {
-    bid,
-    showValuation,
-    project,
-    userProfile,
-    userSpendableFunds,
-    userSellableShares,
-  } = props
+  const { bid, showValuation, project, userProfile, userSpendableFunds, userSellableShares } = props
   const showTrade =
     userProfile &&
     bid.bidder !== userProfile.id &&
@@ -138,9 +117,7 @@ export function Bid(props: {
             addSuffix: true,
           })}
         </span>
-        {userProfile && bid.bidder === userProfile.id && (
-          <DeleteBid bidId={bid.id} />
-        )}
+        {userProfile && bid.bidder === userProfile.id && <DeleteBid bidId={bid.id} />}
         {showTrade && project && (
           <Trade
             bid={bid}
@@ -167,16 +144,12 @@ function Trade(props: {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const userSellableValue = (userSellableShares / TOTAL_SHARES) * bid.valuation
   const [tradeAmount, setTradeAmount] = useState<number | undefined>(
-    Math.min(
-      bid.type === 'buy' ? userSellableValue : userSpendableFunds,
-      bid.amount
-    )
+    Math.min(bid.type === 'buy' ? userSellableValue : userSpendableFunds, bid.amount)
   )
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const enoughMoney = !!tradeAmount && tradeAmount <= (userSpendableFunds ?? 0)
   const enoughShares =
-    ((tradeAmount ?? 0) / bid.valuation) * TOTAL_SHARES <=
-    (userSellableShares ?? 0)
+    ((tradeAmount ?? 0) / bid.valuation) * TOTAL_SHARES <= (userSellableShares ?? 0)
   const marks = [
     { value: 0, label: '$0' },
     { value: 25, label: `${formatMoney(bid.amount / 4)}` },
@@ -201,11 +174,7 @@ function Trade(props: {
     errorMessage = `You can only trade up to the amount offered: ${formatLargeNumber(
       (tradeAmount / bid.valuation) * 100
     )}% for ${formatMoney(tradeAmount)}.`
-  } else if (
-    !agreedToTerms &&
-    project.creator === userId &&
-    bid.type === 'buy'
-  ) {
+  } else if (!agreedToTerms && project.creator === userId && bid.type === 'buy') {
     errorMessage = `Confirm that you understand the terms of this trade.`
   }
   return (
@@ -225,22 +194,14 @@ function Trade(props: {
       <Modal open={open} setOpen={setOpen}>
         <div>
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
-            <CircleStackIcon
-              className="h-6 w-6 text-orange-600"
-              aria-hidden="true"
-            />
+            <CircleStackIcon className="h-6 w-6 text-orange-600" aria-hidden="true" />
           </div>
           <div className="mt-3 text-center sm:mt-5">
-            <Dialog.Title
-              as="h3"
-              className="text-base font-semibold leading-6 text-gray-900"
-            >
+            <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
               Select trade amount
             </Dialog.Title>
             <div className="mt-2">
-              <p className="text-sm text-gray-500">
-                Choose what portion of this offer to accept.
-              </p>
+              <p className="text-sm text-gray-500">Choose what portion of this offer to accept.</p>
             </div>
             <div className="mt-5 flex justify-center">
               <div className="flex w-11/12 justify-center gap-2">
@@ -253,9 +214,7 @@ function Trade(props: {
                 <Slider
                   marks={marks}
                   amount={((tradeAmount ?? 0) / bid.amount) * 100}
-                  onChange={(value) =>
-                    setTradeAmount(((value as number) * bid.amount) / 100)
-                  }
+                  onChange={(value) => setTradeAmount(((value as number) * bid.amount) / 100)}
                   step={5}
                 />
               </div>
@@ -274,13 +233,10 @@ function Trade(props: {
                     I understand
                   </label>{' '}
                   <span id="terms-description" className="text-gray-500">
-                    <span className="sr-only">I understand </span>that by making
-                    this trade, I am agreeing to pay{' '}
-                    {formatLargeNumber(
-                      ((tradeAmount ?? 0) / bid.valuation) * 100
-                    )}
-                    % of any prize money this project wins to Manifund, which
-                    will be distributed to the investor who holds these shares.
+                    <span className="sr-only">I understand </span>that by making this trade, I am
+                    agreeing to pay {formatLargeNumber(((tradeAmount ?? 0) / bid.valuation) * 100)}%
+                    of any prize money this project wins to Manifund, which will be distributed to
+                    the investor who holds these shares.
                   </span>
                 </div>
               </div>
@@ -352,10 +308,7 @@ function DeleteBid(props: { bidId: string }) {
             <TrashIcon className="h-6 w-6 text-rose-600" aria-hidden="true" />
           </div>
           <div className="mt-3 text-center sm:mt-5">
-            <Dialog.Title
-              as="h3"
-              className="text-base font-semibold leading-6 text-gray-900"
-            >
+            <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
               Are you sure you want to delete this offer?
             </Dialog.Title>
           </div>

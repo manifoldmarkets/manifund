@@ -29,13 +29,7 @@ type SortOption =
   | 'hot'
   | 'closing soon'
 
-const DEFAULT_SORT_OPTIONS = [
-  'hot',
-  'newest',
-  'closing soon',
-  'votes',
-  'funding',
-] as SortOption[]
+const DEFAULT_SORT_OPTIONS = ['hot', 'newest', 'closing soon', 'votes', 'funding'] as SortOption[]
 
 export function ProjectsDisplay(props: {
   projects: FullProject[]
@@ -50,11 +44,7 @@ export function ProjectsDisplay(props: {
   const [includedCauses, setIncludedCauses] = useState<Cause[]>([])
   const [search, setSearch] = useState<string>('')
   const filteredProjects = filterProjects(projects, includedCauses)
-  const sortedProjects = sortProjects(
-    noFilter ? projects : filteredProjects,
-    prices,
-    sortBy
-  )
+  const sortedProjects = sortProjects(noFilter ? projects : filteredProjects, prices, sortBy)
   const CLIENT_PAGE_SIZE = 20
   const [numToShow, setNumToShow] = useState<number>(CLIENT_PAGE_SIZE)
   const selectedProjects = sortedProjects
@@ -73,12 +63,8 @@ export function ProjectsDisplay(props: {
   const fundableProjects = selectedProjects.filter(
     (project) => project.stage == 'proposal' || project.stage == 'active'
   )
-  const completeProjects = selectedProjects.filter(
-    (project) => project.stage == 'complete'
-  )
-  const unfundedProjects = selectedProjects.filter(
-    (project) => project.stage == 'not funded'
-  )
+  const completeProjects = selectedProjects.filter((project) => project.stage == 'complete')
+  const unfundedProjects = selectedProjects.filter((project) => project.stage == 'not funded')
 
   return (
     <Col className="gap-2">
@@ -115,17 +101,13 @@ export function ProjectsDisplay(props: {
         )}
         {completeProjects.length > 0 && (
           <div>
-            <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">
-              Complete Projects
-            </h1>
+            <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">Complete Projects</h1>
             <ProjectGroup projects={completeProjects} prices={prices} />
           </div>
         )}
         {unfundedProjects.length > 0 && (
           <div>
-            <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">
-              Unfunded Projects
-            </h1>
+            <h1 className="mb-2 text-lg font-bold text-gray-900 sm:text-2xl">Unfunded Projects</h1>
             <ProjectGroup projects={unfundedProjects} prices={prices} />
           </div>
         )}
@@ -164,9 +146,7 @@ function sortProjects(
     return sortBy(projects, [(project) => -prices[project.id]])
   }
   if (sortType === 'funding') {
-    return sortBy(projects, [
-      (project) => -getAmountRaised(project, project.bids, project.txns),
-    ])
+    return sortBy(projects, [(project) => -getAmountRaised(project, project.bids, project.txns)])
   }
   if (sortType === 'hot') {
     return sortBy(projects, [hotScore])
@@ -230,10 +210,7 @@ function CauseFilterSelect(props: {
             )}
           </Row>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-            <ChevronUpDownIcon
-              className="h-5 w-5 text-gray-400"
-              aria-hidden="true"
-            />
+            <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </span>
         </Listbox.Button>
       </div>
@@ -246,10 +223,7 @@ function CauseFilterSelect(props: {
       >
         <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="relative w-full cursor-pointer select-none py-2 pl-3 pr-9 text-sm text-gray-900 hover:bg-orange-500 hover:text-white">
-            <button
-              onClick={() => setIncludedCauses([])}
-              className="w-full text-left"
-            >
+            <button onClick={() => setIncludedCauses([])} className="w-full text-left">
               All causes
             </button>
             {includedCauses.length === 0 ? (
@@ -271,11 +245,7 @@ function CauseFilterSelect(props: {
             >
               {({ selected, active }) => (
                 <>
-                  <CauseTag
-                    causeTitle={cause.title}
-                    causeSlug={cause.slug}
-                    noLink
-                  />
+                  <CauseTag causeTitle={cause.title} causeSlug={cause.slug} noLink />
                   {selected ? (
                     <span
                       className={clsx(

@@ -2,16 +2,12 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { Database } from './database.types'
 import { Project } from './project'
 
-export type ProjectTransfer =
-  Database['public']['Tables']['project_transfers']['Row']
+export type ProjectTransfer = Database['public']['Tables']['project_transfers']['Row']
 export type ProjectTransferAndProject = ProjectTransfer & {
   projects: Project
 }
 
-export async function getTransfersByEmail(
-  supabase: SupabaseClient,
-  recipientEmail: string
-) {
+export async function getTransfersByEmail(supabase: SupabaseClient, recipientEmail: string) {
   const { data, error } = await supabase
     .from('project_transfers')
     .select('*, projects(*)')

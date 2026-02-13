@@ -138,15 +138,12 @@ export default function ApiDocsPage() {
             Manifund API
           </h1>
           <p className="mb-10 text-gray-600">
-            Manifund makes all of our data public, for developers and LLMs
-            alike. Our endpoints are open and require no authentication.
+            Manifund makes all of our data public, for developers and LLMs alike. Our endpoints are
+            open and require no authentication.
             <br />
             <br />
             Need help, or want to show off something cool? Find us on{' '}
-            <Link
-              href="https://discord.gg/ZGsDMWSA5Q"
-              className="text-orange-600 underline"
-            >
+            <Link href="https://discord.gg/ZGsDMWSA5Q" className="text-orange-600 underline">
               Discord
             </Link>
             !
@@ -166,19 +163,13 @@ export default function ApiDocsPage() {
                   rel="noopener noreferrer"
                 >
                   <div className="flex items-center gap-1">
-                    <span className="font-mono text-sm text-gray-700">
-                      {api.path}
-                    </span>
+                    <span className="font-mono text-sm text-gray-700">{api.path}</span>
                     <ArrowTopRightOnSquareIcon className="h-4 w-4 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" />
                   </div>
                 </Link>
               </div>
-              <p className="mb-6 whitespace-pre-wrap text-gray-600">
-                {api.description}
-              </p>
-              <h3 className="mb-2 mt-6 font-semibold text-gray-900">
-                Query Parameters
-              </h3>
+              <p className="mb-6 whitespace-pre-wrap text-gray-600">{api.description}</p>
+              <h3 className="mb-2 mt-6 font-semibold text-gray-900">Query Parameters</h3>
               <table className="mb-8 w-full overflow-hidden rounded border text-sm">
                 <thead className="bg-gray-100">
                   <tr>
@@ -203,9 +194,7 @@ export default function ApiDocsPage() {
               <pre className="mb-8 overflow-x-auto rounded bg-gray-100 p-4 text-xs">
                 <code>{api.response}</code>
               </pre>
-              <div className="mb-2 text-xs font-semibold text-gray-500">
-                cURL
-              </div>
+              <div className="mb-2 text-xs font-semibold text-gray-500">cURL</div>
               <pre className="mb-8 overflow-x-auto rounded border border-orange-100 bg-orange-50 p-3 text-xs">
                 <code>{api.curl}</code>
               </pre>

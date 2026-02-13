@@ -15,8 +15,7 @@ export const MentionList = forwardRef<any, SuggestionProps<MiniProfile>>(
       if (profile) command({ id: profile.id, label: profile.username } as any)
     }
 
-    const onUp = () =>
-      setSelectedIndex((i) => (i + profiles.length - 1) % profiles.length)
+    const onUp = () => setSelectedIndex((i) => (i + profiles.length - 1) % profiles.length)
     const onDown = () => setSelectedIndex((i) => (i + 1) % profiles.length)
     const onEnter = () => submitUser(selectedIndex)
 
@@ -47,9 +46,7 @@ export const MentionList = forwardRef<any, SuggestionProps<MiniProfile>>(
             <button
               className={clsx(
                 'flex h-8 w-full cursor-pointer select-none items-center gap-2 truncate px-4',
-                selectedIndex === i
-                  ? 'bg-orange-500 text-white'
-                  : 'text-gray-900'
+                selectedIndex === i ? 'bg-orange-500 text-white' : 'text-gray-900'
               )}
               onClick={() => submitUser(i)}
               key={profile.id}

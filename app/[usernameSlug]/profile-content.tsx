@@ -41,22 +41,10 @@ export function ProfileContent(props: {
   userTxns?: TxnAndProject[]
   userBids?: BidAndProject[]
 }) {
-  const {
-    profile,
-    projects,
-    comments,
-    bids,
-    txns,
-    userProfile,
-    userTxns,
-    userBids,
-  } = props
+  const { profile, projects, comments, bids, txns, userProfile, userTxns, userBids } = props
   const isOwnProfile = userProfile?.id === profile.id
   const proposalBids = bids.filter(
-    (bid) =>
-      bid.projects.stage === 'proposal' &&
-      bid.status === 'pending' &&
-      bid.type !== 'donate'
+    (bid) => bid.projects.stage === 'proposal' && bid.status === 'pending' && bid.type !== 'donate'
   )
   const activeBids = bids.filter(
     (bid) => bid.projects.stage === 'active' && bid.status === 'pending'
@@ -70,16 +58,9 @@ export function ProfileContent(props: {
       (txn.type === 'profile donation' || txn.type === 'project donation') &&
       txn.from_id === profile.id
   )
-  const pendingDonateBids = bids.filter(
-    (bid) => bid.status === 'pending' && bid.type === 'donate'
-  )
+  const pendingDonateBids = bids.filter((bid) => bid.status === 'pending' && bid.type === 'donate')
   const balance = calculateUserBalance(txns, profile.id)
-  const cashBalance = calculateCashBalance(
-    txns,
-    bids,
-    profile.id,
-    profile.accreditation_status
-  )
+  const cashBalance = calculateCashBalance(txns, bids, profile.id, profile.accreditation_status)
   const charityBalance = calculateCharityBalance(
     txns,
     bids,
@@ -98,25 +79,14 @@ export function ProfileContent(props: {
   const relevantProjects = projects
     .filter(
       (project) =>
-        project.project_transfers.filter((transfer) => !transfer.transferred)
-          .length === 0
+        project.project_transfers.filter((transfer) => !transfer.transferred).length === 0
     )
-    .filter(
-      (project) =>
-        (project.stage !== 'hidden' && project.stage !== 'draft') ||
-        isOwnProfile
-    )
-  const sortedTxns = sortBy(txns, [
-    (txn) => -new Date(txn.created_at).getTime(),
-  ])
+    .filter((project) => (project.stage !== 'hidden' && project.stage !== 'draft') || isOwnProfile)
+  const sortedTxns = sortBy(txns, [(txn) => -new Date(txn.created_at).getTime()])
   return (
     <div className="flex flex-col gap-6">
       {profile.regranter_status && !isOwnProfile && (
-        <DonateBox
-          charity={profile}
-          profile={userProfile}
-          maxDonation={userCharityBalance}
-        />
+        <DonateBox charity={profile} profile={userProfile} maxDonation={userCharityBalance} />
       )}
       <BalanceDisplay
         balance={balance}
@@ -127,27 +97,16 @@ export function ProfileContent(props: {
         isOwnProfile={isOwnProfile ?? undefined}
         userId={userProfile?.id ?? undefined}
       />
-      {profile.long_description && (
-        <AboutMeSection content={profile.long_description} />
-      )}
-      {(relevantProjects.length > 0 || isOwnProfile) && (
-        <Projects projects={relevantProjects} />
-      )}
+      {profile.long_description && <AboutMeSection content={profile.long_description} />}
+      {(relevantProjects.length > 0 || isOwnProfile) && <Projects projects={relevantProjects} />}
       {(donations.length > 0 || pendingDonateBids.length > 0) && (
-        <OutgoingDonationsHistory
-          donations={donations}
-          pendingDonateBids={pendingDonateBids}
-        />
+        <OutgoingDonationsHistory donations={donations} pendingDonateBids={pendingDonateBids} />
       )}
       {notOwnProjectInvestments.length > 0 && (
         <Investments investments={notOwnProjectInvestments} />
       )}
-      {activeBids.length > 0 && (
-        <ActiveBids bids={activeBids} isOwnProfile={isOwnProfile} />
-      )}
-      {proposalBids.length > 0 && (
-        <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />
-      )}
+      {activeBids.length > 0 && <ActiveBids bids={activeBids} isOwnProfile={isOwnProfile} />}
+      {proposalBids.length > 0 && <ProposalBids bids={proposalBids} isOwnProfile={isOwnProfile} />}
       {comments.length > 0 && (
         <ProfileComments
           comments={comments}
@@ -158,10 +117,7 @@ export function ProfileContent(props: {
         />
       )}
       <Col className="gap-4">
-        <UserTxns
-          txns={sortedTxns.filter((t) => t.token === 'USD')}
-          profile={profile}
-        />
+        <UserTxns txns={sortedTxns.filter((t) => t.token === 'USD')} profile={profile} />
       </Col>
     </div>
   )
@@ -183,8 +139,7 @@ function UserTxns(props: { txns: FullTxn[]; profile: Profile }) {
     const from = mappings[txn.from_id ?? ''] ?? `<${txn.from_id}>`
     const to = mappings[txn.to_id] ?? `<${txn.to_id}>`
     const sign = txn.from_id === profile.id ? '' : '+'
-    const descriptor =
-      txn.projects?.title ?? (txn.from_id === profile.id ? to : from)
+    const descriptor = txn.projects?.title ?? (txn.from_id === profile.id ? to : from)
 
     return (
       <TableRow className="text-sm font-light">
@@ -193,12 +148,7 @@ function UserTxns(props: { txns: FullTxn[]; profile: Profile }) {
           {formatDistanceToNow(new Date(txn.created_at))} ago
         </TableCell>
         <TableCell className="max-w-6 truncate">{txn.type}</TableCell>
-        <TableCell
-          className={clsx(
-            'w-4 text-right font-bold',
-            sign ? 'text-green-600' : ''
-          )}
-        >
+        <TableCell className={clsx('w-4 text-right font-bold', sign ? 'text-green-600' : '')}>
           {sign}
           {Math.round(txn.amount)}
         </TableCell>
@@ -238,9 +188,7 @@ function compileInvestments(txns: FullTxn[], userId: string) {
   let investments: Investment[] = []
 
   projectTxns.forEach((txn) => {
-    let aggInvestment = investments.find(
-      (investment) => investment.project?.id === txn.project
-    )
+    let aggInvestment = investments.find((investment) => investment.project?.id === txn.project)
     const incoming = txn.to_id === userId
     if (txn.token === 'USD') {
       if (aggInvestment) {
@@ -279,10 +227,7 @@ function AboutMeSection(props: { content: any }) {
         About Me
       </Row>
       <div className="text-sm text-gray-700">
-        <RichContent
-          content={content}
-          className={clsx('text-sm', !expanded && 'line-clamp-2')}
-        />
+        <RichContent content={content} className={clsx('text-sm', !expanded && 'line-clamp-2')} />
       </div>
     </div>
   )

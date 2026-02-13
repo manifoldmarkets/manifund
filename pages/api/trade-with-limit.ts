@@ -53,28 +53,13 @@ export default async function handler(req: NextRequest) {
         ? calculateCashBalance(userTxns, userBids, userProfile.id, true)
         : calculateCharityBalance(userTxns, userBids, userProfile.id, false)
       : oldBid.bidder === oldBid.projects.creator
-      ? calculateCashBalance(partnerTxns, partnerBids, oldBid.bidder, true) +
-        oldBid.amount
-      : calculateCharityBalance(
-          partnerTxns,
-          partnerBids,
-          oldBid.bidder,
-          false
-        ) + oldBid.amount
+        ? calculateCashBalance(partnerTxns, partnerBids, oldBid.bidder, true) + oldBid.amount
+        : calculateCharityBalance(partnerTxns, partnerBids, oldBid.bidder, false) + oldBid.amount
   const sellerShares =
     oldBid.type === 'sell'
-      ? calculateSellableShares(
-          partnerTxns,
-          partnerBids,
-          oldBid.project,
-          oldBid.bidder
-        ) + numSharesInTrade
-      : calculateSellableShares(
-          userTxns,
-          userBids,
-          oldBid.project,
-          userProfile.id
-        )
+      ? calculateSellableShares(partnerTxns, partnerBids, oldBid.project, oldBid.bidder) +
+        numSharesInTrade
+      : calculateSellableShares(userTxns, userBids, oldBid.project, userProfile.id)
   if (
     buyerBalance < numDollarsInTrade ||
     numDollarsInTrade > oldBid.amount ||
@@ -93,11 +78,7 @@ export default async function handler(req: NextRequest) {
     supabase
   )
   await updateBidFromTrade(oldBid, numDollarsInTrade, supabaseAdmin)
-  const tradeText = genTradeText(
-    oldBid,
-    oldBid.projects.title,
-    numDollarsInTrade
-  )
+  const tradeText = genTradeText(oldBid, oldBid.projects.title, numDollarsInTrade)
   await sendTemplateEmail(
     TEMPLATE_IDS.TRADE_ACCEPTED,
     {

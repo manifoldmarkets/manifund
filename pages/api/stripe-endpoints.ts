@@ -34,10 +34,7 @@ const initStripe = () => {
   return new Stripe(apiKey, { apiVersion: '2022-11-15', typescript: true })
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const stripe = initStripe()
   const buf = await buffer(req)
   let event

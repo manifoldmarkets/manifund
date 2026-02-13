@@ -12,9 +12,7 @@ export function ProfileComments(props: {
   userProfile?: Profile
 }) {
   const { comments, profile, userId, userCharityBalance, userProfile } = props
-  const filteredComments = comments.filter(
-    (comment) => comment.projects.stage !== 'hidden'
-  )
+  const filteredComments = comments.filter((comment) => comment.projects.stage !== 'hidden')
   const sortedComments = orderBy(filteredComments, ['created_at'], ['desc'])
   return (
     <div>

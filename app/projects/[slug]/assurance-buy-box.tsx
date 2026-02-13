@@ -7,11 +7,7 @@ import { SignInButton } from '@/components/sign-in-button'
 import { Slider } from '@/components/slider'
 import { Tooltip } from '@/components/tooltip'
 import { Project } from '@/db/project'
-import {
-  formatMoney,
-  formatMoneyPrecise,
-  formatPercent,
-} from '@/utils/formatting'
+import { formatMoney, formatMoneyPrecise, formatPercent } from '@/utils/formatting'
 import { format, isBefore } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -25,14 +21,7 @@ export function AssuranceBuyBox(props: {
   activeAuction?: boolean
   signedIn?: boolean
 }) {
-  const {
-    project,
-    minValuation,
-    offerSizePortion,
-    maxBuy,
-    activeAuction,
-    signedIn,
-  } = props
+  const { project, minValuation, offerSizePortion, maxBuy, activeAuction, signedIn } = props
   const [amount, setAmount] = useState<number | undefined>(0)
   const [valuation, setValuation] = useState<number | undefined>(minValuation)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -49,9 +38,7 @@ export function AssuranceBuyBox(props: {
   } else if (amount && amount > maxBuy) {
     errorMessage = `You don't have enough funds to buy $${amount}. You can buy up to $${maxBuy} worth.`
   } else if (amount && amount > offerSizeDollars) {
-    errorMessage = `You can't buy more than ${formatPercent(
-      offerSizePortion
-    )} of the project.`
+    errorMessage = `You can't buy more than ${formatPercent(offerSizePortion)} of the project.`
   }
 
   const placeBid = async () => {
@@ -81,10 +68,8 @@ export function AssuranceBuyBox(props: {
         </Row>
         <p className="text-sm text-gray-500">
           Offer to buy equity directly from the founder at{' '}
-          {activeAuction
-            ? 'or above the minimum valuation'
-            : 'the initial valuation'}
-          . This order will only go through once{' '}
+          {activeAuction ? 'or above the minimum valuation' : 'the initial valuation'}. This order
+          will only go through once{' '}
           {activeAuction
             ? `the auction closes on ${format(
                 new Date(`${project.auction_close}T12:00:00Z`),
@@ -153,8 +138,7 @@ export function AssuranceBuyBox(props: {
             </Col>
           ) : (
             <span className="w-full text-center italic text-gray-600">
-              You have no spendable funds. Add money to your account through
-              your profile page.
+              You have no spendable funds. Add money to your account through your profile page.
             </span>
           )}
           <Row className="justify-end gap-2">
@@ -165,23 +149,20 @@ export function AssuranceBuyBox(props: {
                 disabled={!amount || errorMessage !== null}
                 loading={isSubmitting}
               >
-                Buy {formatPercent(valuation ? (amount ?? 0) / valuation : 0)}{' '}
-                at {formatMoneyPrecise(valuation ?? 0)} valuation
+                Buy {formatPercent(valuation ? (amount ?? 0) / valuation : 0)} at{' '}
+                {formatMoneyPrecise(valuation ?? 0)} valuation
               </Button>
             </Tooltip>
           </Row>
         </>
       )}
       {!signedIn && isOpen && (
-        <SignInButton
-          className="w-full"
-          buttonText="Sign in to place a buy offer"
-        />
+        <SignInButton className="w-full" buttonText="Sign in to place a buy offer" />
       )}
       {!isOpen && (
         <span className="w-full text-center italic text-gray-600">
-          This project has reached its deadline and is no longer accepting
-          offers while it completes its other funding requirements.
+          This project has reached its deadline and is no longer accepting offers while it completes
+          its other funding requirements.
         </span>
       )}
     </Card>

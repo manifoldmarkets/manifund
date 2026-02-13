@@ -12,12 +12,7 @@ import { DisplayLink } from '@/hooks/use-text-editor'
 import StarterKit from '@tiptap/starter-kit'
 import { DisplayImage } from './editor/image'
 
-export const TIPTAP_EXTENSIONS = [
-  StarterKit,
-  DisplayLink,
-  DisplayMention,
-  DisplayImage,
-]
+export const TIPTAP_EXTENSIONS = [StarterKit, DisplayLink, DisplayMention, DisplayImage]
 
 export function TextEditor(props: {
   editor: Editor | null

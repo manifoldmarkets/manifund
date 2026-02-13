@@ -14,10 +14,7 @@ export function isAdmin(user: User | null) {
   return ADMINS.includes(user?.email ?? '')
 }
 
-export async function getFullTxnsByUser(
-  supabase: SupabaseClient,
-  user: string
-) {
+export async function getFullTxnsByUser(supabase: SupabaseClient, user: string) {
   if (!user) {
     return []
   }
@@ -31,10 +28,7 @@ export async function getFullTxnsByUser(
   return (data as FullTxn[]) ?? ([] as FullTxn[])
 }
 
-export async function getTxnAndProjectsByUser(
-  supabase: SupabaseClient,
-  user: string
-) {
+export async function getTxnAndProjectsByUser(supabase: SupabaseClient, user: string) {
   if (!user) {
     return []
   }
@@ -62,10 +56,7 @@ export async function getTxnsByUser(supabase: SupabaseClient, user: string) {
   return (data as Txn[]) ?? ([] as Txn[])
 }
 
-export async function getIncomingTxnsByUserWithDonor(
-  supabase: SupabaseClient,
-  user: string
-) {
+export async function getIncomingTxnsByUserWithDonor(supabase: SupabaseClient, user: string) {
   const { data, error } = await supabase
     .from('txns')
     .select('*, profiles!txns_from_id_fkey(*)')
@@ -76,10 +67,7 @@ export async function getIncomingTxnsByUserWithDonor(
   return data as TxnAndProfiles[]
 }
 
-export async function getTxnsByProject(
-  supabase: SupabaseClient,
-  project: string
-) {
+export async function getTxnsByProject(supabase: SupabaseClient, project: string) {
   const { data, error } = await supabase
     .from('txns')
     .select('*, profiles!txns_from_id_fkey(*)')
@@ -93,9 +81,7 @@ export async function getTxnsByProject(
 export async function getAllProjectTxns(supabase: SupabaseClient) {
   const { data, error } = await supabase
     .from('txns')
-    .select(
-      '*, profiles!txns_from_id_fkey(regranter_status), projects(creator, stage, type)'
-    )
+    .select('*, profiles!txns_from_id_fkey(regranter_status), projects(creator, stage, type)')
     .not('project', 'is', null)
   if (error) {
     throw error
@@ -121,10 +107,7 @@ export async function getRecentFullTxns(
 }
 
 // Return all txns to projects related to this cause
-export async function getMatchTxns(
-  supabase: SupabaseClient,
-  causeSlug: string
-) {
+export async function getMatchTxns(supabase: SupabaseClient, causeSlug: string) {
   const { data } = await supabase
     .from('txns')
     .select(

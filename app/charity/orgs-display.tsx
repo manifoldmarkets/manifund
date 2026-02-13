@@ -8,9 +8,7 @@ import { OrgCard } from './org-card'
 export function OrgsDisplay(props: { orgs: ProfileAndTxns[] }) {
   const { orgs } = props
   const [search, setSearch] = useState<string>('')
-  const selectedOrgs = orgs.filter((org) =>
-    searchInAny(search, org.full_name, org.bio)
-  )
+  const selectedOrgs = orgs.filter((org) => searchInAny(search, org.full_name, org.bio))
   return (
     <>
       <SearchBar search={search} setSearch={setSearch} className="mt-2" />

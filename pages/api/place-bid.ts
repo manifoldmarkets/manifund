@@ -36,12 +36,7 @@ export default async function handler(req: NextRequest) {
   const bidderBalance =
     bidder.accreditation_status && type === 'buy'
       ? calculateCashBalance(txns, bids, bidder.id, bidder.accreditation_status)
-      : calculateCharityBalance(
-          txns,
-          bids,
-          bidder.id,
-          bidder.accreditation_status
-        )
+      : calculateCharityBalance(txns, bids, bidder.id, bidder.accreditation_status)
   if (type !== 'sell' && bidderBalance < amount) {
     return new Response('Insufficient funds', { status: 401 })
   }
@@ -54,11 +49,7 @@ export default async function handler(req: NextRequest) {
     const totalOffered = calcTotalOffered(project) + amount
     const totalNeeded = calcFundingNeeded(project)
     const difference = totalNeeded - totalOffered
-    if (
-      difference < 0 &&
-      difference > -1 &&
-      amount - difference <= bidderBalance
-    ) {
+    if (difference < 0 && difference > -1 && amount - difference <= bidderBalance) {
       actualBidAmount = totalNeeded - totalOffered
     }
   }

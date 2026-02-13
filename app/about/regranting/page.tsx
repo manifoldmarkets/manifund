@@ -22,10 +22,9 @@ export default async function RegrantingPage() {
       <div className="prose mx-auto max-w-none font-light">
         <h1>AI Safety Regranting</h1>
         <p>
-          We partner with <i>regrantors:</i> experts in the field of AI safety,
-          each given an independent budget. Regrantors recommend grants based on
-          their personal expertise; Manifund reviews these recommendations and
-          distributes the funds.
+          We partner with <i>regrantors:</i> experts in the field of AI safety, each given an
+          independent budget. Regrantors recommend grants based on their personal expertise;
+          Manifund reviews these recommendations and distributes the funds.
         </p>
         {/* <p>
           This model was pioneered by the FTX Future Fund; among the grantmaking
@@ -42,28 +41,24 @@ export default async function RegrantingPage() {
         <h3>Why regranting?</h3>
         <ul>
           <li>
-            <strong>Hidden opportunities:</strong> Regrantors can tap into their
-            personal networks, giving to places that donors and grantmaking
-            organizations might miss. Rather than wait for an application,
-            regrantors can reach out to grantees to initiate new projects.
+            <strong>Hidden opportunities:</strong> Regrantors can tap into their personal networks,
+            giving to places that donors and grantmaking organizations might miss. Rather than wait
+            for an application, regrantors can reach out to grantees to initiate new projects.
           </li>
           <li>
-            <strong>Fast:</strong> The regrantor is responsible for the budget,
-            rather than a committee. The regranting model requires less overhead
-            than traditional grantmaking, so we can make grants in days, not
-            months.
+            <strong>Fast:</strong> The regrantor is responsible for the budget, rather than a
+            committee. The regranting model requires less overhead than traditional grantmaking, so
+            we can make grants in days, not months.
           </li>
           <li>
-            <strong>Flexible:</strong> Regrantors can give to projects that are
-            not yet registered as charities, or to individuals; Manifund acts as
-            the fiscal sponsor, complying with 501c3 requirements and allowing
-            tax benefits for donors.
+            <strong>Flexible:</strong> Regrantors can give to projects that are not yet registered
+            as charities, or to individuals; Manifund acts as the fiscal sponsor, complying with
+            501c3 requirements and allowing tax benefits for donors.
           </li>
           <li>
-            <strong>Trust-based:</strong> Newer fields like AI safety can be
-            speculative, opaque, and nascent, making it harder for donors to
-            know where to direct their money. Regranting helps donors to
-            outsource these decisions to individuals with deep expertise.
+            <strong>Trust-based:</strong> Newer fields like AI safety can be speculative, opaque,
+            and nascent, making it harder for donors to know where to direct their money. Regranting
+            helps donors to outsource these decisions to individuals with deep expertise.
           </li>
         </ul>
         <p>
@@ -86,71 +81,64 @@ export default async function RegrantingPage() {
         <h3>How does regranting on Manifund work?</h3>
         <ol>
           <li>
-            A donor adds money to their Manifund account (which constitutes a
-            tax-deductible donation to our 501c3 nonprofit).
+            A donor adds money to their Manifund account (which constitutes a tax-deductible
+            donation to our 501c3 nonprofit).
           </li>
           <li>
-            The donor can then allocate the money between regrantors of their
-            choice (or they can give directly to projects).
+            The donor can then allocate the money between regrantors of their choice (or they can
+            give directly to projects).
           </li>
           <li>
-            Regrantors choose which opportunities, including projects posted on
-            Manifund through our open call or projects they learn about
-            elsewhere, to spend their budgets on, writing up an explanation for
-            each grant made.
+            Regrantors choose which opportunities, including projects posted on Manifund through our
+            open call or projects they learn about elsewhere, to spend their budgets on, writing up
+            an explanation for each grant made.
           </li>
           <li>
-            We review the grant to make sure it is legitimate, legal, and
-            aligned with our mission.
+            We review the grant to make sure it is legitimate, legal, and aligned with our mission.
           </li>
           <li>
-            If we approve the grant, the money will be transferred to the
-            grantee&apos;s Manifund account, at which point they request to
-            withdraw and we send them their funds.
+            If we approve the grant, the money will be transferred to the grantee&apos;s Manifund
+            account, at which point they request to withdraw and we send them their funds.
           </li>
         </ol>
         <h3>FAQ</h3>
         <strong>Who can see the information about grants?</strong>
         <br />
         <p>
-          Currently all grant information is made public. This includes the
-          identity of the regrantor and grant recipient, the project
-          description, the grant size, and the regrantor’s writeup.
+          Currently all grant information is made public. This includes the identity of the
+          regrantor and grant recipient, the project description, the grant size, and the
+          regrantor’s writeup.
         </p>
         <p>
-          We strongly believe in transparency as it allows for meaningful public
-          feedback, accountability of decisions, and establishment of a
-          regrantor track records. We recognize that not all grants are suited
-          for publishing; for now, we recommend such grants be made through
-          other funders, such as the Long Term Future Fund, the Survival and
-          Flourishing Fund, or Open Philanthropy.
+          We strongly believe in transparency as it allows for meaningful public feedback,
+          accountability of decisions, and establishment of a regrantor track records. We recognize
+          that not all grants are suited for publishing; for now, we recommend such grants be made
+          through other funders, such as the Long Term Future Fund, the Survival and Flourishing
+          Fund, or Open Philanthropy.
         </p>
         <strong>What kinds of projects are eligible for regranting?</strong>
         <br />
         <p>
-          We have no official cause-area restrictions on grants, though most of
-          our regrantors are focused on mitigating global catastrophic risk,
-          specifically on AI safety.
+          We have no official cause-area restrictions on grants, though most of our regrantors are
+          focused on mitigating global catastrophic risk, specifically on AI safety.
         </p>
         <p>
-          We support regrants to registered charities and individuals.
-          For-profit organizations may also be eligible, pending due diligence.
-          As a US-registered 501c3, we do not generally permit donations to
-          political campaigns or lobbying.
+          We support regrants to registered charities and individuals. For-profit organizations may
+          also be eligible, pending due diligence. As a US-registered 501c3, we do not generally
+          permit donations to political campaigns or lobbying.
         </p>
         <p>
-          We look over all grants before fulfilling withdrawal requests to make
-          sure they meet these requirements. We reserve the right to veto grants
-          for any reason, though we expect to often defer to our regrantors’
-          judgement.
+          We look over all grants before fulfilling withdrawal requests to make sure they meet these
+          requirements. We reserve the right to veto grants for any reason, though we expect to
+          often defer to our regrantors’ judgement.
         </p>
         <strong>Can regrantors send money to their own projects?</strong>
         <br />
         <p>
-          In certain circumstances, we allow regrantors to give to projects they
-          advise, or are otherwise involved with; we evaluate these projects
-          with a more rigorous bar before fulfilling withdrawal requests. We
-          generally do not permit regrantors to pay for their own salaries.
+          In certain circumstances, we allow regrantors to give to projects they advise, or are
+          otherwise involved with; we evaluate these projects with a more rigorous bar before
+          fulfilling withdrawal requests. We generally do not permit regrantors to pay for their own
+          salaries.
         </p>
         {/* <strong>How do I become a regrantor?</strong>
         <p>
@@ -165,16 +153,12 @@ export default async function RegrantingPage() {
         </p> */}
         <strong>Can I contribute funds to the regrantor budgets?</strong>
         <p>
-          Yes! We&apos;re looking for contributions to our AI Safety regrantor
-          budgets. If you&apos;re donating a substantial amount (eg $50k+), we
-          can also work with you to nominate specific regrantors who share your
-          values and interests. We do ask large donors to cover a 5% fiscal
-          sponsorship fee, which offsets our operational costs & salaries.
+          Yes! We&apos;re looking for contributions to our AI Safety regrantor budgets. If
+          you&apos;re donating a substantial amount (eg $50k+), we can also work with you to
+          nominate specific regrantors who share your values and interests. We do ask large donors
+          to cover a 5% fiscal sponsorship fee, which offsets our operational costs & salaries.
         </p>
-        <p>
-          Get in touch with Austin (austin@manifund.org) if you&apos;re
-          interested in donating!
-        </p>
+        <p>Get in touch with Austin (austin@manifund.org) if you&apos;re interested in donating!</p>
       </div>
       <DonationCTA />
     </div>

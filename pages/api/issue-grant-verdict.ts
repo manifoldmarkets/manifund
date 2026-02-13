@@ -21,8 +21,7 @@ type VerdictProps = {
 }
 
 export default async function handler(req: NextRequest) {
-  const { approved, projectId, adminComment, publicBenefit } =
-    (await req.json()) as VerdictProps
+  const { approved, projectId, adminComment, publicBenefit } = (await req.json()) as VerdictProps
   const supabase = createEdgeClient(req)
   const user = await getUser(supabase)
   if (!user || !isAdmin(user)) {
@@ -63,11 +62,7 @@ export default async function handler(req: NextRequest) {
     subject: recipientSubject,
     adminName: adminName,
   }
-  await sendTemplateEmail(
-    TEMPLATE_IDS.VERDICT,
-    recipientPostmarkVars,
-    creator.id
-  )
+  await sendTemplateEmail(TEMPLATE_IDS.VERDICT, recipientPostmarkVars, creator.id)
   await maybeActivateProject(supabase, projectId)
   return NextResponse.json('success')
 }

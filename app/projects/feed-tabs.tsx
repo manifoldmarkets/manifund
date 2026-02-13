@@ -26,14 +26,7 @@ export function FeedTabs(props: {
   causesList: SimpleCause[]
   userId?: string
 }) {
-  const {
-    recentComments,
-    recentDonations,
-    recentBids,
-    projects,
-    causesList,
-    userId,
-  } = props
+  const { recentComments, recentDonations, recentBids, projects, causesList, userId } = props
   const searchParams = useSearchParams() ?? new URLSearchParams()
   const currentTabId = searchParams.get('tab') ?? 'projects'
   const [page, setPage] = useState(1)
@@ -43,11 +36,7 @@ export function FeedTabs(props: {
       <p className="text-sm text-gray-600">
         Including {projects.length} projects in all stages and from all rounds.
       </p>
-      <ProjectsDisplay
-        projects={projects}
-        defaultSort={'hot'}
-        causesList={causesList}
-      />
+      <ProjectsDisplay projects={projects} defaultSort={'hot'} causesList={causesList} />
     </Col>
   )
 
@@ -96,18 +85,12 @@ export function FeedTabs(props: {
           ...recentBids.map((bid) => ({ type: 'bid' as const, item: bid })),
         ]
           .sort((a, b) => {
-            return (
-              new Date(b.item.created_at).getTime() -
-              new Date(a.item.created_at).getTime()
-            )
+            return new Date(b.item.created_at).getTime() - new Date(a.item.created_at).getTime()
           })
           .map(({ type, item }) => (
             <Col key={`${type}-${item.id}`}>
               <Link href={`/projects/${item.projects?.slug}`} className="w-fit">
-                <Tag
-                  text={item.projects?.title ?? ''}
-                  className="hover:bg-orange-200"
-                />
+                <Tag text={item.projects?.title ?? ''} className="hover:bg-orange-200" />
               </Link>
               <Card className="rounded-tl-sm !p-1">
                 <DonationItem type={type} item={item} />
@@ -145,10 +128,7 @@ export function FeedTabs(props: {
   )
 }
 
-function DonationItem(props: {
-  type: 'donation' | 'bid'
-  item: FullTxn | FullBid
-}) {
+function DonationItem(props: { type: 'donation' | 'bid'; item: FullTxn | FullBid }) {
   const { type, item } = props
   return (
     <div className="grid w-full grid-cols-3 items-center gap-3 rounded p-3 text-sm">

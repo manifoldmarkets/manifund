@@ -33,10 +33,7 @@ const XAxis = <X,>(props: { w: number; h: number; axis: Axis<X> }) => {
   const axisRef = useRef<SVGGElement>(null)
   useEffect(() => {
     if (axisRef.current != null) {
-      select(axisRef.current)
-        .call(axis)
-        .select('.domain')
-        .attr('stroke-width', 0)
+      select(axisRef.current).call(axis).select('.domain').attr('stroke-width', 0)
     }
   }, [h, axis])
   return <g ref={axisRef} transform={`translate(0, ${h})`} />
@@ -47,22 +44,14 @@ const SimpleYAxis = <Y,>(props: { w: number; axis: Axis<Y> }) => {
   const axisRef = useRef<SVGGElement>(null)
   useEffect(() => {
     if (axisRef.current != null) {
-      select(axisRef.current)
-        .call(axis)
-        .select('.domain')
-        .attr('stroke-width', 0)
+      select(axisRef.current).call(axis).select('.domain').attr('stroke-width', 0)
     }
   }, [w, axis])
   return <g ref={axisRef} transform={`translate(${w}, 0)`} />
 }
 
 // horizontal gridlines
-const YAxis = <Y,>(props: {
-  w: number
-  h: number
-  axis: Axis<Y>
-  negativeThreshold?: number
-}) => {
+const YAxis = <Y,>(props: { w: number; h: number; axis: Axis<Y>; negativeThreshold?: number }) => {
   const { w, h, axis, negativeThreshold = 0 } = props
   const axisRef = useRef<SVGGElement>(null)
 
@@ -169,42 +158,22 @@ export const AreaWithTopStroke = <P,>(props: {
       />
       <LinePath data={data} px={px} py={py1} curve={curve} stroke={color} />
       {/* a little extension so that the current value is always visible */}
-      <path
-        fill="none"
-        d={`M${lastX},${lastY} L${lastX + 2},${lastY}`}
-        stroke={color}
-      />
+      <path fill="none" d={`M${lastX},${lastY} L${lastX + 2},${lastY}`} stroke={color} />
     </g>
   )
 }
 
-export const SliceMarker = (props: {
-  color: string
-  x: number
-  y0: number
-  y1: number
-}) => {
+export const SliceMarker = (props: { color: string; x: number; y0: number; y1: number }) => {
   const { color, x, y0, y1 } = props
   return (
     <g>
       <line stroke="white" strokeWidth={1} x1={x} x2={x} y1={y0} y2={y1} />
-      <circle
-        stroke="white"
-        strokeWidth={1}
-        fill={color}
-        cx={x}
-        cy={y1}
-        r={5}
-      />
+      <circle stroke="white" strokeWidth={1} fill={color} cx={x} cy={y1} r={5} />
     </g>
   )
 }
 
-export const SVGChart = <
-  X,
-  TT extends { x: number; y: number },
-  S extends AxisScale<X>
->(props: {
+export const SVGChart = <X, TT extends { x: number; y: number }, S extends AxisScale<X>>(props: {
   children: ReactNode
   w: number
   h: number
@@ -292,33 +261,18 @@ export const SVGChart = <
     >
       {ttParams && Tooltip && (
         <TooltipContainer
-          calculatePos={(ttw, tth) =>
-            getTooltipPosition(ttParams.x, ttParams.y, w, h, ttw, tth)
-          }
+          calculatePos={(ttw, tth) => getTooltipPosition(ttParams.x, ttParams.y, w, h, ttw, tth)}
         >
           {Tooltip(ttParams)}
         </TooltipContainer>
       )}
-      <svg
-        width={w}
-        height={h}
-        viewBox={`0 0 ${w} ${h}`}
-        overflow="visible"
-        ref={svgRef}
-      >
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} overflow="visible" ref={svgRef}>
         <defs>
           <filter id="blur">
             <feGaussianBlur stdDeviation="8" />
           </filter>
           <mask id="mask">
-            <rect
-              x={-8}
-              y={-8}
-              width={w + 16}
-              height={h + 16}
-              fill="white"
-              filter="url(#blur)"
-            />
+            <rect x={-8} y={-8} width={w + 16} height={h + 16} fill="white" filter="url(#blur)" />
           </mask>
           <clipPath id="clip">
             <rect x={-32} y={-32} width={w + 64} height={h + 64} />
@@ -330,12 +284,7 @@ export const SVGChart = <
           {noGridlines ? (
             <SimpleYAxis axis={yAxis} w={w} />
           ) : (
-            <YAxis
-              axis={yAxis}
-              w={w}
-              h={h}
-              negativeThreshold={negativeThreshold}
-            />
+            <YAxis axis={yAxis} w={w} h={h} negativeThreshold={negativeThreshold} />
           )}
           {/* clip to stop pointer events outside of graph, and mask for the blur to indicate zoom */}
           <g clipPath="url(#clip)">
@@ -424,17 +373,14 @@ export const formatDate = (
   const { includeYear, includeHour, includeMinute } = opts ?? {}
   const d = new Date(date.valueOf())
   const now = Date.now()
-  if (
-    isAfter(add(d, { minutes: 1 }), now) &&
-    isBefore(sub(d, { minutes: 1 }), now)
-  ) {
+  if (isAfter(add(d, { minutes: 1 }), now) && isBefore(sub(d, { minutes: 1 }), now)) {
     return 'Now'
   } else {
     const dayName = isSameDay(now, d)
       ? 'Today'
       : isSameDay(now, add(d, { days: 1 }))
-      ? 'Yesterday'
-      : null
+        ? 'Yesterday'
+        : null
     let dateFormat = 'MMM d'
     if (includeMinute) {
       dateFormat += ', h:mma'
@@ -447,11 +393,7 @@ export const formatDate = (
   }
 }
 
-export const formatDateInRange = (
-  d: Date | number,
-  start: Date | number,
-  end: Date | number
-) => {
+export const formatDateInRange = (d: Date | number, start: Date | number, end: Date | number) => {
   const opts = {
     includeYear: !isSameYear(start, end),
     includeHour: isAfter(add(start, { days: 8 }), end),
@@ -477,8 +419,7 @@ export const computeColorStops = <P extends HistoryPoint>(
     const curr = data[i]
     if (pc(prev) !== pc(curr)) {
       // given a line through points (x0, y0) and (x1, y1), find the x value where y = 0 (intersects with x axis)
-      const xIntersect =
-        prev.x + (prev.y * (curr.x - prev.x)) / (prev.y - curr.y)
+      const xIntersect = prev.x + (prev.y * (curr.x - prev.x)) / (prev.y - curr.y)
 
       segments.push({ x: px({ ...prev, x: xIntersect }), color: pc(curr) })
     }
@@ -495,8 +436,7 @@ export const computeColorStops = <P extends HistoryPoint>(
 
 export const useViewScale = () => {
   const [viewXScale, setViewXScale] = useState<ScaleTime<number, number>>()
-  const [viewYScale, setViewYScale] =
-    useState<ScaleContinuousNumeric<number, number>>()
+  const [viewYScale, setViewYScale] = useState<ScaleContinuousNumeric<number, number>>()
   return {
     viewXScale,
     setViewXScale,

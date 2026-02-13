@@ -12,12 +12,8 @@ import {
 
 export function CauseData(props: { projects: FullProject[] }) {
   const { projects } = props
-  const numActiveProjects = projects.filter(
-    (project) => project.stage === 'active'
-  ).length
-  const numProposalProjects = projects.filter(
-    (project) => project.stage === 'proposal'
-  ).length
+  const numActiveProjects = projects.filter((project) => project.stage === 'active').length
+  const numProposalProjects = projects.filter((project) => project.stage === 'proposal').length
   const totalRaised = projects.reduce((acc, project) => {
     return acc + getAmountRaised(project, project.bids, project.txns)
   }, 0)

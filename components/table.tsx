@@ -6,10 +6,7 @@ import { EllipsisVerticalIcon, TrashIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { Row } from './layout/row'
 
-export const Table = (props: {
-  className?: string
-  children: React.ReactNode
-}) => {
+export const Table = (props: { className?: string; children: React.ReactNode }) => {
   const { className, children } = props
 
   return (
@@ -35,16 +32,11 @@ export function TableRow(props: {
   return (
     <Row className="flex items-start justify-between gap-3 px-5 py-4 hover:bg-gray-50">
       <div className="flex w-full flex-col justify-center gap-2 font-medium text-gray-900 sm:flex-row sm:items-center sm:justify-between">
-        <Link
-          className="mr-5 flex-shrink truncate text-base hover:underline"
-          href={href}
-        >
+        <Link className="mr-5 flex-shrink truncate text-base hover:underline" href={href}>
           {title}
         </Link>
         {subtitle && (
-          <span className="flex-none truncate text-xs font-normal text-gray-500">
-            {subtitle}
-          </span>
+          <span className="flex-none truncate text-xs font-normal text-gray-500">{subtitle}</span>
         )}
       </div>
       <Row className="flex h-full min-w-0 items-start justify-end">

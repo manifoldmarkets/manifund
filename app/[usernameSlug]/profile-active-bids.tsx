@@ -7,10 +7,7 @@ import { useRouter } from 'next/navigation'
 import { formatMoney } from '@/utils/formatting'
 import { Project } from '@/db/project'
 
-export function ActiveBids(props: {
-  bids: BidAndProject[]
-  isOwnProfile?: boolean
-}) {
+export function ActiveBids(props: { bids: BidAndProject[]; isOwnProfile?: boolean }) {
   const { bids, isOwnProfile } = props
   const { supabase } = useSupabase()
   const router = useRouter()

@@ -35,12 +35,8 @@ export function Comments(props: {
     specialPrompt,
   } = props
   const [replyingTo, setReplyingTo] = useState<CommentAndProfile | null>(null)
-  const rootComments = comments.filter(
-    (comment) => comment.replying_to === null
-  )
-  const replyComments = comments.filter(
-    (comment) => comment.replying_to !== null
-  )
+  const rootComments = comments.filter((comment) => comment.replying_to === null)
+  const replyComments = comments.filter((comment) => comment.replying_to !== null)
   if (comments.length === 0 && !userProfile)
     return (
       <p className="text-center italic text-gray-500">
@@ -99,8 +95,7 @@ export function Comments(props: {
                 </div>
               ))}
             </div>
-            {(replyingTo?.id === thread.root.id ||
-              replyingTo?.replying_to === thread.root.id) &&
+            {(replyingTo?.id === thread.root.id || replyingTo?.replying_to === thread.root.id) &&
               userProfile && (
                 <div className="ml-12 mt-1">
                   <WriteComment
@@ -120,11 +115,7 @@ export function Comments(props: {
     <div>
       {userProfile && (
         <div className="mb-5" id="main-write-comment">
-          <WriteComment
-            project={project}
-            commenter={userProfile}
-            specialPrompt={specialPrompt}
-          />
+          <WriteComment project={project} commenter={userProfile} specialPrompt={specialPrompt} />
         </div>
       )}
       {commentsDisplay}
@@ -141,10 +132,7 @@ function genThreads(
   replyComments: CommentAndProfileAndRxns[]
 ) {
   const threads = Object.fromEntries(
-    rootComments.map((comment) => [
-      comment.id,
-      { root: comment, replies: [] } as Thread,
-    ])
+    rootComments.map((comment) => [comment.id, { root: comment, replies: [] } as Thread])
   )
   replyComments.forEach((reply) => {
     threads[reply.replying_to ?? 0].replies.push(reply)
@@ -164,14 +152,7 @@ export function WriteComment(props: {
   onSubmit?: () => void
   specialPrompt?: string
 }) {
-  const {
-    project,
-    commenter,
-    replyingTo,
-    setReplyingTo,
-    onSubmit,
-    specialPrompt,
-  } = props
+  const { project, commenter, replyingTo, setReplyingTo, onSubmit, specialPrompt } = props
   const showCancelButton = !!setReplyingTo
   const startingText: JSONContent | string = !!replyingTo
     ? {
@@ -196,9 +177,7 @@ export function WriteComment(props: {
         ],
       }
     : ''
-  const storageKey = `CommentOn${project.id}${
-    replyingTo ? `ReplyingTo${replyingTo.id}` : ''
-  }`
+  const storageKey = `CommentOn${project.id}${replyingTo ? `ReplyingTo${replyingTo.id}` : ''}`
   const editor = useTextEditor(
     startingText,
     storageKey,
@@ -228,9 +207,7 @@ export function WriteComment(props: {
         body: JSON.stringify({
           content: content,
           projectId: project.id,
-          replyingTo: replyingTo?.replying_to
-            ? (replyingTo.replying_to as string)
-            : replyingTo?.id,
+          replyingTo: replyingTo?.replying_to ? (replyingTo.replying_to as string) : replyingTo?.id,
         }),
       })
       if (setReplyingTo) {

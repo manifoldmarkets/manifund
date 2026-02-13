@@ -14,8 +14,7 @@ import { Tag } from '@/components/tags'
 const EXAMPLE_GRANTS = [
   {
     regrantor_name: 'Neel Nanda',
-    project_title:
-      'Mechanistic Interpretability Research for Unfaithful Chain of Thought',
+    project_title: 'Mechanistic Interpretability Research for Unfaithful Chain of Thought',
     project_slug:
       'mechanistic-interpretability-research-for-unfaithful-chain-of-thought-1-month?tab=comments#700a0335-b141-46b2-ac78-e661aa1e2961',
     amount: 11_000,
@@ -43,9 +42,7 @@ export function ExampleRegrants({ regrantors }: { regrantors: Profile[] }) {
   return (
     <Col className="my-6 space-y-6">
       {EXAMPLE_GRANTS.map((grant) => {
-        const regrantor = regrantors.find(
-          (r) => r.full_name === grant.regrantor_name
-        )
+        const regrantor = regrantors.find((r) => r.full_name === grant.regrantor_name)
         if (!regrantor) return null
 
         return (
@@ -58,10 +55,7 @@ export function ExampleRegrants({ regrantors }: { regrantors: Profile[] }) {
                   }`}
                   className="hover:bg-orange-200"
                 /> */}
-                <Tag
-                  text={grant.project_title}
-                  className="hover:bg-orange-200"
-                />
+                <Tag text={grant.project_title} className="hover:bg-orange-200" />
               </Link>
             </div>
             <Row className="w-full gap-2">
@@ -84,8 +78,7 @@ export function ExampleRegrants({ regrantors }: { regrantors: Profile[] }) {
                       className="text-sm font-semibold"
                     />
                     <div className="rounded-full text-sm font-semibold">
-                      <span className="font-light">gave</span>{' '}
-                      {formatMoney(grant.amount)}
+                      <span className="font-light">gave</span> {formatMoney(grant.amount)}
                     </div>
                   </Row>
                 </Row>

@@ -1,9 +1,6 @@
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getProfileByUsername, getProfileById, getUser } from '@/db/profile'
-import {
-  getTxnAndProjectsByUser,
-  getIncomingTxnsByUserWithDonor,
-} from '@/db/txn'
+import { getTxnAndProjectsByUser, getIncomingTxnsByUserWithDonor } from '@/db/txn'
 import { DonateBox } from '@/components/donate-box'
 import { getBidsByUser } from '@/db/bid'
 import Image from 'next/image'
@@ -19,9 +16,7 @@ import { calculateCharityBalance } from '@/utils/math'
 
 export const revalidate = 60
 
-export default async function CharityPage(props: {
-  params: Promise<{ charitySlug: string }>
-}) {
+export default async function CharityPage(props: { params: Promise<{ charitySlug: string }> }) {
   const { charitySlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const charity = await getProfileByUsername(supabase, charitySlug)
@@ -59,10 +54,7 @@ export default async function CharityPage(props: {
       {charity.website && (
         <span className="text-orange-600">
           <LinkIcon className="mr-1 inline-block h-4 w-4 stroke-2" />
-          <Link
-            className="hover:underline"
-            href={addHttpToUrl(charity.website)}
-          >
+          <Link className="hover:underline" href={addHttpToUrl(charity.website)}>
             {charity.website}
           </Link>
         </span>
@@ -74,11 +66,7 @@ export default async function CharityPage(props: {
           <Stat label="supporters" value={numSupporters.toString()} />
         </Col>
         <div className="mx-5">
-          <DonateBox
-            charity={charity}
-            profile={profile}
-            maxDonation={userCharityBalance}
-          />
+          <DonateBox charity={charity} profile={profile} maxDonation={userCharityBalance} />
         </div>
       </Row>
       <div className="relative mt-10">
@@ -86,9 +74,7 @@ export default async function CharityPage(props: {
           <div className="w-full border-t border-gray-300" />
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-gray-50 px-2 text-gray-500">
-            Donation history
-          </span>
+          <span className="bg-gray-50 px-2 text-gray-500">Donation history</span>
         </div>
       </div>
       <DonationsHistory donations={donations} />

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://oxc.rs/schemas/oxfmt.json",
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": false,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "ignorePatterns": [".next/**", "out/**", "public/**/*.json", "public/**/*.html"]
+}

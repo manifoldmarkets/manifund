@@ -29,12 +29,7 @@ export default async function handler(req: NextRequest) {
   }
   const txns = await getTxnAndProjectsByUser(supabase, user.id)
   const bids = await getPendingBidsByUser(supabase, user.id)
-  const cashBalance = calculateCashBalance(
-    txns,
-    bids,
-    user.id,
-    profile.accreditation_status
-  )
+  const cashBalance = calculateCashBalance(txns, bids, user.id, profile.accreditation_status)
   if (amount > cashBalance) {
     console.error('amount too high')
     return NextResponse.error()
@@ -58,11 +53,6 @@ export default async function handler(req: NextRequest) {
     email: user.email,
     txnId: txnId,
   }
-  await sendTemplateEmail(
-    TEMPLATE_IDS.CASH_TO_CHARITY,
-    postmarkVars,
-    undefined,
-    user.email
-  )
+  await sendTemplateEmail(TEMPLATE_IDS.CASH_TO_CHARITY, postmarkVars, undefined, user.email)
   return NextResponse.json('success')
 }

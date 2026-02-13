@@ -42,12 +42,7 @@ export default async function handler(req: NextRequest) {
   }
   const txns = await getFullTxnsByUser(supabase, user.id)
   const bids = await getBidsByUser(supabase, user.id)
-  const withdrawBalance = calculateCashBalance(
-    txns,
-    bids,
-    user.id,
-    profile.accreditation_status
-  )
+  const withdrawBalance = calculateCashBalance(txns, bids, user.id, profile.accreditation_status)
   if (dollarAmount > withdrawBalance) {
     console.log('amount too high')
     return NextResponse.error()
@@ -84,16 +79,10 @@ export default async function handler(req: NextRequest) {
   const postmarkVars = {
     amount: dollarAmount,
     id: txnId,
-    methodText:
-      (usedBank ? 'Routing number ending in: ' : 'Card ending in: ') + last4,
+    methodText: (usedBank ? 'Routing number ending in: ' : 'Card ending in: ') + last4,
     fullName: profile.full_name,
     email: user.email,
   }
-  await sendTemplateEmail(
-    TEMPLATE_IDS.CONFIRM_WITHDRAWAL,
-    postmarkVars,
-    undefined,
-    user.email
-  )
+  await sendTemplateEmail(TEMPLATE_IDS.CONFIRM_WITHDRAWAL, postmarkVars, undefined, user.email)
   return NextResponse.json({ dollarAmount })
 }

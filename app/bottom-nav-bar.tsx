@@ -57,12 +57,7 @@ export async function BottomNavBar() {
             </div>
             <p className="text-center">
               {formatMoney(
-                calculateCharityBalance(
-                  txns,
-                  bids,
-                  profile.id,
-                  profile.accreditation_status
-                )
+                calculateCharityBalance(txns, bids, profile.id, profile.accreditation_status)
               )}
             </p>
           </Col>

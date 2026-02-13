@@ -29,12 +29,7 @@ export default async function WithdrawPage() {
   if (!profile) {
     return null
   }
-  const withdrawBalance = calculateCashBalance(
-    txns,
-    bids,
-    user.id,
-    profile.accreditation_status
-  )
+  const withdrawBalance = calculateCashBalance(txns, bids, user.id, profile.accreditation_status)
   const account = profile.stripe_connect_id
     ? await stripe.accounts.retrieve(profile.stripe_connect_id)
     : null

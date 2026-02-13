@@ -25,11 +25,7 @@ export function SimilarProjects({
     <Col className="gap-4">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {projectsWithValuations.map(({ project, valuation }) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            valuation={valuation}
-          />
+          <ProjectCard key={project.id} project={project} valuation={valuation} />
         ))}
       </div>
     </Col>

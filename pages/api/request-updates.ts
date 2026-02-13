@@ -17,9 +17,7 @@ export default async function handler() {
   const supabase = createAdminClient()
   const { data: activeProjects, error } = await supabase
     .from('projects')
-    .select(
-      'id, creator, title, type, created_at, slug, comments(created_at, special_type)'
-    )
+    .select('id, creator, title, type, created_at, slug, comments(created_at, special_type)')
     .eq('stage', 'active')
   if (error) {
     console.error(error)
@@ -28,14 +26,10 @@ export default async function handler() {
   const now = new Date()
   const projectsNeedingUpdates = activeProjects?.filter((project) => {
     const createdDate = new Date(project.created_at)
-    const updates = project.comments.filter(
-      (c) => c.special_type === 'progress update'
-    )
+    const updates = project.comments.filter((c) => c.special_type === 'progress update')
     const sortedUpdates = orderBy(updates, ['created_at'], ['desc'])
     const latestUpdate = sortedUpdates.length ? sortedUpdates[0] : null
-    const latestUpdateDate = latestUpdate
-      ? new Date(latestUpdate.created_at)
-      : null
+    const latestUpdateDate = latestUpdate ? new Date(latestUpdate.created_at) : null
     const monthsSinceLatestUpdate = latestUpdateDate
       ? differenceInMonths(now, latestUpdateDate)
       : null

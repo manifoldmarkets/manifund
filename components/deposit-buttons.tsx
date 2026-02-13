@@ -2,11 +2,7 @@
 import { Profile } from '@/db/profile'
 import { Dialog } from '@headlessui/react'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'
-import {
-  CircleStackIcon,
-  PlusSmallIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline'
+import { CircleStackIcon, PlusSmallIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ReactNode, useEffect, useState } from 'react'
@@ -47,11 +43,7 @@ export function DepositButton(props: {
           </button>
         </div>
         {passFundsTo ? (
-          <DonateTab
-            userId={userId}
-            setOpen={setOpen}
-            passFundsTo={passFundsTo}
-          />
+          <DonateTab userId={userId} setOpen={setOpen} passFundsTo={passFundsTo} />
         ) : (
           <Tabs
             tabs={[
@@ -77,12 +69,10 @@ export function DepositButton(props: {
 function WireTab() {
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-base font-semibold leading-6 text-gray-900">
-        Large transfers
-      </h3>
+      <h3 className="text-base font-semibold leading-6 text-gray-900">Large transfers</h3>
       <p className="text-sm text-gray-500">
-        For large donations ($10k+), we accept transfers via wire/ACH, crypto,
-        or a donor advised fund.
+        For large donations ($10k+), we accept transfers via wire/ACH, crypto, or a donor advised
+        fund.
       </p>
       <ol className="list-inside list-decimal space-y-2 text-sm text-gray-600">
         <li>
@@ -105,8 +95,7 @@ function WireTab() {
           </SiteLink>
         </li>
         <li>
-          We&apos;ll update your Manifund balance upon receiving your donation
-          (typically 5-10 days)
+          We&apos;ll update your Manifund balance upon receiving your donation (typically 5-10 days)
         </li>
       </ol>
     </div>
@@ -139,27 +128,18 @@ function DonateTab(props: {
         />
       </div> */}
       <div className="mt-3 sm:mt-5">
-        <Dialog.Title
-          as="h3"
-          className="mb-1 text-base font-semibold leading-6 text-gray-900"
-        >
+        <Dialog.Title as="h3" className="mb-1 text-base font-semibold leading-6 text-gray-900">
           {passFundsTo
             ? `Send money to ${passFundsTo.full_name}`
             : 'Add funds to your Manifund account'}
         </Dialog.Title>
         {!passFundsTo && (
           <p className="my-2 text-sm text-gray-500">
-            This money will go into your charity balance, which can be donated
-            but not withdrawn.
+            This money will go into your charity balance, which can be donated but not withdrawn.
           </p>
         )}
         <label htmlFor="amount">$ </label>
-        <AmountInput
-          step="0.01"
-          id="amount"
-          amount={amount}
-          onChangeAmount={setAmount}
-        />
+        <AmountInput step="0.01" id="amount" amount={amount} onChangeAmount={setAmount} />
         {/* Show an alert box if the user is trying to donate $10k or more */}
         {amount && amount >= 10000 && (
           <AlertBox title="Large donations" type="warning">
@@ -214,8 +194,8 @@ function DonateTab(props: {
         </Button>
       </div>
       <p className="mt-4 text-xs font-light text-gray-500">
-        Your purchase constitutes a donation to Manifold for Charity, a
-        registered 501(c)(3) nonprofit.{' '}
+        Your purchase constitutes a donation to Manifold for Charity, a registered 501(c)(3)
+        nonprofit.{' '}
         {passFundsTo
           ? ''
           : 'Money in your charity balance has zero monetary value and is not redeemable for cash, but can be donated to charity.'}
@@ -302,8 +282,7 @@ function ManaTab() {
           href="https://manifold.markets/profile"
           className="text-orange-500 hover:underline hover:decoration-orange-500 hover:decoration-2"
         >
-          Manifold API key{' '}
-          <ArrowTopRightOnSquareIcon className="inline h-4 w-4" />
+          Manifold API key <ArrowTopRightOnSquareIcon className="inline h-4 w-4" />
         </SiteLink>{' '}
         to turn mana into your charity balance.
       </p>
@@ -323,9 +302,7 @@ function ManaTab() {
           </p>
 
           <div className="mt-8 flex flex-col gap-2">
-            <label className="text-sm font-medium leading-none">
-              USD to deposit
-            </label>
+            <label className="text-sm font-medium leading-none">USD to deposit</label>
             <AmountInput
               id="amount"
               autoComplete="off"

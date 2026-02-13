@@ -13,14 +13,10 @@ export async function GET(request: NextRequest) {
     // Get parameters from query string with defaults
     const batchSize = parseInt(searchParams.get('batchSize') || '5')
     const force = searchParams.get('force') === 'true'
-    const model = (searchParams.get('model') ||
-      DEFAULT_EMBEDDING_MODEL) as EmbeddingModel
+    const model = (searchParams.get('model') || DEFAULT_EMBEDDING_MODEL) as EmbeddingModel
     // Validate batch size
     if (batchSize < 1 || batchSize > 20) {
-      return NextResponse.json(
-        { error: 'Batch size must be between 1 and 20' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Batch size must be between 1 and 20' }, { status: 400 })
     }
 
     console.log(`Starting embedding sync...`)
@@ -43,9 +39,7 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    console.log(
-      `Sync complete: ${results.processed} processed, ${results.errors} errors`
-    )
+    console.log(`Sync complete: ${results.processed} processed, ${results.errors} errors`)
 
     return NextResponse.json({
       success: true,

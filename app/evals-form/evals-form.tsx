@@ -2,9 +2,7 @@
 import { Button } from '@/components/button'
 import { Col } from '@/components/layout/col'
 import { MiniProject } from '@/db/project'
-import useLocalStorage, {
-  clearLocalStorageItem,
-} from '@/hooks/use-local-storage'
+import useLocalStorage, { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { cloneDeep } from 'es-toolkit'
 import { useState } from 'react'
 import { resetServerContext } from 'react-beautiful-dnd'
@@ -45,9 +43,10 @@ export function EvalsForm(props: {
   const initialTrustList = profileTrusts.map((trust) => {
     return { profileId: trust.trusted_id, trust: trust.weight }
   })
-  const { value: trustList, setValue: setTrustList } = useLocalStorage<
-    TrustObj[]
-  >(initialTrustList, TRUST_LIST_KEY)
+  const { value: trustList, setValue: setTrustList } = useLocalStorage<TrustObj[]>(
+    initialTrustList,
+    TRUST_LIST_KEY
+  )
   const initialTiers = makeTiers(projects, evals)
   const { value: tiers, setValue: setTiers } = useLocalStorage<TierObj[]>(
     initialTiers,
@@ -60,8 +59,10 @@ export function EvalsForm(props: {
       [project.id]: existingEval?.confidence ?? 0.5,
     }
   }, {})
-  const { value: confidenceMap, setValue: setConfidenceMap } =
-    useLocalStorage<ConfidenceMap>(initialConfidenceMap, CONFIDENCE_MAP_KEY)
+  const { value: confidenceMap, setValue: setConfidenceMap } = useLocalStorage<ConfidenceMap>(
+    initialConfidenceMap,
+    CONFIDENCE_MAP_KEY
+  )
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const handleSubmit = async () => {
@@ -90,16 +91,9 @@ export function EvalsForm(props: {
         confidenceMap={confidenceMap}
         setConfidenceMap={setConfidenceMap}
       />
-      <SetTrust
-        profiles={profiles}
-        trustList={trustList}
-        setTrustList={setTrustList}
-      />
+      <SetTrust profiles={profiles} trustList={trustList} setTrustList={setTrustList} />
       <Row className="justify-between">
-        <Button
-          onClick={async () => await handleSubmit()}
-          loading={isSubmitting}
-        >
+        <Button onClick={async () => await handleSubmit()} loading={isSubmitting}>
           Save evaluations
         </Button>
         <Button
@@ -108,9 +102,7 @@ export function EvalsForm(props: {
             router.push(`/${username}/evals`)
           }}
           disabled={
-            tiers.filter(
-              (tier) => tier.id !== 'unsorted' && tier.projects.length > 0
-            ).length === 0
+            tiers.filter((tier) => tier.id !== 'unsorted' && tier.projects.length > 0).length === 0
           }
           loading={isSubmitting}
         >
@@ -205,9 +197,7 @@ const EMPTY_TIERS: TierObj[] = [
 function makeTiers(projects: MiniProject[], projectEvals: ProjectEval[]) {
   const tiers = cloneDeep(EMPTY_TIERS)
   projects.forEach((project) => {
-    const projectEval = projectEvals.find(
-      (projectEval) => projectEval.project_id === project.id
-    )
+    const projectEval = projectEvals.find((projectEval) => projectEval.project_id === project.id)
     if (projectEval) {
       const tierId = projectEval.score.toString()
       const tier = tiers.find((tier) => tier.id === tierId)

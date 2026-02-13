@@ -27,11 +27,7 @@ export function CreateTxn() {
         onChange={(event) => setToUsername(event.target.value)}
         placeholder="To username"
       />
-      <AmountInput
-        amount={amount}
-        onChangeAmount={setAmount}
-        placeholder="amount (USD)"
-      />
+      <AmountInput amount={amount} onChangeAmount={setAmount} placeholder="amount (USD)" />
       <Input
         value={projectSlug}
         onChange={(event) => setProjectSlug(event.target.value)}
@@ -67,10 +63,7 @@ export function CreateTxn() {
   )
 }
 
-async function getProfileIdFromUsername(
-  supabase: SupabaseClient,
-  username: string
-) {
+async function getProfileIdFromUsername(supabase: SupabaseClient, username: string) {
   const { data, error } = await supabase
     .from('profiles')
     .select('id')
@@ -83,15 +76,8 @@ async function getProfileIdFromUsername(
   }
 }
 
-async function getProjectIdFromUsername(
-  supabase: SupabaseClient,
-  slug: string
-) {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('id')
-    .eq('slug', slug)
-    .single()
+async function getProjectIdFromUsername(supabase: SupabaseClient, slug: string) {
+  const { data, error } = await supabase.from('projects').select('id').eq('slug', slug).single()
   if (error) {
     console.error('Getting project', error)
   } else {

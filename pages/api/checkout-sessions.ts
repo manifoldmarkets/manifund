@@ -17,10 +17,7 @@ export type StripeSession = Stripe.Event.Data.Object & {
   }
 }
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { dollarQuantity, userId, passFundsToId } = (await req.body) as {
     dollarQuantity: number
     userId: string
@@ -46,9 +43,7 @@ export default async function handler(
           },
         ],
         mode: 'payment',
-        success_url: isProd()
-          ? 'https://manifund.org'
-          : 'http://localhost:3000',
+        success_url: isProd() ? 'https://manifund.org' : 'http://localhost:3000',
         cancel_url: isProd() ? 'https://manifund.org' : 'http://localhost:3000',
       })
       res.json({ url: session.url, id: session.id })

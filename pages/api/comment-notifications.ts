@@ -9,22 +9,13 @@ import { TIPTAP_EXTENSIONS } from '@/components/editor'
 import { getProjectFollowerIds } from '@/db/follows'
 import { createAdminClient } from '@/db/edge'
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const comment = req.body.record as Comment
   const supabase = createAdminClient()
   const fullComment = await getCommentById(supabase, comment.id)
-  const projectFollowerIds = await getProjectFollowerIds(
-    supabase,
-    comment.project
-  )
+  const projectFollowerIds = await getProjectFollowerIds(supabase, comment.project)
 
-  const htmlContent = generateHTML(
-    comment.content as JSONContent,
-    TIPTAP_EXTENSIONS
-  )
+  const htmlContent = generateHTML(comment.content as JSONContent, TIPTAP_EXTENSIONS)
   const mentionedUserIds = parseMentions(comment.content as JSONContent)
   const postmarkVars = {
     projectTitle: fullComment.projects.title,
@@ -36,11 +27,7 @@ export default async function handler(
 
   // Send creator email
   if (comment.commenter !== fullComment.projects.creator) {
-    await sendTemplateEmail(
-      TEMPLATE_IDS.NEW_COMMENT,
-      postmarkVars,
-      fullComment.projects.creator
-    )
+    await sendTemplateEmail(TEMPLATE_IDS.NEW_COMMENT, postmarkVars, fullComment.projects.creator)
   }
 
   const notCreatorOrCommenter = (userId: string) =>
@@ -49,39 +36,33 @@ export default async function handler(
   // Send follower emails
   if (!comment.replying_to) {
     await Promise.all(
-      projectFollowerIds
-        .filter(notCreatorOrCommenter)
-        .map(async (followerId) => {
-          if (comment.special_type === 'progress update') {
-            await sendTemplateEmail(
-              TEMPLATE_IDS.GENERIC_NOTIF,
-              {
-                notifText: `The creator of "${fullComment.projects.title}" has posted a progress update on their project. Check it out!`,
-                buttonUrl: `https://manifund.org/projects/${fullComment.projects.slug}?tab=comments#${comment.id}`,
-                buttonText: 'View project',
-                subject: `Manifund: Update posted for "${fullComment.projects.title}"`,
-              },
-              followerId
-            )
-          } else if (comment.special_type === 'final report') {
-            await sendTemplateEmail(
-              TEMPLATE_IDS.GENERIC_NOTIF,
-              {
-                notifText: `The creator of "${fullComment.projects.title}" has completed their project and posted a final report. Check it out!`,
-                buttonUrl: `https://manifund.org/projects/${fullComment.projects.slug}?tab=comments#${comment.id}`,
-                buttonText: 'View project',
-                subject: `Manifund: Final report posted for "${fullComment.projects.title}"`,
-              },
-              followerId
-            )
-          } else {
-            await sendTemplateEmail(
-              TEMPLATE_IDS.NEW_COMMENT,
-              postmarkVars,
-              followerId
-            )
-          }
-        })
+      projectFollowerIds.filter(notCreatorOrCommenter).map(async (followerId) => {
+        if (comment.special_type === 'progress update') {
+          await sendTemplateEmail(
+            TEMPLATE_IDS.GENERIC_NOTIF,
+            {
+              notifText: `The creator of "${fullComment.projects.title}" has posted a progress update on their project. Check it out!`,
+              buttonUrl: `https://manifund.org/projects/${fullComment.projects.slug}?tab=comments#${comment.id}`,
+              buttonText: 'View project',
+              subject: `Manifund: Update posted for "${fullComment.projects.title}"`,
+            },
+            followerId
+          )
+        } else if (comment.special_type === 'final report') {
+          await sendTemplateEmail(
+            TEMPLATE_IDS.GENERIC_NOTIF,
+            {
+              notifText: `The creator of "${fullComment.projects.title}" has completed their project and posted a final report. Check it out!`,
+              buttonUrl: `https://manifund.org/projects/${fullComment.projects.slug}?tab=comments#${comment.id}`,
+              buttonText: 'View project',
+              subject: `Manifund: Final report posted for "${fullComment.projects.title}"`,
+            },
+            followerId
+          )
+        } else {
+          await sendTemplateEmail(TEMPLATE_IDS.NEW_COMMENT, postmarkVars, followerId)
+        }
+      })
     )
   }
 
@@ -89,13 +70,7 @@ export default async function handler(
   await Promise.all(
     mentionedUserIds
       .filter(notCreatorOrCommenter)
-      .map((userId) =>
-        sendTemplateEmail(
-          TEMPLATE_IDS.COMMENT_WITH_MENTION,
-          postmarkVars,
-          userId
-        )
-      )
+      .map((userId) => sendTemplateEmail(TEMPLATE_IDS.COMMENT_WITH_MENTION, postmarkVars, userId))
   )
 
   // Send parent commenter email
@@ -106,11 +81,7 @@ export default async function handler(
       !mentionedUserIds.includes(parentComment.commenter) &&
       !projectFollowerIds.includes(parentComment.commenter)
     ) {
-      await sendTemplateEmail(
-        TEMPLATE_IDS.NEW_COMMENT,
-        postmarkVars,
-        parentComment.commenter
-      )
+      await sendTemplateEmail(TEMPLATE_IDS.NEW_COMMENT, postmarkVars, parentComment.commenter)
     }
   }
   res.status(200).json({

@@ -4,12 +4,7 @@ import { Tag } from '@/components/tags'
 import { Tooltip } from '@/components/tooltip'
 import { BidAndProject } from '@/db/bid'
 import { FullTxn } from '@/db/txn'
-import {
-  HeartIcon,
-  UserIcon,
-  WrenchIcon,
-  UserGroupIcon,
-} from '@heroicons/react/24/solid'
+import { HeartIcon, UserIcon, WrenchIcon, UserGroupIcon } from '@heroicons/react/24/solid'
 import { formatDistanceToNow } from 'date-fns'
 import { orderBy } from 'es-toolkit'
 import Link from 'next/link'
@@ -25,20 +20,18 @@ export function OutgoingDonationsHistory(props: {
     const type = donation.project
       ? 'project'
       : donation.profiles?.type === 'individual'
-      ? 'regranter'
-      : donation.profiles?.type === 'fund'
-      ? 'fund'
-      : 'charity'
+        ? 'regranter'
+        : donation.profiles?.type === 'fund'
+          ? 'fund'
+          : 'charity'
     const name =
-      (type === 'project'
-        ? donation.projects?.title
-        : donation.profiles?.full_name) ?? ''
+      (type === 'project' ? donation.projects?.title : donation.profiles?.full_name) ?? ''
     const url =
       type === 'project'
         ? `/projects/${donation.projects?.slug}`
         : donation.profiles?.type === 'individual'
-        ? `/${donation.profiles?.username}`
-        : `/charity/${donation.profiles?.username}`
+          ? `/${donation.profiles?.username}`
+          : `/charity/${donation.profiles?.username}`
     return (
       <DonationRow
         key={donation.id}
@@ -65,9 +58,7 @@ export function OutgoingDonationsHistory(props: {
   })
   return (
     <div>
-      <h1 className="mb-2 text-xl font-medium sm:text-2xl">
-        Outgoing donations
-      </h1>
+      <h1 className="mb-2 text-xl font-medium sm:text-2xl">Outgoing donations</h1>
       <div className="overflow-hidden rounded-md bg-white shadow">
         <Table>
           {pendingGrantDisplay}

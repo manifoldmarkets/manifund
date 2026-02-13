@@ -1,10 +1,6 @@
 import { Fragment, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
-import {
-  CheckIcon,
-  PlusCircleIcon,
-  XCircleIcon,
-} from '@heroicons/react/20/solid'
+import { CheckIcon, PlusCircleIcon, XCircleIcon } from '@heroicons/react/20/solid'
 import clsx from 'clsx'
 import { Row } from '@/components/layout/row'
 import { ProfileAndEvals } from '@/db/profile'
@@ -31,8 +27,8 @@ export function SetTrust(props: {
     <Card className="overflow-visible">
       <h2 className="text-xl font-bold">Set trust in other evaluators</h2>
       <p className="mt-1 text-sm text-gray-600">
-        If unspecified, trust levels in other evaluators will be set to 1. Set
-        trust levels for specific individuals relative to this default.
+        If unspecified, trust levels in other evaluators will be set to 1. Set trust levels for
+        specific individuals relative to this default.
       </p>
       <Col className="mt-4 w-full items-center gap-4">
         {trustList.map((trust, index) => (
@@ -93,9 +89,7 @@ function SetSingleTrust(props: {
           setTrustList(newTrustList)
         }}
       />
-      <button
-        onClick={() => setTrustList(trustList.filter((t) => t !== trust))}
-      >
+      <button onClick={() => setTrustList(trustList.filter((t) => t !== trust))}>
         <XCircleIcon className="h-5 w-5 text-gray-800" />
       </button>
     </Row>
@@ -109,14 +103,10 @@ function ProfileSelect(props: {
   index: number
 }) {
   const { profiles, trustList, setTrustList, index } = props
-  const selectedProfile =
-    profiles.find((p) => p.id === trustList[index].profileId) ?? null
+  const selectedProfile = profiles.find((p) => p.id === trustList[index].profileId) ?? null
   const [search, setSearch] = useState('')
   const unselectedProfiles = profiles.filter(
-    (profile) =>
-      !trustList.find(
-        (trust, idx) => trust.profileId === profile.id && idx !== index
-      )
+    (profile) => !trustList.find((trust, idx) => trust.profileId === profile.id && idx !== index)
   )
   const searchedProfiles =
     search === ''
@@ -140,9 +130,7 @@ function ProfileSelect(props: {
           <Combobox.Input
             onChange={(event) => setSearch(event.target.value)}
             className="w-full rounded-md border-0 bg-white py-1.5 pl-3 text-sm text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-orange-600"
-            displayValue={(profile: ProfileAndEvals | null) =>
-              profile?.full_name ?? search
-            }
+            displayValue={(profile: ProfileAndEvals | null) => profile?.full_name ?? search}
             placeholder="Select an evaluator"
             autoComplete="off"
           />
@@ -168,9 +156,7 @@ function ProfileSelect(props: {
                   {({ selected, active }) => (
                     <>
                       <Row className="items-center">
-                        <DoneEvalsIndicator
-                          doneEvals={profile.project_evals.length > 0}
-                        />
+                        <DoneEvalsIndicator doneEvals={profile.project_evals.length > 0} />
 
                         <Row
                           className={clsx(
@@ -213,10 +199,7 @@ function ProfileSelect(props: {
 function DoneEvalsIndicator(props: { doneEvals: boolean }) {
   const { doneEvals } = props
   return (
-    <Tooltip
-      text={doneEvals ? 'Has done evals' : "Hasn't done evals"}
-      placement="top"
-    >
+    <Tooltip text={doneEvals ? 'Has done evals' : "Hasn't done evals"} placement="top">
       <div
         className={clsx(
           doneEvals ? 'bg-green-400' : 'bg-gray-200',
