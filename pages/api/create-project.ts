@@ -23,7 +23,10 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   if (DISABLE_NEW_SIGNUPS_AND_PROJECTS) {
-    return NextResponse.json({ error: SIGNUP_DISABLED_MESSAGE }, { status: 503 })
+    return NextResponse.json(
+      { error: SIGNUP_DISABLED_MESSAGE },
+      { status: 503 }
+    )
   }
 
   const {

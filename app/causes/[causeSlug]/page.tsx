@@ -19,7 +19,7 @@ export const revalidate = 60
 export async function generateMetadata(props: {
   params: Promise<{ causeSlug: string }>
 }) {
-  const { causeSlug } = (await props.params)
+  const { causeSlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const cause = await getCause(supabase, causeSlug)
   return {
@@ -31,7 +31,7 @@ export default async function CausePage(props: {
   params: Promise<{ causeSlug: string }>
 }) {
   // TODO: Maybe batch with Promise.all for fewer roundtrips
-  const { causeSlug } = (await props.params)
+  const { causeSlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const cause = await getCause(supabase, causeSlug)
   const causesList = await listSimpleCauses(supabase)

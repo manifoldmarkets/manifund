@@ -77,6 +77,7 @@ export function InteractiveWidget() { ... }
 ### Next.js 16 Async Conventions
 
 `params` and `searchParams` are Promises in Next.js 16 - always `await` them:
+
 ```typescript
 const { slug } = await props.params
 const { tab } = await props.searchParams
@@ -85,6 +86,7 @@ const { tab } = await props.searchParams
 ### Database Queries
 
 Direct Supabase queries, no ORM. Types auto-generated from schema:
+
 ```typescript
 const supabase = await createServerSupabaseClient()
 const { data } = await supabase
@@ -97,6 +99,7 @@ const { data } = await supabase
 ### Styling
 
 Tailwind utility classes with clsx for conditionals:
+
 ```typescript
 className={clsx('px-4 py-2 rounded', color === 'emerald' && 'bg-emerald-500 text-white')}
 ```
@@ -104,6 +107,7 @@ className={clsx('px-4 py-2 rounded', color === 'emerald' && 'bg-emerald-500 text
 ## Environment Variables
 
 Key variables are configured in `db/env.ts`. Uses multi-environment setup:
+
 - `NEXT_PUBLIC_SUPABASE_ENV` switches between `'PROD'` and `'dev'`
 - Separate Supabase URL/key pairs for prod and dev
 - Stripe has live and test key pairs

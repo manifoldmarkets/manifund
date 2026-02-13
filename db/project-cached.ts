@@ -11,7 +11,7 @@ export const getHotProjectsCached = unstable_cache(
   ['hot-projects'],
   {
     revalidate: 3600, // 1 hr
-    tags: ['hot-projects'],  // cache key
+    tags: ['hot-projects'], // cache key
   }
 )
 

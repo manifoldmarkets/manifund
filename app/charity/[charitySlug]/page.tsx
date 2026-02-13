@@ -22,7 +22,7 @@ export const revalidate = 60
 export default async function CharityPage(props: {
   params: Promise<{ charitySlug: string }>
 }) {
-  const { charitySlug } = (await props.params)
+  const { charitySlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const charity = await getProfileByUsername(supabase, charitySlug)
   if (!charity) {

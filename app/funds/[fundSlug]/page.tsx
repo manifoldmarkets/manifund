@@ -23,7 +23,7 @@ import { ExpandableDonationsHistory } from '@/components/donations-history'
 export default async function FundPage(props: {
   params: Promise<{ fundSlug: string }>
 }) {
-  const { fundSlug } = (await props.params)
+  const { fundSlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const user = await getUser(supabase)
   const fund = await getFundByUsername(supabase, fundSlug)

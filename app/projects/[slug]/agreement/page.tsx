@@ -12,7 +12,7 @@ import { Tag } from '@/components/tags'
 export default async function GrantAgreementPage(props: {
   params: Promise<{ slug: string }>
 }) {
-  const { slug } = (await props.params)
+  const { slug } = await props.params
   const supabase = await createServerSupabaseClient()
   const project = await getProjectAndProfileBySlug(supabase, slug)
   if (!project || project.approved === false) {

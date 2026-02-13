@@ -1,6 +1,7 @@
 # AI Safety Viewer-Minutes — Starter Project
 
 This tiny project fetches all videos from a YouTube channel and computes **estimated viewer‑minutes**:
+
 ```
 viewer_minutes = views * duration_minutes * average_watch_fraction
 ```
@@ -14,8 +15,8 @@ It’s set up for **Robert Miles – AI Safety** by default, but works for any c
 - Install **Python 3.10+**
 - Create a free **YouTube Data API v3** key:
   1. Go to https://console.cloud.google.com/
-  2. Create a project → *APIs & Services* → *Enable APIs & Services* → search **“YouTube Data API v3”** → **Enable**
-  3. *APIs & Services* → *Credentials* → **Create credentials → API key**
+  2. Create a project → _APIs & Services_ → _Enable APIs & Services_ → search **“YouTube Data API v3”** → **Enable**
+  3. _APIs & Services_ → _Credentials_ → **Create credentials → API key**
   4. (Optional) **Restrict** the key to “YouTube Data API v3” + your IP
 
 > Channel ID for **Robert Miles AI Safety** is: `UCLB7AzTwc6VFZrBsO2ucBMg`
@@ -48,22 +49,26 @@ copy .env.example .env   # (Windows PowerShell: cp .env.example .env)
 ## 3) Run
 
 **Robert Miles channel (default):**
+
 ```bash
 python src/fetch_youtube_viewer_minutes.py --avg-watch 0.50 --out data/robert_miles_viewer_minutes.csv
 ```
 
 **Any other channel:**
+
 ```bash
 python src/fetch_youtube_viewer_minutes.py --channel-id <UC......> --avg-watch 0.55 --out data/out.csv
 ```
 
 Flags:
+
 - `--channel-id` : YouTube channel ID (starts with UC…)
-- `--avg-watch`  : Assumed average watch fraction (0.50 = 50%). Defaults to 0.50.
-- `--max`        : (optional) limit number of videos while testing.
-- `--sleep`      : seconds to sleep between API pages (default 0.0).
+- `--avg-watch` : Assumed average watch fraction (0.50 = 50%). Defaults to 0.50.
+- `--max` : (optional) limit number of videos while testing.
+- `--sleep` : seconds to sleep between API pages (default 0.0).
 
 Outputs:
+
 - A CSV at `data/...csv` with columns:
   - title, video_id, published_at, duration_min, views, avg_watch_fraction, est_viewer_minutes
 - A one-line **summary** is printed (total views, total est. viewer‑minutes).
@@ -95,4 +100,3 @@ Outputs:
 - Aggregate viewer‑minutes per **year**, **topic**, or **format**.
 - Add TikTok/Shorts ingestion later for cross‑platform comparisons.
 - Plug the CSV into a **cost‑effectiveness** model (cost per viewer‑minute).
-

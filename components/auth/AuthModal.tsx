@@ -95,7 +95,9 @@ export default function AuthModal({
           throw error
         }
         const message =
-          error instanceof Error ? error.message : 'An unexpected error occurred'
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred'
         setMessage({ type: 'error', text: message })
       }
     })

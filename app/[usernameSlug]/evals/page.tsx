@@ -20,7 +20,7 @@ export type Result = {
 export default async function ResultsPage(props: {
   params: Promise<{ usernameSlug: string }>
 }) {
-  const { usernameSlug } = (await props.params)
+  const { usernameSlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const evaluator = await getProfileByUsername(supabase, usernameSlug)
   if (!evaluator) {

@@ -46,7 +46,6 @@ export function createPublicSupabaseClient() {
   })
 }
 
-
 // For admin operations that need elevated privileges
 export function createAdminSupabaseClient() {
   return createClient<Database>(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)

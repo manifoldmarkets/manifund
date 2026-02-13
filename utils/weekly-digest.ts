@@ -187,13 +187,18 @@ export async function getNewProjectsLastWeek(
     project_follows: [],
   }))
 
-  return projects
-  // Exclude projects with 0 or fewer net upvotes
-    .filter((p) => {
-      const netUpvotes = p.project_votes.reduce((acc, v) => acc + v.magnitude, 0)
-      return netUpvotes > 0
-    })
-    .sort((a, b) => pointScore(b) - pointScore(a))
+  return (
+    projects
+      // Exclude projects with 0 or fewer net upvotes
+      .filter((p) => {
+        const netUpvotes = p.project_votes.reduce(
+          (acc, v) => acc + v.magnitude,
+          0
+        )
+        return netUpvotes > 0
+      })
+      .sort((a, b) => pointScore(b) - pointScore(a))
+  )
 }
 
 export async function getNotableCommentsLastWeek(

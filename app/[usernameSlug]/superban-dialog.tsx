@@ -97,7 +97,11 @@ function SuperBanDialog(props: {
               {projects.length > 0 && (
                 <span className="text-red-600">
                   {' '}
-                  ({projects.slice(0, 3).map((p) => p.title).join(', ')}
+                  (
+                  {projects
+                    .slice(0, 3)
+                    .map((p) => p.title)
+                    .join(', ')}
                   {projects.length > 3 && `, +${projects.length - 3} more`})
                 </span>
               )}
@@ -130,9 +134,7 @@ function SuperBanDialog(props: {
           />
         </div>
 
-        {error && (
-          <p className="text-sm text-red-600">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-600">{error}</p>}
 
         <Row className="justify-end gap-3">
           <button

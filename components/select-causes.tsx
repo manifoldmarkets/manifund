@@ -45,8 +45,8 @@ export function SelectCauses(props: {
                   causeIncluded
                     ? 'bg-orange-500 text-white hover:bg-orange-600'
                     : disabled
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-gray-200 hover:bg-gray-300'
+                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                    : 'bg-gray-200 hover:bg-gray-300'
                 )}
               />
             </button>

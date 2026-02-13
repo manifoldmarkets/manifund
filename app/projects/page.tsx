@@ -36,7 +36,7 @@ export default async function Projects(props: {
         fallback={
           <Suspense fallback={<FeedTabsSkeleton />}>
             <AsyncFeedTabs
-              searchParams={(await props.searchParams)}
+              searchParams={await props.searchParams}
               userId={user?.id}
               useHotProjects={true}
             />
@@ -44,13 +44,13 @@ export default async function Projects(props: {
         }
       >
         <AsyncFeedTabs
-          searchParams={(await props.searchParams)}
+          searchParams={await props.searchParams}
           userId={user?.id}
           useHotProjects={false}
         />
       </Suspense>
     </Col>
-  );
+  )
 }
 
 // Separate component for async feed data

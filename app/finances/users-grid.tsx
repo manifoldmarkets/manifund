@@ -97,8 +97,8 @@ export function BalanceSheet() {
     // Current users
     users: -3_970_255,
     // Regranting pot owed, plus 12 * 100k regrantors + neel (350k) + gavin/joel reup (2*50k) + 100k (joel/joel/richard/ethan)
-    regranting: -2_250_000 + 100_000 * 12 + 350_000 + 100_000 + 100_000, 
-    // not credited: -pending grants on Airtable; Frame deposit; -Eric VARA; ACX; 
+    regranting: -2_250_000 + 100_000 * 12 + 350_000 + 100_000 + 100_000,
+    // not credited: -pending grants on Airtable; Frame deposit; -Eric VARA; ACX;
     pending: -50 + 280_000 - 24_897,
     // Donations for Manifold for Charity
     // 500k initial - donated - David MCF - AmmonLam

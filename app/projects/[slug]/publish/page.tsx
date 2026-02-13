@@ -8,7 +8,7 @@ import { PublishProjectForm } from './publish-form'
 export default async function PublishProjectPage(props: {
   params: Promise<{ slug: string }>
 }) {
-  const { slug } = (await props.params)
+  const { slug } = await props.params
   const supabase = await createServerSupabaseClient()
   const project = await getProjectWithCausesBySlug(supabase, slug)
   const user = await getUser(supabase)

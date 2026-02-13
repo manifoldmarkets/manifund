@@ -1,4 +1,9 @@
-import { getProfileById, getProfileByUsername, getUser, isAdmin } from '@/db/profile'
+import {
+  getProfileById,
+  getProfileByUsername,
+  getUser,
+  isAdmin,
+} from '@/db/profile'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { ProfileHeader } from './profile-header'
 import { getFullTxnsByUser, getTxnsByUser } from '@/db/txn'
@@ -14,7 +19,7 @@ export const revalidate = 60
 export default async function UserProfilePage(props: {
   params: Promise<{ usernameSlug: string }>
 }) {
-  const { usernameSlug } = (await props.params)
+  const { usernameSlug } = await props.params
   const supabase = await createServerSupabaseClient()
   const profile = await getProfileByUsername(supabase, usernameSlug)
   if (!profile) {
