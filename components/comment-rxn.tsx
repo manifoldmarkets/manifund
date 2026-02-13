@@ -309,6 +309,7 @@ export function CommentRxnsPanel(props: {
           accreditation_status: false,
           bio: '',
           long_description: {},
+          mercury_recipient_id: null,
           regranter_status: false,
           stripe_connect_id: null,
           type: 'individual',
