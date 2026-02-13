@@ -5,6 +5,7 @@ import { ActivateProject } from '../activate-project'
 import Link from 'next/link'
 import { CircleStackIcon } from '@heroicons/react/24/solid'
 import { Table } from '@/components/table-catalyst'
+import { supabaseProjectRowUrl } from '@/utils/supabase-admin-url'
 
 export const revalidate = 300
 
@@ -29,7 +30,7 @@ export default async function ProjectsPage() {
           <tr key={project.id}>
             <td className="pr-2">
               <Link
-                href={`https://supabase.com/dashboard/project/fkousziwzbnkdkldjper/editor/27111?filter=id%3Aeq%3A${project.id}`}
+                href={supabaseProjectRowUrl(project.id)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500 hover:underline"
