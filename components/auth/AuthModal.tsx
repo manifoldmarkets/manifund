@@ -8,6 +8,7 @@ import {
   resetPassword,
   AuthResult,
 } from '@/lib/auth-actions'
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
 
 interface AuthError {
   error: string
@@ -88,7 +89,14 @@ export default function AuthModal({
           }
         }
       } catch (error) {
-        setMessage({ type: 'error', text: 'An unexpected error occurred' })
+        // In Next.js 16, redirect() in server actions rejects the promise
+        // with a redirect error. Re-throw so RedirectBoundary handles it.
+        if (isRedirectError(error)) {
+          throw error
+        }
+        const message =
+          error instanceof Error ? error.message : 'An unexpected error occurred'
+        setMessage({ type: 'error', text: message })
       }
     })
   }
