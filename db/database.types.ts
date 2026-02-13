@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: '10.2.0 (e07807d)'
+  }
   public: {
     Tables: {
       bids: {
@@ -262,6 +267,60 @@ export type Database = {
           }
         ]
       }
+      orgs: {
+        Row: {
+          budget_url: string | null
+          created_at: string | null
+          description: string | null
+          donation_url: string | null
+          email: string | null
+          headcount: number | null
+          id: string
+          logo_url: string | null
+          name: string
+          slug: string
+          subtitle: string | null
+          tags: string[] | null
+          target_2026: number | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          budget_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          donation_url?: string | null
+          email?: string | null
+          headcount?: number | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          slug: string
+          subtitle?: string | null
+          tags?: string[] | null
+          target_2026?: number | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          budget_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          donation_url?: string | null
+          email?: string | null
+          headcount?: number | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          subtitle?: string | null
+          tags?: string[] | null
+          target_2026?: number | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       profile_roles: {
         Row: {
           donor: boolean
@@ -347,6 +406,7 @@ export type Database = {
           full_name: string
           id: string
           long_description: Json | null
+          mercury_recipient_id: string | null
           regranter_status: boolean
           stripe_connect_id: string | null
           type: Database['public']['Enums']['profile_type']
@@ -360,6 +420,7 @@ export type Database = {
           full_name?: string
           id?: string
           long_description?: Json | null
+          mercury_recipient_id?: string | null
           regranter_status?: boolean
           stripe_connect_id?: string | null
           type?: Database['public']['Enums']['profile_type']
@@ -373,6 +434,7 @@ export type Database = {
           full_name?: string
           id?: string
           long_description?: Json | null
+          mercury_recipient_id?: string | null
           regranter_status?: boolean
           stripe_connect_id?: string | null
           type?: Database['public']['Enums']['profile_type']
@@ -844,172 +906,147 @@ export type Database = {
       }
     }
     Functions: {
-      _transfer_project: {
-        Args:
-          | {
+      _transfer_project:
+        | {
+            Args: {
+              amount: number
+              from_id: string
               project_id: string
               to_id: string
-              from_id: string
               transfer_id: string
-              amount: number
             }
-          | {
-              project_id: string
-              to_id: string
-              from_id: string
-              transfer_id: string
+            Returns: undefined
+          }
+        | {
+            Args: {
               amount: number
-              txn_id: string
               donor_comment_id?: string
+              from_id: string
+              project_id: string
+              to_id: string
+              transfer_id: string
+              txn_id: string
             }
-          | { project_id: string; to_id: string; transfer_id: string }
-        Returns: undefined
-      }
+            Returns: undefined
+          }
+        | {
+            Args: { project_id: string; to_id: string; transfer_id: string }
+            Returns: undefined
+          }
       activate_cert: {
-        Args: { project_id: string; project_creator: string }
+        Args: { project_creator: string; project_id: string }
         Returns: undefined
       }
       activate_grant: {
-        Args: { project_id: string; project_creator: string }
+        Args: { project_creator: string; project_id: string }
         Returns: undefined
       }
-      add_tags: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      add_topics: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      add_tags: { Args: never; Returns: undefined }
+      add_topics: { Args: never; Returns: undefined }
       create_transfer_grant: {
         Args: {
-          project: Database['public']['CompositeTypes']['project_row']
           donor_comment: Database['public']['CompositeTypes']['comment_row']
-          project_transfer: Database['public']['CompositeTypes']['transfer_row']
           grant_amount: number
+          project: Database['public']['CompositeTypes']['project_row']
+          project_transfer: Database['public']['CompositeTypes']['transfer_row']
         }
         Returns: undefined
       }
-      execute_grant_verdict: {
-        Args:
-          | {
-              approved: boolean
-              project_id: string
-              project_creator: string
-              admin_id?: string
+      execute_grant_verdict:
+        | {
+            Args: {
               admin_comment_content?: Json
+              admin_id?: string
+              approved: boolean
+              project_creator: string
+              project_id: string
             }
-          | {
-              approved: boolean
-              project_id: string
-              project_creator: string
-              admin_id?: string
+            Returns: undefined
+          }
+        | {
+            Args: {
               admin_comment_content?: Json
+              admin_id?: string
+              approved: boolean
+              project_creator: string
+              project_id: string
               public_benefit?: string
             }
-        Returns: undefined
-      }
+            Returns: undefined
+          }
       find_similar_projects: {
-        Args: { project_id: string; match_count?: number }
+        Args: { match_count?: number; project_id: string }
         Returns: {
+          blurb: string
           id: string
+          similarity: number
           slug: string
           title: string
-          blurb: string
-          similarity: number
         }[]
       }
       follow_project: {
-        Args: { project_id: string; follower_id: string }
+        Args: { follower_id: string; project_id: string }
         Returns: undefined
       }
       get_user_balances: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
+          balance: number
           id: number
           username: string
-          balance: number
         }[]
       }
       give_grant: {
         Args: {
-          project: Database['public']['CompositeTypes']['project_row']
-          donor_comment: Database['public']['CompositeTypes']['comment_row']
           donation: Database['public']['CompositeTypes']['bid_row']
+          donor_comment: Database['public']['CompositeTypes']['comment_row']
+          project: Database['public']['CompositeTypes']['project_row']
         }
         Returns: undefined
       }
-      ivfflathandler: {
-        Args: { '': unknown }
-        Returns: unknown
-      }
-      reject_grant: {
-        Args: { project_id: string }
-        Returns: undefined
-      }
-      reject_proposal: {
-        Args: { project_id: string }
-        Returns: undefined
-      }
+      reject_grant: { Args: { project_id: string }; Returns: undefined }
+      reject_proposal: { Args: { project_id: string }; Returns: undefined }
       toggle_follow: {
-        Args: { project_id: string; follower_id: string }
+        Args: { follower_id: string; project_id: string }
         Returns: undefined
       }
-      transfer_project: {
-        Args:
-          | {
-              project_id: string
-              to_id: string
-              from_id: string
-              transfer_id: string
+      transfer_project:
+        | {
+            Args: {
               amount: number
-            }
-          | {
+              from_id: string
               project_id: string
               to_id: string
-              from_id: string
               transfer_id: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
               amount: number
               donor_comment_id: string
-              txn_id?: string
-            }
-          | {
+              from_id: string
               project_id: string
               to_id: string
-              from_id: string
               transfer_id: string
+              txn_id?: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
               amount: number
               donor_notes: Json
+              from_id: string
+              project_id: string
+              to_id: string
+              transfer_id: string
             }
-        Returns: undefined
-      }
+            Returns: undefined
+          }
       unfollow_project: {
-        Args: { project_id: string; follower_id: string }
+        Args: { follower_id: string; project_id: string }
         Returns: undefined
-      }
-      vector_avg: {
-        Args: { '': number[] }
-        Returns: string
-      }
-      vector_dims: {
-        Args: { '': string }
-        Returns: number
-      }
-      vector_norm: {
-        Args: { '': string }
-        Returns: number
-      }
-      vector_out: {
-        Args: { '': string }
-        Returns: unknown
-      }
-      vector_send: {
-        Args: { '': string }
-        Returns: string
-      }
-      vector_typmod_in: {
-        Args: { '': unknown[] }
-        Returns: number
       }
     }
     Enums: {
@@ -1082,21 +1119,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, 'public'>]
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
     : never = never
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -1114,14 +1155,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema['Tables']
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -1137,14 +1180,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema['Tables']
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
     : never = never
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
@@ -1160,14 +1205,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema['Enums']
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
     : never = never
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
   ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
   : never
@@ -1175,14 +1222,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema['CompositeTypes']
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
     : never = never
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
   ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
   : never
