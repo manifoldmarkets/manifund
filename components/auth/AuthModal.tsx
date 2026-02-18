@@ -62,6 +62,7 @@ export default function AuthModal({
         let result
         if (mode === 'signin') {
           result = await signIn(formData)
+          console.log('signIn AuthModal result', result)
           // If no result is returned, it means the sign in was successful and redirected
           if (!result) {
             markUserAsReturning()
@@ -80,6 +81,7 @@ export default function AuthModal({
           }
         }
       } catch (error) {
+        console.log('signIn AuthModal error', error)
         // In Next.js 16, redirect() in server actions rejects the promise
         // with a redirect error. Re-throw so RedirectBoundary handles it.
         if (isRedirectError(error)) {

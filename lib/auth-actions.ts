@@ -27,8 +27,11 @@ export async function signIn(formData: FormData): Promise<AuthResult> {
   console.log('signIn error', error)
 
   if (!error) {
+    console.log('signIn revalidating')
     revalidatePath('/', 'layout')
+    console.log('signIn redirecting to /')
     redirect('/')
+    console.log('signIn redirected to /')
   }
 
   // Return the error
