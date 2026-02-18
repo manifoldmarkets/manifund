@@ -22,7 +22,9 @@ export async function signIn(formData: FormData): Promise<AuthResult> {
     password: formData.get('password') as string,
   }
 
+  console.log('signIn with email', data.email)
   const { error } = await supabase.auth.signInWithPassword(data)
+  console.log('signIn error', error)
 
   if (!error) {
     revalidatePath('/', 'layout')
