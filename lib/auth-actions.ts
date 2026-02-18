@@ -22,16 +22,11 @@ export async function signIn(formData: FormData): Promise<AuthResult> {
     password: formData.get('password') as string,
   }
 
-  console.log('signIn with email', data.email)
   const { error } = await supabase.auth.signInWithPassword(data)
-  console.log('signIn error', error)
 
   if (!error) {
-    console.log('signIn revalidating')
     revalidatePath('/', 'layout')
-    console.log('signIn redirecting to /')
-    redirect('/')
-    console.log('signIn redirected to /')
+    return { type: 'success', text: 'Signed in' }
   }
 
   // Return the error
@@ -98,7 +93,7 @@ export async function signInWithGoogle(): Promise<AuthResult> {
   if (error) {
     return { type: 'error', text: error.message }
   }
-  redirect(data.url)
+  return { type: 'success', text: data.url }
 }
 
 export async function signOut(): Promise<AuthResult> {

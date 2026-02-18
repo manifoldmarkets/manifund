@@ -2,7 +2,6 @@
 
 import { useState, useTransition, useEffect } from 'react'
 import { signInWithGoogle, signIn, signUp, resetPassword, AuthResult } from '@/lib/auth-actions'
-import { isRedirectError } from 'next/dist/client/components/redirect-error'
 
 interface AuthError {
   error: string
@@ -62,11 +61,11 @@ export default function AuthModal({
         let result
         if (mode === 'signin') {
           result = await signIn(formData)
-          console.log('signIn AuthModal result', result)
-          // If no result is returned, it means the sign in was successful and redirected
-          if (!result) {
+          if (result?.type === 'success') {
             markUserAsReturning()
             onClose?.()
+            window.location.href = '/'
+            return
           }
         } else if (mode === 'signup') {
           result = await signUp(formData)
@@ -81,12 +80,6 @@ export default function AuthModal({
           }
         }
       } catch (error) {
-        console.log('signIn AuthModal error', error)
-        // In Next.js 16, redirect() in server actions rejects the promise
-        // with a redirect error. Re-throw so RedirectBoundary handles it.
-        if (isRedirectError(error)) {
-          throw error
-        }
         const message = error instanceof Error ? error.message : 'An unexpected error occurred'
         setMessage({ type: 'error', text: message })
       }
@@ -98,6 +91,11 @@ export default function AuthModal({
       // Mark as returning user before the redirect happens
       markUserAsReturning()
       const result = await signInWithGoogle()
+      if (result?.type === 'success') {
+        markUserAsReturning()
+        window.location.href = result.text
+        return
+      }
       if (result) {
         setMessage(result)
       }
