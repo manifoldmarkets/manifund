@@ -77,47 +77,48 @@ export function BalanceSheet() {
   const lastUpdated = '2026-01-22'
   const $ = {
     // Stripe Opal + Payments balance
-    stripe: 116_088 + 90_806,
+    stripe: 39_676 + 69_256,
     // Mercury Manifund Grants account
-    mercury: 1_225_640,
-    coinbase: 2_279_269,
+    mercury: 4_656_935,
+    coinbase: 1_785_090,
     // Current users
-    users: -3_970_255,
+    users: -3_061_895,
     // Regranting pot owed, plus 12 * 100k regrantors + neel (350k) + gavin/joel reup (2*50k) + 100k (joel/joel/richard/ethan)
     regranting: -2_250_000 + 100_000 * 12 + 350_000 + 100_000 + 100_000,
-    // not credited: -pending grants on Airtable; Frame deposit; -Eric VARA; ACX;
-    pending: -50 + 280_000 - 24_897,
+    // not credited: -pending grants on Airtable;
+    pending: -47_050,
     // Donations for Manifold for Charity
     // 500k initial - donated - David MCF - AmmonLam
     charity: 500000 - 315832 - 186747,
     // Mox: Mercury + Stripe pending
     // Note that we've transferred $800k from the grants balance so far, and recouped $315k
-    mox: 46_715 + 23_937,
+    mox: 56_915 + 8_576,
 
     // Investments
-    vara_for_manifund: 439_318,
-    vara_for_others: 2_439_021 - 439_318,
+    vara_for_manifund: 523_309,
+    // - VARA returned - Daniel & Ada + VARA for Manifund
+    vara_for_others: -2_905_325 - 515_342 + 523_309,
     mox_fund: 129_800,
   }
   const financeRows = [
     { name: 'Stripe Bank', balance: $.stripe },
     { name: 'Mercury', balance: $.mercury },
     { name: 'Coinbase (USDC)', balance: $.coinbase },
-    { name: 'VARA, for Manifund', balance: $.vara_for_manifund },
     { name: 'Mox balance (Mercury + Stripe)', balance: $.mox },
     { name: 'Mox Fund investments', balance: $.mox_fund },
     {
       name: 'Total assets',
-      balance: $.stripe + $.mercury + $.coinbase + $.vara_for_manifund + $.mox + $.mox_fund,
+      balance: $.stripe + $.mercury + $.coinbase + $.mox + $.mox_fund,
     },
     {},
     { name: 'User balances', balance: $.users },
+    { name: 'VARA, for donors', balance: $.vara_for_others },
     { name: '2025 regrantor funds, to be allocated', balance: $.regranting },
     { name: 'Pending transfers', balance: $.pending },
     { name: 'Pending Manifold for Charity donations', balance: $.charity },
     {
       name: 'Total liabilities',
-      balance: $.users + $.regranting + $.pending + $.charity,
+      balance: $.users + $.regranting + $.pending + $.charity + $.vara_for_others,
     },
     {},
     {
@@ -131,14 +132,14 @@ export function BalanceSheet() {
         $.pending +
         $.charity +
         $.mox +
-        $.vara_for_manifund +
-        $.mox_fund,
+        $.mox_fund +
+        $.vara_for_others,
     },
     {},
     { name: '(not included in net calculations)' },
-    { name: 'VARA, for donors', balance: $.vara_for_others },
-    { name: 'ACX Grants balance', balance: 37_380 },
-    { name: 'Frame Fellowship', balance: 242_588 },
+    { name: 'VARA, for Manifund', balance: $.vara_for_manifund },
+    { name: 'ACX Grants balance', balance: 80_380 },
+    { name: 'Frame Fellowship', balance: 143_894 },
   ]
   // Using a grid to display the finances
   return (
