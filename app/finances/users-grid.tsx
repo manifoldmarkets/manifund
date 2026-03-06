@@ -151,6 +151,7 @@ export function BalanceSheet() {
         height={800}
         value={financeRows}
         columns={[keyColumn('name', textColumn), keyColumn('balance', floatColumn)]}
+        rowHeight={30}
         lockRows
       />
     </>
