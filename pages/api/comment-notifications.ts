@@ -1,3 +1,6 @@
+// Called by Supabase webhook trigger on comments table INSERT.
+// If Vercel Attack Challenge Mode is on, this endpoint must be bypassed in Vercel Firewall rules,
+// otherwise the webhook will be blocked by the security checkpoint.
 import { NextApiRequest, NextApiResponse } from 'next'
 import { generateHTML } from '@tiptap/html'
 import { getCommentById } from '@/db/comment'
