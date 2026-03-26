@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, memo } from 'react'
+import { useState, useMemo, memo } from 'react'
 
 type UserRow = {
   id: string
@@ -11,30 +11,51 @@ type UserRow = {
 }
 
 export function UserTable(props: { users: UserRow[] }) {
+  const [search, setSearch] = useState('')
+
+  const filtered = useMemo(() => {
+    if (!search) return props.users
+    const q = search.toLowerCase()
+    return props.users.filter(
+      (u) => u.email.toLowerCase().includes(q) || (u.username?.toLowerCase().includes(q) ?? false)
+    )
+  }, [search, props.users])
+
   return (
-    <table className="mx-auto max-w-5xl table-fixed text-left text-xs">
-      <colgroup>
-        <col className="w-5" />
-        <col className="w-[300px]" />
-        <col className="w-[210px]" />
-        <col className="w-7" />
-        <col />
-      </colgroup>
-      <thead className="border-b text-[10px] uppercase tracking-wide text-zinc-400">
-        <tr>
-          <th className="py-0.5"></th>
-          <th className="py-0.5">Email</th>
-          <th className="py-0.5">Username</th>
-          <th className="py-0.5">Acc</th>
-          <th className="py-0.5">Balance / Pay</th>
-        </tr>
-      </thead>
-      <tbody>
-        {props.users.map((user, i) => (
-          <MemoRow key={user.id} user={user} odd={i % 2 === 1} />
-        ))}
-      </tbody>
-    </table>
+    <>
+      <div className="mx-auto max-w-5xl">
+        <input
+          type="text"
+          className="mb-2 w-64 rounded border border-gray-300 px-2 py-1 text-xs placeholder-gray-400 focus:border-orange-500 focus:outline-none"
+          placeholder="Search email or username"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+      <table className="mx-auto min-w-[1024px] max-w-5xl table-fixed text-left text-xs">
+        <colgroup>
+          <col style={{ width: 20 }} />
+          <col style={{ width: 300 }} />
+          <col style={{ width: 210 }} />
+          <col style={{ width: 28 }} />
+          <col style={{ width: 380 }} />
+        </colgroup>
+        <thead className="border-b text-[10px] uppercase tracking-wide text-zinc-400">
+          <tr>
+            <th className="py-0.5"></th>
+            <th className="py-0.5">Email</th>
+            <th className="py-0.5">Username</th>
+            <th className="py-0.5">Acc</th>
+            <th className="py-0.5">Balance / Pay</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map((user, i) => (
+            <MemoRow key={user.id} user={user} odd={i % 2 === 1} />
+          ))}
+        </tbody>
+      </table>
+    </>
   )
 }
 
