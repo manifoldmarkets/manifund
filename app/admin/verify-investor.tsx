@@ -1,8 +1,5 @@
 'use client'
 
-import { Button } from '@/components/button'
-import { useRouter } from 'next/navigation'
-
 export type VerifyInvestorProps = {
   userId: string
   accredited: boolean
@@ -10,18 +7,17 @@ export type VerifyInvestorProps = {
 
 export function VerifyInvestor(props: { userId: string; accredited: boolean }) {
   const { userId } = props
-  const router = useRouter()
 
   return (
-    <Button
-      size="sm"
+    <button
+      className="cursor-pointer text-sm leading-none"
       onClick={async () => {
         await verifyInvestor({ userId, accredited: !props.accredited })
-        router.refresh()
+        window.location.reload()
       }}
     >
       {props.accredited ? '✅' : '❌'}
-    </Button>
+    </button>
   )
 }
 
