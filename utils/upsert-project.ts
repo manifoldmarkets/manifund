@@ -3,6 +3,8 @@ import { TOTAL_SHARES } from '@/db/project'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { JSONContent } from '@tiptap/core'
 import uuid from 'react-uuid'
+import { createAdminClient } from '@/db/edge'
+import { TxnType } from '@/db/txn'
 
 export type ProjectParams = {
   title: string
@@ -26,9 +28,10 @@ export async function giveCreatorShares(supabase: SupabaseClient, id: string, cr
     amount: TOTAL_SHARES,
     token: id,
     project: id,
-    type: 'mint cert',
+    type: 'mint cert' as TxnType,
   }
-  const { error } = await supabase.from('txns').insert([txn])
+  const supabaseAdmin = createAdminClient()
+  const { error } = await supabaseAdmin.from('txns').insert([txn])
   if (error) {
     console.error(error)
   }

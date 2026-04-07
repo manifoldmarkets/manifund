@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from '@/db/edge'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { getProfileById } from '@/db/profile'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getPendingBidsByUser } from '@/db/bid'
@@ -35,7 +35,8 @@ export default async function handler(req: NextRequest) {
     return NextResponse.error()
   }
   const txnId = uuid()
-  const { error } = await supabase.from('txns').insert({
+  const supabaseAdmin = createAdminClient()
+  const { error } = await supabaseAdmin.from('txns').insert({
     id: txnId,
     from_id: user.id,
     to_id: user.id,

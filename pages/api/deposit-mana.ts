@@ -1,5 +1,5 @@
 import { getUser } from '@/db/profile'
-import { createEdgeClient } from '@/db/edge'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const config = {
@@ -44,7 +44,8 @@ export default async function handler(req: NextRequest) {
   }
 
   // 2. If successful, create a txn adding that much money to the user's account
-  await supabase
+  const supabaseAdmin = createAdminClient()
+  await supabaseAdmin
     .from('txns')
     .insert({
       from_id: process.env.NEXT_PUBLIC_PROD_BANK_ID ?? '',

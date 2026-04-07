@@ -3,6 +3,7 @@ import { Bid } from '@/db/bid'
 import { formatLargeNumber, formatMoneyPrecise } from './formatting'
 import uuid from 'react-uuid'
 import { TxnType } from '@/db/txn'
+import { createAdminClient } from '@/db/edge'
 
 export async function makeTrade(
   numShares: number,
@@ -33,7 +34,8 @@ export async function makeTrade(
     bundle: bundleId,
     type: tradeType as TxnType,
   }
-  const { error } = await supabase.from('txns').insert([sharesTxn, usdTxn])
+  const supabaseAdmin = createAdminClient()
+  const { error } = await supabaseAdmin.from('txns').insert([sharesTxn, usdTxn])
   if (error) {
     console.error(error)
     return new Response('Error', { status: 500 })

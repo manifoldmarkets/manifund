@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from '@/db/edge'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { getProfileById } from '@/db/profile'
 import { getFullTxnsByUser } from '@/db/txn'
 import { calculateCashBalance } from '@/utils/math'
@@ -53,7 +53,8 @@ export default async function handler(req: NextRequest) {
     destination: profile.stripe_connect_id,
   })
   const txnId = uuid()
-  await supabase
+  const supabaseAdmin = createAdminClient()
+  await supabaseAdmin
     .from('txns')
     .insert({
       id: txnId,
@@ -65,7 +66,7 @@ export default async function handler(req: NextRequest) {
       type: 'withdraw',
     })
     .throwOnError()
-  await supabase
+  await supabaseAdmin
     .from('stripe_txns')
     .insert({
       session_id: transfer.id,
