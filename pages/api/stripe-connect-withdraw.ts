@@ -43,15 +43,13 @@ export default async function handler(req: NextRequest) {
   const txns = await getFullTxnsByUser(supabase, user.id)
   const bids = await getBidsByUser(supabase, user.id)
   const withdrawBalance = calculateCashBalance(txns, bids, user.id, profile.accreditation_status)
-  if (dollarAmount > withdrawBalance) {
-    console.log('amount too high')
+  if (dollarAmount <= 0 || dollarAmount > withdrawBalance) {
+    console.log('invalid amount')
     return NextResponse.error()
   }
-  const transfer = await stripe.transfers.create({
-    amount: dollarAmount * CENTS_PER_DOLLAR,
-    currency: 'usd',
-    destination: profile.stripe_connect_id,
-  })
+
+  // Insert the withdrawal txn BEFORE the Stripe transfer to prevent double-withdrawal.
+  // If a concurrent request also inserts, the re-check below will catch it.
   const txnId = uuid()
   const supabaseAdmin = createAdminClient()
   await supabaseAdmin
@@ -66,6 +64,37 @@ export default async function handler(req: NextRequest) {
       type: 'withdraw',
     })
     .throwOnError()
+
+  // Re-check balance after insert to detect concurrent withdrawals
+  const txnsAfter = await getFullTxnsByUser(supabase, user.id)
+  const bidsAfter = await getBidsByUser(supabase, user.id)
+  const balanceAfter = calculateCashBalance(
+    txnsAfter,
+    bidsAfter,
+    user.id,
+    profile.accreditation_status
+  )
+  if (balanceAfter < 0) {
+    // Concurrent withdrawal detected — roll back our txn
+    await supabaseAdmin.from('txns').delete().eq('id', txnId).throwOnError()
+    console.log('concurrent withdrawal detected, rolled back')
+    return NextResponse.error()
+  }
+
+  let transfer
+  try {
+    transfer = await stripe.transfers.create({
+      amount: dollarAmount * CENTS_PER_DOLLAR,
+      currency: 'usd',
+      destination: profile.stripe_connect_id,
+    })
+  } catch (e) {
+    // Stripe transfer failed — roll back the txn
+    await supabaseAdmin.from('txns').delete().eq('id', txnId).throwOnError()
+    console.error('stripe transfer failed', e)
+    return NextResponse.error()
+  }
+
   await supabaseAdmin
     .from('stripe_txns')
     .insert({
