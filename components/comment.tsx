@@ -13,7 +13,6 @@ import { Avatar } from './avatar'
 import { useRef, useState } from 'react'
 import { LinkIcon } from '@heroicons/react/20/solid'
 import { Tooltip } from './tooltip'
-import { getURL } from '@/utils/constants'
 import { useSafeLayoutEffect } from '@/hooks/use-safe-layout-effect'
 import { toSentenceCase } from '@/utils/formatting'
 import { CommentRxnsPanel } from './comment-rxn'
@@ -109,7 +108,7 @@ export function Comment(props: {
                 <LinkIcon
                   className="h-3 w-3 stroke-2 text-gray-500 hover:text-gray-700"
                   onClick={async () => {
-                    await navigator.clipboard.writeText(`${getURL()}${commentHref}`)
+                    await navigator.clipboard.writeText(`${window.location.origin}${commentHref}`)
                   }}
                 />
               </Tooltip>
