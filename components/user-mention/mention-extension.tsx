@@ -12,7 +12,7 @@ const name = 'mention-component'
  */
 export const DisplayMention = Mention.extend({
   parseHTML: () => [{ tag: name }, { tag: `a[data-type="${name}"]` }],
-  renderHTML: ({ HTMLAttributes }) => [name, mergeAttributes({ HTMLAttributes })],
+  renderHTML: ({ HTMLAttributes }) => [name, mergeAttributes(HTMLAttributes), `@${HTMLAttributes['data-label'] || ''}`],
   // Note: Manifold uses nodeviewMiddleware wrapper instead of addNodeView; see
   // https://github.com/manifoldmarkets/manifold/pull/1275/files
   addNodeView: () => ReactNodeViewRenderer(UserMentionNodeView, { className: 'inline-block' }),
