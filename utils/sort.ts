@@ -3,7 +3,7 @@ import { getAmountRaised } from '@/utils/math'
 
 export function pointScore(project: FullProject) {
   // Rough heuristic for how good a project is:
-  // Votes are 2 points, comments are 1, every OOM raised is 3 points
+  // Votes are 2 points, comments are 1, every OOM raised is ~6 points
   const votes = countVotes(project)
   const comments = project.comments.length
   const raised = getAmountRaised(project, project.bids, project.txns)

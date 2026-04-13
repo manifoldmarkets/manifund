@@ -1,7 +1,7 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import { FullProject } from '@/db/project'
 import { sendEmail, sendBatchEmail } from './email'
-import { pointScore } from './sort'
+import { pointScore, countVotes } from './sort'
 import { getAmountRaised } from './math'
 import { getUserEmail } from './email'
 import { getSponsoredAmount } from './constants'
@@ -317,6 +317,50 @@ export async function getLargeDonorsEmails(
   return Array.from(new Set(emails.filter((email): email is string => email !== null)))
 }
 
+// This is about the top 150 projects
+const TOP_CREATOR_MIN_SCORE = 40
+
+export async function getTopCreatorEmails(
+  supabase: SupabaseClient,
+  minScore = TOP_CREATOR_MIN_SCORE
+): Promise<string[]> {
+  const { data: projects } = await supabase
+    .from('projects')
+    .select(
+      `
+      id, title, creator, created_at, stage, type, funding_goal,
+      profiles!projects_creator_fkey(id, full_name, username),
+      project_votes(magnitude),
+      comments(id),
+      bids(amount, status, type),
+      txns(amount, type, token, to_id)
+    `
+    )
+    .neq('stage', 'hidden')
+    .neq('stage', 'draft')
+    .throwOnError()
+
+  if (!projects?.length) return []
+
+  const scored = projects
+    .map((p) => ({
+      creatorId: p.creator,
+      score: pointScore(p as any),
+    }))
+    .filter((p) => p.score >= minScore)
+    .sort((a, b) => b.score - a.score)
+
+  const topCreatorIds = Array.from(new Set(scored.map((p) => p.creatorId)))
+
+  const { data: users } = await supabase
+    .from('users')
+    .select('email')
+    .in('id', topCreatorIds)
+    .throwOnError()
+
+  return (users ?? []).map((u) => u.email).filter((email): email is string => email !== null)
+}
+
 // Content generation functions
 const generateProjectItem = (project: FullProject): string => {
   const upvotes = project.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
@@ -534,6 +578,7 @@ export async function sendWeeklyDigest(supabase: SupabaseClient): Promise<void> 
     ...DEFAULT_DIGEST_RECIPIENTS,
     ...(await getLargeDonorsEmails(supabase)),
     ...(await getRegrantorEmails(supabase)),
+    ...(await getTopCreatorEmails(supabase)),
   ]
   const uniqueRecipients = new Set(recipients)
 
