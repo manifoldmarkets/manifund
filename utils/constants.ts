@@ -82,11 +82,11 @@ export function getSponsoredAmount2024(regrantorId: string) {
 }
 
 export function getSponsoredAmount2025(regrantorId: string) {
-  // Total allocated: $1,750,000
+  // Total allocated: $1,925,000
   const sponsoredRegrantors = {
     'e9362a95-cbec-4685-b179-91b4c5ba4edc': 350_000, // Neel Nanda
     '4988c7d8-e1a6-4f2b-b9d9-f80cd02f1732': 100_000, // Lisa
-    'aa7c88dc-7311-4577-8cd3-c58a0d41fc31': 200_000, // Joel
+    'aa7c88dc-7311-4577-8cd3-c58a0d41fc31': 350_000, // Joel
     'dd68802c-760d-4241-9431-352e1f635f6a': 100_000, // Lauren
     '8a2d245e-1cfe-4d93-8a74-82b2ed695f24': 150_000, // Gavin
     '9af369f0-dc1e-4577-9bb7-4ad4cb87131f': 100_000, // Marius
