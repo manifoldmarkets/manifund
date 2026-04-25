@@ -69,6 +69,7 @@
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.4.1",
     "react-icons": "^4.10.1",
+    "react-plock": "^3.5.1",
     "react-uuid": "^2.0.0",
     "recharts": "^2.8.0",
     "server-only": "^0.0.1",
