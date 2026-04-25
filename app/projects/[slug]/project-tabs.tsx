@@ -15,8 +15,30 @@ import { uniq } from 'es-toolkit'
 import { compareDesc } from 'date-fns'
 import { formatMoneyPrecise, formatPercent } from '@/utils/formatting'
 import { SimilarProjects } from './similar-projects'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/db/supabase-browser'
 
 const SIMILARITY_THRESHOLD = 0.6
+
+function useExpiredBids(projectId: string) {
+  const [expiredBids, setExpiredBids] = useState<BidAndProfile[]>([])
+  useEffect(() => {
+    const fetchExpiredBids = async () => {
+      const supabase = createClient()
+      const { data, error } = await supabase
+        .from('bids')
+        .select('*, profiles(*)')
+        .eq('project', projectId)
+        .eq('status', 'declined')
+        .eq('type', 'donate')
+      if (data && data.length > 0) {
+        setExpiredBids(data as BidAndProfile[])
+      }
+    }
+    void fetchExpiredBids()
+  }, [projectId])
+  return expiredBids
+}
 
 export function ProjectTabs(props: {
   project: FullProject
@@ -90,6 +112,28 @@ export function ProjectTabs(props: {
         />
       ),
     })
+  }
+
+  const expiredBids = useExpiredBids(project.id)
+  // Show expired offers for non-funded projects
+  if (project.stage === 'not funded') {
+    if (expiredBids.length > 0) {
+      tabs.push({
+        name: 'Expired Offers',
+        id: 'expired-offers',
+        count: expiredBids.length,
+        display: (
+          <Bids
+            bids={expiredBids}
+            project={project}
+            userProfile={userProfile}
+            userSpendableFunds={0}
+            userSellableShares={0}
+            activeAuction={false}
+          />
+        ),
+      })
+    }
   }
   if (shareholders) {
     tabs.push({
