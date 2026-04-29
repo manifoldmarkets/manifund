@@ -58,7 +58,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Suspense fallback={null}>
             <BottomNavBar />
           </Suspense>
-          <OAuthCodeHandler />
+          <Suspense fallback={null}>
+            <OAuthCodeHandler />
+          </Suspense>
         </SupabaseProvider>
         <Script
           src="https://analytics.umami.is/script.js"
