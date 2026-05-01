@@ -1,15 +1,35 @@
 import { createAdminClient } from '@/db/edge'
+import { Txn } from '@/db/txn'
 import { userBalances } from '../admin/utils'
 import UsersGrid from './users-grid'
 
+// Supabase caps a single response at 5000 rows; page through to get all USD txns.
+async function fetchAllUSDTxns(supabase: ReturnType<typeof createAdminClient>) {
+  const PAGE = 2000
+  const all: Txn[] = []
+  for (let from = 0; ; from += PAGE) {
+    const { data } = await supabase
+      .from('txns')
+      .select('*')
+      .eq('token', 'USD')
+      .order('created_at')
+      .range(from, from + PAGE - 1)
+      .throwOnError()
+    if (!data?.length) break
+    all.push(...data)
+    if (data.length < PAGE) break
+  }
+  return all
+}
+
 export default async function FinancesPage() {
   const supabase = createAdminClient()
-  const [{ data: users }, { data: profiles }, { data: txns }] = await Promise.all([
+  const [{ data: users }, { data: profiles }, txns] = await Promise.all([
     supabase.from('users').select('*'),
     supabase.from('profiles').select('*'),
-    supabase.from('txns').select('*').eq('token', 'USD').order('created_at'),
+    fetchAllUSDTxns(supabase),
   ])
-  const balances = userBalances(txns ?? [])
+  const balances = userBalances(txns)
 
   const userAndProfiles =
     users
