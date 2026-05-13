@@ -74,7 +74,7 @@ export default function UsersGrid({ users }: { users: User[] }) {
 }
 
 export function BalanceSheet() {
-  const lastUpdated = '2026-03-04'
+  const lastUpdated = '2026-05-01'
   const $ = {
     // Stripe Opal + Payments balance
     stripe: 30_299 + 68_464,
