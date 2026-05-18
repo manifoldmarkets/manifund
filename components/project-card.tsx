@@ -27,9 +27,9 @@ export function ProjectCard(props: { project: FullProject; valuation?: number })
   //   project.stage === 'proposal'
   //     ? orderBy(project.bids, 'created_at', 'asc')[0]?.bidder
   //     : orderBy(project.txns, 'created_at', 'asc')[0]?.from_id
-  const regrantorFunded = project.txns.some(
-    (txn) => txn.from_id && getSponsoredAmount(txn.from_id) > 0
-  )
+  const regrantorFunded =
+    project.txns.some((txn) => txn.from_id && getSponsoredAmount(txn.from_id) > 0) ||
+    project.bids.some((bid) => bid.bidder && getSponsoredAmount(bid.bidder) > 0)
   const voteCount = project.project_votes.reduce((acc, vote) => vote.magnitude + acc, 0)
   const minIncludingAmm = getMinIncludingAmm(project)
   const fundingGoal = project.type === 'cert' ? minIncludingAmm : project.funding_goal
