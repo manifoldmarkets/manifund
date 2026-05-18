@@ -101,6 +101,12 @@ export function getSponsoredAmount2025(regrantorId: string) {
   return sponsoredRegrantors[regrantorId] ?? 0
 }
 
+export function getSponsoredAmount2026(regrantorId: string) {
+  // Budgets not yet allocated for 2026.
+  const sponsoredRegrantors = {} as { [key: string]: number }
+  return sponsoredRegrantors[regrantorId] ?? 0
+}
+
 export function getSponsoredAmount(regrantorId: string, year?: number) {
   if (year === 2023) {
     return getSponsoredAmount2023(regrantorId)
@@ -108,11 +114,14 @@ export function getSponsoredAmount(regrantorId: string, year?: number) {
     return getSponsoredAmount2024(regrantorId)
   } else if (year === 2025) {
     return getSponsoredAmount2025(regrantorId)
+  } else if (year === 2026) {
+    return getSponsoredAmount2026(regrantorId)
   } else {
     return (
       getSponsoredAmount2023(regrantorId) +
       getSponsoredAmount2024(regrantorId) +
-      getSponsoredAmount2025(regrantorId)
+      getSponsoredAmount2025(regrantorId) +
+      getSponsoredAmount2026(regrantorId)
     )
   }
 }
