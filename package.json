@@ -16,7 +16,8 @@
     "update-deps": "bunx npm-check-updates -i",
     "ts-watch": "tsc --watch --noEmit --incremental --preserveWatchOutput --pretty",
     "setup-local-env": "bun run setup/setup-local-env.ts",
-    "sync-data-from-prod": "bun run setup/sync-data-from-prod.ts"
+    "sync-data-from-prod": "bun run setup/sync-data-from-prod.ts",
+    "digest": "bun run scripts/preview-weekly-digest.ts && open /tmp/digest-preview.html"
   },
   "dependencies": {
     "@floating-ui/react": "^0.19.2",
@@ -94,11 +95,11 @@
     "snaplet": "0.89.4",
     "tailwindcss": "^3.2.6"
   },
-  "trustedDependencies": [
-    "supabase"
-  ],
   "overrides": {
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3"
-  }
+  },
+  "trustedDependencies": [
+    "supabase"
+  ]
 }
