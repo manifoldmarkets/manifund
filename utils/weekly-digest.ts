@@ -366,7 +366,7 @@ const generateProjectItem = (project: FullProject): string => {
   const upvotes = project.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
   const commentCount = project.comments.length
   const creatorName = getDisplayName(project.profiles)
-  const summary = project.blurb || 'No description available'
+  const summary = project.blurb
   const raised = getAmountRaised(project, project.bids, project.txns)
 
   return `
@@ -376,7 +376,7 @@ const generateProjectItem = (project: FullProject): string => {
       )}">${escapeHtml(
         project.title
       )}</a> <span class="creator">by ${escapeHtml(creatorName)}</span></div>
-      <div class="summary">${escapeHtml(summary)}</div>
+      ${summary ? `<div class="summary">${escapeHtml(summary)}</div>` : ''}
       <div class="stats">
         <span>${upvotes} ⬆️</span>
         <span>${commentCount} 💬</span>
@@ -527,8 +527,8 @@ export function generatePlaintextDigest(
       const upvotes = project.project_votes.reduce((acc, vote) => acc + vote.magnitude, 0)
       const commentCount = project.comments.length
       const creatorName = getDisplayName(project.profiles)
-      const summary = project.blurb || 'No description available'
-      text += `- ${project.title}, by ${creatorName} - ${summary}. ${upvotes} ⬆️ ${commentCount} 💬\n`
+      const summary = project.blurb ? ` - ${project.blurb}` : ''
+      text += `- ${project.title}, by ${creatorName}${summary}. ${upvotes} ⬆️ ${commentCount} 💬\n`
     })
   }
 
