@@ -137,7 +137,10 @@ export async function getRegrantorEmails(
   return Array.from(new Set(emails.filter((email): email is string => email !== null)))
 }
 
-export async function getNewProjectsLastWeek(supabase: SupabaseClient): Promise<FullProject[]> {
+export async function getNewProjectsLastWeek(
+  supabase: SupabaseClient,
+  limit = 7
+): Promise<FullProject[]> {
   const oneWeekAgo = getOneWeekAgo()
 
   const { data: projectsBase } = await supabase
@@ -184,6 +187,7 @@ export async function getNewProjectsLastWeek(supabase: SupabaseClient): Promise<
         return netUpvotes > 0
       })
       .sort((a, b) => pointScore(b) - pointScore(a))
+      .slice(0, limit)
   )
 }
 
