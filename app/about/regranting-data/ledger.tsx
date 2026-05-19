@@ -42,10 +42,34 @@ type RegrantorRow = {
   budget2026: number
 }
 
-const YEARS = [2023, 2024, 2025, 2026] as const
+const YEARS = [2023, 2024, 2025] as const
 type YearKey = (typeof YEARS)[number]
 type YearSelection = YearKey | 'all'
 const YEAR_OPTIONS: YearSelection[] = ['all', ...YEARS]
+
+// Each grantmaking cycle covers a hand-picked set of calendar quarters,
+// listed as [year, quarter] pairs. Edit this map to reassign quarters.
+const FY_QUARTERS: Record<YearKey, Array<[number, number]>> = {
+  2023: [
+    [2023, 2],
+    [2023, 3],
+    [2023, 4],
+    [2024, 1],
+  ],
+  2024: [
+    [2024, 2],
+    [2024, 3],
+    [2024, 4],
+    [2025, 1],
+  ],
+  2025: [
+    [2025, 2],
+    [2025, 3],
+    [2025, 4],
+    [2026, 1],
+    [2026, 2],
+  ],
+}
 
 const QUARTERS_RANGE: { year: number; quarter: number }[] = []
 for (let y = 2023; y <= 2026; y++) {
@@ -67,24 +91,35 @@ function formatDollarsFull(n: number): string {
   return `$${Math.round(n).toLocaleString('en-US')}`
 }
 
-function shortDate(iso: string, includeYear = false) {
+function shortDate(iso: string) {
   const d = new Date(iso)
-  return d.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    ...(includeYear ? { year: '2-digit' } : {}),
-  })
+  return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
 }
 
 function budgetForYear(r: RegrantorRow, year: YearSelection): number {
   if (year === 'all') {
-    return r.budget2023 + r.budget2024 + r.budget2025 + r.budget2026
+    return r.budget2023 + r.budget2024 + r.budget2025
   }
   return r[`budget${year}` as 'budget2025']
 }
 
 function labelForYear(year: YearSelection): string {
   return year === 'all' ? 'all time' : String(year)
+}
+
+function isQuarterInFiscalYear(qYear: number, q: number, fy: YearKey): boolean {
+  return FY_QUARTERS[fy].some(([y, qq]) => y === qYear && qq === q)
+}
+
+function isInFiscalYear(date: Date, fy: YearKey): boolean {
+  return isQuarterInFiscalYear(date.getFullYear(), quarterOf(date), fy)
+}
+
+function fiscalYearRangeLabel(fy: YearKey): string {
+  const quarters = FY_QUARTERS[fy]
+  const [firstY, firstQ] = quarters[0]
+  const [lastY, lastQ] = quarters[quarters.length - 1]
+  return `Q${firstQ} ${firstY} – Q${lastQ} ${lastY}`
 }
 
 export function RegrantingLedger({
@@ -94,14 +129,14 @@ export function RegrantingLedger({
   grants: Grant[]
   regrantors: RegrantorRow[]
 }) {
-  const [year, setYear] = useState<YearSelection>(2026)
+  const [year, setYear] = useState<YearSelection>(2025)
   const [activeRegrantor, setActiveRegrantor] = useState<string | null>(null)
 
   const grantsInYear = useMemo(
     () =>
       year === 'all'
         ? grants
-        : grants.filter((g) => new Date(g.date).getFullYear() === year),
+        : grants.filter((g) => isInFiscalYear(new Date(g.date), year)),
     [grants, year]
   )
 
@@ -151,13 +186,13 @@ export function RegrantingLedger({
       .map((r) => {
         const myGrants = grantsInYear.filter((g) => g.regrantorId === r.id)
         const deployed = myGrants.reduce((s, g) => s + g.amount, 0)
-        const topGrants = [...myGrants].sort((a, b) => b.amount - a.amount).slice(0, 3)
+        const sortedGrants = [...myGrants].sort((a, b) => b.amount - a.amount)
         return {
           ...r,
           budget: budgetForYear(r, year),
           deployed,
           grantCount: myGrants.length,
-          topGrants,
+          sortedGrants,
         }
       })
       .sort((a, b) => b.deployed - a.deployed || b.budget - a.budget)
@@ -199,7 +234,7 @@ export function RegrantingLedger({
     <div className="mx-auto max-w-4xl p-5">
       {/* Header */}
       <header className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">Regranting data</h1>
+        <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">Where regrantors give</h1>
         <p className="mt-2 max-w-2xl text-gray-600">
           Every grant made through Manifund&apos;s regranting program — the experts, the dollars,
           the destinations, and the reasoning, broken down by year and quarter.
@@ -208,12 +243,11 @@ export function RegrantingLedger({
 
       {/* Top-line stats */}
       <section className="mb-10">
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <StatCard label="Total deployed" value={formatDollarsCompact(ledgerStats.total)} accent />
           <StatCard label="Grants written" value={ledgerStats.grantsWritten.toString()} />
           <StatCard label="Projects backed" value={ledgerStats.projectsBacked.toString()} />
           <StatCard label="Regrantors active" value={ledgerStats.regrantorCount.toString()} />
-          <StatCard label="Median grant" value={formatDollarsCompact(ledgerStats.medianGrant)} />
         </div>
       </section>
 
@@ -256,7 +290,11 @@ export function RegrantingLedger({
                   {quarterlyData.map((d, i) => (
                     <Cell
                       key={i}
-                      fill={year === 'all' || d.year === year ? '#ea580c' : '#fdba74'}
+                      fill={
+                        year === 'all' || isQuarterInFiscalYear(d.year, d.quarter, year)
+                          ? '#ea580c'
+                          : '#fdba74'
+                      }
                     />
                   ))}
                 </Bar>
@@ -276,28 +314,50 @@ export function RegrantingLedger({
       </section>
 
       {/* Year switcher */}
-      <section className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold text-gray-900">
-          Showing data for <span className="text-orange-600">{labelForYear(year)}</span>
-        </h2>
-        <div className="flex flex-wrap gap-1">
-          {YEAR_OPTIONS.map((y) => (
-            <button
-              key={y}
-              onClick={() => {
-                setYear(y)
-                setActiveRegrantor(null)
-              }}
-              className={clsx(
-                'rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                y === year
-                  ? 'bg-orange-100 text-orange-600'
-                  : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
-              )}
+      <section className="mb-6">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <div className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                Grantmaking cycle
+              </div>
+              <div className="mt-1 flex items-baseline gap-3">
+                <span className="text-3xl font-bold text-orange-600 sm:text-4xl">
+                  {labelForYear(year)}
+                </span>
+                {year !== 'all' && (
+                  <span className="text-sm text-gray-500">
+                    {fiscalYearRangeLabel(year)}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div
+              role="tablist"
+              aria-label="Cycle"
+              className="inline-flex rounded-lg bg-gray-100 p-1"
             >
-              {y === 'all' ? 'All' : y}
-            </button>
-          ))}
+              {YEAR_OPTIONS.map((y) => (
+                <button
+                  key={y}
+                  role="tab"
+                  aria-selected={y === year}
+                  onClick={() => {
+                    setYear(y)
+                    setActiveRegrantor(null)
+                  }}
+                  className={clsx(
+                    'min-w-[64px] rounded-md px-4 py-2 text-base font-semibold transition-all sm:min-w-[72px] sm:text-lg',
+                    y === year
+                      ? 'bg-orange-600 text-white shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  )}
+                >
+                  {y === 'all' ? 'All' : y}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -372,28 +432,34 @@ export function RegrantingLedger({
                   )}
                 </button>
 
-                {row.topGrants.length > 0 && (
+                {row.sortedGrants.length > 0 && (
                   <div className="border-t border-gray-100 bg-gray-50 px-4 py-3">
                     <div className="mb-2 text-[11px] font-medium uppercase tracking-wide text-gray-500">
-                      Top grant{row.topGrants.length === 1 ? '' : 's'} in {labelForYear(year)}
+                      {isActive
+                        ? `All ${row.sortedGrants.length} grant${row.sortedGrants.length === 1 ? '' : 's'} in ${labelForYear(year)}`
+                        : `Top grant${row.sortedGrants.length === 1 ? '' : 's'} in ${labelForYear(year)}`}
                     </div>
                     <ol className="space-y-1.5">
-                      {row.topGrants.map((g) => (
-                        <li key={g.id}>
-                          <Link
-                            href={`/projects/${g.projectSlug}`}
-                            className="group flex items-baseline gap-3 text-sm text-gray-800"
-                          >
-                            <span className="w-14 flex-shrink-0 text-right font-semibold tabular-nums text-orange-600">
-                              {formatDollarsCompact(g.amount)}
-                            </span>
-                            <span className="flex-1 group-hover:underline">{g.projectTitle}</span>
-                            <span className="hidden text-xs text-gray-400 sm:inline">
-                              {shortDate(g.date, year === 'all')}
-                            </span>
-                          </Link>
-                        </li>
-                      ))}
+                      {(isActive ? row.sortedGrants : row.sortedGrants.slice(0, 3)).map(
+                        (g) => (
+                          <li key={g.id}>
+                            <Link
+                              href={`/projects/${g.projectSlug}`}
+                              className="group flex items-baseline gap-3 text-sm text-gray-800"
+                            >
+                              <span className="w-14 flex-shrink-0 text-right font-semibold tabular-nums text-orange-600">
+                                {formatDollarsCompact(g.amount)}
+                              </span>
+                              <span className="flex-1 group-hover:underline">
+                                {g.projectTitle}
+                              </span>
+                              <span className="hidden text-xs text-gray-400 sm:inline">
+                                {shortDate(g.date)}
+                              </span>
+                            </Link>
+                          </li>
+                        )
+                      )}
                     </ol>
                   </div>
                 )}
@@ -539,7 +605,7 @@ export function RegrantingLedger({
                     <div className="text-sm font-semibold text-orange-600">
                       {formatDollarsCompact(g.amount)}
                     </div>
-                    <div className="text-[11px] text-gray-400">{shortDate(g.date, year === 'all')}</div>
+                    <div className="text-[11px] text-gray-400">{shortDate(g.date)}</div>
                   </div>
                 </figcaption>
               </figure>
@@ -571,7 +637,7 @@ export function RegrantingLedger({
               className="grid grid-cols-12 items-center gap-y-1 border-b border-gray-100 px-4 py-3 text-sm last:border-b-0 hover:bg-gray-50"
             >
               <div className="col-span-12 text-xs text-gray-500 sm:col-span-2">
-                {shortDate(g.date, year === 'all')}
+                {shortDate(g.date)}
               </div>
               <Link
                 href={`/${g.regrantorUsername}`}

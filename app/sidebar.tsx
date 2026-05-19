@@ -64,6 +64,7 @@ export default async function Sidebar() {
               children: [
                 { name: 'About Manifund', href: '/about' },
                 { name: 'Regranting', href: '/about/regranting' },
+                { name: 'Regranting data', href: '/about/regranting-data' },
                 { name: 'Impact markets', href: '/about/impact-certificates' },
                 { name: 'Applying for funding', href: '/about/open-call' },
                 { name: 'API docs', href: '/docs' },
