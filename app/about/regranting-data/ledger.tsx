@@ -199,26 +199,40 @@ export function RegrantingLedger({
   }, [grantsInYear, regrantors, year])
 
   const topProjectsInYear = useMemo(() => {
-    const seen = new Map<string, { project: Grant; backers: Grant[] }>()
+    const seen = new Map<string, { project: Grant; backers: Grant[]; regrantedTotal: number }>()
     for (const g of grantsInYear) {
       const entry = seen.get(g.projectId)
       if (entry) {
         entry.backers.push(g)
+        entry.regrantedTotal += g.amount
       } else {
-        seen.set(g.projectId, { project: g, backers: [g] })
+        seen.set(g.projectId, { project: g, backers: [g], regrantedTotal: g.amount })
       }
     }
+    // Collapse multiple grants from the same regrantor into a single backer entry.
     return Array.from(seen.values())
-      .sort((a, b) => b.project.projectTotal - a.project.projectTotal)
-      .slice(0, 8)
+      .map((entry) => {
+        const byRegrantor = new Map<string, Grant>()
+        for (const b of entry.backers) {
+          const existing = byRegrantor.get(b.regrantorId)
+          if (existing) {
+            existing.amount += b.amount
+            if (!existing.comment && b.comment) existing.comment = b.comment
+          } else {
+            byRegrantor.set(b.regrantorId, { ...b })
+          }
+        }
+        const uniqueBackers = Array.from(byRegrantor.values()).sort(
+          (a, b) => b.amount - a.amount
+        )
+        return { ...entry, uniqueBackers }
+      })
+      .sort((a, b) => b.regrantedTotal - a.regrantedTotal)
+      .slice(0, 20)
   }, [grantsInYear])
 
-  const featuredNotes = useMemo(() => {
-    return grantsInYear
-      .filter((g) => g.comment && g.comment.length > 120)
-      .sort((a, b) => b.amount - a.amount)
-      .slice(0, 6)
-  }, [grantsInYear])
+  const featuredProjects = topProjectsInYear.slice(0, 8)
+  const runnerUpProjects = topProjectsInYear.slice(8)
 
   const feedGrants = useMemo(() => {
     const list = grantsInYear.filter(
@@ -480,22 +494,27 @@ export function RegrantingLedger({
           title="Largest projects backed"
           subtitle={`Top projects funded ${
             year === 'all' ? 'across all years' : `in ${year}`
-          }, ranked by total dollars raised`}
+          }, ranked by total given via regranting`}
         />
         <ol className="space-y-3">
-          {topProjectsInYear.map((entry) => (
+          {featuredProjects.map((entry, i) => (
             <li
               key={entry.project.projectId}
               className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-5"
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
                 <div className="min-w-0 flex-1">
-                  <Link
-                    href={`/projects/${entry.project.projectSlug}`}
-                    className="text-lg font-semibold text-gray-900 hover:text-orange-600 hover:underline sm:text-xl"
-                  >
-                    {entry.project.projectTitle}
-                  </Link>
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-sm font-medium tabular-nums text-gray-300">
+                      #{i + 1}
+                    </span>
+                    <Link
+                      href={`/projects/${entry.project.projectSlug}`}
+                      className="text-lg font-semibold text-gray-900 hover:text-orange-600 hover:underline sm:text-xl"
+                    >
+                      {entry.project.projectTitle}
+                    </Link>
+                  </div>
                   {entry.project.projectBlurb && (
                     <p className="mt-1.5 text-sm leading-relaxed text-gray-600">
                       {entry.project.projectBlurb}
@@ -504,22 +523,22 @@ export function RegrantingLedger({
                 </div>
                 <div className="flex-shrink-0 sm:text-right">
                   <div className="text-2xl font-bold text-orange-600">
-                    {formatDollarsCompact(entry.project.projectTotal)}
+                    {formatDollarsCompact(entry.regrantedTotal)}
                   </div>
-                  <div className="text-xs text-gray-500">total raised</div>
+                  <div className="text-xs text-gray-500">
+                    from {entry.uniqueBackers.length} regrantor
+                    {entry.uniqueBackers.length === 1 ? '' : 's'}
+                  </div>
                   <div className="mt-1 text-xs text-gray-500">
-                    {entry.backers.length} regrantor{entry.backers.length === 1 ? '' : 's'} ·{' '}
-                    {formatDollarsCompact(entry.backers.reduce((s, b) => s + b.amount, 0))}
+                    {formatDollarsCompact(entry.project.projectTotal)} raised overall
                   </div>
                 </div>
               </div>
 
               {/* Backers + comments */}
               <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-3 border-t border-gray-100 pt-3 sm:grid-cols-2">
-                {entry.backers
-                  .sort((a, b) => b.amount - a.amount)
-                  .map((b) => (
-                    <div key={b.id} className="flex items-start gap-3">
+                {entry.uniqueBackers.map((b) => (
+                    <div key={b.regrantorId} className="flex items-start gap-3">
                       <Avatar
                         username={b.regrantorUsername}
                         avatarUrl={b.regrantorAvatar}
@@ -557,62 +576,64 @@ export function RegrantingLedger({
             </div>
           )}
         </ol>
-      </section>
 
-      {/* Featured notes */}
-      {featuredNotes.length > 0 && (
-        <section className="mb-10">
-          <SectionHeading
-            title="From the regrantors"
-            subtitle={
-              year === 'all'
-                ? 'Selected notes accompanying notable grants'
-                : `Selected notes accompanying ${year} grants`
-            }
-          />
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            {featuredNotes.map((g) => (
-              <figure
-                key={g.id}
-                className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+        {runnerUpProjects.length > 0 && (
+          <div className="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div className="hidden grid-cols-12 items-center gap-3 border-b border-gray-100 bg-gray-50 px-4 py-2 text-[11px] font-medium uppercase tracking-wide text-gray-500 sm:grid">
+              <div className="col-span-1">Rank</div>
+              <div className="col-span-6">Project</div>
+              <div className="col-span-3">Regrantors</div>
+              <div className="col-span-2 text-right">Total regranted</div>
+            </div>
+            {runnerUpProjects.map((entry, i) => (
+              <div
+                key={entry.project.projectId}
+                className="grid grid-cols-12 items-center gap-3 border-b border-gray-100 px-4 py-2.5 text-sm last:border-b-0 hover:bg-gray-50"
               >
-                <blockquote className="text-sm leading-relaxed text-gray-700">
-                  “{g.comment!.length > 420 ? g.comment!.slice(0, 420) + '…' : g.comment}”
-                </blockquote>
-                <figcaption className="mt-3 flex items-center gap-3 border-t border-gray-100 pt-3">
-                  <Avatar
-                    username={g.regrantorUsername}
-                    avatarUrl={g.regrantorAvatar}
-                    id={g.regrantorId}
-                    noLink
-                    size="sm"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <Link
-                      href={`/${g.regrantorUsername}`}
-                      className="block truncate text-sm font-semibold text-gray-900 hover:underline"
-                    >
-                      {g.regrantorName}
-                    </Link>
-                    <Link
-                      href={`/projects/${g.projectSlug}`}
-                      className="block truncate text-xs text-gray-500 hover:text-gray-700"
-                    >
-                      ↳ {g.projectTitle}
-                    </Link>
+                <span className="col-span-1 hidden tabular-nums text-gray-400 sm:inline">
+                  #{i + 9}
+                </span>
+                <Link
+                  href={`/projects/${entry.project.projectSlug}`}
+                  className="col-span-12 truncate font-medium text-gray-900 hover:text-orange-600 hover:underline sm:col-span-6"
+                >
+                  <span className="mr-1 tabular-nums text-gray-400 sm:hidden">
+                    #{i + 9}
+                  </span>
+                  {entry.project.projectTitle}
+                </Link>
+                <div className="col-span-9 -ml-1 flex items-center sm:col-span-3">
+                  <div className="isolate flex items-center -space-x-1.5">
+                    {entry.uniqueBackers.slice(0, 5).map((b, idx) => (
+                      <Avatar
+                        key={b.regrantorId}
+                        username={b.regrantorUsername}
+                        avatarUrl={b.regrantorAvatar}
+                        id={b.regrantorId}
+                        noLink
+                        size="xs"
+                        className={clsx(
+                          'ring-2 ring-white',
+                          ['z-50', 'z-40', 'z-30', 'z-20', 'z-10'][idx]
+                        )}
+                      />
+                    ))}
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm font-semibold text-orange-600">
-                      {formatDollarsCompact(g.amount)}
-                    </div>
-                    <div className="text-[11px] text-gray-400">{shortDate(g.date)}</div>
-                  </div>
-                </figcaption>
-              </figure>
+                  {entry.uniqueBackers.length > 5 && (
+                    <span className="ml-2 text-xs text-gray-500">
+                      +{entry.uniqueBackers.length - 5}
+                    </span>
+                  )}
+                </div>
+                <div className="col-span-3 text-right font-semibold tabular-nums text-orange-600 sm:col-span-2">
+                  {formatDollarsCompact(entry.regrantedTotal)}
+                </div>
+              </div>
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
+
 
       {/* Grant index */}
       <section className="mb-10">
