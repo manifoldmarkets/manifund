@@ -62,12 +62,12 @@ export default async function Sidebar() {
             item={{
               name: 'About',
               children: [
-                { name: 'About Manifund', href: '/about' },
+                { name: 'Manifund', href: '/about' },
                 { name: 'Regranting', href: '/about/regranting' },
-                { name: 'Regranting data', href: '/about/regranting-data' },
+                { name: 'Where regrantors give', href: '/about/regranting-data' },
                 { name: 'Impact markets', href: '/about/impact-certificates' },
-                { name: 'Applying for funding', href: '/about/open-call' },
-                { name: 'API docs', href: '/docs' },
+                // { name: 'Applying for funding', href: '/about/open-call' },
+                { name: 'API', href: '/docs' },
               ],
             }}
           />

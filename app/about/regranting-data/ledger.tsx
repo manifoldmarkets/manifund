@@ -3,15 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Cell,
-} from 'recharts'
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts'
 import { Avatar } from '@/components/avatar'
 
 type Grant = {
@@ -133,10 +125,7 @@ export function RegrantingLedger({
   const [activeRegrantor, setActiveRegrantor] = useState<string | null>(null)
 
   const grantsInYear = useMemo(
-    () =>
-      year === 'all'
-        ? grants
-        : grants.filter((g) => isInFiscalYear(new Date(g.date), year)),
+    () => (year === 'all' ? grants : grants.filter((g) => isInFiscalYear(new Date(g.date), year))),
     [grants, year]
   )
 
@@ -222,9 +211,7 @@ export function RegrantingLedger({
             byRegrantor.set(b.regrantorId, { ...b })
           }
         }
-        const uniqueBackers = Array.from(byRegrantor.values()).sort(
-          (a, b) => b.amount - a.amount
-        )
+        const uniqueBackers = Array.from(byRegrantor.values()).sort((a, b) => b.amount - a.amount)
         return { ...entry, uniqueBackers }
       })
       .sort((a, b) => b.regrantedTotal - a.regrantedTotal)
@@ -235,9 +222,7 @@ export function RegrantingLedger({
   const runnerUpProjects = topProjectsInYear.slice(8)
 
   const feedGrants = useMemo(() => {
-    const list = grantsInYear.filter(
-      (g) => !activeRegrantor || g.regrantorId === activeRegrantor
-    )
+    const list = grantsInYear.filter((g) => !activeRegrantor || g.regrantorId === activeRegrantor)
     return list.sort((a, b) => +new Date(b.date) - +new Date(a.date))
   }, [grantsInYear, activeRegrantor])
 
@@ -259,9 +244,9 @@ export function RegrantingLedger({
       <section className="mb-10">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <StatCard label="Total deployed" value={formatDollarsCompact(ledgerStats.total)} accent />
-          <StatCard label="Grants written" value={ledgerStats.grantsWritten.toString()} />
+          <StatCard label="Grants made" value={ledgerStats.grantsWritten.toString()} />
           <StatCard label="Projects backed" value={ledgerStats.projectsBacked.toString()} />
-          <StatCard label="Regrantors active" value={ledgerStats.regrantorCount.toString()} />
+          <StatCard label="Total regrantors" value={ledgerStats.regrantorCount.toString()} />
         </div>
       </section>
 
@@ -319,9 +304,7 @@ export function RegrantingLedger({
             <span>Bars highlighted: {labelForYear(year)}</span>
             <span>
               {labelForYear(year)} deployed: {formatDollarsCompact(totalDeployedInYear)}
-              {totalBudgetInYear > 0 && (
-                <> of {formatDollarsCompact(totalBudgetInYear)} budget</>
-              )}
+              {totalBudgetInYear > 0 && <> of {formatDollarsCompact(totalBudgetInYear)} budget</>}
             </span>
           </div>
         </div>
@@ -340,9 +323,7 @@ export function RegrantingLedger({
                   {labelForYear(year)}
                 </span>
                 {year !== 'all' && (
-                  <span className="text-sm text-gray-500">
-                    {fiscalYearRangeLabel(year)}
-                  </span>
+                  <span className="text-sm text-gray-500">{fiscalYearRangeLabel(year)}</span>
                 )}
               </div>
             </div>
@@ -394,9 +375,7 @@ export function RegrantingLedger({
                 )}
               >
                 <button
-                  onClick={() =>
-                    setActiveRegrantor((curr) => (curr === row.id ? null : row.id))
-                  }
+                  onClick={() => setActiveRegrantor((curr) => (curr === row.id ? null : row.id))}
                   className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 sm:gap-4"
                 >
                   <Avatar
@@ -407,9 +386,7 @@ export function RegrantingLedger({
                     size="sm"
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-base font-semibold text-gray-900">
-                      {row.name}
-                    </div>
+                    <div className="truncate text-base font-semibold text-gray-900">{row.name}</div>
                     <div className="text-xs text-gray-500">
                       {row.budget > 0 ? (
                         <>
@@ -454,26 +431,22 @@ export function RegrantingLedger({
                         : `Top grant${row.sortedGrants.length === 1 ? '' : 's'} in ${labelForYear(year)}`}
                     </div>
                     <ol className="space-y-1.5">
-                      {(isActive ? row.sortedGrants : row.sortedGrants.slice(0, 3)).map(
-                        (g) => (
-                          <li key={g.id}>
-                            <Link
-                              href={`/projects/${g.projectSlug}`}
-                              className="group flex items-baseline gap-3 text-sm text-gray-800"
-                            >
-                              <span className="w-14 flex-shrink-0 text-right font-semibold tabular-nums text-orange-600">
-                                {formatDollarsCompact(g.amount)}
-                              </span>
-                              <span className="flex-1 group-hover:underline">
-                                {g.projectTitle}
-                              </span>
-                              <span className="hidden text-xs text-gray-400 sm:inline">
-                                {shortDate(g.date)}
-                              </span>
-                            </Link>
-                          </li>
-                        )
-                      )}
+                      {(isActive ? row.sortedGrants : row.sortedGrants.slice(0, 3)).map((g) => (
+                        <li key={g.id}>
+                          <Link
+                            href={`/projects/${g.projectSlug}`}
+                            className="group flex items-baseline gap-3 text-sm text-gray-800"
+                          >
+                            <span className="w-14 flex-shrink-0 text-right font-semibold tabular-nums text-orange-600">
+                              {formatDollarsCompact(g.amount)}
+                            </span>
+                            <span className="flex-1 group-hover:underline">{g.projectTitle}</span>
+                            <span className="hidden text-xs text-gray-400 sm:inline">
+                              {shortDate(g.date)}
+                            </span>
+                          </Link>
+                        </li>
+                      ))}
                     </ol>
                   </div>
                 )}
@@ -505,9 +478,7 @@ export function RegrantingLedger({
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline gap-3">
-                    <span className="text-sm font-medium tabular-nums text-gray-300">
-                      #{i + 1}
-                    </span>
+                    <span className="text-sm font-medium tabular-nums text-gray-300">#{i + 1}</span>
                     <Link
                       href={`/projects/${entry.project.projectSlug}`}
                       className="text-lg font-semibold text-gray-900 hover:text-orange-600 hover:underline sm:text-xl"
@@ -538,35 +509,35 @@ export function RegrantingLedger({
               {/* Backers + comments */}
               <div className="mt-4 grid grid-cols-1 gap-x-6 gap-y-3 border-t border-gray-100 pt-3 sm:grid-cols-2">
                 {entry.uniqueBackers.map((b) => (
-                    <div key={b.regrantorId} className="flex items-start gap-3">
-                      <Avatar
-                        username={b.regrantorUsername}
-                        avatarUrl={b.regrantorAvatar}
-                        id={b.regrantorId}
-                        noLink
-                        size="xs"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-baseline justify-between gap-2">
-                          <Link
-                            href={`/${b.regrantorUsername}`}
-                            className="truncate text-sm font-semibold text-gray-900 hover:underline"
-                          >
-                            {b.regrantorName}
-                          </Link>
-                          <span className="text-sm font-semibold tabular-nums text-orange-600">
-                            {formatDollarsCompact(b.amount)}
-                          </span>
-                        </div>
-                        {b.comment && (
-                          <p className="mt-1 line-clamp-3 text-xs leading-snug text-gray-600">
-                            “{b.comment.slice(0, 240)}
-                            {b.comment.length > 240 ? '…' : ''}”
-                          </p>
-                        )}
+                  <div key={b.regrantorId} className="flex items-start gap-3">
+                    <Avatar
+                      username={b.regrantorUsername}
+                      avatarUrl={b.regrantorAvatar}
+                      id={b.regrantorId}
+                      noLink
+                      size="xs"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <Link
+                          href={`/${b.regrantorUsername}`}
+                          className="truncate text-sm font-semibold text-gray-900 hover:underline"
+                        >
+                          {b.regrantorName}
+                        </Link>
+                        <span className="text-sm font-semibold tabular-nums text-orange-600">
+                          {formatDollarsCompact(b.amount)}
+                        </span>
                       </div>
+                      {b.comment && (
+                        <p className="mt-1 line-clamp-3 text-xs leading-snug text-gray-600">
+                          “{b.comment.slice(0, 240)}
+                          {b.comment.length > 240 ? '…' : ''}”
+                        </p>
+                      )}
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
             </li>
           ))}
@@ -597,9 +568,7 @@ export function RegrantingLedger({
                   href={`/projects/${entry.project.projectSlug}`}
                   className="col-span-12 truncate font-medium text-gray-900 hover:text-orange-600 hover:underline sm:col-span-6"
                 >
-                  <span className="mr-1 tabular-nums text-gray-400 sm:hidden">
-                    #{i + 9}
-                  </span>
+                  <span className="mr-1 tabular-nums text-gray-400 sm:hidden">#{i + 9}</span>
                   {entry.project.projectTitle}
                 </Link>
                 <div className="col-span-9 -ml-1 flex items-center sm:col-span-3">
@@ -634,15 +603,12 @@ export function RegrantingLedger({
         )}
       </section>
 
-
       {/* Grant index */}
       <section className="mb-10">
         <SectionHeading
           title="Grant index"
           subtitle={`All ${feedGrants.length} grants${
-            activeRegrantor
-              ? ` from ${regrantors.find((r) => r.id === activeRegrantor)?.name}`
-              : ''
+            activeRegrantor ? ` from ${regrantors.find((r) => r.id === activeRegrantor)?.name}` : ''
           }${year === 'all' ? ' across all years' : ` in ${year}`}, most recent first`}
         />
         <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
@@ -678,9 +644,7 @@ export function RegrantingLedger({
             </div>
           ))}
           {feedGrants.length === 0 && (
-            <div className="px-4 py-6 text-center text-sm text-gray-500">
-              No grants recorded.
-            </div>
+            <div className="px-4 py-6 text-center text-sm text-gray-500">No grants recorded.</div>
           )}
         </div>
       </section>
