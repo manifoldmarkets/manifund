@@ -124,9 +124,7 @@ export default async function RegrantingDataPage() {
       budget2025: getSponsoredAmount2025(r.id),
       budget2026: getSponsoredAmount2026(r.id),
     }))
-    .filter(
-      (r) => r.budget2023 + r.budget2024 + r.budget2025 + r.budget2026 > 0
-    )
+    .filter((r) => r.budget2023 + r.budget2024 + r.budget2025 + r.budget2026 > 0)
 
   return <RegrantingLedger grants={grants} regrantors={regrantorRows} />
 }

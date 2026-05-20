@@ -102,13 +102,7 @@ const MemoRow = memo(function UserRowComponent({ user, odd }: { user: UserRow; o
   )
 })
 
-function AccreditedToggle({
-  userId,
-  accredited,
-}: {
-  userId: string
-  accredited: boolean
-}) {
+function AccreditedToggle({ userId, accredited }: { userId: string; accredited: boolean }) {
   const [value, setValue] = useState(accredited)
   return (
     <button
@@ -128,13 +122,7 @@ function AccreditedToggle({
   )
 }
 
-function PayControls({
-  userId,
-  balance,
-}: {
-  userId: string
-  balance: number
-}) {
+function PayControls({ userId, balance }: { userId: string; balance: number }) {
   const [amount, setAmount] = useState('')
   const [receipt, setReceipt] = useState(false)
   const [loading, setLoading] = useState(false)
