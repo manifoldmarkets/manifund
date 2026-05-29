@@ -1,5 +1,4 @@
 'use client'
-import { Button } from '@/components/button'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -13,10 +12,17 @@ export function RestoreProject(props: { projectId: string; stage: string }) {
   }
 
   return (
-    <Button
-      color="emerald"
-      loading={isSubmitting}
+    <button
+      disabled={isSubmitting}
+      className="cursor-pointer whitespace-nowrap text-emerald-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-400"
       onClick={async () => {
+        if (
+          !window.confirm(
+            'Restore this project? This extends its funding deadline to 30 days from today and un-declines its bids.'
+          )
+        ) {
+          return
+        }
         setIsSubmitting(true)
         await fetch('/api/restore-project', {
           method: 'POST',
@@ -29,7 +35,7 @@ export function RestoreProject(props: { projectId: string; stage: string }) {
         router.refresh()
       }}
     >
-      Restore project
-    </Button>
+      {isSubmitting ? 'Restoring…' : 'Restore'}
+    </button>
   )
 }

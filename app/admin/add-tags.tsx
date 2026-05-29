@@ -9,26 +9,26 @@ export function AddTags(props: {
   causeSlug: string
   currentCauseSlugs: string[]
 }) {
-  const { projectId, causeSlug, currentCauseSlugs } = props
+  const { projectId, causeSlug } = props
   const { supabase } = useSupabase()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   return (
-    <td>
-      <Button
-        loading={isSubmitting}
-        disabled
-        onClick={async () => {
-          setIsSubmitting(true)
-          await supabase
-            .from('project_causes')
-            .insert({ project_id: projectId, cause_slug: causeSlug })
-          router.refresh()
-          setIsSubmitting(false)
-        }}
-      >
-        add {causeSlug}
-      </Button>
-    </td>
+    <Button
+      size="2xs"
+      className="whitespace-nowrap"
+      loading={isSubmitting}
+      disabled
+      onClick={async () => {
+        setIsSubmitting(true)
+        await supabase
+          .from('project_causes')
+          .insert({ project_id: projectId, cause_slug: causeSlug })
+        router.refresh()
+        setIsSubmitting(false)
+      }}
+    >
+      add {causeSlug}
+    </Button>
   )
 }

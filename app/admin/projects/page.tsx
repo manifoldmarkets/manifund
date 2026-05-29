@@ -1,12 +1,6 @@
 import { createAdminClient } from '@/db/edge'
 import { listProjects } from '@/db/project'
-import { AddTags } from '../add-tags'
-import { ActivateProject } from '../activate-project'
-import { RestoreProject } from '../restore-project'
-import Link from 'next/link'
-import { CircleStackIcon } from '@heroicons/react/24/solid'
-import { Table } from '@/components/table-catalyst'
-import { supabaseProjectRowUrl } from '@/utils/supabase-admin-url'
+import { ProjectTable, ProjectRow } from './project-table'
 
 export const revalidate = 300
 
@@ -14,53 +8,14 @@ export default async function ProjectsPage() {
   const supabaseAdmin = createAdminClient()
   const projects = await listProjects(supabaseAdmin)
 
-  return (
-    <Table>
-      <thead>
-        <tr>
-          <th className="p-2">DB</th>
-          <th className="p-2">Title</th>
-          <th className="p-2">Creator</th>
-          <th className="p-2">Min funding</th>
-          <th className="p-2">Add tag</th>
-          <th className="p-2">Activate project</th>
-          <th className="p-2">Restore project</th>
-        </tr>
-      </thead>
-      <tbody>
-        {projects.map((project) => (
-          <tr key={project.id}>
-            <td className="pr-2">
-              <Link
-                href={supabaseProjectRowUrl(project.id)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                <CircleStackIcon className="inline h-3 w-3" />
-              </Link>
-            </td>
-            <td className="max-w-sm overflow-hidden hover:underline">
-              <Link href={`/projects/${project.slug}`}>{project.title}</Link>
-            </td>
-            <td>{project.profiles.username}</td>
-            <td>{project.min_funding}</td>
-            <td>
-              <AddTags
-                projectId={project.id}
-                causeSlug={'gcr'}
-                currentCauseSlugs={project.causes.map((cause) => cause.slug)}
-              />
-            </td>
-            <td>
-              <ActivateProject projectId={project.id} />
-            </td>
-            <td>
-              <RestoreProject projectId={project.id} stage={project.stage} />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
-  )
+  const rows: ProjectRow[] = projects.map((project) => ({
+    id: project.id,
+    slug: project.slug,
+    title: project.title,
+    username: project.profiles?.username ?? null,
+    minFunding: project.min_funding,
+    stage: project.stage,
+  }))
+
+  return <ProjectTable projects={rows} />
 }
