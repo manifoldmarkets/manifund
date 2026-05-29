@@ -2,6 +2,7 @@ import { createAdminClient } from '@/db/edge'
 import { listProjects } from '@/db/project'
 import { AddTags } from '../add-tags'
 import { ActivateProject } from '../activate-project'
+import { RestoreProject } from '../restore-project'
 import Link from 'next/link'
 import { CircleStackIcon } from '@heroicons/react/24/solid'
 import { Table } from '@/components/table-catalyst'
@@ -23,6 +24,7 @@ export default async function ProjectsPage() {
           <th className="p-2">Min funding</th>
           <th className="p-2">Add tag</th>
           <th className="p-2">Activate project</th>
+          <th className="p-2">Restore project</th>
         </tr>
       </thead>
       <tbody>
@@ -52,6 +54,9 @@ export default async function ProjectsPage() {
             </td>
             <td>
               <ActivateProject projectId={project.id} />
+            </td>
+            <td>
+              <RestoreProject projectId={project.id} stage={project.stage} />
             </td>
           </tr>
         ))}
