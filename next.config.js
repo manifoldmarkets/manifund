@@ -37,6 +37,12 @@ const nextConfig = {
           'https://manifoldmarkets.notion.site/Manifund-Essay-Prize-34354492ea7a804dbb44dc4fee8cf82f?source=copy_link',
         permanent: false,
       },
+      {
+        source: '/surplus',
+        destination:
+          'https://airtable.com/appaxqJfxht7OronH/pag4BXQJgRUkdb6lQ/form',
+        permanent: false,
+      },
     ]
   },
 }
