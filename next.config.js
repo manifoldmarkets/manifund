@@ -39,8 +39,12 @@ const nextConfig = {
       },
       {
         source: '/surplus',
-        destination:
-          'https://airtable.com/appaxqJfxht7OronH/pag4BXQJgRUkdb6lQ/form',
+        destination: 'https://airtable.com/appaxqJfxht7OronH/pag4BXQJgRUkdb6lQ/form',
+        permanent: false,
+      },
+      {
+        source: '/surplus:star(\\*)',
+        destination: 'https://airtable.com/appaxqJfxht7OronH/pag4BXQJgRUkdb6lQ/form',
         permanent: false,
       },
     ]
