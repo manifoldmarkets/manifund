@@ -132,7 +132,7 @@ export function Bid(props: {
   )
 }
 
-function Trade(props: {
+export function Trade(props: {
   bid: BidAndProfile
   project: Project
   userId: string
@@ -180,7 +180,8 @@ function Trade(props: {
   return (
     <div>
       <Button
-        className="w-14 text-xs"
+        size="2xs"
+        className="w-12"
         onClick={() => {
           setOpen(true)
         }}
@@ -286,7 +287,7 @@ function Trade(props: {
   )
 }
 
-function DeleteBid(props: { bidId: string }) {
+export function DeleteBid(props: { bidId: string }) {
   const { bidId } = props
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -295,7 +296,8 @@ function DeleteBid(props: { bidId: string }) {
   return (
     <div>
       <Button
-        className="w-14 bg-rose-500 text-xs hover:bg-rose-600"
+        size="2xs"
+        className="w-14 bg-rose-500 hover:bg-rose-600"
         onClick={() => {
           setOpen(true)
         }}

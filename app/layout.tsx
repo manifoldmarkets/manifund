@@ -25,8 +25,6 @@ const satisfy = Satisfy({
 })
 const fontVars = [readex.variable, josefin.variable, satisfy.variable].join(' ')
 
-export const runtime = 'edge'
-
 export const metadata = {
   title: {
     default: 'Manifund',
@@ -60,7 +58,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Suspense fallback={null}>
             <BottomNavBar />
           </Suspense>
-          <OAuthCodeHandler />
+          <Suspense fallback={null}>
+            <OAuthCodeHandler />
+          </Suspense>
         </SupabaseProvider>
         <Script
           src="https://analytics.umami.is/script.js"
