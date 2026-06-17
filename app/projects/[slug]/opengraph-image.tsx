@@ -1,4 +1,4 @@
-import { getFullProjectBySlug, getProjectBySlug } from '@/db/project'
+import { getFullProjectBySlug } from '@/db/project'
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { ImageResponse } from 'next/og'
 
@@ -14,9 +14,14 @@ export const size = {
 export const contentType = 'image/png'
 
 // Image generation
-export default async function Image({ params }: { params: { slug: string } }) {
+export default async function Image({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
+  const { slug } = await params
   const supabase = await createServerSupabaseClient()
-  const project = await getFullProjectBySlug(supabase, params.slug)
+  const project = await getFullProjectBySlug(supabase, slug)
   if (!project) {
     return new Response('Not found', { status: 404 })
   }
