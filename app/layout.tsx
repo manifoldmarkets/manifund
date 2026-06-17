@@ -33,12 +33,12 @@ export const metadata = {
     default: 'Manifund',
     template: '%s | Manifund',
   },
-  description: 'A platform for funding impactful projects',
+  description: 'Fast, transparent grants',
   openGraph: {
     siteName: 'Manifund',
     type: 'website',
     title: 'Manifund',
-    description: 'A platform for funding impactful projects',
+    description: 'Fast, transparent grants',
   },
   icons: {
     icon: '/favicon.ico',
