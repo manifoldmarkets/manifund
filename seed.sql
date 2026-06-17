@@ -39,17 +39,48 @@ drop function if exists public.handle_new_user() cascade;
 
 create function public.handle_new_user() returns trigger language plpgsql security definer
 set
-  search_path = public as $ $ begin
-insert into
-  public.profiles (id, username)
-values
-  (new.id, new.id);
+  search_path = public as $$
+declare
+  display_name text;
+  base_username text;
+  candidate text;
+  suffix int := 0;
+begin
+  -- Display name: prefer an OAuth full name (Google etc.), else email local part.
+  display_name := coalesce(
+    nullif(new.raw_user_meta_data->>'full_name', ''),
+    split_part(coalesce(new.email, ''), '@', 1)
+  );
 
-return new;
+  -- Username base: the email local part, made URL-safe.
+  base_username := regexp_replace(
+    regexp_replace(split_part(coalesce(new.email, ''), '@', 1), '\s', '-', 'g'),
+    '[^\w-]+', '', 'g'
+  );
 
+  if display_name = '' then
+    display_name := new.id::text;
+  end if;
+  if base_username = '' then
+    base_username := new.id::text;
+  end if;
+
+  -- Insert, retrying with an incrementing suffix when the username is taken.
+  loop
+    candidate := case when suffix = 0 then base_username else base_username || suffix end;
+    begin
+      insert into public.profiles (id, username, full_name)
+      values (new.id, candidate, display_name);
+      return new;
+    exception when unique_violation then
+      suffix := suffix + 1;
+      if suffix > 1000 then
+        raise;
+      end if;
+    end;
+  end loop;
 end;
-
-$ $;
+$$;
 
 -- trigger the function every time a user is created
 drop trigger if exists on_auth_user_created on auth.users;
