@@ -18,7 +18,7 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
   const { slug } = await props.params
   const supabase = await createServerSupabaseClient()
   const project = await getProjectBySlug(supabase, slug)
-  const description = project.blurb?.trim() || 'Fast, transparent grants'
+  const description = project.blurb?.trim() || 'A project on Manifund'
   return {
     title: project.title,
     description: description,
