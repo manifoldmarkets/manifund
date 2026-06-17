@@ -34,7 +34,9 @@ export default async function Image({
     // ImageResponse JSX element
     <div tw="bg-orange-100 w-full h-full flex flex-col items-center justify-center relative">
       <div tw="text-[60px] text-center px-20 mb-6">{project.title}</div>
-      <div tw="flex text-[32px] text-gray-600">By {project.profiles.full_name}</div>
+      <div tw="flex text-[32px] text-gray-600">
+        By {project.profiles.full_name || '<anon>'}
+      </div>
       <div tw="flex flex-row absolute bottom-5 left-5 text-[24px] text-gray-500 items-center">
         <img src="https://manifund.org/Manifox.png" width={32} height={32} tw="mr-2" />
         <span tw="text-orange-500">manifund.org</span>
