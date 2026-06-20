@@ -89,6 +89,16 @@ export default async function handler(req: NextRequest) {
       ...defaultProject,
       round: 'EA Community Choice',
     }
+  } else if (selectedPrize?.slug === 'leo-microgrants') {
+    // Fixed $10k grant; min-funding field is hidden for prize rounds.
+    // `round` is a FK to rounds.title and this cause has no rounds row, so bucket
+    // it under the existing 'Independent' round (the cause carries its identity).
+    project = {
+      ...defaultProject,
+      round: 'Independent',
+      min_funding: 10_000,
+      funding_goal: fundingGoal ?? 10_000,
+    }
   } else if (selectedPrize) {
     const seedingAmm =
       selectedPrize?.cert_params?.ammShares &&
