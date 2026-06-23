@@ -6,6 +6,7 @@ import { BidAndProfile } from '@/db/bid'
 import { getAmountRaised, getMinIncludingAmm } from '@/utils/math'
 import { TxnAndProfiles } from '@/db/txn'
 import { CheckBadgeIcon } from '@heroicons/react/20/solid'
+import { LeoGrantButton } from './leo-grant-button'
 
 export function AdminActionPanel(props: {
   project: FullProject
@@ -21,22 +22,27 @@ export function AdminActionPanel(props: {
   const needsApproval =
     project.stage === 'proposal' && project.approved === null && amountRaised >= minIncludingAmm
 
-  if (!needsApproval) {
+  const isLeoMicrogrant = project.causes.some((cause) => cause.slug === 'leo-microgrants')
+
+  if (!needsApproval && !isLeoMicrogrant) {
     return null
   }
 
   return (
     <Row className="items-center gap-1" id="admin-actions">
-      <GrantVerdict
-        projectId={project.id}
-        lobbying={project.lobbying}
-        buttonContent={
-          <>
-            <CheckBadgeIcon className="relative right-1 h-4 w-4" />
-            Approve
-          </>
-        }
-      />
+      {needsApproval && (
+        <GrantVerdict
+          projectId={project.id}
+          lobbying={project.lobbying}
+          buttonContent={
+            <>
+              <CheckBadgeIcon className="relative right-1 h-4 w-4" />
+              Approve
+            </>
+          }
+        />
+      )}
+      {isLeoMicrogrant && <LeoGrantButton projectId={project.id} />}
     </Row>
   )
 }
