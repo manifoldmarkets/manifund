@@ -2,6 +2,10 @@ import { Database } from '@/db/database.types'
 import { SupabaseClient } from '@supabase/supabase-js'
 import { sortBy, uniq } from 'es-toolkit'
 
+// Prize causes that are only selectable via a direct ?prize=<slug> link — never
+// shown by default on /create, and not addable through the edit-project UI.
+export const LINK_ONLY_PRIZE_CAUSE_SLUGS = ['leo-microgrants']
+
 export type Cause = Omit<Database['public']['Tables']['causes']['Row'], 'cert_params'> & {
   cert_params: CertParams | null
 }

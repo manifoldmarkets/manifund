@@ -1,7 +1,7 @@
 'use client'
 import { Button, buttonClass } from '@/components/button'
 import { Row } from '@/components/layout/row'
-import { SimpleCause, Cause } from '@/db/cause'
+import { SimpleCause, Cause, LINK_ONLY_PRIZE_CAUSE_SLUGS } from '@/db/cause'
 import { FullProject, Project } from '@/db/project'
 import {
   LockClosedIcon,
@@ -281,7 +281,14 @@ function Edit(props: { project: ProjectWithCauses; causesList: SimpleCause[] }) 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const editor = useTextEditor(project.description ?? '')
-  const selectableCauses = causesList.filter((cause) => cause.open)
+  // Link-only prize causes (e.g. Leo's microgrants) can't be added by editing;
+  // keep any the project is already in so saving doesn't strip them.
+  const selectableCauses = causesList.filter(
+    (cause) =>
+      cause.open &&
+      (!LINK_ONLY_PRIZE_CAUSE_SLUGS.includes(cause.slug) ||
+        project.causes.some((c) => c.slug === cause.slug))
+  )
 
   let errorMessage = null
   if (title.length === 0) {

@@ -14,7 +14,7 @@ import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
-import { Cause, MiniCause } from '@/db/cause'
+import { Cause, MiniCause, LINK_ONLY_PRIZE_CAUSE_SLUGS } from '@/db/cause'
 import { SelectCauses } from '@/components/select-causes'
 import { InvestmentStructurePanel } from '@/components/investment-structure'
 import { Tooltip } from '@/components/tooltip'
@@ -82,7 +82,15 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
       setMadeChanges(false)
     }
   }, [projectParams.selectedPrize])
-  const selectablePrizeCauses = causesList.filter((cause) => cause.open && cause.prize)
+  // Causes that are only selectable via a direct ?prize=<slug> link, never shown by default
+  const searchParams = useSearchParams()
+  const prizeSlug = searchParams?.get('prize')
+  const selectablePrizeCauses = causesList.filter(
+    (cause) =>
+      cause.open &&
+      cause.prize &&
+      (!LINK_ONLY_PRIZE_CAUSE_SLUGS.includes(cause.slug) || cause.slug === prizeSlug)
+  )
   const selectableCauses = causesList.filter((cause) => cause.open && !cause.prize)
   const minMinFunding = projectParams.selectedPrize?.cert_params
     ? projectParams.selectedPrize.cert_params.minMinFunding
@@ -133,8 +141,6 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
   }
 
   // If ?prize=... param is set, then choose that prize by default
-  const searchParams = useSearchParams()
-  const prizeSlug = searchParams?.get('prize')
   const selectedPrize = selectablePrizeCauses.find((cause) => cause.slug === prizeSlug)
   useEffect(() => {
     if (selectedPrize) {
