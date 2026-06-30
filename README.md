@@ -91,6 +91,25 @@ bun run gen-types        # From prod
 bun run gen-types:dev    # From dev
 ```
 
+## Granting Admin Access
+
+Admin status (access to `/admin`, adjusting user balances, approving grants,
+transferring money between users, editing/restoring projects, etc.) is granted
+by a hardcoded allowlist of email addresses — there is no database role or UI
+toggle. The single source of truth is the `ADMINS` array in `isAdmin()` in
+`db/profile.ts`. To make someone an admin, add their account's email there:
+
+```typescript
+// db/profile.ts
+const ADMINS = ['akrolsmir@gmail.com', 'hannah@manifund.org'] // ← add new admins here
+```
+
+The email must match the address on their Manifund/Google account exactly
+(it's compared against `user.email` from Supabase Auth).
+
+After editing, commit and deploy — the change takes effect on the next deploy
+(no migration or env change needed). Verify with `bun run build`.
+
 ## Testing Stripe Webhooks
 
 ```bash

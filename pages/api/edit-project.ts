@@ -3,7 +3,7 @@ import { invalidateProjectsCache } from '@/db/project-cached'
 import { updateProjectCauses } from '@/db/cause'
 import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { ProjectUpdate, updateProject } from '@/db/project'
-import { isAdmin } from '@/db/txn'
+import { isAdmin } from '@/db/profile'
 import { updateProjectEmbedding } from '@/app/utils/embeddings'
 
 export const config = {
