@@ -23,10 +23,10 @@ users at [manifund.org/docs](https://manifund.org/docs).
 
 There are **two endpoints, two permission tiers**:
 
-| Tier   | URL                                        | Auth                        | Data access |
-| ------ | ------------------------------------------ | --------------------------- | ----------- |
-| Public | `https://manifund.org/api/mcp`             | None                        | Only what the site already shows publicly |
-| Admin  | `https://manifund.org/api/mcp-admin/<token>/mcp` | Secret token in the URL path | Everything, including read-only SQL |
+| Tier   | URL                                              | Auth                         | Data access                               |
+| ------ | ------------------------------------------------ | ---------------------------- | ----------------------------------------- |
+| Public | `https://manifund.org/api/mcp`                   | None                         | Only what the site already shows publicly |
+| Admin  | `https://manifund.org/api/mcp-admin/<token>/mcp` | Secret token in the URL path | Everything, including read-only SQL       |
 
 The design is hybrid MCP + SQL: structured tools cover the common paths
 (search, lookups, txn queries), and the admin tier's `query_sql` tool covers
@@ -85,24 +85,24 @@ SQL, so it gets defense in depth (see
 
 ### Public (both tiers)
 
-| Tool              | Purpose |
-| ----------------- | ------- |
+| Tool              | Purpose                                                                                                                                                                                                                                                                    |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `search_projects` | Semantic search via the existing `project_embeddings` (OpenAI `text-embedding-3-large`) when a query is given — "AI safety video projects" just works. Falls back to `ilike` text search if `OPENAI_API_KEY` is missing or embedding fails. Filterable by cause and stage. |
-| `get_project`     | Full project by slug: markdown description, donations with donor names, causes, similar projects (`find_similar_projects`). |
-| `search_users`    | Profile search by username / full name. |
-| `get_user`        | Profile + their projects + recent donations given/received. |
-| `get_txns`        | Txns filtered by user, project, type, token, date range. |
-| `list_causes`     | Cause slugs for filtering. |
+| `get_project`     | Full project by slug: markdown description, donations with donor names, causes, similar projects (`find_similar_projects`).                                                                                                                                                |
+| `search_users`    | Profile search by username / full name.                                                                                                                                                                                                                                    |
+| `get_user`        | Profile + their projects + recent donations given/received.                                                                                                                                                                                                                |
+| `get_txns`        | Txns filtered by user, project, type, token, date range.                                                                                                                                                                                                                   |
+| `list_causes`     | Cause slugs for filtering.                                                                                                                                                                                                                                                 |
 
 ### Admin only
 
-| Tool                  | Purpose |
-| --------------------- | ------- |
-| `query_sql`           | Arbitrary read-only SQL (see sandboxing above). |
+| Tool                  | Purpose                                                                                                              |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `query_sql`           | Arbitrary read-only SQL (see sandboxing above).                                                                      |
 | `get_database_schema` | All tables/columns plus semantic notes (txn types, token semantics, etc.) so the model writes correct SQL first try. |
-| `get_user_balances`   | Current USD balances (wraps the `get_user_balances` RPC). |
-| `lookup_users`        | Match emails / usernames / full names → accounts. Built for reconciling spreadsheets of named donors. |
-| `get_stripe_txns`     | Stripe checkout records with depositor email, for cross-checking payouts. |
+| `get_user_balances`   | Current USD balances (wraps the `get_user_balances` RPC).                                                            |
+| `lookup_users`        | Match emails / usernames / full names → accounts. Built for reconciling spreadsheets of named donors.                |
+| `get_stripe_txns`     | Stripe checkout records with depositor email, for cross-checking payouts.                                            |
 
 ## Setup
 
