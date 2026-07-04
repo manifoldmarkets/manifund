@@ -24,6 +24,24 @@ type ToolResult = {
   isError?: boolean
 }
 
+type ToolConfig = {
+  title: string
+  description: string
+  inputSchema: z.ZodRawShape
+}
+
+// Register through an untyped boundary: the MCP SDK's registerTool generics
+// recurse catastrophically over zod schemas (TS2589 / OOM in `next build`).
+// Zod still validates tool inputs at runtime.
+function addTool(
+  server: McpServer,
+  name: string,
+  config: ToolConfig,
+  handler: (args: any) => Promise<ToolResult>
+) {
+  ;(server as any).registerTool(name, config, handler)
+}
+
 function jsonResult(data: unknown): ToolResult {
   return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] }
 }
@@ -83,7 +101,8 @@ function summarizeProject(project: any, extra?: Record<string, unknown>) {
 export function registerPublicTools(server: McpServer, options: { admin: boolean }) {
   const { admin } = options
 
-  server.registerTool(
+  addTool(
+    server,
     'search_projects',
     {
       title: 'Search projects',
@@ -165,7 +184,8 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
       })
   )
 
-  server.registerTool(
+  addTool(
+    server,
     'get_project',
     {
       title: 'Get project details',
@@ -241,7 +261,8 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
       })
   )
 
-  server.registerTool(
+  addTool(
+    server,
     'search_users',
     {
       title: 'Search users',
@@ -265,7 +286,8 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
       })
   )
 
-  server.registerTool(
+  addTool(
+    server,
     'get_user',
     {
       title: 'Get user details',
@@ -322,7 +344,8 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
       })
   )
 
-  server.registerTool(
+  addTool(
+    server,
     'get_txns',
     {
       title: 'Get transactions',
@@ -393,7 +416,8 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
       })
   )
 
-  server.registerTool(
+  addTool(
+    server,
     'list_causes',
     {
       title: 'List causes',
@@ -415,7 +439,8 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
 }
 
 export function registerAdminTools(server: McpServer) {
-  server.registerTool(
+  addTool(
+    server,
     'query_sql',
     {
       title: 'Run read-only SQL',
@@ -441,7 +466,8 @@ export function registerAdminTools(server: McpServer) {
       })
   )
 
-  server.registerTool(
+  addTool(
+    server,
     'get_database_schema',
     {
       title: 'Get database schema',
@@ -476,7 +502,8 @@ export function registerAdminTools(server: McpServer) {
       })
   )
 
-  server.registerTool(
+  addTool(
+    server,
     'get_user_balances',
     {
       title: 'Get user balances',
@@ -493,13 +520,14 @@ export function registerAdminTools(server: McpServer) {
         const db = adminDb()
         const { data: balances } = await db.rpc('get_user_balances').throwOnError()
         const filtered = usernames
-          ? (balances ?? []).filter((b) => usernames.includes(b.username))
+          ? (balances ?? []).filter((b: any) => usernames.includes(b.username))
           : balances
         return jsonResult(filtered)
       })
   )
 
-  server.registerTool(
+  addTool(
+    server,
     'lookup_users',
     {
       title: 'Look up users by email or username',
@@ -511,7 +539,15 @@ export function registerAdminTools(server: McpServer) {
         full_names: z.array(z.string()).optional(),
       },
     },
-    async ({ emails, usernames, full_names }) =>
+    async ({
+      emails,
+      usernames,
+      full_names,
+    }: {
+      emails?: string[]
+      usernames?: string[]
+      full_names?: string[]
+    }) =>
       run(async () => {
         if (!emails?.length && !usernames?.length && !full_names?.length) {
           return errorResult('Provide at least one of emails, usernames, or full_names')
@@ -553,7 +589,8 @@ export function registerAdminTools(server: McpServer) {
       })
   )
 
-  server.registerTool(
+  addTool(
+    server,
     'get_stripe_txns',
     {
       title: 'Get Stripe transactions',
