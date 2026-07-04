@@ -74,7 +74,8 @@ async function main() {
   for (const r of rows) {
     const approved = approvedById.get(r.project_id) ?? false
     if (!approved) notApproved.push(r.project_id)
-    else if (r.signed_at) approvedWithSigned.push({ project_id: r.project_id, signed_at: r.signed_at })
+    else if (r.signed_at)
+      approvedWithSigned.push({ project_id: r.project_id, signed_at: r.signed_at })
     else approvedNoSigned.push(r.project_id)
   }
 
@@ -112,7 +113,8 @@ async function main() {
       .update({ approved_at: r.signed_at })
       .eq('project_id', r.project_id)
       .throwOnError()
-    if (++done % 100 === 0) console.log(`  set approved_at for ${done}/${approvedWithSigned.length}`)
+    if (++done % 100 === 0)
+      console.log(`  set approved_at for ${done}/${approvedWithSigned.length}`)
   }
   console.log('done.')
 }

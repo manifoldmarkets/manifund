@@ -21,9 +21,7 @@ export function ProjectTable(props: { projects: ProjectRow[] }) {
     if (!search) return props.projects
     const q = search.toLowerCase()
     return props.projects.filter(
-      (p) =>
-        p.title.toLowerCase().includes(q) ||
-        (p.username?.toLowerCase().includes(q) ?? false)
+      (p) => p.title.toLowerCase().includes(q) || (p.username?.toLowerCase().includes(q) ?? false)
     )
   }, [search, props.projects])
 
