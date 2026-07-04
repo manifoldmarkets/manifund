@@ -164,20 +164,34 @@ export default function ApiDocsPage() {
             </div>
             <p className="mb-6 whitespace-pre-wrap text-gray-600">
               Connect Claude (or any MCP client) directly to Manifund. The server exposes tools for
-              searching projects semantically (&quot;AI safety video projects&quot;), looking up
-              users, and querying donations — so an AI assistant can answer questions like
-              &quot;which projects about forecasting got funded this year?&quot; on its own. No
-              authentication required; it has access to the same public data as this API.
+              searching projects semantically (&quot;AI safety video projects&quot;), recommending
+              projects to donors based on their interests, reading comment threads, looking up
+              users, and querying donations and balances — so an AI assistant can answer questions
+              like &quot;which projects about forecasting got funded this year?&quot; or
+              &quot;recommend 10 projects I&apos;d like&quot; on its own. No authentication
+              required; it has access to the same public data as this API.
             </p>
             <h3 className="mb-2 mt-6 font-semibold text-gray-900">Tools</h3>
             <table className="mb-8 w-full overflow-hidden rounded border text-sm">
               <tbody>
                 {[
-                  ['search_projects', 'Semantic or keyword search over all projects'],
-                  ['get_project', 'Full project details, donations, and similar projects'],
+                  [
+                    'search_projects',
+                    'Semantic or keyword search over projects, with quality signals (score, votes, comments, funding)',
+                  ],
+                  [
+                    'recommend_projects',
+                    "Fundable projects ranked against a donor's interests, quality, and urgency",
+                  ],
+                  [
+                    'get_project',
+                    'Full project details: funding, score, donations, recent comments, similar projects',
+                  ],
+                  ['get_comments', 'Full comment thread on a project, as markdown'],
                   ['search_users', 'Find user profiles by name or username'],
-                  ['get_user', 'Profile with their projects and donations'],
-                  ['get_txns', 'Donation transactions by user, project, or date range'],
+                  ['get_user', 'Profile with balance, projects, and recent transactions'],
+                  ['get_user_balances', 'Current USD balances for a set of users'],
+                  ['get_txns', 'Money transactions by user, project, type, or date range'],
                   ['list_causes', 'Cause areas for filtering'],
                 ].map(([name, desc]) => (
                   <tr key={name} className="border-t first:border-t-0">
