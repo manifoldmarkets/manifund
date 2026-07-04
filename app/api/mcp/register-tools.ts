@@ -6,6 +6,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminSupabaseClient } from '@/db/supabase-server'
 import { generateEmbedding } from '@/app/utils/embeddings'
 import { toMarkdown } from '@/utils/tiptap-parsing'
+import { calculateUserBalance } from '@/utils/math'
 
 const SITE_URL = 'https://manifund.org'
 
@@ -16,8 +17,16 @@ function adminDb(): SupabaseClient {
   return createAdminSupabaseClient() as unknown as SupabaseClient
 }
 
-// Txn types that are visible on the public site (donations pages, project ledgers)
-const PUBLIC_TXN_TYPES = ['project donation', 'profile donation', 'tip']
+// Cert/AMM trading txn types: excluded from default txn listings since impact
+// cert mechanics are confusing out of context. Pass include_cert_txns to see them.
+const CERT_TXN_TYPES = [
+  'user to user trade',
+  'user to amm trade',
+  'inject amm liquidity',
+  'mint cert',
+]
+// PostgREST `in` filter literal, quoted because the type names contain spaces
+const CERT_TXN_FILTER = `(${CERT_TXN_TYPES.map((t) => `"${t}"`).join(',')})`
 
 type ToolResult = {
   content: { type: 'text'; text: string }[]
@@ -69,6 +78,24 @@ function projectUrl(slug: string) {
 
 function profileUrl(username: string) {
   return `${SITE_URL}/${username}`
+}
+
+// Every USD txn involving a profile, paginated past PostgREST's 1000-row cap.
+// Feed the result to calculateUserBalance — the same calc as profile pages.
+async function fetchUsdTxns(db: SupabaseClient, profileId: string) {
+  const PAGE = 1000
+  const txns: any[] = []
+  for (let start = 0; ; start += PAGE) {
+    const { data } = await db
+      .from('txns')
+      .select('amount, token, from_id, to_id')
+      .or(`from_id.eq.${profileId},to_id.eq.${profileId}`)
+      .eq('token', 'USD')
+      .range(start, start + PAGE - 1)
+      .throwOnError()
+    txns.push(...(data ?? []))
+    if (!data || data.length < PAGE) return txns
+  }
 }
 
 const PROJECT_SUMMARY_SELECT = `
@@ -226,9 +253,7 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
           .throwOnError()
 
         const donations = (project.txns ?? [])
-          .filter(
-            (txn: any) => txn.token === 'USD' && (admin || PUBLIC_TXN_TYPES.includes(txn.type))
-          )
+          .filter((txn: any) => txn.token === 'USD' && !CERT_TXN_TYPES.includes(txn.type))
           .map((txn: any) => ({
             amount: txn.amount,
             type: txn.type,
@@ -292,7 +317,7 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
     {
       title: 'Get user details',
       description:
-        'Get a user profile by username, with the projects they created and their donations given and received.',
+        'Get a user profile by username, with their current USD balance, the projects they created, and recent money transactions (donations, deposits, withdrawals).',
       inputSchema: {
         username: z.string(),
       },
@@ -324,20 +349,25 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
           to:profiles!txns_to_id_fkey(username, full_name),
           project:projects(title, slug)
         `
-        let txnQuery = db
+        const txnQuery = db
           .from('txns')
           .select(txnSelect)
           .or(`from_id.eq.${profile.id},to_id.eq.${profile.id}`)
           .eq('token', 'USD')
+          .not('type', 'in', CERT_TXN_FILTER)
           .order('created_at', { ascending: false })
           .limit(100)
-        if (!admin) txnQuery = txnQuery.in('type', PUBLIC_TXN_TYPES)
-        const { data: txns } = await txnQuery.throwOnError()
+        const [{ data: txns }, balanceTxns] = await Promise.all([
+          txnQuery.throwOnError(),
+          fetchUsdTxns(db, profile.id),
+        ])
+        const balance = calculateUserBalance(balanceTxns, profile.id)
 
         return jsonResult({
           ...profile,
           id: admin ? profile.id : undefined,
           url: profileUrl(profile.username),
+          balance,
           projects: (projects ?? []).map((p) => ({ ...p, url: projectUrl(p.slug) })),
           recent_txns: txns,
         })
@@ -349,20 +379,26 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
     'get_txns',
     {
       title: 'Get transactions',
-      description: admin
-        ? 'Query money transactions, filtered by user, project, type, and date range. Includes all txn types (donations, deposits, withdrawals, trades).'
-        : 'Query public donation transactions, filtered by user, project, and date range.',
+      description:
+        'Query money transactions, filtered by user, project, type, and date range. Includes donations, deposits, and withdrawals; impact cert / AMM trade txns are excluded unless include_cert_txns is set.',
       inputSchema: {
         username: z.string().optional().describe('Only txns sent or received by this user'),
         project_slug: z.string().optional().describe('Only txns for this project'),
-        type: z.string().optional().describe('Txn type, e.g. "project donation"'),
+        type: z
+          .string()
+          .optional()
+          .describe('Txn type, e.g. "project donation", "deposit", "withdraw"'),
         token: z.string().default('USD').describe('"USD" for money; certs use other tokens'),
+        include_cert_txns: z
+          .boolean()
+          .default(false)
+          .describe(`Include cert/AMM trading txns (${CERT_TXN_TYPES.join(', ')})`),
         after: z.string().optional().describe('ISO date, only txns after this'),
         before: z.string().optional().describe('ISO date, only txns before this'),
         limit: z.number().int().min(1).max(500).default(100),
       },
     },
-    async ({ username, project_slug, type, token, after, before, limit }) =>
+    async ({ username, project_slug, type, token, include_cert_txns, after, before, limit }) =>
       run(async () => {
         const db = adminDb()
 
@@ -380,13 +416,10 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
           .limit(limit)
 
         if (token) query = query.eq('token', token)
-        if (!admin) {
-          if (type && !PUBLIC_TXN_TYPES.includes(type)) {
-            return errorResult(`Only these txn types are public: ${PUBLIC_TXN_TYPES.join(', ')}`)
-          }
-          query = query.in('type', type ? [type] : PUBLIC_TXN_TYPES)
-        } else if (type) {
+        if (type) {
           query = query.eq('type', type)
+        } else if (!include_cert_txns) {
+          query = query.not('type', 'in', CERT_TXN_FILTER)
         }
         if (username) {
           const { data: profile } = await db
@@ -413,6 +446,37 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
 
         const { data: txns } = await query.throwOnError()
         return jsonResult(txns)
+      })
+  )
+
+  addTool(
+    server,
+    'get_user_balances',
+    {
+      title: 'Get user balances',
+      description:
+        'Get current USD balances for a set of users, computed from their transaction history (the same balance shown on manifund.org profiles).',
+      inputSchema: {
+        usernames: z.array(z.string()).min(1).max(50),
+      },
+    },
+    async ({ usernames }: { usernames: string[] }) =>
+      run(async () => {
+        const db = adminDb()
+        const { data: profiles } = await db
+          .from('profiles')
+          .select('id, username')
+          .in('username', usernames)
+          .throwOnError()
+        const found = profiles ?? []
+        const balances = await Promise.all(
+          found.map(async (p) => ({
+            username: p.username,
+            balance: calculateUserBalance(await fetchUsdTxns(db, p.id), p.id),
+          }))
+        )
+        const notFound = usernames.filter((u) => !found.some((p) => p.username === u))
+        return jsonResult({ balances, not_found: notFound })
       })
   )
 
@@ -499,30 +563,6 @@ export function registerAdminTools(server: McpServer) {
           ],
           columns: data,
         })
-      })
-  )
-
-  addTool(
-    server,
-    'get_user_balances',
-    {
-      title: 'Get user balances',
-      description: 'Get current USD balances for all users (or a specific set of usernames).',
-      inputSchema: {
-        usernames: z
-          .array(z.string())
-          .optional()
-          .describe('If omitted, returns all users with balances'),
-      },
-    },
-    async ({ usernames }) =>
-      run(async () => {
-        const db = adminDb()
-        const { data: balances } = await db.rpc('get_user_balances').throwOnError()
-        const filtered = usernames
-          ? (balances ?? []).filter((b: any) => usernames.includes(b.username))
-          : balances
-        return jsonResult(filtered)
       })
   )
 
