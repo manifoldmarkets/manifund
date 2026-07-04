@@ -964,6 +964,10 @@ export type Database = {
             }
             Returns: undefined
           }
+      execute_readonly_sql: {
+        Args: { max_rows?: number; query: string }
+        Returns: Json
+      }
       find_similar_projects: {
         Args: { match_count?: number; project_id: string }
         Returns: {
@@ -978,14 +982,6 @@ export type Database = {
         Args: { follower_id: string; project_id: string }
         Returns: undefined
       }
-      get_user_balances: {
-        Args: never
-        Returns: {
-          balance: number
-          id: number
-          username: string
-        }[]
-      }
       give_grant: {
         Args: {
           donation: Database['public']['CompositeTypes']['bid_row']
@@ -996,6 +992,21 @@ export type Database = {
       }
       reject_grant: { Args: { project_id: string }; Returns: undefined }
       reject_proposal: { Args: { project_id: string }; Returns: undefined }
+      search_projects_by_embedding: {
+        Args: {
+          include_hidden?: boolean
+          match_count?: number
+          query_embedding: string
+        }
+        Returns: {
+          blurb: string
+          id: string
+          similarity: number
+          slug: string
+          stage: Database['public']['Enums']['project_stage']
+          title: string
+        }[]
+      }
       toggle_follow: {
         Args: { follower_id: string; project_id: string }
         Returns: undefined
