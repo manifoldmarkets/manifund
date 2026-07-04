@@ -1,7 +1,11 @@
 import { timingSafeEqual } from 'crypto'
 import { NextRequest } from 'next/server'
 import { createMcpHandler } from 'mcp-handler'
-import { registerAdminTools, registerPublicTools } from '@/app/api/mcp/register-tools'
+import {
+  registerAdminTools,
+  registerPublicTools,
+  SERVER_INSTRUCTIONS,
+} from '@/app/api/mcp/register-tools'
 
 export const runtime = 'nodejs'
 
@@ -27,7 +31,7 @@ async function handler(req: NextRequest, props: { params: Promise<{ token: strin
       registerPublicTools(server, { admin: true })
       registerAdminTools(server)
     },
-    {},
+    { instructions: SERVER_INSTRUCTIONS },
     {
       basePath: `/api/mcp-admin/${token}`,
       maxDuration: 120,

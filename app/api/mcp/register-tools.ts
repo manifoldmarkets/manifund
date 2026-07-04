@@ -4,11 +4,15 @@ import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminSupabaseClient } from '@/db/supabase-server'
-import { generateEmbedding } from '@/app/utils/embeddings'
+import { generateEmbedding, hasEmbeddingKey } from '@/app/utils/embeddings'
 import { toMarkdown } from '@/utils/tiptap-parsing'
-import { calculateUserBalance } from '@/utils/math'
+import { calculateUserBalance, getAmountRaised } from '@/utils/math'
+import { pointScore, countVotes } from '@/utils/sort'
 
 const SITE_URL = 'https://manifund.org'
+
+// Top-level guidance sent to MCP clients alongside the tool list
+export const SERVER_INSTRUCTIONS = `Manifund (https://manifund.org) hosts fundraising projects in AI safety, existential risk, EA, forecasting, global health, and adjacent causes. Proposal-stage projects are open for funding and are where marginal donations matter most; active projects can also receive donations. When evaluating projects for a user, prefer get_project over search blurbs alone, and weight score, votes, comments, and money raised as quality signals. Use recommend_projects for donor recommendations. Project URLs are shareable; donations happen on manifund.org.`
 
 // Untyped client: the aliased nested select strings below (e.g.
 // from:profiles!txns_from_id_fkey(...)) blow up supabase-js type inference
@@ -98,14 +102,22 @@ async function fetchUsdTxns(db: SupabaseClient, profileId: string) {
   }
 }
 
+// Everything needed to render a summary AND compute pointScore/getAmountRaised
 const PROJECT_SUMMARY_SELECT = `
-  id, title, slug, blurb, stage, type, funding_goal, min_funding, created_at,
+  id, title, slug, blurb, stage, type, creator, funding_goal, min_funding,
+  created_at, auction_close,
   profiles!projects_creator_fkey(username, full_name),
   causes(slug, title),
-  txns(amount, token)
+  txns(amount, token, to_id),
+  bids(amount, status, type),
+  comments(id),
+  project_votes(magnitude)
 `
 
 function summarizeProject(project: any, extra?: Record<string, unknown>) {
+  // getAmountRaised counts pending bids for proposals, so proposal-stage
+  // projects show pledged money instead of $0
+  const totalRaised = getAmountRaised(project, project.bids, project.txns)
   return {
     title: project.title,
     url: projectUrl(project.slug),
@@ -115,12 +127,15 @@ function summarizeProject(project: any, extra?: Record<string, unknown>) {
     type: project.type,
     funding_goal: project.funding_goal,
     min_funding: project.min_funding,
-    total_raised: (project.txns ?? [])
-      .filter((txn: any) => txn.token === 'USD')
-      .reduce((acc: number, txn: any) => acc + txn.amount, 0),
+    total_raised: totalRaised,
+    // The site's aggregate quality score (votes, comments, money raised)
+    score: pointScore(project),
+    votes: countVotes(project),
+    comment_count: (project.comments ?? []).length,
     creator: project.profiles,
     causes: project.causes,
     created_at: project.created_at,
+    close_date: project.auction_close,
     ...extra,
   }
 }
@@ -134,14 +149,14 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
     {
       title: 'Search projects',
       description:
-        'Search Manifund projects. If `query` is given, uses semantic (embedding) search, so natural-language descriptions like "AI safety video projects" work well. Otherwise lists recent projects, optionally filtered by cause or stage.',
+        'Search Manifund projects. If `query` is given, uses semantic (embedding) search, so natural-language descriptions like "AI safety video projects" work well. Otherwise lists recent projects. Defaults to fundable stages (proposal + active); pass `stage` for others.',
       inputSchema: {
         query: z.string().optional().describe('Natural-language search query'),
         cause: z.string().optional().describe('Cause slug to filter by (see list_causes)'),
         stage: z
           .enum(['proposal', 'active', 'complete', 'not funded'])
           .optional()
-          .describe('Filter by project stage'),
+          .describe('Filter by one stage; omit for proposal + active'),
         limit: z.number().int().min(1).max(50).default(10),
       },
     },
@@ -150,17 +165,27 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
         const db = adminDb()
 
         let matches: { id: string; similarity: number }[] | null = null
-        if (query && process.env.OPENAI_API_KEY) {
-          try {
-            const { embedding } = await generateEmbedding(query)
-            const { data } = await (db.rpc as any)('search_projects_by_embedding', {
-              query_embedding: embedding,
-              match_count: limit * 3,
-              include_hidden: admin,
-            }).throwOnError()
-            matches = data
-          } catch (e) {
-            console.error('Semantic search failed, falling back to text search:', e)
+        let warning: string | undefined
+        if (query) {
+          if (!hasEmbeddingKey()) {
+            warning = 'Semantic search is not configured on the server.'
+          } else {
+            try {
+              const { embedding } = await generateEmbedding(query)
+              const { data } = await (db.rpc as any)('search_projects_by_embedding', {
+                query_embedding: embedding,
+                match_count: limit * 3,
+                include_hidden: admin,
+              }).throwOnError()
+              matches = data
+            } catch (e) {
+              warning = `Semantic search failed (${e instanceof Error ? e.message : e}).`
+              console.error('Semantic search failed, falling back to text search:', e)
+            }
+          }
+          if (warning) {
+            warning +=
+              ' Falling back to keyword matching ordered by recency — results may be poor; tell the user search is degraded.'
           }
         }
 
@@ -192,7 +217,11 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
           }
         }
         if (cause) dbQuery = dbQuery.eq('causes.slug', cause)
-        if (stage) dbQuery = dbQuery.eq('stage', stage)
+        if (stage) {
+          dbQuery = dbQuery.eq('stage', stage)
+        } else {
+          dbQuery = dbQuery.in('stage', ['proposal', 'active'])
+        }
         if (!matches) dbQuery = dbQuery.order('created_at', { ascending: false })
 
         const { data } = await dbQuery.limit(matches ? limit * 3 : limit).throwOnError()
@@ -207,7 +236,11 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
           .map((p) =>
             summarizeProject(p, { similarity: matches?.find((m) => m.id === p.id)?.similarity })
           )
-        return jsonResult(results)
+        return jsonResult({
+          search_mode: matches ? 'semantic' : query ? 'keyword' : 'recent',
+          ...(warning ? { warning } : {}),
+          projects: results,
+        })
       })
   )
 
@@ -217,7 +250,7 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
     {
       title: 'Get project details',
       description:
-        'Get full details for one project by slug: description (markdown), funding, donations with donor names, causes, and similar projects.',
+        'Get full details for one project by slug: description (markdown), funding, quality signals (score, votes, comments), donations with donor names, recent comments, causes, and similar projects.',
       inputSchema: {
         slug: z
           .string()
@@ -233,11 +266,15 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
           .from('projects')
           .select(
             `
-            id, title, slug, blurb, description, stage, type, funding_goal, min_funding,
-            created_at, external_link, location_description,
+            id, title, slug, blurb, description, stage, type, creator,
+            funding_goal, min_funding, created_at, auction_close,
+            external_link, location_description,
             profiles!projects_creator_fkey(username, full_name),
             causes(slug, title),
-            txns(amount, token, type, created_at, from:profiles!txns_from_id_fkey(username, full_name))
+            txns(amount, token, type, created_at, to_id, from:profiles!txns_from_id_fkey(username, full_name)),
+            bids(amount, status, type),
+            project_votes(magnitude),
+            comments(id, content, created_at, replying_to, special_type, author:profiles!comments_commenter_fkey(username, full_name))
           `
           )
           .eq('slug', slug)
@@ -261,6 +298,18 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
             created_at: txn.created_at,
           }))
 
+        const comments = (project.comments ?? []) as any[]
+        const recentComments = [...comments]
+          .sort((a, b) => b.created_at.localeCompare(a.created_at))
+          .slice(0, 5)
+          .map((c) => ({
+            author: c.author,
+            created_at: c.created_at,
+            is_reply: Boolean(c.replying_to),
+            special_type: c.special_type,
+            content: toMarkdown(c.content),
+          }))
+
         return jsonResult({
           title: project.title,
           url: projectUrl(project.slug),
@@ -271,18 +320,168 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
           description: toMarkdown(project.description),
           funding_goal: project.funding_goal,
           min_funding: project.min_funding,
-          total_raised: donations.reduce((acc: number, txn: any) => acc + txn.amount, 0),
+          total_raised: getAmountRaised(project as any, project.bids as any, project.txns as any),
+          score: pointScore(project as any),
+          votes: countVotes(project as any),
           external_link: project.external_link,
           location: project.location_description,
           causes: project.causes,
           created_at: project.created_at,
+          close_date: project.auction_close,
           donations,
+          comment_count: comments.length,
+          recent_comments: recentComments,
           similar_projects: (similar ?? []).map((s: any) => ({
             title: s.title,
             url: projectUrl(s.slug),
             similarity: s.similarity,
           })),
         })
+      })
+  )
+
+  addTool(
+    server,
+    'get_comments',
+    {
+      title: 'Get project comments',
+      description:
+        'Get the comments on a project (newest first), in markdown. Comments hold the evaluative discussion: regrantor reasoning, questions, and creator responses.',
+      inputSchema: {
+        project_slug: z.string(),
+        limit: z.number().int().min(1).max(100).default(20),
+      },
+    },
+    async ({ project_slug, limit }) =>
+      run(async () => {
+        const db = adminDb()
+        const { data: project } = await db
+          .from('projects')
+          .select('id, stage')
+          .eq('slug', project_slug)
+          .maybeSingle()
+          .throwOnError()
+        if (!project || (!admin && ['hidden', 'draft'].includes(project.stage))) {
+          return errorResult(`No project found with slug "${project_slug}"`)
+        }
+        const { data: comments } = await db
+          .from('comments')
+          .select(
+            'id, content, created_at, replying_to, special_type, author:profiles!comments_commenter_fkey(username, full_name)'
+          )
+          .eq('project', project.id)
+          .order('created_at', { ascending: false })
+          .limit(limit)
+          .throwOnError()
+        return jsonResult(
+          (comments ?? []).map((c: any) => ({
+            id: c.id,
+            author: c.author,
+            created_at: c.created_at,
+            replying_to: c.replying_to,
+            special_type: c.special_type,
+            content: toMarkdown(c.content),
+          }))
+        )
+      })
+  )
+
+  addTool(
+    server,
+    'recommend_projects',
+    {
+      title: 'Recommend projects to a donor',
+      description:
+        "Recommend fundable projects (proposal or active stage) matching a donor's interests, ranked by semantic fit, project quality (votes, comments, funding), and closing-soon urgency. Distill `interests` from what you know about the user, then verify finalists with get_project before presenting.",
+      inputSchema: {
+        interests: z
+          .string()
+          .describe(
+            'Free-text description of the donor\'s interests, e.g. "mechanistic interpretability, forecasting tools, animal welfare"'
+          ),
+        causes: z
+          .array(z.string())
+          .optional()
+          .describe('Optional cause slugs to hard-filter by (see list_causes)'),
+        budget: z
+          .number()
+          .optional()
+          .describe(
+            'Approximate donation budget in USD; boosts proposals this budget could push over their minimum funding bar'
+          ),
+        limit: z.number().int().min(1).max(30).default(10),
+      },
+    },
+    async ({ interests, causes, budget, limit }) =>
+      run(async () => {
+        const db = adminDb()
+        if (!hasEmbeddingKey()) {
+          return errorResult(
+            'Semantic search is not configured on the server, so recommendations are unavailable. Use search_projects (keyword mode) instead and tell the user recommendations are degraded.'
+          )
+        }
+        const { embedding } = await generateEmbedding(interests)
+        const { data: matches } = await (db.rpc as any)('search_projects_by_embedding', {
+          query_embedding: embedding,
+          match_count: 50,
+          include_hidden: false,
+        }).throwOnError()
+        const simById = new Map<string, number>(
+          (matches ?? []).map((m: any) => [m.id, m.similarity])
+        )
+        if (simById.size === 0) return jsonResult([])
+
+        let dbQuery = db
+          .from('projects')
+          .select(
+            causes?.length
+              ? PROJECT_SUMMARY_SELECT.replace('causes(', 'causes!inner(')
+              : PROJECT_SUMMARY_SELECT
+          )
+          .in('id', Array.from(simById.keys()))
+          .in('stage', ['proposal', 'active'])
+          .neq('type', 'dummy')
+        if (causes?.length) dbQuery = dbQuery.in('causes.slug', causes)
+        const { data } = await dbQuery.throwOnError()
+
+        const now = Date.now()
+        const ranked = ((data ?? []) as any[])
+          .map((p) => {
+            const summary = summarizeProject(p)
+            const similarity = simById.get(p.id) ?? 0
+            // Crude v1 ranking: semantic fit dominates, quality and urgency nudge
+            const quality = Math.min(Math.max(summary.score, 0), 50) / 50
+            const daysToClose = p.auction_close
+              ? (new Date(p.auction_close).getTime() - now) / (1000 * 60 * 60 * 24)
+              : null
+            const closingSoon =
+              p.stage === 'proposal' &&
+              daysToClose !== null &&
+              daysToClose > 0 &&
+              daysToClose <= 14
+            // Projects whose fundraise closed long ago are technically still
+            // donatable but rarely what a donor is looking for
+            const stale = daysToClose !== null && daysToClose < -90
+            const fundingGap =
+              p.stage === 'proposal' ? Math.max(0, p.min_funding - summary.total_raised) : 0
+            const budgetCompletes = Boolean(budget && fundingGap > 0 && budget >= fundingGap)
+            const rank =
+              0.65 * similarity +
+              0.25 * quality +
+              0.1 * (closingSoon ? 1 : 0) +
+              (budgetCompletes ? 0.05 : 0) -
+              (stale ? 0.1 : 0)
+            return {
+              ...summary,
+              similarity,
+              funding_gap_to_minimum: fundingGap,
+              days_until_close: daysToClose === null ? null : Math.round(daysToClose),
+              rank_score: rank,
+            }
+          })
+          .sort((a, b) => b.rank_score - a.rank_score)
+          .slice(0, limit)
+        return jsonResult(ranked)
       })
   )
 

@@ -20,18 +20,30 @@ if (!(DEFAULT_EMBEDDING_MODEL in EMBEDDING_MODELS)) {
   )
 }
 
+export function hasEmbeddingKey() {
+  return Boolean(process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY)
+}
+
 export async function generateEmbedding(
   text: string,
   model: EmbeddingModel = DEFAULT_EMBEDDING_MODEL
 ): Promise<{ embedding: number[]; model: string; dimension: number }> {
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+  // Prefer OpenRouter: it proxies the same OpenAI embedding models, so vectors
+  // stay compatible with those already stored in project_embeddings.
+  const openRouterKey = process.env.OPENROUTER_API_KEY
+  const openai = openRouterKey
+    ? new OpenAI({ apiKey: openRouterKey, baseURL: 'https://openrouter.ai/api/v1' })
+    : new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+
+  // Stay under the model's 8191-token input limit (~4 chars/token)
+  const response = await openai.embeddings.create({
+    model: openRouterKey ? `openai/${model}` : model,
+    input: text.slice(0, 24000),
   })
 
-  const response = await openai.embeddings.create({
-    model: model,
-    input: text,
-  })
+  if (!response.data?.[0]?.embedding) {
+    throw new Error(`Embedding API returned no data: ${JSON.stringify(response).slice(0, 300)}`)
+  }
 
   return {
     embedding: response.data[0].embedding,

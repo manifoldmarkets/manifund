@@ -1,5 +1,5 @@
 import { createMcpHandler } from 'mcp-handler'
-import { registerPublicTools } from './register-tools'
+import { registerPublicTools, SERVER_INSTRUCTIONS } from './register-tools'
 
 export const runtime = 'nodejs'
 
@@ -9,7 +9,7 @@ const handler = createMcpHandler(
   (server) => {
     registerPublicTools(server, { admin: false })
   },
-  {},
+  { instructions: SERVER_INSTRUCTIONS },
   {
     basePath: '/api',
     maxDuration: 120,
