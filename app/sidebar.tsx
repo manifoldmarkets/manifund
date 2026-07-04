@@ -68,7 +68,7 @@ export default async function Sidebar() {
                 { name: 'Where regrantors give', href: '/about/regranting-data' },
                 // { name: 'Impact markets', href: '/about/impact-certificates' },
                 // { name: 'Applying for funding', href: '/about/open-call' },
-                { name: 'API', href: '/docs' },
+                { name: 'API & MCP', href: '/docs' },
               ],
             }}
           />

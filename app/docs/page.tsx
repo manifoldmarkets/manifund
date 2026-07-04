@@ -190,7 +190,10 @@ export default function ApiDocsPage() {
             <h3 className="mb-2 font-semibold text-gray-900">Connecting</h3>
             <p className="mb-2 text-sm text-gray-600">
               On claude.ai or Claude Cowork: Settings → Connectors → Add custom connector, with the
-              URL above. From Claude Code:
+              URL above.
+              <br />
+              <br />
+              From Claude Code:
             </p>
             <pre className="mb-4 overflow-x-auto rounded border border-orange-100 bg-orange-50 p-3 text-xs">
               <code>claude mcp add --transport http manifund https://manifund.org/api/mcp</code>
