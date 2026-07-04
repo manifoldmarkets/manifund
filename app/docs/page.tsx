@@ -112,6 +112,12 @@ export default function ApiDocsPage() {
           </span>
         </div>
         <nav className="space-y-2">
+          <a
+            href="#mcp"
+            className="block w-full rounded px-3 text-left text-gray-700 transition hover:bg-orange-50 hover:text-orange-600"
+          >
+            MCP server
+          </a>
           {apis.map((a) => (
             <a
               key={a.id}
@@ -148,6 +154,62 @@ export default function ApiDocsPage() {
             </Link>
             !
           </p>
+          <section id="mcp" className="scroll-mt-24 py-24">
+            <div className="mb-8">
+              <h2 className="mb-2 text-3xl text-gray-900">MCP server</h2>
+              <span className="mr-2 inline-block rounded bg-orange-100 px-2 py-1 text-xs font-semibold text-orange-600">
+                MCP
+              </span>
+              <span className="font-mono text-sm text-gray-700">https://manifund.org/api/mcp</span>
+            </div>
+            <p className="mb-6 whitespace-pre-wrap text-gray-600">
+              Connect Claude (or any MCP client) directly to Manifund. The server exposes tools for
+              searching projects semantically (&quot;AI safety video projects&quot;), looking up
+              users, and querying donations — so an AI assistant can answer questions like
+              &quot;which projects about forecasting got funded this year?&quot; on its own. No
+              authentication required; it has access to the same public data as this API.
+            </p>
+            <h3 className="mb-2 mt-6 font-semibold text-gray-900">Tools</h3>
+            <table className="mb-8 w-full overflow-hidden rounded border text-sm">
+              <tbody>
+                {[
+                  ['search_projects', 'Semantic or keyword search over all projects'],
+                  ['get_project', 'Full project details, donations, and similar projects'],
+                  ['search_users', 'Find user profiles by name or username'],
+                  ['get_user', 'Profile with their projects and donations'],
+                  ['get_txns', 'Donation transactions by user, project, or date range'],
+                  ['list_causes', 'Cause areas for filtering'],
+                ].map(([name, desc]) => (
+                  <tr key={name} className="border-t first:border-t-0">
+                    <td className="p-2 font-mono">{name}</td>
+                    <td className="p-2 text-gray-600">{desc}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <h3 className="mb-2 font-semibold text-gray-900">Connecting</h3>
+            <p className="mb-2 text-sm text-gray-600">
+              On claude.ai or Claude Cowork: Settings → Connectors → Add custom connector, with the
+              URL above. From Claude Code:
+            </p>
+            <pre className="mb-4 overflow-x-auto rounded border border-orange-100 bg-orange-50 p-3 text-xs">
+              <code>claude mcp add --transport http manifund https://manifund.org/api/mcp</code>
+            </pre>
+            <p className="mb-2 text-sm text-gray-600">
+              For clients that only support stdio servers, use{' '}
+              <span className="font-mono">mcp-remote</span>:
+            </p>
+            <pre className="mb-8 overflow-x-auto rounded border border-orange-100 bg-orange-50 p-3 text-xs">
+              <code>{`{
+  "mcpServers": {
+    "manifund": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://manifund.org/api/mcp"]
+    }
+  }
+}`}</code>
+            </pre>
+          </section>
           {apis.map((api) => (
             <section key={api.id} id={api.id} className="scroll-mt-24 py-24">
               <div className="mb-8">
