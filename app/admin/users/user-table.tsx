@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, memo } from 'react'
+import { supabaseProfileRowUrl } from '@/utils/supabase-admin-url'
 
 type UserRow = {
   id: string
@@ -64,7 +65,7 @@ const MemoRow = memo(function UserRowComponent({ user, odd }: { user: UserRow; o
     <tr className={odd ? 'bg-zinc-100 hover:bg-zinc-200/60' : 'hover:bg-zinc-100/60'}>
       <td className="py-px">
         <a
-          href={`https://supabase.com/dashboard/project/fkousziwzbnkdkldjper/editor/27095?filter=id%3Aeq%3A${user.id}`}
+          href={supabaseProfileRowUrl(user.id)}
           target="_blank"
           rel="noopener noreferrer"
           className="text-blue-400 hover:text-blue-600"
