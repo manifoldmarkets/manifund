@@ -148,7 +148,7 @@ export default function AboutPage() {
                     />
                     {feature.title}
                   </div>{' '}
-                  <p className="text-sm text-gray-500">{feature.description}</p>
+                  <div className="text-sm text-gray-500">{feature.description}</div>
                 </Card>
               )
             })}

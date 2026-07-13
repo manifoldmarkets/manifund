@@ -26,3 +26,8 @@ export async function proxy(request: NextRequest) {
 
   return supabaseResponse
 }
+
+export const config = {
+  // Skip static assets so the proxy only runs on requests that use Supabase
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+}

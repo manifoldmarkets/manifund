@@ -20,6 +20,7 @@ export function useTextEditor(
   const [edited, setEdited] = useState(false)
   const { supabase } = useSupabase()
   const editor = useEditor({
+    immediatelyRender: false,
     editorProps: {
       attributes: {
         class: clsx(

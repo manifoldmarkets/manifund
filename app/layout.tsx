@@ -1,6 +1,5 @@
 import 'server-only'
 
-import SupabaseListener from '@/db/supabase-listener'
 import SupabaseProvider from '@/db/supabase-provider'
 import './globals.css'
 import Sidebar from './sidebar'
@@ -57,7 +56,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Suspense fallback={null}>
             <Sidebar />
           </Suspense>
-          <SupabaseListener />
           <main className="flex flex-col lg:col-span-8">
             <Suspense fallback={null}>
               <CompleteProfileBanner />
