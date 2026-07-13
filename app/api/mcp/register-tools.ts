@@ -455,10 +455,7 @@ export function registerPublicTools(server: McpServer, options: { admin: boolean
               ? (new Date(p.auction_close).getTime() - now) / (1000 * 60 * 60 * 24)
               : null
             const closingSoon =
-              p.stage === 'proposal' &&
-              daysToClose !== null &&
-              daysToClose > 0 &&
-              daysToClose <= 14
+              p.stage === 'proposal' && daysToClose !== null && daysToClose > 0 && daysToClose <= 14
             // Projects whose fundraise closed long ago are technically still
             // donatable but rarely what a donor is looking for
             const stale = daysToClose !== null && daysToClose < -90
