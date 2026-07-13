@@ -4,7 +4,7 @@ import { getURL } from '@/utils/constants'
 import { projectSlugify } from '@/utils/formatting'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
-import { createEdgeClient } from '@/db/edge'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { JSONContent } from '@tiptap/react'
@@ -14,6 +14,8 @@ import { invalidateProjectsCache } from '@/db/project-cached'
 import { getBidsByUser } from '@/db/bid'
 import { updateProjectCauses } from '@/db/cause'
 import { updateProjectEmbedding } from '@/app/utils/embeddings'
+import { scoreProject } from '@/app/utils/project-scores'
+import { waitUntil } from '@vercel/functions'
 
 export const config = {
   runtime: 'edge',
@@ -166,9 +168,18 @@ export default async function handler(req: NextRequest) {
   await updateProjectCauses(supabase, causeSlugs, project.id)
 
   invalidateProjectsCache()
-  updateProjectEmbedding(project.id).catch((error) => {
-    console.error('Failed to generate embeddings for new grant project:', error)
-  })
+  // waitUntil keeps the edge isolate alive after the response; without it,
+  // this background work is frozen mid-flight and never completes
+  waitUntil(
+    updateProjectEmbedding(project.id).catch((error) => {
+      console.error('Failed to generate embeddings for new grant project:', error)
+    })
+  )
+  waitUntil(
+    scoreProject(createAdminClient(), project.id).catch((error) => {
+      console.error('Failed to score new grant project:', error)
+    })
+  )
 
   return NextResponse.json(project)
 }
