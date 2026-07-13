@@ -6,6 +6,7 @@ import { getAmountRaised } from './math'
 import { getUserEmail } from './email'
 import { getSponsoredAmount } from './constants'
 import { toPlaintext } from './tiptap-parsing'
+import { isSlopProject } from './slop'
 
 /* TODOs:
 - [x] Pull out regrantor emails from Supabase
@@ -186,6 +187,8 @@ export async function getNewProjectsLastWeek(
         const netUpvotes = p.project_votes.reduce((acc, v) => acc + v.magnitude, 0)
         return netUpvotes > 0
       })
+      // Exclude likely-AI-written projects, same as the default projects feed
+      .filter((p) => !isSlopProject(p))
       .sort((a, b) => pointScore(b) - pointScore(a))
       .slice(0, limit)
   )

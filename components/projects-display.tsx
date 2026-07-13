@@ -16,7 +16,7 @@ import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
 import { sortBy } from 'es-toolkit'
 import { countVotes, hotScore } from '@/utils/sort'
 import { Checkbox } from './input'
-import { isLikelyAiWritten, SLOP_FUNDING_EXEMPTION_DOLLARS } from '@/utils/slop'
+import { isSlopProject } from '@/utils/slop'
 
 type SortOption =
   | 'votes'
@@ -45,13 +45,11 @@ export function ProjectsDisplay(props: {
   const [includedCauses, setIncludedCauses] = useState<MiniCause[]>([])
   const [search, setSearch] = useState<string>('')
   const [hideSlop, setHideSlop] = useState<boolean>(true)
-  // Flagged as AI-written, unless real money is behind it
-  const isSlop = (project: FullProject) =>
-    isLikelyAiWritten(project.ai_fraction) &&
-    getAmountRaised(project, project.bids, project.txns) <= SLOP_FUNDING_EXEMPTION_DOLLARS
-  const slopCount = projects.filter(isSlop).length
+  const slopCount = projects.filter(isSlopProject).length
   const anySlop = slopCount > 0
-  const visibleProjects = hideSlop ? projects.filter((project) => !isSlop(project)) : projects
+  const visibleProjects = hideSlop
+    ? projects.filter((project) => !isSlopProject(project))
+    : projects
   const filteredProjects = filterProjects(visibleProjects, includedCauses)
   const sortedProjects = sortProjects(noFilter ? visibleProjects : filteredProjects, prices, sortBy)
   const CLIENT_PAGE_SIZE = 20
