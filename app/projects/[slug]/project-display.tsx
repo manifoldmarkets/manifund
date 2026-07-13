@@ -34,6 +34,7 @@ import { UserAvatarAndBadge } from '@/components/user-link'
 import { Tooltip } from '@/components/tooltip'
 import { EnvelopeIcon } from '@heroicons/react/20/solid'
 import { ViewerActionPanel } from './viewer-action-panel'
+import { ProjectScoreFlags } from '@/components/slop-flag'
 import { toSentenceCase } from '@/utils/formatting'
 import Link from 'next/link'
 import { ArrowTrendingUpIcon, CircleStackIcon } from '@heroicons/react/24/outline'
@@ -105,6 +106,7 @@ export function ProjectDisplay(props: {
         />
       )}
       <Col className="gap-2">
+        <ProjectScoreFlags aiFraction={project.ai_fraction} qualityScore={project.quality_score} />
         <Col className="gap-1">
           <Row className="flex-2 items-center gap-3">
             <Vote

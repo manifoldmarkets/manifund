@@ -16,6 +16,9 @@ import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
 import { Select } from './select'
 import { sortBy } from 'es-toolkit'
 import { countVotes, hotScore } from '@/utils/sort'
+import { Checkbox } from './input'
+import { Tooltip } from './tooltip'
+import { isLikelyAiWritten, SLOP_FUNDING_EXEMPTION_DOLLARS } from '@/utils/slop'
 
 type SortOption =
   | 'votes'
@@ -43,8 +46,15 @@ export function ProjectsDisplay(props: {
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'hot')
   const [includedCauses, setIncludedCauses] = useState<Cause[]>([])
   const [search, setSearch] = useState<string>('')
-  const filteredProjects = filterProjects(projects, includedCauses)
-  const sortedProjects = sortProjects(noFilter ? projects : filteredProjects, prices, sortBy)
+  const [hideSlop, setHideSlop] = useState<boolean>(true)
+  // Flagged as AI-written, unless real money is behind it
+  const isSlop = (project: FullProject) =>
+    isLikelyAiWritten(project.ai_fraction) &&
+    getAmountRaised(project, project.bids, project.txns) <= SLOP_FUNDING_EXEMPTION_DOLLARS
+  const anySlop = projects.some(isSlop)
+  const visibleProjects = hideSlop ? projects.filter((project) => !isSlop(project)) : projects
+  const filteredProjects = filterProjects(visibleProjects, includedCauses)
+  const sortedProjects = sortProjects(noFilter ? visibleProjects : filteredProjects, prices, sortBy)
   const CLIENT_PAGE_SIZE = 20
   const [numToShow, setNumToShow] = useState<number>(CLIENT_PAGE_SIZE)
   const selectedProjects = sortedProjects
@@ -92,6 +102,18 @@ export function ProjectsDisplay(props: {
             )}
           </Listbox>
         </div>
+      )}
+      {anySlop && (
+        <Row className="items-center gap-1.5">
+          <Checkbox
+            id="show-slop"
+            checked={!hideSlop}
+            onChange={(event) => setHideSlop(!event.target.checked)}
+          />
+          <label htmlFor="show-slop" className="cursor-pointer text-xs text-gray-500 sm:text-sm">
+            Show slop
+          </label>
+        </Row>
       )}
       <div className="mt-2 flex flex-col gap-5 sm:mt-5 sm:gap-10">
         {fundableProjects.length > 0 && (

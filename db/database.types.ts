@@ -580,6 +580,47 @@ export type Database = {
           },
         ]
       }
+      project_scores: {
+        Row: {
+          content_hash: string | null
+          pangram_fraction_ai: number | null
+          pangram_fraction_ai_assisted: number | null
+          pangram_raw: Json | null
+          project_id: string
+          quality_raw: Json | null
+          quality_score: number | null
+          scored_at: string
+        }
+        Insert: {
+          content_hash?: string | null
+          pangram_fraction_ai?: number | null
+          pangram_fraction_ai_assisted?: number | null
+          pangram_raw?: Json | null
+          project_id: string
+          quality_raw?: Json | null
+          quality_score?: number | null
+          scored_at?: string
+        }
+        Update: {
+          content_hash?: string | null
+          pangram_fraction_ai?: number | null
+          pangram_fraction_ai_assisted?: number | null
+          pangram_raw?: Json | null
+          project_id?: string
+          quality_raw?: Json | null
+          quality_score?: number | null
+          scored_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'project_scores_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: true
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       project_transfers: {
         Row: {
           created_at: string
@@ -653,6 +694,7 @@ export type Database = {
       }
       projects: {
         Row: {
+          ai_fraction: number | null
           amm_shares: number | null
           approved: boolean | null
           auction_close: string | null
@@ -669,6 +711,7 @@ export type Database = {
           markets: Json | null
           min_funding: number
           public_benefit: string | null
+          quality_score: number | null
           round: string
           signed_agreement: boolean
           slug: string
@@ -677,6 +720,7 @@ export type Database = {
           type: Database['public']['Enums']['project_type']
         }
         Insert: {
+          ai_fraction?: number | null
           amm_shares?: number | null
           approved?: boolean | null
           auction_close?: string | null
@@ -693,6 +737,7 @@ export type Database = {
           markets?: Json | null
           min_funding: number
           public_benefit?: string | null
+          quality_score?: number | null
           round: string
           signed_agreement?: boolean
           slug?: string
@@ -701,6 +746,7 @@ export type Database = {
           type?: Database['public']['Enums']['project_type']
         }
         Update: {
+          ai_fraction?: number | null
           amm_shares?: number | null
           approved?: boolean | null
           auction_close?: string | null
@@ -717,6 +763,7 @@ export type Database = {
           markets?: Json | null
           min_funding?: number
           public_benefit?: string | null
+          quality_score?: number | null
           round?: string
           signed_agreement?: boolean
           slug?: string

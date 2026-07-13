@@ -19,6 +19,7 @@ import { Card } from './layout/card'
 import { Row } from './layout/row'
 import { Tooltip } from './tooltip'
 import { getSponsoredAmount } from '@/utils/constants'
+import { AiWrittenIcon } from './slop-flag'
 
 export function ProjectCard(props: { project: FullProject; valuation?: number }) {
   const { project, valuation } = props
@@ -43,6 +44,7 @@ export function ProjectCard(props: { project: FullProject; valuation?: number })
           creator={project.profiles}
           valuation={project.stage !== 'not funded' ? valuation : undefined}
           regrantorFunded={regrantorFunded}
+          aiFraction={project.ai_fraction}
           projectRecipient={
             incompleteProjectTransfers.length > 0
               ? incompleteProjectTransfers[0].recipient_name
@@ -129,8 +131,9 @@ export function ProjectCardHeader(props: {
   projectRecipient?: string
   valuation?: number
   regrantorFunded?: boolean
+  aiFraction?: number | null
 }) {
-  const { creator, valuation, projectRecipient, projectType, regrantorFunded } = props
+  const { creator, valuation, projectRecipient, projectType, regrantorFunded, aiFraction } = props
   return (
     <Row className="mt-1 items-start justify-between">
       <div>
@@ -143,18 +146,21 @@ export function ProjectCardHeader(props: {
           <UserAvatarAndBadge profile={creator} className="text-sm" />
         )}
       </div>
-      {projectType === 'cert' && valuation && !isNaN(valuation) ? (
-        <Tooltip text="valuation">
-          <p className="rounded-2xl bg-orange-100 px-2 py-1 text-center text-sm font-medium text-orange-600">
-            {formatMoney(valuation)}
-          </p>
-        </Tooltip>
-      ) : null}
-      {projectType === 'grant' && regrantorFunded && (
-        <Tooltip text="Regrantor funded">
-          <CheckBadgeIcon className="relative h-6 w-6 text-orange-500" />
-        </Tooltip>
-      )}
+      <Row className="items-center gap-1">
+        <AiWrittenIcon aiFraction={aiFraction ?? null} />
+        {projectType === 'cert' && valuation && !isNaN(valuation) ? (
+          <Tooltip text="valuation">
+            <p className="rounded-2xl bg-orange-100 px-2 py-1 text-center text-sm font-medium text-orange-600">
+              {formatMoney(valuation)}
+            </p>
+          </Tooltip>
+        ) : null}
+        {projectType === 'grant' && regrantorFunded && (
+          <Tooltip text="Regrantor funded">
+            <CheckBadgeIcon className="relative h-6 w-6 text-orange-500" />
+          </Tooltip>
+        )}
+      </Row>
     </Row>
   )
 }
