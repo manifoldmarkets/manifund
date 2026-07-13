@@ -1,23 +1,21 @@
 'use client'
 import { FullProject } from '@/db/project'
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
-import { Listbox, Transition } from '@headlessui/react'
+import { CheckIcon, ChevronUpDownIcon, FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { Listbox, Popover, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 import { getAmountRaised, getProjectValuation } from '@/utils/math'
 import clsx from 'clsx'
 import { ProjectGroup } from '@/components/project-group'
 import { Row } from './layout/row'
-import { MiniCause, Cause, SimpleCause } from '@/db/cause'
+import { MiniCause, SimpleCause } from '@/db/cause'
 import { CauseTag } from './tags'
 import { Col } from './layout/col'
 import { SearchBar } from './input'
 import { searchInAny } from '@/utils/parse'
 import { LoadMoreUntilNotVisible } from './widgets/visibility-observer'
-import { Select } from './select'
 import { sortBy } from 'es-toolkit'
 import { countVotes, hotScore } from '@/utils/sort'
 import { Checkbox } from './input'
-import { Tooltip } from './tooltip'
 import { isLikelyAiWritten, SLOP_FUNDING_EXEMPTION_DOLLARS } from '@/utils/slop'
 
 type SortOption =
@@ -44,14 +42,15 @@ export function ProjectsDisplay(props: {
   const { projects, defaultSort, causesList, noFilter } = props
   const prices = getPrices(projects)
   const [sortBy, setSortBy] = useState<SortOption>(defaultSort ?? 'hot')
-  const [includedCauses, setIncludedCauses] = useState<Cause[]>([])
+  const [includedCauses, setIncludedCauses] = useState<MiniCause[]>([])
   const [search, setSearch] = useState<string>('')
   const [hideSlop, setHideSlop] = useState<boolean>(true)
   // Flagged as AI-written, unless real money is behind it
   const isSlop = (project: FullProject) =>
     isLikelyAiWritten(project.ai_fraction) &&
     getAmountRaised(project, project.bids, project.txns) <= SLOP_FUNDING_EXEMPTION_DOLLARS
-  const anySlop = projects.some(isSlop)
+  const slopCount = projects.filter(isSlop).length
+  const anySlop = slopCount > 0
   const visibleProjects = hideSlop ? projects.filter((project) => !isSlop(project)) : projects
   const filteredProjects = filterProjects(visibleProjects, includedCauses)
   const sortedProjects = sortProjects(noFilter ? visibleProjects : filteredProjects, prices, sortBy)
@@ -76,43 +75,53 @@ export function ProjectsDisplay(props: {
   const completeProjects = selectedProjects.filter((project) => project.stage == 'complete')
   const unfundedProjects = selectedProjects.filter((project) => project.stage == 'not funded')
 
+  const filterableCauses = noFilter ? [] : causesList.filter((c) => !c.prize)
+  const showFilters = filterableCauses.length > 0 || anySlop
+
   return (
     <Col className="gap-2">
-      <div className="flex flex-col justify-between gap-2 lg:flex-row lg:items-center">
-        <SearchBar search={search} setSearch={setSearch} className="w-full" />
-        <div className="lg:w-4/12">
-          <Select
-            options={DEFAULT_SORT_OPTIONS}
-            selected={sortBy}
-            onSelect={(event) => setSortBy(event as SortOption)}
-            label="Sort by"
+      <Row className="items-stretch gap-2">
+        <SearchBar
+          search={search}
+          setSearch={setSearch}
+          className="min-w-0 flex-1"
+          placeholder={`Search ${sortedProjects.length} projects`}
+        />
+        <SortSelect sortBy={sortBy} setSortBy={setSortBy} />
+        {showFilters && (
+          <FilterPopover
+            causes={filterableCauses}
+            includedCauses={includedCauses}
+            setIncludedCauses={setIncludedCauses}
+            slopCount={anySlop ? slopCount : 0}
+            hideSlop={hideSlop}
+            setHideSlop={setHideSlop}
           />
-        </div>
-      </div>
-      {!noFilter && (
-        <div className="relative w-full">
-          <Listbox value={includedCauses} onChange={setIncludedCauses} multiple>
-            {({ open }) => (
-              <CauseFilterSelect
-                includedCauses={includedCauses}
-                setIncludedCauses={setIncludedCauses}
-                open={open}
-                causes={causesList.filter((c) => !c.prize)}
+        )}
+      </Row>
+      {includedCauses.length > 0 && (
+        <Row className="flex-wrap items-center gap-1.5">
+          {includedCauses.map((cause) => (
+            <button
+              key={cause.slug}
+              onClick={() =>
+                setIncludedCauses(includedCauses.filter((c) => c.slug !== cause.slug))
+              }
+              className="group flex items-center gap-0.5 whitespace-nowrap rounded-full bg-orange-100 py-0.5 pl-2.5 pr-1.5 text-xs text-orange-900 transition-colors hover:bg-orange-200"
+            >
+              {cause.title}
+              <XMarkIcon
+                className="h-3.5 w-3.5 text-orange-400 transition-colors group-hover:text-orange-700"
+                aria-hidden="true"
               />
-            )}
-          </Listbox>
-        </div>
-      )}
-      {anySlop && (
-        <Row className="items-center gap-1.5">
-          <Checkbox
-            id="show-slop"
-            checked={!hideSlop}
-            onChange={(event) => setHideSlop(!event.target.checked)}
-          />
-          <label htmlFor="show-slop" className="cursor-pointer text-xs text-gray-500 sm:text-sm">
-            Show slop
-          </label>
+            </button>
+          ))}
+          <button
+            onClick={() => setIncludedCauses([])}
+            className="px-1 text-xs text-gray-400 transition-colors hover:text-gray-600"
+          >
+            Clear
+          </button>
         </Row>
       )}
       <div className="mt-2 flex flex-col gap-5 sm:mt-5 sm:gap-10">
@@ -190,7 +199,7 @@ function sortProjects(
   return projects
 }
 
-function filterProjects(projects: FullProject[], includedCauses: Cause[]) {
+function filterProjects(projects: FullProject[], includedCauses: MiniCause[]) {
   if (includedCauses.length === 0) return projects
   return projects.filter((project) => {
     return project.causes.some((cause) => {
@@ -201,90 +210,159 @@ function filterProjects(projects: FullProject[], includedCauses: Cause[]) {
   })
 }
 
-function CauseFilterSelect(props: {
-  includedCauses: Cause[]
-  setIncludedCauses: (causes: Cause[]) => void
-  open: boolean
-  causes: MiniCause[]
-}) {
-  const { includedCauses, setIncludedCauses, open, causes } = props
+function SortSelect(props: { sortBy: SortOption; setSortBy: (option: SortOption) => void }) {
+  const { sortBy, setSortBy } = props
   return (
-    <div>
-      <div>
-        <Listbox.Button className="relative w-full cursor-pointer rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-xs text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 sm:text-base sm:leading-6">
-          <Row className="flex-wrap gap-1">
-            <span className="text-gray-500">Include</span>
-            {includedCauses.length === 0 ? (
-              ' all causes'
-            ) : (
-              <>
-                {includedCauses.map((cause) => {
-                  return (
-                    <CauseTag
-                      causeTitle={cause.title}
-                      causeSlug={cause.slug}
-                      key={cause.slug}
-                      noLink
-                    />
-                  )
-                })}
-              </>
-            )}
-          </Row>
-          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-            <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-          </span>
+    <Listbox value={sortBy} onChange={setSortBy}>
+      <div className="relative">
+        <Listbox.Button className="flex h-full cursor-pointer items-center gap-1 whitespace-nowrap rounded-md bg-white py-1.5 pl-3 pr-2 text-sm capitalize text-gray-700 shadow-sm ring-1 ring-inset ring-gray-300 transition-transform focus:outline-none focus:ring-2 focus:ring-orange-500 active:scale-[0.96] sm:text-base">
+          {sortBy}
+          <ChevronUpDownIcon className="h-4 w-4 shrink-0 text-gray-400" aria-hidden="true" />
         </Listbox.Button>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-150"
+          enterFrom="-translate-y-1 opacity-0"
+          enterTo="translate-y-0 opacity-100"
+          leave="transition ease-in duration-100"
+          leaveFrom="translate-y-0 opacity-100"
+          leaveTo="-translate-y-0.5 opacity-0"
+        >
+          <Listbox.Options className="absolute right-0 z-10 mt-1.5 w-44 rounded-xl bg-white p-1.5 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <p className="px-2.5 pb-1 pt-1 text-xs font-medium uppercase tracking-wide text-gray-400">
+              Sort by
+            </p>
+            {DEFAULT_SORT_OPTIONS.map((option) => (
+              <Listbox.Option
+                key={option}
+                value={option}
+                className={({ active }) =>
+                  clsx(
+                    'flex cursor-pointer select-none items-center justify-between rounded-md px-2.5 py-1.5 text-sm capitalize',
+                    active ? 'bg-orange-50 text-orange-900' : 'text-gray-700'
+                  )
+                }
+              >
+                {({ selected }) => (
+                  <>
+                    <span className={selected ? 'font-medium text-gray-900' : undefined}>
+                      {option}
+                    </span>
+                    {selected && (
+                      <CheckIcon className="h-4 w-4 text-orange-600" aria-hidden="true" />
+                    )}
+                  </>
+                )}
+              </Listbox.Option>
+            ))}
+          </Listbox.Options>
+        </Transition>
       </div>
-      <Transition
-        show={open}
-        as={Fragment}
-        leave="transition ease-in duration-100"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
+    </Listbox>
+  )
+}
+
+function FilterPopover(props: {
+  causes: MiniCause[]
+  includedCauses: MiniCause[]
+  setIncludedCauses: (causes: MiniCause[]) => void
+  slopCount: number
+  hideSlop: boolean
+  setHideSlop: (hide: boolean) => void
+}) {
+  const { causes, includedCauses, setIncludedCauses, slopCount, hideSlop, setHideSlop } = props
+  const activeCount = includedCauses.length + (slopCount > 0 && !hideSlop ? 1 : 0)
+  const toggleCause = (cause: MiniCause) => {
+    if (includedCauses.some((c) => c.slug === cause.slug)) {
+      setIncludedCauses(includedCauses.filter((c) => c.slug !== cause.slug))
+    } else {
+      setIncludedCauses([...includedCauses, cause])
+    }
+  }
+  return (
+    <Popover className="relative flex">
+      <Popover.Button
+        className={clsx(
+          'relative flex w-10 items-center justify-center rounded-md bg-white shadow-sm ring-1 ring-inset transition-transform focus:outline-none focus:ring-2 focus:ring-orange-500 active:scale-[0.96]',
+          activeCount > 0 ? 'text-orange-600 ring-orange-300' : 'text-gray-500 ring-gray-300'
+        )}
+        aria-label="Filter projects"
       >
-        <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          <div className="relative w-full cursor-pointer select-none py-2 pl-3 pr-9 text-sm text-gray-900 hover:bg-orange-500 hover:text-white">
-            <button onClick={() => setIncludedCauses([])} className="w-full text-left">
-              All causes
-            </button>
-            {includedCauses.length === 0 ? (
-              <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-white">
-                <CheckIcon className="h-5 w-5" aria-hidden="true" />
-              </span>
-            ) : null}
-          </div>
-          {causes.map((cause) => (
-            <Listbox.Option
-              key={cause.title}
-              className={({ active }) =>
-                clsx(
-                  active ? 'bg-orange-500 text-white' : 'text-gray-900',
-                  'relative cursor-pointer select-none py-2 pl-3 pr-9'
-                )
-              }
-              value={cause}
-            >
-              {({ selected, active }) => (
-                <>
-                  <CauseTag causeTitle={cause.title} causeSlug={cause.slug} noLink />
-                  {selected ? (
-                    <span
+        <FunnelIcon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
+        {activeCount > 0 && (
+          <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-orange-600 px-1 text-[10px] font-medium tabular-nums text-white">
+            {activeCount}
+          </span>
+        )}
+      </Popover.Button>
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-150"
+        enterFrom="-translate-y-1 opacity-0"
+        enterTo="translate-y-0 opacity-100"
+        leave="transition ease-in duration-100"
+        leaveFrom="translate-y-0 opacity-100"
+        leaveTo="-translate-y-0.5 opacity-0"
+      >
+        <Popover.Panel className="absolute right-0 top-full z-10 mt-1.5 w-64 rounded-xl bg-white p-1.5 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+          {causes.length > 0 && (
+            <>
+              <Row className="items-center justify-between px-2.5 pb-1 pt-1">
+                <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Causes</p>
+                {includedCauses.length > 0 && (
+                  <button
+                    onClick={() => setIncludedCauses([])}
+                    className="text-xs text-gray-400 transition-colors hover:text-gray-600"
+                  >
+                    Clear
+                  </button>
+                )}
+              </Row>
+              <div className="max-h-56 overflow-auto">
+                {causes.map((cause) => {
+                  const selected = includedCauses.some((c) => c.slug === cause.slug)
+                  return (
+                    <button
+                      key={cause.slug}
+                      onClick={() => toggleCause(cause)}
                       className={clsx(
-                        active ? 'text-white' : 'text-orange-500',
-                        'absolute inset-y-0 right-0 flex items-center pr-4'
+                        'flex w-full items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-left transition-colors',
+                        selected ? 'bg-orange-50' : 'hover:bg-gray-50'
                       )}
                     >
-                      <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                  ) : null}
-                </>
-              )}
-            </Listbox.Option>
-          ))}
-        </Listbox.Options>
+                      <CauseTag causeTitle={cause.title} causeSlug={cause.slug} noLink />
+                      {selected && (
+                        <CheckIcon
+                          className="h-4 w-4 shrink-0 text-orange-600"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </>
+          )}
+          {slopCount > 0 && (
+            <>
+              {causes.length > 0 && <div className="my-1.5 h-px bg-gray-100" />}
+              <label className="flex cursor-pointer items-center justify-between gap-2 rounded-md px-2.5 py-1.5 transition-colors hover:bg-gray-50">
+                <span className="text-sm text-gray-700">
+                  Show slop
+                  <span className="block text-xs text-gray-400">
+                    {slopCount} likely AI-written {slopCount === 1 ? 'project' : 'projects'}
+                  </span>
+                </span>
+                <Checkbox
+                  checked={!hideSlop}
+                  onChange={(event) => setHideSlop(!event.target.checked)}
+                />
+              </label>
+            </>
+          )}
+        </Popover.Panel>
       </Transition>
-    </div>
+    </Popover>
   )
 }
 

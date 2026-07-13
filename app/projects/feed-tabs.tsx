@@ -32,12 +32,7 @@ export function FeedTabs(props: {
   const [page, setPage] = useState(1)
 
   const ProjectsTab = (
-    <Col className="gap-3">
-      <p className="text-sm text-gray-600">
-        Including {projects.length} projects in all stages and from all rounds.
-      </p>
-      <ProjectsDisplay projects={projects} defaultSort={'hot'} causesList={causesList} />
-    </Col>
+    <ProjectsDisplay projects={projects} defaultSort={'hot'} causesList={causesList} />
   )
 
   const PaginationWrapper = (
