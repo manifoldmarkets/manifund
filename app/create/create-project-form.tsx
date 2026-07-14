@@ -1,5 +1,6 @@
 'use client'
 
+import clsx from 'clsx'
 import { useSupabase } from '@/db/supabase-provider'
 import { useEffect, useState } from 'react'
 import { AmountInput, Input } from '@/components/input'
@@ -12,6 +13,7 @@ import Link from 'next/link'
 import { add, format, isAfter, isBefore } from 'date-fns'
 import { Col } from '@/components/layout/col'
 import { RequiredStar } from '@/components/tags'
+import { ExclamationTriangleIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 import { Row } from '@/components/layout/row'
 import { Cause, MiniCause, LINK_ONLY_PRIZE_CAUSE_SLUGS } from '@/db/cause'
@@ -96,6 +98,8 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
     ? projectParams.selectedPrize.cert_params.minMinFunding
     : 500
   const certParams = projectParams.selectedPrize?.cert_params ?? null
+  const showMinFunding = !projectParams.selectedPrize || !!certParams?.proposalPhase
+  const showFundingGoal = !certParams
   const errorMessage = getCreateProjectErrorMessage(projectParams, minMinFunding)
 
   const router = useRouter()
@@ -170,39 +174,40 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           <Button onClick={() => setErrorModalOpen(false)}>Close</Button>
         </Col>
       </Modal>
-      <div className="flex flex-col md:flex-row md:justify-between">
-        <h1 className="text-3xl font-bold">Add a project</h1>
-      </div>
-      <Col className="gap-1">
-        <label>I am applying for...</label>
-        <HorizontalRadioGroup
-          value={projectParams.selectedPrize?.slug ?? 'grant'}
-          onChange={(value) =>
-            updateProjectParams({
-              selectedPrize:
-                value === 'grant'
-                  ? null
-                  : (selectablePrizeCauses.find((cause) => cause.slug === value) ?? null),
-            })
-          }
-          options={{
-            grant: 'A regular grant',
-            ...Object.fromEntries(selectablePrizeCauses.map((cause) => [cause.slug, cause.title])),
-          }}
-        />
-        <p className="text-sm text-gray-500">
-          Learn more about different funding rounds{' '}
-          <SiteLink className="text-orange-500" followsLinkClass href="/causes">
-            here
-          </SiteLink>
-          .
-        </p>
-      </Col>
-      <Col className="gap-1">
-        <label htmlFor="title">
+      {selectablePrizeCauses.length > 0 && (
+        <Col className="gap-1.5">
+          <FieldLabel>I am applying for...</FieldLabel>
+          <HorizontalRadioGroup
+            value={projectParams.selectedPrize?.slug ?? 'grant'}
+            onChange={(value) =>
+              updateProjectParams({
+                selectedPrize:
+                  value === 'grant'
+                    ? null
+                    : (selectablePrizeCauses.find((cause) => cause.slug === value) ?? null),
+              })
+            }
+            options={{
+              grant: 'A regular grant',
+              ...Object.fromEntries(
+                selectablePrizeCauses.map((cause) => [cause.slug, cause.title])
+              ),
+            }}
+          />
+          <p className="text-xs text-gray-500">
+            Learn more about different funding rounds{' '}
+            <SiteLink className="text-orange-500" followsLinkClass href="/causes">
+              here
+            </SiteLink>
+            .
+          </p>
+        </Col>
+      )}
+      <SectionDivider label="New proposal" />
+      <Col className="gap-1.5">
+        <FieldLabel htmlFor="title" required>
           Title
-          <RequiredStar />
-        </label>
+        </FieldLabel>
         <Col>
           <Input
             type="text"
@@ -212,11 +217,13 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             value={projectParams.title}
             onChange={(event) => updateProjectParams({ title: event.target.value })}
           />
-          <span className="text-right text-xs text-gray-600">Maximum 80 characters</span>
+          <span className="mt-0.5 text-right text-xs tabular-nums text-gray-400">
+            {projectParams.title.length}/80 characters
+          </span>
         </Col>
       </Col>
-      <Col className="gap-1">
-        <label htmlFor="subtitle">Subtitle</label>
+      <Col className="gap-1.5">
+        <FieldLabel htmlFor="subtitle">Subtitle</FieldLabel>
         <Col>
           <Input
             type="text"
@@ -228,15 +235,19 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
               updateProjectParams({ subtitle: event.target.value })
             }
           />
-          <span className="text-right text-xs text-gray-600">Maximum 160 characters</span>
+          <span className="mt-0.5 text-right text-xs tabular-nums text-gray-400">
+            {(projectParams.subtitle ?? '').length}/160 characters
+          </span>
         </Col>
       </Col>
-      <Col className="gap-1">
+      <Col className="gap-1.5">
         <Row className="items-center justify-between">
-          <label>
+          <FieldLabel
+            required
+            help="Use bullet points, headings, hyperlinks and more. Use Notion-style markdown shortcuts or paste from Google Docs."
+          >
             Project description
-            <RequiredStar />
-          </label>
+          </FieldLabel>
           <ResetEditor
             storageKey={DESCRIPTION_KEY}
             editor={editor}
@@ -245,46 +256,80 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             }
           />
         </Row>
-        <p className="text-sm text-gray-500">
-          Use bullet points, headings, hyperlinks and more. Use{' '}
-          <Link
-            className="hover:underline"
-            href="https://www.notion.so/help/keyboard-shortcuts#markdown-style"
-          >
-            Notion shortcuts
-          </Link>{' '}
-          or paste from Google Docs.
-        </p>
+        <div className="mb-1 flex items-start gap-2.5 rounded-lg bg-amber-50 px-3 py-2.5 ring-1 ring-inset ring-amber-600/10">
+          <ExclamationTriangleIcon
+            className="mt-0.5 h-4 w-4 shrink-0 text-amber-500"
+            aria-hidden="true"
+          />
+          <p className="text-sm text-amber-900 [text-wrap:pretty]">
+            We recommend writing your proposal in your own words, rather than with an AI; the home
+            page filters out projects that are flagged as AI-written.
+          </p>
+        </div>
         <TextEditor editor={editor} />
       </Col>
-      {(!projectParams.selectedPrize || certParams?.proposalPhase) && (
-        <Col className="gap-1">
-          <label htmlFor="minFunding" className="mr-3 mt-4">
-            Minimum funding (USD)
-            <RequiredStar />
-          </label>
-          <p className="text-sm text-gray-600">
-            The minimum amount of funding you need to start this project. If this amount is not
-            reached, no funds will be sent. Due to the cost of approving grants and processing
-            payments, we require this to be at least ${minMinFunding}.
-          </p>
-          <Col>
-            <AmountInput
-              id="minFunding"
-              amount={projectParams.minFunding}
-              onChangeAmount={(newMin: number | undefined) =>
-                updateProjectParams({ minFunding: newMin })
-              }
-              placeholder={minMinFunding.toString()}
-              error={
-                projectParams.minFunding !== undefined && projectParams.minFunding < minMinFunding
-              }
-              errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
-            />
-          </Col>
-        </Col>
+      <SectionDivider label="Funding" />
+      {(showMinFunding || showFundingGoal) && (
+        <div
+          className={clsx(
+            'grid grid-cols-1 gap-4',
+            showMinFunding && showFundingGoal && 'sm:grid-cols-2'
+          )}
+        >
+          {showMinFunding && (
+            <Col className="gap-1.5">
+              <FieldLabel
+                htmlFor="minFunding"
+                required
+                help={`The minimum amount of funding you need to start this project. If this amount is not reached, no funds will be sent. Due to the cost of approving grants and processing payments, we require this to be at least $${minMinFunding}.`}
+              >
+                Minimum funding (USD)
+              </FieldLabel>
+              <AmountInput
+                id="minFunding"
+                amount={projectParams.minFunding}
+                onChangeAmount={(newMin: number | undefined) =>
+                  updateProjectParams({ minFunding: newMin })
+                }
+                placeholder={minMinFunding.toString()}
+                error={
+                  projectParams.minFunding !== undefined && projectParams.minFunding < minMinFunding
+                }
+                errorMessage={`Minimum funding must be at least $${minMinFunding}.`}
+              />
+            </Col>
+          )}
+          {showFundingGoal && (
+            <Col className="gap-1.5">
+              <FieldLabel
+                htmlFor="fundingGoal"
+                required
+                help="Until this amount is raised, the project will be marked for donors as not fully funded. If this amount is different from your minimum funding, please explain in your project description what you could accomplish with the minimum funding and what you could accomplish with the full funding."
+              >
+                Funding goal (USD)
+              </FieldLabel>
+              <AmountInput
+                id="fundingGoal"
+                amount={projectParams.fundingGoal}
+                onChangeAmount={(newGoal: number | undefined) =>
+                  updateProjectParams({ fundingGoal: Number(newGoal) })
+                }
+                placeholder={minMinFunding.toString()}
+                error={
+                  !!(
+                    projectParams.fundingGoal &&
+                    projectParams.minFunding &&
+                    (projectParams.fundingGoal < projectParams.minFunding ||
+                      projectParams.fundingGoal <= 0)
+                  )
+                }
+                errorMessage="Funding goal must be greater than 0 and greater than or equal to your minimum funding."
+              />
+            </Col>
+          )}
+        </div>
       )}
-      {!!certParams ? (
+      {!!certParams && (
         <InvestmentStructurePanel
           minFunding={projectParams.minFunding ?? 0}
           founderPercent={projectParams.founderPercent}
@@ -297,50 +342,18 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             updateProjectParams({ agreedToTerms: newAgreedToTerms })
           }}
         />
-      ) : (
-        <Col className="gap-1">
-          <label htmlFor="fundingGoal">
-            Funding goal (USD)
-            <RequiredStar />
-          </label>
-          <p className="text-sm text-gray-600">
-            Until this amount is raised, the project will be marked for donors as not fully funded.
-            If this amount is different from your minimum funding, please explain in your project
-            description what you could accomplish with the minimum funding and what you could
-            accomplish with the full funding.
-          </p>
-          <AmountInput
-            id="fundingGoal"
-            amount={projectParams.fundingGoal}
-            onChangeAmount={(newGoal: number | undefined) =>
-              updateProjectParams({ fundingGoal: Number(newGoal) })
-            }
-            placeholder={minMinFunding.toString()}
-            error={
-              !!(
-                projectParams.fundingGoal &&
-                projectParams.minFunding &&
-                (projectParams.fundingGoal < projectParams.minFunding ||
-                  projectParams.fundingGoal <= 0)
-              )
-            }
-            errorMessage="Funding goal must be greater than 0 and greater than or equal to your minimum funding."
-          />
-        </Col>
       )}
-      {(!projectParams.selectedPrize || certParams?.proposalPhase) && (
-        <Col className="gap-1">
-          <label>
+      {showMinFunding && (
+        <Col className="gap-1.5">
+          <FieldLabel
+            required
+            help="After this deadline, if you have not reached your minimum funding bar, your application will close and you will not receive any money. This date cannot be more than 6 weeks after posting."
+          >
             Decision deadline
-            <RequiredStar />
-          </label>
-          <p className="text-sm text-gray-600">
-            After this deadline, if you have not reached your minimum funding bar, your application
-            will close and you will not receive any money. This date cannot be more than 6 weeks
-            after posting.
-          </p>
+          </FieldLabel>
           <Input
             type="date"
+            className="sm:max-w-xs"
             value={projectParams.verdictDate ?? ''}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               updateProjectParams({ verdictDate: event.target.value })
@@ -348,8 +361,9 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
           />
         </Col>
       )}
-      <Col className="gap-1">
-        <label>Cause areas</label>
+      <SectionDivider label="Logistics" />
+      <Col className="gap-1.5">
+        <FieldLabel>Cause areas</FieldLabel>
         <SelectCauses
           causesList={selectableCauses}
           selectedCauses={projectParams.selectedCauses}
@@ -359,12 +373,11 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         />
       </Col>
 
-      <Col className="gap-1">
-        <label>
+      <Col className="gap-1.5">
+        <FieldLabel required>
           In what countries are you and anyone else working on this located?
-          <RequiredStar />
-        </label>
-        <p className="text-sm text-gray-600">
+        </FieldLabel>
+        <p className="text-xs text-gray-500">
           This is for Manifund operations and will not be published.
         </p>
         <Input
@@ -376,15 +389,15 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         />
       </Col>
 
-      <Row className="items-start">
-        <Checkbox
-          checked={projectParams.lobbying}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            updateProjectParams({ lobbying: event.target.checked })
-          }
-        />
-        <span className="ml-3 mt-0.5 text-sm leading-tight">
-          <span className="font-bold">
+      <Row className="items-center gap-1">
+        <label className="flex cursor-pointer items-center">
+          <Checkbox
+            checked={projectParams.lobbying}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              updateProjectParams({ lobbying: event.target.checked })
+            }
+          />
+          <span className="ml-3 text-sm font-medium text-gray-900">
             This project will engage in{' '}
             <a
               href="https://www.irs.gov/charities-non-profits/lobbying"
@@ -394,18 +407,21 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
             </a>
             .
           </span>
-          <span>
-            {' '}
-            Check this box if you will use this money to fund lobbying activities within the US or
-            internationally.
-          </span>
-          <RequiredStar />
-        </span>
+        </label>
+        <Tooltip
+          text="Check this box if you will use this money to fund lobbying activities within the US or internationally."
+          className="flex"
+        >
+          <QuestionMarkCircleIcon
+            className="h-4 w-4 cursor-help text-gray-300 transition-colors hover:text-gray-500"
+            aria-hidden="true"
+          />
+        </Tooltip>
       </Row>
       <Tooltip text={errorMessage}>
         <Button
           type="submit"
-          className="w-full"
+          className="w-full transition enabled:active:scale-[0.96]"
           disabled={!!errorMessage}
           loading={isSubmitting}
           onClick={handleSubmit}
@@ -414,6 +430,41 @@ export function CreateProjectForm(props: { causesList: Cause[] }) {
         </Button>
       </Tooltip>
     </Col>
+  )
+}
+
+function FieldLabel(props: {
+  children: React.ReactNode
+  htmlFor?: string
+  required?: boolean
+  help?: string
+}) {
+  const { children, htmlFor, required, help } = props
+  return (
+    <Row className="items-center gap-1">
+      <label htmlFor={htmlFor} className="text-sm font-medium text-gray-900">
+        {children}
+        {required && <RequiredStar />}
+      </label>
+      {help && (
+        <Tooltip text={help} className="flex">
+          <QuestionMarkCircleIcon
+            className="h-4 w-4 cursor-help text-gray-300 transition-colors hover:text-gray-500"
+            aria-hidden="true"
+          />
+        </Tooltip>
+      )}
+    </Row>
+  )
+}
+
+function SectionDivider(props: { label: string }) {
+  const { label } = props
+  return (
+    <Row className="mt-4 items-center gap-3">
+      <span className="text-xs font-medium uppercase tracking-wider text-gray-400">{label}</span>
+      <div className="h-px flex-1 bg-gray-200" />
+    </Row>
   )
 }
 

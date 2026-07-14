@@ -7,9 +7,7 @@ import { getPrizeCause } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
 import { seedAmm } from '@/utils/activate-project'
 import { insertBid } from '@/db/bid'
-import { updateProjectEmbedding } from '@/app/utils/embeddings'
-import { scoreProject } from '@/app/utils/project-scores'
-import { waitUntil } from '@vercel/functions'
+import { triggerProjectScoring } from '@/app/utils/trigger-scoring'
 
 export const config = {
   runtime: 'edge',
@@ -66,18 +64,7 @@ export default async function handler(req: NextRequest) {
   }
 
   invalidateProjectsCache()
-  // waitUntil keeps the edge isolate alive after the response; without it,
-  // this background work is frozen mid-flight and never completes
-  waitUntil(
-    updateProjectEmbedding(projectId).catch((error) => {
-      console.error('Failed to regenerate embeddings for published project:', error)
-    })
-  )
-  waitUntil(
-    scoreProject(createAdminClient(), projectId).catch((error) => {
-      console.error('Failed to score published project:', error)
-    })
-  )
+  await triggerProjectScoring(projectId)
 
   return NextResponse.json('success')
 }

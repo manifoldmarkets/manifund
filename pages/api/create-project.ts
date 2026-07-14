@@ -10,9 +10,7 @@ import { insertBid } from '@/db/bid'
 import { invalidateProjectsCache } from '@/db/project-cached'
 import { seedAmm } from '@/utils/activate-project'
 import { upvoteOwnProject, giveCreatorShares } from '@/utils/upsert-project'
-import { updateProjectEmbedding } from '@/app/utils/embeddings'
-import { scoreProject } from '@/app/utils/project-scores'
-import { waitUntil } from '@vercel/functions'
+import { triggerProjectScoring } from '@/app/utils/trigger-scoring'
 import { DISABLE_NEW_SIGNUPS_AND_PROJECTS, SIGNUP_DISABLED_MESSAGE } from '@/utils/constants'
 
 export const config = {
@@ -145,18 +143,7 @@ export default async function handler(req: NextRequest) {
   }
 
   invalidateProjectsCache()
-  // waitUntil keeps the edge isolate alive after the response; without it,
-  // this background work is frozen mid-flight and never completes
-  waitUntil(
-    updateProjectEmbedding(projectId).catch((error) => {
-      console.error('Failed to generate embeddings for new project:', error)
-    })
-  )
-  waitUntil(
-    scoreProject(createAdminClient(), projectId).catch((error) => {
-      console.error('Failed to score new project:', error)
-    })
-  )
+  await triggerProjectScoring(projectId)
 
   return NextResponse.json(project)
 }

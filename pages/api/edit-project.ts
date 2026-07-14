@@ -4,9 +4,7 @@ import { updateProjectCauses } from '@/db/cause'
 import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { ProjectUpdate, updateProject } from '@/db/project'
 import { isAdmin } from '@/db/profile'
-import { updateProjectEmbedding } from '@/app/utils/embeddings'
-import { scoreProject } from '@/app/utils/project-scores'
-import { waitUntil } from '@vercel/functions'
+import { triggerProjectScoring } from '@/app/utils/trigger-scoring'
 
 export const config = {
   runtime: 'edge',
@@ -32,18 +30,7 @@ export default async function handler(req: NextRequest) {
   await updateProjectCauses(supabase, causeSlugs, projectId)
 
   invalidateProjectsCache()
-  // waitUntil keeps the edge isolate alive after the response; without it,
-  // this background work is frozen mid-flight and never completes
-  waitUntil(
-    updateProjectEmbedding(projectId).catch((error) => {
-      console.error('Failed to regenerate embeddings for updated project:', error)
-    })
-  )
-  waitUntil(
-    scoreProject(createAdminClient(), projectId).catch((error) => {
-      console.error('Failed to score updated project:', error)
-    })
-  )
+  await triggerProjectScoring(projectId)
 
   return NextResponse.json('success')
 }
