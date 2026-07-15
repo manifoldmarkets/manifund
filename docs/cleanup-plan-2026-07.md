@@ -34,15 +34,15 @@ they land.
 
 ## Tier 2: package.json and config
 
-- [ ] **Remove 5 unused packages** (grep-verified zero imports): `csv-parse`,
+- [x] **Remove 5 unused packages** (grep-verified zero imports): `csv-parse`,
   `csv-stringify`, `rc-slider`, `@tailwindcss/line-clamp` (built into
   Tailwind since 3.3, not even in the plugins array), `@types/mailgun-js`
   (mailgun isn't a dependency).
-- [ ] **Move to devDependencies:** `eslint`, `eslint-config-next`,
+- [x] **Move to devDependencies:** `eslint`, `eslint-config-next`,
   `typescript`, and all `@types/*` currently in `dependencies`.
-- [ ] **`tsconfig.json`:** bump `"target": "es5"` → `es2017` (stale for
+- [x] **`tsconfig.json`:** bump `"target": "es5"` → `es2017` (stale for
   Next 16 + React 19).
-- [ ] Commit `docs/` (was untracked).
+- [x] Commit `docs/` (was untracked).
 
 Flagged for later, no action yet:
 
