@@ -97,6 +97,16 @@ export default async function handler(req: NextRequest) {
       min_funding: 10_000,
       funding_goal: fundingGoal ?? 10_000,
     }
+  } else if (selectedPrize?.slug === 'grantmaking-ai') {
+    // $5k–$50k grants; min-funding field is hidden for prize rounds.
+    // Like leo-microgrants, this cause has no rounds row, so bucket it under
+    // 'Independent' (the cause carries its identity).
+    project = {
+      ...defaultProject,
+      round: 'Independent',
+      min_funding: 5_000,
+      funding_goal: fundingGoal ?? 5_000,
+    }
   } else if (selectedPrize) {
     const seedingAmm =
       selectedPrize?.cert_params?.ammShares &&

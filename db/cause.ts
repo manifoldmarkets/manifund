@@ -4,7 +4,7 @@ import { sortBy, uniq } from 'es-toolkit'
 
 // Prize causes that are only selectable via a direct ?prize=<slug> link — never
 // shown by default on /create, and not addable through the edit-project UI.
-export const LINK_ONLY_PRIZE_CAUSE_SLUGS = ['leo-microgrants']
+export const LINK_ONLY_PRIZE_CAUSE_SLUGS = ['leo-microgrants', 'grantmaking-ai']
 
 export type Cause = Omit<Database['public']['Tables']['causes']['Row'], 'cert_params'> & {
   cert_params: CertParams | null
