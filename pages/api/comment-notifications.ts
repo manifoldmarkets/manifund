@@ -12,6 +12,28 @@ import { TIPTAP_EXTENSIONS } from '@/components/editor'
 import { getProjectFollowerIds } from '@/db/follows'
 import { createAdminClient } from '@/db/edge'
 
+const EXCERPT_WORD_LIMIT = 500
+
+function countWords(node: JSONContent): number {
+  const ownWords = node.text ? node.text.split(/\s+/).filter(Boolean).length : 0
+  return ownWords + (node.content ?? []).reduce((sum, child) => sum + countWords(child), 0)
+}
+
+// Render the first ~EXCERPT_WORD_LIMIT words of a Tiptap doc as HTML,
+// truncating at top-level node boundaries to keep the markup valid.
+function generateExcerptHtml(content: JSONContent) {
+  const nodes = content.content ?? []
+  const kept: JSONContent[] = []
+  let words = 0
+  for (const node of nodes) {
+    kept.push(node)
+    words += countWords(node)
+    if (words >= EXCERPT_WORD_LIMIT) break
+  }
+  const html = generateHTML({ type: 'doc', content: kept }, TIPTAP_EXTENSIONS)
+  return kept.length < nodes.length ? html + '<p><em>[...]</em></p>' : html
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const comment = req.body.record as Comment
   const supabase = createAdminClient()
@@ -42,22 +64,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       projectFollowerIds.filter(notCreatorOrCommenter).map(async (followerId) => {
         if (comment.special_type === 'progress update') {
           await sendTemplateEmail(
-            TEMPLATE_IDS.GENERIC_NOTIF,
+            TEMPLATE_IDS.GENERIC_NOTIF_HTML,
             {
-              notifText: `The creator of "${fullComment.projects.title}" has posted a progress update on their project. Check it out!`,
+              htmlContent: `<p>The creator of "${fullComment.projects.title}" has posted a progress update on their project:</p><hr />${generateExcerptHtml(comment.content as JSONContent)}`,
               buttonUrl: `https://manifund.org/projects/${fullComment.projects.slug}?tab=comments#${comment.id}`,
-              buttonText: 'View project',
+              buttonText: 'View update',
               subject: `Manifund: Update posted for "${fullComment.projects.title}"`,
             },
             followerId
           )
         } else if (comment.special_type === 'final report') {
           await sendTemplateEmail(
-            TEMPLATE_IDS.GENERIC_NOTIF,
+            TEMPLATE_IDS.GENERIC_NOTIF_HTML,
             {
-              notifText: `The creator of "${fullComment.projects.title}" has completed their project and posted a final report. Check it out!`,
+              htmlContent: `<p>The creator of "${fullComment.projects.title}" has completed their project and posted a final report:</p><hr />${generateExcerptHtml(comment.content as JSONContent)}`,
               buttonUrl: `https://manifund.org/projects/${fullComment.projects.slug}?tab=comments#${comment.id}`,
-              buttonText: 'View project',
+              buttonText: 'View update',
               subject: `Manifund: Final report posted for "${fullComment.projects.title}"`,
             },
             followerId
