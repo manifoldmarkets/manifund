@@ -1,6 +1,6 @@
 import { getProjectById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from '@/db/edge'
+import { createAdminClient, getUserAndClient } from '@/db/edge'
 import { getProfileById } from '@/db/profile'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getPendingBidsByUser } from '@/db/bid'
@@ -24,9 +24,7 @@ type MoneyTransferProps = {
 
 export default async function handler(req: NextRequest) {
   const { fromId, toId, amount, projectId } = (await req.json()) as MoneyTransferProps
-  const supabase = createEdgeClient(req)
-  const resp = await supabase.auth.getUser()
-  const user = resp.data.user
+  const { supabase, user } = await getUserAndClient(req)
   if (user?.id !== fromId && !isAdmin(user)) {
     return NextResponse.error()
   }

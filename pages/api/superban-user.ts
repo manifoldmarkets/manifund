@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from '@/db/edge'
+import { createAdminClient, getUserAndClient } from '@/db/edge'
 import { isAdmin } from '@/db/profile'
 
 export const config = {
@@ -13,11 +13,8 @@ type SuperbanUserProps = {
 
 export default async function handler(req: NextRequest) {
   const { userId } = (await req.json()) as SuperbanUserProps
-  const supabase = createEdgeClient(req)
+  const { supabase, user } = await getUserAndClient(req)
   const adminSupabase = createAdminClient()
-
-  const resp = await supabase.auth.getUser()
-  const user = resp.data.user
 
   if (!user || !isAdmin(user)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

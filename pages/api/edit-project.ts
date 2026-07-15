@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { invalidateProjectsCache } from '@/db/project-cached'
 import { updateProjectCauses } from '@/db/cause'
-import { createAdminClient, createEdgeClient } from '@/db/edge'
+import { createAdminClient, getUserAndClient } from '@/db/edge'
 import { ProjectUpdate, updateProject } from '@/db/project'
 import { isAdmin } from '@/db/profile'
 import { triggerProjectScoring } from '@/app/utils/trigger-scoring'
@@ -17,9 +17,7 @@ export default async function handler(req: NextRequest) {
     projectId: string
     causeSlugs: string[]
   }
-  const supabaseEdge = createEdgeClient(req)
-  const resp = await supabaseEdge.auth.getUser()
-  const user = resp.data.user
+  const { supabase: supabaseEdge, user } = await getUserAndClient(req)
   const supabase = isAdmin(user) ? createAdminClient() : supabaseEdge
   if (!user) return NextResponse.error()
   // Score columns are server-managed; never accept them from the client

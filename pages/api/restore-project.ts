@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from '@/db/edge'
+import { createAdminClient, getUserAndClient } from '@/db/edge'
 import { isAdmin } from '@/db/profile'
 import { add, format } from 'date-fns'
 
@@ -17,11 +17,8 @@ type RestoreProjectProps = {
 // from today, puts it back into the 'proposal' stage, and un-declines its bids.
 export default async function handler(req: NextRequest) {
   const { projectId } = (await req.json()) as RestoreProjectProps
-  const supabase = createEdgeClient(req)
+  const { supabase, user } = await getUserAndClient(req)
   const adminSupabase = createAdminClient()
-
-  const resp = await supabase.auth.getUser()
-  const user = resp.data.user
 
   if (!user || !isAdmin(user)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

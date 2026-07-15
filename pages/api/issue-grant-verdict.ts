@@ -1,7 +1,7 @@
 import { JSONContent } from '@tiptap/react'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from '@/db/edge'
-import { getUser, isAdmin } from '@/db/profile'
+import { createAdminClient, getUserAndClient } from '@/db/edge'
+import { isAdmin } from '@/db/profile'
 import { getProjectById } from '@/db/project'
 import { getAdminName, getURL } from '@/utils/constants'
 import { getProfileById } from '@/db/profile'
@@ -22,8 +22,7 @@ type VerdictProps = {
 
 export default async function handler(req: NextRequest) {
   const { approved, projectId, adminComment, publicBenefit } = (await req.json()) as VerdictProps
-  const supabase = createEdgeClient(req)
-  const user = await getUser(supabase)
+  const { supabase, user } = await getUserAndClient(req)
   if (!user || !isAdmin(user)) {
     return NextResponse.error()
   }

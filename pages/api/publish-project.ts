@@ -1,7 +1,7 @@
 import { updateProject, getProjectById } from '@/db/project'
 import { invalidateProjectsCache } from '@/db/project-cached'
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from '@/db/edge'
+import { createAdminClient, getUserAndClient } from '@/db/edge'
 import { createUpdateFromParams, ProjectParams } from '@/utils/upsert-project'
 import { getPrizeCause } from '@/db/cause'
 import { getProposalValuation, getMinIncludingAmm } from '@/utils/math'
@@ -19,9 +19,7 @@ export default async function handler(req: NextRequest) {
     projectParams: ProjectParams
     projectId: string
   }
-  const supabase = createEdgeClient(req)
-  const resp = await supabase.auth.getUser()
-  const user = resp.data.user
+  const { supabase, user } = await getUserAndClient(req)
   if (!user) return NextResponse.error()
   const causeSlugs = projectParams.selectedCauses.map((cause) => cause.slug)
   const selectedPrize = projectParams.selectedPrize

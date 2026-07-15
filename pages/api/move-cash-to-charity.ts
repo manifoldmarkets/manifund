@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from '@/db/edge'
+import { createAdminClient, getUserAndClient } from '@/db/edge'
 import { getProfileById } from '@/db/profile'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getPendingBidsByUser } from '@/db/bid'
@@ -19,9 +19,7 @@ export default async function handler(req: NextRequest) {
     console.error('amount must be $1 or greater')
     return NextResponse.error()
   }
-  const supabase = createEdgeClient(req)
-  const resp = await supabase.auth.getUser()
-  const user = resp.data.user
+  const { supabase, user } = await getUserAndClient(req)
   const profile = await getProfileById(supabase, user?.id)
   if (!profile || !user) {
     console.error('no user or profile')

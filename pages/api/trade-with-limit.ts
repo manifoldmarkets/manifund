@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { genTradeText, makeTrade, updateBidFromTrade } from '@/utils/trade'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getProfileById } from '@/db/profile'
-import { createAdminClient, createEdgeClient } from '@/db/edge'
+import { createAdminClient, getUserAndClient } from '@/db/edge'
 import {
   calculateCashBalance,
   calculateCharityBalance,
@@ -24,10 +24,8 @@ export type TradeProps = {
 
 export default async function handler(req: NextRequest) {
   const { oldBidId, numDollarsInTrade } = (await req.json()) as TradeProps
-  const supabase = createEdgeClient(req)
+  const { supabase, user } = await getUserAndClient(req)
   const supabaseAdmin = createAdminClient()
-  const resp = await supabase.auth.getUser()
-  const user = resp.data.user
   if (!user) {
     console.error('no user')
     return NextResponse.error()

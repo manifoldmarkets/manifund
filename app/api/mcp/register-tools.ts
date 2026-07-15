@@ -3,7 +3,7 @@ import 'server-only'
 import { z } from 'zod'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { createAdminSupabaseClient } from '@/db/supabase-server'
+import { createAdminClient } from '@/db/supabase-admin'
 import { generateEmbedding, hasEmbeddingKey } from '@/app/utils/embeddings'
 import { toMarkdown } from '@/utils/tiptap-parsing'
 import { calculateUserBalance, getAmountRaised } from '@/utils/math'
@@ -18,7 +18,7 @@ export const SERVER_INSTRUCTIONS = `Manifund (https://manifund.org) hosts fundra
 // from:profiles!txns_from_id_fkey(...)) blow up supabase-js type inference
 // badly enough to OOM the TypeScript checker.
 function adminDb(): SupabaseClient {
-  return createAdminSupabaseClient() as unknown as SupabaseClient
+  return createAdminClient() as unknown as SupabaseClient
 }
 
 // Cert/AMM trading txn types: excluded from default txn listings since impact

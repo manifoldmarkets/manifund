@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from '@/db/edge'
+import { getUserAndClient } from '@/db/edge'
 import { JSONContent } from '@tiptap/react'
 import { sendComment, Comment } from '@/db/comment'
 
@@ -17,9 +17,7 @@ type CommentProps = {
 
 export default async function handler(req: NextRequest) {
   const { content, projectId, replyingTo, specialType } = (await req.json()) as CommentProps
-  const supabase = createEdgeClient(req)
-  const resp = await supabase.auth.getUser()
-  const user = resp.data.user
+  const { supabase, user } = await getUserAndClient(req)
   if (!user) return NextResponse.error()
   await sendComment(supabase, content, projectId, user.id, replyingTo, specialType)
   const { error } = await supabase.rpc('follow_project', {
