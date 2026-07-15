@@ -3,6 +3,7 @@ import { waitUntil } from '@vercel/functions'
 import { updateProjectEmbedding } from '@/app/utils/embeddings'
 import { scoreProject } from '@/app/utils/project-scores'
 import { createAdminSupabaseClient } from '@/db/supabase-server'
+import { invalidateProjectsCache } from '@/db/project-cached'
 
 // Embeds and slop-scores a single project in the background. The on-create/
 // on-edit hooks live in Pages Router edge functions, where waitUntil doesn't
@@ -21,6 +22,10 @@ export async function POST(request: NextRequest) {
   if (!projectId) {
     return NextResponse.json({ error: 'Missing projectId' }, { status: 400 })
   }
+
+  // The Pages Router callers can't revalidateTag themselves (App Router-only
+  // API), so the projects cache is refreshed here on their behalf
+  invalidateProjectsCache()
 
   waitUntil(
     updateProjectEmbedding(projectId).catch((error) => {

@@ -16,5 +16,14 @@ export const getHotProjectsCached = unstable_cache(
 )
 
 export function invalidateProjectsCache() {
-  revalidateTag('hot-projects', 'max')
+  // revalidateTag is an App Router-only API: called from a Pages Router API
+  // route it throws "Invariant: static generation store missing" and 500s the
+  // whole request. Swallow that so Pages Router callers survive; the actual
+  // revalidation for create/edit/publish happens in /api/score-project (App
+  // Router), and the hot-projects cache otherwise expires within an hour.
+  try {
+    revalidateTag('hot-projects', 'max')
+  } catch (error) {
+    console.error('invalidateProjectsCache failed (Pages Router context?):', error)
+  }
 }
