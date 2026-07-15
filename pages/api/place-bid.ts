@@ -1,9 +1,9 @@
 import { Bid, getBidsByUser } from '@/db/bid'
 import { NextRequest } from 'next/server'
 import uuid from 'react-uuid'
-import { createEdgeClient } from '@/db/edge'
+import { getUserAndClient } from '@/db/edge'
 import { getProjectAndBidsById } from '@/db/project'
-import { getProfileAndBidsById, getUser } from '@/db/profile'
+import { getProfileAndBidsById } from '@/db/profile'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { calculateCashBalance, calculateCharityBalance } from '@/utils/math'
 import { calcFundingNeeded, calcTotalOffered } from '@/utils/activate-project'
@@ -22,8 +22,7 @@ type BidProps = {
 
 export default async function handler(req: NextRequest) {
   const { projectId, valuation, amount, type } = (await req.json()) as BidProps
-  const supabase = createEdgeClient(req)
-  const user = await getUser(supabase)
+  const { supabase, user } = await getUserAndClient(req)
   if (!user) {
     return new Response('Unauthorized', { status: 401 })
   }

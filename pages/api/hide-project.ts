@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from '@/db/edge'
+import { getUserAndClient } from '@/db/edge'
 import { invalidateProjectsCache } from '@/db/project-cached'
 import { getProjectById, updateProjectStage } from '@/db/project'
 
@@ -14,9 +14,7 @@ type HideProjectProps = {
 
 export default async function handler(req: NextRequest) {
   const { projectId } = (await req.json()) as HideProjectProps
-  const supabase = createEdgeClient(req)
-  const resp = await supabase.auth.getUser()
-  const user = resp.data.user
+  const { supabase, user } = await getUserAndClient(req)
   const project = await getProjectById(supabase, projectId)
   if (!user || user.id !== project.creator) return NextResponse.error()
 

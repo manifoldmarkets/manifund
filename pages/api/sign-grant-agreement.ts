@@ -1,6 +1,6 @@
 import { getProjectAndProfileById, ProjectAndProfile } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from '@/db/edge'
+import { getUserAndClient } from '@/db/edge'
 import { maybeActivateProject } from '@/utils/activate-project'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { format } from 'date-fns'
@@ -13,10 +13,8 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   const { projectId } = await req.json()
-  const supabase = createEdgeClient(req)
+  const { supabase, user } = await getUserAndClient(req)
   const project = await getProjectAndProfileById(supabase, projectId)
-  const resp = await supabase.auth.getUser()
-  const user = resp.data.user
   if (!project || user?.id !== project.creator) {
     return Response.error()
   }

@@ -1,8 +1,8 @@
 import { Bid } from '@/db/bid'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
-import { createAdminClient, createEdgeClient } from '@/db/edge'
-import { getProfileByUsername, getUser, isAdmin } from '@/db/profile'
+import { createAdminClient, getUserAndClient } from '@/db/edge'
+import { getProfileByUsername, isAdmin } from '@/db/profile'
 
 export const config = {
   runtime: 'edge',
@@ -20,8 +20,7 @@ export default async function handler(req: NextRequest) {
   if (!projectId) {
     return new Response('Missing projectId', { status: 400 })
   }
-  const supabase = createEdgeClient(req)
-  const user = await getUser(supabase)
+  const { supabase, user } = await getUserAndClient(req)
   if (!isAdmin(user)) {
     return new Response('Unauthorized', { status: 401 })
   }

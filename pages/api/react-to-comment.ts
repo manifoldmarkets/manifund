@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, createEdgeClient } from '@/db/edge'
+import { createAdminClient, getUserAndClient } from '@/db/edge'
 import { getTxnAndProjectsByUser } from '@/db/txn'
 import { getPendingBidsByUser } from '@/db/bid'
 import { calculateCharityBalance } from '@/utils/math'
@@ -21,9 +21,7 @@ type RxnProps = {
 
 export default async function handler(req: NextRequest) {
   const { commentId, reaction } = (await req.json()) as RxnProps
-  const supabase = createEdgeClient(req)
-  const resp = await supabase.auth.getUser()
-  const user = resp.data.user
+  const { supabase, user } = await getUserAndClient(req)
   if (!user) return NextResponse.error()
 
   const reactionPrice = tippedRxns[reaction] ?? 0

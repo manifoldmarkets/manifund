@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createEdgeClient } from '@/db/edge'
+import { getUserAndClient } from '@/db/edge'
 
 export const config = {
   runtime: 'edge',
@@ -8,9 +8,7 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   const { projectId } = (await req.json()) as { projectId: string }
-  const supabase = createEdgeClient(req)
-  const resp = await supabase.auth.getUser()
-  const user = resp.data.user
+  const { supabase, user } = await getUserAndClient(req)
   if (!user) return NextResponse.error()
   const { error } = await supabase.rpc('toggle_follow', {
     project_id: projectId,

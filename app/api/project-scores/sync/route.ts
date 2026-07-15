@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { syncProjectScores, hasScoringKeys } from '@/app/utils/project-scores'
-import { createAdminSupabaseClient } from '@/db/supabase-server'
+import { createAdminClient } from '@/db/supabase-admin'
 
 export const maxDuration = 300
 
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       `Starting project score sync (batchSize=${batchSize}, limit=${limit}, force=${force})`
     )
 
-    const results = await syncProjectScores(createAdminSupabaseClient(), {
+    const results = await syncProjectScores(createAdminClient(), {
       batchSize,
       limit,
       force,
