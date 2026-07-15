@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { invalidateProjectsCache } from '@/db/project-cached'
-import { getUserAndClient } from '@/db/edge'
+import { createEdgeClient } from '@/db/edge'
+import { getUser } from '@/db/profile'
 import { getProjectWithCausesById } from '@/db/project'
 import { getPrizeCause } from '@/db/cause'
 import { checkReactivateEligible } from '@/utils/activate-project'
@@ -13,7 +14,8 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   const { projectId } = (await req.json()) as { projectId: string }
-  const { supabase, user } = await getUserAndClient(req)
+  const supabase = createEdgeClient(req)
+  const user = await getUser(supabase)
   const project = await getProjectWithCausesById(supabase, projectId)
   if (!project || !user || user.id !== project.creator) {
     console.error('no project or user')

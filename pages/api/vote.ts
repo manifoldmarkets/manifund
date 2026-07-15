@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserAndClient } from '@/db/edge'
+import { createEdgeClient } from '@/db/edge'
+import { getUser } from '@/db/profile'
 import { getUserProjectVote } from '@/db/project'
 
 export const config = {
@@ -14,7 +15,8 @@ type VoteProps = {
 
 export default async function handler(req: NextRequest) {
   const { projectId, newMagnitude } = (await req.json()) as VoteProps
-  const { supabase, user } = await getUserAndClient(req)
+  const supabase = createEdgeClient(req)
+  const user = await getUser(supabase)
   if (!user) {
     return NextResponse.error()
   }

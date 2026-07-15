@@ -1,4 +1,4 @@
-import { createAdminClient } from '@/db/supabase-admin'
+import { createAdminSupabaseClient } from '@/db/supabase-server'
 import { JSONContent } from '@tiptap/core'
 import { toMarkdown } from '@/utils/tiptap-parsing'
 import OpenAI from 'openai'
@@ -110,7 +110,7 @@ export async function updateProjectEmbedding(
   projectId: string,
   model: EmbeddingModel = DEFAULT_EMBEDDING_MODEL
 ) {
-  const supabase = createAdminClient()
+  const supabase = createAdminSupabaseClient()
 
   // Get project data with creator information and causes
   const { data: project, error } = await supabase
@@ -214,7 +214,7 @@ export interface EmbeddingSyncOptions {
 export async function syncProjectEmbeddings(options: EmbeddingSyncOptions = {}) {
   const { model = DEFAULT_EMBEDDING_MODEL, batchSize = 5, force = false, onProgress } = options
 
-  const supabase = createAdminClient()
+  const supabase = createAdminSupabaseClient()
 
   // Get all projects
   const { data: allProjects, error: projectsError } = await supabase

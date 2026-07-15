@@ -1,4 +1,5 @@
-import { createAdminClient, getUserAndClient } from '@/db/edge'
+import { getUser } from '@/db/profile'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const config = {
@@ -15,7 +16,8 @@ export type DepositManaProps = {
 }
 export default async function handler(req: NextRequest) {
   const { manifoldApiKey, manaToDeposit } = (await req.json()) as DepositManaProps
-  const { supabase, user } = await getUserAndClient(req)
+  const supabase = createEdgeClient(req)
+  const user = await getUser(supabase)
   if (!user) {
     return NextResponse.json({ error: 'no user' }, { status: 400 })
   }

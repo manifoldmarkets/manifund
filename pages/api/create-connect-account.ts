@@ -1,4 +1,5 @@
-import { getUserAndClient } from '@/db/edge'
+import { createEdgeClient } from '@/db/edge'
+import { getUser } from '@/db/profile'
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/utils/stripe'
 export const config = {
@@ -8,7 +9,8 @@ export const config = {
 }
 
 export default async function handler(req: NextRequest) {
-  const { supabase, user } = await getUserAndClient(req)
+  const supabase = createEdgeClient(req)
+  const user = await getUser(supabase)
   if (!user) {
     return NextResponse.error()
   }

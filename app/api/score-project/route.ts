@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { waitUntil } from '@vercel/functions'
 import { updateProjectEmbedding } from '@/app/utils/embeddings'
 import { scoreProject } from '@/app/utils/project-scores'
-import { createAdminClient } from '@/db/supabase-admin'
+import { createAdminSupabaseClient } from '@/db/supabase-server'
 import { invalidateProjectsCache } from '@/db/project-cached'
 
 // Embeds and slop-scores a single project in the background. The on-create/
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     })
   )
   waitUntil(
-    scoreProject(createAdminClient(), projectId).catch((error) => {
+    scoreProject(createAdminSupabaseClient(), projectId).catch((error) => {
       console.error(`Failed to score project ${projectId}:`, error)
     })
   )

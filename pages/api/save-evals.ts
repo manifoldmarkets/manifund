@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getUserAndClient } from '@/db/edge'
+import { createEdgeClient } from '@/db/edge'
 import { ConfidenceMap, TierObj, TrustObj } from '@/app/evals-form/evals-form'
 
 export const config = {
@@ -14,7 +14,9 @@ type EvalsProps = {
 }
 export default async function handler(req: NextRequest) {
   const { tiers, confidenceMap, trustList } = (await req.json()) as EvalsProps
-  const { supabase, user } = await getUserAndClient(req)
+  const supabase = createEdgeClient(req)
+  const resp = await supabase.auth.getUser()
+  const user = resp.data.user
   if (!user) {
     return NextResponse.error()
   }

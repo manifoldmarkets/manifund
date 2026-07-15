@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, getUserAndClient } from '@/db/edge'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { getProfileById } from '@/db/profile'
 import { getFullTxnsByUser } from '@/db/txn'
 import { calculateCashBalance } from '@/utils/math'
@@ -17,7 +17,9 @@ export const config = {
 
 export default async function handler(req: NextRequest) {
   const { dollarAmount } = await req.json()
-  const { supabase, user } = await getUserAndClient(req)
+  const supabase = createEdgeClient(req)
+  const resp = await supabase.auth.getUser()
+  const user = resp.data.user
   if (!user) {
     console.error('no user')
     return NextResponse.error()

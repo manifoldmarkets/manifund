@@ -2,8 +2,9 @@ import 'server-only'
 
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 import type { Database } from './database.types'
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from './env'
+import { SUPABASE_ANON_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } from './env'
 
 // For Server Components, API Routes, and general server-side usage
 export const createServerSupabaseClient = async () => {
@@ -37,4 +38,9 @@ export function createPublicSupabaseClient() {
       setAll() {},
     },
   })
+}
+
+// For admin operations that need elevated privileges
+export function createAdminSupabaseClient() {
+  return createClient<Database>(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
 }

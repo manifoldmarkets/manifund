@@ -1,7 +1,7 @@
 import { Project, TOTAL_SHARES } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
-import { createAdminClient, getUserAndClient } from '@/db/edge'
+import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { projectSlugify, toTitleCase } from '@/utils/formatting'
 import { ProjectParams } from '@/utils/upsert-project'
 import { getPrizeCause, updateProjectCauses } from '@/db/cause'
@@ -37,7 +37,9 @@ export default async function handler(req: NextRequest) {
     agreedToTerms,
     lobbying,
   } = (await req.json()) as ProjectParams
-  const { supabase, user } = await getUserAndClient(req)
+  const supabase = createEdgeClient(req)
+  const resp = await supabase.auth.getUser()
+  const user = resp.data.user
   if (!user) return NextResponse.error()
 
   // Check for existing project with same title by this user (prevents duplicates from double-submit)

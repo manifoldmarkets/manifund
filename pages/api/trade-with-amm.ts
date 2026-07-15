@@ -1,7 +1,7 @@
-import { getProfileById } from '@/db/profile'
+import { getProfileById, getUser } from '@/db/profile'
 import { NextRequest, NextResponse } from 'next/server'
 import { getTxnAndProjectsByUser, getTxnsByUser } from '@/db/txn'
-import { getUserAndClient } from '@/db/edge'
+import { createEdgeClient } from '@/db/edge'
 import {
   calculateAMMPorfolio,
   calculateBuyShares,
@@ -33,7 +33,8 @@ type TradeWithAmmProps = {
 
 export default async function handler(req: NextRequest) {
   const { projectId, amount, buying, valuation } = (await req.json()) as TradeWithAmmProps
-  const { supabase, user } = await getUserAndClient(req)
+  const supabase = createEdgeClient(req)
+  const user = await getUser(supabase)
   if (!user) {
     return new Response('Unauthorized', { status: 401 })
   }

@@ -4,7 +4,7 @@ import { getURL } from '@/utils/constants'
 import { projectSlugify } from '@/utils/formatting'
 import { NextRequest, NextResponse } from 'next/server'
 import uuid from 'react-uuid'
-import { getUserAndClient } from '@/db/edge'
+import { createEdgeClient } from '@/db/edge'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { JSONContent } from '@tiptap/react'
@@ -52,7 +52,9 @@ export default async function handler(req: NextRequest) {
     locationDescription,
     lobbying,
   } = (await req.json()) as GrantProps
-  const { supabase, user: regranter } = await getUserAndClient(req)
+  const supabase = createEdgeClient(req)
+  const resp = await supabase.auth.getUser()
+  const regranter = resp.data.user
   if (!regranter) {
     console.error('no regranter')
     return NextResponse.error()
