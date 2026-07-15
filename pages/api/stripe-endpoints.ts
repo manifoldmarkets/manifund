@@ -1,5 +1,5 @@
 import Stripe from 'stripe'
-import { STRIPE_SECRET_KEY } from '@/db/env'
+import { stripe } from '@/utils/stripe'
 import { createAdminClient } from '@/db/edge'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { NextApiRequest, NextApiResponse } from 'next'
@@ -29,13 +29,7 @@ export type StripeSession = Stripe.Event.Data.Object & {
   }
 }
 
-const initStripe = () => {
-  const apiKey = STRIPE_SECRET_KEY as string
-  return new Stripe(apiKey, { apiVersion: '2022-11-15', typescript: true })
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const stripe = initStripe()
   const buf = await buffer(req)
   let event
   try {

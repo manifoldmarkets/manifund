@@ -3,8 +3,7 @@ import { createAdminClient, createEdgeClient } from '@/db/edge'
 import { getProfileById } from '@/db/profile'
 import { getFullTxnsByUser } from '@/db/txn'
 import { calculateCashBalance } from '@/utils/math'
-import Stripe from 'stripe'
-import { STRIPE_SECRET_KEY } from '@/db/env'
+import { stripe } from '@/utils/stripe'
 import uuid from 'react-uuid'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { CENTS_PER_DOLLAR } from '@/utils/constants'
@@ -15,11 +14,6 @@ export const config = {
   regions: ['sfo1'],
   unstable_allowDynamic: ['**/node_modules/function-bind/implementation.js'],
 }
-
-const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
-  apiVersion: '2022-11-15',
-  typescript: true,
-})
 
 export default async function handler(req: NextRequest) {
   const { dollarAmount } = await req.json()

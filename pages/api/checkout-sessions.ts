@@ -1,12 +1,8 @@
 import Stripe from 'stripe'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { isProd, STRIPE_SECRET_KEY } from '@/db/env'
+import { isProd } from '@/db/env'
 import { CENTS_PER_DOLLAR } from '@/utils/constants'
-
-const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
-  apiVersion: '2022-11-15',
-  typescript: true,
-})
+import { stripe } from '@/utils/stripe'
 
 export type StripeSession = Stripe.Event.Data.Object & {
   id: string

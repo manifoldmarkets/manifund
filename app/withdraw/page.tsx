@@ -1,17 +1,11 @@
 import { createServerSupabaseClient } from '@/db/supabase-server'
 import { WithdrawalSteps } from './withdrawal-steps'
 import { getProfileById, getUser } from '@/db/profile'
-import { STRIPE_SECRET_KEY } from '@/db/env'
 import { calculateCashBalance } from '@/utils/math'
-import Stripe from 'stripe'
+import { stripe } from '@/utils/stripe'
 import { getFullTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import AuthModal from '@/components/auth/AuthModal'
-
-const stripe = new Stripe(STRIPE_SECRET_KEY as string, {
-  apiVersion: '2022-11-15',
-  typescript: true,
-})
 
 export const revalidate = 60
 
