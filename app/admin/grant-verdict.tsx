@@ -8,6 +8,7 @@ import { Modal } from '@/components/modal'
 import { HorizontalRadioGroup } from '@/components/radio-group'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { toast } from 'react-hot-toast'
 import { Input } from '@/components/input'
 
 const REJECT_MESSAGE_INTRO = 'Manifund has declined to fund this project because we believe it'
@@ -163,7 +164,7 @@ export function GrantVerdict(props: {
               loading={isSubmitting}
               onClick={async () => {
                 setIsSubmitting(true)
-                await fetch('/api/issue-grant-verdict', {
+                const response = await fetch('/api/issue-grant-verdict', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -176,6 +177,11 @@ export function GrantVerdict(props: {
                   }),
                 })
                 setIsSubmitting(false)
+                if (!response.ok) {
+                  const body = await response.json().catch(() => null)
+                  toast.error(body?.error ?? 'Failed to issue grant verdict.')
+                  return
+                }
                 setOpen(false)
                 router.refresh()
               }}
