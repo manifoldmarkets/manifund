@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, getUserAndClient } from '@/db/edge'
 import { isAdmin } from '@/db/profile'
 import { getProjectById } from '@/db/project'
-import { getAdminName, getURL } from '@/utils/constants'
+import { getURL } from '@/utils/constants'
 import { getProfileById } from '@/db/profile'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { maybeActivateProject } from '@/utils/activate-project'
@@ -24,14 +24,24 @@ export default async function handler(req: NextRequest) {
   const { approved, projectId, adminComment, publicBenefit } = (await req.json()) as VerdictProps
   const { supabase, user } = await getUserAndClient(req)
   if (!user || !isAdmin(user)) {
-    return NextResponse.error()
+    return NextResponse.json({ error: 'Only admins can issue grant verdicts.' }, { status: 403 })
   }
 
-  const adminName = getAdminName(user.email ?? '')
+  // Sign the verdict email with the admin's first name, from their profile
+  const adminProfile = await getProfileById(supabase, user.id)
+  const adminName = adminProfile?.full_name?.split(' ')[0]
+  if (!adminName) {
+    return NextResponse.json(
+      { error: `No profile name found for admin ${user.email}.` },
+      {
+        status: 500,
+      }
+    )
+  }
   const project = await getProjectById(supabase, projectId)
   const creator = await getProfileById(supabase, project?.creator)
-  if (!project || !creator || !adminName) {
-    return NextResponse.error()
+  if (!project || !creator) {
+    return NextResponse.json({ error: 'Project or project creator not found.' }, { status: 404 })
   }
 
   const supabaseAdmin = createAdminClient()
@@ -45,7 +55,10 @@ export default async function handler(req: NextRequest) {
   })
   if (error) {
     console.error(error)
-    return NextResponse.error()
+    return NextResponse.json(
+      { error: `Failed to execute grant verdict: ${error.message}` },
+      { status: 500 }
+    )
   }
 
   const recipientSubject = approved
