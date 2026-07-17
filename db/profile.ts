@@ -17,7 +17,11 @@ export type ProfileWithRoles = Profile & {
 }
 
 export function isAdmin(user: User | null) {
-  const ADMINS = ['akrolsmir@gmail.com', 'hannah@manifund.org']
+  const ADMINS = [
+    'akrolsmir@gmail.com',
+    'hannah@manifund.org',
+    'carol@manifund.org',
+  ]
   return ADMINS.includes(user?.email ?? '')
 }
 
