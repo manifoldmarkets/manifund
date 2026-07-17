@@ -1,5 +1,29 @@
 # Manifund Dev Guide
 
+1. Clone this repo & `cd` into it
+2. Install [bun](https://bun.sh/)
+3. Get env variables: `bunx vercel link`, then `bunx vercel env pull`
+4. Install dependencies: `bun install`
+5. Start a dev server: `bun run dev`
+6. View the site on localhost:3000
+
+Then: make changes, preview locally. Commit to a branch for Github PR review (or main, if you're confident). The site autodeploys from main.
+
+Note that this runs against the prod db, so be reasonably careful. We should have supabase backups but it's not well tested. Our dev db is currently out of date.
+
+TODO: Update all this for agentic coding instructions
+
+### Checklist for getting productive:
+
+- [ ] Get a @manifund.org email
+- [ ] Github
+- [ ] Vercel
+- [ ] Supabase
+
+## Older instructions
+
+(note as of Jul 2026: everything below is left as (questionably useful) history)
+
 ## Prerequisites
 
 1. Install [Bun](https://bun.sh/): `curl -fsSL https://bun.sh/install | bash`
