@@ -2,8 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { waitUntil } from '@vercel/functions'
 import { updateProjectEmbedding } from '@/app/utils/embeddings'
 import { scoreProject } from '@/app/utils/project-scores'
+import {
+  classifyProjectSpam,
+  handleSpamProject,
+  hasSpamScoringKeys,
+  recordSpamVerdict,
+} from '@/app/utils/spam-scores'
 import { createAdminClient } from '@/db/supabase-admin'
 import { invalidateProjectsCache } from '@/db/project-cached'
+import { SPAM_FILTER_ENABLED, SPAM_FILTER_ENFORCE } from '@/utils/constants'
 
 // Embeds and slop-scores a single project in the background. The on-create/
 // on-edit hooks live in Pages Router edge functions, where waitUntil doesn't
@@ -27,13 +34,40 @@ export async function POST(request: NextRequest) {
   // API), so the projects cache is refreshed here on their behalf
   invalidateProjectsCache()
 
+  // Spam gate runs first and blocks: an obvious ad/scam must be hidden or the
+  // author banned before we spend a Pangram call on it. Everything that isn't
+  // spam (or if the classifier is unavailable) proceeds to normal scoring.
+  const admin = createAdminClient()
+  if (SPAM_FILTER_ENABLED && hasSpamScoringKeys()) {
+    const { data: project } = await admin
+      .from('projects')
+      .select('id, title, blurb, slug, creator, description')
+      .eq('id', projectId)
+      .single()
+    if (project) {
+      const verdict = await classifyProjectSpam(project as any)
+      if (verdict.is_spam) {
+        if (SPAM_FILTER_ENFORCE) {
+          await handleSpamProject(admin, project as any, verdict)
+          invalidateProjectsCache()
+          return NextResponse.json({ spam: true, projectId }, { status: 202 })
+        }
+        // Shadow mode: record the verdict but let the project through so we can
+        // audit accuracy on live traffic before enabling enforcement.
+        await recordSpamVerdict(admin, projectId, verdict).catch((e) =>
+          console.error('recordSpamVerdict failed:', e)
+        )
+      }
+    }
+  }
+
   waitUntil(
     updateProjectEmbedding(projectId).catch((error) => {
       console.error(`Failed to embed project ${projectId}:`, error)
     })
   )
   waitUntil(
-    scoreProject(createAdminClient(), projectId).catch((error) => {
+    scoreProject(admin, projectId).catch((error) => {
       console.error(`Failed to score project ${projectId}:`, error)
     })
   )

@@ -583,6 +583,7 @@ export type Database = {
       project_scores: {
         Row: {
           content_hash: string | null
+          is_spam: boolean | null
           pangram_fraction_ai: number | null
           pangram_fraction_ai_assisted: number | null
           pangram_raw: Json | null
@@ -590,9 +591,11 @@ export type Database = {
           quality_raw: Json | null
           quality_score: number | null
           scored_at: string
+          spam_reason: string | null
         }
         Insert: {
           content_hash?: string | null
+          is_spam?: boolean | null
           pangram_fraction_ai?: number | null
           pangram_fraction_ai_assisted?: number | null
           pangram_raw?: Json | null
@@ -600,9 +603,11 @@ export type Database = {
           quality_raw?: Json | null
           quality_score?: number | null
           scored_at?: string
+          spam_reason?: string | null
         }
         Update: {
           content_hash?: string | null
+          is_spam?: boolean | null
           pangram_fraction_ai?: number | null
           pangram_fraction_ai_assisted?: number | null
           pangram_raw?: Json | null
@@ -610,6 +615,7 @@ export type Database = {
           quality_raw?: Json | null
           quality_score?: number | null
           scored_at?: string
+          spam_reason?: string | null
         }
         Relationships: [
           {
