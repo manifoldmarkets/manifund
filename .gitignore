@@ -40,3 +40,7 @@ next-env.d.ts
 .snaplet/snapshots
 .snaplet/structure.d.ts
 .snaplet/config.json
+
+# Retro spam cleanup local cache (not for commit)
+scripts/.retro-spam-cache.json
+scripts/.retro-spam-actions.json
