@@ -5,6 +5,15 @@ export const DISABLE_NEW_SIGNUPS_AND_PROJECTS = false
 export const SIGNUP_DISABLED_MESSAGE =
   'New projects and accounts disabled as we deal with spambots; contact austin@manifund.org if you have questions.'
 
+// Spam filter (runs before Pangram on project create/edit/publish).
+// SPAM_FILTER_ENABLED: master switch. When false, the gate is skipped entirely.
+// SPAM_FILTER_ENFORCE: when true, flagged projects are hidden (or the author
+//   banned, for accounts < 1 week old) and the creator is emailed. When false,
+//   the verdict is only recorded to project_scores.is_spam (shadow mode) so you
+//   can review accuracy on live traffic before turning on enforcement.
+export const SPAM_FILTER_ENABLED = false
+export const SPAM_FILTER_ENFORCE = false
+
 export function getURL() {
   let url =
     process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your site URL in production env.
