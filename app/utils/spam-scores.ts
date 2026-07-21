@@ -15,14 +15,8 @@ import { superbanUser } from '@/db/superban'
 const PRIMARY_MODEL = 'anthropic/claude-sonnet-5'
 const FALLBACK_MODEL = 'anthropic/claude-haiku-4-5'
 
-// A project with almost no content can't be an advertising billboard, so it's
-// never spam. Keeps empty/test posts (e.g. "test" with an empty body) from being
-// flagged - and, for new accounts, banned.
 const MIN_SPAM_CONTENT_CHARS = 15
 
-// Canonical site URL for links in user-facing emails. Hardcoded (not getURL())
-// so a run outside prod - e.g. the retro cleanup script - never emails a real
-// user a localhost link.
 const SITE_URL = 'https://manifund.org'
 
 // New accounts posting spam are almost always throwaway spammer accounts, so we
