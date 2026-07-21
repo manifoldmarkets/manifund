@@ -4,7 +4,6 @@ import OpenAI from 'openai'
 import { toMarkdown } from '@/utils/tiptap-parsing'
 import { getUserEmail, sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { superbanUser } from '@/db/superban'
-import { getURL } from '@/utils/constants'
 
 // Spam gate that runs BEFORE the expensive Pangram + quality scoring. It only
 // catches blatant advertising/scam "billboards" (drug sales, phishing, fake
@@ -15,6 +14,16 @@ import { getURL } from '@/utils/constants'
 
 const PRIMARY_MODEL = 'anthropic/claude-sonnet-5'
 const FALLBACK_MODEL = 'anthropic/claude-haiku-4-5'
+
+// A project with almost no content can't be an advertising billboard, so it's
+// never spam. Keeps empty/test posts (e.g. "test" with an empty body) from being
+// flagged - and, for new accounts, banned.
+const MIN_SPAM_CONTENT_CHARS = 15
+
+// Canonical site URL for links in user-facing emails. Hardcoded (not getURL())
+// so a run outside prod - e.g. the retro cleanup script - never emails a real
+// user a localhost link.
+const SITE_URL = 'https://manifund.org'
 
 // New accounts posting spam are almost always throwaway spammer accounts, so we
 // delete them. Older accounts that post spam might be a compromised or confused
@@ -34,6 +43,7 @@ Do NOT flag (these are NOT spam — set is_spam=false even if low-quality or off
 - Any sincere request for a grant to BUILD, RESEARCH, or DO something — even if it is commercial, a startup, a crypto/token project, off-mission, grandiose, vague, AI-written, eccentric, or unlikely to be funded. That is a real proposal; other filters handle quality.
 - A project that describes a product/service it wants to build and gives a budget or funding breakdown. Asking Manifund for money = not spam.
 - Research or charity work that merely mentions drugs, medicine, prescriptions, pharmacies, cost, or discounts.
+- Empty, blank, test, or placeholder projects (title like "test", "asdf", "delete this", nonsense, or with little or no real content) — these are not advertisements, just empty or unfinished. Never flag them.
 
 If the post asks Manifund for funding to do something, is_spam is FALSE — no matter how bad or commercial it is. Only flag pure advertisements/scams that are not funding requests at all. When in doubt, is_spam=false.
 
@@ -101,6 +111,14 @@ export async function classifyProjectSpam(project: {
   description: JSONContent | null
 }): Promise<SpamVerdict> {
   const text = spamText(project)
+  if (text.replace(/\s+/g, '').length < MIN_SPAM_CONTENT_CHARS) {
+    return {
+      is_spam: false,
+      confidence: 1,
+      reason: 'too little content to be spam',
+      model: 'guard',
+    }
+  }
   try {
     return await classifyWithModel(text, PRIMARY_MODEL)
   } catch (primaryError) {
@@ -157,7 +175,7 @@ async function emailSpamNotice(
     TEMPLATE_IDS.GENERIC_NOTIF,
     {
       notifText: `Your Manifund project "${project.title}" was ${actionText}. If you believe this was a mistake, reply to this email and we'll take a look.\n\nFor your reference, here is what you submitted:\n\n${proposalText}`,
-      buttonUrl: `${getURL()}`,
+      buttonUrl: SITE_URL,
       buttonText: 'Go to Manifund',
       subject: 'Your Manifund project was flagged by our spam filter',
     },
