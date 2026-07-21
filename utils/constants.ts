@@ -12,7 +12,7 @@ export const SIGNUP_DISABLED_MESSAGE =
 //   the verdict is only recorded to project_scores.is_spam (shadow mode) so you
 //   can review accuracy on live traffic before turning on enforcement.
 export const SPAM_FILTER_ENABLED = true
-export const SPAM_FILTER_ENFORCE = false
+export const SPAM_FILTER_ENFORCE = true
 
 export function getURL() {
   let url =
