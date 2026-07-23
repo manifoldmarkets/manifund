@@ -4,7 +4,6 @@ import OpenAI from 'openai'
 import { toMarkdown } from '@/utils/tiptap-parsing'
 import { getUserEmail, sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { superbanUser } from '@/db/superban'
-import { getURL } from '@/utils/constants'
 
 // Spam gate that runs BEFORE the expensive Pangram + quality scoring. It only
 // catches blatant advertising/scam "billboards" (drug sales, phishing, fake
@@ -17,6 +16,8 @@ const PRIMARY_MODEL = 'anthropic/claude-sonnet-5'
 const FALLBACK_MODEL = 'anthropic/claude-haiku-4-5'
 
 const MIN_SPAM_CONTENT_CHARS = 15
+
+const SITE_URL = 'https://manifund.org'
 
 // New accounts posting spam are almost always throwaway spammer accounts, so we
 // delete them. Older accounts that post spam might be a compromised or confused
