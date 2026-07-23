@@ -116,6 +116,28 @@ const getOneWeekAgo = (): Date => {
   return date
 }
 
+// Supabase's PostgREST rejects an `.in(col, ids)` once the id list makes the
+// request URL too long (~640 ids in practice), returning a "Bad Request"
+// error rather than the rows. Split large id lists into batches so a busy
+// week (or a spam wave) can't silently truncate the query. Errors throw
+// instead of being swallowed into an empty result.
+const IN_CHUNK_SIZE = 200
+
+async function selectByIdsChunked<Row>(
+  ids: string[],
+  runChunk: (
+    chunk: string[]
+  ) => PromiseLike<{ data: Row[] | null; error: { message: string } | null }>
+): Promise<Row[]> {
+  const rows: Row[] = []
+  for (let i = 0; i < ids.length; i += IN_CHUNK_SIZE) {
+    const { data, error } = await runChunk(ids.slice(i, i + IN_CHUNK_SIZE))
+    if (error) throw new Error(`weekly digest chunked query failed: ${error.message}`)
+    if (data) rows.push(...data)
+  }
+  return rows
+}
+
 // Data fetching functions
 export async function getRegrantorEmails(
   supabase: SupabaseClient,
@@ -164,18 +186,26 @@ export async function getNewProjectsLastWeek(
 
   const projectIds = projectsBase.map((p) => p.id)
   const [votes, comments, bids, txns] = await Promise.all([
-    supabase.from('project_votes').select('project_id, magnitude').in('project_id', projectIds),
-    supabase.from('comments').select('project, id').in('project', projectIds),
-    supabase.from('bids').select('*').in('project', projectIds),
-    supabase.from('txns').select('*').in('project', projectIds),
+    selectByIdsChunked(projectIds, (chunk) =>
+      supabase.from('project_votes').select('project_id, magnitude').in('project_id', chunk)
+    ),
+    selectByIdsChunked(projectIds, (chunk) =>
+      supabase.from('comments').select('project, id').in('project', chunk)
+    ),
+    selectByIdsChunked(projectIds, (chunk) =>
+      supabase.from('bids').select('*').in('project', chunk)
+    ),
+    selectByIdsChunked(projectIds, (chunk) =>
+      supabase.from('txns').select('*').in('project', chunk)
+    ),
   ])
 
   const projects: FullProject[] = projectsBase.map((project) => ({
     ...project,
-    project_votes: votes.data?.filter((v) => v.project_id === project.id) || [],
-    comments: comments.data?.filter((c) => c.project === project.id) || [],
-    bids: bids.data?.filter((b) => b.project === project.id) || [],
-    txns: txns.data?.filter((t) => t.project === project.id) || [],
+    project_votes: votes.filter((v) => v.project_id === project.id),
+    comments: comments.filter((c) => c.project === project.id),
+    bids: bids.filter((b) => b.project === project.id),
+    txns: txns.filter((t) => t.project === project.id),
     project_transfers: [],
     project_follows: [],
   }))
@@ -311,14 +341,11 @@ export async function getLargeDonorsEmails(
 
   if (!largeDonorIds.length) return []
 
-  const { data: profiles } = await supabase
-    .from('profiles')
-    .select('id')
-    .in('id', largeDonorIds)
-    .eq('regranter_status', false)
-    .throwOnError()
+  const profiles = await selectByIdsChunked<{ id: string }>(largeDonorIds, (chunk) =>
+    supabase.from('profiles').select('id').in('id', chunk).eq('regranter_status', false)
+  )
 
-  if (!profiles?.length) return []
+  if (!profiles.length) return []
 
   const emails = await Promise.all(profiles.map((p) => getUserEmail(supabase, p.id)))
   return Array.from(new Set(emails.filter((email): email is string => email !== null)))
@@ -359,13 +386,11 @@ export async function getTopCreatorEmails(
 
   const topCreatorIds = Array.from(new Set(scored.map((p) => p.creatorId)))
 
-  const { data: users } = await supabase
-    .from('users')
-    .select('email')
-    .in('id', topCreatorIds)
-    .throwOnError()
+  const users = await selectByIdsChunked<{ email: string | null }>(topCreatorIds, (chunk) =>
+    supabase.from('users').select('email').in('id', chunk)
+  )
 
-  return (users ?? []).map((u) => u.email).filter((email): email is string => email !== null)
+  return users.map((u) => u.email).filter((email): email is string => email !== null)
 }
 
 // Content generation functions
