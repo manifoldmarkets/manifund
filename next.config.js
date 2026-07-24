@@ -43,6 +43,11 @@ const nextConfig = {
         permanent: false,
       },
       {
+        source: '/discord',
+        destination: 'https://discord.com/invite/ZGsDMWSA5Q',
+        permanent: false,
+      },
+      {
         source: '/surplus:star(\\*)',
         destination: 'https://airtable.com/appaxqJfxht7OronH/pag4BXQJgRUkdb6lQ/form',
         permanent: false,
