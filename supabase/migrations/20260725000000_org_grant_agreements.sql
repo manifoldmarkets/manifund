@@ -38,7 +38,17 @@ ALTER TABLE public.grant_agreements
   ADD COLUMN IF NOT EXISTS project_lead_name text,
   ADD COLUMN IF NOT EXISTS project_lead_org text,
   ADD COLUMN IF NOT EXISTS signatory_authority_attested boolean NOT NULL DEFAULT false,
-  ADD COLUMN IF NOT EXISTS org_agreement_version int2;
+  ADD COLUMN IF NOT EXISTS org_agreement_version int2,
+  -- The agreement HTML as rendered at signing time: the signed artifact of
+  -- record. Re-rendering from components would let later edits silently change
+  -- what a past signer is recorded as having agreed to.
+  --
+  -- Lives with the rest of the agreement rather than on the private table: it
+  -- is the agreement, everything in it is already on this row, and the page
+  -- that displays it is public. Revisit only if the document ever comes to
+  -- contain something confidential -- an individual recipient's home address,
+  -- say -- which today it does not.
+  ADD COLUMN IF NOT EXISTS rendered_document text;
 
 -- Text + CHECK rather than Postgres enums: these vocabularies (entity class
 -- especially) are likely to grow, and altering an enum in place is painful.
@@ -96,13 +106,6 @@ CREATE TABLE IF NOT EXISTS public.grant_agreement_private (
   -- E-signature audit trail (ESIGN / UETA)
   signed_ip text,
   signed_user_agent text,
-
-  -- The agreement HTML as rendered at signing time: the signed artifact of
-  -- record. Re-rendering from components would let later edits silently change
-  -- what a past signer is recorded as having agreed to. Kept on this table
-  -- because nothing public reads it -- the page renders live from the columns
-  -- above -- and it's a large blob the world-readable table doesn't need.
-  rendered_document text,
 
   -- Tax / reporting diligence, collected out-of-band and flagged here
   w9_received_at timestamptz,

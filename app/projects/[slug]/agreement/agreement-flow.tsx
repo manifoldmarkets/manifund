@@ -312,6 +312,9 @@ function OrgSignatureBlock(props: { agreement?: GrantAgreement; values: OrgAgree
         <span className="h-6 border-b border-black">{values.recipientName}</span>
       </Col>
       <div className="flex flex-col gap-5 md:flex-row md:justify-between">
+        {/* The signature and date only appear once signed -- they record the act
+            of signing. The name previews live from the form, so the creator can
+            see who the document will name before committing to it. */}
         <Col className="gap-2">
           <span className="font-medium">By (signature)</span>
           <span className="h-6 w-52 border-b border-black font-satisfy">
@@ -320,15 +323,7 @@ function OrgSignatureBlock(props: { agreement?: GrantAgreement; values: OrgAgree
         </Col>
         <Col className="gap-2">
           <span className="font-medium">Name</span>
-          <span className="h-6 w-52 border-b border-black">
-            {signedAt ? values.signatoryName : ''}
-          </span>
-        </Col>
-        <Col className="gap-2">
-          <span className="font-medium">Title</span>
-          <span className="h-6 w-52 border-b border-black">
-            {signedAt ? 'Authorized signatory' : ''}
-          </span>
+          <span className="h-6 w-52 border-b border-black">{values.signatoryName}</span>
         </Col>
         <Col className="justify-between gap-2">
           <span className="font-medium">Date</span>

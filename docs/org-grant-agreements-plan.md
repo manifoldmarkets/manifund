@@ -149,7 +149,7 @@ is already rendered on a public page:
 `recipient_legal_name`, `recipient_address`, `recipient_country`,
 `recipient_entity_class`, `recipient_tax_id`, `foreign_no_tin`,
 `is_fiscal_sponsor`, `project_lead_name`, `project_lead_org`,
-`signatory_authority_attested`, `org_agreement_version`.
+`signatory_authority_attested`, `org_agreement_version`, `rendered_document`.
 
 Reuse the existing `recipient_name` and `signatory_name` rather than duplicating
 them. All new columns nullable / defaulted so existing rows are untouched.
@@ -158,9 +158,8 @@ them. All new columns nullable / defaulted so existing rows are untouched.
 service-role access only):
 
 `signatory_email`, `signing_token_hash`, `token_sent_to`, `token_sent_at`,
-`token_expires_at`, `signed_ip`, `signed_user_agent`, `rendered_document`,
-`w9_received_at`, `w8_received_at`, `determination_letter_on_file`,
-`foreign_withholding_flag`.
+`token_expires_at`, `signed_ip`, `signed_user_agent`, `w9_received_at`,
+`w8_received_at`, `determination_letter_on_file`, `foreign_withholding_flag`.
 
 **RLS fix:** `grant_agreements` insert/update become service-role-only. Every
 legitimate write already goes through an API route or the `execute_grant_verdict`
@@ -311,9 +310,12 @@ Deviations from the plan above, and why:
   filings anyway. Removing that assumption deleted a whole layer of plumbing and
   removed a bug with it (the public document had been asserting both "EIN on
   file" and "no US taxpayer ID" at once).
-- **`rendered_document` still lives on `grant_agreement_private`**, now for a
-  weaker reason: nothing public reads it (the page renders live from the
-  columns), and it's a large blob the world-readable table doesn't need.
+- **`rendered_document` lives on `grant_agreements`**, with the rest of the
+  agreement. It had been moved to the private table because it contains the EIN;
+  once the EIN is public that reason evaporates, and the artifact _is_ the
+  agreement — every field in it is already on that row, and the page that
+  displays it is public. Revisit only if the document ever comes to contain
+  something confidential, e.g. an individual recipient's home address.
 - **No `signatory_title`.** The authority attestation is what actually binds the
   organization; title is corroborating evidence, not a requirement. The
   signature block renders "Authorized signatory". This is the first thing to

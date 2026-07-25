@@ -69,12 +69,19 @@ export default async function handler(req: NextRequest) {
     .eq('id', priv.project_id)
     .throwOnError()
 
+  const documentHtml = renderOrgAgreementHtml({
+    project,
+    values: parsed,
+    excludeLobbyingClause: project.lobbying,
+  })
+
   await supabaseAdmin
     .from('grant_agreements')
     .upsert(
       {
         project_id: priv.project_id,
         signed_at: signedAt,
+        rendered_document: documentHtml,
         project_title: project.title,
         project_description: project.description,
         lobbying_clause_excluded: project.lobbying,
@@ -86,14 +93,7 @@ export default async function handler(req: NextRequest) {
     )
     .throwOnError()
 
-  const documentHtml = renderOrgAgreementHtml({
-    project,
-    values: parsed,
-    excludeLobbyingClause: project.lobbying,
-  })
-
   await upsertAgreementPrivate(supabaseAdmin, priv.project_id, {
-    rendered_document: documentHtml,
     signed_ip: clientIp(req),
     signed_user_agent: req.headers.get('user-agent'),
     // Burn the token: the link is single-use once it has produced a signature.
