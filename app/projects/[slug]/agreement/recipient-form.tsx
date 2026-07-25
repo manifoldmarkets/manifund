@@ -130,57 +130,11 @@ export function RecipientForm(props: {
               }
             />
             <label htmlFor="foreign-no-tin" className="text-sm text-gray-900">
-              This organization has no US taxpayer ID (we&apos;ll ask for a Form W-8 separately)
+              This organization has no US taxpayer ID
             </label>
           </Row>
         )}
       </Col>
-
-      <Row className="items-center gap-3">
-        <Checkbox
-          id="is-fiscal-sponsor"
-          checked={values.isFiscalSponsor}
-          disabled={disabled}
-          onChange={(e) => set({ isFiscalSponsor: e.target.checked })}
-        />
-        <label htmlFor="is-fiscal-sponsor" className="text-sm text-gray-900">
-          This organization is a fiscal sponsor, receiving the funds on behalf of someone else who
-          runs the project
-        </label>
-      </Row>
-
-      {values.isFiscalSponsor && (
-        <>
-          <Col className="gap-2">
-            <label className="font-medium text-gray-900" htmlFor="project-lead-name">
-              Project lead
-            </label>
-            <p className="text-sm text-gray-500">
-              Who actually runs the project. Named in the agreement so the clauses about doing the
-              work point at the right person.
-            </p>
-            <Input
-              id="project-lead-name"
-              value={values.projectLeadName}
-              disabled={disabled}
-              onChange={(e) => set({ projectLeadName: e.target.value })}
-              placeholder="Alice Smith"
-            />
-          </Col>
-          <Col className="gap-2">
-            <label className="font-medium text-gray-900" htmlFor="project-lead-org">
-              Project lead&apos;s organization <span className="text-gray-500">(optional)</span>
-            </label>
-            <Input
-              id="project-lead-org"
-              value={values.projectLeadOrg}
-              disabled={disabled}
-              onChange={(e) => set({ projectLeadOrg: e.target.value })}
-              placeholder="Acme Labs"
-            />
-          </Col>
-        </>
-      )}
 
       {showSignerChoice && (
         <Col className="gap-3 border-t border-gray-200 pt-6">
@@ -276,9 +230,6 @@ export function validateRecipient(
     !values.recipientTaxId?.trim()
   ) {
     return 'Enter an EIN, or confirm the organization has no US taxpayer ID.'
-  }
-  if (values.isFiscalSponsor && !values.projectLeadName.trim()) {
-    return 'Enter the project lead’s name.'
   }
   if (!values.signatoryName.trim()) {
     return 'Enter the signatory’s name.'
