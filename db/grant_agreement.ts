@@ -156,9 +156,14 @@ export type OrgAgreementValues = {
   signatoryTitle: string
 }
 
+// `foreignNoTin` must be passed explicitly rather than inferred from a missing
+// taxId: public viewers are given taxId = null because the EIN is private, and
+// inferring from that would make the document tell every anonymous visitor the
+// organization has no US taxpayer ID — a false tax representation.
 export function orgValuesFromAgreement(
   agreement: GrantAgreement,
-  taxId: string | null
+  taxId: string | null,
+  foreignNoTin: boolean
 ): OrgAgreementValues {
   return {
     recipientName: agreement.recipient_name ?? '',
@@ -166,7 +171,7 @@ export function orgValuesFromAgreement(
     recipientCountry: agreement.recipient_country ?? '',
     recipientEntityClass: agreement.recipient_entity_class,
     recipientTaxId: taxId,
-    foreignNoTin: !taxId,
+    foreignNoTin,
     recipientRelationship: agreement.recipient_relationship,
     projectLeadName: agreement.project_lead_name ?? '',
     projectLeadOrg: agreement.project_lead_org ?? '',

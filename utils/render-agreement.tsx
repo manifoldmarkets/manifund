@@ -3,6 +3,7 @@ import { GrantAgreement as IndividualGrantAgreement } from '@/app/projects/[slug
 import { OrgGrantAgreement } from '@/app/projects/[slug]/agreement/org-grant-agreement'
 import { type GrantAgreement, type OrgAgreementValues } from '@/db/grant_agreement'
 import { type ProjectAndProfile } from '@/db/project'
+import { escapeHtml } from '@/utils/email'
 
 // Renders the agreement to HTML from the same components the page displays.
 //
@@ -40,15 +41,18 @@ export function renderIndividualAgreementHtml(props: {
   )
 }
 
+// documentHtml comes from renderToStaticMarkup, so React has already escaped
+// its interpolated values; greetingName and attestation are raw user input and
+// are escaped here.
 export function agreementEmailHtml(props: {
   greetingName: string
   documentHtml: string
   attestation: string
 }) {
-  return `<p>Dear ${props.greetingName},</p>
+  return `<p>Dear ${escapeHtml(props.greetingName)},</p>
   <p>Thank you for signing this grant agreement. Below is a copy for your records.</p>
   <hr style="border-top: 3px solid #bbb" />
   ${props.documentHtml}
   <hr style="border-top: 3px solid #bbb" />
-  <p>${props.attestation}</p>`
+  <p>${escapeHtml(props.attestation)}</p>`
 }

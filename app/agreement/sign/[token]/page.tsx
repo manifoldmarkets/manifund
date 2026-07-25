@@ -20,8 +20,9 @@ function InvalidLink() {
     <Col className="mx-auto max-w-2xl gap-3 p-10">
       <h1 className="text-xl font-semibold">This signing link isn&apos;t valid</h1>
       <p className="text-gray-600">
-        It may have expired, already been used, or been replaced by a newer link. Ask whoever sent
-        it to you to resend it from their Manifund project page.
+        It may have expired, already been used to sign, or been replaced by a newer link. If you
+        already signed, a copy was emailed to you and nothing further is needed. Otherwise, ask
+        whoever sent it to you to resend it from their Manifund project page.
       </p>
     </Col>
   )
@@ -40,13 +41,14 @@ export default async function ExternalSignPage(props: { params: Promise<{ token:
   if (!project || !agreement) {
     return <InvalidLink />
   }
+  // Signing burns the token, so a signed agreement is normally unreachable from
+  // here — this is the belt-and-braces case where the creator signed some other
+  // way while this link was outstanding.
   if (agreement.signed_at) {
     return (
       <Col className="mx-auto max-w-2xl gap-3 p-10">
         <h1 className="text-xl font-semibold">This agreement has already been signed</h1>
-        <p className="text-gray-600">
-          Nothing further is needed from you. A copy was emailed to {priv.token_sent_to}.
-        </p>
+        <p className="text-gray-600">Nothing further is needed from you.</p>
       </Col>
     )
   }
@@ -62,7 +64,11 @@ export default async function ExternalSignPage(props: { params: Promise<{ token:
       <ExternalSignForm
         token={token}
         project={project}
-        initialValues={orgValuesFromAgreement(agreement, priv.recipient_tax_id)}
+        initialValues={orgValuesFromAgreement(
+          agreement,
+          priv.recipient_tax_id,
+          priv.foreign_no_tin
+        )}
       />
     </div>
   )

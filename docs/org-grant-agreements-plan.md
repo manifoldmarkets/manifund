@@ -293,11 +293,14 @@ delete once `gen-types` runs against a migrated prod).
 
 Deviations from the plan above, and why:
 
-- **Two migrations, not one.** `20260725000000` is purely additive and safe to
-  apply any time; `20260725000001` drops the loose write policies and must land
-  **after** the code deploys, because today's `sign-grant-agreement.ts` writes
-  with the caller's cookie-authed client. One file couldn't express that
-  ordering constraint.
+- **Two migrations, not one**, with opposite ordering constraints, which one
+  file couldn't express. `20260725000000` is additive but **required before**
+  the deploy: `sign-grant-agreement.ts` writes `recipient_type` and upserts
+  `grant_agreement_private` on every signature including the plain individual
+  path, so deploying first breaks _all_ grant signing, not just the org flow.
+  `20260725000001` drops the loose write policies and must land **after** the
+  deploy, because today's signing route writes with the caller's cookie-authed
+  client.
 - **`rendered_document` moved to `grant_agreement_private`.** The rendered
   document contains the recipient's EIN, and `grant_agreements` is
   world-readable — so the artifact of record can't live there either. This
@@ -327,7 +330,8 @@ Deviations from the plan above, and why:
 
 1. Get a legal read on `org-grant-agreement.tsx`.
 2. Apply `20260725000000` to prod, then `bun run gen-types`, then delete the
-   shim block in `db/grant_agreement.ts`.
+   shim block in `db/grant_agreement.ts`. **Required before step 3** — the new
+   code writes the new columns on every signature, individual ones included.
 3. Deploy the code.
 4. Apply `20260725000001` (the RLS fix) — **only after step 3**.
 5. Smoke-test both paths: Alice self-signs for Acme; Alice sends to Carol, Carol
