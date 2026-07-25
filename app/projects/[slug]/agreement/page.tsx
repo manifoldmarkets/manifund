@@ -1,11 +1,11 @@
 import { createServerSupabaseClient } from '@/db/supabase-server'
-import { getUser } from '@/db/profile'
+import { createAdminClient } from '@/db/edge'
+import { getUser, isAdmin } from '@/db/profile'
 import { getProjectAndProfileBySlug } from '@/db/project'
 import React from 'react'
-import { Col } from '@/components/layout/col'
-import { GrantAgreement } from './grant-agreement'
-import { SignatureSection } from './signature-section'
-import { getGrantAgreement } from '@/db/grant_agreement'
+import { AgreementFlow } from './agreement-flow'
+import { AdminTaxPanel } from './admin-tax-panel'
+import { getGrantAgreement, getGrantAgreementPrivate } from '@/db/grant_agreement'
 import { Row } from '@/components/layout/row'
 import { Tag } from '@/components/tags'
 
@@ -18,6 +18,17 @@ export default async function GrantAgreementPage(props: { params: Promise<{ slug
   }
   const agreement = (await getGrantAgreement(supabase, project.id)) ?? undefined
   const user = await getUser(supabase)
+  const userIsOwner = user?.id === project.creator
+  const userIsAdmin = isAdmin(user)
+  const canSeePrivate = userIsOwner || userIsAdmin
+
+  // Read with the admin client because grant_agreement_private is RLS-locked to
+  // the service role. Only the EIN-exists flag crosses to the client for
+  // everyone; the EIN itself and the signatory's email go no further than the
+  // creator and admins.
+  const priv = agreement ? await getGrantAgreementPrivate(createAdminClient(), project.id) : null
+  const awaitingExternalSignature = !!priv?.token_sent_to && !agreement?.signed_at
+
   return (
     <div className="p-5">
       <Row className="gap-3">
@@ -28,7 +39,9 @@ export default async function GrantAgreementPage(props: { params: Promise<{ slug
               ? project.approved
                 ? 'COMPLETE'
                 : 'AWAITING COUNTER SIGNATURE'
-              : 'AWAITING SIGNATURE'
+              : awaitingExternalSignature
+                ? 'AWAITING SIGNATORY'
+                : 'AWAITING SIGNATURE'
           }
           color={project.signed_agreement && project.approved ? 'orange' : 'rose'}
         />
@@ -40,19 +53,35 @@ export default async function GrantAgreementPage(props: { params: Promise<{ slug
       {agreement?.signed_off_site ? (
         <div className="rounded-md bg-gray-200 p-4 text-gray-600">
           This grant agreement was signed off-site. We have grantees sign agreements elsewhere in
-          cases where they need a modified version of the agreement, when a signatory signs on
-          behalf of a receiving organization, or where they want to preserve their anonymity on
-          Manifund.
+          cases where they need a modified version of the agreement, or where they want to preserve
+          their anonymity on Manifund.
         </div>
       ) : (
-        <Col className="gap-16">
-          <GrantAgreement project={project} agreement={agreement} />
-          <SignatureSection
-            project={project}
-            agreement={agreement}
-            userIsOwner={user?.id === project.creator}
+        <AgreementFlow
+          project={project}
+          agreement={agreement}
+          userIsOwner={userIsOwner}
+          taxId={canSeePrivate ? (priv?.recipient_tax_id ?? null) : null}
+          signatoryEmail={canSeePrivate ? (priv?.signatory_email ?? null) : null}
+          tokenSentTo={canSeePrivate ? (priv?.token_sent_to ?? null) : null}
+          tokenSentAt={canSeePrivate ? (priv?.token_sent_at ?? null) : null}
+          einOnFile={!!priv?.recipient_tax_id}
+        />
+      )}
+      {userIsAdmin && agreement?.recipient_type === 'organization' && (
+        <div className="mt-10">
+          <AdminTaxPanel
+            projectId={project.id}
+            taxId={priv?.recipient_tax_id ?? null}
+            signatoryEmail={priv?.signatory_email ?? null}
+            initial={{
+              w9Received: !!priv?.w9_received_at,
+              w8Received: !!priv?.w8_received_at,
+              determinationLetterOnFile: !!priv?.determination_letter_on_file,
+              foreignWithholding: !!priv?.foreign_withholding_flag,
+            }}
           />
-        </Col>
+        </div>
       )}
     </div>
   )
