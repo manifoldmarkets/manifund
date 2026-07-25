@@ -85,11 +85,9 @@ export function ExternalSignForm(props: {
         />
         <div className="ml-3 text-sm leading-6">
           <label htmlFor="terms" className="font-medium text-gray-900">
-            I, <strong>{values.signatoryName || '[your name]'}</strong>,{' '}
-            {values.signatoryTitle || '[your title]'} of{' '}
-            <strong>{values.recipientName || '[organization]'}</strong>, am authorized to enter into
-            this agreement on its behalf, and agree to the terms of this grant as laid out in the
-            above document.
+            I, <strong>{values.signatoryName || '[your name]'}</strong>, am authorized to enter into
+            this agreement on behalf of <strong>{values.recipientName || '[organization]'}</strong>,
+            and agree to the terms of this grant as laid out in the above document.
           </label>
         </div>
       </Row>

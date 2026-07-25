@@ -65,8 +65,6 @@ export default async function handler(req: NextRequest) {
   // a different person" are the same operation and an old link stops working.
   const token = generateSigningToken()
   await upsertAgreementPrivate(supabaseAdmin, projectId, {
-    recipient_tax_id: parsed.recipientTaxId,
-    foreign_no_tin: parsed.foreignNoTin,
     signatory_email: email,
     signing_token_hash: await hashSigningToken(token),
     token_sent_to: email,

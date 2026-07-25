@@ -5,11 +5,9 @@ import { Checkbox, Input, RadioButton } from '@/components/input'
 import { Select } from '@/components/select'
 import {
   ENTITY_CLASS_LABELS,
-  RELATIONSHIP_LABELS,
   requiresEin,
   type OrgAgreementValues,
   type RecipientEntityClass,
-  type RecipientRelationship,
 } from '@/db/grant_agreement'
 
 export type SignerChoice = 'self' | 'someone_else'
@@ -50,11 +48,8 @@ export function RecipientForm(props: {
     <Col className="gap-6 rounded-md border border-gray-300 p-5">
       <Col className="gap-2">
         <label className="font-medium text-gray-900" htmlFor="recipient-name">
-          Organization legal name
+          Organization full legal name
         </label>
-        <p className="text-sm text-gray-500">
-          The exact registered name, not a brand or DBA — this is the party bound by the agreement.
-        </p>
         <Input
           id="recipient-name"
           value={values.recipientName}
@@ -114,10 +109,6 @@ export function RecipientForm(props: {
         <label className="font-medium text-gray-900" htmlFor="recipient-ein">
           EIN
         </label>
-        <p className="text-sm text-gray-500">
-          Kept private — it appears in your copy of the agreement and to Manifund staff, but not on
-          the public project page.
-        </p>
         <Input
           id="recipient-ein"
           value={values.recipientTaxId ?? ''}
@@ -145,27 +136,20 @@ export function RecipientForm(props: {
         )}
       </Col>
 
-      <Col className="gap-2">
-        <span className="font-medium text-gray-900">
-          How does this organization relate to the project?
-        </span>
-        {(Object.keys(RELATIONSHIP_LABELS) as RecipientRelationship[]).map((rel) => (
-          <Row key={rel} className="items-center gap-3">
-            <RadioButton
-              id={`relationship-${rel}`}
-              name="relationship"
-              checked={values.recipientRelationship === rel}
-              disabled={disabled}
-              onChange={() => set({ recipientRelationship: rel })}
-            />
-            <label htmlFor={`relationship-${rel}`} className="text-sm text-gray-900">
-              {RELATIONSHIP_LABELS[rel]}
-            </label>
-          </Row>
-        ))}
-      </Col>
+      <Row className="items-center gap-3">
+        <Checkbox
+          id="is-fiscal-sponsor"
+          checked={values.isFiscalSponsor}
+          disabled={disabled}
+          onChange={(e) => set({ isFiscalSponsor: e.target.checked })}
+        />
+        <label htmlFor="is-fiscal-sponsor" className="text-sm text-gray-900">
+          This organization is a fiscal sponsor, receiving the funds on behalf of someone else who
+          runs the project
+        </label>
+      </Row>
 
-      {values.recipientRelationship && values.recipientRelationship !== 'self' && (
+      {values.isFiscalSponsor && (
         <>
           <Col className="gap-2">
             <label className="font-medium text-gray-900" htmlFor="project-lead-name">
@@ -241,23 +225,6 @@ export function RecipientForm(props: {
         />
       </Col>
 
-      <Col className="gap-2">
-        <label className="font-medium text-gray-900" htmlFor="signatory-title">
-          {signerChoice === 'self' ? 'Your title' : 'Signatory title'}
-        </label>
-        <p className="text-sm text-gray-500">
-          Authority to bind the organization is read off this — e.g. Executive Director, Managing
-          Partner.
-        </p>
-        <Input
-          id="signatory-title"
-          value={values.signatoryTitle}
-          disabled={disabled}
-          onChange={(e) => set({ signatoryTitle: e.target.value })}
-          placeholder="Executive Director"
-        />
-      </Col>
-
       {showSignerChoice && signerChoice === 'someone_else' && (
         <Col className="gap-2">
           <label className="font-medium text-gray-900" htmlFor="signatory-email">
@@ -310,17 +277,11 @@ export function validateRecipient(
   ) {
     return 'Enter an EIN, or confirm the organization has no US taxpayer ID.'
   }
-  if (!values.recipientRelationship) {
-    return 'Select how the organization relates to the project.'
-  }
-  if (values.recipientRelationship !== 'self' && !values.projectLeadName.trim()) {
+  if (values.isFiscalSponsor && !values.projectLeadName.trim()) {
     return 'Enter the project lead’s name.'
   }
   if (!values.signatoryName.trim()) {
     return 'Enter the signatory’s name.'
-  }
-  if (!values.signatoryTitle.trim()) {
-    return 'Enter the signatory’s title.'
   }
   if (signerChoice === 'someone_else' && !signatoryEmail.trim()) {
     return 'Enter the signatory’s email address.'

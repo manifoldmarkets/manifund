@@ -61,19 +61,15 @@ export default async function GrantAgreementPage(props: { params: Promise<{ slug
           project={project}
           agreement={agreement}
           userIsOwner={userIsOwner}
-          taxId={canSeePrivate ? (priv?.recipient_tax_id ?? null) : null}
           signatoryEmail={canSeePrivate ? (priv?.signatory_email ?? null) : null}
           tokenSentTo={canSeePrivate ? (priv?.token_sent_to ?? null) : null}
           tokenSentAt={canSeePrivate ? (priv?.token_sent_at ?? null) : null}
-          einOnFile={!!priv?.recipient_tax_id}
-          foreignNoTin={!!priv?.foreign_no_tin}
         />
       )}
       {userIsAdmin && agreement?.recipient_type === 'organization' && (
         <div className="mt-10">
           <AdminTaxPanel
             projectId={project.id}
-            taxId={priv?.recipient_tax_id ?? null}
             signatoryEmail={priv?.signatory_email ?? null}
             initial={{
               w9Received: !!priv?.w9_received_at,

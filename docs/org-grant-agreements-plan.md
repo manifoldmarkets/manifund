@@ -50,8 +50,9 @@ flagged in the DB.
 
 Per root `seed.sql:529-547`, `grant_agreements` is:
 
-- `FOR SELECT TO public USING (true)` — world-readable. **EIN, signatory email,
-  and signing tokens therefore cannot live on this table.**
+- `FOR SELECT TO public USING (true)` — world-readable. **Signatory email and
+  signing tokens therefore cannot live on this table.** (The EIN can, and does —
+  see "As built".)
 - `FOR INSERT / UPDATE TO authenticated ... USING (true)` — **any logged-in
   user can overwrite anyone's grant agreement row.** That is a hole today; once
   the table carries signing state and signatory identity, it becomes forgeable
@@ -86,7 +87,6 @@ live. But these are the pieces, and why each is load-bearing.
 | Field                          | Why                                                                                                                                                                  |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `signatory_name`               | Column exists, never written on the live path.                                                                                                                       |
-| `signatory_title`              | Authority is inferred from title. "Executive Director" binds; "volunteer" doesn't.                                                                                   |
 | `signatory_email`              | The address the token was sent to. **This is the authentication evidence** — what proves Carol signed, not Alice.                                                    |
 | `signatory_authority_attested` | Explicit checkbox: "I am authorized to enter into this agreement on behalf of {legal name}." Cheap, and it's what holds up if the org later disclaims the signature. |
 | `signed_at`                    | Exists.                                                                                                                                                              |
@@ -116,7 +116,9 @@ _performs_ the work, or several clauses become false on their face:
   the wrong party.
 
 So: `project_lead_name` (Alice), `project_lead_org` (Acme), and
-`recipient_relationship` ∈ {`self`, `employer`, `fiscal_sponsor`}. Plus a clause
+`is_fiscal_sponsor` (a single boolean — `employer` turned out to be noise, since
+an org that employs the project lead and is itself bound is just the plain
+case). Plus a clause
 where Cherry warrants it will apply the funds to the Project and retains
 discretion and control consistent with its sponsorship arrangement.
 
@@ -145,9 +147,9 @@ is already rendered on a public page:
 
 `recipient_type` ('individual' | 'organization', default `'individual'`),
 `recipient_legal_name`, `recipient_address`, `recipient_country`,
-`recipient_entity_class`, `recipient_relationship`, `project_lead_name`,
-`project_lead_org`, `signatory_title`, `signatory_authority_attested`,
-`org_agreement_version`, `rendered_document`.
+`recipient_entity_class`, `recipient_tax_id`, `foreign_no_tin`,
+`is_fiscal_sponsor`, `project_lead_name`, `project_lead_org`,
+`signatory_authority_attested`, `org_agreement_version`.
 
 Reuse the existing `recipient_name` and `signatory_name` rather than duplicating
 them. All new columns nullable / defaulted so existing rows are untouched.
@@ -155,10 +157,10 @@ them. All new columns nullable / defaulted so existing rows are untouched.
 **`grant_agreement_private`** (new table, `project_id` PK, RLS deny-all,
 service-role access only):
 
-`recipient_tax_id`, `foreign_no_tin`, `signatory_email`, `signing_token_hash`,
-`token_sent_to`, `token_sent_at`, `token_expires_at`, `signed_ip`,
-`signed_user_agent`, `w9_received_at`, `w8_received_at`,
-`determination_letter_on_file`, `foreign_withholding_flag`.
+`signatory_email`, `signing_token_hash`, `token_sent_to`, `token_sent_at`,
+`token_expires_at`, `signed_ip`, `signed_user_agent`, `rendered_document`,
+`w9_received_at`, `w8_received_at`, `determination_letter_on_file`,
+`foreign_withholding_flag`.
 
 **RLS fix:** `grant_agreements` insert/update become service-role-only. Every
 legitimate write already goes through an API route or the `execute_grant_verdict`
@@ -301,14 +303,26 @@ Deviations from the plan above, and why:
   `20260725000001` drops the loose write policies and must land **after** the
   deploy, because today's signing route writes with the caller's cookie-authed
   client.
-- **`rendered_document` moved to `grant_agreement_private`.** The rendered
-  document contains the recipient's EIN, and `grant_agreements` is
-  world-readable — so the artifact of record can't live there either. This
-  wasn't caught until the document was written.
-- **Public viewers see "EIN on file with the Charity"**, not masked digits. The
-  earlier idea of showing the last 4 still meant fetching private data for every
-  anonymous visitor; a plain boolean avoids that entirely. The creator, the
-  signatory, and admins see the real EIN.
+- **The EIN is public**, and lives on `grant_agreements` with the rest of the
+  document. An earlier round of this treated it as confidential — private
+  table, "EIN on file with the Charity" for public viewers, an `einOnFile`
+  boolean threaded through the components — which was wrong: the EIN identifies
+  the contracting party in §1.2, and nonprofit EINs are on public Form 990
+  filings anyway. Removing that assumption deleted a whole layer of plumbing and
+  removed a bug with it (the public document had been asserting both "EIN on
+  file" and "no US taxpayer ID" at once).
+- **`rendered_document` still lives on `grant_agreement_private`**, now for a
+  weaker reason: nothing public reads it (the page renders live from the
+  columns), and it's a large blob the world-readable table doesn't need.
+- **No `signatory_title`.** The authority attestation is what actually binds the
+  organization; title is corroborating evidence, not a requirement. The
+  signature block renders "Authorized signatory". This is the first thing to
+  reinstate if legal review wants stronger evidence of authority.
+- **One boolean, not a three-way relationship.** `employer` was noise: an org
+  that employs the project lead and is itself the bound party is just the plain
+  case. What actually needs modelling is whether the Recipient performs the
+  Project at all, so it's `is_fiscal_sponsor`, surfaced as a single checkbox
+  that reveals the Project Lead field.
 - **`recipient_legal_name` was never added** — the existing `recipient_name`
   column already is the Recipient party name, so a second field for the same
   thing would just be a divergence risk. The plan contradicted itself on this.
@@ -359,9 +373,10 @@ Deviations from the plan above, and why:
 - **Payment routing is explicitly out of scope**, but naming Cherry as Recipient
   while `mercury_recipient_id` still points at Alice is a live inconsistency.
   Worth a follow-up.
-- The agreement page is public, so the org's legal name and registered address
-  become public (the Charity's own address already is). Fine by default; if not,
-  gate the page to owner + admins.
+- The agreement page is public, so the org's legal name, registered address and
+  EIN are public (the Charity's own address and EIN already are). Confirmed as
+  intended. If that ever changes, gate the page to owner + admins rather than
+  splitting fields across tables again.
 - The new org document needs a named legal reviewer before launch.
 - Whether to migrate existing `signed_off_site` agreements that were signed
   elsewhere purely because of an org signatory, or leave them as-is.

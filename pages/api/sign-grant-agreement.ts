@@ -101,14 +101,15 @@ export default async function handler(req: NextRequest) {
               // Clear any org draft the creator started and then abandoned:
               // upsert only writes the columns given, so leaving these out
               // would sign an individual agreement onto a row still asserting
-              // an entity class and an attested org signatory.
+              // an entity class, an EIN and an attested org signatory.
               recipient_address: null,
               recipient_country: null,
               recipient_entity_class: null,
-              recipient_relationship: null,
+              recipient_tax_id: null,
+              foreign_no_tin: false,
+              is_fiscal_sponsor: false,
               project_lead_name: null,
               project_lead_org: null,
-              signatory_title: null,
               signatory_authority_attested: false,
               org_agreement_version: null,
             }),
@@ -130,19 +131,7 @@ export default async function handler(req: NextRequest) {
     : renderIndividualAgreementHtml({ project, agreement })
 
   await upsertAgreementPrivate(supabaseAdmin, projectId, {
-    ...(parsed
-      ? {
-          recipient_tax_id: parsed.recipientTaxId,
-          foreign_no_tin: parsed.foreignNoTin,
-          signatory_email: user.email ?? null,
-        }
-      : // Same cleanup on the private side: an abandoned org draft must not
-        // leave an EIN attached to an individual agreement.
-        {
-          recipient_tax_id: null,
-          foreign_no_tin: false,
-          signatory_email: user.email ?? null,
-        }),
+    signatory_email: user.email ?? null,
     rendered_document: documentHtml,
     signed_ip: clientIp(req),
     signed_user_agent: req.headers.get('user-agent'),
@@ -157,7 +146,7 @@ export default async function handler(req: NextRequest) {
   await maybeActivateProject(supabase, projectId)
 
   const attestation = parsed
-    ? `I, ${parsed.signatoryName}, ${parsed.signatoryTitle} of ${parsed.recipientName}, am authorized to enter into this agreement on its behalf, and agree to the terms of this grant as laid out in the above document.`
+    ? `I, ${parsed.signatoryName}, am authorized to enter into this agreement on behalf of ${parsed.recipientName}, and agree to the terms of this grant as laid out in the above document.`
     : `I, ${project.profiles.full_name}, agree to the terms of this grant as laid out in the above document.`
 
   await sendTemplateEmail(

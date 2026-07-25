@@ -54,8 +54,6 @@ export default async function handler(req: NextRequest) {
     .throwOnError()
 
   await upsertAgreementPrivate(supabaseAdmin, projectId, {
-    recipient_tax_id: parsed.recipientTaxId,
-    foreign_no_tin: parsed.foreignNoTin,
     // Saved so that reloading restores the "someone else signs" choice and the
     // address typed into it. Sending the link is still a separate action.
     signatory_email: typeof signatoryEmail === 'string' ? signatoryEmail.trim() || null : null,

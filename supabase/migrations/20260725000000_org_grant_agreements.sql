@@ -27,10 +27,16 @@ ALTER TABLE public.grant_agreements
   ADD COLUMN IF NOT EXISTS recipient_address text,
   ADD COLUMN IF NOT EXISTS recipient_country text,
   ADD COLUMN IF NOT EXISTS recipient_entity_class text,
-  ADD COLUMN IF NOT EXISTS recipient_relationship text,
+  -- The EIN is part of the agreement as published: it identifies the
+  -- contracting party in section 1.2, and an organization's EIN is not treated
+  -- as confidential (nonprofit EINs are on public Form 990 filings).
+  ADD COLUMN IF NOT EXISTS recipient_tax_id text,
+  ADD COLUMN IF NOT EXISTS foreign_no_tin boolean NOT NULL DEFAULT false,
+  -- True when the Recipient receives the funds on behalf of someone else who
+  -- runs the Project, rather than running it itself.
+  ADD COLUMN IF NOT EXISTS is_fiscal_sponsor boolean NOT NULL DEFAULT false,
   ADD COLUMN IF NOT EXISTS project_lead_name text,
   ADD COLUMN IF NOT EXISTS project_lead_org text,
-  ADD COLUMN IF NOT EXISTS signatory_title text,
   ADD COLUMN IF NOT EXISTS signatory_authority_attested boolean NOT NULL DEFAULT false,
   ADD COLUMN IF NOT EXISTS org_agreement_version int2;
 
@@ -56,35 +62,26 @@ ALTER TABLE public.grant_agreements
     'foreign_individual'
   ));
 
--- How the Recipient relates to whoever actually performs the Project.
--- 'self'           -> the Recipient is doing the work (Alice -> Acme)
--- 'employer'       -> the project lead works for the Recipient
--- 'fiscal_sponsor' -> the Recipient sponsors the project lead (Alice -> Cherry)
-ALTER TABLE public.grant_agreements
-  DROP CONSTRAINT IF EXISTS grant_agreements_recipient_relationship_check;
-ALTER TABLE public.grant_agreements
-  ADD CONSTRAINT grant_agreements_recipient_relationship_check
-  CHECK (recipient_relationship IS NULL OR recipient_relationship IN (
-    'self',
-    'employer',
-    'fiscal_sponsor'
-  ));
+COMMENT ON COLUMN public.grant_agreements.is_fiscal_sponsor IS
+  'The Recipient is bound by the agreement but does not perform the Project. '
+  'Gates the Project Lead recital and the discretion-and-control clauses, without '
+  'which section 5.1(e) ("the Recipient ceases to work on the Project") and section 2.2 '
+  'would bind a party that never does the work.';
 
 COMMENT ON COLUMN public.grant_agreements.recipient_name IS
   'Legal name of the contracting party. For orgs, the exact registered name (not a DBA).';
 
 -- Sensitive fields. Deliberately a separate table because grant_agreements is
--- world-readable (SELECT TO public USING (true)); EINs, signatory emails and
--- signing tokens must never be reachable from the anon key.
+-- world-readable (SELECT TO public USING (true)); signatory emails, signing
+-- tokens and the audit trail must never be reachable from the anon key.
+--
+-- The EIN is NOT here: it identifies the contracting party in the published
+-- agreement and isn't treated as confidential.
 --
 -- RLS is enabled with NO policies, so anon/authenticated get nothing. All
 -- access is via the service role (createAdminClient), which bypasses RLS.
 CREATE TABLE IF NOT EXISTS public.grant_agreement_private (
   project_id uuid NOT NULL PRIMARY KEY REFERENCES public.projects(id) ON DELETE CASCADE,
-
-  -- Entity tax identity
-  recipient_tax_id text,
-  foreign_no_tin boolean NOT NULL DEFAULT false,
 
   -- Signatory contact. This is the address the signing link was sent to, and
   -- therefore the authentication evidence for who signed.
@@ -102,13 +99,9 @@ CREATE TABLE IF NOT EXISTS public.grant_agreement_private (
 
   -- The agreement HTML as rendered at signing time: the signed artifact of
   -- record. Re-rendering from components would let later edits silently change
-  -- what a past signer is recorded as having agreed to.
-  --
-  -- Lives here rather than on grant_agreements because the rendered document
-  -- contains the recipient's EIN, and grant_agreements is world-readable. The
-  -- public /agreement page masks the EIN; this copy is the unmasked one, shown
-  -- to the signatory, the creator, and admins, and embedded in the
-  -- confirmation email.
+  -- what a past signer is recorded as having agreed to. Kept on this table
+  -- because nothing public reads it -- the page renders live from the columns
+  -- above -- and it's a large blob the world-readable table doesn't need.
   rendered_document text,
 
   -- Tax / reporting diligence, collected out-of-band and flagged here
