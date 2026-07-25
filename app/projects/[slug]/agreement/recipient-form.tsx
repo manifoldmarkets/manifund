@@ -107,7 +107,7 @@ export function RecipientForm(props: {
 
       <Col className="gap-2">
         <label className="font-medium text-gray-900" htmlFor="recipient-ein">
-          EIN
+          US EIN
         </label>
         <Input
           id="recipient-ein"
