@@ -77,12 +77,32 @@ export default async function handler(req: NextRequest) {
     .eq('id', projectId)
     .throwOnError()
 
-  const { data: agreementRows } = await supabaseAdmin
+  // Rendered before the write, from the values about to be written, so the
+  // stored artifact and the row are produced in one round trip.
+  const documentHtml = parsed
+    ? renderOrgAgreementHtml({
+        project,
+        values: parsed,
+        excludeLobbyingClause: project.lobbying,
+      })
+    : renderIndividualAgreementHtml({
+        project,
+        agreement: {
+          signed_at: signedAt,
+          lobbying_clause_excluded: project.lobbying,
+          version: CURRENT_AGREEMENT_VERSION,
+          recipient_name: project.profiles.full_name,
+          project_title: project.title,
+        } as GrantAgreement,
+      })
+
+  await supabaseAdmin
     .from('grant_agreements')
     .upsert(
       {
         project_id: projectId,
         signed_at: signedAt,
+        rendered_document: documentHtml,
         project_description: project.description,
         project_title: project.title,
         lobbying_clause_excluded: project.lobbying,
@@ -116,23 +136,10 @@ export default async function handler(req: NextRequest) {
       },
       { onConflict: 'project_id' }
     )
-    .select('*, profiles(full_name, username)')
     .throwOnError()
-
-  // Cast because database.types.ts doesn't yet know about the org columns; see
-  // the shim note in db/grant_agreement.ts.
-  const agreement = agreementRows?.[0] as GrantAgreement | undefined
-  const documentHtml = parsed
-    ? renderOrgAgreementHtml({
-        project,
-        values: parsed,
-        excludeLobbyingClause: project.lobbying,
-      })
-    : renderIndividualAgreementHtml({ project, agreement })
 
   await upsertAgreementPrivate(supabaseAdmin, projectId, {
     signatory_email: user.email ?? null,
-    rendered_document: documentHtml,
     signed_ip: clientIp(req),
     signed_user_agent: req.headers.get('user-agent'),
     // A self-signed agreement has no outstanding link; clear any earlier one so

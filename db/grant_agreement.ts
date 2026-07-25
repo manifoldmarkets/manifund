@@ -48,6 +48,7 @@ type OrgAgreementColumns = {
   project_lead_org: string | null
   signatory_authority_attested: boolean
   org_agreement_version: number | null
+  rendered_document: string | null
 }
 
 type GrantAgreementRow = Database['public']['Tables']['grant_agreements']['Row'] &
@@ -69,7 +70,6 @@ export type GrantAgreementPrivate = {
   token_expires_at: string | null
   signed_ip: string | null
   signed_user_agent: string | null
-  rendered_document: string | null
   w9_received_at: string | null
   w8_received_at: string | null
   determination_letter_on_file: boolean
