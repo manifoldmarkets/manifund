@@ -14,9 +14,6 @@ export type RecipientEntityClass =
   | 'foreign_org'
   | 'foreign_individual'
 
-// How the Recipient relates to whoever actually performs the Project.
-export type RecipientRelationship = 'self' | 'employer' | 'fiscal_sponsor'
-
 export const ENTITY_CLASS_LABELS: Record<RecipientEntityClass, string> = {
   us_501c3: 'US 501(c)(3)',
   us_nonprofit_other: 'US nonprofit (not 501(c)(3))',
@@ -24,12 +21,6 @@ export const ENTITY_CLASS_LABELS: Record<RecipientEntityClass, string> = {
   us_individual: 'US individual',
   foreign_org: 'Non-US organization',
   foreign_individual: 'Non-US individual',
-}
-
-export const RELATIONSHIP_LABELS: Record<RecipientRelationship, string> = {
-  self: 'The organization is running the project itself',
-  employer: 'The project lead works for the organization',
-  fiscal_sponsor: 'The organization is the project lead’s fiscal sponsor',
 }
 
 // A US EIN is required unless the entity is foreign (which needs a W-8 instead).
@@ -50,10 +41,11 @@ type OrgAgreementColumns = {
   recipient_address: string | null
   recipient_country: string | null
   recipient_entity_class: RecipientEntityClass | null
-  recipient_relationship: RecipientRelationship | null
+  recipient_tax_id: string | null
+  foreign_no_tin: boolean
+  is_fiscal_sponsor: boolean
   project_lead_name: string | null
   project_lead_org: string | null
-  signatory_title: string | null
   signatory_authority_attested: boolean
   org_agreement_version: number | null
 }
@@ -70,8 +62,6 @@ export type GrantAgreement = GrantAgreementRow & {
 // nothing. Never pass a whole row of this to a client component.
 export type GrantAgreementPrivate = {
   project_id: string
-  recipient_tax_id: string | null
-  foreign_no_tin: boolean
   signatory_email: string | null
   signing_token_hash: string | null
   token_sent_to: string | null
@@ -144,38 +134,28 @@ export type OrgAgreementValues = {
   recipientAddress: string
   recipientCountry: string
   recipientEntityClass: RecipientEntityClass | null
-  // Null for public viewers — the EIN lives in grant_agreement_private and is
-  // only passed to the creator, the signatory, and admins. The document renders
-  // "EIN on file with the Charity" in its place.
   recipientTaxId: string | null
   foreignNoTin: boolean
-  recipientRelationship: RecipientRelationship | null
+  // The Recipient receives the funds on behalf of someone else who runs the
+  // Project. Gates the Project Lead recital and the discretion-and-control
+  // clauses in the document.
+  isFiscalSponsor: boolean
   projectLeadName: string
   projectLeadOrg: string
   signatoryName: string
-  signatoryTitle: string
 }
 
-// `foreignNoTin` must be passed explicitly rather than inferred from a missing
-// taxId: public viewers are given taxId = null because the EIN is private, and
-// inferring from that would make the document tell every anonymous visitor the
-// organization has no US taxpayer ID — a false tax representation.
-export function orgValuesFromAgreement(
-  agreement: GrantAgreement,
-  taxId: string | null,
-  foreignNoTin: boolean
-): OrgAgreementValues {
+export function orgValuesFromAgreement(agreement: GrantAgreement): OrgAgreementValues {
   return {
     recipientName: agreement.recipient_name ?? '',
     recipientAddress: agreement.recipient_address ?? '',
     recipientCountry: agreement.recipient_country ?? '',
     recipientEntityClass: agreement.recipient_entity_class,
-    recipientTaxId: taxId,
-    foreignNoTin,
-    recipientRelationship: agreement.recipient_relationship,
+    recipientTaxId: agreement.recipient_tax_id,
+    foreignNoTin: agreement.foreign_no_tin,
+    isFiscalSponsor: agreement.is_fiscal_sponsor,
     projectLeadName: agreement.project_lead_name ?? '',
     projectLeadOrg: agreement.project_lead_org ?? '',
     signatoryName: agreement.signatory_name ?? '',
-    signatoryTitle: agreement.signatory_title ?? '',
   }
 }

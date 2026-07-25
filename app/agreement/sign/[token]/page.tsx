@@ -64,11 +64,7 @@ export default async function ExternalSignPage(props: { params: Promise<{ token:
       <ExternalSignForm
         token={token}
         project={project}
-        initialValues={orgValuesFromAgreement(
-          agreement,
-          priv.recipient_tax_id,
-          priv.foreign_no_tin
-        )}
+        initialValues={orgValuesFromAgreement(agreement)}
       />
     </div>
   )

@@ -58,14 +58,10 @@ export function OrgGrantAgreement(props: {
   project: Project
   values: OrgAgreementValues
   excludeLobbyingClause: boolean
-  // True when an EIN has been recorded but this viewer isn't entitled to see it
-  // (the /agreement page is public). The unredacted document is stored in
-  // grant_agreement_private.rendered_document at signing.
-  einOnFile?: boolean
 }) {
-  const { project, values, excludeLobbyingClause, einOnFile } = props
-  const hasProjectLead = values.recipientRelationship !== 'self' && !!values.projectLeadName
-  const isSponsor = values.recipientRelationship === 'fiscal_sponsor'
+  const { project, values, excludeLobbyingClause } = props
+  const isSponsor = values.isFiscalSponsor
+  const hasProjectLead = isSponsor && !!values.projectLeadName
   const ein = values.recipientTaxId
 
   // Numbered dynamically because the Project Lead recital only exists when the
@@ -80,8 +76,7 @@ export function OrgGrantAgreement(props: {
       {values.recipientAddress ? `, ${values.recipientAddress}` : ''}
       {values.recipientCountry ? `, ${values.recipientCountry}` : ''},{' '}
       {entityDescription(values.recipientEntityClass)}
-      {ein ? ` with EIN ${ein}` : einOnFile ? ' with EIN on file with the Charity' : ''} (the
-      “Recipient”).
+      {ein ? ` with EIN ${ein}` : ''} (the “Recipient”).
       {values.foreignNoTin && (
         <>
           {' '}
@@ -96,8 +91,8 @@ export function OrgGrantAgreement(props: {
       <p key="lead">
         The Project is led by {values.projectLeadName}
         {values.projectLeadOrg ? ` of ${values.projectLeadOrg}` : ''} (the “Project Lead”). The
-        Recipient {isSponsor ? 'acts as fiscal sponsor to' : 'is the employer of'} the Project Lead
-        {isSponsor ? ' and will apply the Grant to the Project in accordance with Section 6' : ''}.
+        Recipient acts as fiscal sponsor to the Project Lead and will apply the Grant to the Project
+        in accordance with Section 6.
       </p>
     )
   }

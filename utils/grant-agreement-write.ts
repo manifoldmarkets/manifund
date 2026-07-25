@@ -3,7 +3,6 @@ import {
   requiresEin,
   type OrgAgreementValues,
   type RecipientEntityClass,
-  type RecipientRelationship,
 } from '@/db/grant_agreement'
 
 const ENTITY_CLASSES: RecipientEntityClass[] = [
@@ -14,7 +13,6 @@ const ENTITY_CLASSES: RecipientEntityClass[] = [
   'foreign_org',
   'foreign_individual',
 ]
-const RELATIONSHIPS: RecipientRelationship[] = ['self', 'employer', 'fiscal_sponsor']
 
 // Server-side mirror of validateRecipient in recipient-form.tsx. The client
 // version exists for immediate feedback; this one is the enforcement, since the
@@ -30,13 +28,12 @@ export function parseOrgValues(input: unknown): OrgAgreementValues | { error: st
   const recipientAddress = str('recipientAddress')
   const recipientCountry = str('recipientCountry')
   const signatoryName = str('signatoryName')
-  const signatoryTitle = str('signatoryTitle')
   const projectLeadName = str('projectLeadName')
   const projectLeadOrg = str('projectLeadOrg')
   const recipientTaxId = str('recipientTaxId') || null
   const foreignNoTin = v.foreignNoTin === true
+  const isFiscalSponsor = v.isFiscalSponsor === true
   const entityClass = ENTITY_CLASSES.find((c) => c === v.recipientEntityClass) ?? null
-  const relationship = RELATIONSHIPS.find((r) => r === v.recipientRelationship) ?? null
 
   if (!recipientName) {
     return { error: 'Organization legal name is required.' }
@@ -56,17 +53,11 @@ export function parseOrgValues(input: unknown): OrgAgreementValues | { error: st
   if (!requiresEin(entityClass) && !recipientTaxId && !foreignNoTin) {
     return { error: 'Provide an EIN, or confirm the entity has no US taxpayer ID.' }
   }
-  if (!relationship) {
-    return { error: 'Select how the organization relates to the project.' }
-  }
-  if (relationship !== 'self' && !projectLeadName) {
+  if (isFiscalSponsor && !projectLeadName) {
     return { error: 'Project lead name is required.' }
   }
   if (!signatoryName) {
     return { error: 'Signatory name is required.' }
-  }
-  if (!signatoryTitle) {
-    return { error: 'Signatory title is required.' }
   }
 
   return {
@@ -76,16 +67,16 @@ export function parseOrgValues(input: unknown): OrgAgreementValues | { error: st
     recipientEntityClass: entityClass,
     recipientTaxId,
     foreignNoTin,
-    recipientRelationship: relationship,
+    isFiscalSponsor,
     projectLeadName,
     projectLeadOrg,
     signatoryName,
-    signatoryTitle,
   }
 }
 
-// The public half of an org agreement: everything that appears in the rendered
-// document and is therefore safe on the world-readable grant_agreements table.
+// Everything that appears in the rendered document. All of it lives on the
+// world-readable grant_agreements table, the EIN included: it identifies the
+// contracting party in the published agreement.
 export function orgAgreementColumns(values: OrgAgreementValues) {
   return {
     recipient_type: 'organization' as const,
@@ -93,11 +84,12 @@ export function orgAgreementColumns(values: OrgAgreementValues) {
     recipient_address: values.recipientAddress,
     recipient_country: values.recipientCountry,
     recipient_entity_class: values.recipientEntityClass,
-    recipient_relationship: values.recipientRelationship,
+    recipient_tax_id: values.recipientTaxId,
+    foreign_no_tin: values.foreignNoTin,
+    is_fiscal_sponsor: values.isFiscalSponsor,
     project_lead_name: values.projectLeadName || null,
     project_lead_org: values.projectLeadOrg || null,
     signatory_name: values.signatoryName,
-    signatory_title: values.signatoryTitle,
   }
 }
 

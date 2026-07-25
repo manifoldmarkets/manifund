@@ -25,11 +25,10 @@ const EMPTY_VALUES: OrgAgreementValues = {
   recipientEntityClass: null,
   recipientTaxId: null,
   foreignNoTin: false,
-  recipientRelationship: null,
+  isFiscalSponsor: false,
   projectLeadName: '',
   projectLeadOrg: '',
   signatoryName: '',
-  signatoryTitle: '',
 }
 
 // Owns the state for the whole /agreement page: which kind of recipient this
@@ -41,26 +40,17 @@ export function AgreementFlow(props: {
   agreement?: GrantAgreement
   userIsOwner: boolean
   // Private fields, only passed for the creator and admins.
-  taxId: string | null
   signatoryEmail: string | null
   tokenSentTo: string | null
   tokenSentAt: string | null
-  einOnFile: boolean
-  // Safe to pass to every viewer: a boolean, not the EIN itself. Passed rather
-  // than inferred from a null taxId, which for public viewers only means "not
-  // entitled to see it".
-  foreignNoTin: boolean
 }) {
   const {
     project,
     agreement,
     userIsOwner,
-    taxId,
     signatoryEmail: initialSignatoryEmail,
     tokenSentTo,
     tokenSentAt,
-    einOnFile,
-    foreignNoTin,
   } = props
   const signed = !!agreement?.signed_at
   const router = useRouter()
@@ -70,7 +60,7 @@ export function AgreementFlow(props: {
   )
   const [values, setValues] = useState<OrgAgreementValues>(
     agreement?.recipient_type === 'organization'
-      ? orgValuesFromAgreement(agreement, taxId, foreignNoTin)
+      ? orgValuesFromAgreement(agreement)
       : { ...EMPTY_VALUES, projectLeadName: project.profiles.full_name }
   )
   // A saved signatory email means the creator had chosen "someone else signs",
@@ -220,7 +210,6 @@ export function AgreementFlow(props: {
           project={project}
           values={values}
           excludeLobbyingClause={excludeLobbyingClause}
-          einOnFile={einOnFile}
         />
       ) : (
         <IndividualGrantAgreement project={project} agreement={agreement} />
@@ -269,11 +258,10 @@ export function AgreementFlow(props: {
                 <label htmlFor="terms" className="font-medium text-gray-900">
                   {isOrg ? (
                     <>
-                      I, <strong>{values.signatoryName || '[your name]'}</strong>,{' '}
-                      {values.signatoryTitle || '[your title]'} of{' '}
-                      <strong>{values.recipientName || '[organization]'}</strong>, am authorized to
-                      enter into this agreement on its behalf, and agree to the terms of this grant
-                      as laid out in the above document.
+                      I, <strong>{values.signatoryName || '[your name]'}</strong>, am authorized to
+                      enter into this agreement on behalf of{' '}
+                      <strong>{values.recipientName || '[organization]'}</strong>, and agree to the
+                      terms of this grant as laid out in the above document.
                     </>
                   ) : (
                     <>
@@ -339,7 +327,7 @@ function OrgSignatureBlock(props: { agreement?: GrantAgreement; values: OrgAgree
         <Col className="gap-2">
           <span className="font-medium">Title</span>
           <span className="h-6 w-52 border-b border-black">
-            {signedAt ? values.signatoryTitle : ''}
+            {signedAt ? 'Authorized signatory' : ''}
           </span>
         </Col>
         <Col className="justify-between gap-2">

@@ -17,11 +17,10 @@ type TaxFlags = {
 // looking at the agreement to countersign it.
 export function AdminTaxPanel(props: {
   projectId: string
-  taxId: string | null
   signatoryEmail: string | null
   initial: TaxFlags
 }) {
-  const { projectId, taxId, signatoryEmail, initial } = props
+  const { projectId, signatoryEmail, initial } = props
   const [flags, setFlags] = useState(initial)
   const [isSaving, setIsSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -60,14 +59,10 @@ export function AdminTaxPanel(props: {
       <span className="text-sm font-semibold uppercase tracking-wide text-gray-500">
         Admin only
       </span>
-      <Col className="gap-1 text-sm text-gray-700">
-        <span>
-          <strong>EIN:</strong> {taxId || 'none on file'}
-        </span>
-        <span>
-          <strong>Signatory email:</strong> {signatoryEmail || 'none on file'}
-        </span>
-      </Col>
+      {/* The EIN isn't repeated here: it's in section 1.2 of the document above. */}
+      <span className="text-sm text-gray-700">
+        <strong>Signatory email:</strong> {signatoryEmail || 'none on file'}
+      </span>
       <Col className="gap-2">
         {rows.map((row) => (
           <Row key={row.key} className="items-center gap-3">

@@ -93,8 +93,6 @@ export default async function handler(req: NextRequest) {
   })
 
   await upsertAgreementPrivate(supabaseAdmin, priv.project_id, {
-    recipient_tax_id: parsed.recipientTaxId,
-    foreign_no_tin: parsed.foreignNoTin,
     rendered_document: documentHtml,
     signed_ip: clientIp(req),
     signed_user_agent: req.headers.get('user-agent'),
@@ -105,7 +103,7 @@ export default async function handler(req: NextRequest) {
 
   await maybeActivateProject(supabaseAdmin, priv.project_id)
 
-  const attestation = `I, ${parsed.signatoryName}, ${parsed.signatoryTitle} of ${parsed.recipientName}, am authorized to enter into this agreement on its behalf, and agree to the terms of this grant as laid out in the above document.`
+  const attestation = `I, ${parsed.signatoryName}, am authorized to enter into this agreement on behalf of ${parsed.recipientName}, and agree to the terms of this grant as laid out in the above document.`
   const emailHtml = agreementEmailHtml({
     greetingName: parsed.signatoryName,
     documentHtml,
@@ -132,8 +130,7 @@ export default async function handler(req: NextRequest) {
     {
       subject: `Your grant agreement for "${project.title}" has been signed`,
       htmlContent: `<p>Dear ${escapeHtml(project.profiles.full_name)},</p>
-      <p><strong>${escapeHtml(parsed.signatoryName)}</strong>
-      (${escapeHtml(parsed.signatoryTitle)}) has signed the grant agreement for
+      <p><strong>${escapeHtml(parsed.signatoryName)}</strong> has signed the grant agreement for
       &quot;${escapeHtml(project.title)}&quot; on behalf of
       <strong>${escapeHtml(parsed.recipientName)}</strong>. A copy is below for your records.</p>
       <hr style="border-top: 3px solid #bbb" />
