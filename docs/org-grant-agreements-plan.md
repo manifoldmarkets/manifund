@@ -74,13 +74,13 @@ live. But these are the pieces, and why each is load-bearing.
 
 ### The contracting party
 
-| Field                    | Why                                                                                                                                                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `recipient_legal_name`   | Exact registered name, not the brand/DBA. "Cherry" isn't enforceable; "Cherry Foundation, Inc." is. Most common defect in org agreements.                                                        |
-| `recipient_entity_class` | US 501(c)(3) / other US nonprofit / US for-profit / US individual / foreign org / foreign individual. Drives which clauses apply, whether a 1099 is owed, and whether extra diligence is needed. |
-| `recipient_address`      | Contract identification and notice. §1.1 already gives the Charity's full address; the Recipient side currently gives only a name.                                                               |
-| `recipient_country`      | §5.1(b) already refers to "the country where the Recipient is established" — currently unverifiable. Also the input to the OFAC screening that §12's terrorism warranty implies.                 |
-| `recipient_tax_id`       | EIN. For a 501(c)(3), what confirms public-charity status; for a for-profit, what a 1099 is filed against. Null for foreign entities, which need a W-8 instead.                                  |
+| Field                    | Why                                                                                                                                                                                                                                                      |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `recipient_legal_name`   | Exact registered name, not the brand/DBA. "Cherry" isn't enforceable; "Cherry Foundation, Inc." is. Most common defect in org agreements.                                                                                                                |
+| `recipient_entity_class` | US 501(c)(3) / other US nonprofit / US for-profit / non-US organization. Drives whether an EIN is required, whether a 1099 is owed, and whether a determination letter is relevant. Organizations only — it's only ever asked when the recipient is one. |
+| `recipient_address`      | Contract identification and notice. §1.1 already gives the Charity's full address; the Recipient side currently gives only a name.                                                                                                                       |
+| `recipient_country`      | §5.1(b) already refers to "the country where the Recipient is established" — currently unverifiable. Also the input to the OFAC screening that §12's terrorism warranty implies.                                                                         |
+| `recipient_tax_id`       | EIN. For a 501(c)(3), what confirms public-charity status; for a for-profit, what a 1099 is filed against. Null for foreign entities, which need a W-8 instead.                                                                                          |
 
 ### The human who binds it — currently missing entirely
 
@@ -115,10 +115,15 @@ _performs_ the work, or several clauses become false on their face:
 - §2.2 "Recipient shall not make any substantive change to the Project" — binds
   the wrong party.
 
-So: `project_lead_name` (Alice), `project_lead_org` (Acme), and
-`is_fiscal_sponsor` (a single boolean — `employer` turned out to be noise, since
-an org that employs the project lead and is itself bound is just the plain
-case). Plus a clause
+**Resolved by rewriting the clauses instead of recording the relationship.**
+Manifund contracts with the Recipient either way and doesn't act on the
+distinction, so asking about it made the user resolve something we don't use.
+§5.1(e) now turns on "work on the Project ceases" rather than "the Recipient
+ceases to work on the Project", and the discretion-and-control warranty is
+unconditional — it holds whether the Recipient does the work itself or applies
+the Grant through someone else, and it's the provision that protects the
+Charity's 501(c)(3) position wherever the funds go next. No
+`is_fiscal_sponsor`, no `project_lead_name`. Superseded clause
 where Cherry warrants it will apply the funds to the Project and retains
 discretion and control consistent with its sponsorship arrangement.
 
@@ -136,6 +141,40 @@ Collected out-of-band by email as today; the DB only records that we have them.
 
 ---
 
+## The flow
+
+```mermaid
+flowchart TD
+    A[Creator opens /agreement] --> B{Who is receiving<br/>this grant?}
+
+    B -->|Me| C[Individual agreement]
+    C --> D[Tick the terms box<br/>Submit signature]
+
+    B -->|An organization| E[Fill in legal name, address,<br/>country, entity type, US EIN]
+    E --> F{Who signs for<br/>the organization?}
+
+    F -->|I'm authorized| G[Tick the authority box<br/>Submit signature]
+    F -->|Someone else| H[Enter their name + email<br/>Send for signature]
+
+    H --> I[Draft saved, token emailed<br/>Tag: AWAITING SIGNATORY<br/>Project does NOT advance]
+    I --> J[Signatory opens the link<br/>no account needed]
+    J --> K[Reviews, corrects details,<br/>ticks authority box, signs]
+    K --> L
+    D --> L
+    G --> L
+
+    L[signed_agreement = true<br/>document archived<br/>token burned<br/>copies emailed] --> M{Funded + approved<br/>already?}
+    M -->|Yes| N[Project activates<br/>funds move]
+    M -->|Not yet| O[Waits for admin countersign<br/>Tag: AWAITING COUNTER SIGNATURE]
+```
+
+Notes on the emailed path: resending mints a new token and invalidates the old
+link, and the creator can switch back to signing themselves at any point, which
+also invalidates the outstanding link. There is no draft-save step — details are
+persisted when the agreement is signed or sent, and not before.
+
+---
+
 ## Implementation
 
 ### 1. Migration
@@ -148,7 +187,6 @@ is already rendered on a public page:
 `recipient_type` ('individual' | 'organization', default `'individual'`),
 `recipient_legal_name`, `recipient_address`, `recipient_country`,
 `recipient_entity_class`, `recipient_tax_id`, `foreign_no_tin`,
-`is_fiscal_sponsor`, `project_lead_name`, `project_lead_org`,
 `signatory_authority_attested`, `org_agreement_version`, `rendered_document`.
 
 Reuse the existing `recipient_name` and `signatory_name` rather than duplicating
@@ -261,7 +299,6 @@ unsigned and signed, since activation now waits on Carol.
 | `app/projects/[slug]/agreement/agreement-flow.tsx`      | new — state, attestation, self-sign vs. send           |
 | `app/projects/[slug]/agreement/signature-display.tsx`   | By / Name / Title block                                |
 | `app/agreement/sign/[token]/page.tsx`                   | new — public external signing route                    |
-| `pages/api/save-agreement-recipient.ts`                 | new — draft save                                       |
 | `pages/api/send-agreement-for-signature.ts`             | new — mint token, email signatory                      |
 | `pages/api/sign-grant-agreement.ts`                     | extend for org self-sign; drop `genGrantAgreementHtml` |
 | `pages/api/sign-grant-agreement-external.ts`            | new — token-authed signing                             |
@@ -320,11 +357,17 @@ Deviations from the plan above, and why:
   organization; title is corroborating evidence, not a requirement. The
   signature block renders "Authorized signatory". This is the first thing to
   reinstate if legal review wants stronger evidence of authority.
-- **One boolean, not a three-way relationship.** `employer` was noise: an org
-  that employs the project lead and is itself the bound party is just the plain
-  case. What actually needs modelling is whether the Recipient performs the
-  Project at all, so it's `is_fiscal_sponsor`, surfaced as a single checkbox
-  that reveals the Project Lead field.
+- **The fiscal-sponsor distinction isn't recorded at all.** It started as three
+  radios, became one checkbox, then went away entirely: Manifund contracts with
+  the Recipient whether or not it regrants onward, so the question asked the
+  user to resolve something we never act on. Instead the clauses that assumed
+  the Recipient does the work were rewritten to hold in both cases. See "The
+  Acme-vs-Cherry relationship" above.
+- **No draft-save.** A "Save details" button existed briefly, then was cut:
+  signing and sending both persist the details anyway, so it only served
+  someone who filled the form and left without doing either — and as written it
+  refused to save an incomplete form, which is exactly when saving would have
+  helped.
 - **`recipient_legal_name` was never added** — the existing `recipient_name`
   column already is the Recipient party name, so a second field for the same
   thing would just be a divergence risk. The plan contradicted itself on this.

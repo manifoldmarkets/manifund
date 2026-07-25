@@ -32,11 +32,6 @@ ALTER TABLE public.grant_agreements
   -- as confidential (nonprofit EINs are on public Form 990 filings).
   ADD COLUMN IF NOT EXISTS recipient_tax_id text,
   ADD COLUMN IF NOT EXISTS foreign_no_tin boolean NOT NULL DEFAULT false,
-  -- True when the Recipient receives the funds on behalf of someone else who
-  -- runs the Project, rather than running it itself.
-  ADD COLUMN IF NOT EXISTS is_fiscal_sponsor boolean NOT NULL DEFAULT false,
-  ADD COLUMN IF NOT EXISTS project_lead_name text,
-  ADD COLUMN IF NOT EXISTS project_lead_org text,
   ADD COLUMN IF NOT EXISTS signatory_authority_attested boolean NOT NULL DEFAULT false,
   ADD COLUMN IF NOT EXISTS org_agreement_version int2,
   -- The agreement HTML as rendered at signing time: the signed artifact of
@@ -63,20 +58,20 @@ ALTER TABLE public.grant_agreements
   DROP CONSTRAINT IF EXISTS grant_agreements_recipient_entity_class_check;
 ALTER TABLE public.grant_agreements
   ADD CONSTRAINT grant_agreements_recipient_entity_class_check
+  -- Organizations only: this is only ever set when recipient_type is
+  -- 'organization', so there are no individual classifications.
   CHECK (recipient_entity_class IS NULL OR recipient_entity_class IN (
     'us_501c3',
     'us_nonprofit_other',
     'us_for_profit',
-    'us_individual',
-    'foreign_org',
-    'foreign_individual'
+    'foreign_org'
   ));
 
-COMMENT ON COLUMN public.grant_agreements.is_fiscal_sponsor IS
-  'The Recipient is bound by the agreement but does not perform the Project. '
-  'Gates the Project Lead recital and the discretion-and-control clauses, without '
-  'which section 5.1(e) ("the Recipient ceases to work on the Project") and section 2.2 '
-  'would bind a party that never does the work.';
+-- Deliberately NOT recorded: whether the Recipient runs the Project itself or
+-- fiscally sponsors someone who does. Manifund contracts with the Recipient
+-- either way, so the org document is written to be true in both cases -- the
+-- discretion-and-control warranty is unconditional and section 5.1(e) turns on
+-- work ceasing rather than on the Recipient ceasing to work.
 
 COMMENT ON COLUMN public.grant_agreements.recipient_name IS
   'Legal name of the contracting party. For orgs, the exact registered name (not a DBA).';

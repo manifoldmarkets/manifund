@@ -6,30 +6,25 @@ import { Database } from './database.types'
 // here so the UI is typed.
 export type RecipientType = 'individual' | 'organization'
 
+// Organizations only — this vocabulary is only ever asked for when the
+// recipient is an organization, so there are no individual classifications.
 export type RecipientEntityClass =
   | 'us_501c3'
   | 'us_nonprofit_other'
   | 'us_for_profit'
-  | 'us_individual'
   | 'foreign_org'
-  | 'foreign_individual'
 
 export const ENTITY_CLASS_LABELS: Record<RecipientEntityClass, string> = {
   us_501c3: 'US 501(c)(3)',
   us_nonprofit_other: 'US nonprofit (not 501(c)(3))',
   us_for_profit: 'US for-profit',
-  us_individual: 'US individual',
   foreign_org: 'Non-US organization',
-  foreign_individual: 'Non-US individual',
 }
 
-// A US EIN is required unless the entity is foreign (which needs a W-8 instead).
+// Every US entity has an EIN. Non-US organizations generally don't, and provide
+// a Form W-8 instead.
 export function requiresEin(entityClass: RecipientEntityClass | null) {
-  return (
-    entityClass === 'us_501c3' ||
-    entityClass === 'us_nonprofit_other' ||
-    entityClass === 'us_for_profit'
-  )
+  return entityClass !== null && entityClass !== 'foreign_org'
 }
 
 // TODO: delete this block once `bun run gen-types` has been re-run against a
@@ -43,9 +38,6 @@ type OrgAgreementColumns = {
   recipient_entity_class: RecipientEntityClass | null
   recipient_tax_id: string | null
   foreign_no_tin: boolean
-  is_fiscal_sponsor: boolean
-  project_lead_name: string | null
-  project_lead_org: string | null
   signatory_authority_attested: boolean
   org_agreement_version: number | null
   rendered_document: string | null
@@ -136,12 +128,6 @@ export type OrgAgreementValues = {
   recipientEntityClass: RecipientEntityClass | null
   recipientTaxId: string | null
   foreignNoTin: boolean
-  // The Recipient receives the funds on behalf of someone else who runs the
-  // Project. Gates the Project Lead recital and the discretion-and-control
-  // clauses in the document.
-  isFiscalSponsor: boolean
-  projectLeadName: string
-  projectLeadOrg: string
   signatoryName: string
 }
 
@@ -153,9 +139,6 @@ export function orgValuesFromAgreement(agreement: GrantAgreement): OrgAgreementV
     recipientEntityClass: agreement.recipient_entity_class,
     recipientTaxId: agreement.recipient_tax_id,
     foreignNoTin: agreement.foreign_no_tin,
-    isFiscalSponsor: agreement.is_fiscal_sponsor,
-    projectLeadName: agreement.project_lead_name ?? '',
-    projectLeadOrg: agreement.project_lead_org ?? '',
     signatoryName: agreement.signatory_name ?? '',
   }
 }

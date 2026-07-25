@@ -9,10 +9,23 @@ const ENTITY_CLASSES: RecipientEntityClass[] = [
   'us_501c3',
   'us_nonprofit_other',
   'us_for_profit',
-  'us_individual',
   'foreign_org',
-  'foreign_individual',
 ]
+
+// Sanitizes whatever the client sent, without judging completeness.
+function extractOrgValues(input: unknown): OrgAgreementValues {
+  const v = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>
+  const str = (key: string) => (typeof v[key] === 'string' ? (v[key] as string).trim() : '')
+  return {
+    recipientName: str('recipientName'),
+    recipientAddress: str('recipientAddress'),
+    recipientCountry: str('recipientCountry'),
+    recipientEntityClass: ENTITY_CLASSES.find((c) => c === v.recipientEntityClass) ?? null,
+    recipientTaxId: str('recipientTaxId') || null,
+    foreignNoTin: v.foreignNoTin === true,
+    signatoryName: str('signatoryName'),
+  }
+}
 
 // Server-side mirror of validateRecipient in recipient-form.tsx. The client
 // version exists for immediate feedback; this one is the enforcement, since the
@@ -21,19 +34,15 @@ export function parseOrgValues(input: unknown): OrgAgreementValues | { error: st
   if (!input || typeof input !== 'object') {
     return { error: 'Missing recipient details.' }
   }
-  const v = input as Record<string, unknown>
-  const str = (key: string) => (typeof v[key] === 'string' ? (v[key] as string).trim() : '')
-
-  const recipientName = str('recipientName')
-  const recipientAddress = str('recipientAddress')
-  const recipientCountry = str('recipientCountry')
-  const signatoryName = str('signatoryName')
-  const projectLeadName = str('projectLeadName')
-  const projectLeadOrg = str('projectLeadOrg')
-  const recipientTaxId = str('recipientTaxId') || null
-  const foreignNoTin = v.foreignNoTin === true
-  const isFiscalSponsor = v.isFiscalSponsor === true
-  const entityClass = ENTITY_CLASSES.find((c) => c === v.recipientEntityClass) ?? null
+  const {
+    recipientName,
+    recipientAddress,
+    recipientCountry,
+    recipientEntityClass: entityClass,
+    recipientTaxId,
+    foreignNoTin,
+    signatoryName,
+  } = extractOrgValues(input)
 
   if (!recipientName) {
     return { error: 'Organization legal name is required.' }
@@ -53,9 +62,6 @@ export function parseOrgValues(input: unknown): OrgAgreementValues | { error: st
   if (!requiresEin(entityClass) && !recipientTaxId && !foreignNoTin) {
     return { error: 'Provide an EIN, or confirm the entity has no US taxpayer ID.' }
   }
-  if (isFiscalSponsor && !projectLeadName) {
-    return { error: 'Project lead name is required.' }
-  }
   if (!signatoryName) {
     return { error: 'Signatory name is required.' }
   }
@@ -67,9 +73,6 @@ export function parseOrgValues(input: unknown): OrgAgreementValues | { error: st
     recipientEntityClass: entityClass,
     recipientTaxId,
     foreignNoTin,
-    isFiscalSponsor,
-    projectLeadName,
-    projectLeadOrg,
     signatoryName,
   }
 }
@@ -86,9 +89,6 @@ export function orgAgreementColumns(values: OrgAgreementValues) {
     recipient_entity_class: values.recipientEntityClass,
     recipient_tax_id: values.recipientTaxId,
     foreign_no_tin: values.foreignNoTin,
-    is_fiscal_sponsor: values.isFiscalSponsor,
-    project_lead_name: values.projectLeadName || null,
-    project_lead_org: values.projectLeadOrg || null,
     signatory_name: values.signatoryName,
   }
 }

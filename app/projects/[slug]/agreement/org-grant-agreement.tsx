@@ -1,10 +1,6 @@
 'use client'
 import { type Project } from '@/db/project'
-import {
-  ENTITY_CLASS_LABELS,
-  type OrgAgreementValues,
-  type RecipientEntityClass,
-} from '@/db/grant_agreement'
+import { type OrgAgreementValues, type RecipientEntityClass } from '@/db/grant_agreement'
 import { Col } from '@/components/layout/col'
 import { format } from 'date-fns'
 import React from 'react'
@@ -36,22 +32,15 @@ function Section(props: { number: number | string; title: string; children: Reac
   )
 }
 
+const ENTITY_DESCRIPTIONS: Record<RecipientEntityClass, string> = {
+  us_501c3: 'a registered 501(c)(3) nonprofit',
+  us_nonprofit_other: 'a US nonprofit organization',
+  us_for_profit: 'a US for-profit entity',
+  foreign_org: 'a non-US organization',
+}
+
 function entityDescription(entityClass: RecipientEntityClass | null) {
-  if (!entityClass) {
-    return 'an organization'
-  }
-  switch (entityClass) {
-    case 'us_501c3':
-      return 'a registered 501(c)(3) nonprofit'
-    case 'us_nonprofit_other':
-      return 'a US nonprofit organization'
-    case 'us_for_profit':
-      return 'a US for-profit entity'
-    case 'foreign_org':
-      return 'a non-US organization'
-    default:
-      return ENTITY_CLASS_LABELS[entityClass]
-  }
+  return entityClass ? ENTITY_DESCRIPTIONS[entityClass] : 'an organization'
 }
 
 export function OrgGrantAgreement(props: {
@@ -60,12 +49,10 @@ export function OrgGrantAgreement(props: {
   excludeLobbyingClause: boolean
 }) {
   const { project, values, excludeLobbyingClause } = props
-  const isSponsor = values.isFiscalSponsor
-  const hasProjectLead = isSponsor && !!values.projectLeadName
   const ein = values.recipientTaxId
 
-  // Numbered dynamically because the Project Lead recital only exists when the
-  // Recipient isn't the one doing the work.
+  // Numbered dynamically because the last recital only appears while the grant
+  // is still undecided.
   const background: React.ReactNode[] = [
     <p key="charity">
       Manifold for Charity, 1621 E 6th Street Unit 1440, Austin, TX 78702, United States, a
@@ -86,16 +73,6 @@ export function OrgGrantAgreement(props: {
       )}
     </p>,
   ]
-  if (hasProjectLead) {
-    background.push(
-      <p key="lead">
-        The Project is led by {values.projectLeadName}
-        {values.projectLeadOrg ? ` of ${values.projectLeadOrg}` : ''} (the “Project Lead”). The
-        Recipient acts as fiscal sponsor to the Project Lead and will apply the Grant to the Project
-        in accordance with Section 6.
-      </p>
-    )
-  }
   background.push(
     <p key="purpose">
       Based on the information provided to Manifold for Charity, this grant is to be used
@@ -221,10 +198,11 @@ export function OrgGrantAgreement(props: {
               (d) the Recipient provides the Charity with any materially misleading or inaccurate
               information.
             </p>
-            <p>
-              (e) the Recipient or, where applicable, the Project Lead ceases to work on the Project
-              for any reason.
-            </p>
+            {/* Deliberately "work on the Project ceases" rather than "the
+                Recipient ceases to work on the Project": the Recipient may be
+                fiscally sponsoring whoever does the work, and this clause has
+                to hold either way. */}
+            <p>(e) work on the Project ceases for any reason.</p>
             <p>
               (f) the Recipient fails to comply with any of the terms and conditions of this
               Agreement.
@@ -268,21 +246,21 @@ export function OrgGrantAgreement(props: {
             6.2 The Recipient shall promptly notify the Charity of any change to the individuals
             authorized to act on its behalf in respect of the Grant.
           </p>
-          {isSponsor && (
-            <>
-              <p>
-                6.3 The Recipient warrants that it will apply the Grant exclusively to the Project,
-                and that it retains full discretion and control over the use of the Grant consistent
-                with its fiscal sponsorship arrangement with the Project Lead and with its own
-                obligations under Section 501(c)(3) of the IRC.
-              </p>
-              <p>
-                6.4 The Recipient shall promptly notify the Charity if its fiscal sponsorship of the
-                Project Lead terminates or materially changes during the Grant Period. Any portion
-                of the Grant unspent at that time shall be dealt with as the Charity directs.
-              </p>
-            </>
-          )}
+          {/* Unconditional, rather than a fiscal-sponsor-only clause: it is the
+              provision that protects the Charity's 501(c)(3) position wherever
+              the funds go next, and it holds whether the Recipient does the
+              work itself or applies the Grant through someone else. */}
+          <p>
+            6.3 The Recipient warrants that it will apply the Grant exclusively to the Project, and
+            that it retains full discretion and control over the use of the Grant, consistent with
+            the Charity’s obligations under Section 501(c)(3) of the IRC.
+          </p>
+          <p>
+            6.4 Where the Recipient applies the Grant to the Project through another person or
+            organization, the Recipient remains responsible to the Charity for the obligations in
+            this Agreement, and shall promptly notify the Charity if that arrangement terminates or
+            materially changes during the Grant Period.
+          </p>
         </Section>
 
         <Section number={7} title="Limitation of Liability">
@@ -323,8 +301,8 @@ export function OrgGrantAgreement(props: {
         <Section number={10} title="No employment">
           <p>
             The making of this Grant does not represent or imply any kind of employment relationship
-            between the Recipient, the Project Lead, or any of the Recipient’s personnel and the
-            Charity.
+            between the Recipient, any of the Recipient’s personnel, or anyone working on the
+            Project, and the Charity.
           </p>
         </Section>
 
@@ -385,8 +363,8 @@ export function OrgGrantAgreement(props: {
   )
 }
 
-// Section 1's clauses are numbered at render time, since the Project Lead
-// recital is only present when the Recipient isn't the one doing the work.
+// Section 1's clauses are numbered at render time, since the "not yet decided"
+// recital drops out once the grant is approved.
 function NumberedClause(props: { number: string; children: React.ReactNode }) {
   return (
     <div className="flex gap-2">

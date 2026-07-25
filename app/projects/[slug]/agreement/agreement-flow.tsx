@@ -25,9 +25,6 @@ const EMPTY_VALUES: OrgAgreementValues = {
   recipientEntityClass: null,
   recipientTaxId: null,
   foreignNoTin: false,
-  isFiscalSponsor: false,
-  projectLeadName: '',
-  projectLeadOrg: '',
   signatoryName: '',
 }
 
@@ -59,9 +56,7 @@ export function AgreementFlow(props: {
     agreement?.recipient_type ?? 'individual'
   )
   const [values, setValues] = useState<OrgAgreementValues>(
-    agreement?.recipient_type === 'organization'
-      ? orgValuesFromAgreement(agreement)
-      : { ...EMPTY_VALUES, projectLeadName: project.profiles.full_name }
+    agreement?.recipient_type === 'organization' ? orgValuesFromAgreement(agreement) : EMPTY_VALUES
   )
   // A saved signatory email means the creator had chosen "someone else signs",
   // whether or not the link has gone out yet.
@@ -71,7 +66,6 @@ export function AgreementFlow(props: {
   const [signatoryEmail, setSignatoryEmail] = useState(initialSignatoryEmail ?? '')
   const [attested, setAttested] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [savedDraft, setSavedDraft] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const isOrg = recipientType === 'organization'
@@ -119,25 +113,6 @@ export function AgreementFlow(props: {
     }
   }
 
-  // Lets a half-filled form survive leaving the page; the sign and send paths
-  // persist the same details themselves.
-  async function saveDraft() {
-    const problem = validateRecipient(values, signerChoice, signatoryEmail)
-    if (problem) {
-      setError(problem)
-      return
-    }
-    if (
-      await post('/api/save-agreement-recipient', {
-        projectId: project.id,
-        values,
-        signatoryEmail: signerChoice === 'someone_else' ? signatoryEmail : null,
-      })
-    ) {
-      setSavedDraft(true)
-    }
-  }
-
   async function sendForSignature() {
     const problem = validateRecipient(values, signerChoice, signatoryEmail)
     if (problem) {
@@ -162,7 +137,7 @@ export function AgreementFlow(props: {
               onChange={() => setRecipientType('individual')}
             />
             <label htmlFor="recipient-individual" className="text-sm text-gray-900">
-              Me, {project.profiles.full_name}
+              Me ({project.profiles.full_name}), as an individual
             </label>
           </Row>
           <Row className="items-center gap-3">
@@ -181,28 +156,14 @@ export function AgreementFlow(props: {
       )}
 
       {isOrg && editable && (
-        <Col className="gap-3">
-          <RecipientForm
-            values={values}
-            onChange={(next) => {
-              setValues(next)
-              setSavedDraft(false)
-            }}
-            signerChoice={signerChoice}
-            onSignerChoiceChange={(choice) => {
-              setSignerChoice(choice)
-              setSavedDraft(false)
-            }}
-            signatoryEmail={signatoryEmail}
-            onSignatoryEmailChange={setSignatoryEmail}
-          />
-          <Row className="items-center justify-end gap-3">
-            {savedDraft && <span className="text-sm text-gray-500">Details saved.</span>}
-            <Button color="gray" onClick={saveDraft} loading={isSubmitting}>
-              Save details
-            </Button>
-          </Row>
-        </Col>
+        <RecipientForm
+          values={values}
+          onChange={setValues}
+          signerChoice={signerChoice}
+          onSignerChoiceChange={setSignerChoice}
+          signatoryEmail={signatoryEmail}
+          onSignatoryEmailChange={setSignatoryEmail}
+        />
       )}
 
       {isOrg ? (
