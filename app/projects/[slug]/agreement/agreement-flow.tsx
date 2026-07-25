@@ -137,7 +137,7 @@ export function AgreementFlow(props: {
               onChange={() => setRecipientType('individual')}
             />
             <label htmlFor="recipient-individual" className="text-sm text-gray-900">
-              Me ({project.profiles.full_name}), as an individual
+              An individual — {project.profiles.full_name}
             </label>
           </Row>
           <Row className="items-center gap-3">
