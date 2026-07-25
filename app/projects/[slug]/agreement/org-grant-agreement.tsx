@@ -64,13 +64,6 @@ export function OrgGrantAgreement(props: {
       {values.recipientCountry ? `, ${values.recipientCountry}` : ''},{' '}
       {entityDescription(values.recipientEntityClass)}
       {ein ? ` with EIN ${ein}` : ''} (the “Recipient”).
-      {values.foreignNoTin && (
-        <>
-          {' '}
-          The Recipient has no US taxpayer identification number and has provided the Charity with
-          the applicable IRS Form W-8.
-        </>
-      )}
     </p>,
   ]
   background.push(
