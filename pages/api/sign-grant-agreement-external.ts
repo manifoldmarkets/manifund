@@ -2,7 +2,7 @@ import { getProjectAndProfileById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/db/edge'
 import { maybeActivateProject } from '@/utils/activate-project'
-import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
+import { escapeHtml, sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { getURL, CURRENT_ORG_AGREEMENT_VERSION } from '@/utils/constants'
 import {
   clientIp,
@@ -131,10 +131,11 @@ export default async function handler(req: NextRequest) {
     TEMPLATE_IDS.GENERIC_NOTIF_HTML,
     {
       subject: `Your grant agreement for "${project.title}" has been signed`,
-      htmlContent: `<p>Dear ${project.profiles.full_name},</p>
-      <p><strong>${parsed.signatoryName}</strong> (${parsed.signatoryTitle}) has signed the grant
-      agreement for &quot;${project.title}&quot; on behalf of
-      <strong>${parsed.recipientName}</strong>. A copy is below for your records.</p>
+      htmlContent: `<p>Dear ${escapeHtml(project.profiles.full_name)},</p>
+      <p><strong>${escapeHtml(parsed.signatoryName)}</strong>
+      (${escapeHtml(parsed.signatoryTitle)}) has signed the grant agreement for
+      &quot;${escapeHtml(project.title)}&quot; on behalf of
+      <strong>${escapeHtml(parsed.recipientName)}</strong>. A copy is below for your records.</p>
       <hr style="border-top: 3px solid #bbb" />
       ${documentHtml}`,
       buttonUrl: `${getURL()}/projects/${project.slug}`,

@@ -46,6 +46,10 @@ export function AgreementFlow(props: {
   tokenSentTo: string | null
   tokenSentAt: string | null
   einOnFile: boolean
+  // Safe to pass to every viewer: a boolean, not the EIN itself. Passed rather
+  // than inferred from a null taxId, which for public viewers only means "not
+  // entitled to see it".
+  foreignNoTin: boolean
 }) {
   const {
     project,
@@ -56,6 +60,7 @@ export function AgreementFlow(props: {
     tokenSentTo,
     tokenSentAt,
     einOnFile,
+    foreignNoTin,
   } = props
   const signed = !!agreement?.signed_at
   const router = useRouter()
@@ -65,11 +70,13 @@ export function AgreementFlow(props: {
   )
   const [values, setValues] = useState<OrgAgreementValues>(
     agreement?.recipient_type === 'organization'
-      ? orgValuesFromAgreement(agreement, taxId)
+      ? orgValuesFromAgreement(agreement, taxId, foreignNoTin)
       : { ...EMPTY_VALUES, projectLeadName: project.profiles.full_name }
   )
+  // A saved signatory email means the creator had chosen "someone else signs",
+  // whether or not the link has gone out yet.
   const [signerChoice, setSignerChoice] = useState<SignerChoice>(
-    tokenSentTo ? 'someone_else' : 'self'
+    tokenSentTo || initialSignatoryEmail ? 'someone_else' : 'self'
   )
   const [signatoryEmail, setSignatoryEmail] = useState(initialSignatoryEmail ?? '')
   const [attested, setAttested] = useState(false)
@@ -130,7 +137,13 @@ export function AgreementFlow(props: {
       setError(problem)
       return
     }
-    if (await post('/api/save-agreement-recipient', { projectId: project.id, values })) {
+    if (
+      await post('/api/save-agreement-recipient', {
+        projectId: project.id,
+        values,
+        signatoryEmail: signerChoice === 'someone_else' ? signatoryEmail : null,
+      })
+    ) {
       setSavedDraft(true)
     }
   }

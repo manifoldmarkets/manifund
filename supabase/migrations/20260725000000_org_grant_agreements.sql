@@ -4,9 +4,16 @@
 -- See docs/org-grant-agreements-plan.md.
 --
 -- This migration is purely additive (new nullable/defaulted columns + a new
--- table), so it is safe to apply before the application code ships. The
--- companion migration that tightens grant_agreements write policies is NOT
--- safe to apply early -- see 20260725000001.
+-- table), so it is safe to apply before the application code ships.
+--
+-- !! It is also REQUIRED before that code ships. !!
+-- sign-grant-agreement.ts writes recipient_type and upserts
+-- grant_agreement_private on EVERY signature, including the plain individual
+-- path -- so if the code deploys first, all grant signing fails on an unknown
+-- column/relation, not just the new org flow.
+--
+-- The companion migration that tightens grant_agreements write policies has the
+-- opposite constraint and must land AFTER the deploy -- see 20260725000001.
 
 -- Public, document-visible fields. grant_agreements is world-readable and the
 -- /agreement page is public, so ONLY fields that appear in the rendered

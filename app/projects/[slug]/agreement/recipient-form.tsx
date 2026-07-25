@@ -97,7 +97,15 @@ export function RecipientForm(props: {
           selected={selectedEntityLabel}
           onSelect={(label) => {
             const entry = Object.entries(ENTITY_CLASS_LABELS).find(([, v]) => v === label)
-            set({ recipientEntityClass: (entry?.[0] as RecipientEntityClass) ?? null })
+            const nextClass = (entry?.[0] as RecipientEntityClass) ?? null
+            // The no-TIN checkbox is only shown for entity types that don't
+            // require an EIN, so switching to one that does would otherwise
+            // strand a checked box: the EIN field stays disabled with no way to
+            // re-enable it, and validation then demands an EIN forever.
+            set({
+              recipientEntityClass: nextClass,
+              foreignNoTin: requiresEin(nextClass) ? false : values.foreignNoTin,
+            })
           }}
         />
       </Col>

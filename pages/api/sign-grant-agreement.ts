@@ -53,6 +53,22 @@ export default async function handler(req: NextRequest) {
   // 20260725000001 to close the "any authenticated user can overwrite any
   // agreement" hole.
   const supabaseAdmin = createAdminClient()
+
+  // Refuse to overwrite an executed agreement. The UI hides the button once
+  // signed, but this endpoint is reachable directly, and the row now carries
+  // signature state rather than just a snapshot -- without this, a creator could
+  // replace an agreement already signed by an external signatory and
+  // countersigned by an admin.
+  const { data: existing } = await supabaseAdmin
+    .from('grant_agreements')
+    .select('signed_at')
+    .eq('project_id', projectId)
+    .maybeSingle()
+    .throwOnError()
+  if (existing?.signed_at) {
+    return new Response('This agreement has already been signed.', { status: 409 })
+  }
+
   const signedAt = new Date().toISOString()
 
   await supabaseAdmin
@@ -82,6 +98,19 @@ export default async function handler(req: NextRequest) {
               recipient_name: project.profiles.full_name,
               signatory_name: project.profiles.full_name,
               version: CURRENT_AGREEMENT_VERSION,
+              // Clear any org draft the creator started and then abandoned:
+              // upsert only writes the columns given, so leaving these out
+              // would sign an individual agreement onto a row still asserting
+              // an entity class and an attested org signatory.
+              recipient_address: null,
+              recipient_country: null,
+              recipient_entity_class: null,
+              recipient_relationship: null,
+              project_lead_name: null,
+              project_lead_org: null,
+              signatory_title: null,
+              signatory_authority_attested: false,
+              org_agreement_version: null,
             }),
       },
       { onConflict: 'project_id' }
@@ -107,7 +136,13 @@ export default async function handler(req: NextRequest) {
           foreign_no_tin: parsed.foreignNoTin,
           signatory_email: user.email ?? null,
         }
-      : {}),
+      : // Same cleanup on the private side: an abandoned org draft must not
+        // leave an EIN attached to an individual agreement.
+        {
+          recipient_tax_id: null,
+          foreign_no_tin: false,
+          signatory_email: user.email ?? null,
+        }),
     rendered_document: documentHtml,
     signed_ip: clientIp(req),
     signed_user_agent: req.headers.get('user-agent'),

@@ -66,6 +66,7 @@ export default async function GrantAgreementPage(props: { params: Promise<{ slug
           tokenSentTo={canSeePrivate ? (priv?.token_sent_to ?? null) : null}
           tokenSentAt={canSeePrivate ? (priv?.token_sent_at ?? null) : null}
           einOnFile={!!priv?.recipient_tax_id}
+          foreignNoTin={!!priv?.foreign_no_tin}
         />
       )}
       {userIsAdmin && agreement?.recipient_type === 'organization' && (
