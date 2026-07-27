@@ -220,9 +220,9 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
     node: (
       <>
         Estimate: they&apos;ve{' '}
-        <A href="https://openaifoundation.org/news/resilience-in-the-age-of-ai">announced</A> that
-        they&apos;ve made $130M in grants so far, and that they&apos;re planning to give away $1B
-        across all cause areas in 2026.
+        <A href="https://openaifoundation.org/news/resilience-in-the-age-of-ai">announced</A>
+        &nbsp;that they&apos;ve made $130M in grants so far, and that they&apos;re planning to give
+        away $1B across all cause areas in 2026.
       </>
     ),
   },
@@ -331,8 +331,8 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
     text: "Past payouts have been higher, but they haven't posted a payout report in a long time, and they are in a transitional period.",
     node: (
       <>
-        <A href="https://funds.effectivealtruism.org/funds/far-future">Past payouts</A> have been
-        higher, but they haven&apos;t posted a payout report in a long time, and they are in a
+        <A href="https://funds.effectivealtruism.org/funds/far-future">Past payouts</A>&nbsp;have
+        been higher, but they haven&apos;t posted a payout report in a long time, and they are in a
         transitional period.
       </>
     ),
