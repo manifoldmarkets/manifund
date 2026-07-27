@@ -3,7 +3,7 @@ import Link from 'next/link'
 import React from 'react'
 
 export const metadata = {
-  title: 'AIS Funder Bulletin',
+  title: 'AI Safety Funder Bulletin',
   description: 'A digest of funders in the AI safety space.',
 }
 
@@ -19,12 +19,14 @@ function A({ href, children }: { href: string; children: React.ReactNode }) {
   )
 }
 
+type Cell = { v: string; n?: number }
+
 type Row = {
   name: string
   href?: string
-  donated2025: string
-  grants2025: string
-  expected2026: string
+  donated2025: Cell
+  grants2025: Cell
+  expected2026: Cell
   fte: string
   generalApps: boolean
   openRfps: boolean
@@ -35,9 +37,9 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'Coefficient Giving',
     href: 'https://coefficientgiving.org/',
-    donated2025: '$300M¹',
-    grants2025: '184²',
-    expected2026: '$1B³',
+    donated2025: { v: '$300M', n: 1 },
+    grants2025: { v: '184', n: 2 },
+    expected2026: { v: '$1B', n: 3 },
     fte: '70',
     generalApps: false,
     openRfps: true,
@@ -46,9 +48,9 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'Longview Philanthropy',
     href: 'https://www.longview.org/',
-    donated2025: '$60M⁴',
-    grants2025: '—',
-    expected2026: '$350M⁵',
+    donated2025: { v: '$60M', n: 4 },
+    grants2025: { v: '—' },
+    expected2026: { v: '$350M', n: 5 },
     fte: '13',
     generalApps: false,
     openRfps: false,
@@ -57,9 +59,9 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'OpenAI Foundation',
     href: 'https://openaifoundation.org/',
-    donated2025: '$0',
-    grants2025: '0',
-    expected2026: '$250M⁶',
+    donated2025: { v: '$0' },
+    grants2025: { v: '0' },
+    expected2026: { v: '$250M', n: 6 },
     fte: '2',
     generalApps: false,
     openRfps: false,
@@ -68,9 +70,9 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'Macroscopic',
     href: 'https://macroscopic.org/',
-    donated2025: '$30M⁷',
-    grants2025: '—',
-    expected2026: '$100M⁸',
+    donated2025: { v: '$30M', n: 7 },
+    grants2025: { v: '—' },
+    expected2026: { v: '$100M', n: 8 },
     fte: '8',
     generalApps: false,
     openRfps: false,
@@ -79,9 +81,9 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'SFF',
     href: 'https://survivalandflourishing.fund/',
-    donated2025: '$35M⁹',
-    grants2025: '89¹⁰',
-    expected2026: '$30M¹¹',
+    donated2025: { v: '$35M', n: 9 },
+    grants2025: { v: '89', n: 10 },
+    expected2026: { v: '$30M', n: 11 },
     fte: '8',
     generalApps: true,
     openRfps: false,
@@ -90,9 +92,9 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'Lightcone Commons',
     href: 'https://www.lightconecommons.com/',
-    donated2025: '$0',
-    grants2025: '0',
-    expected2026: '$20M',
+    donated2025: { v: '$0' },
+    grants2025: { v: '0' },
+    expected2026: { v: '$20M' },
     fte: '2',
     generalApps: true,
     openRfps: false,
@@ -101,9 +103,9 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'Schmidt Sciences',
     href: 'https://www.schmidtsciences.org/',
-    donated2025: '$10M¹²',
-    grants2025: '27¹³',
-    expected2026: '$20M¹⁴',
+    donated2025: { v: '$10M', n: 12 },
+    grants2025: { v: '27', n: 13 },
+    expected2026: { v: '$20M', n: 14 },
     fte: '2',
     generalApps: false,
     openRfps: true,
@@ -111,9 +113,9 @@ const AT_A_GLANCE: Row[] = [
   },
   {
     name: 'AISTOF',
-    donated2025: '—',
-    grants2025: '—',
-    expected2026: '$10M¹⁵',
+    donated2025: { v: '—' },
+    grants2025: { v: '—' },
+    expected2026: { v: '$10M', n: 15 },
     fte: '1',
     generalApps: false,
     openRfps: false,
@@ -122,9 +124,9 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'Manifund',
     href: 'https://manifund.org/',
-    donated2025: '$6M¹⁶',
-    grants2025: '234¹⁷',
-    expected2026: '$6M¹⁸',
+    donated2025: { v: '$6M', n: 16 },
+    grants2025: { v: '234', n: 17 },
+    expected2026: { v: '$6M', n: 18 },
     fte: '1',
     generalApps: true,
     openRfps: false,
@@ -133,9 +135,9 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'BlueDot Impact',
     href: 'https://bluedot.org/',
-    donated2025: '$0',
-    grants2025: '0',
-    expected2026: '$4M¹⁹',
+    donated2025: { v: '$0' },
+    grants2025: { v: '0' },
+    expected2026: { v: '$4M', n: 19 },
     fte: '1',
     generalApps: true,
     openRfps: false,
@@ -144,15 +146,219 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'LTFF',
     href: 'https://funds.effectivealtruism.org/funds/far-future',
-    donated2025: '—',
-    grants2025: '—',
-    expected2026: '$3M²⁰',
+    donated2025: { v: '—' },
+    grants2025: { v: '—' },
+    expected2026: { v: '$3M', n: 20 },
     fte: '1',
     generalApps: true,
     openRfps: false,
     donations: true,
   },
 ]
+
+// Single source of truth for footnotes: `node` renders in the Notes list, `text`
+// is the plain-text version shown in the hover tooltip on each superscript marker.
+const NOTES: { node: React.ReactNode; text: string }[] = [
+  {
+    text: 'coefficientgiving.org/funds/navigating-transformative-ai — Featured Grants table',
+    node: (
+      <>
+        <A href="https://coefficientgiving.org/funds/navigating-transformative-ai">
+          https://coefficientgiving.org/funds/navigating-transformative-ai
+        </A>{' '}
+        Featured Grants table
+      </>
+    ),
+  },
+  {
+    text: 'coefficientgiving.org/funds/navigating-transformative-ai — Featured Grants table',
+    node: (
+      <>
+        <A href="https://coefficientgiving.org/funds/navigating-transformative-ai">
+          https://coefficientgiving.org/funds/navigating-transformative-ai
+        </A>{' '}
+        Featured Grants table
+      </>
+    ),
+  },
+  {
+    text: "Per Luke Muehlhauser's post.",
+    node: (
+      <>
+        Per{' '}
+        <A href="https://forum.effectivealtruism.org/posts/B6d8Wzk4gNzHsXvdi/ai-safety-is-extremely-bottlenecked-on-grantmakers">
+          Luke Muehlhauser&apos;s post
+        </A>
+        .
+      </>
+    ),
+  },
+  {
+    text: 'Per this post from a Longview team member, they directed over $60M in 2025, more than 2x their 2024 figure.',
+    node: (
+      <>
+        Per{' '}
+        <A href="https://forum.effectivealtruism.org/posts/aX8xLjCLd4LMDpTYL/longview-is-hiring-what-longview-is-like-from-my-perspective">
+          this post from a Longview team member
+        </A>
+        , they directed over $60M in 2025, more than 2x their 2024 figure.
+      </>
+    ),
+  },
+  {
+    text: "The number on Longview's website went up from $89M as of year-end to $266M as of June, multiplied by 2 for a full-year estimate.",
+    node: (
+      <>
+        The number on{' '}
+        <A href="https://www.longview.org/artificial-intelligence/">Longview&apos;s website</A> went
+        up from $89M as of year-end to $266M as of June, multiplied by 2 for a full-year estimate.
+      </>
+    ),
+  },
+  {
+    text: "Estimate: they've announced that they've made $130M in grants so far, and that they're planning to give away $1B across all cause areas in 2026.",
+    node: (
+      <>
+        Estimate: they&apos;ve{' '}
+        <A href="https://openaifoundation.org/news/resilience-in-the-age-of-ai">announced</A> that
+        they&apos;ve made $130M in grants so far, and that they&apos;re planning to give away $1B
+        across all cause areas in 2026.
+      </>
+    ),
+  },
+  {
+    text: 'forum.effectivealtruism.org/topics/macroscopic-ventures',
+    node: (
+      <A href="https://forum.effectivealtruism.org/topics/macroscopic-ventures">
+        https://forum.effectivealtruism.org/topics/macroscopic-ventures
+      </A>
+    ),
+  },
+  {
+    text: "Macroscopic's job posting says they are planning to donate $100M this year.",
+    node: (
+      <>
+        <A href="https://jobs.ashbyhq.com/macroscopic/0d80e3a8-2ffd-4bef-8485-03f764732a6e">
+          Macroscopic&apos;s job posting
+        </A>{' '}
+        says they are planning to donate $100M this year.
+      </>
+    ),
+  },
+  {
+    text: 'survivalandflourishing.fund/2025/recommendations',
+    node: (
+      <A href="https://survivalandflourishing.fund/2025/recommendations">
+        https://survivalandflourishing.fund/2025/recommendations
+      </A>
+    ),
+  },
+  {
+    text: 'survivalandflourishing.fund/2025/recommendations',
+    node: (
+      <A href="https://survivalandflourishing.fund/2025/recommendations">
+        https://survivalandflourishing.fund/2025/recommendations
+      </A>
+    ),
+  },
+  {
+    text: "Per SFF's announcement, they are planning to give $20–40M.",
+    node: (
+      <>
+        Per{' '}
+        <A href="https://survivalandflourishing.fund/2026/application">SFF&apos;s announcement</A>,
+        they are planning to give $20–40M.
+      </>
+    ),
+  },
+  {
+    text: 'schmidtsciences.org new $10M AI safety science program (foundational research)',
+    node: (
+      <A href="https://www.schmidtsciences.org/new-10-million-ai-safety-science-program-launched-for-foundational-research/">
+        https://www.schmidtsciences.org/new-10-million-ai-safety-science-program-launched-for-foundational-research/
+      </A>
+    ),
+  },
+  {
+    text: 'schmidtsciences.org new $10M AI safety science program (foundational research)',
+    node: (
+      <A href="https://www.schmidtsciences.org/new-10-million-ai-safety-science-program-launched-for-foundational-research/">
+        https://www.schmidtsciences.org/new-10-million-ai-safety-science-program-launched-for-foundational-research/
+      </A>
+    ),
+  },
+  {
+    text: 'Estimate: total for previous 2026 RFP not published.',
+    node: (
+      <>
+        Estimate: total for{' '}
+        <A href="https://web.archive.org/web/20260222153754/https://www.schmidtsciences.org/opportunity/2026-science-of-trustworthy-ai-rfp/">
+          previous 2026 RFP
+        </A>{' '}
+        not published.
+      </>
+    ),
+  },
+  {
+    text: '$30M funds raised so far over 3 years; amount deployed not reported.',
+    node: <>$30M funds raised so far over 3 years; amount deployed not reported.</>,
+  },
+  {
+    text: 'manifund.org/about',
+    node: <A href="https://manifund.org/about">https://manifund.org/about</A>,
+  },
+  {
+    text: 'manifund.org/about',
+    node: <A href="https://manifund.org/about">https://manifund.org/about</A>,
+  },
+  {
+    text: 'Around $3M in first half of year.',
+    node: <>Around $3M in first half of year.</>,
+  },
+  {
+    text: "According to this LinkedIn post, where they say they're planning to 10x their $400k in grants.",
+    node: (
+      <>
+        According to{' '}
+        <A href="https://www.linkedin.com/posts/anglilian_weve-awarded-400k-in-career-transition-activity-7453112364004102145-KSv2/">
+          this LinkedIn post
+        </A>
+        , where they say they&apos;re planning to 10x their $400k in grants.
+      </>
+    ),
+  },
+  {
+    text: "Past payouts have been higher, but they haven't posted a payout report in a long time, and they are in a transitional period.",
+    node: (
+      <>
+        <A href="https://funds.effectivealtruism.org/funds/far-future">Past payouts</A> have been
+        higher, but they haven&apos;t posted a payout report in a long time, and they are in a
+        transitional period.
+      </>
+    ),
+  },
+]
+
+function Footnote({ n }: { n: number }) {
+  return (
+    <a
+      href={`#note-${n}`}
+      title={NOTES[n - 1]?.text}
+      className="ml-0.5 align-super text-[0.65em] font-medium text-orange-600 no-underline hover:underline"
+    >
+      {n}
+    </a>
+  )
+}
+
+function NumCell({ cell }: { cell: Cell }) {
+  return (
+    <>
+      {cell.v}
+      {cell.n ? <Footnote n={cell.n} /> : null}
+    </>
+  )
+}
 
 function Check({ on }: { on: boolean }) {
   return on ? <span className="text-orange-600">✓</span> : <span className="text-gray-300">—</span>
@@ -180,9 +386,15 @@ function AtAGlanceTable() {
               <td className="p-2 font-medium">
                 {row.href ? <A href={row.href}>{row.name}</A> : row.name}
               </td>
-              <td className="p-2">{row.donated2025}</td>
-              <td className="p-2">{row.grants2025}</td>
-              <td className="p-2">{row.expected2026}</td>
+              <td className="p-2">
+                <NumCell cell={row.donated2025} />
+              </td>
+              <td className="p-2">
+                <NumCell cell={row.grants2025} />
+              </td>
+              <td className="p-2">
+                <NumCell cell={row.expected2026} />
+              </td>
               <td className="p-2">{row.fte}</td>
               <td className="p-2 text-center">
                 <Check on={row.generalApps} />
@@ -217,15 +429,28 @@ function Funder({ title, children }: { title: string; children: React.ReactNode 
   )
 }
 
+function CollapsibleSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <details className="group mt-12">
+      <summary className="flex cursor-pointer list-none items-center text-2xl font-bold text-gray-900 marker:content-none">
+        <span className="mr-2 inline-block text-orange-500 transition-transform group-open:rotate-90">
+          ▸
+        </span>
+        {title}
+      </summary>
+      <div className="mt-4">{children}</div>
+    </details>
+  )
+}
+
 export default function AisFunderBulletinPage() {
   return (
     <div className="px-4 py-8 sm:px-8">
       <div className="mx-auto max-w-3xl">
-        <div className="mb-2 text-3xl">🧣</div>
         <h1 className="mb-1 text-3xl font-bold tracking-tight text-gray-900">
-          AIS Funder Bulletin
+          AI Safety Funder Bulletin
         </h1>
-        <p className="mb-6 text-sm text-gray-400">[Last updated {LAST_UPDATED}]</p>
+        <p className="mb-6 text-sm text-gray-400">Last updated {LAST_UPDATED}</p>
 
         <div className="space-y-4 text-gray-600">
           <p>
@@ -949,170 +1174,74 @@ export default function AisFunderBulletinPage() {
           </div>
         </div>
 
-        <h2 className="mb-4 mt-12 text-2xl font-bold text-gray-900">Not included</h2>
-        <ul className="space-y-3 text-sm text-gray-600 [&_a]:text-orange-600">
-          <li>
-            <A href="https://astralisfoundation.org/">Astralis Foundation</A> — They seem fairly new
-            with not a ton of public info. They&apos;re not taking unsolicited funding requests.
-            Based on{' '}
-            <A href="https://web.archive.org/web/20260121035945/https://effectivealtruism.nz/job-board/ai-governance-fund-lead-astralis-foundation">
-              this job posting
-            </A>{' '}
-            from earlier in the year, they have a fund focused on international AI governance aiming
-            to deploy $15m this year.
-          </li>
-          <li>
-            <A href="https://www.navigation.org/">Navigation Fund</A> — Jed McCaleb&apos;s
-            foundation. At one point they{' '}
-            <A href="https://forum.effectivealtruism.org/posts/NAcN98bACuwcnB32H/the-navigation-fund-launched-is-hiring-a-program-officer-to">
-              announced
-            </A>{' '}
-            they were giving $20m/year to AI safety, but this seems to have not materialized and
-            it&apos;s now gone from their website.
-          </li>
-          <li>
-            <A href="https://www.airiskfund.com/">AI Risk Mitigation Fund</A> — They announced a
-            spinoff from LTFF in 2023, but haven&apos;t made any updates or grant announcements on
-            their website. They&apos;re one of the funders of Lightcone Commons.
-          </li>
-          <li>
-            <A href="https://futureoflife.org/">FLI</A> — They were previously more active in
-            grantmaking and still have a PhD fellowship program, but seem to be less focused on
-            grantmaking these days.
-          </li>
-          <li>
-            <A href="https://www.frontiermodelforum.org/ai-safety-fund/">
-              Frontier Model Forum AI Safety Fund
-            </A>{' '}
-            — It was funded with $10m in 2023. Most of this was distributed in 2024 and 2025 and
-            they now appear to be winding down and spending their remaining funds.
-          </li>
-          <li>
-            <A href="https://foresight.org/grants/grants-ai-for-science-safety/">
-              Foresight AI for Safety and Science
-            </A>{' '}
-            — They award $3m annually across AI safety &amp; science.
-          </li>
-          <li>
-            <A href="https://astera.org/ai-safety/">Astera</A> — Their webpage mentions that
-            they&apos;re primarily backing <A href="https://www.simplexaisafety.com/">Simplex</A>.
-          </li>
-          <li>
-            <A href="http://grantmaking.ai">grantmaking.ai</A> — New initiative housed under
-            Manifund, with an initial $1m, see{' '}
-            <A href="https://www.lesswrong.com/posts/hDQZZzYkcipgaZfxy/usd1m-ai-x-risk-grant-round-is-live-on-grantmaking-ai-apply">
-              launch post
-            </A>
-            .
-          </li>
-        </ul>
+        <CollapsibleSection title="Not included">
+          <ul className="space-y-3 text-sm text-gray-600 [&_a]:text-orange-600">
+            <li>
+              <A href="https://astralisfoundation.org/">Astralis Foundation</A>: They seem fairly
+              new with not a ton of public info. They&apos;re not taking unsolicited funding
+              requests. Based on{' '}
+              <A href="https://web.archive.org/web/20260121035945/https://effectivealtruism.nz/job-board/ai-governance-fund-lead-astralis-foundation">
+                this job posting
+              </A>{' '}
+              from earlier in the year, they have a fund focused on international AI governance
+              aiming to deploy $15m this year.
+            </li>
+            <li>
+              <A href="https://www.navigation.org/">Navigation Fund</A>: Jed McCaleb&apos;s
+              foundation. At one point they{' '}
+              <A href="https://forum.effectivealtruism.org/posts/NAcN98bACuwcnB32H/the-navigation-fund-launched-is-hiring-a-program-officer-to">
+                announced
+              </A>{' '}
+              they were giving $20m/year to AI safety, but this seems to have not materialized and
+              it&apos;s now gone from their website.
+            </li>
+            <li>
+              <A href="https://www.airiskfund.com/">AI Risk Mitigation Fund</A>: They announced a
+              spinoff from LTFF in 2023, but haven&apos;t made any updates or grant announcements on
+              their website. They&apos;re one of the funders of Lightcone Commons.
+            </li>
+            <li>
+              <A href="https://futureoflife.org/">FLI</A>: They were previously more active in
+              grantmaking and still have a PhD fellowship program, but seem to be less focused on
+              grantmaking these days.
+            </li>
+            <li>
+              <A href="https://www.frontiermodelforum.org/ai-safety-fund/">
+                Frontier Model Forum AI Safety Fund
+              </A>
+              : It was funded with $10m in 2023. Most of this was distributed in 2024 and 2025 and
+              they now appear to be winding down and spending their remaining funds.
+            </li>
+            <li>
+              <A href="https://foresight.org/grants/grants-ai-for-science-safety/">
+                Foresight AI for Safety and Science
+              </A>
+              : They award $3m annually across AI safety &amp; science.
+            </li>
+            <li>
+              <A href="https://astera.org/ai-safety/">Astera</A>: Their webpage mentions that
+              they&apos;re primarily backing <A href="https://www.simplexaisafety.com/">Simplex</A>.
+            </li>
+            <li>
+              <A href="http://grantmaking.ai">grantmaking.ai</A>: New initiative housed under
+              Manifund, with an initial $1m, see{' '}
+              <A href="https://www.lesswrong.com/posts/hDQZZzYkcipgaZfxy/usd1m-ai-x-risk-grant-round-is-live-on-grantmaking-ai-apply">
+                launch post
+              </A>
+              .
+            </li>
+          </ul>
+        </CollapsibleSection>
 
-        <h2 className="mb-4 mt-12 text-2xl font-bold text-gray-900">Notes</h2>
-        <ol className="list-decimal space-y-2 pl-6 text-sm text-gray-500 [&_a]:break-all [&_a]:text-orange-600">
-          <li>
-            <A href="https://coefficientgiving.org/funds/navigating-transformative-ai">
-              https://coefficientgiving.org/funds/navigating-transformative-ai
-            </A>{' '}
-            Featured Grants table
-          </li>
-          <li>
-            <A href="https://coefficientgiving.org/funds/navigating-transformative-ai">
-              https://coefficientgiving.org/funds/navigating-transformative-ai
-            </A>{' '}
-            Featured Grants table
-          </li>
-          <li>
-            Per{' '}
-            <A href="https://forum.effectivealtruism.org/posts/B6d8Wzk4gNzHsXvdi/ai-safety-is-extremely-bottlenecked-on-grantmakers">
-              Luke Muehlhauser&apos;s post
-            </A>
-            .
-          </li>
-          <li>
-            Per{' '}
-            <A href="https://forum.effectivealtruism.org/posts/aX8xLjCLd4LMDpTYL/longview-is-hiring-what-longview-is-like-from-my-perspective">
-              this post from a Longview team member
-            </A>
-            , they directed over $60M in 2025, more than 2x their 2024 figure.
-          </li>
-          <li>
-            The number on{' '}
-            <A href="https://www.longview.org/artificial-intelligence/">Longview&apos;s website</A>{' '}
-            went up from $89M as of year-end to $266M as of June, multiplied by 2 for a full-year
-            estimate.
-          </li>
-          <li>
-            Estimate: they&apos;ve{' '}
-            <A href="https://openaifoundation.org/news/resilience-in-the-age-of-ai">announced</A>{' '}
-            that they&apos;ve made $130M in grants so far, and that they&apos;re planning to give
-            away $1B across all cause areas in 2026.
-          </li>
-          <li>
-            <A href="https://forum.effectivealtruism.org/topics/macroscopic-ventures">
-              https://forum.effectivealtruism.org/topics/macroscopic-ventures
-            </A>
-          </li>
-          <li>
-            <A href="https://jobs.ashbyhq.com/macroscopic/0d80e3a8-2ffd-4bef-8485-03f764732a6e">
-              Macroscopic&apos;s job posting
-            </A>{' '}
-            says they are planning to donate $100M this year.
-          </li>
-          <li>
-            <A href="https://survivalandflourishing.fund/2025/recommendations">
-              https://survivalandflourishing.fund/2025/recommendations
-            </A>
-          </li>
-          <li>
-            <A href="https://survivalandflourishing.fund/2025/recommendations">
-              https://survivalandflourishing.fund/2025/recommendations
-            </A>
-          </li>
-          <li>
-            Per{' '}
-            <A href="https://survivalandflourishing.fund/2026/application">
-              SFF&apos;s announcement
-            </A>
-            , they are planning to give $20–40M.
-          </li>
-          <li>
-            <A href="https://www.schmidtsciences.org/new-10-million-ai-safety-science-program-launched-for-foundational-research/">
-              https://www.schmidtsciences.org/new-10-million-ai-safety-science-program-launched-for-foundational-research/
-            </A>
-          </li>
-          <li>
-            <A href="https://www.schmidtsciences.org/new-10-million-ai-safety-science-program-launched-for-foundational-research/">
-              https://www.schmidtsciences.org/new-10-million-ai-safety-science-program-launched-for-foundational-research/
-            </A>
-          </li>
-          <li>
-            Estimate: total for{' '}
-            <A href="https://web.archive.org/web/20260222153754/https://www.schmidtsciences.org/opportunity/2026-science-of-trustworthy-ai-rfp/">
-              previous 2026 RFP
-            </A>{' '}
-            not published.
-          </li>
-          <li>$30M funds raised so far over 3 years; amount deployed not reported.</li>
-          <li>
-            <A href="https://manifund.org/about">https://manifund.org/about</A>
-          </li>
-          <li>
-            <A href="https://manifund.org/about">https://manifund.org/about</A>
-          </li>
-          <li>Around $3M in first half of year.</li>
-          <li>
-            According to{' '}
-            <A href="https://www.linkedin.com/posts/anglilian_weve-awarded-400k-in-career-transition-activity-7453112364004102145-KSv2/">
-              this LinkedIn post
-            </A>
-            , where they say they&apos;re planning to 10x their $400k in grants.
-          </li>
-          <li>
-            <A href="https://funds.effectivealtruism.org/funds/far-future">Past payouts</A> have
-            been higher, but they haven&apos;t posted a payout report in a long time, and they are
-            in a transitional period.
-          </li>
-        </ol>
+        <CollapsibleSection title="Notes">
+          <ol className="list-decimal space-y-2 pl-6 text-sm text-gray-500 [&_a]:break-all [&_a]:text-orange-600">
+            {NOTES.map((note, i) => (
+              <li key={i} id={`note-${i + 1}`} className="scroll-mt-4 target:text-gray-900">
+                {note.node}
+              </li>
+            ))}
+          </ol>
+        </CollapsibleSection>
       </div>
     </div>
   )
