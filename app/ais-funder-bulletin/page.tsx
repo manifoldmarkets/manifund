@@ -1241,6 +1241,14 @@ export default function AisFunderBulletinPage() {
             ))}
           </ol>
         </CollapsibleSection>
+
+        <h2 className="mb-4 mt-12 text-2xl font-bold text-gray-900">Other resources</h2>
+        <p className="text-sm text-gray-600 [&_a]:text-orange-600">
+          See another database of AIS funding at{' '}
+          <A href="https://aisafety.com/funding">https://aisafety.com/funding</A>&nbsp;and subscribe
+          to their newsletter at{' '}
+          <A href="https://aisafetyfunding.substack.com/">https://aisafetyfunding.substack.com/</A>.
+        </p>
       </div>
     </div>
   )
