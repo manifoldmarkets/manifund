@@ -49,9 +49,22 @@ export default function DonorFaqPage() {
                 discretionary budget provided by a donor.
               </li>
               <li>
-                <strong>We&apos;ve run 2 rounds of ACX Grants:</strong> Scott Alexander solicits
-                project applications and raises funding, and recommends a set of grants which we
-                review and fulfill.
+                <strong>
+                  We&apos;ve run 2 rounds of{' '}
+                  <a href="https://manifund.org/causes/acx-grants-2025">ACX Grants</a>:
+                </strong>{' '}
+                Scott Alexander solicits project applications and raises funding, and recommends a
+                set of grants which we review and fulfill.
+              </li>
+              <li>
+                We&apos;ve also hosted a{' '}
+                <a href="https://manifund.org/causes/grantmaking-ai">$1m grant round</a> with
+                grantmaking.ai; an{' '}
+                <a href="https://manifund.org/causes/leo-microgrants">
+                  alignment microgrant program
+                </a>{' '}
+                for Leo Gao; and various experiments with prizes, impact certs, and quadratic
+                funding.
               </li>
             </ul>
           </li>
