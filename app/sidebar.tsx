@@ -66,6 +66,7 @@ export default async function Sidebar() {
                 { name: 'Donor FAQ', href: '/about/donor-faq' },
                 { name: 'Regranting', href: '/about/regranting' },
                 { name: 'Where regrantors give', href: '/about/regranting-data' },
+                { name: 'Funder Bulletin', href: '/ais-funder-bulletin' },
                 // { name: 'Impact markets', href: '/about/impact-certificates' },
                 // { name: 'Applying for funding', href: '/about/open-call' },
                 { name: 'API & MCP', href: '/docs' },
