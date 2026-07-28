@@ -234,10 +234,6 @@ export function RegrantingLedger({
       {/* Header */}
       <header className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">Where regrantors give</h1>
-        <p className="mt-2 max-w-2xl text-gray-600">
-          Every grant made through Manifund&apos;s regranting program — the experts, the dollars,
-          the destinations, and the reasoning, broken down by year and quarter.
-        </p>
       </header>
 
       {/* Top-line stats */}
