@@ -37,8 +37,8 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'Coefficient Giving',
     href: 'https://coefficientgiving.org/',
-    donated2025: { v: '$300M', n: 1 },
-    grants2025: { v: '184', n: 2 },
+    donated2025: { v: '$400M', n: 1 },
+    grants2025: { v: '226', n: 2 },
     expected2026: { v: '$1B', n: 3 },
     fte: '70',
     generalApps: false,
@@ -160,24 +160,23 @@ const AT_A_GLANCE: Row[] = [
 // is the plain-text version shown in the hover tooltip on each superscript marker.
 const NOTES: { node: React.ReactNode; text: string }[] = [
   {
-    text: 'coefficientgiving.org/funds/navigating-transformative-ai — Featured Grants table',
+    text: "Using public grants on https://coefficientgiving.org/funds for the Navigating Transformative AI Fund and the GCR Opportunities Fund. I don't know what the total of nonpublic AIS grants was; total giving in 2025 was reported as around $1B.",
     node: (
       <>
-        <A href="https://coefficientgiving.org/funds/navigating-transformative-ai">
-          https://coefficientgiving.org/funds/navigating-transformative-ai
-        </A>{' '}
-        Featured Grants table
+        Using public grants on{' '}
+        <A href="https://coefficientgiving.org/funds">https://coefficientgiving.org/funds</A>
+        &nbsp;for the Navigating Transformative AI Fund and the GCR Opportunities Fund. I don&apos;t
+        know what the total of nonpublic AIS grants was; total giving in 2025 was reported as around
+        $1B.
       </>
     ),
   },
   {
-    text: 'coefficientgiving.org/funds/navigating-transformative-ai — Featured Grants table',
+    text: 'grants listed on https://coefficientgiving.org/funds',
     node: (
       <>
-        <A href="https://coefficientgiving.org/funds/navigating-transformative-ai">
-          https://coefficientgiving.org/funds/navigating-transformative-ai
-        </A>{' '}
-        Featured Grants table
+        grants listed on{' '}
+        <A href="https://coefficientgiving.org/funds">https://coefficientgiving.org/funds</A>
       </>
     ),
   },
