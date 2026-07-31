@@ -15,16 +15,11 @@ export const metadata: Metadata = {
   description: 'Every grant ever made by a Manifund regrantor, tabulated.',
 }
 
-// This page shows public, non-personalized data and was previously a slow
-// dynamic function (a cold Node serverless start took ~24s before first byte).
-// Prerender it as a static/ISR page instead, served from the CDN, so visitors
-// never trigger the function on the request path; regeneration happens in the
-// background at most once per `revalidate` window.
-//   - force-static: the Supabase client issues no-store fetches; without this
-//     the route falls back to dynamic. Safe here — no request-scoped data.
-//     It also makes cookies() return empty for the whole route, so the sidebar
-//     renders logged-out on a hard load of this page (fine on soft nav).
-//   - createPublicSupabaseClient (below): no cookies, required for prerendering.
+// Public, non-personalized data, so prerender to the CDN rather than running a
+// slow query per request. force-static is required: the Supabase client's
+// no-store fetches and the sidebar's cookies() read would otherwise force
+// dynamic rendering. Side effect — the sidebar renders logged-out on a hard
+// load of this page (soft nav is unaffected).
 export const dynamic = 'force-static'
 export const revalidate = 300 // 5 min
 
