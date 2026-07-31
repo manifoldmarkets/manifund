@@ -1,6 +1,6 @@
 import 'server-only'
 import type { Metadata } from 'next'
-import { createServerSupabaseClient } from '@/db/supabase-server'
+import { createPublicSupabaseClient } from '@/db/supabase-server'
 import { getRegranters } from '@/db/profile'
 import {
   getSponsoredAmount2023,
@@ -15,6 +15,20 @@ export const metadata: Metadata = {
   description: 'Every grant ever made by a Manifund regrantor, tabulated.',
 }
 
+// This page shows public, non-personalized data and was previously a slow
+// dynamic function (a cold Node serverless start took ~24s before first byte).
+// Prerender it as a static/ISR page instead, served from the CDN, so visitors
+// never trigger the function on the request path; regeneration happens in the
+// background at most once per `revalidate` window.
+//   - nodejs runtime: overrides the app-wide edge runtime (app/layout.tsx),
+//     which would otherwise disable static generation entirely.
+//   - force-static: the Supabase client issues no-store fetches; without this
+//     the route falls back to dynamic. Safe here — no request-scoped data.
+//   - createPublicSupabaseClient (below): no cookies, required for prerendering.
+export const runtime = 'nodejs'
+export const dynamic = 'force-static'
+export const revalidate = 300 // 5 min
+
 // Minimal recursive Tiptap → plaintext (kept local to avoid edge-runtime bloat).
 function tiptapToText(node: any): string {
   if (!node) return ''
@@ -27,7 +41,7 @@ function tiptapToText(node: any): string {
 }
 
 export default async function RegrantingDataPage() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createPublicSupabaseClient()
 
   const regrantors = await getRegranters(supabase)
   const regrantorIds = regrantors.map((r) => r.id)
