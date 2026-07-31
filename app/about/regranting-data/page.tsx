@@ -1,6 +1,6 @@
 import 'server-only'
 import type { Metadata } from 'next'
-import { createServerSupabaseClient } from '@/db/supabase-server'
+import { createPublicSupabaseClient } from '@/db/supabase-server'
 import { getRegranters } from '@/db/profile'
 import {
   getSponsoredAmount2023,
@@ -15,7 +15,15 @@ export const metadata: Metadata = {
   description: 'Every grant ever made by a Manifund regrantor, tabulated.',
 }
 
-// Minimal recursive Tiptap → plaintext (kept local to avoid edge-runtime bloat).
+// Public, non-personalized data, so prerender to the CDN rather than running a
+// slow query per request. force-static is required: the Supabase client's
+// no-store fetches and the sidebar's cookies() read would otherwise force
+// dynamic rendering. Side effect — the sidebar renders logged-out on a hard
+// load of this page (soft nav is unaffected).
+export const dynamic = 'force-static'
+export const revalidate = 300 // 5 min
+
+// Minimal recursive Tiptap → plaintext (kept local to avoid pulling in Tiptap).
 function tiptapToText(node: any): string {
   if (!node) return ''
   if (typeof node === 'string') return node
@@ -27,7 +35,7 @@ function tiptapToText(node: any): string {
 }
 
 export default async function RegrantingDataPage() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createPublicSupabaseClient()
 
   const regrantors = await getRegranters(supabase)
   const regrantorIds = regrantors.map((r) => r.id)
