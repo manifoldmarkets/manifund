@@ -19,6 +19,10 @@
     {
       "path": "/api/weekly-digest",
       "schedule": "0 17 * * 1"
+    },
+    {
+      "path": "/api/revalidate-regranting-ledger",
+      "schedule": "0 * * * *"
     }
   ]
 }
