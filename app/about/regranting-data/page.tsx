@@ -29,7 +29,7 @@ function tiptapToText(node: any): string {
 
 // The ledger is public, non-personalized data that changes at most a few times
 // a day, but the four queries below cost ~2s warm (and far more on a cold
-// serverless start). Cache the assembled result for an hour so nearly every
+// serverless start). Cache the assembled result for 5 min so nearly every
 // visit is served instantly. Uses createPublicSupabaseClient (no cookies) since
 // unstable_cache callbacks can't read request-scoped data.
 async function loadRegrantingLedger() {
@@ -136,7 +136,7 @@ async function loadRegrantingLedger() {
 }
 
 const getRegrantingLedgerCached = unstable_cache(loadRegrantingLedger, ['regranting-ledger'], {
-  revalidate: 3600, // 1 hr
+  revalidate: 300, // 5 min
   tags: ['regranting-ledger'],
 })
 
