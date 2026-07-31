@@ -24,8 +24,6 @@ const satisfy = Satisfy({
 })
 const fontVars = [readex.variable, josefin.variable, satisfy.variable].join(' ')
 
-export const runtime = 'edge'
-
 export const metadata = {
   metadataBase: new URL('https://manifund.org'),
   title: {

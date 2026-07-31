@@ -20,16 +20,15 @@ export const metadata: Metadata = {
 // Prerender it as a static/ISR page instead, served from the CDN, so visitors
 // never trigger the function on the request path; regeneration happens in the
 // background at most once per `revalidate` window.
-//   - nodejs runtime: overrides the app-wide edge runtime (app/layout.tsx),
-//     which would otherwise disable static generation entirely.
 //   - force-static: the Supabase client issues no-store fetches; without this
 //     the route falls back to dynamic. Safe here — no request-scoped data.
+//     It also makes cookies() return empty for the whole route, so the sidebar
+//     renders logged-out on a hard load of this page (fine on soft nav).
 //   - createPublicSupabaseClient (below): no cookies, required for prerendering.
-export const runtime = 'nodejs'
 export const dynamic = 'force-static'
 export const revalidate = 300 // 5 min
 
-// Minimal recursive Tiptap → plaintext (kept local to avoid edge-runtime bloat).
+// Minimal recursive Tiptap → plaintext (kept local to avoid pulling in Tiptap).
 function tiptapToText(node: any): string {
   if (!node) return ''
   if (typeof node === 'string') return node
