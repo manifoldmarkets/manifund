@@ -1,6 +1,7 @@
 import 'server-only'
 import type { Metadata } from 'next'
-import { createServerSupabaseClient } from '@/db/supabase-server'
+import { unstable_cache } from 'next/cache'
+import { createPublicSupabaseClient } from '@/db/supabase-server'
 import { getRegranters } from '@/db/profile'
 import {
   getSponsoredAmount2023,
@@ -26,8 +27,13 @@ function tiptapToText(node: any): string {
   return ''
 }
 
-export default async function RegrantingDataPage() {
-  const supabase = await createServerSupabaseClient()
+// The ledger is public, non-personalized data that changes at most a few times
+// a day, but the four queries below cost ~2s warm (and far more on a cold
+// serverless start). Cache the assembled result for an hour so nearly every
+// visit is served instantly. Uses createPublicSupabaseClient (no cookies) since
+// unstable_cache callbacks can't read request-scoped data.
+async function loadRegrantingLedger() {
+  const supabase = createPublicSupabaseClient()
 
   const regrantors = await getRegranters(supabase)
   const regrantorIds = regrantors.map((r) => r.id)
@@ -126,5 +132,15 @@ export default async function RegrantingDataPage() {
     }))
     .filter((r) => r.budget2023 + r.budget2024 + r.budget2025 + r.budget2026 > 0)
 
+  return { grants, regrantorRows }
+}
+
+const getRegrantingLedgerCached = unstable_cache(loadRegrantingLedger, ['regranting-ledger'], {
+  revalidate: 3600, // 1 hr
+  tags: ['regranting-ledger'],
+})
+
+export default async function RegrantingDataPage() {
+  const { grants, regrantorRows } = await getRegrantingLedgerCached()
   return <RegrantingLedger grants={grants} regrantors={regrantorRows} />
 }
