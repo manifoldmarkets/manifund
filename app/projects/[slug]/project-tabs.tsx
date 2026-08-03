@@ -114,7 +114,17 @@ export function ProjectTabs(props: {
       name: 'Donations',
       id: 'donations',
       count: donations.length,
-      display: <DonationsHistory donations={donations} />,
+      display: (
+        <DonationsHistory
+          donations={donations}
+          replyContext={{
+            projectId: project.id,
+            projectSlug: project.slug,
+            creatorId: project.creator,
+            userProfile,
+          }}
+        />
+      ),
     })
   }
 
