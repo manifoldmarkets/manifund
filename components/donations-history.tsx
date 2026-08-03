@@ -6,20 +6,42 @@ import clsx from 'clsx'
 import { format } from 'date-fns'
 import { orderBy, uniq } from 'es-toolkit'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { JSONContent } from '@tiptap/react'
 import { Avatar } from './avatar'
 import { RightCarrotIcon } from './icons'
 import { Row } from './layout/row'
 import { UserAvatarAndBadge } from './user-link'
+import { TextEditor } from './editor'
+import { useTextEditor } from '@/hooks/use-text-editor'
+import { IconButton } from './button'
+import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
+import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
+import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 
-export function DonationsHistory(props: { donations: TxnAndProfiles[] }) {
-  const { donations } = props
+// `replyContext` adds a "Reply" button to each donation (for any logged-in
+// user) that posts a public comment mentioning the donor. Just an ordinary
+// top-level comment via /api/post-comment — no special DB machinery.
+type ReplyContext = {
+  projectId: string
+  projectSlug: string
+  userProfile?: Profile
+}
+
+export function DonationsHistory(props: {
+  donations: TxnAndProfiles[]
+  replyContext?: ReplyContext
+}) {
+  const { donations, replyContext } = props
   const sortedDonations = orderBy(donations, ['created_at'], ['desc'])
   return (
     <>
       {donations.length > 0 ? (
         <>
           {sortedDonations.map((txn) => {
-            return txn.profiles ? <Donation txn={txn} /> : null
+            return txn.profiles ? (
+              <Donation key={txn.id} txn={txn} replyContext={replyContext} />
+            ) : null
           })}
         </>
       ) : (
@@ -64,20 +86,123 @@ export function ExpandableDonationsHistory(props: { donations: TxnAndProfiles[] 
   )
 }
 
-export function Donation(props: { txn: TxnAndProfiles }) {
-  const { txn } = props
+export function Donation(props: { txn: TxnAndProfiles; replyContext?: ReplyContext }) {
+  const { txn, replyContext } = props
+  const [replying, setReplying] = useState(false)
+  const canReply = !!replyContext?.userProfile
   return (
-    <Row key={txn.id} className="justify-between rounded p-2">
-      <Row className="items-center gap-1">
-        <UserAvatarAndBadge profile={txn.profiles as Profile} />
-        <span className="text-gray-600"> donated </span>
-        <span>{formatMoney(txn.amount)}</span>
+    <div className="rounded p-2">
+      <Row className="justify-between">
+        <Row className="items-center gap-1">
+          <UserAvatarAndBadge profile={txn.profiles as Profile} />
+          <span className="text-gray-600"> donated </span>
+          <span>{formatMoney(txn.amount)}</span>
+        </Row>
+        <Row className="items-center gap-2">
+          {canReply && (
+            <button
+              onClick={() => setReplying((r) => !r)}
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-orange-500"
+            >
+              <ArrowUturnRightIcon className="h-4 w-4 rotate-180 stroke-2" />
+              Reply
+            </button>
+          )}
+          <span className="text-sm text-gray-500">
+            {format(new Date(txn.created_at), 'yyyy-MM-dd')}
+          </span>
+        </Row>
       </Row>
-      <Row className="items-center">
-        <span className="text-sm text-gray-500">
-          {format(new Date(txn.created_at), 'yyyy-MM-dd')}
-        </span>
-      </Row>
-    </Row>
+      {replying && canReply && replyContext && (
+        <div className="mt-2">
+          <DonationReplyBox
+            txn={txn}
+            replyContext={replyContext}
+            onClose={() => setReplying(false)}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function DonationReplyBox(props: {
+  txn: TxnAndProfiles
+  replyContext: ReplyContext
+  onClose: () => void
+}) {
+  const { txn, replyContext, onClose } = props
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const donor = txn.profiles as Profile
+  const storageKey = `DonationReply${txn.id}`
+  // Seed the editor with a mention of the donor so the reply is addressed to
+  // them (and they get a mention notification on top of the follower email).
+  const startingText: JSONContent = {
+    type: 'doc',
+    content: [
+      {
+        type: 'paragraph',
+        content: [
+          { type: 'mention', attrs: { id: donor.id, label: donor.username } },
+          { type: 'text', text: ' ' },
+        ],
+      },
+    ],
+  }
+  const editor = useTextEditor(
+    startingText,
+    storageKey,
+    `Reply to ${donor.full_name || donor.username}...`,
+    'border-0 focus:!outline-none focus:ring-0 text-sm sm:text-md'
+  )
+  const handleSubmit = async () => {
+    const content = editor?.getJSON() as JSONContent | undefined
+    if (!editor || !editor.getText()?.trim() || !content) return
+    setIsSubmitting(true)
+    try {
+      const res = await fetch('/api/post-comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, projectId: replyContext.projectId }),
+      })
+      // On failure, keep the typed reply and the box open so nothing is lost.
+      if (!res.ok) return
+      editor.commands.clearContent()
+      clearLocalStorageItem(storageKey)
+      onClose()
+      router.push(`/projects/${replyContext.projectSlug}?tab=comments`)
+      router.refresh()
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+  return (
+    <div className="relative w-full overflow-hidden rounded-xl rounded-tl-sm bg-white p-0 shadow">
+      <TextEditor editor={editor}>
+        <div className="py-1" aria-hidden="true">
+          <div className="py-px">
+            <div className="h-9" />
+          </div>
+        </div>
+        <Row className="absolute bottom-0 w-full items-center justify-between border-t border-t-gray-200 bg-white py-0.5 pl-3">
+          <button
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="text-sm text-gray-500 hover:cursor-pointer hover:text-gray-700 disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <IconButton
+            loading={isSubmitting}
+            onClick={async () => {
+              await handleSubmit()
+            }}
+          >
+            <PaperAirplaneIcon className="h-6 w-6 text-gray-500 hover:cursor-pointer hover:text-orange-500" />
+          </IconButton>
+        </Row>
+      </TextEditor>
+    </div>
   )
 }
