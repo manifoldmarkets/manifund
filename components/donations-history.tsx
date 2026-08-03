@@ -154,24 +154,29 @@ function ThankDonorBox(props: {
   const editor = useTextEditor(
     startingText,
     storageKey,
-    `Say thanks to ${donor.full_name}...`,
+    `Say thanks to ${donor.full_name || donor.username}...`,
     'border-0 focus:!outline-none focus:ring-0 text-sm sm:text-md'
   )
   const handleSubmit = async () => {
     const content = editor?.getJSON() as JSONContent | undefined
     if (!editor || !editor.getText()?.trim() || !content) return
     setIsSubmitting(true)
-    await fetch('/api/post-comment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content, projectId: replyContext.projectId }),
-    })
-    editor.commands.clearContent()
-    clearLocalStorageItem(storageKey)
-    setIsSubmitting(false)
-    onClose()
-    router.push(`/projects/${replyContext.projectSlug}?tab=comments`)
-    router.refresh()
+    try {
+      const res = await fetch('/api/post-comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content, projectId: replyContext.projectId }),
+      })
+      // On failure, keep the typed reply and the box open so nothing is lost.
+      if (!res.ok) return
+      editor.commands.clearContent()
+      clearLocalStorageItem(storageKey)
+      onClose()
+      router.push(`/projects/${replyContext.projectSlug}?tab=comments`)
+      router.refresh()
+    } finally {
+      setIsSubmitting(false)
+    }
   }
   return (
     <div className="relative w-full overflow-hidden rounded-xl rounded-tl-sm bg-white p-0 shadow">
@@ -184,7 +189,8 @@ function ThankDonorBox(props: {
         <Row className="absolute bottom-0 w-full items-center justify-between border-t border-t-gray-200 bg-white py-0.5 pl-3">
           <button
             onClick={onClose}
-            className="text-sm text-gray-500 hover:cursor-pointer hover:text-gray-700"
+            disabled={isSubmitting}
+            className="text-sm text-gray-500 hover:cursor-pointer hover:text-gray-700 disabled:opacity-50"
           >
             Cancel
           </button>
