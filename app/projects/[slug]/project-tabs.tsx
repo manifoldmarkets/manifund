@@ -120,7 +120,6 @@ export function ProjectTabs(props: {
           replyContext={{
             projectId: project.id,
             projectSlug: project.slug,
-            creatorId: project.creator,
             userProfile,
           }}
         />

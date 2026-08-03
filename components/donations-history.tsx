@@ -17,17 +17,14 @@ import { useTextEditor } from '@/hooks/use-text-editor'
 import { IconButton } from './button'
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid'
 import { ArrowUturnRightIcon } from '@heroicons/react/24/outline'
-import { Tooltip } from './tooltip'
 import { clearLocalStorageItem } from '@/hooks/use-local-storage'
 
-// When rendered on a grant project by its creator, `replyContext` adds a
-// "Reply" button to each donation that posts a public comment thanking the
-// donor (mentioning them, so they're notified). Just an ordinary top-level
-// comment via /api/post-comment — no special DB machinery.
+// `replyContext` adds a "Reply" button to each donation (for any logged-in
+// user) that posts a public comment mentioning the donor. Just an ordinary
+// top-level comment via /api/post-comment — no special DB machinery.
 type ReplyContext = {
   projectId: string
   projectSlug: string
-  creatorId: string
   userProfile?: Profile
 }
 
@@ -92,7 +89,7 @@ export function ExpandableDonationsHistory(props: { donations: TxnAndProfiles[] 
 export function Donation(props: { txn: TxnAndProfiles; replyContext?: ReplyContext }) {
   const { txn, replyContext } = props
   const [replying, setReplying] = useState(false)
-  const canReply = !!replyContext && replyContext.userProfile?.id === replyContext.creatorId
+  const canReply = !!replyContext?.userProfile
   return (
     <div className="rounded p-2">
       <Row className="justify-between">
@@ -103,15 +100,13 @@ export function Donation(props: { txn: TxnAndProfiles; replyContext?: ReplyConte
         </Row>
         <Row className="items-center gap-2">
           {canReply && (
-            <Tooltip text="Reply to thank this donor">
-              <button
-                onClick={() => setReplying((r) => !r)}
-                className="flex items-center gap-1 text-sm text-gray-500 hover:text-orange-500"
-              >
-                <ArrowUturnRightIcon className="h-4 w-4 rotate-180 stroke-2" />
-                Reply
-              </button>
-            </Tooltip>
+            <button
+              onClick={() => setReplying((r) => !r)}
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-orange-500"
+            >
+              <ArrowUturnRightIcon className="h-4 w-4 rotate-180 stroke-2" />
+              Reply
+            </button>
           )}
           <span className="text-sm text-gray-500">
             {format(new Date(txn.created_at), 'yyyy-MM-dd')}
@@ -120,14 +115,18 @@ export function Donation(props: { txn: TxnAndProfiles; replyContext?: ReplyConte
       </Row>
       {replying && canReply && replyContext && (
         <div className="mt-2">
-          <ThankDonorBox txn={txn} replyContext={replyContext} onClose={() => setReplying(false)} />
+          <DonationReplyBox
+            txn={txn}
+            replyContext={replyContext}
+            onClose={() => setReplying(false)}
+          />
         </div>
       )}
     </div>
   )
 }
 
-function ThankDonorBox(props: {
+function DonationReplyBox(props: {
   txn: TxnAndProfiles
   replyContext: ReplyContext
   onClose: () => void
@@ -136,8 +135,8 @@ function ThankDonorBox(props: {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const donor = txn.profiles as Profile
-  const storageKey = `ThankDonor${txn.id}`
-  // Seed the editor with a mention of the donor so the thank-you is addressed to
+  const storageKey = `DonationReply${txn.id}`
+  // Seed the editor with a mention of the donor so the reply is addressed to
   // them (and they get a mention notification on top of the follower email).
   const startingText: JSONContent = {
     type: 'doc',
@@ -154,7 +153,7 @@ function ThankDonorBox(props: {
   const editor = useTextEditor(
     startingText,
     storageKey,
-    `Say thanks to ${donor.full_name || donor.username}...`,
+    `Reply to ${donor.full_name || donor.username}...`,
     'border-0 focus:!outline-none focus:ring-0 text-sm sm:text-md'
   )
   const handleSubmit = async () => {
