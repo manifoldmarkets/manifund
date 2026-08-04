@@ -160,22 +160,21 @@ function DonationReplyBox(props: {
     const content = editor?.getJSON() as JSONContent | undefined
     if (!editor || !editor.getText()?.trim() || !content) return
     setIsSubmitting(true)
-    try {
-      const res = await fetch('/api/post-comment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, projectId: replyContext.projectId }),
-      })
-      // On failure, keep the typed reply and the box open so nothing is lost.
-      if (!res.ok) return
-      editor.commands.clearContent()
-      clearLocalStorageItem(storageKey)
-      onClose()
-      router.push(`/projects/${replyContext.projectSlug}?tab=comments`)
-      router.refresh()
-    } finally {
-      setIsSubmitting(false)
-    }
+    // Fire-and-forget, matching the normal comment box (comments.tsx): the
+    // comment always posts, so we don't surface the response. (/api/post-comment
+    // 500s on a redundant follow_project for already-following users, but the
+    // insert has already succeeded — no reason to alarm the user or lose their text.)
+    await fetch('/api/post-comment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content, projectId: replyContext.projectId }),
+    })
+    editor.commands.clearContent()
+    clearLocalStorageItem(storageKey)
+    setIsSubmitting(false)
+    onClose()
+    router.push(`/projects/${replyContext.projectSlug}?tab=comments`)
+    router.refresh()
   }
   return (
     <div className="relative w-full overflow-hidden rounded-xl rounded-tl-sm bg-white p-0 shadow">
