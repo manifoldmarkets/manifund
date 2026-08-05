@@ -124,7 +124,7 @@ async function closeProject(
         } Thank you for posting your project, and please let us know on our discord if you have any questions or feedback about the process.`,
         projectUrl: `https://manifund.org/projects/${project.slug}`,
         subject: `Manifund project not funded: "${project.title}"`,
-        adminName: 'Rachel',
+        adminName: 'Manifund team',
       }
       await sendTemplateEmail(TEMPLATE_IDS.VERDICT, creatorPostmarkVars, project.creator)
       const bidders = bids.map((bid) => bid.bidder)
