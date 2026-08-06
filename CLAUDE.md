@@ -5,9 +5,9 @@ Funding platform built with Next.js 16, TypeScript, Supabase, and Stripe.
 ## Quick Commands
 
 ```bash
-bun run dev          # Dev server (turbo, production Supabase)
+bun run dev          # Dev server (turbo, production Supabase) - the normal one
 bun run dev:dev      # Dev server (dev Supabase)
-bun run dev:local    # Dev server (local Supabase via Docker)
+bun run dev:local    # Dev server (local Supabase via Docker) - rarely used, see below
 bun run build        # Production build
 bun run format       # oxfmt format all files
 bun run gen-types    # Regenerate Supabase TypeScript types
@@ -115,11 +115,31 @@ Key variables are configured in `db/env.ts`. Uses multi-environment setup:
 
 ## Database Migrations
 
+**We push schema changes straight to the production database.** The local
+Docker/Supabase path is not a well-supported route here - don't assume it works
+or plan around it, and don't ask the user to start Docker.
+
 ```bash
-# Make changes via Supabase Studio (localhost:54323 for local)
+# Write the migration SQL by hand into supabase/migrations/<timestamp>_name.sql,
+# apply it to prod, then regenerate types from prod:
+bun run gen-types    # reads the prod project (fkousziwzbnkdkldjper)
+```
+
+Because `gen-types` reads prod, `db/database.types.ts` cannot be regenerated
+until the migration is actually applied. Applying DDL to prod is a real
+production change - confirm with the user before doing it.
+
+Note that RLS policies live only in the production project: there are **zero**
+`CREATE POLICY` statements in `supabase/migrations/`, and the root `seed.sql`
+that appears to define them is never loaded (`supabase/config.toml` points at
+`supabase/seed.sql`, which doesn't exist). To see real policies, query
+`pg_policies` on prod rather than trusting `seed.sql`.
+
+```bash
+# Legacy/local flow, kept for reference only:
 npx supabase db diff --schema public --file migration_name
-npx supabase migration up        # Apply locally
-bun run gen-types:local           # Regenerate types
+npx supabase migration up         # Apply locally
+bun run gen-types:local           # Regenerate types from local
 ```
 
 ## No Test Framework

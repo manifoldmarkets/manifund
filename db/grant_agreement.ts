@@ -1,9 +1,75 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import { Database } from './database.types'
 
-export type GrantAgreement = Database['public']['Tables']['grant_agreements']['Row'] & {
+// Vocabularies for the org-recipient columns. Enforced by CHECK constraints in
+// supabase/migrations/20260725000000_org_grant_agreements.sql; kept as unions
+// here so the UI is typed.
+export type RecipientType = 'individual' | 'organization'
+
+// Organizations only — this vocabulary is only ever asked for when the
+// recipient is an organization, so there are no individual classifications.
+export type RecipientEntityClass =
+  | 'us_501c3'
+  | 'us_nonprofit_other'
+  | 'us_for_profit'
+  | 'foreign_org'
+
+export const ENTITY_CLASS_LABELS: Record<RecipientEntityClass, string> = {
+  us_501c3: 'US 501(c)(3)',
+  us_nonprofit_other: 'US nonprofit (not 501(c)(3))',
+  us_for_profit: 'US for-profit',
+  foreign_org: 'Non-US organization',
+}
+
+// Every US entity has an EIN. Non-US organizations generally don't, and provide
+// a Form W-8 instead.
+export function requiresEin(entityClass: RecipientEntityClass | null) {
+  return entityClass !== null && entityClass !== 'foreign_org'
+}
+
+// TODO: delete this block once `bun run gen-types` has been re-run against a
+// database with 20260725000000_org_grant_agreements.sql applied. Until the
+// migration is pushed to prod, the generated Row type is missing these columns,
+// so they're declared by hand and intersected in below.
+type OrgAgreementColumns = {
+  recipient_type: RecipientType
+  recipient_address: string | null
+  recipient_country: string | null
+  recipient_entity_class: RecipientEntityClass | null
+  recipient_tax_id: string | null
+  foreign_no_tin: boolean
+  signatory_authority_attested: boolean
+  org_agreement_version: number | null
+  rendered_document: string | null
+}
+
+type GrantAgreementRow = Database['public']['Tables']['grant_agreements']['Row'] &
+  OrgAgreementColumns
+
+export type GrantAgreement = GrantAgreementRow & {
   profiles: { full_name: string; username: string }
 }
+
+// Sensitive counterpart to grant_agreements. Service-role access only: RLS on
+// this table is enabled with no policies, so an anon/authenticated client sees
+// nothing. Never pass a whole row of this to a client component.
+export type GrantAgreementPrivate = {
+  project_id: string
+  signatory_email: string | null
+  signing_token_hash: string | null
+  token_sent_to: string | null
+  token_sent_at: string | null
+  token_expires_at: string | null
+  signed_ip: string | null
+  signed_user_agent: string | null
+  w9_received_at: string | null
+  w8_received_at: string | null
+  determination_letter_on_file: boolean
+  foreign_withholding_flag: boolean
+  created_at: string
+  updated_at: string
+}
+
 export async function getGrantAgreement(supabase: SupabaseClient, projectId: string) {
   const { data, error } = await supabase
     .from('grant_agreements')
@@ -15,4 +81,64 @@ export async function getGrantAgreement(supabase: SupabaseClient, projectId: str
     throw error
   }
   return data as GrantAgreement | null
+}
+
+// Requires an admin (service-role) client.
+export async function getGrantAgreementPrivate(supabaseAdmin: SupabaseClient, projectId: string) {
+  const { data } = await supabaseAdmin
+    .from('grant_agreement_private')
+    .select('*')
+    .eq('project_id', projectId)
+    .maybeSingle()
+    .throwOnError()
+  return (data as GrantAgreementPrivate | null) ?? null
+}
+
+// Looks up a pending signature request by the sha256 of its token. Requires an
+// admin client. Returns null for an unknown or expired token; callers must not
+// distinguish the two in what they render.
+export async function getAgreementBySigningTokenHash(
+  supabaseAdmin: SupabaseClient,
+  tokenHash: string
+) {
+  const { data } = await supabaseAdmin
+    .from('grant_agreement_private')
+    .select('*')
+    .eq('signing_token_hash', tokenHash)
+    .maybeSingle()
+    .throwOnError()
+  const priv = data as GrantAgreementPrivate | null
+  if (!priv) {
+    return null
+  }
+  if (priv.token_expires_at && new Date(priv.token_expires_at) < new Date()) {
+    return null
+  }
+  return priv
+}
+
+// What the agreement document needs in order to render. Assembled either from a
+// saved agreement row (once details are drafted or signed) or from live form
+// state (while the creator is still filling it in), so the preview and the
+// signed artifact go through exactly one code path.
+export type OrgAgreementValues = {
+  recipientName: string
+  recipientAddress: string
+  recipientCountry: string
+  recipientEntityClass: RecipientEntityClass | null
+  recipientTaxId: string | null
+  foreignNoTin: boolean
+  signatoryName: string
+}
+
+export function orgValuesFromAgreement(agreement: GrantAgreement): OrgAgreementValues {
+  return {
+    recipientName: agreement.recipient_name ?? '',
+    recipientAddress: agreement.recipient_address ?? '',
+    recipientCountry: agreement.recipient_country ?? '',
+    recipientEntityClass: agreement.recipient_entity_class,
+    recipientTaxId: agreement.recipient_tax_id,
+    foreignNoTin: agreement.foreign_no_tin,
+    signatoryName: agreement.signatory_name ?? '',
+  }
 }
