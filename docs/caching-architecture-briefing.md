@@ -36,14 +36,14 @@ prerendered ISR (`○ 5m 1y`). Three load-bearing changes:
    prerender. **[MEASURED]**
 3. **Wrapped `<OAuthCodeHandler />` in `<Suspense>`.** It calls
    `useSearchParams()` (`components/oauth-code-handler.tsx:11`); unwrapped in the
-   root layout, the build *fails outright* the moment any route prerenders.
+   root layout, the build _fails outright_ the moment any route prerenders.
    **[MEASURED]** — build exits 1 with `useSearchParams() should be wrapped in a
-   suspense boundary at page "/404"`.
+suspense boundary at page "/404"`.
 
 A cron-based cache-warming route was written and then dropped as unnecessary —
 ISR's stale-while-revalidate already means nobody waits.
 
-> One thing PR #192 does *not* need, despite appearances: the
+> One thing PR #192 does _not_ need, despite appearances: the
 > `createServerSupabaseClient` → `createPublicSupabaseClient` swap. **[MEASURED]**
 > — the page prerenders identically either way, because `force-static` makes
 > `cookies()` return empty rather than error. It was kept for intent clarity.
@@ -56,7 +56,7 @@ ISR's stale-while-revalidate already means nobody waits.
 
 `app/sidebar.tsx:23` calls `createServerSupabaseClient()` → `cookies()`, and
 `Sidebar` renders in the root layout. Without Cache Components, a request-time
-API *anywhere* in the tree forces the entire route dynamic. Suspense does not
+API _anywhere_ in the tree forces the entire route dynamic. Suspense does not
 help — that's precisely what PPR adds.
 
 I tested removing `runtime = 'edge'` in isolation: the prerender manifest was
@@ -68,7 +68,7 @@ same thing. Don't fix them one at a time.
 
 ### F2 — `force-static` is the only escape hatch today, and it's lossy **[MEASURED]**
 
-`force-static` forces `cookies()` to return empty *for the whole route*, sidebar
+`force-static` forces `cookies()` to return empty _for the whole route_, sidebar
 included. The prerendered HTML for the ledger contains the logged-out sidebar:
 
 ```bash
@@ -101,7 +101,7 @@ from reality — worth correcting explicitly, not just deleting.
 
 `proxy.ts:25` calls `await supabase.auth.getClaims()`, with a matcher
 (`proxy.ts:32`) that excludes only static assets. On Vercel, routing middleware
-runs *before* cache lookup, so even a CDN-cached ISR page should still pay this
+runs _before_ cache lookup, so even a CDN-cached ISR page should still pay this
 hop. If `getClaims()` does a network round trip to Supabase Auth, that's a floor
 under TTFB that no amount of page caching removes.
 
@@ -165,17 +165,20 @@ the prerender path is therefore a build error.
 Two distinct error shapes, hit in sequence:
 
 **1. Client Components** — fatal at `/causes/[causeSlug]`:
+
 ```
 Error: Route "/causes/[causeSlug]" used `Math.random()` inside a Client
 Component without a Suspense boundary above it.
     at i (db/supabase-browser.ts:5:35)
     at <unknown> (db/supabase-provider.tsx:18:37)
 ```
+
 `SupabaseProvider` builds its client in `useState(() => createClient())` during
 render, and it wraps the entire app from the root layout.
 
 **2. Server Components** — after probing past #1, fatal at `/finances`, having
 reached **14 of 56 pages**:
+
 ```
 Error: Route "/finances" used `Math.random()` before accessing either uncached
 data (e.g. `fetch()`) or Request data (e.g. `cookies()`, `headers()`...).
@@ -184,6 +187,7 @@ data (e.g. `fetch()`) or Request data (e.g. `cookies()`, `headers()`...).
 ```
 
 **Blast radius [MEASURED]:**
+
 - All four client factories are affected: `db/supabase-admin.ts:8`,
   `db/edge.ts:13`, `db/supabase-server.ts:12` and `:32`, `db/supabase-browser.ts:5`.
 - **59 files construct a Supabase client; 40 of them are in `app/`** — i.e.
@@ -195,14 +199,14 @@ data (e.g. `fetch()`) or Request data (e.g. `cookies()`, `headers()`...).
 
 1. **The build halts on the first failing page.** This is an iterative
    fix-and-rebuild loop, not a list you can enumerate in one run. "14/56" is
-   where it stopped, *not* "14 pages are fine and 42 are broken."
+   where it stopped, _not_ "14 pages are fine and 42 are broken."
 2. **Good news:** the root layout is already well Suspense-structured —
    `Sidebar`, `BottomNavBar`, `CompleteProfileBanner` and `OAuthCodeHandler` are
    each already wrapped (`app/layout.tsx:53-68`). The Suspense work I expected
    to dominate is largely done. The Supabase client determinism problem replaces
    it as the main cost.
 
-**Revised verdict:** stage 2 is *not* mechanical, but it is *concentrated*. It's
+**Revised verdict:** stage 2 is _not_ mechanical, but it is _concentrated_. It's
 one root cause in a 5-line module surface, not 40 independent page bugs. Fix
 client construction to be prerender-safe — construct inside `use cache` scopes,
 or after a `connection()` / request-data read — and most of the 40 pages should
@@ -259,7 +263,8 @@ Each step is independently shippable and independently valuable. **Do not skip
 PR 2** — it converts the largest unknown into a number before anyone commits to
 a timeline.
 
-### PR 1 — Delete the dead caching config *(low risk, no behavior change)*
+### PR 1 — Delete the dead caching config _(low risk, no behavior change)_
+
 - Remove all 19 dead `revalidate` exports (F3), including the three in non-route
   files.
 - Remove the three now-redundant `runtime = 'nodejs'` exports on MCP routes —
@@ -269,14 +274,16 @@ a timeline.
 - **Why first:** it's a prerequisite for the flag, it's pure deletion, and it
   stops the codebase from lying about its own caching behavior.
 
-### PR 2 — Verify and fix the middleware cost *(independent, possibly the biggest win)*
+### PR 2 — Verify and fix the middleware cost _(independent, possibly the biggest win)_
+
 - Resolve F4. Measure `getClaims()` on a cached page.
 - If it's a network call per request, fix it — asymmetric JWT verification, or
   narrow the matcher so genuinely public paths skip the proxy entirely.
 - **Independent of everything else.** Can run in parallel; do it early. If the
   Cache Components work stalls, this still stands on its own.
 
-### PR 3 — Make Supabase client construction prerender-safe *(the critical path)*
+### PR 3 — Make Supabase client construction prerender-safe _(the critical path)_
+
 This is F8, and it is the gate everything else passes through. The four
 factories (`db/supabase-admin.ts:8`, `db/edge.ts:13`, `db/supabase-server.ts:12`
 and `:32`, `db/supabase-browser.ts:5`) all call `Math.random()` internally, which
@@ -292,11 +299,12 @@ Cache Components rejects during prerender.
   update all 17, or keep it non-null and defer differently (e.g. a module-level
   singleton constructed outside render).
 - **Verify:** `cacheComponents: true` on a scratch branch, then rebuild
-  repeatedly. The build halts on the *first* failing page, so expect an
+  repeatedly. The build halts on the _first_ failing page, so expect an
   iterative loop. Track progress by the `Generating static pages (n/56)` counter
   — the baseline probe reached 14/56.
 
 ### PR 4 — Consolidate the data layer
+
 - Extend the `db/project-cached.ts` pattern across the `db/` modules: cached,
   tagged accessors for public reads (projects, profiles, causes, rounds, txns).
 - Use React `cache()` for per-render dedup of repeated queries.
@@ -307,6 +315,7 @@ Cache Components rejects during prerender.
   get faster, and nothing depends on the flag.
 
 ### PR 5 — Make auth a hole
+
 - The root layout is **already** Suspense-structured (`app/layout.tsx:53-68`
   wraps `Sidebar`, `CompleteProfileBanner`, `BottomNavBar`, `OAuthCodeHandler`),
   so this is smaller than it looks. Mostly: give those boundaries real skeleton
@@ -315,9 +324,10 @@ Cache Components rejects during prerender.
   from F6 into a cached public fetch and a Suspense-wrapped personalized one,
   starting with `app/projects/[slug]/page.tsx:39-60`.
 - Pre-PPR this won't make pages static yet. That's expected; it's the
-  refactoring that makes PPR *possible*.
+  refactoring that makes PPR _possible_.
 
 ### PR 6 — Flip Cache Components
+
 - `cacheComponents: true`, `'use cache'` on public pages/layouts, `cacheLife`
   profiles instead of `revalidate`, `cacheTag` instead of ad-hoc keys.
 - Replace `force-static` on the ledger with `'use cache'` — this also fixes the
@@ -329,6 +339,7 @@ Cache Components rejects during prerender.
   unmounting. Test dropdowns, modals, and form state — this surfaces latent bugs.
 
 ### PR 7+ — Pages Router → App Router, prioritized by cache correctness
+
 49 routes; do not do them alphabetically. Order by whether the route mutates
 data that a cache depends on:
 
@@ -350,7 +361,7 @@ Each migrated route can call `revalidateTag` directly, and the try/catch in
 
 - **`use cache` is not a distributed cache.** On serverless, runtime entries are
   in-memory per instance and don't reliably persist across requests. It's for
-  getting data into the *static shell*. For genuine runtime caching across
+  getting data into the _static shell_. For genuine runtime caching across
   instances, that's `use cache: remote` (network hop + platform cost) — don't
   assume `'use cache'` alone replaces `unstable_cache` for hot runtime data.
 - **`cacheComponents` deletes `dynamic`/`revalidate`/`fetchCache` entirely.** Any
@@ -374,7 +385,7 @@ Each migrated route can call `revalidateTag` directly, and the try/catch in
 
 1. Does `@supabase/ssr` have a supported way to construct a client
    deterministically, or does PR 3 have to work around `Math.random()` by
-   controlling *where* construction happens? Check upstream issues before
+   controlling _where_ construction happens? Check upstream issues before
    designing the fix — this is a common Cache Components collision and there may
    already be a blessed pattern.
 2. Is `getClaims()` a network call in this project's config (F4)?

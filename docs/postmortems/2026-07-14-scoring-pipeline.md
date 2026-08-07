@@ -19,7 +19,7 @@
 
 1. **`invalidateProjectsCache()` called `revalidateTag`, an App Router-only
    API, from seven Pages Router endpoints.** It threw `Invariant: static
-   generation store missing` on *every* invocation — after the DB writes,
+generation store missing` on _every_ invocation — after the DB writes,
    before the response and the scoring hooks. This was the true reason
    on-create scoring never fired, and it failed at runtime only, so builds
    stayed green.
@@ -46,7 +46,7 @@
 
 - **Two masking layers:** the nightly cron hid the broken hooks for months;
   then a plausible-but-wrong theory (`waitUntil` broken in edge runtime)
-  survived one deploy cycle because the 500 upstream made *any* hook change
+  survived one deploy cycle because the 500 upstream made _any_ hook change
   look ineffective.
 - **Invisible failure:** users got a 500 but the project existed on refresh,
   so nobody reported creation as broken; `vercel logs` is live-tail-only,

@@ -118,7 +118,7 @@ const getOneWeekAgo = (): Date => {
 
 // Supabase's PostgREST rejects an `.in(col, ids)` once the id list makes the
 // request URL too long, returning a "Bad Request"
-// error rather than the rows. Split large id lists into batches to avoid errors. 
+// error rather than the rows. Split large id lists into batches to avoid errors.
 const IN_CHUNK_SIZE = 200
 
 async function selectByIdsChunked<Row>(

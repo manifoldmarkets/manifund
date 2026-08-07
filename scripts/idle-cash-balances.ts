@@ -50,8 +50,7 @@ function getTxnCashMultiplier(
   }
   const isIncoming = txn.to_id === userId
   const isOwnProject = projectCreator === userId
-  const actuallyAccredited =
-    new Date(txn.created_at) < IGNORE_ACCREDITATION_DATE && accredited
+  const actuallyAccredited = new Date(txn.created_at) < IGNORE_ACCREDITATION_DATE && accredited
   if (txn.type === 'cash to charity transfer') return -1
   if (isIncoming && txn.from_id === userId) return isOwnProject ? 1 : 0
   if (txn.type === 'project donation') return isIncoming ? 1 : 0
@@ -60,8 +59,7 @@ function getTxnCashMultiplier(
     return 0
   }
   if (txn.type === 'inject amm liquidity') return isOwnProject ? (isIncoming ? 1 : -1) : 0
-  if (txn.type === 'deposit')
-    return actuallyAccredited && !CHARITABLE_DEPOSITS.has(txn.id) ? 1 : 0
+  if (txn.type === 'deposit') return actuallyAccredited && !CHARITABLE_DEPOSITS.has(txn.id) ? 1 : 0
   if (txn.type === 'withdraw') return -1
   return 0
 }
@@ -152,7 +150,7 @@ async function main() {
     deltasByUser.get(userId)!.push({ created_at, delta })
   }
   for (const t of txns) {
-    const creator = t.project ? creatorByProject.get(t.project) ?? null : null
+    const creator = t.project ? (creatorByProject.get(t.project) ?? null) : null
     for (const uid of new Set([t.to_id, t.from_id].filter(Boolean) as string[])) {
       const m = getTxnCashMultiplier(t, uid, creator, accreditedById.get(uid) ?? false)
       if (m !== 0) push(uid, t.created_at, t.amount * m)
@@ -216,7 +214,9 @@ async function main() {
   }
   const totalAged = qualifying.reduce((s, q) => s + q.aged, 0)
   console.log('-'.repeat(82))
-  console.log(`Total aged >= ${MONTHS}mo across these ${qualifying.length} people: ${fmt(totalAged)}`)
+  console.log(
+    `Total aged >= ${MONTHS}mo across these ${qualifying.length} people: ${fmt(totalAged)}`
+  )
 }
 
 main().catch((e) => {

@@ -11,9 +11,7 @@ export async function triggerProjectScoring(projectId: string) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(process.env.CRON_SECRET
-          ? { authorization: `Bearer ${process.env.CRON_SECRET}` }
-          : {}),
+        ...(process.env.CRON_SECRET ? { authorization: `Bearer ${process.env.CRON_SECRET}` } : {}),
       },
       body: JSON.stringify({ projectId }),
     })

@@ -102,9 +102,7 @@ export function ProjectsDisplay(props: {
           {includedCauses.map((cause) => (
             <button
               key={cause.slug}
-              onClick={() =>
-                setIncludedCauses(includedCauses.filter((c) => c.slug !== cause.slug))
-              }
+              onClick={() => setIncludedCauses(includedCauses.filter((c) => c.slug !== cause.slug))}
               className="group flex items-center gap-0.5 whitespace-nowrap rounded-full bg-orange-100 py-0.5 pl-2.5 pr-1.5 text-xs text-orange-900 transition-colors hover:bg-orange-200"
             >
               {cause.title}

@@ -108,7 +108,11 @@ async function main() {
     return
   }
 
-  const { data: inserted } = await supabase.from('txns').insert(rows).select('id, type').throwOnError()
+  const { data: inserted } = await supabase
+    .from('txns')
+    .insert(rows)
+    .select('id, type')
+    .throwOnError()
   console.log('Inserted:')
   for (const r of inserted ?? []) console.log(' ', r.id, r.type)
 
