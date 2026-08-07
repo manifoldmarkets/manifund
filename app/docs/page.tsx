@@ -92,6 +92,78 @@ const apis = [
 ]`,
     curl: `curl https://manifund.org/api/v0/comments`,
   },
+  {
+    name: 'List users',
+    id: 'users',
+    path: '/api/v0/users',
+    description:
+      'Return the 100 most recently created user profiles. \n\n' +
+      'To get older users, paginate with the `before` parameter, eg from the `created_at` of the 100th user:\n' +
+      '`https://manifund.org/api/v0/users?before=2025-01-24T19:16:45.757Z`\n\n' +
+      'The `id`, `username`, and `name` parameters filter by case-insensitive substring, eg ' +
+      '`https://manifund.org/api/v0/users?name=austin`. Combining them narrows the results: every ' +
+      'filter given must match.',
+    method: 'GET',
+    params: [
+      {
+        name: 'before',
+        type: 'ISO 8601 timestamp',
+        required: false,
+        desc: 'Fetch users created before this time',
+      },
+      {
+        name: 'id',
+        type: 'string',
+        required: false,
+        desc: 'Only users whose id contains this string',
+      },
+      {
+        name: 'username',
+        type: 'string',
+        required: false,
+        desc: 'Only users whose username contains this string',
+      },
+      {
+        name: 'name',
+        type: 'string',
+        required: false,
+        desc: 'Only users whose display name contains this string',
+      },
+    ],
+    response: `[
+  {
+    id: string,
+    created_at: string,
+    // URL of the profile is https://manifund.org/{username}
+    username: string,
+    full_name: string,
+    bio: string,
+    website: string,
+    avatar_url: string,
+    // Can be "individual" | "org"
+    type: string,
+    regranter_status: boolean,
+    // Balances in USD. Cash and charity exclude money locked in pending
+    // offers, so they can add up to less than total_balance.
+    cash_balance: number,
+    charity_balance: number,
+    total_balance: number,
+    // The user's USD transactions, newest first
+    txns: [
+      {
+        id: string,
+        created_at: string,
+        amount: number,
+        type: string,
+        from_id: string,
+        to_id: string,
+        project: string
+      }
+    ]
+  }
+]`,
+    curl: `curl https://manifund.org/api/v0/users`,
+  },
 ]
 
 export default function ApiDocsPage() {

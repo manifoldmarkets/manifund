@@ -397,6 +397,7 @@ export type Database = {
           accreditation_status: boolean
           avatar_url: string | null
           bio: string
+          created_at: string
           full_name: string
           id: string
           long_description: Json | null
@@ -411,6 +412,7 @@ export type Database = {
           accreditation_status?: boolean
           avatar_url?: string | null
           bio?: string
+          created_at?: string
           full_name?: string
           id?: string
           long_description?: Json | null
@@ -425,6 +427,7 @@ export type Database = {
           accreditation_status?: boolean
           avatar_url?: string | null
           bio?: string
+          created_at?: string
           full_name?: string
           id?: string
           long_description?: Json | null

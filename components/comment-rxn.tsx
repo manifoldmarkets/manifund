@@ -306,6 +306,7 @@ export function CommentRxnsPanel(props: {
           username: '',
           avatar_url: '',
           full_name: '',
+          created_at: new Date().toISOString(),
           accreditation_status: false,
           bio: '',
           long_description: {},
