@@ -235,13 +235,12 @@ export default function ApiDocsPage() {
               <span className="font-mono text-sm text-gray-700">https://manifund.org/api/mcp</span>
             </div>
             <p className="mb-6 whitespace-pre-wrap text-gray-600">
-              Connect Claude (or any MCP client) directly to Manifund. The server exposes tools for
+              Allow agents and LLMs to interact with Manifund's data.The server exposes tools for
               searching projects semantically (&quot;AI safety video projects&quot;), recommending
               projects to donors based on their interests, reading comment threads, looking up
               users, and querying donations and balances — so an AI assistant can answer questions
               like &quot;which projects about forecasting got funded this year?&quot; or
-              &quot;recommend 10 projects I&apos;d like&quot; on its own. No authentication
-              required; it has access to the same public data as this API.
+              &quot;recommend 10 projects I&apos;d like&quot; on its own.
             </p>
             <h3 className="mb-2 mt-6 font-semibold text-gray-900">Tools</h3>
             <table className="mb-8 w-full overflow-hidden rounded border text-sm">
