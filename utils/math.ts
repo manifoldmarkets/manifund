@@ -211,7 +211,12 @@ function getBidCharityMultiplier(bid: BidAndProject) {
   }
 }
 
-function getBidCashMultiplier(bid: BidAndProject) {
+export function getBidCashMultiplier(bid: {
+  status: string
+  type: string
+  bidder: string
+  projects: { creator: string; stage: string }
+}) {
   const projectIsBidders = bid.projects.creator === bid.bidder
   if (
     bid.status !== 'pending' ||
@@ -268,6 +273,24 @@ export function getTxnCharityMultiplier(txn: TxnAndProject, userId: string, accr
 }
 
 export function getTxnCashMultiplier(txn: FullTxn, userId: string, accredited: boolean) {
+  return getTxnCashMultiplierRaw(txn, userId, txn.projects?.creator ?? null, accredited)
+}
+
+// Same rules as getTxnCashMultiplier, for callers without a joined projects row
+// (e.g. utils/idle-balances.ts, which pages over every USD txn).
+export function getTxnCashMultiplierRaw(
+  txn: {
+    id: string
+    token: string
+    type: string | null
+    created_at: string
+    from_id: string | null
+    to_id: string
+  },
+  userId: string,
+  projectCreator: string | null,
+  accredited: boolean
+) {
   if (
     txn.token !== 'USD' ||
     (txn.from_id !== userId && txn.to_id !== userId) ||
@@ -278,9 +301,9 @@ export function getTxnCashMultiplier(txn: FullTxn, userId: string, accredited: b
     return 0
   }
   const isIncoming = txn.to_id === userId
-  const isOwnProject = txn.projects?.creator === userId
+  const isOwnProject = projectCreator === userId
   const actuallyAccredited =
-    isBefore(new Date(txn.created_at), new Date('2023-11-02')) && accredited
+    isBefore(new Date(txn.created_at), IGNORE_ACCREDITATION_DATE) && accredited
   if (txn.type === 'cash to charity transfer') {
     return -1
   }

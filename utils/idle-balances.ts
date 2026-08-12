@@ -1,4 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js'
+import { getBidCashMultiplier, getTxnCashMultiplierRaw } from './math'
 
 // "Withdrawable balance" = calculateCashBalance (utils/math.ts): sum of
 // txn.amount * getTxnCashMultiplier(...) plus pending-bid locks. This distinguishes
@@ -6,12 +7,6 @@ import { SupabaseClient } from '@supabase/supabase-js'
 // "Aged N months" = the running withdrawable balance never dropped below that amount at
 // any point in the trailing N months, i.e. min(balance over window) is the portion that
 // has been sitting untouched for the whole window.
-
-const IGNORE_ACCREDITATION_DATE = new Date('2023-11-02')
-const CHARITABLE_DEPOSITS = new Set([
-  '1e17c09d-aa7f-432a-b523-89691531b304',
-  'c223e240-598f-41a9-8aa0-7a961d8db258',
-])
 
 type Txn = {
   id: string
@@ -30,38 +25,6 @@ export type IdleBalance = {
   full_name: string
   current: number
   aged: number
-}
-
-// Faithful port of getTxnCashMultiplier (utils/math.ts:270-311).
-function getTxnCashMultiplier(
-  txn: Txn,
-  userId: string,
-  projectCreator: string | null,
-  accredited: boolean
-) {
-  if (
-    txn.token !== 'USD' ||
-    (txn.from_id !== userId && txn.to_id !== userId) ||
-    txn.type === 'profile donation' ||
-    txn.type === 'tip' ||
-    txn.type === 'return bank funds'
-  ) {
-    return 0
-  }
-  const isIncoming = txn.to_id === userId
-  const isOwnProject = projectCreator === userId
-  const actuallyAccredited = new Date(txn.created_at) < IGNORE_ACCREDITATION_DATE && accredited
-  if (txn.type === 'cash to charity transfer') return -1
-  if (isIncoming && txn.from_id === userId) return isOwnProject ? 1 : 0
-  if (txn.type === 'project donation') return isIncoming ? 1 : 0
-  if (txn.type === 'user to amm trade' || txn.type === 'user to user trade') {
-    if (isOwnProject || actuallyAccredited) return isIncoming ? 1 : -1
-    return 0
-  }
-  if (txn.type === 'inject amm liquidity') return isOwnProject ? (isIncoming ? 1 : -1) : 0
-  if (txn.type === 'deposit') return actuallyAccredited && !CHARITABLE_DEPOSITS.has(txn.id) ? 1 : 0
-  if (txn.type === 'withdraw') return -1
-  return 0
 }
 
 async function pageAll<T>(query: (from: number, to: number) => any): Promise<T[]> {
@@ -120,8 +83,7 @@ export async function computeIdleBalances(
     for (const p of data ?? []) accreditedById.set(p.id, !!p.accreditation_status)
   }
 
-  // Pending bids -> per-user withdrawable lock (getBidCashMultiplier: -1 for a
-  // pending buy/donate bid on the bidder's OWN non-hidden project).
+  // Pending bids -> per-user withdrawable lock.
   const bids = await pageAll<{
     amount: number
     status: string
@@ -138,15 +100,8 @@ export async function computeIdleBalances(
   const bidLockByUser = new Map<string, number>()
   for (const b of bids) {
     if (!b.projects) continue
-    const projectIsBidders = b.projects.creator === b.bidder
-    if (
-      b.type === 'sell' ||
-      b.type === 'assurance sell' ||
-      b.projects.stage === 'hidden' ||
-      !projectIsBidders
-    )
-      continue
-    bidLockByUser.set(b.bidder, (bidLockByUser.get(b.bidder) ?? 0) - b.amount)
+    const m = getBidCashMultiplier({ ...b, projects: b.projects })
+    if (m !== 0) bidLockByUser.set(b.bidder, (bidLockByUser.get(b.bidder) ?? 0) + b.amount * m)
   }
 
   // Per-user signed withdrawable deltas, chronological.
@@ -159,7 +114,7 @@ export async function computeIdleBalances(
   for (const t of txns) {
     const creator = t.project ? (creatorByProject.get(t.project) ?? null) : null
     for (const uid of new Set([t.to_id, t.from_id].filter(Boolean) as string[])) {
-      const m = getTxnCashMultiplier(t, uid, creator, accreditedById.get(uid) ?? false)
+      const m = getTxnCashMultiplierRaw(t, uid, creator, accreditedById.get(uid) ?? false)
       if (m !== 0) push(uid, t.created_at, t.amount * m)
     }
   }
