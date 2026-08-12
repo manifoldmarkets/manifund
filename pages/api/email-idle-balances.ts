@@ -10,10 +10,10 @@ export const config = {
 }
 
 // Quarterly nudge (see vercel.json) to holders of long-idle withdrawable balances,
-// so the money isn't forgotten. Recomputed each run; summary goes to Austin.
+// so the money isn't forgotten. Recomputed each run; summary goes to the team.
 const MONTHS = 12
 const THRESHOLD = 5_000
-const SUMMARY_EMAIL = 'austin@manifund.org'
+const SUMMARY_EMAILS = ['austin@manifund.org', 'carol@manifund.org']
 
 export default async function handler() {
   if (!isProd()) {
@@ -41,25 +41,27 @@ export default async function handler() {
   const summary = idle
     .map((h) => `${h.full_name} (@${h.username}): $${Math.floor(h.aged).toLocaleString('en-US')}`)
     .join('; ')
-  await sendTemplateEmail(
-    TEMPLATE_IDS.GENERIC_NOTIF,
-    {
-      notifText: idle.length
-        ? `Quarterly idle-balance emails sent to ${idle.length} ${
-            idle.length === 1 ? 'person' : 'people'
-          } with a withdrawable balance of $${THRESHOLD.toLocaleString(
-            'en-US'
-          )}+ held for ${MONTHS}+ months: ${summary}`
-        : `Quarterly idle-balance check ran: no one currently holds a withdrawable balance of $${THRESHOLD.toLocaleString(
-            'en-US'
-          )}+ for ${MONTHS}+ months, so no emails were sent.`,
-      buttonUrl: 'https://manifund.org',
-      buttonText: 'Manifund',
-      subject: `Idle balance emails sent: ${idle.length}`,
-    },
-    undefined,
-    SUMMARY_EMAIL
-  )
+  for (const summaryEmail of SUMMARY_EMAILS) {
+    await sendTemplateEmail(
+      TEMPLATE_IDS.GENERIC_NOTIF,
+      {
+        notifText: idle.length
+          ? `Quarterly idle-balance emails sent to ${idle.length} ${
+              idle.length === 1 ? 'person' : 'people'
+            } with a withdrawable balance of $${THRESHOLD.toLocaleString(
+              'en-US'
+            )}+ held for ${MONTHS}+ months: ${summary}`
+          : `Quarterly idle-balance check ran: no one currently holds a withdrawable balance of $${THRESHOLD.toLocaleString(
+              'en-US'
+            )}+ for ${MONTHS}+ months, so no emails were sent.`,
+        buttonUrl: 'https://manifund.org',
+        buttonText: 'Manifund',
+        subject: `Idle balance emails sent: ${idle.length}`,
+      },
+      undefined,
+      summaryEmail
+    )
+  }
 
   return NextResponse.json({ emailed: idle.length })
 }
