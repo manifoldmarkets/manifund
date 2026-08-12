@@ -12,7 +12,7 @@ export const config = {
 // Quarterly nudge (see vercel.json) to holders of long-idle withdrawable balances,
 // so the money isn't forgotten. Recomputed each run; summary goes to Austin.
 const MONTHS = 12
-const THRESHOLD = 10_000
+const THRESHOLD = 5_000
 const SUMMARY_EMAIL = 'austin@manifund.org'
 
 export default async function handler() {
