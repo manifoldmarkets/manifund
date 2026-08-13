@@ -183,24 +183,31 @@ function ConfirmWithdrawal(props: {
 }) {
   const { withdrawalMethod, isBank, withdrawAmount, complete, setComplete } = props
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [withdrawError, setWithdrawError] = useState<string | null>(null)
 
   const completeWithdrawal = async () => {
     setIsSubmitting(true)
-    const response = await fetch('/api/stripe-connect-withdraw', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        dollarAmount: withdrawAmount,
-      }),
-    })
-
-    const json = await response.json()
-    if (json.error) {
-      console.error(json.error)
-    } else {
-      setComplete(true)
+    setWithdrawError(null)
+    try {
+      const response = await fetch('/api/stripe-connect-withdraw', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          dollarAmount: withdrawAmount,
+        }),
+      })
+      const json = await response.json().catch(() => null)
+      if (!response.ok || json?.error) {
+        setWithdrawError(
+          json?.error ?? 'Withdrawal failed. Please try again or contact info@manifund.org.'
+        )
+      } else {
+        setComplete(true)
+      }
+    } catch {
+      setWithdrawError('Withdrawal failed. Please try again or contact info@manifund.org.')
     }
     setIsSubmitting(false)
   }
@@ -260,20 +267,25 @@ function ConfirmWithdrawal(props: {
                 <dd className="mt-0 text-sm leading-6 text-gray-700">${withdrawAmount}</dd>
               </div>
               {!complete && (
-                <Row className="justify-center px-6 py-6">
-                  <Tooltip
-                    text={isSubmitting ? 'Loading...' : complete ? 'Withdrawal complete' : ''}
-                  >
-                    <Button
-                      className="font-semibold"
-                      onClick={completeWithdrawal}
-                      loading={isSubmitting}
-                      disabled={complete}
+                <div className="px-6 py-6">
+                  <Row className="justify-center">
+                    <Tooltip
+                      text={isSubmitting ? 'Loading...' : complete ? 'Withdrawal complete' : ''}
                     >
-                      Withdraw
-                    </Button>
-                  </Tooltip>
-                </Row>
+                      <Button
+                        className="font-semibold"
+                        onClick={completeWithdrawal}
+                        loading={isSubmitting}
+                        disabled={complete}
+                      >
+                        Withdraw
+                      </Button>
+                    </Tooltip>
+                  </Row>
+                  {withdrawError && (
+                    <p className="mt-3 text-center text-sm text-rose-600">{withdrawError}</p>
+                  )}
+                </div>
               )}
             </dl>
           </div>

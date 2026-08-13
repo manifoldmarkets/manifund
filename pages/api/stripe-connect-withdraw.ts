@@ -3,9 +3,11 @@ import { createAdminClient, getUserAndClient } from '@/db/edge'
 import { getProfileById } from '@/db/profile'
 import { getFullTxnsByUser } from '@/db/txn'
 import { calculateCashBalance } from '@/utils/math'
+import Stripe from 'stripe'
 import { stripe } from '@/utils/stripe'
 import uuid from 'react-uuid'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
+import { sendDiscordAlert } from '@/utils/discord'
 import { CENTS_PER_DOLLAR } from '@/utils/constants'
 import { getBidsByUser } from '@/db/bid'
 
@@ -19,25 +21,34 @@ export default async function handler(req: NextRequest) {
   const { dollarAmount } = await req.json()
   const { supabase, user } = await getUserAndClient(req)
   if (!user) {
-    console.error('no user')
-    return NextResponse.error()
+    console.error('withdraw failed: no user')
+    return NextResponse.json({ error: 'You must be signed in to withdraw.' }, { status: 401 })
   }
   const profile = await getProfileById(supabase, user.id)
   if (!profile?.stripe_connect_id) {
-    console.error('no stripe connect id')
-    return NextResponse.error()
+    console.error('withdraw failed: no stripe connect id', user.id)
+    return NextResponse.json(
+      { error: 'Set up your Stripe account before withdrawing.' },
+      { status: 400 }
+    )
   }
   const account = await stripe.accounts.retrieve(profile.stripe_connect_id)
   if (!account.payouts_enabled || !account.details_submitted) {
-    console.error('no payouts enabled')
-    return NextResponse.error()
+    console.error('withdraw failed: payouts not enabled', user.id)
+    return NextResponse.json(
+      { error: 'Complete your Stripe onboarding before withdrawing.' },
+      { status: 400 }
+    )
   }
   const txns = await getFullTxnsByUser(supabase, user.id)
   const bids = await getBidsByUser(supabase, user.id)
   const withdrawBalance = calculateCashBalance(txns, bids, user.id, profile.accreditation_status)
   if (dollarAmount <= 0 || dollarAmount > withdrawBalance) {
-    console.log('invalid amount')
-    return NextResponse.error()
+    console.error('withdraw failed: invalid amount', user.id, dollarAmount)
+    return NextResponse.json(
+      { error: 'Withdrawal amount exceeds your withdrawable balance.' },
+      { status: 400 }
+    )
   }
 
   // Insert the withdrawal txn BEFORE the Stripe transfer to prevent double-withdrawal.
@@ -69,8 +80,11 @@ export default async function handler(req: NextRequest) {
   if (balanceAfter < 0) {
     // Concurrent withdrawal detected — roll back our txn
     await supabaseAdmin.from('txns').delete().eq('id', txnId).throwOnError()
-    console.log('concurrent withdrawal detected, rolled back')
-    return NextResponse.error()
+    console.error('withdraw failed: concurrent withdrawal, rolled back', user.id, dollarAmount)
+    return NextResponse.json(
+      { error: 'Another withdrawal is already in progress. Please try again.' },
+      { status: 409 }
+    )
   }
 
   let transfer
@@ -81,10 +95,27 @@ export default async function handler(req: NextRequest) {
       destination: profile.stripe_connect_id,
     })
   } catch (e) {
+    console.error('withdraw failed: stripe transfer failed', user.id, dollarAmount, e)
     // Stripe transfer failed — roll back the txn
-    await supabaseAdmin.from('txns').delete().eq('id', txnId).throwOnError()
-    console.error('stripe transfer failed', e)
-    return NextResponse.error()
+    let rollbackFailed = false
+    try {
+      await supabaseAdmin.from('txns').delete().eq('id', txnId).throwOnError()
+    } catch (rollbackError) {
+      rollbackFailed = true
+      console.error('withdraw rollback failed', user.id, txnId, rollbackError)
+    }
+    const stripeErrorCode = e instanceof Stripe.errors.StripeError ? e.code : 'unknown'
+    await sendDiscordAlert(
+      `🚨 Withdrawal failed for ${profile.full_name} (${user.email}): ` +
+        `$${dollarAmount}, Stripe error: ${stripeErrorCode}, user id: ${user.id}` +
+        (rollbackFailed
+          ? `\n⚠️ Rollback of txn ${txnId} also failed — their balance is now wrong!`
+          : '')
+    )
+    return NextResponse.json(
+      { error: 'Withdrawal failed. Our team has been notified and will follow up.' },
+      { status: 500 }
+    )
   }
 
   await supabaseAdmin
