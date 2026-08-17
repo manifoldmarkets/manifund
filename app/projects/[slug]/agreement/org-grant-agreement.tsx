@@ -13,8 +13,6 @@ import React from 'react'
 // conditionals inside it, so the two can be versioned independently
 // (CURRENT_ORG_AGREEMENT_VERSION vs CURRENT_AGREEMENT_VERSION) and so no edit
 // here can change how an already-signed individual agreement renders.
-//
-// !! This text has NOT had a legal review. See docs/org-grant-agreements-plan.md.
 
 function Section(props: { number: number | string; title: string; children: React.ReactNode }) {
   const { number, title, children } = props

@@ -309,7 +309,7 @@ unsigned and signed, since activation now waits on Carol.
 
 - [x] **0.** Verify live RLS on `grant_agreements` against prod `pg_policies`.
 - [x] **1.** Migration written. Grep-verified no client-side writes. **Not applied to any DB.**
-- [x] **2.** `org-grant-agreement.tsx` — needs the legal review, it's the long pole.
+- [x] **2.** `org-grant-agreement.tsx` — legal review done.
 - [x] **3.** `recipient-form.tsx` + draft-save endpoint; org doc renders live.
 - [x] **4.** Self-sign path (case 1, Alice → Acme).
 - [x] **5.** Token mint + email + public signing route (case 2, Cherry).
@@ -422,6 +422,5 @@ Deviations from the plan above, and why:
   EIN are public (the Charity's own address and EIN already are). Confirmed as
   intended. If that ever changes, gate the page to owner + admins rather than
   splitting fields across tables again.
-- The new org document needs a named legal reviewer before launch.
 - Whether to migrate existing `signed_off_site` agreements that were signed
   elsewhere purely because of an org signatory, or leave them as-is.
