@@ -12,7 +12,7 @@ import {
 } from '@/db/grant_agreement'
 import { type ProjectAndProfile } from '@/db/project'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { format } from 'date-fns'
 import { GrantAgreement as IndividualGrantAgreement } from './grant-agreement'
 import { OrgGrantAgreement } from './org-grant-agreement'
@@ -280,13 +280,6 @@ export function AgreementFlow(props: {
 function OrgSignatureBlock(props: { agreement?: GrantAgreement; values: OrgAgreementValues }) {
   const { agreement, values } = props
   const signedAt = agreement?.signed_at ? new Date(agreement.signed_at) : undefined
-  // Today's date, for previewing an unsigned block. Set after mount rather than
-  // during render: this component is server-rendered too, and a server in UTC
-  // against a viewer in an earlier timezone would disagree about the date for
-  // part of each day, which is a hydration mismatch.
-  const [today, setToday] = useState<Date | null>(null)
-  useEffect(() => setToday(new Date()), [])
-  const displayDate = signedAt ?? today
   return (
     <Col className="gap-4">
       <Col className="gap-2">
@@ -294,12 +287,14 @@ function OrgSignatureBlock(props: { agreement?: GrantAgreement; values: OrgAgree
         <span className="h-6 border-b border-black">{values.recipient_name}</span>
       </Col>
       <div className="flex flex-col gap-5 md:flex-row md:justify-between">
-        {/* Everything previews live from the form, so the creator sees exactly
-            what the executed block will say before committing to it. */}
+        {/* The Recipient and Name lines preview live from the form, but the
+            signature mark and date appear only once the agreement is actually
+            signed: an unsigned block that shows them reads as executed,
+            especially while a link is out awaiting an external signatory. */}
         <Col className="gap-2">
           <span className="font-medium">By (signature)</span>
           <span className="h-6 w-52 border-b border-black font-satisfy">
-            {values.signatory_name}
+            {signedAt ? values.signatory_name : ''}
           </span>
         </Col>
         <Col className="gap-2">
@@ -309,7 +304,7 @@ function OrgSignatureBlock(props: { agreement?: GrantAgreement; values: OrgAgree
         <Col className="justify-between gap-2">
           <span className="font-medium">Date</span>
           <span className="h-6 w-52 border-b border-black">
-            {displayDate ? format(displayDate, 'MMMM do, yyyy') : ''}
+            {signedAt ? format(signedAt, 'MMMM do, yyyy') : ''}
           </span>
         </Col>
       </div>
