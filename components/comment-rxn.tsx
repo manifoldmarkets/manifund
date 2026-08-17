@@ -315,6 +315,7 @@ export function CommentRxnsPanel(props: {
           stripe_connect_id: null,
           type: 'individual',
           website: null,
+          id_text: null,
         },
       })
       setLocalRxns(rxns)
