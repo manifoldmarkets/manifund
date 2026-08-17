@@ -1,17 +1,11 @@
 import { getProjectAndProfileById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/db/edge'
-import { maybeActivateProject } from '@/utils/activate-project'
 import { escapeHtml, sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { getURL, CURRENT_ORG_AGREEMENT_VERSION } from '@/utils/constants'
-import {
-  clientIp,
-  orgAgreementColumns,
-  parseOrgValues,
-  upsertAgreementPrivate,
-} from '@/utils/grant-agreement-write'
+import { clientIp, commitSignature } from '@/utils/grant-agreement-write'
 import { agreementEmailHtml, renderOrgAgreementHtml } from '@/utils/render-agreement'
-import { getAgreementBySigningTokenHash } from '@/db/grant_agreement'
+import { getAgreementBySigningTokenHash, parseOrgValues } from '@/db/grant_agreement'
 import { hashSigningToken } from '@/utils/signing-token'
 
 export const config = {
@@ -70,45 +64,30 @@ export default async function handler(req: NextRequest) {
     excludeLobbyingClause: project.lobbying,
   })
 
-  await supabaseAdmin
-    .from('grant_agreements')
-    .upsert(
-      {
-        project_id: priv.project_id,
-        signed_at: signedAt,
-        rendered_document: documentHtml,
-        project_title: project.title,
-        project_description: project.description,
-        lobbying_clause_excluded: project.lobbying,
-        ...orgAgreementColumns(parsed),
-        signatory_authority_attested: true,
-        org_agreement_version: CURRENT_ORG_AGREEMENT_VERSION,
-      },
-      { onConflict: 'project_id' }
-    )
-    .throwOnError()
-
-  // Only after the agreement row exists: if the upsert above fails, the project
-  // must not be left marked as signed with no agreement to show for it.
-  await supabaseAdmin
-    .from('projects')
-    .update({ signed_agreement: true })
-    .eq('id', priv.project_id)
-    .throwOnError()
-
-  await upsertAgreementPrivate(supabaseAdmin, priv.project_id, {
-    signed_ip: clientIp(req),
-    signed_user_agent: req.headers.get('user-agent'),
-    // Burn the token: the link is single-use once it has produced a signature.
-    signing_token_hash: null,
-    token_expires_at: null,
+  await commitSignature({
+    supabaseAdmin,
+    activationClient: supabaseAdmin,
+    project,
+    signedAt,
+    documentHtml,
+    agreementColumns: {
+      recipient_type: 'organization',
+      ...parsed,
+      signatory_authority_attested: true,
+      org_agreement_version: CURRENT_ORG_AGREEMENT_VERSION,
+    },
+    privatePatch: {
+      signed_ip: clientIp(req),
+      signed_user_agent: req.headers.get('user-agent'),
+      // Burn the token: the link is single-use once it has produced a signature.
+      signing_token_hash: null,
+      token_expires_at: null,
+    },
   })
 
-  await maybeActivateProject(supabaseAdmin, priv.project_id)
-
-  const attestation = `I, ${parsed.signatoryName}, am authorized to enter into this agreement on behalf of ${parsed.recipientName}, and agree to the terms of this grant as laid out in the above document.`
+  const attestation = `I, ${parsed.signatory_name}, am authorized to enter into this agreement on behalf of ${parsed.recipient_name}, and agree to the terms of this grant as laid out in the above document.`
   const emailHtml = agreementEmailHtml({
-    greetingName: parsed.signatoryName,
+    greetingName: parsed.signatory_name,
     documentHtml,
     attestation,
   })
@@ -142,9 +121,9 @@ export default async function handler(req: NextRequest) {
       {
         subject: `Your grant agreement for "${project.title}" has been signed`,
         htmlContent: `<p>Dear ${escapeHtml(project.profiles.full_name)},</p>
-        <p><strong>${escapeHtml(parsed.signatoryName)}</strong> has signed the grant agreement for
+        <p><strong>${escapeHtml(parsed.signatory_name)}</strong> has signed the grant agreement for
         &quot;${escapeHtml(project.title)}&quot; on behalf of
-        <strong>${escapeHtml(parsed.recipientName)}</strong>. A copy is below for your records.</p>
+        <strong>${escapeHtml(parsed.recipient_name)}</strong>. A copy is below for your records.</p>
         <hr style="border-top: 3px solid #bbb" />
         ${documentHtml}`,
         buttonUrl: `${getURL()}/projects/${project.slug}`,

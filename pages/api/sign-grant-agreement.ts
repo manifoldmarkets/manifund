@@ -1,21 +1,15 @@
 import { getProjectAndProfileById } from '@/db/project'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, getUserAndClient } from '@/db/edge'
-import { maybeActivateProject } from '@/utils/activate-project'
 import { sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { CURRENT_AGREEMENT_VERSION, CURRENT_ORG_AGREEMENT_VERSION } from '@/utils/constants'
-import {
-  clientIp,
-  orgAgreementColumns,
-  parseOrgValues,
-  upsertAgreementPrivate,
-} from '@/utils/grant-agreement-write'
+import { clientIp, commitSignature } from '@/utils/grant-agreement-write'
 import {
   agreementEmailHtml,
   renderIndividualAgreementHtml,
   renderOrgAgreementHtml,
 } from '@/utils/render-agreement'
-import { type GrantAgreement } from '@/db/grant_agreement'
+import { parseOrgValues, type GrantAgreement } from '@/db/grant_agreement'
 
 export const config = {
   runtime: 'edge',
@@ -90,69 +84,52 @@ export default async function handler(req: NextRequest) {
         } as GrantAgreement,
       })
 
-  await supabaseAdmin
-    .from('grant_agreements')
-    .upsert(
-      {
-        project_id: projectId,
-        signed_at: signedAt,
-        rendered_document: documentHtml,
-        project_description: project.description,
-        project_title: project.title,
-        lobbying_clause_excluded: project.lobbying,
-        ...(parsed
-          ? {
-              ...orgAgreementColumns(parsed),
-              signatory_authority_attested: true,
-              org_agreement_version: CURRENT_ORG_AGREEMENT_VERSION,
-              version: null,
-            }
-          : {
-              recipient_type: 'individual',
-              recipient_name: project.profiles.full_name,
-              signatory_name: project.profiles.full_name,
-              version: CURRENT_AGREEMENT_VERSION,
-              // Clear any org draft the creator started and then abandoned:
-              // upsert only writes the columns given, so leaving these out
-              // would sign an individual agreement onto a row still asserting
-              // an entity class, an EIN and an attested org signatory.
-              recipient_address: null,
-              recipient_country: null,
-              recipient_entity_class: null,
-              recipient_tax_id: null,
-              foreign_no_tin: false,
-              signatory_authority_attested: false,
-              org_agreement_version: null,
-            }),
-      },
-      { onConflict: 'project_id' }
-    )
-    .throwOnError()
-
-  // Only after the agreement row exists: if the upsert above fails, the project
-  // must not be left marked as signed with no agreement to show for it.
-  await supabaseAdmin
-    .from('projects')
-    .update({ signed_agreement: true })
-    .eq('id', projectId)
-    .throwOnError()
-
-  await upsertAgreementPrivate(supabaseAdmin, projectId, {
-    signatory_email: user.email ?? null,
-    signed_ip: clientIp(req),
-    signed_user_agent: req.headers.get('user-agent'),
-    // A self-signed agreement has no outstanding link; clear any earlier one so
-    // a previously emailed token can't still be used.
-    signing_token_hash: null,
-    token_sent_to: null,
-    token_sent_at: null,
-    token_expires_at: null,
+  await commitSignature({
+    supabaseAdmin,
+    activationClient: supabase,
+    project,
+    signedAt,
+    documentHtml,
+    agreementColumns: parsed
+      ? {
+          recipient_type: 'organization',
+          ...parsed,
+          signatory_authority_attested: true,
+          org_agreement_version: CURRENT_ORG_AGREEMENT_VERSION,
+          version: null,
+        }
+      : {
+          recipient_type: 'individual',
+          recipient_name: project.profiles.full_name,
+          signatory_name: project.profiles.full_name,
+          version: CURRENT_AGREEMENT_VERSION,
+          // Clear any org draft the creator started and then abandoned:
+          // upsert only writes the columns given, so leaving these out
+          // would sign an individual agreement onto a row still asserting
+          // an entity class, an EIN and an attested org signatory.
+          recipient_address: null,
+          recipient_country: null,
+          recipient_entity_class: null,
+          recipient_tax_id: null,
+          foreign_no_tin: false,
+          signatory_authority_attested: false,
+          org_agreement_version: null,
+        },
+    privatePatch: {
+      signatory_email: user.email ?? null,
+      signed_ip: clientIp(req),
+      signed_user_agent: req.headers.get('user-agent'),
+      // A self-signed agreement has no outstanding link; clear any earlier one
+      // so a previously emailed token can't still be used.
+      signing_token_hash: null,
+      token_sent_to: null,
+      token_sent_at: null,
+      token_expires_at: null,
+    },
   })
 
-  await maybeActivateProject(supabase, projectId)
-
   const attestation = parsed
-    ? `I, ${parsed.signatoryName}, am authorized to enter into this agreement on behalf of ${parsed.recipientName}, and agree to the terms of this grant as laid out in the above document.`
+    ? `I, ${parsed.signatory_name}, am authorized to enter into this agreement on behalf of ${parsed.recipient_name}, and agree to the terms of this grant as laid out in the above document.`
     : `I, ${project.profiles.full_name}, agree to the terms of this grant as laid out in the above document.`
 
   // The signature is committed; a failed records-copy email must not surface as
@@ -163,7 +140,7 @@ export default async function handler(req: NextRequest) {
       {
         subject: 'Your Manifund grant agreement',
         htmlContent: agreementEmailHtml({
-          greetingName: parsed ? parsed.signatoryName : project.profiles.full_name,
+          greetingName: parsed ? parsed.signatory_name : project.profiles.full_name,
           documentHtml,
           attestation,
         }),

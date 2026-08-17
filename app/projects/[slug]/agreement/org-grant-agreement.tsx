@@ -47,7 +47,7 @@ export function OrgGrantAgreement(props: {
   excludeLobbyingClause: boolean
 }) {
   const { project, values, excludeLobbyingClause } = props
-  const ein = values.recipientTaxId
+  const ein = values.recipient_tax_id
 
   // Numbered dynamically because the last recital only appears while the grant
   // is still undecided.
@@ -57,10 +57,10 @@ export function OrgGrantAgreement(props: {
       registered 501(c)3-nonprofit with EIN 88-3668801 (the “Charity”).
     </p>,
     <p key="recipient">
-      {values.recipientName || '[Recipient legal name]'}
-      {values.recipientAddress ? `, ${values.recipientAddress}` : ''}
-      {values.recipientCountry ? `, ${values.recipientCountry}` : ''},{' '}
-      {entityDescription(values.recipientEntityClass)}
+      {values.recipient_name || '[Recipient legal name]'}
+      {values.recipient_address ? `, ${values.recipient_address}` : ''}
+      {values.recipient_country ? `, ${values.recipient_country}` : ''},{' '}
+      {entityDescription(values.recipient_entity_class)}
       {ein ? ` with EIN ${ein}` : ''} (the “Recipient”).
     </p>,
   ]

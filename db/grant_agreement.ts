@@ -121,24 +121,87 @@ export async function getAgreementBySigningTokenHash(
 // saved agreement row (once details are drafted or signed) or from live form
 // state (while the creator is still filling it in), so the preview and the
 // signed artifact go through exactly one code path.
+//
+// Keys are the grant_agreements column names, so a complete value spreads
+// straight into an upsert and there's no camelCase twin to keep in sync.
 export type OrgAgreementValues = {
-  recipientName: string
-  recipientAddress: string
-  recipientCountry: string
-  recipientEntityClass: RecipientEntityClass | null
-  recipientTaxId: string | null
-  foreignNoTin: boolean
-  signatoryName: string
+  recipient_name: string
+  recipient_address: string
+  recipient_country: string
+  recipient_entity_class: RecipientEntityClass | null
+  recipient_tax_id: string | null
+  foreign_no_tin: boolean
+  signatory_name: string
 }
 
+// Same columns, minus the row's nulls: the form wants '' for empty text fields.
 export function orgValuesFromAgreement(agreement: GrantAgreement): OrgAgreementValues {
   return {
-    recipientName: agreement.recipient_name ?? '',
-    recipientAddress: agreement.recipient_address ?? '',
-    recipientCountry: agreement.recipient_country ?? '',
-    recipientEntityClass: agreement.recipient_entity_class,
-    recipientTaxId: agreement.recipient_tax_id,
-    foreignNoTin: agreement.foreign_no_tin,
-    signatoryName: agreement.signatory_name ?? '',
+    recipient_name: agreement.recipient_name ?? '',
+    recipient_address: agreement.recipient_address ?? '',
+    recipient_country: agreement.recipient_country ?? '',
+    recipient_entity_class: agreement.recipient_entity_class,
+    recipient_tax_id: agreement.recipient_tax_id,
+    foreign_no_tin: agreement.foreign_no_tin,
+    signatory_name: agreement.signatory_name ?? '',
   }
+}
+
+const ENTITY_CLASSES: RecipientEntityClass[] = [
+  'us_501c3',
+  'us_nonprofit_other',
+  'us_for_profit',
+  'foreign_org',
+]
+
+// Sanitizes untrusted input into the values shape, without judging completeness.
+function extractOrgValues(input: unknown): OrgAgreementValues {
+  const v = (input && typeof input === 'object' ? input : {}) as Record<string, unknown>
+  const str = (key: string) => (typeof v[key] === 'string' ? (v[key] as string).trim() : '')
+  return {
+    recipient_name: str('recipient_name'),
+    recipient_address: str('recipient_address'),
+    recipient_country: str('recipient_country'),
+    recipient_entity_class: ENTITY_CLASSES.find((c) => c === v.recipient_entity_class) ?? null,
+    recipient_tax_id: str('recipient_tax_id') || null,
+    foreign_no_tin: v.foreign_no_tin === true,
+    signatory_name: str('signatory_name'),
+  }
+}
+
+// The single source of validation for org recipient details. The form calls it
+// for immediate feedback; the signing endpoints call it as the enforcement,
+// since they're reachable directly. Returns the sanitized values, or a
+// human-readable reason the input is incomplete.
+export function parseOrgValues(input: unknown): OrgAgreementValues | { error: string } {
+  if (!input || typeof input !== 'object') {
+    return { error: 'Missing recipient details.' }
+  }
+  const values = extractOrgValues(input)
+  if (!values.recipient_name) {
+    return { error: 'Enter the organization’s legal name.' }
+  }
+  if (!values.recipient_address) {
+    return { error: 'Enter the organization’s registered address.' }
+  }
+  if (!values.recipient_country) {
+    return { error: 'Enter the organization’s country.' }
+  }
+  if (!values.recipient_entity_class) {
+    return { error: 'Select the organization’s entity type.' }
+  }
+  if (requiresEin(values.recipient_entity_class) && !values.recipient_tax_id) {
+    return { error: 'Enter the organization’s EIN.' }
+  }
+  if (
+    !requiresEin(values.recipient_entity_class) &&
+    !values.recipient_tax_id &&
+    !values.foreign_no_tin
+  ) {
+    return { error: 'Enter an EIN, or confirm the organization has no US taxpayer ID.' }
+  }
+  if (!values.signatory_name) {
+    return { error: 'Enter the signatory’s name.' }
+  }
+  return values
 }

@@ -3,11 +3,11 @@ import { Button } from '@/components/button'
 import { Checkbox } from '@/components/input'
 import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
-import { type OrgAgreementValues } from '@/db/grant_agreement'
+import { parseOrgValues, type OrgAgreementValues } from '@/db/grant_agreement'
 import { type ProjectAndProfile } from '@/db/project'
 import { useState } from 'react'
 import { OrgGrantAgreement } from '@/app/projects/[slug]/agreement/org-grant-agreement'
-import { RecipientForm, validateRecipient } from '@/app/projects/[slug]/agreement/recipient-form'
+import { RecipientForm } from '@/app/projects/[slug]/agreement/recipient-form'
 
 // The signatory's view: the same form the creator drafted, editable, so the
 // person actually bound by the agreement can correct their organization's legal
@@ -26,9 +26,9 @@ export function ExternalSignForm(props: {
   const [done, setDone] = useState(false)
 
   async function sign() {
-    const problem = validateRecipient(values, 'self', '')
-    if (problem) {
-      setError(problem)
+    const parsed = parseOrgValues(values)
+    if ('error' in parsed) {
+      setError(parsed.error)
       return
     }
     setIsSubmitting(true)
@@ -85,9 +85,10 @@ export function ExternalSignForm(props: {
         />
         <div className="ml-3 text-sm leading-6">
           <label htmlFor="terms" className="font-medium text-gray-900">
-            I, <strong>{values.signatoryName || '[your name]'}</strong>, am authorized to enter into
-            this agreement on behalf of <strong>{values.recipientName || '[organization]'}</strong>,
-            and agree to the terms of this grant as laid out in the above document.
+            I, <strong>{values.signatory_name || '[your name]'}</strong>, am authorized to enter
+            into this agreement on behalf of{' '}
+            <strong>{values.recipient_name || '[organization]'}</strong>, and agree to the terms of
+            this grant as laid out in the above document.
           </label>
         </div>
       </Row>

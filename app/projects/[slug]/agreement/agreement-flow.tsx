@@ -5,6 +5,7 @@ import { Col } from '@/components/layout/col'
 import { Row } from '@/components/layout/row'
 import {
   orgValuesFromAgreement,
+  parseOrgValues,
   type GrantAgreement,
   type OrgAgreementValues,
   type RecipientType,
@@ -15,17 +16,17 @@ import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import { GrantAgreement as IndividualGrantAgreement } from './grant-agreement'
 import { OrgGrantAgreement } from './org-grant-agreement'
-import { RecipientForm, validateRecipient, type SignerChoice } from './recipient-form'
+import { RecipientForm, type SignerChoice } from './recipient-form'
 import { SignatureDisplay } from './signature-display'
 
 const EMPTY_VALUES: OrgAgreementValues = {
-  recipientName: '',
-  recipientAddress: '',
-  recipientCountry: '',
-  recipientEntityClass: null,
-  recipientTaxId: null,
-  foreignNoTin: false,
-  signatoryName: '',
+  recipient_name: '',
+  recipient_address: '',
+  recipient_country: '',
+  recipient_entity_class: null,
+  recipient_tax_id: null,
+  foreign_no_tin: false,
+  signatory_name: '',
 }
 
 // Owns the state for the whole /agreement page: which kind of recipient this
@@ -102,8 +103,21 @@ export function AgreementFlow(props: {
     }
   }
 
+  // Same completeness rules the server enforces, checked here for immediate
+  // feedback, plus the email needed when the signing link goes to someone else.
+  function validateOrgForm() {
+    const parsed = parseOrgValues(values)
+    if ('error' in parsed) {
+      return parsed.error
+    }
+    if (signerChoice === 'someone_else' && !signatoryEmail.trim()) {
+      return 'Enter the signatory’s email address.'
+    }
+    return null
+  }
+
   async function signAsOrg() {
-    const problem = validateRecipient(values, signerChoice, signatoryEmail)
+    const problem = validateOrgForm()
     if (problem) {
       setError(problem)
       return
@@ -114,7 +128,7 @@ export function AgreementFlow(props: {
   }
 
   async function sendForSignature() {
-    const problem = validateRecipient(values, signerChoice, signatoryEmail)
+    const problem = validateOrgForm()
     if (problem) {
       setError(problem)
       return
@@ -219,9 +233,9 @@ export function AgreementFlow(props: {
                 <label htmlFor="terms" className="font-medium text-gray-900">
                   {isOrg ? (
                     <>
-                      I, <strong>{values.signatoryName || '[your name]'}</strong>, am authorized to
+                      I, <strong>{values.signatory_name || '[your name]'}</strong>, am authorized to
                       enter into this agreement on behalf of{' '}
-                      <strong>{values.recipientName || '[organization]'}</strong>, and agree to the
+                      <strong>{values.recipient_name || '[organization]'}</strong>, and agree to the
                       terms of this grant as laid out in the above document.
                     </>
                   ) : (
@@ -277,7 +291,7 @@ function OrgSignatureBlock(props: { agreement?: GrantAgreement; values: OrgAgree
     <Col className="gap-4">
       <Col className="gap-2">
         <span className="font-medium">Recipient</span>
-        <span className="h-6 border-b border-black">{values.recipientName}</span>
+        <span className="h-6 border-b border-black">{values.recipient_name}</span>
       </Col>
       <div className="flex flex-col gap-5 md:flex-row md:justify-between">
         {/* Everything previews live from the form, so the creator sees exactly
@@ -285,12 +299,12 @@ function OrgSignatureBlock(props: { agreement?: GrantAgreement; values: OrgAgree
         <Col className="gap-2">
           <span className="font-medium">By (signature)</span>
           <span className="h-6 w-52 border-b border-black font-satisfy">
-            {values.signatoryName}
+            {values.signatory_name}
           </span>
         </Col>
         <Col className="gap-2">
           <span className="font-medium">Name</span>
-          <span className="h-6 w-52 border-b border-black">{values.signatoryName}</span>
+          <span className="h-6 w-52 border-b border-black">{values.signatory_name}</span>
         </Col>
         <Col className="justify-between gap-2">
           <span className="font-medium">Date</span>

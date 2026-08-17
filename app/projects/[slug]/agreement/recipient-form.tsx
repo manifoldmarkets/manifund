@@ -39,10 +39,10 @@ export function RecipientForm(props: {
   const set = (patch: Partial<OrgAgreementValues>) => onChange({ ...values, ...patch })
 
   const entityClassOptions = Object.values(ENTITY_CLASS_LABELS)
-  const selectedEntityLabel = values.recipientEntityClass
-    ? ENTITY_CLASS_LABELS[values.recipientEntityClass]
+  const selectedEntityLabel = values.recipient_entity_class
+    ? ENTITY_CLASS_LABELS[values.recipient_entity_class]
     : 'Select…'
-  const needsEin = requiresEin(values.recipientEntityClass)
+  const needsEin = requiresEin(values.recipient_entity_class)
 
   return (
     <Col className="gap-6 rounded-md border border-gray-300 p-5">
@@ -52,9 +52,9 @@ export function RecipientForm(props: {
         </label>
         <Input
           id="recipient-name"
-          value={values.recipientName}
+          value={values.recipient_name}
           disabled={disabled}
-          onChange={(e) => set({ recipientName: e.target.value })}
+          onChange={(e) => set({ recipient_name: e.target.value })}
           placeholder="Cherry Foundation, Inc."
         />
       </Col>
@@ -65,9 +65,9 @@ export function RecipientForm(props: {
         </label>
         <Input
           id="recipient-address"
-          value={values.recipientAddress}
+          value={values.recipient_address}
           disabled={disabled}
-          onChange={(e) => set({ recipientAddress: e.target.value })}
+          onChange={(e) => set({ recipient_address: e.target.value })}
           placeholder="123 Main Street, Springfield, IL 62701"
         />
       </Col>
@@ -78,9 +78,9 @@ export function RecipientForm(props: {
         </label>
         <Input
           id="recipient-country"
-          value={values.recipientCountry}
+          value={values.recipient_country}
           disabled={disabled}
-          onChange={(e) => set({ recipientCountry: e.target.value })}
+          onChange={(e) => set({ recipient_country: e.target.value })}
           placeholder="United States"
         />
       </Col>
@@ -98,8 +98,8 @@ export function RecipientForm(props: {
             // strand a checked box: the EIN field stays disabled with no way to
             // re-enable it, and validation then demands an EIN forever.
             set({
-              recipientEntityClass: nextClass,
-              foreignNoTin: requiresEin(nextClass) ? false : values.foreignNoTin,
+              recipient_entity_class: nextClass,
+              foreign_no_tin: requiresEin(nextClass) ? false : values.foreign_no_tin,
             })
           }}
         />
@@ -111,21 +111,21 @@ export function RecipientForm(props: {
         </label>
         <Input
           id="recipient-ein"
-          value={values.recipientTaxId ?? ''}
-          disabled={disabled || values.foreignNoTin}
-          onChange={(e) => set({ recipientTaxId: e.target.value })}
+          value={values.recipient_tax_id ?? ''}
+          disabled={disabled || values.foreign_no_tin}
+          onChange={(e) => set({ recipient_tax_id: e.target.value })}
           placeholder="12-3456789"
         />
         {!needsEin && (
           <Row className="items-center gap-3">
             <Checkbox
               id="foreign-no-tin"
-              checked={values.foreignNoTin}
+              checked={values.foreign_no_tin}
               disabled={disabled}
               onChange={(e) =>
                 set({
-                  foreignNoTin: e.target.checked,
-                  recipientTaxId: e.target.checked ? null : values.recipientTaxId,
+                  foreign_no_tin: e.target.checked,
+                  recipient_tax_id: e.target.checked ? null : values.recipient_tax_id,
                 })
               }
             />
@@ -172,9 +172,9 @@ export function RecipientForm(props: {
         </label>
         <Input
           id="signatory-name"
-          value={values.signatoryName}
+          value={values.signatory_name}
           disabled={disabled}
-          onChange={(e) => set({ signatoryName: e.target.value })}
+          onChange={(e) => set({ signatory_name: e.target.value })}
           placeholder="Carol Jones"
         />
       </Col>
@@ -200,42 +200,4 @@ export function RecipientForm(props: {
       )}
     </Col>
   )
-}
-
-// Required before an org agreement can be signed or sent out. Returns a
-// human-readable reason, or null when the form is complete.
-export function validateRecipient(
-  values: OrgAgreementValues,
-  signerChoice: SignerChoice,
-  signatoryEmail: string
-) {
-  if (!values.recipientName.trim()) {
-    return 'Enter the organization’s legal name.'
-  }
-  if (!values.recipientAddress.trim()) {
-    return 'Enter the organization’s registered address.'
-  }
-  if (!values.recipientCountry.trim()) {
-    return 'Enter the organization’s country.'
-  }
-  if (!values.recipientEntityClass) {
-    return 'Select the organization’s entity type.'
-  }
-  if (requiresEin(values.recipientEntityClass) && !values.recipientTaxId?.trim()) {
-    return 'Enter the organization’s EIN.'
-  }
-  if (
-    !requiresEin(values.recipientEntityClass) &&
-    !values.foreignNoTin &&
-    !values.recipientTaxId?.trim()
-  ) {
-    return 'Enter an EIN, or confirm the organization has no US taxpayer ID.'
-  }
-  if (!values.signatoryName.trim()) {
-    return 'Enter the signatory’s name.'
-  }
-  if (signerChoice === 'someone_else' && !signatoryEmail.trim()) {
-    return 'Enter the signatory’s email address.'
-  }
-  return null
 }

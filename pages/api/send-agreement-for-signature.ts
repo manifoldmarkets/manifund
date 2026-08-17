@@ -3,11 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient, getUserAndClient } from '@/db/edge'
 import { escapeHtml, sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { getURL } from '@/utils/constants'
-import {
-  orgAgreementColumns,
-  parseOrgValues,
-  upsertAgreementPrivate,
-} from '@/utils/grant-agreement-write'
+import { upsertAgreementPrivate } from '@/utils/grant-agreement-write'
+import { parseOrgValues } from '@/db/grant_agreement'
 import { generateSigningToken, hashSigningToken, signingTokenExpiry } from '@/utils/signing-token'
 
 export const config = {
@@ -55,7 +52,8 @@ export default async function handler(req: NextRequest) {
         project_title: project.title,
         project_description: project.description,
         lobbying_clause_excluded: project.lobbying,
-        ...orgAgreementColumns(parsed),
+        recipient_type: 'organization',
+        ...parsed,
       },
       { onConflict: 'project_id' }
     )
@@ -76,12 +74,12 @@ export default async function handler(req: NextRequest) {
     TEMPLATE_IDS.GENERIC_NOTIF_HTML,
     {
       subject: `Signature requested: Manifund grant agreement for "${project.title}"`,
-      htmlContent: `<p>Hello ${escapeHtml(parsed.signatoryName)},</p>
+      htmlContent: `<p>Hello ${escapeHtml(parsed.signatory_name)},</p>
       <p>${escapeHtml(project.profiles.full_name)} has proposed a project,
       &quot;${escapeHtml(project.title)}&quot;, to be funded by Manifold for Charity, with
-      <strong>${escapeHtml(parsed.recipientName)}</strong> named as the recipient of the grant.</p>
+      <strong>${escapeHtml(parsed.recipient_name)}</strong> named as the recipient of the grant.</p>
       <p>You've been listed as the person authorized to sign on
-      ${escapeHtml(parsed.recipientName)}'s behalf. Use the link below to review the agreement,
+      ${escapeHtml(parsed.recipient_name)}'s behalf. Use the link below to review the agreement,
       correct any details, and sign. The link expires in 30 days.</p>`,
       buttonUrl: `${getURL()}/agreement/sign/${token}`,
       buttonText: 'Review and sign',
