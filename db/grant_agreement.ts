@@ -27,24 +27,15 @@ export function requiresEin(entityClass: RecipientEntityClass | null) {
   return entityClass !== null && entityClass !== 'foreign_org'
 }
 
-// TODO: delete this block once `bun run gen-types` has been re-run against a
-// database with 20260725000000_org_grant_agreements.sql applied. Until the
-// migration is pushed to prod, the generated Row type is missing these columns,
-// so they're declared by hand and intersected in below.
-type OrgAgreementColumns = {
+// The generated Row types the vocabulary columns as plain strings; narrow them
+// to the unions the CHECK constraints enforce.
+type GrantAgreementRow = Omit<
+  Database['public']['Tables']['grant_agreements']['Row'],
+  'recipient_type' | 'recipient_entity_class'
+> & {
   recipient_type: RecipientType
-  recipient_address: string | null
-  recipient_country: string | null
   recipient_entity_class: RecipientEntityClass | null
-  recipient_tax_id: string | null
-  foreign_no_tin: boolean
-  signatory_authority_attested: boolean
-  org_agreement_version: number | null
-  rendered_document: string | null
 }
-
-type GrantAgreementRow = Database['public']['Tables']['grant_agreements']['Row'] &
-  OrgAgreementColumns
 
 export type GrantAgreement = GrantAgreementRow & {
   profiles: { full_name: string; username: string }
@@ -53,22 +44,7 @@ export type GrantAgreement = GrantAgreementRow & {
 // Sensitive counterpart to grant_agreements. Service-role access only: RLS on
 // this table is enabled with no policies, so an anon/authenticated client sees
 // nothing. Never pass a whole row of this to a client component.
-export type GrantAgreementPrivate = {
-  project_id: string
-  signatory_email: string | null
-  signing_token_hash: string | null
-  token_sent_to: string | null
-  token_sent_at: string | null
-  token_expires_at: string | null
-  signed_ip: string | null
-  signed_user_agent: string | null
-  w9_received_at: string | null
-  w8_received_at: string | null
-  determination_letter_on_file: boolean
-  foreign_withholding_flag: boolean
-  created_at: string
-  updated_at: string
-}
+export type GrantAgreementPrivate = Database['public']['Tables']['grant_agreement_private']['Row']
 
 export async function getGrantAgreement(supabase: SupabaseClient, projectId: string) {
   const { data, error } = await supabase
