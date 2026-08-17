@@ -105,7 +105,7 @@ export default async function handler(req: NextRequest) {
         {
           subject: `Your signed Manifund grant agreement for "${project.title}"`,
           htmlContent: emailHtml,
-          buttonUrl: `${getURL()}/projects/${project.slug}`,
+          buttonUrl: `${getURL()}projects/${project.slug}`,
           buttonText: 'View the project',
         },
         undefined,
@@ -126,7 +126,7 @@ export default async function handler(req: NextRequest) {
         <strong>${escapeHtml(parsed.recipient_name)}</strong>. A copy is below for your records.</p>
         <hr style="border-top: 3px solid #bbb" />
         ${documentHtml}`,
-        buttonUrl: `${getURL()}/projects/${project.slug}`,
+        buttonUrl: `${getURL()}projects/${project.slug}`,
         buttonText: 'View your project',
       },
       project.creator

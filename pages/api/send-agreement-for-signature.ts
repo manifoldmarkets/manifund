@@ -81,7 +81,7 @@ export default async function handler(req: NextRequest) {
       <p>You've been listed as the person authorized to sign on
       ${escapeHtml(parsed.recipient_name)}'s behalf. Use the link below to review the agreement,
       correct any details, and sign. The link expires in 30 days.</p>`,
-      buttonUrl: `${getURL()}/agreement/sign/${token}`,
+      buttonUrl: `${getURL()}agreement/sign/${token}`,
       buttonText: 'Review and sign',
     },
     undefined,
