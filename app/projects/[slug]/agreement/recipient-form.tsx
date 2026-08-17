@@ -55,7 +55,6 @@ export function RecipientForm(props: {
           value={values.recipient_name}
           disabled={disabled}
           onChange={(e) => set({ recipient_name: e.target.value })}
-          placeholder="Cherry Foundation, Inc."
         />
       </Col>
 
@@ -68,7 +67,6 @@ export function RecipientForm(props: {
           value={values.recipient_address}
           disabled={disabled}
           onChange={(e) => set({ recipient_address: e.target.value })}
-          placeholder="123 Main Street, Springfield, IL 62701"
         />
       </Col>
 
@@ -81,7 +79,6 @@ export function RecipientForm(props: {
           value={values.recipient_country}
           disabled={disabled}
           onChange={(e) => set({ recipient_country: e.target.value })}
-          placeholder="United States"
         />
       </Col>
 
@@ -114,7 +111,6 @@ export function RecipientForm(props: {
           value={values.recipient_tax_id ?? ''}
           disabled={disabled || values.foreign_no_tin}
           onChange={(e) => set({ recipient_tax_id: e.target.value })}
-          placeholder="12-3456789"
         />
         {!needsEin && (
           <Row className="items-center gap-3">
@@ -175,7 +171,6 @@ export function RecipientForm(props: {
           value={values.signatory_name}
           disabled={disabled}
           onChange={(e) => set({ signatory_name: e.target.value })}
-          placeholder="Carol Jones"
         />
       </Col>
 
@@ -194,7 +189,6 @@ export function RecipientForm(props: {
             value={signatoryEmail}
             disabled={disabled}
             onChange={(e) => onSignatoryEmailChange(e.target.value)}
-            placeholder="carol@cherryfoundation.org"
           />
         </Col>
       )}
