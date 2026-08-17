@@ -15,7 +15,7 @@
 -- Every legitimate write already goes through the service role:
 --   pages/api/sign-grant-agreement.ts        (switched to createAdminClient in this change)
 --   pages/api/sign-grant-agreement-external.ts (new, admin client, token-authed)
---   pages/api/save-agreement-recipient.ts    (new, admin client)
+--   pages/api/send-agreement-for-signature.ts (new, admin client)
 --   pages/api/backfill-grant-agreements.ts   (createAdminClient)
 --   pages/api/fix-unupdated-agreements.ts    (createAdminClient)
 --   scripts/backfill-approved-at.ts          (SUPABASE_SERVICE_ROLE_KEY)

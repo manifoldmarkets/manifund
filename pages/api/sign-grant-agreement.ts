@@ -71,12 +71,6 @@ export default async function handler(req: NextRequest) {
 
   const signedAt = new Date().toISOString()
 
-  await supabaseAdmin
-    .from('projects')
-    .update({ signed_agreement: true })
-    .eq('id', projectId)
-    .throwOnError()
-
   // Rendered before the write, from the values about to be written, so the
   // stored artifact and the row are produced in one round trip.
   const documentHtml = parsed
@@ -135,6 +129,14 @@ export default async function handler(req: NextRequest) {
     )
     .throwOnError()
 
+  // Only after the agreement row exists: if the upsert above fails, the project
+  // must not be left marked as signed with no agreement to show for it.
+  await supabaseAdmin
+    .from('projects')
+    .update({ signed_agreement: true })
+    .eq('id', projectId)
+    .throwOnError()
+
   await upsertAgreementPrivate(supabaseAdmin, projectId, {
     signatory_email: user.email ?? null,
     signed_ip: clientIp(req),
@@ -153,19 +155,25 @@ export default async function handler(req: NextRequest) {
     ? `I, ${parsed.signatoryName}, am authorized to enter into this agreement on behalf of ${parsed.recipientName}, and agree to the terms of this grant as laid out in the above document.`
     : `I, ${project.profiles.full_name}, agree to the terms of this grant as laid out in the above document.`
 
-  await sendTemplateEmail(
-    TEMPLATE_IDS.GENERIC_NOTIF_HTML,
-    {
-      subject: 'Your Manifund grant agreement',
-      htmlContent: agreementEmailHtml({
-        greetingName: parsed ? parsed.signatoryName : project.profiles.full_name,
-        documentHtml,
-        attestation,
-      }),
-      buttonUrl: `manifund.org/projects/${project.slug}`,
-      buttonText: 'View your project',
-    },
-    user.id
-  )
+  // The signature is committed; a failed records-copy email must not surface as
+  // a signing failure (a retry would just hit the already-signed 409).
+  try {
+    await sendTemplateEmail(
+      TEMPLATE_IDS.GENERIC_NOTIF_HTML,
+      {
+        subject: 'Your Manifund grant agreement',
+        htmlContent: agreementEmailHtml({
+          greetingName: parsed ? parsed.signatoryName : project.profiles.full_name,
+          documentHtml,
+          attestation,
+        }),
+        buttonUrl: `manifund.org/projects/${project.slug}`,
+        buttonText: 'View your project',
+      },
+      user.id
+    )
+  } catch (e) {
+    console.error('Failed to email signed agreement copy:', e)
+  }
   return NextResponse.json({ success: true })
 }

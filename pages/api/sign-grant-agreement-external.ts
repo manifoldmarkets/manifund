@@ -63,11 +63,6 @@ export default async function handler(req: NextRequest) {
   }
 
   const signedAt = new Date().toISOString()
-  await supabaseAdmin
-    .from('projects')
-    .update({ signed_agreement: true })
-    .eq('id', priv.project_id)
-    .throwOnError()
 
   const documentHtml = renderOrgAgreementHtml({
     project,
@@ -93,6 +88,14 @@ export default async function handler(req: NextRequest) {
     )
     .throwOnError()
 
+  // Only after the agreement row exists: if the upsert above fails, the project
+  // must not be left marked as signed with no agreement to show for it.
+  await supabaseAdmin
+    .from('projects')
+    .update({ signed_agreement: true })
+    .eq('id', priv.project_id)
+    .throwOnError()
+
   await upsertAgreementPrivate(supabaseAdmin, priv.project_id, {
     signed_ip: clientIp(req),
     signed_user_agent: req.headers.get('user-agent'),
@@ -112,34 +115,46 @@ export default async function handler(req: NextRequest) {
 
   // The signatory gets the records copy; the creator gets told it's done, since
   // their project only moves forward once this signature lands.
+  //
+  // The signature is committed and the token burned, so a failed email must not
+  // surface as a signing failure: the signatory would see an error page for a
+  // signature that succeeded, and the link they'd retry with is already dead.
   if (priv.token_sent_to) {
+    try {
+      await sendTemplateEmail(
+        TEMPLATE_IDS.GENERIC_NOTIF_HTML,
+        {
+          subject: `Your signed Manifund grant agreement for "${project.title}"`,
+          htmlContent: emailHtml,
+          buttonUrl: `${getURL()}/projects/${project.slug}`,
+          buttonText: 'View the project',
+        },
+        undefined,
+        priv.token_sent_to
+      )
+    } catch (e) {
+      console.error('Failed to email signed agreement copy to signatory:', e)
+    }
+  }
+  try {
     await sendTemplateEmail(
       TEMPLATE_IDS.GENERIC_NOTIF_HTML,
       {
-        subject: `Your signed Manifund grant agreement for "${project.title}"`,
-        htmlContent: emailHtml,
+        subject: `Your grant agreement for "${project.title}" has been signed`,
+        htmlContent: `<p>Dear ${escapeHtml(project.profiles.full_name)},</p>
+        <p><strong>${escapeHtml(parsed.signatoryName)}</strong> has signed the grant agreement for
+        &quot;${escapeHtml(project.title)}&quot; on behalf of
+        <strong>${escapeHtml(parsed.recipientName)}</strong>. A copy is below for your records.</p>
+        <hr style="border-top: 3px solid #bbb" />
+        ${documentHtml}`,
         buttonUrl: `${getURL()}/projects/${project.slug}`,
-        buttonText: 'View the project',
+        buttonText: 'View your project',
       },
-      undefined,
-      priv.token_sent_to
+      project.creator
     )
+  } catch (e) {
+    console.error('Failed to email signed-agreement notice to creator:', e)
   }
-  await sendTemplateEmail(
-    TEMPLATE_IDS.GENERIC_NOTIF_HTML,
-    {
-      subject: `Your grant agreement for "${project.title}" has been signed`,
-      htmlContent: `<p>Dear ${escapeHtml(project.profiles.full_name)},</p>
-      <p><strong>${escapeHtml(parsed.signatoryName)}</strong> has signed the grant agreement for
-      &quot;${escapeHtml(project.title)}&quot; on behalf of
-      <strong>${escapeHtml(parsed.recipientName)}</strong>. A copy is below for your records.</p>
-      <hr style="border-top: 3px solid #bbb" />
-      ${documentHtml}`,
-      buttonUrl: `${getURL()}/projects/${project.slug}`,
-      buttonText: 'View your project',
-    },
-    project.creator
-  )
 
   return NextResponse.json({ success: true })
 }
