@@ -54,6 +54,9 @@ export default async function handler(req: NextRequest) {
         lobbying_clause_excluded: project.lobbying,
         recipient_type: 'organization',
         ...parsed,
+        // Draft rows must not carry the individual-agreement version either;
+        // without this the column's default of 1 sticks when the row is new.
+        version: null,
       },
       { onConflict: 'project_id' }
     )

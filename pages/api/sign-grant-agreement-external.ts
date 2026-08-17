@@ -75,6 +75,9 @@ export default async function handler(req: NextRequest) {
       ...parsed,
       signatory_authority_attested: true,
       org_agreement_version: CURRENT_ORG_AGREEMENT_VERSION,
+      // The individual-agreement version must not survive on an org agreement;
+      // the column defaults to 1 when the draft row is first created.
+      version: null,
     },
     privatePatch: {
       signed_ip: clientIp(req),
