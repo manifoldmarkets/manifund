@@ -31,10 +31,45 @@ file, open a PR, and merging deploys it.
   unknown values are `'—'`; always state years explicitly in prose (e.g.
   "in 2025", not "last year").
 
-## Research checklist
+## Research process
 
-For each funder, check their website (grants database / blog / careers page)
-and search for news since `LAST_UPDATED`:
+Be thorough, not timid. The expectation is that **every figure and claim on
+the page gets re-verified on every refresh**, not just skimmed for obvious
+staleness. A refresh that only tweaks a line or two is almost certainly
+under-researched. Never conclude "no change" for a funder from a single
+search — do several distinct searches per funder (their site, public grants
+database, blog/newsroom, careers page, plus news and community sources like
+the EA Forum and LessWrong).
+
+For each funder:
+
+- **Confirm it still exists in its current form.** Check for renames,
+  mergers, shutdowns, and successor funds. If a funder has been replaced,
+  update everything — At-a-glance row, profile section, footnotes — to
+  reflect the successor, and note the transition in the profile.
+- **Re-verify every "By the numbers" figure and At-a-glance cell**, including
+  current-year grant counts and totals from public grants databases. Add
+  current-year figures where they exist (e.g. "N grants so far in 2026"),
+  and update footnotes to match what the source now shows.
+- **Keep At-a-glance booleans (`generalApps` / `openRfps` / `donations`) in
+  sync with the profile text.** If an RFP closes or applications open, flip
+  the flag and update the prose in the same PR.
+- **For any time-sensitive opportunity whose date has passed**, use the link
+  or a search to confirm whether the deadline was extended. If extended,
+  update the date; if truly passed, reword to the durable state rather than
+  just deleting the mention — e.g. an expired RFP becomes "They post periodic
+  RFPs, but otherwise don't accept unsolicited proposals," not silence.
+- **Click every link on the page** to verify it still exists and says what is
+  claimed.
+- **Make changes consistently in both the At-a-glance table and the funder
+  profiles** whenever both apply.
+- Refresh "Recent updates" bullets with notable grants or announcements, and
+  "Get involved" with current job openings.
+
+Also consider whether anything in the "Not included" section should change,
+and whether a significant new funder has appeared.
+
+Funder list with primary URLs (update this list too if funders change):
 
 - Coefficient Giving — https://coefficientgiving.org/ (grants: https://coefficientgiving.org/funds)
 (we look at only the Transformative AI and GCR Opportunities Funds)
@@ -51,31 +86,17 @@ and search for news since `LAST_UPDATED`:
 - BlueDot Impact — https://bluedot.org/
 - Long-Term Future Fund (LTFF) — https://funds.effectivealtruism.org/funds/far-future
 
-For each, look for changes to: donation/grant totals and expected giving,
-staff count, whether general applications are open, open RFPs or calls for
-proposals, notable recent grants or announcements ("Recent updates" bullets),
-and job openings ("Get involved"). Also consider whether any funder in
-"Not included" now belongs in the main list, or whether a significant new
-funder has appeared.
-
-Click all links to verify they still exist and say what is claimed.
-
-If there are any time-sensitive opportunities on the page with a date in the past, use
-the link or search them to confirm whether the deadline was extended, and either update
-with a new deadline or delete.
-
-Ensure any changes are consistently made in both the "at a glance" table and the funder
-profiles if both apply.
-
 ## Editing rules
 
 - Only change facts you can back with a citable source; put the source URL
   next to each change in the PR body.
-- If you can't verify a figure, leave it alone. Never estimate or extrapolate
-  numbers.
-- Prefer small, conservative diffs — this page is a reference, not a blog.
+- If you can't verify a figure after genuinely trying, leave it alone. Never
+  estimate or extrapolate numbers.
+- The PR body must also include a short per-funder research log: what was
+  checked and what was found, including funders where nothing changed. This
+  is how the reviewer can tell thorough from lazy.
 - Update `LAST_UPDATED` if and only if you changed content.
-- If nothing material has changed, make no edits and open no PR.
+- If nothing material has changed anywhere, make no edits and open no PR.
 
 ## Verification
 
