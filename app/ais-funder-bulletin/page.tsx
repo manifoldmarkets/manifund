@@ -330,12 +330,8 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
     node: <A href="https://manifund.org/about">https://manifund.org/about</A>,
   },
   {
-    text: 'Distinct projects that received funding in 2025, computed from the donation data behind manifund.org/about. The 234 previously shown here could not be reproduced from that source.',
-    node: (
-      <>
-        Distinct projects that received funding in 2025.
-      </>
-    ),
+    text: 'Distinct projects that received funding in 2025.',
+    node: <>Distinct projects that received funding in 2025.</>,
   },
   {
     text: 'Around $4.7M donated between January 1 and August 18, 2026, per the data behind manifund.org/about, extrapolated to a full year.',
