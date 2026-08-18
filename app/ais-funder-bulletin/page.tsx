@@ -210,7 +210,7 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
     ),
   },
   {
-    text: 'Longview\'s hiring materials said "In 2026, we aim to move $200 million — making us the second largest funder in that field." Their AI page previously carried a running total, which rose from $89M as of year-end 2025 to $266M as of June 2026, but that sentence was removed from the site in August 2026.',
+    text: 'Longview\'s hiring materials said "In 2026, we aim to move $200 million — making us the second largest funder in that field."',
     node: (
       <>
         Longview&apos;s{' '}
@@ -218,7 +218,7 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
           hiring materials
         </A>{' '}
         said &ldquo;In 2026, we aim to move $200 million — making us the second largest funder in
-        that field.&rdquo; 
+        that field.&rdquo;
       </>
     ),
   },
@@ -704,9 +704,7 @@ export default function AisFunderBulletinPage() {
                 <li>
                   By the numbers:
                   <ul>
-                    <li>
-                      donations: they aim to move $200m to AI safety in 2026.
-                    </li>
+                    <li>donations: they aim to move $200m to AI safety in 2026.</li>
                     <li>
                       staff: ~27 listed, 7 of them with AI program titles; around half the org
                       working on AIS gets 14
