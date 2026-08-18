@@ -828,8 +828,7 @@ export default function AisFunderBulletinPage() {
                     <li>donating: up to $100m this year</li>
                     <li>grant sizes: $100k to $15m</li>
                     <li>
-                      staff: 13 listed on their team page, most working on AI-related areas. Oscar
-                      Delaney leads their AI policy and governance grantmaking.
+                      staff: 13 listed on their team page, most working on AI-related areas.
                     </li>
                   </ul>
                 </li>
