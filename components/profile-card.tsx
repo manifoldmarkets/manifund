@@ -18,7 +18,12 @@ export function ProfileCard(props: {
   return (
     <Card className={clsx('relative flex h-full flex-col gap-4 border-none py-3', className)}>
       <Row className="items-center justify-between">
-        <SponsoredTag text={`${formatMoney(sponsoredAmount)}`} className="absolute left-3 top-3" />
+        {sponsoredAmount !== 0 && (
+          <SponsoredTag
+            text={`${formatMoney(sponsoredAmount)}`}
+            className="absolute left-3 top-3"
+          />
+        )}
         {profile.website && (
           <Link href={addHttpToUrl(profile.website)}>
             <LinkIcon className="h-5 w-5 rounded bg-gray-100 stroke-2 p-1 text-gray-600 hover:bg-gray-200" />

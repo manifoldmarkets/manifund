@@ -127,7 +127,7 @@ export function BalanceSheet() {
         $.pending +
         $.charity +
         $.mox +
-        $.mox_fund
+        $.mox_fund,
     },
     {},
     { name: '(not included in net calculations)' },
