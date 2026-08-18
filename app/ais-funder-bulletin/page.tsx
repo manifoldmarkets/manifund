@@ -7,7 +7,7 @@ export const metadata = {
   description: 'A digest of funders in the AI safety space.',
 }
 
-const LAST_UPDATED = 'July 28, 2026'
+const LAST_UPDATED = 'August 18, 2026'
 
 const LINK = 'text-orange-600 underline decoration-orange-500 decoration-dotted underline-offset-2'
 
@@ -108,7 +108,7 @@ const AT_A_GLANCE: Row[] = [
     expected2026: { v: '$20M', n: 14 },
     fte: '2',
     generalApps: false,
-    openRfps: true,
+    openRfps: false,
     donations: false,
   },
   {
@@ -144,11 +144,11 @@ const AT_A_GLANCE: Row[] = [
     donations: false,
   },
   {
-    name: 'LTFF',
-    href: 'https://funds.effectivealtruism.org/funds/far-future',
+    name: 'Transformative AI Fund',
+    href: 'https://funds.effectivealtruism.org/funds/transformative-ai',
     donated2025: { v: '—' },
     grants2025: { v: '—' },
-    expected2026: { v: '$3M', n: 20 },
+    expected2026: { v: '$4M', n: 20 },
     fte: '1',
     generalApps: true,
     openRfps: false,
@@ -327,12 +327,20 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
     ),
   },
   {
-    text: "Past payouts have been higher, but they haven't posted a payout report in a long time, and they are in a transitional period.",
+    text: 'EA Funds announced in August 2026 that it is closing the LTFF and spending down its remaining balance (~$3.7M) — roughly three-quarters to existing longtermist applications, largely via the first Lightcone Commons round, and ~$0.9M to seed the successor Transformative AI Fund, which launched with a ~$1M seed and hopes to raise more.',
     node: (
       <>
-        <A href="https://funds.effectivealtruism.org/funds/far-future">Past payouts</A>&nbsp;have
-        been higher, but they haven&apos;t posted a payout report in a long time, and they are in a
-        transitional period.
+        EA Funds{' '}
+        <A href="https://forum.effectivealtruism.org/posts/dtZ9wbKWjtvGWDRJx/closing-the-ltff-spending-down-funds-and-a-new-ai-fund-at-ea">
+          announced in August 2026
+        </A>{' '}
+        that it is closing the LTFF and spending down its remaining balance (~$3.7M) — roughly
+        three-quarters to existing longtermist applications, largely via the first Lightcone Commons
+        round, and ~$0.9M to seed the successor Transformative AI Fund, which{' '}
+        <A href="https://forum.effectivealtruism.org/posts/dYuNi5Rh68o9YKstg/ea-funds-is-launching-the-transformative-ai-fund">
+          launched
+        </A>{' '}
+        with a ~$1M seed and hopes to raise more.
       </>
     ),
   },
@@ -490,10 +498,11 @@ export default function AisFunderBulletinPage() {
                   Background:
                   <ul>
                     <li>
-                      Previously Open Philanthropy, it grew out of a partnership between GiveWell
-                      (founded in 2007 by Holden Karnofsky and Elie Hassenfeld) and Good Ventures
-                      (foundation started in 2011 by Cari Tuna and Dustin Moskovitz). They&apos;re
-                      mainly funded by Tuna and Moskovitz, but looking to work with more donors.
+                      Previously Open Philanthropy (renamed Coefficient Giving in November 2025), it
+                      grew out of a partnership between GiveWell (founded in 2007 by Holden Karnofsky
+                      and Elie Hassenfeld) and Good Ventures (foundation started in 2011 by Cari Tuna
+                      and Dustin Moskovitz). They&apos;re mainly funded by Tuna and Moskovitz, but
+                      looking to work with more donors.
                     </li>
                   </ul>
                 </li>
@@ -532,11 +541,16 @@ export default function AisFunderBulletinPage() {
                   Recent updates:
                   <ul>
                     <li>
-                      They&apos;re hiring for{' '}
+                      They&apos;ve stood up a new{' '}
+                      <A href="https://coefficientgiving.org/research/introducing-our-new-managing-director-of-public-policy/">
+                        US AI Policy team
+                      </A>{' '}
+                      under Managing Director of Public Policy Caleb Watney, and hire periodically for
+                      DC-based AI policy grantmaking and other roles (a recent round of{' '}
                       <A href="https://jobs.ashbyhq.com/coefficientgiving/5496d5b6-d7d2-4390-b577-af6b0c3bf24b">
-                        DC-based roles in US AI policy
-                      </A>
-                      ; applications are due August 2.
+                        US AI policy roles
+                      </A>{' '}
+                      closed in July 2026).
                     </li>
                   </ul>
                 </li>
@@ -625,7 +639,8 @@ export default function AisFunderBulletinPage() {
                       they&apos;re interested in donors giving at least $1m/year
                     </li>
                     <li>
-                      Apply for a job: no current open roles, but you can express interest{' '}
+                      Apply for a job: they periodically hire (including AI policy grantmaking
+                      roles); see current openings{' '}
                       <A href="https://www.longview.org/careers/">here</A>
                     </li>
                   </ul>
@@ -730,7 +745,11 @@ export default function AisFunderBulletinPage() {
                       those donating &gt; $100k
                     </li>
                     <li>
-                      Apply for a job: no current open roles, but you can express interest{' '}
+                      Apply for a job: they&apos;re hiring an{' '}
+                      <A href="https://jobs.ashbyhq.com/macroscopic/2fc5bd5f-d336-4af4-ad8b-b05ee0f43231">
+                        Operations Manager (Finance &amp; Compliance)
+                      </A>
+                      ; you can also express interest for other roles{' '}
                       <A href="https://jobs.ashbyhq.com/macroscopic/0d80e3a8-2ffd-4bef-8485-03f764732a6e">
                         here
                       </A>
@@ -780,8 +799,9 @@ export default function AisFunderBulletinPage() {
                   Recent updates:
                   <ul>
                     <li>
-                      The S-process grant rounds closed in April-July and recommendations will be
-                      announced in September-November.
+                      The 2026 S-process grant rounds closed in April-July (the Main Round added new
+                      Freedom and Fairness tracks, plus three cause-area Theme Rounds); recommendations
+                      are expected to be announced throughout fall 2026, by the end of November.
                     </li>
                   </ul>
                 </li>
@@ -814,9 +834,10 @@ export default function AisFunderBulletinPage() {
                     <li>
                       Apply for a job: They are currently hiring for a{' '}
                       <A href="https://survivalandflourishing.com/careers/full-stack-engineer">
-                        software engineer
-                      </A>{' '}
-                      role.
+                        full-stack software engineer
+                      </A>
+                      , as well as a product manager and a grants coordinator (see all roles{' '}
+                      <A href="https://survivalandflourishing.com/careers">here</A>).
                     </li>
                   </ul>
                 </li>
@@ -927,12 +948,16 @@ export default function AisFunderBulletinPage() {
                       Apply for funding:
                       <ul>
                         <li>
-                          They currently have a{' '}
-                          <A href="https://schmidtsciences.smapply.io/prog/scaling_ai_safety_for_a_multi_agent_world/">
-                            joint RFP on multi-agent safety
+                          They post periodic RFPs — recently a{' '}
+                          <A href="https://www.schmidtsciences.org/opportunity/2026-science-of-trustworthy-ai-rfp/">
+                            Science of Trustworthy AI RFP
                           </A>{' '}
-                          with Google DeepMind, Cooperative AI Foundation, and others with
-                          applications due August 8.
+                          (closed May 2026) and a{' '}
+                          <A href="https://schmidtsciences.smapply.io/prog/scaling_ai_safety_for_a_multi_agent_world/">
+                            joint call on multi-agent safety
+                          </A>{' '}
+                          with Google DeepMind, ARIA, the Cooperative AI Foundation, and Google.org
+                          (closed August 2026). No AI safety RFP is open right now.
                         </li>
                         <li>Otherwise, they don&apos;t accept unsolicited proposals.</li>
                       </ul>
@@ -972,7 +997,7 @@ export default function AisFunderBulletinPage() {
                   Recent updates:
                   <ul>
                     <li>
-                      Grants in the past month:
+                      Recent grants include:
                       <ul>
                         <li>$150,000 for AI safety workshops for middle schoolers in India</li>
                         <li>$77,000 for Sparse Concept Anchoring</li>
@@ -1094,8 +1119,8 @@ export default function AisFunderBulletinPage() {
                         </li>
                         <li>
                           <A href="https://bluedot.org/programs/rapid-grants">Rapid Grants</A>: up
-                          to $10k for concrete AI safety projects — application: 5 minutes, decision
-                          time: 3 days
+                          to $10k for concrete AI safety projects, events, and community-building —
+                          application: 5 minutes, decision time: ~5 working days
                         </li>
                       </ul>
                     </li>
@@ -1104,50 +1129,58 @@ export default function AisFunderBulletinPage() {
               </ul>
             </Funder>
 
-            <Funder title="Long-Term Future Fund (LTFF)">
+            <Funder title="Transformative AI Fund (formerly LTFF)">
               <ul>
                 <li>
-                  <A href="https://funds.effectivealtruism.org/funds/far-future">Website</A>
+                  <A href="https://funds.effectivealtruism.org/funds/transformative-ai">Website</A>
                 </li>
                 <li>
                   Background:
                   <ul>
-                    <li>Started in 2017 as a project of Centre for Effective Altruism.</li>
+                    <li>
+                      The Long-Term Future Fund (LTFF) started in 2017 as a project of the Centre for
+                      Effective Altruism. In August 2026, EA Funds{' '}
+                      <A href="https://forum.effectivealtruism.org/posts/dtZ9wbKWjtvGWDRJx/closing-the-ltff-spending-down-funds-and-a-new-ai-fund-at-ea">
+                        announced it was closing the LTFF
+                      </A>{' '}
+                      and{' '}
+                      <A href="https://forum.effectivealtruism.org/posts/dYuNi5Rh68o9YKstg/ea-funds-is-launching-the-transformative-ai-fund">
+                        launching the Transformative AI Fund
+                      </A>{' '}
+                      (TAIF) as its successor, with a new full-time team led by Lowe Lundin.
+                    </li>
                   </ul>
                 </li>
                 <li>
                   Thesis:
                   <ul>
                     <li>
-                      Focused on giving small grants of $5k-$200k for individuals, independent
-                      researchers, and new projects. They&apos;re currently in a transitional
-                      period, so funding may be delayed.
+                      TAIF makes early-stage grants to individuals, new organizations, and new
+                      projects reducing risks from transformative AI, spanning technical AI safety, AI
+                      governance, and field-building. It is always open to applications.
                     </li>
                   </ul>
                 </li>
                 <li>
                   By the numbers:
                   <ul>
-                    <li>donating: historically around $6m/year</li>
-                    <li>number of grants: 100-200/year</li>
-                    <li>grant size: between $5k-$200k</li>
-                    <li>staff: all part-time, ~1 FTE</li>
+                    <li>
+                      LTFF historically donated around $6m/year across 100-200 grants; TAIF launched
+                      with a ~$1M seed and hopes to raise more
+                    </li>
+                    <li>grant size: typically $10k-$150k, rarely above $300k</li>
+                    <li>staff: full-time Head of Fund (Lowe Lundin) plus part-time grantmakers</li>
                   </ul>
                 </li>
                 <li>
                   Recent updates:
                   <ul>
                     <li>
-                      They haven&apos;t posted grant updates since 2024 Q1. As of April 2026, they{' '}
-                      <A href="https://forum.effectivealtruism.org/posts/MaAzwX3erHW3rD53B/a-brief-update-on-ea-funds-and-a-recruitment-announcement">
-                        announced
-                      </A>{' '}
-                      that they were in the process of hiring new leadership and were in a
-                      transitional period.
-                    </li>
-                    <li>
-                      They are donating $2M to this{' '}
-                      <A href="https://www.lightconecommons.com/">Lightcone Commons</A> round.
+                      The LTFF is spending down its remaining ~$3.7M balance — roughly three-quarters
+                      to existing longtermist applications, largely via the first{' '}
+                      <A href="https://www.lightconecommons.com/">Lightcone Commons</A> round (~$2M to
+                      that round), and ~$0.9M to seed TAIF. Its last payout report covers May 2023 to
+                      March 2024.
                     </li>
                   </ul>
                 </li>
@@ -1155,10 +1188,8 @@ export default function AisFunderBulletinPage() {
                   Get involved:
                   <ul>
                     <li>
-                      Apply for funding: use{' '}
-                      <A href="https://av20jp3z.paperform.co/?fund=Long-Term%20Future%20Fund">
-                        this form
-                      </A>
+                      Apply for funding: apply to the Transformative AI Fund{' '}
+                      <A href="https://funds.effectivealtruism.org/funds/transformative-ai">here</A>
                     </li>
                     <li>
                       Donate: donate to EA Funds{' '}
@@ -1176,14 +1207,12 @@ export default function AisFunderBulletinPage() {
         <CollapsibleSection title="Not included">
           <ul className="space-y-3 text-sm text-gray-600 [&_a]:text-orange-600">
             <li>
-              <A href="https://astralisfoundation.org/">Astralis Foundation</A>: They seem fairly
-              new with not a ton of public info. They&apos;re not taking unsolicited funding
-              requests. Based on{' '}
-              <A href="https://web.archive.org/web/20260121035945/https://effectivealtruism.nz/job-board/ai-governance-fund-lead-astralis-foundation">
-                this job posting
-              </A>{' '}
-              from earlier in the year, they have a fund focused on international AI governance
-              aiming to deploy $15m this year.
+              <A href="https://astralisfoundation.org/">Astralis Foundation</A>: A European-based
+              multi-donor AI-safety grantmaker that has grown considerably — reportedly raising over
+              $20m from around 15 donors and supporting ~14 organizations. Its Shared Horizons Fund
+              focuses on international AI governance (including European and Chinese policy
+              ecosystems). They still don&apos;t appear to take unsolicited funding requests, so
+              they remain in this section for now.
             </li>
             <li>
               <A href="https://www.navigation.org/">Navigation Fund</A>: Jed McCaleb&apos;s
@@ -1195,21 +1224,29 @@ export default function AisFunderBulletinPage() {
               it&apos;s now gone from their website.
             </li>
             <li>
-              <A href="https://www.airiskfund.com/">AI Risk Mitigation Fund</A>: They announced a
-              spinoff from LTFF in 2023, but haven&apos;t made any updates or grant announcements on
-              their website. They&apos;re one of the funders of Lightcone Commons.
+              <A href="https://www.airiskfund.com/">AI Risk Mitigation Fund (ARM Fund)</A>: A spinoff
+              from LTFF announced in 2023. It&apos;s one of the funders of Lightcone Commons
+              (contributing ~$2M to the first round), and as part of the LTFF wind-down, several
+              departing LTFF managers plan to continue part-time grantmaking through the ARM Fund, so
+              it may become more active.
             </li>
             <li>
               <A href="https://futureoflife.org/">FLI</A>: They were previously more active in
-              grantmaking and still have a PhD fellowship program, but seem to be less focused on
-              grantmaking these days.
+              grantmaking and still run PhD fellowship programs, but seem to be less focused on
+              grantmaking these days — and they are{' '}
+              <A href="https://futureoflife.org/grant-program/phd-fellowships/">
+                pausing new fellowship applications
+              </A>{' '}
+              in fall 2026 to reassess the program.
             </li>
             <li>
               <A href="https://www.frontiermodelforum.org/ai-safety-fund/">
                 Frontier Model Forum AI Safety Fund
               </A>
-              : It was funded with $10m in 2023. Most of this was distributed in 2024 and 2025 and
-              they now appear to be winding down and spending their remaining funds.
+              : It was funded with $10m+ in 2023 and has run two grant rounds (the second announced
+              December 2025). After the Meridian Institute wound down in 2025, FMF began managing the
+              fund directly and is now directing remaining funds to narrowly-scoped, urgent-bottleneck
+              projects.
             </li>
             <li>
               <A href="https://foresight.org/grants/grants-ai-for-science-safety/">
@@ -1222,12 +1259,13 @@ export default function AisFunderBulletinPage() {
               they&apos;re primarily backing <A href="https://www.simplexaisafety.com/">Simplex</A>.
             </li>
             <li>
-              <A href="http://grantmaking.ai">grantmaking.ai</A>: New initiative housed under
-              Manifund, with an initial $1m, see{' '}
+              <A href="http://grantmaking.ai">grantmaking.ai</A>: Initiative housed under Manifund; its
+              inaugural $1m AI x-risk round (see{' '}
               <A href="https://www.lesswrong.com/posts/hDQZZzYkcipgaZfxy/usd1m-ai-x-risk-grant-round-is-live-on-grantmaking-ai-apply">
                 launch post
               </A>
-              .
+              ) has now closed to applications, and the platform continues as a public
+              funding-opportunities database.
             </li>
           </ul>
         </CollapsibleSection>
