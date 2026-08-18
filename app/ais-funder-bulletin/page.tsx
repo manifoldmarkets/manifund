@@ -1329,8 +1329,7 @@ export default function AisFunderBulletinPage() {
                         this form
                       </A>
                       ; applications are rolling. The LTFF is no longer taking new applications, and
-                      live LTFF applications were imported into the first Lightcone Commons round —
-                      if yours was, don&apos;t reapply there.
+                      live LTFF applications were imported into the first Lightcone Commons round.
                     </li>
                     <li>
                       Donate: donate to EA Funds{' '}
