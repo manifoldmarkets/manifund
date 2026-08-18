@@ -135,9 +135,9 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'BlueDot Impact',
     href: 'https://bluedot.org/',
-    donated2025: { v: '$11k', n: 20 },
-    grants2025: { v: '16', n: 20 },
-    expected2026: { v: '$7M', n: 21 },
+    donated2025: { v: '$0' },
+    grants2025: { v: '0' },
+    expected2026: { v: '$7M', n: 20 },
     fte: '1',
     generalApps: true,
     openRfps: false,
@@ -146,9 +146,9 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'Transformative AI Fund (formerly LTFF)',
     href: 'https://funds.effectivealtruism.org/funds/transformative-ai',
-    donated2025: { v: '$1.2M', n: 22 },
-    grants2025: { v: '20', n: 22 },
-    expected2026: { v: '$4M', n: 23 },
+    donated2025: { v: '$1.2M', n: 21 },
+    grants2025: { v: '20', n: 21 },
+    expected2026: { v: '$4M', n: 22 },
     fte: '1',
     generalApps: true,
     openRfps: false,
@@ -339,16 +339,6 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
       <>
         Around $4.7M donated between January 1 and August 18, 2026, per the data behind{' '}
         <A href="https://manifund.org/about">manifund.org/about</A>, extrapolated to a full year.
-      </>
-    ),
-  },
-  {
-    text: "BlueDot's public rapid grant list shows 16 grants totalling about $10.7k dated to 2025. That list covers 513 of their 606 rapid grants, so the real 2025 figures may be a little higher.",
-    node: (
-      <>
-        BlueDot&apos;s <A href="https://bluedot.org/grants/rapid">public rapid grant list</A> shows
-        16 grants totalling about $10.7k dated to 2025. That list covers 513 of their 606 rapid
-        grants, so the real 2025 figures may be a little higher.
       </>
     ),
   },
@@ -1239,8 +1229,8 @@ export default function AisFunderBulletinPage() {
                   Background:
                   <ul>
                     <li>
-                      Founded in 2022 as an AI safety training organization. They made a handful of
-                      small rapid grants from mid-2025 and scaled up sharply in 2026.
+                      Founded in 2022 as an AI safety training organization. They started making
+                      grants at scale in 2026.
                     </li>
                   </ul>
                 </li>
