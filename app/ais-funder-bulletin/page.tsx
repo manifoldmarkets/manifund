@@ -1125,29 +1125,6 @@ export default function AisFunderBulletinPage() {
                   </ul>
                 </li>
                 <li>
-                  Recent updates:
-                  <ul>
-                    <li>
-                      Grants since mid-July 2026, from their{' '}
-                      <A href="https://manifund.org/JueYan">Manifund profile</A>:
-                      <ul>
-                        <li>$85,000 for AI Safety Hong Kong (August)</li>
-                        <li>$80,000 for shutdown evaluations for AI agents (July)</li>
-                        <li>$77,000 for Sparse Concept Anchoring (July)</li>
-                        <li>$30,000 for the 2026 European Frontier AI Safety Day (July)</li>
-                        <li>$15,000 for KernelBench (July)</li>
-                      </ul>
-                    </li>
-                    <li>
-                      They are a named funding partner of the UK AI Security Institute&apos;s{' '}
-                      <A href="https://www.aisi.gov.uk/blog/funding-60-projects-to-advance-ai-alignment-research">
-                        Alignment Project
-                      </A>
-                      , so a meaningful share of their grantmaking happens outside Manifund.
-                    </li>
-                  </ul>
-                </li>
-                <li>
                   Get involved:
                   <ul>
                     <li>
