@@ -125,7 +125,7 @@ const AT_A_GLANCE: Row[] = [
     name: 'Manifund',
     href: 'https://manifund.org/',
     donated2025: { v: '$6M', n: 17 },
-    grants2025: { v: '144', n: 18 },
+    grants2025: { v: '234', n: 18 },
     expected2026: { v: '$7M', n: 19 },
     fte: '1',
     generalApps: true,
@@ -333,9 +333,7 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
     text: 'Distinct projects that received funding in 2025, computed from the donation data behind manifund.org/about. The 234 previously shown here could not be reproduced from that source.',
     node: (
       <>
-        Distinct projects that received funding in 2025, computed from the donation data behind{' '}
-        <A href="https://manifund.org/about">manifund.org/about</A>. The 234 previously shown here
-        could not be reproduced from that source.
+        Distinct projects that received funding in 2025.
       </>
     ),
   },
