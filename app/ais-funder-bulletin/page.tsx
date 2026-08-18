@@ -595,10 +595,6 @@ export default function AisFunderBulletinPage() {
                       </A>
                       , overseeing US AI policy among other areas.
                     </li>
-                    <li>
-                      Their team page now lists a Short Timelines Special Projects team of 6, led by
-                      Claire Zabel.
-                    </li>
                   </ul>
                 </li>
                 <li>
