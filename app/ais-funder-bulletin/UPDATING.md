@@ -37,7 +37,9 @@ For each funder, check their website (grants database / blog / careers page)
 and search for news since `LAST_UPDATED`:
 
 - Coefficient Giving — https://coefficientgiving.org/ (grants: https://coefficientgiving.org/funds)
+(we look at only the Transformative AI and GCR Opportunities Funds)
 - Longview Philanthropy — https://www.longview.org/
+(see footnotes on how to estimate money moved to AI in 2026)
 - OpenAI Foundation — https://openaifoundation.org/
 - Macroscopic — https://macroscopic.org/
 - Survival and Flourishing Fund (SFF) — https://survivalandflourishing.fund/
@@ -45,6 +47,7 @@ and search for news since `LAST_UPDATED`:
 - Schmidt Sciences — https://www.schmidtsciences.org/focus-area-ai/
 - AI Safety Tactical Opportunities Fund (AISTOF) — no website; search for news
 - Manifund — https://manifund.org/
+(you can get the exact funding numbers from https://manifund.org/about)
 - BlueDot Impact — https://bluedot.org/
 - Long-Term Future Fund (LTFF) — https://funds.effectivealtruism.org/funds/far-future
 
@@ -54,6 +57,15 @@ proposals, notable recent grants or announcements ("Recent updates" bullets),
 and job openings ("Get involved"). Also consider whether any funder in
 "Not included" now belongs in the main list, or whether a significant new
 funder has appeared.
+
+Click all links to verify they still exist and say what is claimed.
+
+If there are any time-sensitive opportunities on the page with a date in the past, use
+the link or search them to confirm whether the deadline was extended, and either update
+with a new deadline or delete.
+
+Ensure any changes are consistently made in both the "at a glance" table and the funder
+profiles if both apply.
 
 ## Editing rules
 
