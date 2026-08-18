@@ -1093,9 +1093,7 @@ export default function AisFunderBulletinPage() {
                     </li>
                     <li>
                       Apply for a job: They are hiring for scientists, program staff, and fellows in
-                      AI <A href="https://jobs.lever.co/schmidt-entities">here</A>. (Their own{' '}
-                      <A href="https://www.schmidtsciences.org/careers/">careers page</A> renders no
-                      listings.)
+                      AI <A href="https://jobs.lever.co/schmidt-entities">here</A>. 
                     </li>
                   </ul>
                 </li>
