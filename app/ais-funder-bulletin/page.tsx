@@ -218,10 +218,7 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
           hiring materials
         </A>{' '}
         said &ldquo;In 2026, we aim to move $200 million — making us the second largest funder in
-        that field.&rdquo; Their{' '}
-        <A href="https://www.longview.org/artificial-intelligence/">AI page</A> previously carried a
-        running total, which rose from $89M as of year-end 2025 to $266M as of June 2026, but that
-        sentence was removed from the site in August 2026.
+        that field.&rdquo; 
       </>
     ),
   },
@@ -708,9 +705,7 @@ export default function AisFunderBulletinPage() {
                   By the numbers:
                   <ul>
                     <li>
-                      donations: they aim to move $200m to AI safety in 2026. Their AI page used to
-                      carry a running cumulative total, which reached $266m in June 2026, but that
-                      sentence was removed from the site in August 2026.
+                      donations: they aim to move $200m to AI safety in 2026.
                     </li>
                     <li>
                       staff: ~27 listed, 7 of them with AI program titles; around half the org
