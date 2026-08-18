@@ -94,7 +94,7 @@ const AT_A_GLANCE: Row[] = [
     href: 'https://www.lightconecommons.com/',
     donated2025: { v: '$0' },
     grants2025: { v: '0' },
-    expected2026: { v: '$15–25M', n: 12 },
+    expected2026: { v: '$20M', n: 12 },
     fte: '2',
     generalApps: true,
     openRfps: false,
