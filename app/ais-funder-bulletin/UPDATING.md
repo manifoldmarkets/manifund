@@ -33,11 +33,10 @@ file, open a PR, and merging deploys it.
 
 ## Research process
 
-Be thorough, not timid. The expectation is that **every figure and claim on
+Be thorough. The expectation is that **every figure and claim on
 the page gets re-verified on every refresh**, not just skimmed for obvious
 staleness. A refresh that only tweaks a line or two is almost certainly
-under-researched. Never conclude "no change" for a funder from a single
-search — do several distinct searches per funder (their site, public grants
+under-researched. Do several distinct searches per funder (their site, public grants
 database, blog/newsroom, careers page, plus news and community sources like
 the EA Forum and LessWrong).
 
@@ -56,9 +55,9 @@ For each funder:
   the flag and update the prose in the same PR.
 - **For any time-sensitive opportunity whose date has passed**, use the link
   or a search to confirm whether the deadline was extended. If extended,
-  update the date; if truly passed, reword to the durable state rather than
-  just deleting the mention — e.g. an expired RFP becomes "They post periodic
-  RFPs, but otherwise don't accept unsolicited proposals," not silence.
+  update the date; if truly passed, reword to the durable state  — e.g. an
+  expired RFP becomes "They post periodic RFPs, but otherwise don't accept
+  unsolicited proposals."
 - **Click every link on the page** to verify it still exists and says what is
   claimed.
 - **Make changes consistently in both the At-a-glance table and the funder
@@ -66,8 +65,8 @@ For each funder:
 - Refresh "Recent updates" bullets with notable grants or announcements, and
   "Get involved" with current job openings.
 
-Also consider whether anything in the "Not included" section should change,
-and whether a significant new funder has appeared.
+Also consider whether significant new information has come out about anything 
+in the "Not included" section.
 
 Funder list with primary URLs (update this list too if funders change):
 
@@ -90,13 +89,11 @@ Funder list with primary URLs (update this list too if funders change):
 
 - Only change facts you can back with a citable source; put the source URL
   next to each change in the PR body.
-- If you can't verify a figure after genuinely trying, leave it alone. Never
-  estimate or extrapolate numbers.
-- The PR body must also include a short per-funder research log: what was
-  checked and what was found, including funders where nothing changed. This
-  is how the reviewer can tell thorough from lazy.
+- If you can't verify a figure after genuinely trying, leave it alone.
+- The PR body should also include a short per-funder research log: what was
+  checked and what was found, including funders where nothing changed.
 - Update `LAST_UPDATED` if and only if you changed content.
-- If nothing material has changed anywhere, make no edits and open no PR.
+- If nothing material has changed, make no edits and open no PR.
 
 ## Verification
 
