@@ -7,7 +7,7 @@ export const metadata = {
   description: 'A digest of funders in the AI safety space.',
 }
 
-const LAST_UPDATED = 'July 28, 2026'
+const LAST_UPDATED = 'August 18, 2026'
 
 const LINK = 'text-orange-600 underline decoration-orange-500 decoration-dotted underline-offset-2'
 
@@ -529,18 +529,6 @@ export default function AisFunderBulletinPage() {
                   </ul>
                 </li>
                 <li>
-                  Recent updates:
-                  <ul>
-                    <li>
-                      They&apos;re hiring for{' '}
-                      <A href="https://jobs.ashbyhq.com/coefficientgiving/5496d5b6-d7d2-4390-b577-af6b0c3bf24b">
-                        DC-based roles in US AI policy
-                      </A>
-                      ; applications are due August 2.
-                    </li>
-                  </ul>
-                </li>
-                <li>
                   Get involved:
                   <ul>
                     <li>
@@ -927,12 +915,12 @@ export default function AisFunderBulletinPage() {
                       Apply for funding:
                       <ul>
                         <li>
-                          They currently have a{' '}
+                          Their{' '}
                           <A href="https://schmidtsciences.smapply.io/prog/scaling_ai_safety_for_a_multi_agent_world/">
                             joint RFP on multi-agent safety
                           </A>{' '}
-                          with Google DeepMind, Cooperative AI Foundation, and others with
-                          applications due August 8.
+                          with Google DeepMind, Cooperative AI Foundation, and others closed to
+                          applications on August 8.
                         </li>
                         <li>Otherwise, they don&apos;t accept unsolicited proposals.</li>
                       </ul>
