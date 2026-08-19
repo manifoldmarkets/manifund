@@ -120,6 +120,7 @@ const SPONSORED_REGRANTORS_2026 = {
   'b11620f2-fdc7-414c-8a63-9ddee17ee669': 0, // Marcus
   'a3a0607a-b240-47ff-9025-77e6453f171f': 0, // Ethan
   '3f45ee75-65b2-4768-9101-bbd628747661': 0, // Alexandra
+  'd0445b0c-d287-4634-b918-a073cfcc00b2': 0, // Roy Rinberg
 } as { [key: string]: number }
 
 // Whether this regrantor is part of the given year's program, regardless of
