@@ -94,7 +94,7 @@ const AT_A_GLANCE: Row[] = [
     href: 'https://www.lightconecommons.com/',
     donated2025: { v: '$0' },
     grants2025: { v: '0' },
-    expected2026: { v: '$20M', n: 12 },
+    expected2026: { v: '$35M', n: 12 },
     fte: '2',
     generalApps: true,
     openRfps: false,
@@ -115,7 +115,7 @@ const AT_A_GLANCE: Row[] = [
     name: 'AISTOF',
     donated2025: { v: '—' },
     grants2025: { v: '—' },
-    expected2026: { v: '$10M', n: 16 },
+    expected2026: { v: '$40M', n: 16 },
     fte: '1',
     generalApps: false,
     openRfps: false,
@@ -284,14 +284,8 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
     ),
   },
   {
-    text: 'Per their site: "For the first round, I am expecting participating funders to disburse around $15M–25M." Only the first round resolves in 2026; the second is due to resolve around January 2027.',
-    node: (
-      <>
-        Per <A href="https://www.lightconecommons.com/">their site</A>: &ldquo;For the first round,
-        I am expecting participating funders to disburse around $15M–25M.&rdquo; Only the first
-        round resolves in 2026; the second is due to resolve around January 2027.
-      </>
-    ),
+    text: 'Private communications',
+    node: <>Private communications</>,
   },
   {
     text: 'schmidtsciences.org new $10M AI safety science program (foundational research)',
@@ -322,8 +316,8 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
     ),
   },
   {
-    text: '$30M funds raised so far over 3 years; amount deployed not reported.',
-    node: <>$30M funds raised so far over 3 years; amount deployed not reported.</>,
+    text: 'Private communications',
+    node: <>Private communications</>,
   },
   {
     text: 'manifund.org/about',
