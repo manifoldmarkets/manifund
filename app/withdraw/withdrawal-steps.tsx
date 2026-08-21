@@ -110,6 +110,18 @@ export function WithdrawalSteps(props: {
       <StepsDisplay steps={steps} currentStepId={currentStepIdx + 1} complete={complete} />
       <Row className="w-full justify-center p-10">
         <div className="w-full max-w-2xl">
+          <p className="mb-6 rounded-md bg-orange-100 p-4 text-sm font-bold text-orange-700">
+            Note: we&apos;re experiencing issues with our Stripe account right now. Fill out{' '}
+            <a
+              href="https://airtable.com/shrI3XFPivduhbnGa"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              our form
+            </a>{' '}
+            to withdraw amounts greater than $100.
+          </p>
           {steps[currentStepIdx].display}
           <Row className="mt-10 justify-between">
             <button
