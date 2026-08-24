@@ -125,15 +125,14 @@ async function activateProject(project: Project, followerIds: string[]) {
     })
   )
   const creatorSubject = `Your project, "${project.title}" is active!`
-  const creatorMessage = `Your project, "${project.title}", has completed the seed funding process and become active! You can now withdraw any funds you've received for this project from your profile page.`
+  const creatorMessage = `Your project, "${project.title}", has completed the seed funding process and become active! You can now withdraw the funds you've received for this project anytime you want.`
   await sendTemplateEmail(
-    TEMPLATE_IDS.VERDICT,
+    TEMPLATE_IDS.GENERIC_NOTIF,
     {
-      recipientFullName: creatorProfile.full_name ?? 'project creator',
-      verdictMessage: creatorMessage,
-      projectUrl: `${getURL()}/projects/${project.slug}`,
+      notifText: creatorMessage,
+      buttonUrl: `${getURL()}/withdraw`,
+      buttonText: 'Withdraw funds',
       subject: creatorSubject,
-      adminName: 'The Manifund team',
     },
     project.creator
   )
