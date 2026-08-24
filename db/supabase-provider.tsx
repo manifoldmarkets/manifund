@@ -1,5 +1,6 @@
 'use client'
 
+import posthog from 'posthog-js'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { createClient } from './supabase-browser'
 
@@ -25,12 +26,35 @@ export default function SupabaseProvider(props: { children: React.ReactNode; cla
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
+      if (event === 'SIGNED_OUT' && posthog.__loaded) {
+        posthog.reset()
+      }
     })
 
     return () => subscription.unsubscribe()
   }, [supabase])
+
+  // With memory persistence PostHog forgets identity on every hard page load, so re-identify
+  // whenever a session is present. posthog.__loaded is false in dev, where init never runs.
+  const userId = session?.user?.id
+  useEffect(() => {
+    if (!userId || !posthog.__loaded) return
+    void supabase
+      .from('profiles')
+      .select('username, full_name')
+      .eq('id', userId)
+      .single()
+      .then(({ data }) => {
+        posthog.identify(userId, {
+          email: session?.user?.email,
+          username: data?.username,
+          name: data?.full_name,
+        })
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, supabase])
 
   return (
     <Context.Provider value={{ supabase, session }}>
