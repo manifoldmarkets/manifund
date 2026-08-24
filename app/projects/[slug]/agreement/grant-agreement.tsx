@@ -12,7 +12,7 @@ export function GrantAgreement(props: { project: ProjectAndProfile; agreement?: 
   const excludeLobbyingClause = signed ? agreement.lobbying_clause_excluded : project.lobbying
   const version = signed && agreement?.version ? agreement.version : CURRENT_AGREEMENT_VERSION
   return (
-    <table className="text-gray-900">
+    <table className="ph-no-capture text-gray-900">
       <tbody>
         <tr className="font-bold">
           <td className="pr-10 ">1</td>

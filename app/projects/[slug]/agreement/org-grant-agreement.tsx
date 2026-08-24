@@ -89,7 +89,7 @@ export function OrgGrantAgreement(props: {
   }
 
   return (
-    <table className="text-gray-900">
+    <table className="ph-no-capture text-gray-900">
       <tbody>
         <tr className="font-bold">
           <td className="pr-10">1</td>

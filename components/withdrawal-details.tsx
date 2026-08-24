@@ -79,7 +79,7 @@ export function WithdrawalDetails(props: {
   }
   const isBank = withdrawalMethod.object === 'bank_account'
   return (
-    <Col className="gap-10">
+    <Col className="ph-no-capture gap-10">
       <Link
         href="https://airtable.com/shrI3XFPivduhbnGa"
         className="rounded-md bg-orange-500 p-3 text-sm font-semibold text-white shadow hover:bg-orange-600"

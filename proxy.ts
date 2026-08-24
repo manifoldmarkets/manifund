@@ -3,6 +3,13 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from './db/env'
 
 export async function proxy(request: NextRequest) {
+  // Trailing-slash redirect, disabled globally in next.config.js so /flux/* keeps its slashes.
+  // Plain URL, not nextUrl.clone(): NextURL re-normalizes the pathname back to a trailing slash.
+  const { pathname, search } = request.nextUrl
+  if (pathname !== '/' && pathname.endsWith('/')) {
+    return NextResponse.redirect(new URL(pathname.slice(0, -1) + search, request.url), 308)
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
@@ -28,6 +35,8 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Skip static assets so the proxy only runs on requests that use Supabase
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  // Skip static assets and the PostHog proxy (/flux) so the proxy only runs on requests that use Supabase
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|flux/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }
