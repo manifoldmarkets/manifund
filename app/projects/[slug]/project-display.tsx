@@ -128,7 +128,7 @@ export function ProjectDisplay(props: {
           </Row>
         </Col>
         <div className="flex flex-col-reverse gap-3 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
-          <Row className="items-center gap-1 text-sm text-gray-700">
+          <Row className="flex-wrap items-center gap-1 text-sm text-gray-700">
             <UserAvatarAndBadge profile={project.profiles} />
             {creatorEmail && (
               <Tooltip text="Copy creator email">
@@ -140,6 +140,12 @@ export function ProjectDisplay(props: {
                 />
               </Tooltip>
             )}
+            <span className="text-gray-400" aria-hidden="true">
+              &middot;
+            </span>
+            <time dateTime={project.created_at} className="text-gray-500 font-light">
+              created {format(new Date(project.created_at), 'MMM d, yyyy')}
+            </time>
             {pendingProjectTransfers.length > 0 && (
               <span className="text-gray-500">
                 pending transfer to {pendingProjectTransfers[0].recipient_name}
