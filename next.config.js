@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  // PostHog API paths end in '/'; Next's automatic 308 trailing-slash redirect would break them.
-  // The redirect is re-implemented for app routes in proxy.ts.
+  // PostHog API paths end in '/'; the trailing-slash redirect is re-implemented in proxy.ts
   skipTrailingSlashRedirect: true,
   images: {
     remotePatterns: [
@@ -32,7 +31,7 @@ const nextConfig = {
       },
     ],
   },
-  // Reverse proxy for PostHog under an innocuous path so adblockers don't block it
+  // Reverse proxy for PostHog so adblockers don't block it
   async rewrites() {
     return [
       {

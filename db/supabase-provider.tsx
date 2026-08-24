@@ -36,8 +36,6 @@ export default function SupabaseProvider(props: { children: React.ReactNode; cla
     return () => subscription.unsubscribe()
   }, [supabase])
 
-  // With memory persistence PostHog forgets identity on every hard page load, so re-identify
-  // whenever a session is present. posthog.__loaded is false in dev, where init never runs.
   const userId = session?.user?.id
   useEffect(() => {
     if (!userId || !posthog.__loaded) return

@@ -3,11 +3,10 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from './db/env'
 
 export async function proxy(request: NextRequest) {
-  // Re-implement Next's trailing-slash redirect, disabled globally via skipTrailingSlashRedirect
-  // in next.config.js so the /flux/* PostHog proxy paths keep their trailing slashes.
+  // Trailing-slash redirect, disabled globally in next.config.js so /flux/* keeps its slashes.
+  // Plain URL, not nextUrl.clone(): NextURL re-normalizes the pathname back to a trailing slash.
   const { pathname, search } = request.nextUrl
   if (pathname !== '/' && pathname.endsWith('/')) {
-    // Plain URL, not nextUrl.clone(): NextURL re-normalizes the pathname back to a trailing slash
     return NextResponse.redirect(new URL(pathname.slice(0, -1) + search, request.url), 308)
   }
 
