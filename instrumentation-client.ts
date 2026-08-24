@@ -1,4 +1,6 @@
 import posthog from 'posthog-js'
+// Bundle the replay recorder: fetching it at runtime gets adblocked by filename
+import 'posthog-js/dist/posthog-recorder'
 import { NEXT_PUBLIC_POSTHOG_KEY } from './db/env'
 
 // NODE_ENV gate rather than isProd(): `bun run dev` uses prod Supabase but must not send analytics
