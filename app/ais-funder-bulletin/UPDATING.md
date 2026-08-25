@@ -55,7 +55,7 @@ For each funder:
   the flag and update the prose in the same PR.
 - **For any time-sensitive opportunity whose date has passed**, use the link
   or a search to confirm whether the deadline was extended. If extended,
-  update the date; if truly passed, reword to the durable state  — e.g. an
+  update the date; if truly passed, reword to the durable state — e.g. an
   expired RFP becomes "They post periodic RFPs, but otherwise don't accept
   unsolicited proposals."
 - **Click every link on the page** to verify it still exists and says what is
@@ -65,15 +65,15 @@ For each funder:
 - Refresh "Recent updates" bullets with notable grants or announcements, and
   "Get involved" with current job openings.
 
-Also consider whether significant new information has come out about anything 
+Also consider whether significant new information has come out about anything
 in the "Not included" section.
 
 Funder list with primary URLs (update this list too if funders change):
 
 - Coefficient Giving — https://coefficientgiving.org/ (grants: https://coefficientgiving.org/funds)
-(we look at only the Transformative AI and GCR Opportunities Funds)
+  (we look at only the Transformative AI and GCR Opportunities Funds)
 - Longview Philanthropy — https://www.longview.org/
-(see footnotes on how to estimate money moved to AI in 2026)
+  (see footnotes on how to estimate money moved to AI in 2026)
 - OpenAI Foundation — https://openaifoundation.org/
 - Macroscopic — https://macroscopic.org/
 - Survival and Flourishing Fund (SFF) — https://survivalandflourishing.fund/
@@ -81,7 +81,7 @@ Funder list with primary URLs (update this list too if funders change):
 - Schmidt Sciences — https://www.schmidtsciences.org/focus-area-ai/
 - AI Safety Tactical Opportunities Fund (AISTOF) — no website; search for news
 - Manifund — https://manifund.org/
-(you can get the exact funding numbers from https://manifund.org/about)
+  (you can get the exact funding numbers from https://manifund.org/about)
 - BlueDot Impact — https://bluedot.org/
 - Long-Term Future Fund (LTFF) — https://funds.effectivealtruism.org/funds/far-future
 
