@@ -3,8 +3,8 @@ import { createServerSupabaseClient } from '@/db/supabase-server'
 
 import type { NextRequest } from 'next/server'
 
-// Hands a Manifund session to a sibling Manifund-run site (currently Trace at
-// trace.manifund.org), so people don't need a second sign-in. Both sites use
+// Hands a Manifund session to Trace at
+// trace.manifund.org, so people don't need a second sign-in. Both sites use
 // this Supabase project, so it is the same account either way — only the
 // session cookie is per-host, and this passes the tokens across.
 //
@@ -15,8 +15,6 @@ import type { NextRequest } from 'next/server'
 //               own cookie and clears them from the address bar.
 // Signed out -> send them through the normal login page and come back here.
 //
-// `next` is checked against an allowlist: an open redirect here would hand
-// someone's session to whatever host they named.
 const ALLOWED_TARGETS = ['https://trace.manifund.org']
 
 export async function GET(request: NextRequest) {
