@@ -8,6 +8,7 @@ import {
   DISABLE_NEW_SIGNUPS_AND_PROJECTS,
   SIGNUP_DISABLED_MESSAGE,
 } from '@/utils/constants'
+import { safeNext } from '@/utils/safe-next'
 
 export type AuthResult = {
   type: 'error' | 'success'
@@ -83,11 +84,17 @@ export async function resetPassword(formData: FormData): Promise<AuthResult> {
   }
 }
 
-export async function signInWithGoogle(): Promise<AuthResult> {
+export async function signInWithGoogle(next?: string): Promise<AuthResult> {
   const supabase = await createServerSupabaseClient()
 
+  // Google sends the user to /auth/callback, which reads `next` — without it
+  // every OAuth sign-in lands on the home page regardless of where it started.
+  const destination = safeNext(next)
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
+    options: {
+      redirectTo: `${getURL()}auth/callback?next=${encodeURIComponent(destination)}`,
+    },
   })
 
   if (error) {

@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from '@/db/supabase-server'
+import { safeNext } from '@/utils/safe-next'
 import { NextResponse } from 'next/server'
 
 import type { NextRequest } from 'next/server'
@@ -7,7 +8,9 @@ import type { NextRequest } from 'next/server'
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  const next = requestUrl.searchParams.get('next') || '/'
+  // new URL(next, origin) would follow an absolute URL straight off the site,
+  // and this value now comes from a query string the user can set.
+  const next = safeNext(requestUrl.searchParams.get('next'))
 
   if (code) {
     const supabase = await createServerSupabaseClient()

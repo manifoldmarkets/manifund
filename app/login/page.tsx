@@ -2,6 +2,7 @@
 import { use } from 'react'
 
 import AuthModal from '@/components/auth/AuthModal'
+import { safeNext } from '@/utils/safe-next'
 
 export default function LoginPage(props: {
   searchParams: Promise<{
@@ -9,6 +10,7 @@ export default function LoginPage(props: {
     error_code?: string
     error_description?: string
     email?: string
+    next?: string
   }>
 }) {
   const searchParams = use(props.searchParams)
@@ -21,10 +23,17 @@ export default function LoginPage(props: {
     : undefined
 
   const recommendedEmail = searchParams.email || undefined
+  // /sso sends people here to sign in and then resume the handoff to Trace.
+  const next = safeNext(searchParams.next)
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <AuthModal isOpen={true} authError={authError} recommendedEmail={recommendedEmail} />
+      <AuthModal
+        isOpen={true}
+        authError={authError}
+        recommendedEmail={recommendedEmail}
+        next={next}
+      />
     </div>
   )
 }
