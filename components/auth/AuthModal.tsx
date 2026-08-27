@@ -15,6 +15,9 @@ interface AuthModalProps {
   onClose?: () => void
   authError?: AuthError
   recommendedEmail?: string
+  // Where to go once signed in. Defaults to the home page; /login passes the
+  // path that sent you here, so the /sso handoff to Trace can resume.
+  next?: string
 }
 
 type AuthMode = 'signin' | 'signup' | 'forgot-password'
@@ -39,6 +42,7 @@ export default function AuthModal({
   onClose,
   authError,
   recommendedEmail,
+  next = '/',
 }: AuthModalProps) {
   const [mode, setMode] = useState<AuthMode>('signin')
   const [isPending, startTransition] = useTransition()
@@ -64,7 +68,7 @@ export default function AuthModal({
           if (result?.type === 'success') {
             markUserAsReturning()
             onClose?.()
-            window.location.href = '/'
+            window.location.href = next
             return
           }
         } else if (mode === 'signup') {
@@ -90,7 +94,7 @@ export default function AuthModal({
     startTransition(async () => {
       // Mark as returning user before the redirect happens
       markUserAsReturning()
-      const result = await signInWithGoogle()
+      const result = await signInWithGoogle(next)
       if (result?.type === 'success') {
         markUserAsReturning()
         window.location.href = result.text
