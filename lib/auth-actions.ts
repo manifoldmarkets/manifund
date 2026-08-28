@@ -68,7 +68,11 @@ export async function resetPassword(formData: FormData): Promise<AuthResult> {
 
   const email = formData.get('email') as string
   const baseUrl = getURL()
-  const redirectTo = `${baseUrl}edit-profile?recovery=true`
+  // Recovery links have to land on /auth/callback like every other email link:
+  // that is the only place a token_hash is verified or a code is exchanged, and
+  // without it the reset page waits for a session that never arrives.
+  const next = encodeURIComponent('/edit-profile/reset-password')
+  const redirectTo = `${baseUrl}auth/callback?next=${next}`
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo,
