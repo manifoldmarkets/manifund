@@ -106,12 +106,14 @@ export function GeneratedAvatar(props: { seed: string; size?: number }) {
   return (
     <div
       className={clsx(
-        `flex flex-shrink-0 h-${size} w-${size}  items-center justify-center rounded-full`,
+        'flex flex-shrink-0 items-center justify-center rounded-full',
         direction,
         fromColor,
         toColor,
         emojiSize
       )}
+      // Inline size: template classes like h-${size} aren't seen by Tailwind's scanner
+      style={{ width: `${size * 0.25}rem`, height: `${size * 0.25}rem` }}
     >
       {emoji}
     </div>
