@@ -6,7 +6,7 @@ import { ExampleRegrants } from './example-regrants'
 const DonationCTA = () => (
   <div className="my-8 text-center">
     <a
-      href="mailto:austin@manifund.org"
+      href="mailto:hi@manifund.org"
       className="inline-block rounded-lg bg-orange-600 px-6 py-3 text-white hover:bg-orange-700"
     >
       Donate to AI Safety Regranting
@@ -158,7 +158,7 @@ export default async function RegrantingPage() {
           nominate specific regrantors who share your values and interests. We do ask large donors
           to cover a 5% fiscal sponsorship fee, which offsets our operational costs & salaries.
         </p>
-        <p>Get in touch with Austin (austin@manifund.org) if you&apos;re interested in donating!</p>
+        <p>Get in touch (hi@manifund.org) if you&apos;re interested in donating!</p>
       </div>
       <DonationCTA />
     </div>

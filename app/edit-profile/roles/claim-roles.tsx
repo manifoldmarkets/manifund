@@ -125,8 +125,7 @@ export function ClaimRoles(props: {
             the waitlist
           </Link>{' '}
           to be notified if & when we receive more funding, or email{' '}
-          <a href="mailto:austin@manifund.org">austin@manifund.org</a> if you know someone might
-          contribute!
+          <a href="mailto:hi@manifund.org">hi@manifund.org</a> if you know someone might contribute!
         </AlertBox>
         <br />
         <br />
