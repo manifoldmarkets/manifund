@@ -150,8 +150,8 @@ export default function DonorFaqPage() {
         </p>
         <h2>More questions? Contact us!</h2>
         <p>
-          Reach out to <a href="mailto:austin@manifund.org">austin@manifund.org</a> with any
-          questions you have~
+          Reach out to <a href="mailto:hi@manifund.org">hi@manifund.org</a> with any questions you
+          have~
         </p>
       </div>
     </div>

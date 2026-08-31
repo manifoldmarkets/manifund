@@ -167,7 +167,7 @@ function CloseProject(props: { projectId: string }) {
           <p className="mt-2 text-sm text-gray-600">
             <strong>Your report will be posted as a public comment.</strong> If there&apos;s
             anything you&apos;d like to share with Manifund but cannot post publicly, you can email
-            austin@manifund.org.
+            hi@manifund.org.
           </p>
         </div>
         <TextEditor editor={editor} />

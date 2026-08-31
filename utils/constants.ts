@@ -3,7 +3,7 @@ export const CENTS_PER_DOLLAR = 100
 // Temporary flag to disable new signups and projects during spambot attack
 export const DISABLE_NEW_SIGNUPS_AND_PROJECTS = false
 export const SIGNUP_DISABLED_MESSAGE =
-  'New projects and accounts disabled as we deal with spambots; contact austin@manifund.org if you have questions.'
+  'New projects and accounts disabled as we deal with spambots; contact hi@manifund.org if you have questions.'
 
 // Spam filter (runs before Pangram on project create/edit/publish).
 // SPAM_FILTER_ENABLED: master switch. When false, the gate is skipped entirely.
