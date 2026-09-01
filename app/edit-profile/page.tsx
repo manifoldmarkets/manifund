@@ -2,7 +2,6 @@ import { createServerSupabaseClient } from '@/db/supabase-server'
 import { getUser, getProfileById } from '@/db/profile'
 import { EditProfileForm } from './edit-profile-form'
 import AuthModal from '@/components/auth/AuthModal'
-import { redirect } from 'next/navigation'
 import { SUPABASE_URL, SUPABASE_ENV } from '@/db/env'
 import { ProfileHeader } from '../[usernameSlug]/profile-header'
 
@@ -10,8 +9,6 @@ export const revalidate = 60
 
 export default async function Page(props: {
   searchParams: Promise<{
-    code?: string
-    recovery?: string
     redirectTo?: string
     error?: string
     error_code?: string
@@ -33,17 +30,6 @@ export default async function Page(props: {
         />
       </div>
     )
-  }
-
-  // successful password reset redirect
-  if (searchParams.recovery === 'true') {
-    const params = new URLSearchParams()
-    Object.entries(searchParams).forEach(([key, value]) => {
-      if (value) params.set(key, value)
-    })
-
-    params.set('next', '/edit-profile/reset-password')
-    redirect(`/password-reset?${params.toString()}`)
   }
 
   const supabase = await createServerSupabaseClient()

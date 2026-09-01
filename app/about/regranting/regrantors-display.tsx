@@ -3,18 +3,18 @@
 import { Row } from '@/components/layout/row'
 import { ProfileCard } from '@/components/profile-card'
 import { Profile } from '@/db/profile'
-import { getSponsoredAmount } from '@/utils/constants'
+import { getSponsoredAmount, isSponsoredRegrantor } from '@/utils/constants'
 import clsx from 'clsx'
 import { sortBy } from 'es-toolkit'
 import { useState } from 'react'
 
-const YEARS = [2023, 2024, 2025]
+const YEARS = [2023, 2024, 2025, 2026]
 
 export function RegrantorsDisplay(props: { regrantors: Profile[] }) {
   const { regrantors } = props
-  const [selectedYear, setSelectedYear] = useState(2025)
-  const regrantorsToShow = regrantors.filter(
-    (regrantor) => getSponsoredAmount(regrantor.id, selectedYear) !== 0
+  const [selectedYear, setSelectedYear] = useState(2026)
+  const regrantorsToShow = regrantors.filter((regrantor) =>
+    isSponsoredRegrantor(regrantor.id, selectedYear)
   )
   const sortedRegrantors = sortBy(regrantorsToShow, [
     function (regrantor: Profile) {

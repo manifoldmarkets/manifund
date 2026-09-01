@@ -95,7 +95,8 @@ function WireTab() {
           </SiteLink>
         </li>
         <li>
-          We&apos;ll update your Manifund balance upon receiving your donation (typically 5-10 days)
+          We&apos;ll update your Manifund balance upon receiving your donation (typically 1-5 days
+          for wire/ACH/crypto, and longer for DAFs)
         </li>
       </ol>
     </div>

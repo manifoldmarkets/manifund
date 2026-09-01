@@ -4,7 +4,8 @@ import { Row } from '@/components/layout/row'
 import { FullTxn } from '@/db/txn'
 import { formatMoney } from '@/utils/formatting'
 import { uniq } from 'es-toolkit'
-import React from 'react'
+import clsx from 'clsx'
+import React, { useState } from 'react'
 import {
   BarChart,
   Bar,
@@ -17,20 +18,88 @@ import {
   Tooltip,
 } from 'recharts'
 
-function monthTickFormatter(value: string) {
-  const [year, month] = value.split('-')
-  const monthNum = parseInt(month)
-  if (monthNum === 1) {
-    return year
+type Period = 'quarterly' | 'monthly' | 'weekly'
+const PERIODS: { value: Period; label: string }[] = [
+  { value: 'quarterly', label: 'Quarterly' },
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'weekly', label: 'Weekly' },
+]
+
+// Bucket key for a date, sortable as a string
+function periodKey(date: Date, period: Period) {
+  const year = date.getFullYear()
+  if (period === 'quarterly') {
+    return `${year}-Q${Math.floor(date.getMonth() / 3) + 1}`
   }
-  if (monthNum === 4 || monthNum === 7 || monthNum === 10) {
-    return ' '
+  if (period === 'monthly') {
+    return `${year}-${String(date.getMonth() + 1).padStart(2, '0')}`
   }
-  return ''
+  // Weekly: bucket by the Monday that starts the week
+  const d = new Date(year, date.getMonth(), date.getDate())
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+// X-axis ticks: show the year at the first bucket of each year, blank otherwise
+function tickFormatter(key: string, period: Period) {
+  if (period === 'quarterly') {
+    return key.endsWith('Q1') ? key.slice(0, 4) : ''
+  }
+  if (period === 'monthly') {
+    return key.endsWith('-01') ? key.slice(0, 4) : ''
+  }
+  const date = new Date(key)
+  // First week of the year: Monday within the first 7 days of January
+  return date.getMonth() === 0 && date.getDate() <= 7 ? key.slice(0, 4) : ''
+}
+
+function labelFormatter(key: string, period: Period) {
+  if (period === 'quarterly') {
+    const [year, q] = key.split('-')
+    return `${q} ${year}`
+  }
+  if (period === 'monthly') {
+    const [year, month] = key.split('-')
+    return new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+    })
+  }
+  const [year, month, day] = key.split('-').map((n) => parseInt(n))
+  const start = new Date(year, month - 1, day)
+  return `Week of ${start.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })}`
+}
+
+function PeriodToggle(props: { period: Period; setPeriod: (p: Period) => void }) {
+  const { period, setPeriod } = props
+  return (
+    <div className="inline-flex rounded-md border border-gray-200 bg-gray-50 p-0.5 text-sm">
+      {PERIODS.map(({ value, label }) => (
+        <button
+          key={value}
+          type="button"
+          onClick={() => setPeriod(value)}
+          className={clsx(
+            'rounded px-3 py-1 transition-colors',
+            period === value
+              ? 'bg-white text-orange-600 shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
+          )}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  )
 }
 
 export function Stats(props: { txns: FullTxn[] }) {
   const { txns } = props
+  const [period, setPeriod] = useState<Period>('monthly')
   const grantDonations = txns.filter(
     (txn) => txn.type === 'project donation' && txn.projects?.type === 'grant'
   )
@@ -80,41 +149,42 @@ export function Stats(props: { txns: FullTxn[] }) {
     }
   })
 
-  const monthlyData = txns
+  const periodData = txns
     .filter((txn) => txn.type === 'project donation')
-    .reduce((acc: { [key: string]: { amount: number; projects: Set<string> } }, txn) => {
-      const date = new Date(txn.created_at)
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+    .reduce(
+      (
+        acc: { [key: string]: { amount: number; projects: Set<string>; donors: Set<string> } },
+        txn
+      ) => {
+        const key = periodKey(new Date(txn.created_at), period)
+        if (!acc[key]) {
+          acc[key] = { amount: 0, projects: new Set(), donors: new Set() }
+        }
+        acc[key].amount += txn.amount
+        acc[key].projects.add(txn.project as string)
+        if (typeof txn.from_id === 'string') acc[key].donors.add(txn.from_id)
+        return acc
+      },
+      {}
+    )
 
-      if (!acc[monthKey]) {
-        acc[monthKey] = { amount: 0, projects: new Set() }
-      }
-      acc[monthKey].amount += txn.amount
-      acc[monthKey].projects.add(txn.project as string)
-      return acc
-    }, {})
-
-  const monthlyChartData = Object.entries(monthlyData)
+  const chartData = Object.entries(periodData)
     .sort()
-    .map(([month, data]) => ({
-      month,
+    .map(([key, data]) => ({
+      period: key,
       donations: data.amount,
       projectCount: data.projects.size,
+      uniqueDonations: data.donors.size,
     }))
 
-  // Calculate unique donations per month
-  const monthlyUniqueDonations = txns
-    .filter((txn) => txn.type === 'project donation')
-    .reduce((acc: { [key: string]: Set<string> }, txn) => {
-      const date = new Date(txn.created_at)
-      const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-      if (!acc[monthKey]) acc[monthKey] = new Set()
-      if (typeof txn.from_id === 'string') acc[monthKey].add(txn.from_id)
-      return acc
-    }, {})
-  const monthlyUniqueDonationsData = Object.entries(monthlyUniqueDonations)
-    .sort()
-    .map(([month, donors]) => ({ month, uniqueDonations: donors.size }))
+  const periodNoun = { quarterly: 'quarter', monthly: 'month', weekly: 'week' }[period]
+  const periodAdj = { quarterly: 'Quarterly', monthly: 'Monthly', weekly: 'Weekly' }[period]
+  const xAxisProps = {
+    dataKey: 'period',
+    className: 'text-xs',
+    interval: 0 as const,
+    tickFormatter: (key: string) => tickFormatter(key, period),
+  }
 
   return (
     <div>
@@ -136,18 +206,17 @@ export function Stats(props: { txns: FullTxn[] }) {
         />
       </Row>
 
+      <div className="mb-6 flex justify-center">
+        <PeriodToggle period={period} setPeriod={setPeriod} />
+      </div>
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
-        {/* Monthly donations */}
+        {/* Donations over time */}
         <div className="h-96 w-full">
-          <h3 className="mb-4 text-center text-gray-700">Monthly donations</h3>
+          <h3 className="mb-4 text-center text-gray-700">{periodAdj} donations</h3>
           <ResponsiveContainer width="100%" height="75%">
-            <LineChart data={monthlyChartData}>
-              <XAxis
-                dataKey="month"
-                className="text-xs"
-                interval={2}
-                tickFormatter={monthTickFormatter}
-              />
+            <LineChart data={chartData}>
+              <XAxis {...xAxisProps} />
               <YAxis tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
               <Legend />
               <Line
@@ -156,33 +225,22 @@ export function Stats(props: { txns: FullTxn[] }) {
                 name="donations"
                 stroke="#ea580c"
                 strokeWidth={2}
+                animationDuration={300}
               />
               <Tooltip
                 formatter={(value: number) => [`$${(value / 1000).toFixed(1)}K donated`]}
-                labelFormatter={(month) => {
-                  const [year, monthNum] = month.split('-')
-                  const date = new Date(parseInt(year), parseInt(monthNum) - 1)
-                  return date.toLocaleDateString('en-US', {
-                    month: 'long',
-                    year: 'numeric',
-                  })
-                }}
+                labelFormatter={(key) => labelFormatter(key, period)}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Projects funded per month */}
+        {/* Projects funded over time */}
         <div className="h-96 w-full">
-          <h3 className="mb-4 text-center text-gray-700">Projects funded per month</h3>
+          <h3 className="mb-4 text-center text-gray-700">Projects funded per {periodNoun}</h3>
           <ResponsiveContainer width="100%" height="75%">
-            <LineChart data={monthlyChartData}>
-              <XAxis
-                dataKey="month"
-                className="text-xs"
-                interval={2}
-                tickFormatter={monthTickFormatter}
-              />
+            <LineChart data={chartData}>
+              <XAxis {...xAxisProps} />
               <YAxis tickFormatter={(value) => Math.round(value).toString()} />
               <Legend />
               <Line
@@ -191,33 +249,22 @@ export function Stats(props: { txns: FullTxn[] }) {
                 name="projects funded"
                 stroke="#fdba74"
                 strokeWidth={2}
+                animationDuration={300}
               />
               <Tooltip
                 formatter={(value: number) => [`${value} projects funded`]}
-                labelFormatter={(month) => {
-                  const [year, monthNum] = month.split('-')
-                  const date = new Date(parseInt(year), parseInt(monthNum) - 1)
-                  return date.toLocaleDateString('en-US', {
-                    month: 'long',
-                    year: 'numeric',
-                  })
-                }}
+                labelFormatter={(key) => labelFormatter(key, period)}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Unique donations per month */}
+        {/* Unique donors over time */}
         <div className="h-96 w-full">
-          <h3 className="mb-4 text-center text-gray-700">Unique donations per month</h3>
+          <h3 className="mb-4 text-center text-gray-700">Unique donations per {periodNoun}</h3>
           <ResponsiveContainer width="100%" height="75%">
-            <LineChart data={monthlyUniqueDonationsData}>
-              <XAxis
-                dataKey="month"
-                className="text-xs"
-                interval={2}
-                tickFormatter={monthTickFormatter}
-              />
+            <LineChart data={chartData}>
+              <XAxis {...xAxisProps} />
               <YAxis tickFormatter={(value) => Math.round(value).toString()} />
               <Legend />
               <Line
@@ -226,17 +273,11 @@ export function Stats(props: { txns: FullTxn[] }) {
                 name="unique donations"
                 stroke="#a3e635"
                 strokeWidth={2}
+                animationDuration={300}
               />
               <Tooltip
                 formatter={(value: number) => [`${value} unique donations`]}
-                labelFormatter={(month) => {
-                  const [year, monthNum] = month.split('-')
-                  const date = new Date(parseInt(year), parseInt(monthNum) - 1)
-                  return date.toLocaleDateString('en-US', {
-                    month: 'long',
-                    year: 'numeric',
-                  })
-                }}
+                labelFormatter={(key) => labelFormatter(key, period)}
               />
             </LineChart>
           </ResponsiveContainer>

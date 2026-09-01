@@ -20,6 +20,20 @@ export const TEMPLATE_IDS = {
   AUCTION_RESOLVED: 31316142,
 }
 
+// For interpolating user-supplied values into hand-built htmlContent strings.
+// Anything a grantee typed -- organization names, project titles, signatory
+// names -- reaches these templates verbatim, and the resulting mail is sent
+// from info@manifund.org to an address the same user chose, so unescaped
+// interpolation would make this a ready-made phishing relay.
+export function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
 export async function sendTemplateEmail(
   templateId: number,
   templateModel: object,

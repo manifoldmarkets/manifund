@@ -201,16 +201,84 @@ export type Database = {
           },
         ]
       }
+      grant_agreement_private: {
+        Row: {
+          created_at: string
+          determination_letter_on_file: boolean
+          foreign_withholding_flag: boolean
+          project_id: string
+          signatory_email: string | null
+          signed_ip: string | null
+          signed_user_agent: string | null
+          signing_token_hash: string | null
+          token_expires_at: string | null
+          token_sent_at: string | null
+          token_sent_to: string | null
+          updated_at: string
+          w8_received_at: string | null
+          w9_received_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          determination_letter_on_file?: boolean
+          foreign_withholding_flag?: boolean
+          project_id: string
+          signatory_email?: string | null
+          signed_ip?: string | null
+          signed_user_agent?: string | null
+          signing_token_hash?: string | null
+          token_expires_at?: string | null
+          token_sent_at?: string | null
+          token_sent_to?: string | null
+          updated_at?: string
+          w8_received_at?: string | null
+          w9_received_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          determination_letter_on_file?: boolean
+          foreign_withholding_flag?: boolean
+          project_id?: string
+          signatory_email?: string | null
+          signed_ip?: string | null
+          signed_user_agent?: string | null
+          signing_token_hash?: string | null
+          token_expires_at?: string | null
+          token_sent_at?: string | null
+          token_sent_to?: string | null
+          updated_at?: string
+          w8_received_at?: string | null
+          w9_received_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'grant_agreement_private_project_id_fkey'
+            columns: ['project_id']
+            isOneToOne: true
+            referencedRelation: 'projects'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       grant_agreements: {
         Row: {
           approved_at: string | null
           approved_by: string | null
           completed_at: string | null
+          foreign_no_tin: boolean
           lobbying_clause_excluded: boolean
+          org_agreement_version: number | null
           project_description: Json | null
           project_id: string
           project_title: string | null
+          recipient_address: string | null
+          recipient_country: string | null
+          recipient_entity_class: string | null
           recipient_name: string | null
+          recipient_tax_id: string | null
+          recipient_type: string
+          rendered_document: string | null
+          signatory_authority_attested: boolean
           signatory_name: string | null
           signed_at: string | null
           signed_off_site: boolean
@@ -220,11 +288,20 @@ export type Database = {
           approved_at?: string | null
           approved_by?: string | null
           completed_at?: string | null
+          foreign_no_tin?: boolean
           lobbying_clause_excluded?: boolean
+          org_agreement_version?: number | null
           project_description?: Json | null
           project_id: string
           project_title?: string | null
+          recipient_address?: string | null
+          recipient_country?: string | null
+          recipient_entity_class?: string | null
           recipient_name?: string | null
+          recipient_tax_id?: string | null
+          recipient_type?: string
+          rendered_document?: string | null
+          signatory_authority_attested?: boolean
           signatory_name?: string | null
           signed_at?: string | null
           signed_off_site?: boolean
@@ -234,11 +311,20 @@ export type Database = {
           approved_at?: string | null
           approved_by?: string | null
           completed_at?: string | null
+          foreign_no_tin?: boolean
           lobbying_clause_excluded?: boolean
+          org_agreement_version?: number | null
           project_description?: Json | null
           project_id?: string
           project_title?: string | null
+          recipient_address?: string | null
+          recipient_country?: string | null
+          recipient_entity_class?: string | null
           recipient_name?: string | null
+          recipient_tax_id?: string | null
+          recipient_type?: string
+          rendered_document?: string | null
+          signatory_authority_attested?: boolean
           signatory_name?: string | null
           signed_at?: string | null
           signed_off_site?: boolean
@@ -407,6 +493,7 @@ export type Database = {
           type: Database['public']['Enums']['profile_type']
           username: string
           website: string | null
+          id_text: string | null
         }
         Insert: {
           accreditation_status?: boolean
@@ -704,6 +791,7 @@ export type Database = {
       projects: {
         Row: {
           ai_fraction: number | null
+          alerts_paused: boolean
           amm_shares: number | null
           approved: boolean | null
           auction_close: string | null
@@ -730,6 +818,7 @@ export type Database = {
         }
         Insert: {
           ai_fraction?: number | null
+          alerts_paused?: boolean
           amm_shares?: number | null
           approved?: boolean | null
           auction_close?: string | null
@@ -756,6 +845,7 @@ export type Database = {
         }
         Update: {
           ai_fraction?: number | null
+          alerts_paused?: boolean
           amm_shares?: number | null
           approved?: boolean | null
           auction_close?: string | null
@@ -1045,6 +1135,12 @@ export type Database = {
           project: Database['public']['CompositeTypes']['project_row']
         }
         Returns: undefined
+      }
+      id_text: {
+        Args: { '': Database['public']['Tables']['profiles']['Row'] }
+        Returns: {
+          error: true
+        } & 'the function public.id_text with parameter or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache'
       }
       reject_grant: { Args: { project_id: string }; Returns: undefined }
       reject_proposal: { Args: { project_id: string }; Returns: undefined }

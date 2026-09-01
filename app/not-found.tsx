@@ -20,11 +20,8 @@ export default function NotFound() {
       </div>
       <p className="text-center text-sm leading-7 text-gray-600">
         If you weren’t expecting this, you can email{' '}
-        <a
-          className="font-semibold text-orange-600 hover:underline"
-          href="mailto:austin@manifund.org"
-        >
-          austin@manifund.org
+        <a className="font-semibold text-orange-600 hover:underline" href="mailto:hi@manifund.org">
+          hi@manifund.org
         </a>{' '}
         or send us a message on{' '}
         <a

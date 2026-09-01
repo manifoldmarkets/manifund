@@ -119,6 +119,13 @@ const TEAM_MEMBERS = [
       'https://fkousziwzbnkdkldjper.supabase.co/storage/v1/object/public/avatars/10bd8a14-4002-47ff-af4a-92b227423a74/avatar',
     username: 'Austin',
   },
+  {
+    name: 'Carol N',
+    title: 'Senior Researcher & Ops',
+    avatarUrl: null,
+    id: '44ab8c88-037b-44a2-a407-5d0006541624',
+    username: 'carol',
+  },
   // {
   //   name: 'Rachel Weinberg',
   //   title: 'Cofounder, Engineer',
@@ -178,14 +185,14 @@ export default function AboutPage() {
               <Avatar
                 avatarUrl={person.avatarUrl}
                 username={person.username}
-                id=""
+                id={person.id ?? ''}
                 size={36}
                 className="hidden shadow-md sm:block"
               />
               <Avatar
                 avatarUrl={person.avatarUrl}
                 username={person.username}
-                id=""
+                id={person.id ?? ''}
                 size={24}
                 className="shadow-md sm:hidden"
               />

@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  // PostHog API paths end in '/'; the trailing-slash redirect is re-implemented in proxy.ts
+  skipTrailingSlashRedirect: true,
   images: {
     remotePatterns: [
       {
@@ -28,6 +30,23 @@ const nextConfig = {
         pathname: '/a/h06lDL9',
       },
     ],
+  },
+  // Reverse proxy for PostHog so adblockers don't block it
+  async rewrites() {
+    return [
+      {
+        source: '/flux/static/:path*',
+        destination: 'https://us-assets.i.posthog.com/static/:path*',
+      },
+      {
+        source: '/flux/array/:path*',
+        destination: 'https://us-assets.i.posthog.com/array/:path*',
+      },
+      {
+        source: '/flux/:path*',
+        destination: 'https://us.i.posthog.com/:path*',
+      },
+    ]
   },
   async redirects() {
     return [

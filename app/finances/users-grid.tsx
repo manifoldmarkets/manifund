@@ -74,15 +74,15 @@ export default function UsersGrid({ users }: { users: User[] }) {
 }
 
 export function BalanceSheet() {
-  const lastUpdated = '2026-08-13'
+  const lastUpdated = '2026-09-01'
   const $ = {
     // Stripe Opal + Payments balance
-    stripe: 11_088 + 268,
+    stripe: 17_781,
     // Mercury Manifund Grants account
-    mercury: 3_199_410,
-    coinbase: 2_069_808,
+    mercury: 3_483_610,
+    coinbase: 2_073_904,
     // Current users
-    users: -5_134_037,
+    users: -5_543_184,
     // Regranting pot owed + amount assigned to regrantors
     regranting: -2_250_000 + 2_075_000,
     // not credited: -pending grants on Airtable
@@ -91,10 +91,11 @@ export function BalanceSheet() {
     // 500k initial - donated - David MCF - AmmonLam
     charity: 500000 - 315832 - 186747,
     // Mox: Mercury + Stripe pending
-    // Note that we've transferred $800k from the grants balance so far, and recouped $315k
-    mox: 233_594 + 12_175,
+    mox: 321_228,
 
     mox_fund: 142_300,
+    // Part of the $180k sent to Manifest on 2026-06-01; repayable, so it stays an asset
+    manifest_loan: 100_000,
   }
   const financeRows = [
     { name: 'Stripe Bank', balance: $.stripe },
@@ -102,9 +103,10 @@ export function BalanceSheet() {
     { name: 'Coinbase (USDC)', balance: $.coinbase },
     { name: 'Mox balance (Mercury + Stripe)', balance: $.mox },
     { name: 'Mox Fund investments', balance: $.mox_fund },
+    { name: 'Loan to Manifest', balance: $.manifest_loan },
     {
       name: 'Total assets',
-      balance: $.stripe + $.mercury + $.coinbase + $.mox + $.mox_fund,
+      balance: $.stripe + $.mercury + $.coinbase + $.mox + $.mox_fund + $.manifest_loan,
     },
     {},
     { name: 'User balances', balance: $.users },
@@ -127,7 +129,8 @@ export function BalanceSheet() {
         $.pending +
         $.charity +
         $.mox +
-        $.mox_fund
+        $.mox_fund +
+        $.manifest_loan,
     },
     {},
     { name: '(not included in net calculations)' },

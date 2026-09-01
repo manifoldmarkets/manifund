@@ -3,7 +3,7 @@ export const CENTS_PER_DOLLAR = 100
 // Temporary flag to disable new signups and projects during spambot attack
 export const DISABLE_NEW_SIGNUPS_AND_PROJECTS = false
 export const SIGNUP_DISABLED_MESSAGE =
-  'New projects and accounts disabled as we deal with spambots; contact austin@manifund.org if you have questions.'
+  'New projects and accounts disabled as we deal with spambots; contact hi@manifund.org if you have questions.'
 
 // Spam filter (runs before Pangram on project create/edit/publish).
 // SPAM_FILTER_ENABLED: master switch. When false, the gate is skipped entirely.
@@ -100,9 +100,36 @@ export function getSponsoredAmount2025(regrantorId: string) {
 }
 
 export function getSponsoredAmount2026(regrantorId: string) {
-  // Budgets not yet allocated for 2026.
-  const sponsoredRegrantors = {} as { [key: string]: number }
-  return sponsoredRegrantors[regrantorId] ?? 0
+  return SPONSORED_REGRANTORS_2026[regrantorId] ?? 0
+}
+
+// 2026 program: regrantors with a $0 budget are in the program (and shown on
+// the regranting page) but have no sponsored budget allocated yet.
+const SPONSORED_REGRANTORS_2026 = {
+  'aa284776-0f93-4a91-89fa-242cfea631e6': 50_000, // Keri Warr
+  'e9362a95-cbec-4685-b179-91b4c5ba4edc': 0, // Neel Nanda
+  '4988c7d8-e1a6-4f2b-b9d9-f80cd02f1732': 0, // Lisa
+  'aa7c88dc-7311-4577-8cd3-c58a0d41fc31': 0, // Joel
+  'dd68802c-760d-4241-9431-352e1f635f6a': 0, // Lauren
+  '8a2d245e-1cfe-4d93-8a74-82b2ed695f24': 0, // Gavin
+  '9af369f0-dc1e-4577-9bb7-4ad4cb87131f': 0, // Marius
+  '64803b9c-02ff-4d4f-9f4a-3261c8ef60f6': 0, // Thomas
+  '7901a82c-00b3-40e6-ac1c-f56ff672fb18': 0, // Tamay
+  '75d73803-3b02-4e20-826c-c7bd96127a9e': 0, // Richard
+  'e2a30cdd-6797-4e2c-8823-f051195fc77a': 0, // Ryan
+  'b11620f2-fdc7-414c-8a63-9ddee17ee669': 0, // Marcus
+  'a3a0607a-b240-47ff-9025-77e6453f171f': 0, // Ethan
+  '3f45ee75-65b2-4768-9101-bbd628747661': 0, // Alexandra
+  'd0445b0c-d287-4634-b918-a073cfcc00b2': 0, // Roy Rinberg
+} as { [key: string]: number }
+
+// Whether this regrantor is part of the given year's program, regardless of
+// budget (unlike getSponsoredAmount, which is 0 for $0-budget members).
+export function isSponsoredRegrantor(regrantorId: string, year: number) {
+  if (year === 2026) {
+    return regrantorId in SPONSORED_REGRANTORS_2026
+  }
+  return getSponsoredAmount(regrantorId, year) !== 0
 }
 
 export function getSponsoredAmount(regrantorId: string, year?: number) {
@@ -134,3 +161,8 @@ export function isCharitableDeposit(txnId: string) {
 }
 
 export const CURRENT_AGREEMENT_VERSION = 3
+
+// The org/fiscal-sponsor agreement is a separate document with its own version
+// line, not a variant of the individual one, so the two can evolve
+// independently. See docs/org-grant-agreements-plan.md.
+export const CURRENT_ORG_AGREEMENT_VERSION = 1

@@ -5,6 +5,7 @@ import { createAdminClient } from '@/db/edge'
 import { toMarkdown } from '@/utils/tiptap-parsing'
 import { JSONContent } from '@tiptap/core'
 import OpenAI from 'openai'
+import { PANGRAM_MAX_WORDS, truncateToWords } from '@/app/utils/project-scores'
 
 const PANGRAM_API_KEY = process.env.PANGRAM_API_KEY
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
@@ -26,7 +27,7 @@ async function scorePangram(text: string): Promise<PangramResult> {
   const createRes = await fetch('https://text.external-api.pangram.com/task', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-api-key': PANGRAM_API_KEY! },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text: truncateToWords(text, PANGRAM_MAX_WORDS), model: 'pangram-4' }),
   })
   if (!createRes.ok) {
     throw new Error(`Pangram task create failed: ${createRes.status} ${await createRes.text()}`)

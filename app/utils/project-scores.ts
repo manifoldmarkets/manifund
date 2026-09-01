@@ -4,13 +4,22 @@ import { toMarkdown } from '@/utils/tiptap-parsing'
 import OpenAI from 'openai'
 
 // Scores every public project two ways:
-// - Pangram (fraction_ai): how much of the text reads as AI-generated.
+// - Pangram 4 (fraction_ai): how much of the text reads as AI-generated.
 //   Drives the default "hide slop" feed filter and the card/page flags.
+//   Only the first PANGRAM_MAX_WORDS are sent, which at that length is a
+//   single window, so fraction_ai is effectively 0 or 1. Older rows scored
+//   with Pangram 3.3.2 on the full text were not backfilled; pangram_raw.version
+//   ("3.3.2" vs "4.0") tells them apart.
 // - LLM rubric (quality_score, 1-10): substance of the proposal, shown on the
 //   project page as context but not used for hiding (the judge rates
 //   plausible-sounding slop too generously to be an enforcement signal).
 
 const PANGRAM_BASE = 'https://text.external-api.pangram.com'
+const PANGRAM_MODEL = 'pangram-4'
+// Pangram 4 bills per 100 words (10x the 3.3.2 rate), so only the opening of
+// each proposal is sent. Pangram's tokenizer counts ~2-10% more words than a
+// whitespace split (numbers, hyphens and URLs become several words).
+export const PANGRAM_MAX_WORDS = 280
 const JUDGE_MODEL = 'anthropic/claude-sonnet-5'
 
 export function hasScoringKeys() {
@@ -23,14 +32,19 @@ export type PangramScore = {
   raw: Record<string, unknown>
 }
 
-async function scorePangram(text: string): Promise<PangramScore> {
+export function truncateToWords(text: string, maxWords: number): string {
+  return text.split(/\s+/).filter(Boolean).slice(0, maxWords).join(' ')
+}
+
+async function scorePangram(fullText: string): Promise<PangramScore> {
   const apiKey = process.env.PANGRAM_API_KEY
   if (!apiKey) throw new Error('Missing PANGRAM_API_KEY')
 
+  const text = truncateToWords(fullText, PANGRAM_MAX_WORDS)
   const createRes = await fetch(`${PANGRAM_BASE}/task`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, model: PANGRAM_MODEL }),
   })
   if (!createRes.ok) {
     throw new Error(`Pangram task create failed: ${createRes.status} ${await createRes.text()}`)

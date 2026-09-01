@@ -21,6 +21,7 @@ import { useState } from 'react'
 import { ProjectTabs } from './project-tabs'
 import { ProjectData } from './project-data'
 import { ProposalRequirements } from './proposal-requirements'
+import { ProjectTimeline } from './project-timeline'
 import { Vote } from './vote'
 import { CauseTag, StageIcon } from '@/components/tags'
 import { Trade } from './trade'
@@ -93,17 +94,40 @@ export function ProjectDisplay(props: {
   const amountRaised = getAmountRaised(project, projectBids, projectTxns)
   const minIncludingAmm = getMinIncludingAmm(project)
   const tradePoints = calculateTradePoints(projectTxns, project.id)
+  // userTxns/userBids belong to the viewer, so this is only the creator's when it's their project.
+  const creatorCashBalance =
+    userProfile && isOwnProject
+      ? calculateCashBalance(userTxns, userBids, userProfile.id, userProfile.accreditation_status)
+      : 0
+  const showExpandedTimeline =
+    isOwnProject &&
+    project.type === 'grant' &&
+    ['draft', 'proposal', 'active'].includes(project.stage) &&
+    pendingProjectTransfers.length === 0
   const activeAuction = !!prizeCause?.cert_params?.auction && project.stage === 'proposal'
   const [specialCommentPrompt, setSpecialCommentPrompt] = useState<undefined | string>(undefined)
   return (
     <>
-      {project.stage === 'proposal' && pendingProjectTransfers.length === 0 && (
-        <ProposalRequirements
+      {showExpandedTimeline ? (
+        <ProjectTimeline
+          projectSlug={project.slug}
+          stage={project.stage}
           signedAgreement={project.signed_agreement}
           approved={project.approved === true}
           reachedMinFunding={amountRaised >= minIncludingAmm}
-          projectSlug={project.slug}
+          minFunding={minIncludingAmm}
+          withdrawComplete={project.stage === 'active' && creatorCashBalance <= 0}
         />
+      ) : (
+        project.stage === 'proposal' &&
+        pendingProjectTransfers.length === 0 && (
+          <ProposalRequirements
+            signedAgreement={project.signed_agreement}
+            approved={project.approved === true}
+            reachedMinFunding={amountRaised >= minIncludingAmm}
+            projectSlug={project.slug}
+          />
+        )
       )}
       <Col className="gap-2">
         <ProjectScoreFlags aiFraction={project.ai_fraction} qualityScore={project.quality_score} />
@@ -128,7 +152,7 @@ export function ProjectDisplay(props: {
           </Row>
         </Col>
         <div className="flex flex-col-reverse gap-3 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
-          <Row className="items-center gap-1 text-sm text-gray-700">
+          <Row className="flex-wrap items-center gap-1 text-sm text-gray-700">
             <UserAvatarAndBadge profile={project.profiles} />
             {creatorEmail && (
               <Tooltip text="Copy creator email">
@@ -140,6 +164,12 @@ export function ProjectDisplay(props: {
                 />
               </Tooltip>
             )}
+            <span className="text-gray-400" aria-hidden="true">
+              &middot;
+            </span>
+            <time dateTime={project.created_at} className="text-gray-500 font-light">
+              created {format(new Date(project.created_at), 'MMM d, yyyy')}
+            </time>
             {pendingProjectTransfers.length > 0 && (
               <span className="text-gray-500">
                 pending transfer to {pendingProjectTransfers[0].recipient_name}
