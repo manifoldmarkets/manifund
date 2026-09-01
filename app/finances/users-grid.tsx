@@ -82,7 +82,7 @@ export function BalanceSheet() {
     mercury: 3_483_610,
     coinbase: 2_073_904,
     // Current users
-    users: -5_689_856,
+    users: -5_543_184,
     // Regranting pot owed + amount assigned to regrantors
     regranting: -2_250_000 + 2_075_000,
     // not credited: -pending grants on Airtable
