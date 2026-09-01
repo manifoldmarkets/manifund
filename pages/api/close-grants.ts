@@ -71,30 +71,33 @@ async function closeProject(
   const minIncludingAmm = getMinIncludingAmm(project)
   const activeAuction = !!prizeCause?.cert_params?.auction && project.stage === 'proposal'
   if (amountRaised >= minIncludingAmm) {
-    if (!project.signed_agreement) {
-      await sendTemplateEmail(
-        TEMPLATE_IDS.GENERIC_NOTIF,
-        {
-          notifText: `Your project "${project.title}" has enough funding to proceed but is awaiting your signature on the grant agreement. Please sign the agreement to activate your grant.`,
-          buttonUrl: `https://manifund.org/projects/${project.slug}/agreement`,
-          buttonText: 'Sign agreement',
-          subject: 'Manifund: Reminder to sign your grant agreement',
-        },
-        project.creator
-      )
-    }
-    if (!project.approved) {
-      await sendTemplateEmail(
-        TEMPLATE_IDS.GENERIC_NOTIF,
-        {
-          notifText: `The project "${project.title}" has enough funding but is awaiting admin approval.`,
-          buttonUrl: `https://manifund.org/projects/${project.slug}`,
-          buttonText: 'See project',
-          subject: 'Manifund: Reminder to approve project',
-        },
-        undefined,
-        'austin@manifund.org'
-      )
+    if (!project.alerts_paused) {
+      if (!project.signed_agreement) {
+        await sendTemplateEmail(
+          TEMPLATE_IDS.GENERIC_NOTIF,
+          {
+            notifText: `Your project "${project.title}" has enough funding to proceed but is awaiting your signature on the grant agreement. Please sign the agreement to activate your grant.`,
+            buttonUrl: `https://manifund.org/projects/${project.slug}/agreement`,
+            buttonText: 'Sign agreement',
+            subject: 'Manifund: Reminder to sign your grant agreement',
+          },
+          project.creator
+        )
+      }
+      // Nothing for an admin to act on until the creator has signed.
+      if (!project.approved && project.signed_agreement) {
+        await sendTemplateEmail(
+          TEMPLATE_IDS.GENERIC_NOTIF,
+          {
+            notifText: `The project "${project.title}" has enough funding but is awaiting admin approval.`,
+            buttonUrl: `https://manifund.org/projects/${project.slug}`,
+            buttonText: 'See project',
+            subject: 'Manifund: Reminder to approve project',
+          },
+          undefined,
+          'austin@manifund.org'
+        )
+      }
     }
     if (project.approved && project.signed_agreement && activeAuction) {
       await resolveAuction(project)
