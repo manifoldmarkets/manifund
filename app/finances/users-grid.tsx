@@ -91,7 +91,6 @@ export function BalanceSheet() {
     // 500k initial - donated - David MCF - AmmonLam
     charity: 500000 - 315832 - 186747,
     // Mox: Mercury + Stripe pending
-    // Net $1.64M transferred from the grants balance since 2025-01 ($1.71M out, $66k back)
     mox: 321_228,
 
     mox_fund: 142_300,
