@@ -23,13 +23,18 @@ export function loadLocalConfig(): LocalConfig | null {
   if (!existsSync(CONFIG_PATH)) {
     mkdirSync(join(import.meta.dir, '..', 'data'), { recursive: true })
     writeFileSync(CONFIG_PATH, JSON.stringify(TEMPLATE, null, 2))
-    console.warn(`recon: wrote template config to ${CONFIG_PATH} — fill in mercuryAccounts and payeeRules`)
+    console.warn(
+      `recon: wrote template config to ${CONFIG_PATH} — fill in mercuryAccounts and payeeRules`
+    )
     return null
   }
   const config = JSON.parse(readFileSync(CONFIG_PATH, 'utf8')) as LocalConfig
   setAccountMap(config.mercuryAccounts ?? {})
   setPayeeRules(
-    (config.payeeRules ?? []).map((r) => ({ pattern: new RegExp(r.pattern, 'i'), category: r.category }))
+    (config.payeeRules ?? []).map((r) => ({
+      pattern: new RegExp(r.pattern, 'i'),
+      category: r.category,
+    }))
   )
   return config
 }

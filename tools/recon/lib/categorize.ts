@@ -13,6 +13,7 @@ const GENERIC_RULES: Rule[] = [
   { pattern: /Intl\. Wire Fee|International Wire/i, category: 'wire_fee' },
   { pattern: /Mercury Technologies/i, category: 'wire_fee' },
   { pattern: /Mercury Credit/i, category: 'card_autopay' },
+  { pattern: /Coinbase yield/i, category: 'revenue_coinbase_yield' },
 ]
 
 let payeeRules: Rule[] = []
@@ -29,8 +30,8 @@ export function autoCategory(
     if (rule.pattern.test(txn.description) || rule.pattern.test(text)) return rule.category
   }
   // Mox inflows that aren't transfers/payouts are membership & event revenue
-  if (txn.amount > 0 && (txn.source === 'stripe_mox' || txn.source === 'mercury_mox'))
-    return 'revenue'
+  if (txn.amount > 0 && txn.source === 'stripe_mox') return 'revenue_stripe'
+  if (txn.amount > 0 && txn.source === 'mercury_mox') return 'revenue_private_offices'
   // remaining Mox outflows are miscellaneous operating spend
   if (txn.amount < 0 && txn.source === 'mercury_mox') return 'other_expenses'
   return undefined

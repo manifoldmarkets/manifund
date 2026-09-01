@@ -24,22 +24,34 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const BANK_ID = process.env.NEXT_PUBLIC_PROD_BANK_ID!
 if (!SUPABASE_URL || !SERVICE_KEY || !BANK_ID) {
-  console.error('Missing env vars (NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY / NEXT_PUBLIC_PROD_BANK_ID)')
+  console.error(
+    'Missing env vars (NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY / NEXT_PUBLIC_PROD_BANK_ID)'
+  )
   process.exit(1)
 }
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY)
-if (!loadLocalConfig()) console.warn('recon: running without account/payee config — mercury rows will import as off-sheet')
+if (!loadLocalConfig())
+  console.warn(
+    'recon: running without account/payee config — mercury rows will import as off-sheet'
+  )
 
 let bankTxns: BankTxn[] = store.loadBankTxns()
 let matches: Match[] = store.loadMatches()
 let snapshots = store.loadSnapshots()
-let platformTxns: PlatformTxn[] = (store.loadPlatformCache<{ txns: PlatformTxn[] }>()?.txns) ?? []
+let platformTxns: PlatformTxn[] = store.loadPlatformCache<{ txns: PlatformTxn[] }>()?.txns ?? []
 
 let idCounter = Date.now()
 const newId = (p: string) => `${p}_${(idCounter++).toString(36)}`
 
 async function refreshPlatform(): Promise<{ count: number }> {
-  const raw: { id: string; created_at: string; amount: number; type: string; from_id: string | null; to_id: string }[] = []
+  const raw: {
+    id: string
+    created_at: string
+    amount: number
+    type: string
+    from_id: string | null
+    to_id: string
+  }[] = []
   for (let from = 0; ; from += 1000) {
     const { data, error } = await supabase
       .from('txns')
@@ -58,7 +70,10 @@ async function refreshPlatform(): Promise<{ count: number }> {
   const emails = new Map<string, string>()
   for (let i = 0; i < profileIds.length; i += 100) {
     const chunk = profileIds.slice(i, i + 100)
-    const { data: ps } = await supabase.from('profiles').select('id, username, full_name').in('id', chunk)
+    const { data: ps } = await supabase
+      .from('profiles')
+      .select('id, username, full_name')
+      .in('id', chunk)
     for (const p of ps ?? []) profiles.set(p.id, p)
     const { data: us } = await supabase.from('users').select('id, email').in('id', chunk)
     for (const u of us ?? []) if (u.email) emails.set(u.id, u.email)
@@ -112,7 +127,11 @@ const server = Bun.serve({
       }
 
       if (path === '/api/import' && req.method === 'POST') {
-        const body = (await req.json()) as { csv: string; mapping?: ColumnMapping; filename?: string }
+        const body = (await req.json()) as {
+          csv: string
+          mapping?: ColumnMapping
+          filename?: string
+        }
         const { headers, rows } = parseCSV(body.csv)
         const format = detectFormat(headers)
         let parsed
@@ -120,10 +139,15 @@ const server = Bun.serve({
         else if (format === 'stripe') parsed = parseStripe(rows)
         else if (format === 'stripe_balance_history') {
           // determine which Stripe account by overlap of charge ids with already-imported rows
-          const keys = new Set(rows.map((r) => 'stripe:' + r['Source']).filter((k) => k !== 'stripe:'))
+          const keys = new Set(
+            rows.map((r) => 'stripe:' + r['Source']).filter((k) => k !== 'stripe:')
+          )
           const overlap = { stripe_manifund: 0, stripe_mox: 0 }
           for (const t of bankTxns)
-            if ((t.source === 'stripe_manifund' || t.source === 'stripe_mox') && keys.has(t.dedupeKey))
+            if (
+              (t.source === 'stripe_manifund' || t.source === 'stripe_mox') &&
+              keys.has(t.dedupeKey)
+            )
               overlap[t.source]++
           const source =
             overlap.stripe_manifund === 0 && overlap.stripe_mox === 0
@@ -132,7 +156,13 @@ const server = Bun.serve({
                 ? ('stripe_manifund' as const)
                 : ('stripe_mox' as const)
           if (!source)
-            return json({ error: 'cannot tell which Stripe account this is — import its unified_payments export first' }, 400)
+            return json(
+              {
+                error:
+                  'cannot tell which Stripe account this is — import its unified_payments export first',
+              },
+              400
+            )
           parsed = parseStripeBalanceHistory(rows, source)
         } else if (body.mapping) parsed = parseGeneric(rows, body.mapping)
         else return json({ needsMapping: true, headers, sample: rows.slice(0, 3) })
@@ -145,7 +175,10 @@ const server = Bun.serve({
           const prior = existing.get(r.dedupeKey)
           if (prior) {
             // refresh amount/fee/raw for stripe rows (refund drift); never touch category/match
-            if (r.dedupeKey.startsWith('stripe:') && (prior.amount !== r.amount || prior.fee !== r.fee)) {
+            if (
+              r.dedupeKey.startsWith('stripe:') &&
+              (prior.amount !== r.amount || prior.fee !== r.fee)
+            ) {
               prior.amount = r.amount
               prior.fee = r.fee
               prior.raw = r.raw
@@ -199,7 +232,8 @@ const server = Bun.serve({
         const { id } = (await req.json()) as { id: string }
         const t = bankTxns.find((x) => x.id === id)
         if (!t) return json({ error: 'not found' }, 404)
-        if (!t.dedupeKey.startsWith('manual:')) return json({ error: 'only manually added txns can be deleted' }, 400)
+        if (!t.dedupeKey.startsWith('manual:'))
+          return json({ error: 'only manually added txns can be deleted' }, 400)
         if (t.matchId) return json({ error: 'unmatch it first' }, 400)
         bankTxns = bankTxns.filter((x) => x.id !== id)
         store.saveBankTxns(bankTxns)
@@ -216,7 +250,11 @@ const server = Bun.serve({
           }
         store.saveBankTxns(bankTxns)
         store.saveMatches(matches)
-        return json({ phaseCounts: result.phaseCounts, newMatches: result.matches.length, suggestions: result.suggestions })
+        return json({
+          phaseCounts: result.phaseCounts,
+          newMatches: result.matches.length,
+          suggestions: result.suggestions,
+        })
       }
 
       if (path === '/api/suggest' && req.method === 'POST') {
@@ -238,7 +276,8 @@ const server = Bun.serve({
         }
         let revenueRemainder: number | undefined
         const bankRows = body.bankTxnIds.map((id) => bankTxns.find((t) => t.id === id))
-        if (bankRows.some((t) => !t || t.matchId)) return json({ error: 'bank txn missing or already matched' }, 400)
+        if (bankRows.some((t) => !t || t.matchId))
+          return json({ error: 'bank txn missing or already matched' }, 400)
         const linked = new Set(matches.flatMap((m) => m.platformTxnIds))
         if (body.platformTxnIds.some((id) => linked.has(id)))
           return json({ error: 'platform txn already matched' }, 400)
@@ -248,13 +287,24 @@ const server = Bun.serve({
             const platRows = body.platformTxnIds.map((id) => platformTxns.find((t) => t.id === id))
             if (platRows.some((p) => !p)) return json({ error: 'platform txn not found' }, 400)
             if (platRows.length < 2)
-              return json({ error: 'platform-only match needs at least 2 rows (or use Paid off-platform)' }, 400)
-            const net = platRows.reduce((s, p) => s + (p!.type === 'deposit' ? p!.amount : -p!.amount), 0)
+              return json(
+                { error: 'platform-only match needs at least 2 rows (or use Paid off-platform)' },
+                400
+              )
+            const net = platRows.reduce(
+              (s, p) => s + (p!.type === 'deposit' ? p!.amount : -p!.amount),
+              0
+            )
             if (Math.abs(net) > MATCH_TOLERANCE) {
               // withdrawals exceeding re-credits: the difference stayed with Manifund
               if (body.remainderToRevenue && net < 0) revenueRemainder = -net
               else if (!body.force)
-                return json({ error: `deposits and withdrawals do not cancel out: net ${net.toFixed(2)} — use force to override` }, 400)
+                return json(
+                  {
+                    error: `deposits and withdrawals do not cancel out: net ${net.toFixed(2)} — use force to override`,
+                  },
+                  400
+                )
             }
           } else if (body.platformTxnIds.length > 0) {
             // compare signed bank flow against the net platform liability change
@@ -268,15 +318,28 @@ const server = Bun.serve({
             if (Math.abs(delta) > MATCH_TOLERANCE) {
               if (body.remainderToRevenue && delta > 0) revenueRemainder = delta
               else if (!body.force)
-                return json({ error: `net mismatch: bank ${bankNet.toFixed(2)} vs platform ${platNet.toFixed(2)} (deposits − withdrawals) — use force to override` }, 400)
+                return json(
+                  {
+                    error: `net mismatch: bank ${bankNet.toFixed(2)} vs platform ${platNet.toFixed(2)} (deposits − withdrawals) — use force to override`,
+                  },
+                  400
+                )
             }
           } else {
             // bank-only group (e.g. donation in -> forwarded out): signed amounts should cancel
             const signedSum = bankRows.reduce((s, t) => s + t!.amount, 0)
             if (bankRows.length < 2)
-              return json({ error: 'bank-only match needs at least 2 rows (or use No platform counterpart)' }, 400)
+              return json(
+                { error: 'bank-only match needs at least 2 rows (or use No platform counterpart)' },
+                400
+              )
             if (Math.abs(signedSum) > MATCH_TOLERANCE && !body.force)
-              return json({ error: `bank rows do not cancel out: net ${signedSum.toFixed(2)} — use force to override` }, 400)
+              return json(
+                {
+                  error: `bank rows do not cancel out: net ${signedSum.toFixed(2)} — use force to override`,
+                },
+                400
+              )
           }
         }
         const m: Match = {
@@ -315,7 +378,10 @@ const server = Bun.serve({
       }
 
       if (path === '/api/category' && req.method === 'POST') {
-        const { bankTxnIds, category } = (await req.json()) as { bankTxnIds: string[]; category: string }
+        const { bankTxnIds, category } = (await req.json()) as {
+          bankTxnIds: string[]
+          category: string
+        }
         for (const id of bankTxnIds) {
           const t = bankTxns.find((x) => x.id === id)
           if (t) {
@@ -329,12 +395,19 @@ const server = Bun.serve({
 
       if (path === '/api/nav' && req.method === 'POST') {
         const { start, end } = (await req.json()) as { start: string; end: string }
-        const prior = snapshots.filter((s) => s.month < start.slice(0, 7)).sort((a, b) => (a.month < b.month ? 1 : -1))[0]
+        const prior = snapshots
+          .filter((s) => s.month < start.slice(0, 7))
+          .sort((a, b) => (a.month < b.month ? 1 : -1))[0]
         return json(computeNav(bankTxns, matches, platformTxns, [start, end], prior))
       }
 
       if (path === '/api/snapshot' && req.method === 'POST') {
-        const body = (await req.json()) as { month: string; balances: Record<string, number>; computed: Record<string, unknown>; note?: string }
+        const body = (await req.json()) as {
+          month: string
+          balances: Record<string, number>
+          computed: Record<string, unknown>
+          note?: string
+        }
         snapshots = snapshots.filter((s) => s.month !== body.month)
         snapshots.push({ ...body, savedAt: new Date().toISOString() })
         snapshots.sort((a, b) => (a.month < b.month ? -1 : 1))

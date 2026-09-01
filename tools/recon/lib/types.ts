@@ -96,6 +96,27 @@ export const NO_COUNTERPART_CATEGORIES = [
 
 export const OFFPLATFORM_CATEGORIES = ['paypal', 'usdc', 'other']
 
+// revenue sub-buckets; each rolls up into total revenue on the overview
+export const REVENUE_CATEGORIES = [
+  'revenue_fiscal_sponsorship',
+  'revenue_coinbase_yield',
+  'revenue_private_offices',
+  'revenue_stripe',
+  'revenue_other',
+]
+
+export const REVENUE_LABELS: Record<string, string> = {
+  revenue_fiscal_sponsorship: 'Fiscal sponsorship fees',
+  revenue_coinbase_yield: 'Coinbase yield',
+  revenue_private_offices: 'Private offices',
+  revenue_stripe: 'Stripe payments',
+  revenue_other: 'Other revenue',
+  revenue: 'Other revenue', // legacy rows tagged before the split
+}
+
+export const isRevenue = (cat?: string | null): boolean =>
+  cat === 'revenue' || REVENUE_CATEGORIES.includes(cat ?? '')
+
 export const BANK_CATEGORIES = [
   'internal_transfer',
   'stripe_payout',
@@ -107,7 +128,7 @@ export const BANK_CATEGORIES = [
   'direct_grant',
   'ops',
   'other_expenses',
-  'revenue',
+  ...REVENUE_CATEGORIES,
   'other',
 ]
 
@@ -121,6 +142,7 @@ export const NEVER_PLATFORM_MATCH = new Set([
   'wire_fee',
   'direct_grant',
   'revenue',
+  ...REVENUE_CATEGORIES,
   'cleaning',
   'other_expenses',
 ])

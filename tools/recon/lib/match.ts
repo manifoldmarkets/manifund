@@ -1,11 +1,5 @@
 import { autoCategory } from './categorize'
-import {
-  AMOUNT_TOLERANCE,
-  BankTxn,
-  Match,
-  NEVER_PLATFORM_MATCH,
-  PlatformTxn,
-} from './types'
+import { AMOUNT_TOLERANCE, BankTxn, Match, NEVER_PLATFORM_MATCH, PlatformTxn } from './types'
 
 const DAY = 86400000
 const daysBetween = (a: string, b: string) =>
@@ -26,7 +20,12 @@ export type AutoMatchResult = {
 // name-token overlap between a bank description and a platform profile
 function nameScore(bankText: string, p: PlatformTxn): number {
   const tokens = (s: string) =>
-    new Set(s.toLowerCase().split(/[^a-z]+/).filter((t) => t.length > 2))
+    new Set(
+      s
+        .toLowerCase()
+        .split(/[^a-z]+/)
+        .filter((t) => t.length > 2)
+    )
   const bank = tokens(bankText)
   const profile = tokens(`${p.fullName} ${p.username}`)
   let overlap = 0
@@ -177,7 +176,10 @@ export function suggestFor(bank: BankTxn, openPlatform: PlatformTxn[]): string[]
       const bankAbs = Math.abs(bank.amount)
       if (amountsClose(p.amount, bankAbs)) score += 10
       // large donations often carry a 5% fee: bank inflow ≈ platform credit × 1.05
-      else if (bank.amount > 0 && Math.abs(bankAbs / 1.05 - p.amount) <= Math.max(1, p.amount * 0.001))
+      else if (
+        bank.amount > 0 &&
+        Math.abs(bankAbs / 1.05 - p.amount) <= Math.max(1, p.amount * 0.001)
+      )
         score += 9
       if (inWindow(bank, p)) score += 3
       score += nameScore(bank.description, p)
@@ -188,7 +190,11 @@ export function suggestFor(bank: BankTxn, openPlatform: PlatformTxn[]): string[]
           // fuzzy: shared local-part prefix (omotarita ~ omotara.edu3)
           const pLocal = pEmail.split('@')[0].replace(/[^a-z0-9]/g, '')
           let common = 0
-          while (common < Math.min(bankLocal.length, pLocal.length) && bankLocal[common] === pLocal[common]) common++
+          while (
+            common < Math.min(bankLocal.length, pLocal.length) &&
+            bankLocal[common] === pLocal[common]
+          )
+            common++
           if (common >= 5) score += 4
         }
       }

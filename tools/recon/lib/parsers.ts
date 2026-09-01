@@ -13,9 +13,17 @@ const sha = (s: string) => createHash('sha256').update(s).digest('hex').slice(0,
 
 export function detectFormat(headers: string[]): ParseResult['format'] {
   if (headers.includes('Source Account') && headers.includes('Date (UTC)')) return 'mercury'
-  if (headers.includes('id') && headers.includes('Created date (UTC)') && headers.includes('Captured'))
+  if (
+    headers.includes('id') &&
+    headers.includes('Created date (UTC)') &&
+    headers.includes('Captured')
+  )
     return 'stripe'
-  if (headers.includes('Type') && headers.includes('Available On (UTC)') && headers.includes('Source'))
+  if (
+    headers.includes('Type') &&
+    headers.includes('Available On (UTC)') &&
+    headers.includes('Source')
+  )
     return 'stripe_balance_history'
   return 'unknown'
 }
@@ -53,8 +61,7 @@ export function parseMercury(rows: Record<string, string>[]): ParseResult {
     const trackingId = r['Tracking ID']?.trim()
     const dedupeKey =
       'mercury:' +
-      (trackingId ||
-        sha([account, r['Timestamp'] ?? '', r['Amount'] ?? '', description].join('|')))
+      (trackingId || sha([account, r['Timestamp'] ?? '', r['Amount'] ?? '', description].join('|')))
     out.push({
       source,
       dedupeKey,
@@ -79,8 +86,9 @@ export function parseStripe(rows: Record<string, string>[]): ParseResult {
       dropped++
       continue
     }
-    const source: Source =
-      (r['Statement Descriptor'] ?? '').toUpperCase().includes('MOX') ? 'stripe_mox' : 'stripe_manifund'
+    const source: Source = (r['Statement Descriptor'] ?? '').toUpperCase().includes('MOX')
+      ? 'stripe_mox'
+      : 'stripe_manifund'
     out.push({
       source,
       dedupeKey: 'stripe:' + r['id'],
@@ -164,7 +172,12 @@ export function parseStripeBalanceHistory(
   return summarize('stripe_balance_history', out, dropped)
 }
 
-export type ColumnMapping = { dateCol: string; amountCol: string; descriptionCol: string; idCol?: string }
+export type ColumnMapping = {
+  dateCol: string
+  amountCol: string
+  descriptionCol: string
+  idCol?: string
+}
 
 export function parseGeneric(
   rows: Record<string, string>[],

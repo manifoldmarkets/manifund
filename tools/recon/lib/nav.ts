@@ -1,4 +1,11 @@
-import { BankTxn, COUNTED_SOURCES, Match, PlatformTxn, Snapshot } from './types'
+import {
+  BankTxn,
+  COUNTED_SOURCES,
+  isRevenue,
+  Match,
+  PlatformTxn,
+  Snapshot,
+} from './types'
 
 export type NavReport = {
   window: [string, string]
@@ -9,6 +16,7 @@ export type NavReport = {
     donationsCredited: number
     donationsPassThrough: number
     revenue: number // Mox memberships, desk fees, sponsorships
+    revenueByKind: Record<string, number> // revenue_* buckets; fiscal sponsorship comes from match remainders
     withdrawalsPaid: number
     directGrants: number
     opsByAccount: Record<string, number>
@@ -56,6 +64,11 @@ export function computeNav(
   let fees = 0
   let offSheetTransfers = 0
   let revenue = 0
+  const revenueByKind: Record<string, number> = {}
+  const addRevenue = (kind: string, amount: number) => {
+    revenue += amount
+    revenueByKind[kind] = (revenueByKind[kind] ?? 0) + amount
+  }
   const opsByAccount: Record<string, number> = {}
 
   // an internal transfer nets out only when its counterpart leg is also in a counted account
@@ -84,7 +97,7 @@ export function computeNav(
     netExternalFlows += t.amount
     fees += t.fee
     if (t.amount > 0) {
-      if (cat === 'revenue') revenue += t.amount
+      if (isRevenue(cat)) addRevenue(cat === 'revenue' ? 'revenue_other' : cat!, t.amount)
       else if (m && m.platformTxnIds.length > 0) donationsCredited += t.amount
       else donationsPassThrough += t.amount
     } else {
@@ -103,7 +116,7 @@ export function computeNav(
       return t && counted.has(t.source) && inWindow(t.date)
     })
     if (inScope) {
-      revenue += m.revenueRemainder
+      addRevenue('revenue_fiscal_sponsorship', m.revenueRemainder)
       donationsCredited -= m.revenueRemainder
     }
   }
@@ -142,7 +155,8 @@ export function computeNav(
     .map((t) => ({ bankTxnId: t.id, description: t.description, amount: t.amount }))
 
   const unmatchedDeposits = platformTxns.filter(
-    (p) => p.type === 'deposit' && inWindow(p.created_at.slice(0, 10)) && !matchByPlatformId.has(p.id)
+    (p) =>
+      p.type === 'deposit' && inWindow(p.created_at.slice(0, 10)) && !matchByPlatformId.has(p.id)
   )
 
   return {
@@ -154,6 +168,7 @@ export function computeNav(
       donationsCredited,
       donationsPassThrough,
       revenue,
+      revenueByKind,
       withdrawalsPaid,
       directGrants,
       opsByAccount,
