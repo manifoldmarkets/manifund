@@ -40,3 +40,4 @@ next-env.d.ts
 .snaplet/snapshots
 .snaplet/structure.d.ts
 .snaplet/config.json
+tools/recon/data/
