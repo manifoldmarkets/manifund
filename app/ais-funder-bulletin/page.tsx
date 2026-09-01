@@ -48,7 +48,7 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'Longview Philanthropy',
     href: 'https://www.longview.org/',
-    donated2025: { v: '$75M', n: 4 },
+    donated2025: { v: '$60M', n: 4 },
     grants2025: { v: '—' },
     expected2026: { v: '$200M', n: 5 },
     fte: '15',
@@ -124,7 +124,7 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'Manifund',
     href: 'https://manifund.org/',
-    donated2025: { v: '$5.9M', n: 17 },
+    donated2025: { v: '$6M', n: 17 },
     grants2025: { v: '144', n: 18 },
     expected2026: { v: '$8.6M', n: 19 },
     fte: '1',
@@ -135,8 +135,8 @@ const AT_A_GLANCE: Row[] = [
   {
     name: 'BlueDot Impact',
     href: 'https://bluedot.org/',
-    donated2025: { v: '$11k', n: 20 },
-    grants2025: { v: '16', n: 20 },
+    donated2025: { v: '$0', n: 20 },
+    grants2025: { v: '0', n: 20 },
     expected2026: { v: '$7.6M', n: 21 },
     fte: '1',
     generalApps: true,
@@ -199,17 +199,18 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
     ),
   },
   {
-    text: 'Their August 2026 COO job posting says "We directed over $75 million to high-impact organizations in 2025, and expect 2026 will be substantially bigger." An earlier post from a Longview team member had put the 2025 figure at over $60M, more than 2x their 2024 figure.',
+    text: 'Per this post from a Longview team member, they directed over $60M in 2025, more than 2x their 2024 figure. Their August 2026 COO job posting says "We directed over $75 million to high-impact organizations in 2025, and expect 2026 will be substantially bigger," but that figure covers all of Longview\'s giving rather than AI safety specifically.',
     node: (
       <>
-        Their August 2026{' '}
+        Per{' '}
+        <A href="https://forum.effectivealtruism.org/posts/aX8xLjCLd4LMDpTYL/longview-is-hiring-what-longview-is-like-from-my-perspective">
+          this post from a Longview team member
+        </A>
+        , they directed over $60M in 2025, more than 2x their 2024 figure. Their August 2026{' '}
         <A href="https://www.longview.org/careers/chief-operating-officer/">COO job posting</A> says
         &ldquo;We directed over $75 million to high-impact organizations in 2025, and expect 2026
-        will be substantially bigger.&rdquo; An earlier{' '}
-        <A href="https://forum.effectivealtruism.org/posts/aX8xLjCLd4LMDpTYL/longview-is-hiring-what-longview-is-like-from-my-perspective">
-          post from a Longview team member
-        </A>{' '}
-        had put the 2025 figure at over $60M, more than 2x their 2024 figure.
+        will be substantially bigger,&rdquo; but that figure covers all of Longview&apos;s giving
+        rather than AI safety specifically.
       </>
     ),
   },
@@ -349,12 +350,14 @@ const NOTES: { node: React.ReactNode; text: string }[] = [
     ),
   },
   {
-    text: 'Their published list of rapid grants shows 16 grants totalling about $10.7k made between June and December 2025, before they began granting at scale in 2026. Career Transition Grants only launched in May 2026.',
+    text: 'Treated as zero: their published list of rapid grants shows only 16 grants totalling about $10.7k made between June and December 2025, negligible at the scale of this table. They began granting at scale in 2026, and Career Transition Grants only launched in May 2026.',
     node: (
       <>
-        Their published list of <A href="https://bluedot.org/grants/rapid">rapid grants</A> shows 16
-        grants totalling about $10.7k made between June and December 2025, before they began
-        granting at scale in 2026. Career Transition Grants only launched in May 2026.
+        Treated as zero: their published list of{' '}
+        <A href="https://bluedot.org/grants/rapid">rapid grants</A> shows only 16 grants totalling
+        about $10.7k made between June and December 2025, negligible at the scale of this table.
+        They began granting at scale in 2026, and Career Transition Grants only launched in May
+        2026.
       </>
     ),
   },
