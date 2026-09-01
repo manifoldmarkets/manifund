@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/db/edge'
 import { GrantVerdict } from '../grant-verdict'
+import { PauseAlertsButton } from '../pause-alerts-button'
 import Link from 'next/link'
 import clsx from 'clsx'
 import { Table } from '@/components/table-catalyst'
@@ -12,7 +13,7 @@ export default async function ApprovalsPage() {
   const { data: projects } = await supabaseAdmin
     .from('projects')
     .select(
-      'id, title, slug, stage, approved, min_funding, lobbying, signed_agreement, profiles!projects_creator_fkey(username, full_name), bids(amount, type)'
+      'id, title, slug, stage, approved, min_funding, lobbying, signed_agreement, alerts_paused, profiles!projects_creator_fkey(username, full_name), bids(amount, type)'
     )
     .eq('stage', 'proposal')
     .order('created_at', { ascending: false })
@@ -36,12 +37,13 @@ export default async function ApprovalsPage() {
         <tr>
           <th className="p-2 text-center">Creator</th>
           <th className="p-2 text-center">Project</th>
+          <th className="p-2 text-center">Alerts</th>
           <th className="p-2 text-center">Grant verdict</th>
         </tr>
       </thead>
       <tbody className="p-2">
         {projectsToApprove.map((project) => (
-          <tr key={project.id}>
+          <tr key={project.id} className={clsx(project.alerts_paused && 'opacity-60')}>
             <td>
               <Link href={`/${project.profiles?.username}`}>{project.profiles?.full_name}</Link>
             </td>
@@ -52,6 +54,9 @@ export default async function ApprovalsPage() {
               >
                 {project.title}
               </Link>
+            </td>
+            <td>
+              <PauseAlertsButton projectId={project.id} alertsPaused={project.alerts_paused} />
             </td>
             <td>
               <GrantVerdict projectId={project.id} lobbying={project.lobbying} />

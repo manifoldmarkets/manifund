@@ -791,6 +791,7 @@ export type Database = {
       projects: {
         Row: {
           ai_fraction: number | null
+          alerts_paused: boolean
           amm_shares: number | null
           approved: boolean | null
           auction_close: string | null
@@ -817,6 +818,7 @@ export type Database = {
         }
         Insert: {
           ai_fraction?: number | null
+          alerts_paused?: boolean
           amm_shares?: number | null
           approved?: boolean | null
           auction_close?: string | null
@@ -843,6 +845,7 @@ export type Database = {
         }
         Update: {
           ai_fraction?: number | null
+          alerts_paused?: boolean
           amm_shares?: number | null
           approved?: boolean | null
           auction_close?: string | null
