@@ -65,7 +65,7 @@ export function WithdrawalDetails(props: {
             <FeatureCard
               icon={<div className="mx-1 text-xl">🌍</div>}
               title="Large or international"
-              description="Fill out our manual withdraw form with your bank account details and we will manually send you money within 10 business days."
+              description="Fill out our manual withdraw form with your bank account details and we will manually send you money within 5 business days."
               url="https://airtable.com/shrI3XFPivduhbnGa"
               linkText={'Go to form'}
             />
