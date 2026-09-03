@@ -8,11 +8,12 @@ import clsx from 'clsx'
 import { sortBy } from 'es-toolkit'
 import { useState } from 'react'
 
-const YEARS = [2023, 2024, 2025, 2026]
+// TODO: re-add 2026 once the cohort is announced
+const YEARS = [2023, 2024, 2025]
 
 export function RegrantorsDisplay(props: { regrantors: Profile[] }) {
   const { regrantors } = props
-  const [selectedYear, setSelectedYear] = useState(2026)
+  const [selectedYear, setSelectedYear] = useState(2025)
   const regrantorsToShow = regrantors.filter((regrantor) =>
     isSponsoredRegrantor(regrantor.id, selectedYear)
   )
