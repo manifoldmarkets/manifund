@@ -3,7 +3,15 @@ import { SupabaseClient } from '@supabase/supabase-js'
 
 export type WithdrawalRequest = Database['public']['Tables']['withdrawal_requests']['Row']
 
-export const OPEN_STATUSES = ['awaiting_recipient', 'ready_to_pay', 'pending_approval'] as const
+// 'needs_manual' counts as open: the balance is reserved and the grantee can't
+// stack another request, it just never gets a Mercury invite. mercury-sync
+// no-ops on it because no branch matches the status.
+export const OPEN_STATUSES = [
+  'awaiting_recipient',
+  'ready_to_pay',
+  'pending_approval',
+  'needs_manual',
+] as const
 
 export async function getWithdrawalRequestsByUser(supabase: SupabaseClient, userId: string) {
   const { data } = await supabase
