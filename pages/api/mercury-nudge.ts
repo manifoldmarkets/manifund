@@ -17,6 +17,9 @@ const RENUDGE_AFTER_DAYS = 3
 // until the invite expires. This is the flow's most likely new failure mode, so
 // chase it daily. The 24h delay plus 3-day spacing caps this at ~4 emails
 // before the invite expiry reverses the request, so no counter column is needed.
+//
+// last_nudged_at is shared with mercury-sync's stuck-approval alert. They can't
+// collide: this only touches 'awaiting_recipient' rows, that only 'pending_approval'.
 export default async function handler(req: NextRequest) {
   if (!isProd()) return NextResponse.json('not prod')
   const secret = process.env.CRON_SECRET

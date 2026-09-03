@@ -11,7 +11,10 @@ export const config = {
   regions: ['sfo1'],
 }
 
-const STUCK_APPROVAL_DAYS = 7
+// Matches the "within 4 business days" promise on the withdraw page: alert
+// while there's still time to make good on it, not after it's already missed.
+const STUCK_APPROVAL_DAYS = 2
+const RE_ALERT_DAYS = 3
 
 // Advances every open withdrawal as far as Mercury lets it go. This poll -- not
 // the webhook -- is the source of truth for status, because Mercury's approval
@@ -60,16 +63,31 @@ export default async function handler(req: NextRequest) {
 
   // Anything sitting in the approval queue this long means nobody has clicked
   // approve. The grantee can't fix that, so alert us rather than emailing them.
+  //
+  // Throttled on last_nudged_at, shared with mercury-nudge. Safe to reuse: that
+  // cron only ever touches 'awaiting_recipient' rows and this only fires on
+  // 'pending_approval', so the two can never write to the same row. Without a
+  // throttle this would re-post every hour, forever, until someone approved.
   if (!requestId) {
-    const cutoff = new Date(Date.now() - STUCK_APPROVAL_DAYS * 86400 * 1000).toISOString()
+    const now = Date.now()
+    const stuckCutoff = new Date(now - STUCK_APPROVAL_DAYS * 86400 * 1000).toISOString()
+    const reAlertCutoff = new Date(now - RE_ALERT_DAYS * 86400 * 1000).toISOString()
     const stuck = requests.filter(
-      (r) => r.status === 'pending_approval' && (r.submitted_at ?? r.requested_at) < cutoff
+      (r) =>
+        r.status === 'pending_approval' &&
+        (r.submitted_at ?? r.requested_at) < stuckCutoff &&
+        (!r.last_nudged_at || r.last_nudged_at < reAlertCutoff)
     )
     for (const r of stuck) {
       await sendDiscordAlert(
         `⚠️ Withdrawal awaiting approval in Mercury for ${STUCK_APPROVAL_DAYS}+ days: ` +
           `$${r.amount} (request ${r.id})`
       )
+      await supabaseAdmin
+        .from('withdrawal_requests')
+        .update({ last_nudged_at: new Date().toISOString() })
+        .eq('id', r.id)
+        .throwOnError()
     }
   }
 
