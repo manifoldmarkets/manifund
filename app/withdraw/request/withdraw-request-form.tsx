@@ -109,7 +109,7 @@ export function WithdrawRequestForm(props: {
       <Shell>
         <h1 className="text-xl font-semibold text-gray-900">One step left</h1>
         <p className="mt-2 text-sm text-gray-500">
-          {`Enter your bank details with Mercury, our bank, to finish your withdrawal of ${formatMoneyPrecise(pending.amount)}. We never see or store your account numbers. Mercury also emailed you this link.`}
+          {`Enter your bank details with Mercury, our bank, to finish your withdrawal of ${formatMoneyPrecise(pending.amount)}. Mercury also emailed you this link.`}
         </p>
         {pending.onboardingUrl && (
           <a
