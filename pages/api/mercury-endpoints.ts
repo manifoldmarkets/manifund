@@ -169,7 +169,7 @@ async function matchRequest(
     .select('*')
     .eq('mercury_recipient_id', txn.counterpartyId)
     .eq('amount', Math.abs(txn.amount))
-    .in('status', ['pending_approval', 'sent'])
+    .in('status', ['pending_approval', 'needs_manual', 'sent'])
     .order('requested_at', { ascending: false })
     .limit(2)
   const rows = (data ?? []) as WithdrawalRequest[]

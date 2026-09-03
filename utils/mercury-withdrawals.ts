@@ -11,6 +11,7 @@ import {
   getRecipientInvite,
   isManualWireCountry,
   listSendMoneyRequests,
+  listSentTransactionsSince,
   PaymentMethod,
   requestSendMoney,
 } from '@/utils/mercury'
@@ -49,7 +50,8 @@ export async function routePayment(admin: SupabaseClient, request: WithdrawalReq
     `📝 Manual wire needed: $${request.amount} to ${recipient.name}. ` +
       `India and the Philippines need a purpose code Mercury's API can't send. ` +
       `Their bank details are already in Mercury under recipient ${recipientId} — ` +
-      `send it from the dashboard, then mark it sent at ${ADMIN_URL}.`
+      `just send it from the dashboard. We'll notice it went out and email them; ` +
+      `nothing to tick off here.`
   )
   return null
 }
@@ -167,6 +169,38 @@ export async function syncWithdrawalRequest(admin: SupabaseClient, request: With
 
   if (request.status === 'ready_to_pay') {
     await routePayment(admin, request)
+    return
+  }
+
+  // A manual wire produces an ordinary Mercury transaction, so watch for one to
+  // the recipient we set up rather than making an admin tell us it happened.
+  if (request.status === 'needs_manual') {
+    if (!request.mercury_recipient_id) return
+    const sent = await listSentTransactionsSince(request.requested_at)
+    // amount < 0 keeps money *coming in* from the same counterparty from being
+    // mistaken for the wire going out. If Mercury turns out not to sign outgoing
+    // transactions negatively, nothing auto-matches and the admin's "Mark as
+    // sent" button covers it -- which is the right way for this to fail.
+    const matches = sent.filter(
+      (t) =>
+        t.counterpartyId === request.mercury_recipient_id &&
+        t.amount < 0 &&
+        Math.abs(t.amount) === Number(request.amount) &&
+        (t.createdAt ?? t.postedAt ?? '') >= request.requested_at
+    )
+    // Two payments of the same amount to the same recipient is ambiguous; say so
+    // rather than closing out the wrong one.
+    if (matches.length > 1) {
+      await sendDiscordAlert(
+        `⚠️ Withdrawal ${request.id} matches ${matches.length} sent Mercury transactions — ` +
+          `close it out by hand at ${ADMIN_URL}.`
+      )
+      return
+    }
+    const match = matches[0]
+    if (match) {
+      await markSent(admin, request, match.postedAt ?? new Date().toISOString(), match.id)
+    }
     return
   }
 

@@ -41,8 +41,10 @@ export default async function AdminWithdrawalsPage() {
         <h2 className="text-lg font-semibold text-gray-900">Needs a manual wire</h2>
         <p className="max-w-2xl text-sm text-gray-500">
           India and the Philippines need a purpose code that Mercury&apos;s API can&apos;t send.
-          Their bank details are already in Mercury, so send it from the dashboard and mark it sent
-          here — that records the timestamp and emails the grantee.
+          Their bank details are already in Mercury, so just send it from the dashboard — the hourly
+          sync spots the transaction and emails the grantee on its own. Only use{' '}
+          <span className="font-medium">Mark as sent</span> if it didn&apos;t get picked up, which
+          happens when the amount wired differs from the amount requested.
         </p>
         {manual.length === 0 ? (
           <p className="text-sm text-gray-400">Nothing waiting.</p>

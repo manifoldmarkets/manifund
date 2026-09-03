@@ -35,6 +35,7 @@ export type MercuryTransaction = {
   id: string
   status: string
   amount: number
+  createdAt?: string | null
   postedAt?: string | null
   note?: string | null
   externalMemo?: string | null
@@ -167,4 +168,15 @@ export async function listSendMoneyRequests() {
 
 export async function getTransaction(transactionId: string) {
   return await mercuryFetch<MercuryTransaction>(`/transactions/${transactionId}`)
+}
+
+// Used to notice that an admin wired a manual payment from the dashboard. Those
+// produce ordinary transactions, so we can spot them the same way we'd spot any
+// other -- no one has to tell us it happened.
+export async function listSentTransactionsSince(since: string) {
+  const start = since.slice(0, 10)
+  const res = await mercuryFetch<{ transactions?: MercuryTransaction[] }>(
+    `/account/${grantsAccountId()}/transactions?status=sent&start=${start}&limit=500`
+  )
+  return res.transactions ?? []
 }
