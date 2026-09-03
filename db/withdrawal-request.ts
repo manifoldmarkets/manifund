@@ -26,6 +26,28 @@ export async function getOpenWithdrawalRequest(supabase: SupabaseClient, userId:
   return (data ?? null) as WithdrawalRequest | null
 }
 
+// The method a returning grantee's Mercury recipient was onboarded with. That
+// recipient only holds routing details for the one method, so reuse it rather
+// than asking again -- and rather than trusting the client, which could send a
+// destination the recipient can't accept. Null when we can't tell (e.g. a
+// recipient created outside this flow), in which case we do ask.
+export async function getKnownPaymentMethod(
+  supabase: SupabaseClient,
+  profileId: string,
+  recipientId: string
+) {
+  const { data } = await supabase
+    .from('withdrawal_requests')
+    .select('payment_method')
+    .eq('profile_id', profileId)
+    .eq('mercury_recipient_id', recipientId)
+    .order('requested_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  const method = data?.payment_method
+  return method === 'ach' || method === 'internationalWire' ? method : null
+}
+
 export async function getOpenWithdrawalRequests(supabase: SupabaseClient) {
   const { data } = await supabase
     .from('withdrawal_requests')

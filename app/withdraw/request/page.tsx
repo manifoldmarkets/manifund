@@ -3,7 +3,7 @@ import { getProfileById, getUser } from '@/db/profile'
 import { getFullTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { calculateCashBalance } from '@/utils/math'
-import { getOpenWithdrawalRequest } from '@/db/withdrawal-request'
+import { getKnownPaymentMethod, getOpenWithdrawalRequest } from '@/db/withdrawal-request'
 import AuthModal from '@/components/auth/AuthModal'
 import { WithdrawRequestForm } from './withdraw-request-form'
 
@@ -25,12 +25,16 @@ export default async function WithdrawRequestPage() {
   }
   const withdrawBalance = calculateCashBalance(txns, bids, user.id, profile.accreditation_status)
   const openRequest = await getOpenWithdrawalRequest(supabase, user.id)
+  const knownPaymentMethod = profile.mercury_recipient_id
+    ? await getKnownPaymentMethod(supabase, user.id, profile.mercury_recipient_id)
+    : null
 
   return (
     <WithdrawRequestForm
       withdrawBalance={withdrawBalance}
       openRequest={openRequest}
       hasRecipient={!!profile.mercury_recipient_id}
+      knownPaymentMethod={knownPaymentMethod}
     />
   )
 }

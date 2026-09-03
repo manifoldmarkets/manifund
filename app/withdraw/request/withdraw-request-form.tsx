@@ -33,8 +33,11 @@ export function WithdrawRequestForm(props: {
   withdrawBalance: number
   openRequest: WithdrawalRequest | null
   hasRecipient: boolean
+  // Set when we already know which method their recipient accepts, so there's
+  // nothing to ask. Null for a first-time withdrawer.
+  knownPaymentMethod?: 'ach' | 'internationalWire' | null
 }) {
-  const { withdrawBalance, openRequest, hasRecipient } = props
+  const { withdrawBalance, openRequest, hasRecipient, knownPaymentMethod } = props
   const router = useRouter()
   // Held as text, not a number: Number('') is 0, so a numeric state would snap a
   // cleared field back to "0" and typing would then build "01000".
@@ -193,34 +196,36 @@ export function WithdrawRequestForm(props: {
         </span>
       </Col>
 
-      <Col className="mt-6 gap-2">
-        <span className="text-sm font-medium text-gray-900">Where is your bank account?</span>
-        {(
-          [
-            ['us', 'US'],
-            ['international', 'International'],
-          ] as const
-        ).map(([value, label]) => (
-          <label
-            key={value}
-            className={clsx(
-              'flex cursor-pointer items-start gap-3 rounded-md border p-3',
-              destination === value
-                ? 'border-orange-500 bg-orange-50'
-                : 'border-gray-300 hover:bg-gray-50'
-            )}
-          >
-            <input
-              type="radio"
-              name="destination"
-              className="mt-1 text-orange-600"
-              checked={destination === value}
-              onChange={() => setDestination(value)}
-            />
-            <span className="text-sm font-medium text-gray-900">{label}</span>
-          </label>
-        ))}
-      </Col>
+      {!knownPaymentMethod && (
+        <Col className="mt-6 gap-2">
+          <span className="text-sm font-medium text-gray-900">Where is your bank account?</span>
+          {(
+            [
+              ['us', 'US'],
+              ['international', 'International'],
+            ] as const
+          ).map(([value, label]) => (
+            <label
+              key={value}
+              className={clsx(
+                'flex cursor-pointer items-start gap-3 rounded-md border p-3',
+                destination === value
+                  ? 'border-orange-500 bg-orange-50'
+                  : 'border-gray-300 hover:bg-gray-50'
+              )}
+            >
+              <input
+                type="radio"
+                name="destination"
+                className="mt-1 text-orange-600"
+                checked={destination === value}
+                onChange={() => setDestination(value)}
+              />
+              <span className="text-sm font-medium text-gray-900">{label}</span>
+            </label>
+          ))}
+        </Col>
+      )}
 
       <Col className="mt-6 gap-1">
         <label htmlFor="feedback" className="text-sm font-medium text-gray-900">

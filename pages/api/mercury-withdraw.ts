@@ -9,6 +9,7 @@ import uuid from 'react-uuid'
 import { sendDiscordAlert } from '@/utils/discord'
 import { createRecipientInvite, hasMercuryKeys, PaymentMethod } from '@/utils/mercury'
 import { submitSendMoney } from '@/utils/mercury-withdrawals'
+import { getKnownPaymentMethod } from '@/db/withdrawal-request'
 import {
   MERCURY_ENABLED,
   MERCURY_REQUIRE_TAX_DOCUMENT,
@@ -120,7 +121,14 @@ export default async function handler(req: NextRequest) {
     )
   }
 
-  const paymentMethod: PaymentMethod = destination === 'us' ? 'ach' : 'internationalWire'
+  // A returning grantee's recipient only holds routing details for the one
+  // method it was onboarded with, so use that rather than whatever the client
+  // sent -- an ACH send to an international-only recipient would just fail.
+  const knownPaymentMethod = profile.mercury_recipient_id
+    ? await getKnownPaymentMethod(supabaseAdmin, user.id, profile.mercury_recipient_id)
+    : null
+  const paymentMethod: PaymentMethod =
+    knownPaymentMethod ?? (destination === 'us' ? 'ach' : 'internationalWire')
   const { data: request } = await supabaseAdmin
     .from('withdrawal_requests')
     .insert({
