@@ -98,6 +98,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </Suspense>
       ),
     },
+    { name: 'Withdrawals', path: '/admin/withdrawals' },
     { name: 'Tools', path: '/admin/tools' },
   ]
 

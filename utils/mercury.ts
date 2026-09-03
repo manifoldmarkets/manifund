@@ -93,6 +93,40 @@ export async function getRecipientInvite(inviteId: string) {
   return await mercuryFetch<RecipientInvite>(`/recipients/invites/${inviteId}`)
 }
 
+export type Recipient = {
+  id: string
+  name: string
+  status: string
+  address?: { country?: string | null } | null
+  internationalWireRoutingInfo?: {
+    address?: { country?: string | null } | null
+    countrySpecific?: Record<string, unknown> | null
+  } | null
+}
+
+export async function getRecipient(recipientId: string) {
+  return await mercuryFetch<Recipient>(`/recipient/${recipientId}`)
+}
+
+// Wires to these countries need a regulatory purpose code (India's P1302,
+// the Philippines' BSP code) that request-send-money has nowhere to carry:
+// purpose.simple is a fixed 14-value enum with no code field. So we let Mercury
+// collect the bank details as usual and hand the payment itself to an admin.
+const MANUAL_WIRE_COUNTRIES = ['IN', 'PH']
+const MANUAL_WIRE_COUNTRY_KEYS = ['india', 'philippines']
+
+export function isManualWireCountry(recipient: Recipient) {
+  const countries = [
+    recipient.address?.country,
+    recipient.internationalWireRoutingInfo?.address?.country,
+  ]
+  if (countries.some((c) => c && MANUAL_WIRE_COUNTRIES.includes(c.toUpperCase()))) return true
+  // Mercury only populates countrySpecific for countries needing extra data, so
+  // the key itself is a reliable second signal if an address is missing.
+  const specific = recipient.internationalWireRoutingInfo?.countrySpecific ?? {}
+  return Object.keys(specific).some((k) => MANUAL_WIRE_COUNTRY_KEYS.includes(k.toLowerCase()))
+}
+
 // Mercury requires a purpose for both wire types. 'other' needs additionalInfo.
 const WIRE_PURPOSE = {
   simple: { category: 'other', additionalInfo: 'Grant disbursement from Manifund' },

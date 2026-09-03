@@ -8,8 +8,8 @@ import { isProd } from '@/db/env'
 import uuid from 'react-uuid'
 import { sendDiscordAlert } from '@/utils/discord'
 import { createRecipientInvite, hasMercuryKeys, PaymentMethod } from '@/utils/mercury'
-import { submitSendMoney } from '@/utils/mercury-withdrawals'
-import { getKnownPaymentMethod } from '@/db/withdrawal-request'
+import { routePayment } from '@/utils/mercury-withdrawals'
+import { getKnownPaymentMethod, OPEN_STATUSES } from '@/db/withdrawal-request'
 import {
   MERCURY_ENABLED,
   MERCURY_REQUIRE_TAX_DOCUMENT,
@@ -24,9 +24,6 @@ export const config = {
 export type MercuryWithdrawProps = {
   dollarAmount: number
   destination: 'us' | 'international'
-  // Self-declared. Wires to India and the Philippines need a regulatory purpose
-  // code that Mercury's API can't carry, so they're handled by hand.
-  manualWireCountry?: boolean
   feedback?: string
 }
 
@@ -43,8 +40,7 @@ export default async function handler(req: NextRequest) {
     return NextResponse.json({ error: 'Bank withdrawals are not enabled yet.' }, { status: 503 })
   }
 
-  const { dollarAmount, destination, manualWireCountry, feedback } =
-    (await req.json()) as MercuryWithdrawProps
+  const { dollarAmount, destination, feedback } = (await req.json()) as MercuryWithdrawProps
   const { supabase, user } = await getUserAndClient(req)
   if (!user?.email) {
     return NextResponse.json({ error: 'You must be signed in to withdraw.' }, { status: 401 })
@@ -79,7 +75,7 @@ export default async function handler(req: NextRequest) {
     .from('withdrawal_requests')
     .select('id')
     .eq('profile_id', user.id)
-    .in('status', ['awaiting_recipient', 'ready_to_pay', 'pending_approval'])
+    .in('status', OPEN_STATUSES as unknown as string[])
     .maybeSingle()
   if (existing) {
     return NextResponse.json(
@@ -133,17 +129,13 @@ export default async function handler(req: NextRequest) {
     : null
   const paymentMethod: PaymentMethod =
     knownPaymentMethod ?? (destination === 'us' ? 'ach' : 'internationalWire')
-  // Only meaningful for an international wire; a returning grantee already has a
-  // recipient, which means they were never routed to manual in the first place.
-  const needsManual =
-    !!manualWireCountry && destination === 'international' && !profile.mercury_recipient_id
   const { data: request } = await supabaseAdmin
     .from('withdrawal_requests')
     .insert({
       profile_id: user.id,
       amount: dollarAmount,
       payment_method: paymentMethod,
-      status: needsManual ? 'needs_manual' : 'awaiting_recipient',
+      status: 'awaiting_recipient',
       txn_id: txnId,
       feedback: feedback || null,
     })
@@ -170,18 +162,6 @@ export default async function handler(req: NextRequest) {
     )
   }
 
-  // India and the Philippines: no Mercury invite, no API payment. The balance is
-  // already reserved, so all that's left is for someone to wire it by hand.
-  if (needsManual) {
-    await sendDiscordAlert(
-      `📝 Manual wire needed — ${profile.full_name} (${user.email}) requested ` +
-        `$${dollarAmount} to India or the Philippines, which needs a purpose code ` +
-        `Mercury's API can't send. Wire it from the Mercury dashboard, then mark ` +
-        `withdrawal request ${request.id} as sent.`
-    )
-    return NextResponse.json({ status: 'needs_manual' })
-  }
-
   // A returning grantee already has a recipient on file, so skip onboarding
   // entirely and queue the payment for approval right away.
   if (profile.mercury_recipient_id) {
@@ -191,7 +171,7 @@ export default async function handler(req: NextRequest) {
         .update({ mercury_recipient_id: profile.mercury_recipient_id, status: 'ready_to_pay' })
         .eq('id', request.id)
         .throwOnError()
-      await submitSendMoney(supabaseAdmin, {
+      await routePayment(supabaseAdmin, {
         ...request,
         mercury_recipient_id: profile.mercury_recipient_id,
       })
@@ -202,7 +182,13 @@ export default async function handler(req: NextRequest) {
         { status: 500 }
       )
     }
-    return NextResponse.json({ status: 'pending_approval' })
+    // routePayment may have parked it as needs_manual instead of queueing it.
+    const { data: after } = await supabaseAdmin
+      .from('withdrawal_requests')
+      .select('status')
+      .eq('id', request.id)
+      .single()
+    return NextResponse.json({ status: after?.status ?? 'pending_approval' })
   }
 
   try {

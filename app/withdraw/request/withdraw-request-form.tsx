@@ -43,9 +43,6 @@ export function WithdrawRequestForm(props: {
   // cleared field back to "0" and typing would then build "01000".
   const [amountText, setAmountText] = useState(String(withdrawBalance))
   const [destination, setDestination] = useState<Destination>('us')
-  // India and the Philippines need a regulatory purpose code on the wire that
-  // Mercury's API can't carry, so those go to a person instead.
-  const [manualWireCountry, setManualWireCountry] = useState(false)
   const [feedback, setFeedback] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -104,7 +101,7 @@ export function WithdrawRequestForm(props: {
           <h1 className="text-xl font-semibold text-gray-900">Withdrawal requested</h1>
         </Row>
         <p className="mt-2 text-sm text-gray-500">
-          {`Wires to India and the Philippines need extra paperwork, so someone on our team will send your ${formatMoneyPrecise(pending.amount)} by hand and email you for your bank details if we don't already have them. Nothing more for you to do right now.`}
+          {`We have your bank details. Wires to India and the Philippines need extra paperwork, so someone on our team will send your ${formatMoneyPrecise(pending.amount)} by hand rather than automatically — we'll email you as soon as it's on its way. Nothing more for you to do.`}
         </p>
       </Shell>
     )
@@ -155,7 +152,7 @@ export function WithdrawRequestForm(props: {
     const response = await fetch('/api/mercury-withdraw', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dollarAmount: amount, destination, manualWireCountry, feedback }),
+      body: JSON.stringify({ dollarAmount: amount, destination, feedback }),
     })
     const json = await response.json()
     setSubmitting(false)
@@ -241,24 +238,6 @@ export function WithdrawRequestForm(props: {
               <span className="text-sm font-medium text-gray-900">{label}</span>
             </label>
           ))}
-          {destination === 'international' && (
-            <label className="mt-1 flex cursor-pointer items-start gap-3">
-              <input
-                type="checkbox"
-                className="mt-1 rounded border-gray-300 text-orange-600"
-                checked={manualWireCountry}
-                onChange={(event) => setManualWireCountry(event.target.checked)}
-              />
-              <span>
-                <span className="block text-sm text-gray-900">
-                  My bank account is in India or the Philippines
-                </span>
-                <span className="block text-xs text-gray-500">
-                  These need extra paperwork, so we&apos;ll send your money by hand instead.
-                </span>
-              </span>
-            </label>
-          )}
         </Col>
       )}
 
@@ -294,15 +273,13 @@ export function WithdrawRequestForm(props: {
           loading={submitting}
           size="lg"
         >
-          {hasRecipient || manualWireCountry ? 'Request withdrawal' : 'Continue to bank details'}
+          {hasRecipient ? 'Request withdrawal' : 'Continue to bank details'}
         </Button>
       </Row>
       <p className="mt-3 text-right text-xs text-gray-400">
-        {manualWireCountry
-          ? "We'll email you to arrange the details and send your money by hand."
-          : hasRecipient
-            ? "We already have your bank details, so this is the last step. We'll email you when the money is on its way."
-            : "Next you'll enter your bank details with Mercury. That's the last thing you need to do — we'll email you when the money is on its way."}
+        {hasRecipient
+          ? "We already have your bank details, so this is the last step. We'll email you when the money is on its way."
+          : "Next you'll enter your bank details with Mercury. That's the last thing you need to do — we'll email you when the money is on its way."}
       </p>
     </Shell>
   )

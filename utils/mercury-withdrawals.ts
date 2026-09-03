@@ -7,13 +7,16 @@ import { WithdrawalRequest } from '@/db/withdrawal-request'
 import { getUserEmail, sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 import { sendDiscordAlert } from '@/utils/discord'
 import {
+  getRecipient,
   getRecipientInvite,
+  isManualWireCountry,
   listSendMoneyRequests,
   PaymentMethod,
   requestSendMoney,
 } from '@/utils/mercury'
 
 const REQUEST_URL = 'https://manifund.org/withdraw/request'
+const ADMIN_URL = 'https://manifund.org/admin/withdrawals'
 
 function methodLabel(paymentMethod: string) {
   return paymentMethod === 'internationalWire' ? 'International wire' : 'Bank transfer (ACH)'
@@ -25,6 +28,30 @@ async function patch(admin: SupabaseClient, id: string, fields: Record<string, u
     .update({ ...fields, updated_at: new Date().toISOString() })
     .eq('id', id)
     .throwOnError()
+}
+
+// Everyone's bank details are collected by Mercury the same way. The only fork
+// is at payment time: an India or Philippines wire needs a purpose code the API
+// can't send, so it goes to an admin instead of the approval queue. The
+// recipient already exists in Mercury by this point, so they just pick it in the
+// dashboard rather than re-keying account numbers.
+export async function routePayment(admin: SupabaseClient, request: WithdrawalRequest) {
+  const recipientId = request.mercury_recipient_id
+  if (!recipientId) throw new Error(`No recipient on withdrawal request ${request.id}`)
+
+  const recipient = await getRecipient(recipientId)
+  if (!isManualWireCountry(recipient)) {
+    return await submitSendMoney(admin, request)
+  }
+
+  await patch(admin, request.id, { status: 'needs_manual' })
+  await sendDiscordAlert(
+    `📝 Manual wire needed: $${request.amount} to ${recipient.name}. ` +
+      `India and the Philippines need a purpose code Mercury's API can't send. ` +
+      `Their bank details are already in Mercury under recipient ${recipientId} — ` +
+      `send it from the dashboard, then mark it sent at ${ADMIN_URL}.`
+  )
+  return null
 }
 
 // Queue the payment for approval in Mercury. Reuses the stored idempotency key
@@ -134,12 +161,12 @@ export async function syncWithdrawalRequest(admin: SupabaseClient, request: With
       status: 'ready_to_pay',
       mercury_recipient_id: invite.recipientId,
     })
-    await submitSendMoney(admin, { ...request, mercury_recipient_id: invite.recipientId })
+    await routePayment(admin, { ...request, mercury_recipient_id: invite.recipientId })
     return
   }
 
   if (request.status === 'ready_to_pay') {
-    await submitSendMoney(admin, request)
+    await routePayment(admin, request)
     return
   }
 
