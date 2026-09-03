@@ -157,10 +157,6 @@ export function WithdrawRequestForm(props: {
   return (
     <Shell>
       <h1 className="text-xl font-semibold text-gray-900">Withdraw to your bank</h1>
-      <p className="mt-1 text-sm text-gray-500">
-        For withdrawals over $10,000 or to a bank outside the US. You&apos;ll enter your bank
-        details directly with Mercury, our bank — we never see or store them.
-      </p>
 
       <Col className="mt-6 gap-1">
         <label htmlFor="amount" className="text-sm font-medium text-gray-900">
@@ -196,10 +192,10 @@ export function WithdrawRequestForm(props: {
         <span className="text-sm font-medium text-gray-900">Where is your bank account?</span>
         {(
           [
-            ['us', 'In the United States', 'Sent by ACH transfer, free.'],
-            ['international', 'Outside the United States', 'Sent by international wire.'],
+            ['us', 'US'],
+            ['international', 'International'],
           ] as const
-        ).map(([value, label, hint]) => (
+        ).map(([value, label]) => (
           <label
             key={value}
             className={clsx(
@@ -216,24 +212,23 @@ export function WithdrawRequestForm(props: {
               checked={destination === value}
               onChange={() => setDestination(value)}
             />
-            <span>
-              <span className="block text-sm font-medium text-gray-900">{label}</span>
-              <span className="block text-xs text-gray-500">{hint}</span>
-            </span>
+            <span className="text-sm font-medium text-gray-900">{label}</span>
           </label>
         ))}
       </Col>
 
       <Col className="mt-6 gap-1">
         <label htmlFor="feedback" className="text-sm font-medium text-gray-900">
-          Anything you&apos;d like to tell us? <span className="text-gray-400">(optional)</span>
+          Any other notes, or feedback for us? <span className="text-gray-400">(optional)</span>
         </label>
         <textarea
           id="feedback"
-          rows={3}
+          rows={5}
           value={feedback}
           onChange={(event) => setFeedback(event.target.value)}
-          placeholder="How was this process? Anything confusing?"
+          placeholder={
+            'E.g. what was good about your Manifund experience? What could be improved?\n\n(if you say nice things, we might use it as a testimonial -- thanks!)'
+          }
           className="rounded-md border border-gray-300 p-3 text-sm shadow-sm focus:border-orange-500 focus:outline-none"
         />
       </Col>

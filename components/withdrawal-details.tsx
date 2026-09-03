@@ -21,7 +21,7 @@ const LARGE_WITHDRAWAL_URL = MERCURY_ENABLED
   ? '/withdraw/request'
   : 'https://airtable.com/shrI3XFPivduhbnGa'
 const LARGE_WITHDRAWAL_DESCRIPTION = MERCURY_ENABLED
-  ? 'Enter your bank details securely with Mercury, our bank — we never see or store them. Works for any amount, anywhere in the world.'
+  ? 'Enter your bank details with Mercury, our bank, and receive money within 4 business days.'
   : 'Fill out our manual withdraw form with your bank account details and we will manually send you money within 5 business days.'
 
 export function WithdrawalDetails(props: {
