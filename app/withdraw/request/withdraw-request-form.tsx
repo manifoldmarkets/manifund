@@ -36,7 +36,9 @@ export function WithdrawRequestForm(props: {
 }) {
   const { withdrawBalance, openRequest, hasRecipient } = props
   const router = useRouter()
-  const [amount, setAmount] = useState(withdrawBalance)
+  // Held as text, not a number: Number('') is 0, so a numeric state would snap a
+  // cleared field back to "0" and typing would then build "01000".
+  const [amountText, setAmountText] = useState(String(withdrawBalance))
   const [destination, setDestination] = useState<Destination>('us')
   const [feedback, setFeedback] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -54,6 +56,7 @@ export function WithdrawRequestForm(props: {
       }
     : justSubmitted
 
+  const amount = amountText === '' ? NaN : Number(amountText)
   const minWithdrawal = mercuryMinWithdrawal(withdrawBalance)
   const awaitingDetails = pending?.status === 'awaiting_recipient'
 
@@ -147,12 +150,15 @@ export function WithdrawRequestForm(props: {
     router.refresh()
   }
 
-  const amountError =
-    amount > withdrawBalance
-      ? `You can withdraw at most ${formatMoneyPrecise(withdrawBalance)}.`
-      : amount < minWithdrawal
-        ? `Minimum withdrawal is ${formatMoneyPrecise(minWithdrawal)}.`
-        : null
+  const amountError = !amountText
+    ? 'Enter an amount.'
+    : !Number.isFinite(amount)
+      ? 'Enter a valid amount.'
+      : amount > withdrawBalance
+        ? `You can withdraw at most ${formatMoneyPrecise(withdrawBalance)}.`
+        : amount < minWithdrawal
+          ? `Minimum Mercury withdrawal is ${formatMoneyPrecise(minWithdrawal)}.`
+          : null
 
   return (
     <Shell>
@@ -166,25 +172,24 @@ export function WithdrawRequestForm(props: {
           <span className="text-lg text-gray-500">$</span>
           <Input
             id="amount"
-            type="number"
-            value={amount}
+            type="text"
+            inputMode="decimal"
+            value={amountText}
             error={!!amountError}
-            min={minWithdrawal}
-            max={withdrawBalance}
-            onChange={(event) => setAmount(Number(event.target.value))}
+            onChange={(event) => setAmountText(cleanAmount(event.target.value))}
             className="w-40"
           />
           <button
             type="button"
             className="text-sm text-orange-600 hover:underline"
-            onClick={() => setAmount(withdrawBalance)}
+            onClick={() => setAmountText(String(withdrawBalance))}
           >
             Withdraw everything
           </button>
         </Row>
         <span className={clsx('text-xs', amountError ? 'text-rose-600' : 'text-gray-400')}>
           {amountError ??
-            `You have ${formatMoneyPrecise(withdrawBalance)} available. Minimum ${formatMoneyPrecise(minWithdrawal)}.`}
+            `You have ${formatMoneyPrecise(withdrawBalance)} available. Minimum Mercury withdrawal is ${formatMoneyPrecise(minWithdrawal)}.`}
         </span>
       </Col>
 
@@ -259,6 +264,13 @@ export function WithdrawRequestForm(props: {
       </p>
     </Shell>
   )
+}
+
+// Digits and at most one decimal point. Leading zeros are dropped so typing into
+// a field that already reads "0" doesn't produce "01000".
+function cleanAmount(raw: string) {
+  const digitsAndDot = raw.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1')
+  return digitsAndDot.replace(/^0+(?=\d)/, '')
 }
 
 function Shell(props: { children: React.ReactNode }) {

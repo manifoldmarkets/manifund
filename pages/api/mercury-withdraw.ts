@@ -62,9 +62,9 @@ export default async function handler(req: NextRequest) {
       { status: 400 }
     )
   }
-  if (dollarAmount < minWithdrawal) {
+  if (!Number.isFinite(dollarAmount) || dollarAmount < minWithdrawal) {
     return NextResponse.json(
-      { error: `Minimum withdrawal is $${minWithdrawal.toLocaleString()}.` },
+      { error: `Minimum Mercury withdrawal is $${minWithdrawal.toLocaleString()}.` },
       { status: 400 }
     )
   }
