@@ -78,15 +78,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).send('success')
   }
 
+  // Mercury delivers events for EVERY transaction on the Grants account --
+  // donations in, payroll and rent out, card spend. Only a couple of statuses
+  // are ours to act on, so bail before spending an API call on the rest.
+  const status = event.mergePatch?.status
+  if (!status || (status !== 'sent' && !FAILED_TRANSACTION_STATUSES.includes(status))) {
+    return res.status(200).send('success')
+  }
+
   const supabaseAdmin = createAdminClient()
   try {
     // The payload is a merge patch, so fetch the transaction for its own fields.
     const txn = await getTransaction(event.resourceId)
-    const request = await matchRequest(supabaseAdmin, txn)
+    const { request, looksLikeOurs } = await matchRequest(supabaseAdmin, txn)
     if (!request) {
-      await sendDiscordAlert(
-        `⚠️ Mercury transaction ${event.resourceId} ($${txn.amount}) didn't match any withdrawal request`
-      )
+      // Silence for other people's transactions; alert only when it carried one
+      // of our markers and still didn't resolve, which is a real anomaly.
+      if (looksLikeOurs) {
+        await sendDiscordAlert(
+          `⚠️ Mercury transaction ${event.resourceId} ($${txn.amount}) looks like a Manifund withdrawal but matched no request`
+        )
+      }
       return res.status(200).send('success')
     }
 
@@ -124,10 +136,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 // Primary key is the `note` we stamp on request-send-money. Falls back to
 // recipient + amount, which the one-active-request-per-profile index keeps
 // unambiguous. Never guesses beyond that.
+//
+// `looksLikeOurs` separates "this is somebody else's transaction, ignore it"
+// from "this carried a Manifund marker but didn't resolve" -- only the second
+// is worth waking anyone up for.
 async function matchRequest(
   supabaseAdmin: any,
   txn: { id: string; note?: string | null; amount: number; counterpartyId?: string | null }
-) {
+): Promise<{ request: WithdrawalRequest | null; looksLikeOurs: boolean }> {
   const noteId = txn.note?.match(/mfw:([0-9a-f-]{36})/i)?.[1]
   if (noteId) {
     const { data } = await supabaseAdmin
@@ -135,9 +151,19 @@ async function matchRequest(
       .select('*')
       .eq('id', noteId)
       .maybeSingle()
-    if (data) return data as WithdrawalRequest
+    // The marker is ours whether or not the id resolves.
+    return { request: (data as WithdrawalRequest) ?? null, looksLikeOurs: true }
   }
-  if (!txn.counterpartyId) return null
+  if (!txn.counterpartyId) return { request: null, looksLikeOurs: false }
+
+  // No note, so this is only ours if it went to a recipient we onboarded.
+  const { data: known } = await supabaseAdmin
+    .from('profiles')
+    .select('id')
+    .eq('mercury_recipient_id', txn.counterpartyId)
+    .maybeSingle()
+  if (!known) return { request: null, looksLikeOurs: false }
+
   const { data } = await supabaseAdmin
     .from('withdrawal_requests')
     .select('*')
@@ -147,5 +173,5 @@ async function matchRequest(
     .order('requested_at', { ascending: false })
     .limit(2)
   const rows = (data ?? []) as WithdrawalRequest[]
-  return rows.length === 1 ? rows[0] : null
+  return { request: rows.length === 1 ? rows[0] : null, looksLikeOurs: true }
 }
