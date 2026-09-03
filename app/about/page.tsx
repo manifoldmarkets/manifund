@@ -206,6 +206,15 @@ export default function AboutPage() {
           ))}
         </div>
       </Col>
+      <p className="p-5 text-center text-sm text-gray-500 sm:p-10">
+        Manifund (formally, &quot;Manifold for Charity&quot;) is a 501c3 public charity, EIN{' '}
+        <SiteLink
+          href="https://projects.propublica.org/nonprofits/organizations/883668801"
+          className="underline hover:text-gray-700"
+        >
+          88-3668801
+        </SiteLink>
+      </p>
     </>
   )
 }
