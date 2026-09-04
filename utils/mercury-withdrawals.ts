@@ -17,7 +17,6 @@ import {
 } from '@/utils/mercury'
 
 const REQUEST_URL = 'https://manifund.org/withdraw/request'
-const ADMIN_URL = 'https://manifund.org/admin/withdrawals'
 
 function methodLabel(paymentMethod: string) {
   return paymentMethod === 'internationalWire' ? 'International wire' : 'Bank transfer (ACH)'
@@ -50,8 +49,7 @@ export async function routePayment(admin: SupabaseClient, request: WithdrawalReq
     `📝 Manual wire needed: $${request.amount} to ${recipient.name}. ` +
       `India and the Philippines need a purpose code Mercury's API can't send. ` +
       `Their bank details are already in Mercury under recipient ${recipientId} — ` +
-      `just send it from the dashboard. We'll notice it went out and email them; ` +
-      `nothing to tick off here.`
+      `just send it from the dashboard.`
   )
   return null
 }
@@ -179,8 +177,8 @@ export async function syncWithdrawalRequest(admin: SupabaseClient, request: With
     const sent = await listSentTransactionsSince(request.requested_at)
     // amount < 0 keeps money *coming in* from the same counterparty from being
     // mistaken for the wire going out. If Mercury turns out not to sign outgoing
-    // transactions negatively, nothing auto-matches and the admin's "Mark as
-    // sent" button covers it -- which is the right way for this to fail.
+    // transactions negatively, nothing auto-matches and the stuck alert in
+    // mercury-sync eventually points at a SQL fix -- the right way to fail.
     const matches = sent.filter(
       (t) =>
         t.counterpartyId === request.mercury_recipient_id &&
@@ -193,7 +191,7 @@ export async function syncWithdrawalRequest(admin: SupabaseClient, request: With
     if (matches.length > 1) {
       await sendDiscordAlert(
         `⚠️ Withdrawal ${request.id} matches ${matches.length} sent Mercury transactions — ` +
-          `close it out by hand at ${ADMIN_URL}.`
+          `set status='sent' and sent_at on the right one in SQL and email the grantee.`
       )
       return
     }

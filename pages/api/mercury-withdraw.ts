@@ -40,7 +40,12 @@ export default async function handler(req: NextRequest) {
     return NextResponse.json({ error: 'Bank withdrawals are not enabled yet.' }, { status: 503 })
   }
 
-  const { dollarAmount, destination, feedback } = (await req.json()) as MercuryWithdrawProps
+  const body = (await req.json()) as MercuryWithdrawProps
+  const { destination, feedback } = body
+  // Balances are float sums and can carry sub-cent dust Mercury would reject.
+  const dollarAmount = Number.isFinite(body.dollarAmount)
+    ? Math.round(body.dollarAmount * 100) / 100
+    : NaN
   const { supabase, user } = await getUserAndClient(req)
   if (!user?.email) {
     return NextResponse.json({ error: 'You must be signed in to withdraw.' }, { status: 401 })
@@ -77,6 +82,7 @@ export default async function handler(req: NextRequest) {
     .eq('profile_id', user.id)
     .in('status', OPEN_STATUSES as unknown as string[])
     .maybeSingle()
+    .throwOnError()
   if (existing) {
     return NextResponse.json(
       {
@@ -86,6 +92,15 @@ export default async function handler(req: NextRequest) {
       { status: 409 }
     )
   }
+
+  // A returning grantee's recipient only holds routing details for the one
+  // method it was onboarded with, so use that rather than whatever the client
+  // sent -- an ACH send to an international-only recipient would just fail.
+  const knownPaymentMethod = profile.mercury_recipient_id
+    ? await getKnownPaymentMethod(supabaseAdmin, user.id, profile.mercury_recipient_id)
+    : null
+  const paymentMethod: PaymentMethod =
+    knownPaymentMethod ?? (destination === 'us' ? 'ach' : 'internationalWire')
 
   // Insert the withdrawal txn BEFORE calling Mercury, so the balance is
   // reserved for the days this request may sit awaiting details or approval.
@@ -121,15 +136,7 @@ export default async function handler(req: NextRequest) {
     )
   }
 
-  // A returning grantee's recipient only holds routing details for the one
-  // method it was onboarded with, so use that rather than whatever the client
-  // sent -- an ACH send to an international-only recipient would just fail.
-  const knownPaymentMethod = profile.mercury_recipient_id
-    ? await getKnownPaymentMethod(supabaseAdmin, user.id, profile.mercury_recipient_id)
-    : null
-  const paymentMethod: PaymentMethod =
-    knownPaymentMethod ?? (destination === 'us' ? 'ach' : 'internationalWire')
-  const { data: request } = await supabaseAdmin
+  const { data: request, error: requestError } = await supabaseAdmin
     .from('withdrawal_requests')
     .insert({
       profile_id: user.id,
@@ -141,7 +148,36 @@ export default async function handler(req: NextRequest) {
     })
     .select()
     .single()
-    .throwOnError()
+  if (requestError || !request) {
+    // A concurrent submit lands here via the one-open-request unique index.
+    // Either way the reserving txn must not outlive the failed insert.
+    console.error('mercury withdraw: request insert failed', requestError)
+    let rollbackFailed = false
+    try {
+      await supabaseAdmin.from('txns').delete().eq('id', txnId).throwOnError()
+    } catch (e) {
+      rollbackFailed = true
+      console.error('mercury withdraw rollback failed', user.id, txnId, e)
+    }
+    const duplicate = requestError?.code === '23505'
+    if (!duplicate || rollbackFailed) {
+      await sendDiscordAlert(
+        `🚨 Mercury withdrawal insert failed for ${profile.full_name} (${user.email}): ` +
+          `$${dollarAmount}, ${requestError?.message}` +
+          (rollbackFailed
+            ? `\n⚠️ Rollback of txn ${txnId} also failed — their balance is now wrong!`
+            : '')
+      )
+    }
+    return NextResponse.json(
+      {
+        error: duplicate
+          ? 'You already have a withdrawal in progress. It has to finish before you start another.'
+          : 'Withdrawal failed. Our team has been notified and will follow up.',
+      },
+      { status: duplicate ? 409 : 500 }
+    )
+  }
 
   const rollback = async (context: string, e: unknown) => {
     console.error('mercury withdraw failed:', context, e)
@@ -171,24 +207,31 @@ export default async function handler(req: NextRequest) {
         .update({ mercury_recipient_id: profile.mercury_recipient_id, status: 'ready_to_pay' })
         .eq('id', request.id)
         .throwOnError()
-      await routePayment(supabaseAdmin, {
-        ...request,
-        mercury_recipient_id: profile.mercury_recipient_id,
-      })
     } catch (e) {
-      await rollback('request-send-money failed', e)
+      await rollback('marking ready_to_pay failed', e)
       return NextResponse.json(
         { error: 'Withdrawal failed. Our team has been notified and will follow up.' },
         { status: 500 }
       )
     }
-    // routePayment may have parked it as needs_manual instead of queueing it.
-    const { data: after } = await supabaseAdmin
-      .from('withdrawal_requests')
-      .select('status')
-      .eq('id', request.id)
-      .single()
-    return NextResponse.json({ status: after?.status ?? 'pending_approval' })
+    try {
+      const sent = await routePayment(supabaseAdmin, {
+        ...request,
+        mercury_recipient_id: profile.mercury_recipient_id,
+      })
+      return NextResponse.json({ status: sent ? 'pending_approval' : 'needs_manual' })
+    } catch (e) {
+      // Mercury may already have the payment queued (timeout, or a failed
+      // status patch after an accepted send), so never roll back here: the row
+      // holds the idempotency key and the hourly sync retries ready_to_pay rows.
+      console.error('mercury withdraw: routePayment failed', request.id, e)
+      await sendDiscordAlert(
+        `⚠️ Mercury payment submission failed for ${profile.full_name} (${user.email}): ` +
+          `$${dollarAmount}, request ${request.id}. Left as ready_to_pay; the hourly ` +
+          `sync will retry it with the same idempotency key.`
+      )
+      return NextResponse.json({ status: 'ready_to_pay' })
+    }
   }
 
   try {

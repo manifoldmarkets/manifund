@@ -37,7 +37,9 @@ export function WithdrawRequestForm(props: {
   // nothing to ask. Null for a first-time withdrawer.
   knownPaymentMethod?: 'ach' | 'internationalWire' | null
 }) {
-  const { withdrawBalance, openRequest, hasRecipient, knownPaymentMethod } = props
+  const { openRequest, hasRecipient, knownPaymentMethod } = props
+  // Floor to cents: the raw float sum can carry dust Mercury would reject.
+  const withdrawBalance = Math.floor(props.withdrawBalance * 100) / 100
   const router = useRouter()
   // Held as text, not a number: Number('') is 0, so a numeric state would snap a
   // cleared field back to "0" and typing would then build "01000".
@@ -93,20 +95,6 @@ export function WithdrawRequestForm(props: {
     )
   }
 
-  if (pending?.status === 'needs_manual') {
-    return (
-      <Shell>
-        <Row className="items-center gap-2">
-          <CheckCircleIcon className="h-6 w-6 text-emerald-500" aria-hidden="true" />
-          <h1 className="text-xl font-semibold text-gray-900">Withdrawal requested</h1>
-        </Row>
-        <p className="mt-2 text-sm text-gray-500">
-          {`We have your bank details. Wires to India and the Philippines need extra paperwork, so someone on our team will send your ${formatMoneyPrecise(pending.amount)} by hand rather than automatically — we'll email you as soon as it's on its way. Nothing more for you to do.`}
-        </p>
-      </Shell>
-    )
-  }
-
   if (pending && !awaitingDetails) {
     return (
       <Shell>
@@ -149,22 +137,27 @@ export function WithdrawRequestForm(props: {
   const submit = async () => {
     setSubmitting(true)
     setError(null)
-    const response = await fetch('/api/mercury-withdraw', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dollarAmount: amount, destination, feedback }),
-    })
-    const json = await response.json()
-    setSubmitting(false)
-    if (!response.ok) {
-      setError(json.error ?? 'Something went wrong. Please try again or email info@manifund.org.')
-      return
+    try {
+      const response = await fetch('/api/mercury-withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dollarAmount: amount, destination, feedback }),
+      })
+      const json = await response.json()
+      if (!response.ok) {
+        setError(json.error ?? 'Something went wrong. Please try again or email info@manifund.org.')
+        return
+      }
+      setJustSubmitted({ status: json.status, amount, onboardingUrl: json.onboardingUrl ?? null })
+      if (json.onboardingUrl) {
+        window.open(json.onboardingUrl, '_blank', 'noopener,noreferrer')
+      }
+      router.refresh()
+    } catch {
+      setError('Something went wrong. Please try again or email info@manifund.org.')
+    } finally {
+      setSubmitting(false)
     }
-    setJustSubmitted({ status: json.status, amount, onboardingUrl: json.onboardingUrl ?? null })
-    if (json.onboardingUrl) {
-      window.open(json.onboardingUrl, '_blank', 'noopener,noreferrer')
-    }
-    router.refresh()
   }
 
   const amountError = !amountText

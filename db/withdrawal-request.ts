@@ -3,9 +3,8 @@ import { SupabaseClient } from '@supabase/supabase-js'
 
 export type WithdrawalRequest = Database['public']['Tables']['withdrawal_requests']['Row']
 
-// 'needs_manual' counts as open: the balance is reserved and the grantee can't
-// stack another request, it just never gets a Mercury invite. mercury-sync
-// no-ops on it because no branch matches the status.
+// 'needs_manual' counts as open: the balance is reserved and the grantee
+// can't stack another request.
 export const OPEN_STATUSES = [
   'awaiting_recipient',
   'ready_to_pay',
@@ -52,6 +51,7 @@ export async function getKnownPaymentMethod(
     .order('requested_at', { ascending: false })
     .limit(1)
     .maybeSingle()
+    .throwOnError()
   const method = data?.payment_method
   return method === 'ach' || method === 'internationalWire' ? method : null
 }

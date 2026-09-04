@@ -103,15 +103,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (FAILED_TRANSACTION_STATUSES.includes(txn.status)) {
-      await reverseWithdrawalRequest(
-        supabaseAdmin,
-        request,
-        'failed',
-        `the bank returned the payment (${txn.status})`
-      )
-      await sendDiscordAlert(
-        `🚨 Mercury payment returned: $${request.amount} for ${request.profile_id} (request ${request.id})`
-      )
+      // Redelivery of an already-reversed failure is a no-op.
+      if (request.status !== 'failed' && request.status !== 'rejected') {
+        await reverseWithdrawalRequest(
+          supabaseAdmin,
+          request,
+          'failed',
+          `the bank returned the payment (${txn.status})`
+        )
+        await sendDiscordAlert(
+          `🚨 Mercury payment returned: $${request.amount} for ${request.profile_id} (request ${request.id})`
+        )
+      }
     } else if (event.mergePatch?.status === 'sent') {
       const sentAt = event.mergePatch.postedAt ?? txn.postedAt ?? new Date().toISOString()
       if (request.status === 'sent') {
@@ -121,6 +124,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           .update({ sent_at: sentAt, mercury_transaction_id: txn.id })
           .eq('id', request.id)
           .throwOnError()
+      } else if (request.status === 'failed' || request.status === 'rejected') {
+        // A stale 'sent' after we already reversed: flipping the row back would
+        // hide the reversal, so hand it to a human instead.
+        await sendDiscordAlert(
+          `🚨 Mercury says transaction ${txn.id} was sent, but request ${request.id} ` +
+            `was already reversed (${request.status}) — reconcile by hand.`
+        )
       } else {
         await markSent(supabaseAdmin, request, sentAt, txn.id)
       }
@@ -128,6 +138,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } catch (e) {
     console.error('mercury webhook failed', event.resourceId, e)
     await sendDiscordAlert(`⚠️ Mercury webhook error on ${event.resourceId}: ${e}`)
+    // Non-2xx so Mercury redelivers; a transient failure gets another chance.
+    return res.status(500).send('error')
   }
 
   return res.status(200).send('success')
@@ -151,6 +163,7 @@ async function matchRequest(
       .select('*')
       .eq('id', noteId)
       .maybeSingle()
+      .throwOnError()
     // The marker is ours whether or not the id resolves.
     return { request: (data as WithdrawalRequest) ?? null, looksLikeOurs: true }
   }
@@ -162,6 +175,7 @@ async function matchRequest(
     .select('id')
     .eq('mercury_recipient_id', txn.counterpartyId)
     .maybeSingle()
+    .throwOnError()
   if (!known) return { request: null, looksLikeOurs: false }
 
   const { data } = await supabaseAdmin
@@ -172,6 +186,7 @@ async function matchRequest(
     .in('status', ['pending_approval', 'needs_manual', 'sent'])
     .order('requested_at', { ascending: false })
     .limit(2)
+    .throwOnError()
   const rows = (data ?? []) as WithdrawalRequest[]
   return { request: rows.length === 1 ? rows[0] : null, looksLikeOurs: true }
 }

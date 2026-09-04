@@ -11,8 +11,6 @@ export const config = {
   regions: ['sfo1'],
 }
 
-// Matches the "within 4 business days" promise on the withdraw page: alert
-// while there's still time to make good on it, not after it's already missed.
 const STUCK_APPROVAL_DAYS = 2
 const RE_ALERT_DAYS = 3
 
@@ -41,6 +39,7 @@ export default async function handler(req: NextRequest) {
       .eq('id', requestId)
       .eq('profile_id', user.id)
       .maybeSingle()
+      .throwOnError()
     requests = data ? [data as WithdrawalRequest] : []
   } else {
     const secret = process.env.CRON_SECRET
@@ -62,26 +61,32 @@ export default async function handler(req: NextRequest) {
   }
 
   // Anything sitting in the approval queue this long means nobody has clicked
-  // approve. The grantee can't fix that, so alert us rather than emailing them.
+  // approve, and a lingering needs_manual row means the wire wasn't sent -- or
+  // went out with a different amount, which the auto-match above can't see.
+  // The grantee can't fix either, so alert us rather than emailing them.
   //
   // Throttled on last_nudged_at, shared with mercury-nudge. Safe to reuse: that
   // cron only ever touches 'awaiting_recipient' rows and this only fires on
-  // 'pending_approval', so the two can never write to the same row. Without a
-  // throttle this would re-post every hour, forever, until someone approved.
+  // 'pending_approval' and 'needs_manual', so the two can never write to the
+  // same row.
   if (!requestId) {
     const now = Date.now()
     const stuckCutoff = new Date(now - STUCK_APPROVAL_DAYS * 86400 * 1000).toISOString()
     const reAlertCutoff = new Date(now - RE_ALERT_DAYS * 86400 * 1000).toISOString()
     const stuck = requests.filter(
       (r) =>
-        r.status === 'pending_approval' &&
+        (r.status === 'pending_approval' || r.status === 'needs_manual') &&
         (r.submitted_at ?? r.requested_at) < stuckCutoff &&
         (!r.last_nudged_at || r.last_nudged_at < reAlertCutoff)
     )
     for (const r of stuck) {
       await sendDiscordAlert(
-        `⚠️ Withdrawal awaiting approval in Mercury for ${STUCK_APPROVAL_DAYS}+ days: ` +
-          `$${r.amount} (request ${r.id})`
+        r.status === 'pending_approval'
+          ? `⚠️ Withdrawal awaiting approval in Mercury for ${STUCK_APPROVAL_DAYS}+ days: ` +
+              `$${r.amount} (request ${r.id})`
+          : `⚠️ Manual wire still open after ${STUCK_APPROVAL_DAYS}+ days: ` +
+              `$${r.amount} (request ${r.id}). If it already went out, the sync couldn't ` +
+              `match it — set status='sent' and sent_at in SQL and email the grantee.`
       )
       await supabaseAdmin
         .from('withdrawal_requests')

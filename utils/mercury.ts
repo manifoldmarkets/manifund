@@ -68,8 +68,6 @@ function grantsAccountId() {
   return id
 }
 
-// Only ask for the method that applies: offering internationalWire to a US
-// recipient makes Mercury's form demand an IBAN they don't have.
 export async function createRecipientInvite(props: {
   name: string
   contactEmail: string
@@ -133,8 +131,6 @@ const WIRE_PURPOSE = {
   simple: { category: 'other', additionalInfo: 'Grant disbursement from Manifund' },
 }
 
-// Lands in Mercury's approval queue rather than sending: the "Send Money with
-// Approval" scope needs no IP allowlist, which Vercel can't provide.
 export async function requestSendMoney(props: {
   recipientId: string
   amount: number
@@ -160,23 +156,44 @@ export async function requestSendMoney(props: {
 }
 
 export async function listSendMoneyRequests() {
-  const res = await mercuryFetch<{ requests?: SendMoneyRequest[] }>(
-    `/request-send-money?accountId=${grantsAccountId()}`
-  )
-  return res.requests ?? []
+  const requests: SendMoneyRequest[] = []
+  let startAfter: string | undefined
+  // Page cap is a runaway guard, not a real bound: 20 pages is 20k requests.
+  for (let i = 0; i < 20; i++) {
+    const res = await mercuryFetch<{
+      requests?: SendMoneyRequest[]
+      page?: { nextPage?: string | null }
+    }>(
+      `/request-send-money?accountId=${grantsAccountId()}&limit=1000` +
+        (startAfter ? `&start_after=${startAfter}` : '')
+    )
+    requests.push(...(res.requests ?? []))
+    const next = res.page?.nextPage
+    if (!next) break
+    startAfter = next
+  }
+  return requests
 }
 
 export async function getTransaction(transactionId: string) {
-  return await mercuryFetch<MercuryTransaction>(`/transactions/${transactionId}`)
+  return await mercuryFetch<MercuryTransaction>(
+    `/account/${grantsAccountId()}/transaction/${transactionId}`
+  )
 }
 
-// Used to notice that an admin wired a manual payment from the dashboard. Those
-// produce ordinary transactions, so we can spot them the same way we'd spot any
-// other -- no one has to tell us it happened.
+// Used to notice that an admin wired a manual payment from the dashboard.
 export async function listSentTransactionsSince(since: string) {
   const start = since.slice(0, 10)
-  const res = await mercuryFetch<{ transactions?: MercuryTransaction[] }>(
-    `/account/${grantsAccountId()}/transactions?status=sent&start=${start}&limit=500`
-  )
-  return res.transactions ?? []
+  const transactions: MercuryTransaction[] = []
+  let offset = 0
+  do {
+    const res = await mercuryFetch<{ total?: number; transactions?: MercuryTransaction[] }>(
+      `/account/${grantsAccountId()}/transactions?status=sent&start=${start}&limit=1000&offset=${offset}`
+    )
+    const page = res.transactions ?? []
+    transactions.push(...page)
+    offset += page.length
+    if (page.length === 0 || offset >= (res.total ?? 0)) break
+  } while (offset < 20000)
+  return transactions
 }
