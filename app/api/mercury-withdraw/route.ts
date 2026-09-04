@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, getUserAndClient } from '@/db/edge'
-import { getProfileById } from '@/db/profile'
+import { createAdminClient } from '@/db/supabase-admin'
+import { createServerSupabaseClient } from '@/db/supabase-server'
+import { getProfileById, getUser } from '@/db/profile'
 import { getFullTxnsByUser } from '@/db/txn'
 import { getBidsByUser } from '@/db/bid'
 import { calculateCashBalance } from '@/utils/math'
@@ -16,18 +17,13 @@ import {
   mercuryMinWithdrawal,
 } from '@/utils/constants'
 
-export const config = {
-  runtime: 'edge',
-  regions: ['sfo1'],
-}
-
 export type MercuryWithdrawProps = {
   dollarAmount: number
   destination: 'us' | 'international'
   feedback?: string
 }
 
-export default async function handler(req: NextRequest) {
+export async function POST(req: NextRequest) {
   // There is no Mercury sandbox and dev shares the production token, so a dev
   // server must never be able to move money.
   if (!isProd()) {
@@ -46,7 +42,8 @@ export default async function handler(req: NextRequest) {
   const dollarAmount = Number.isFinite(body.dollarAmount)
     ? Math.round(body.dollarAmount * 100) / 100
     : NaN
-  const { supabase, user } = await getUserAndClient(req)
+  const supabase = await createServerSupabaseClient()
+  const user = await getUser(supabase)
   if (!user?.email) {
     return NextResponse.json({ error: 'You must be signed in to withdraw.' }, { status: 401 })
   }

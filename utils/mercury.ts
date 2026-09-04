@@ -1,8 +1,4 @@
 // Mercury Bank API client. No SDK exists, so this is a thin fetch wrapper.
-//
-// Kept free of Node-only imports so it can be pulled into the edge-runtime
-// Pages API routes. Signature verification lives in the webhook receiver
-// instead, since that route runs on Node and needs the raw request body.
 
 const MERCURY_API = 'https://api.mercury.com/api/v1'
 

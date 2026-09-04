@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient, getUserAndClient } from '@/db/edge'
+import { createAdminClient } from '@/db/supabase-admin'
+import { createServerSupabaseClient } from '@/db/supabase-server'
+import { getUser } from '@/db/profile'
 import { isProd } from '@/db/env'
 import { getOpenWithdrawalRequests, WithdrawalRequest } from '@/db/withdrawal-request'
 import { syncWithdrawalRequest } from '@/utils/mercury-withdrawals'
 import { hasMercuryKeys } from '@/utils/mercury'
 import { sendDiscordAlert } from '@/utils/discord'
 
-export const config = {
-  runtime: 'edge',
-  regions: ['sfo1'],
-}
+export const maxDuration = 300
 
 const STUCK_APPROVAL_DAYS = 2
 const RE_ALERT_DAYS = 3
@@ -20,7 +19,7 @@ const RE_ALERT_DAYS = 3
 //
 // Runs hourly from vercel.json. Also accepts ?requestId= so the withdrawal page
 // can refresh one row when a grantee lands back on it.
-export default async function handler(req: NextRequest) {
+async function handler(req: NextRequest) {
   if (!isProd()) return NextResponse.json('not prod')
   if (!hasMercuryKeys())
     return NextResponse.json({ error: 'Mercury not configured' }, { status: 503 })
@@ -31,7 +30,7 @@ export default async function handler(req: NextRequest) {
 
   if (requestId) {
     // User-triggered: only ever their own row.
-    const { user } = await getUserAndClient(req)
+    const user = await getUser(await createServerSupabaseClient())
     if (!user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
     const { data } = await supabaseAdmin
       .from('withdrawal_requests')
@@ -98,3 +97,6 @@ export default async function handler(req: NextRequest) {
 
   return NextResponse.json({ checked: requests.length, advanced })
 }
+
+// Cron hits GET; the withdrawal page refreshes one row via POST.
+export { handler as GET, handler as POST }

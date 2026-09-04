@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createAdminClient } from '@/db/edge'
+import { createAdminClient } from '@/db/supabase-admin'
 import { isProd } from '@/db/env'
 import { WithdrawalRequest } from '@/db/withdrawal-request'
 import { getUserEmail, sendTemplateEmail, TEMPLATE_IDS } from '@/utils/email'
 
-export const config = {
-  runtime: 'edge',
-  regions: ['sfo1'],
-}
+export const maxDuration = 300
 
 const NUDGE_AFTER_HOURS = 24
 const RENUDGE_AFTER_DAYS = 3
@@ -20,7 +17,7 @@ const RENUDGE_AFTER_DAYS = 3
 //
 // last_nudged_at is shared with mercury-sync's stuck-approval alert. They can't
 // collide: this only touches 'awaiting_recipient' rows, that only 'pending_approval'.
-export default async function handler(req: NextRequest) {
+export async function GET(req: NextRequest) {
   if (!isProd()) return NextResponse.json('not prod')
   const secret = process.env.CRON_SECRET
   if (secret && req.headers.get('authorization') !== `Bearer ${secret}`) {
