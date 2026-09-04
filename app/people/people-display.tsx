@@ -8,7 +8,7 @@ import { ProfileAndProjectTitles } from '@/db/profile'
 import { useState } from 'react'
 import { sortBy } from 'es-toolkit'
 import { Tooltip } from '@/components/tooltip'
-import { CheckBadgeIcon, CurrencyDollarIcon, WrenchIcon } from '@heroicons/react/20/solid'
+import { CheckBadgeIcon, WrenchIcon } from '@heroicons/react/20/solid'
 import { getSponsoredAmount2025 } from '@/utils/constants'
 import { SearchBar } from '@/components/input'
 import { searchInAny } from '@/utils/parse'
@@ -85,7 +85,6 @@ function ProfileRow(props: { profile: Profile; isCreator?: boolean }) {
           <Row className="gap-1">
             {profile.regranter_status && <MiniProfileTag role="regrantor" />}
             {isCreator && <MiniProfileTag role="creator" />}
-            {profile.accreditation_status && <MiniProfileTag role="accredited" />}
           </Row>
         </Row>
         <span className="truncate overflow-ellipsis text-xs text-gray-500">{profile.bio}</span>
@@ -115,14 +114,6 @@ export function MiniProfileTag(props: { role: string }) {
         <Tooltip text="Regrantor">
           <div className="rounded-full bg-orange-500 p-0.5 text-orange-100 shadow">
             <CheckBadgeIcon className="m-auto h-3 w-3 stroke-2" />
-          </div>
-        </Tooltip>
-      )
-    case 'accredited':
-      return (
-        <Tooltip text="Accredited Investor">
-          <div className="rounded-full bg-emerald-500 p-0.5 text-emerald-100 shadow">
-            <CurrencyDollarIcon className="m-auto h-3 w-3 stroke-2" />
           </div>
         </Tooltip>
       )

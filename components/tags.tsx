@@ -7,7 +7,6 @@ import {
   EllipsisHorizontalCircleIcon,
   XCircleIcon,
   CheckCircleIcon,
-  CurrencyDollarIcon,
   PencilIcon,
   BuildingLibraryIcon,
   GlobeEuropeAfricaIcon,
@@ -157,23 +156,6 @@ export function StageIcon(props: { stage: Project['stage']; className?: string }
     }[stage],
   }
   return <i.icon className={className} />
-}
-
-export function AccreditedTag() {
-  return (
-    <Tooltip
-      text={
-        'For accredited investors, deposits, investments, and profits impact cash balance rather than charity balance. This means their profits are withdrawable.'
-      }
-    >
-      <Row className="max-w-fit gap-0.5 rounded-full bg-emerald-100 px-2 pt-1 text-center">
-        <CurrencyDollarIcon className="relative bottom-0.5 m-auto h-4 w-4 stroke-2 text-emerald-500" />
-        <div className="relative bottom-0.5 text-sm leading-tight text-emerald-500">
-          accredited investor
-        </div>
-      </Row>
-    </Tooltip>
-  )
 }
 
 export function RegranterTag() {
